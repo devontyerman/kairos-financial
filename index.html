@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kairos Financial — Agent Portal</title>
+  <meta name="description" content="Kairos Financial Agent Portal — Resources, tools, and training for our agents." />
+  <link rel="stylesheet" href="css/styles.css" />
+  <style>
+    /* Home-specific styles */
+    .home-sections {
+      background: transparent;
+      position: relative;
+      z-index: 1;
+    }
+
+    .home-intro {
+      text-align: center;
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 0 1.5rem 5rem;
+    }
+
+    .home-intro-divider {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 3rem;
+    }
+
+    .home-intro-divider::before,
+    .home-intro-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border-strong));
+    }
+
+    .home-intro-divider::after {
+      background: linear-gradient(90deg, var(--border-strong), transparent);
+    }
+
+    .section-nav-grid {
+      padding: 0 0 6rem;
+    }
+
+    .section-carriers {
+      background: var(--bg-surface);
+      padding: 5rem 0;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .carriers-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1rem;
+    }
+
+    .carrier-pill {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 1.25rem;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: var(--transition);
+      letter-spacing: 0.02em;
+    }
+
+    .carrier-pill:hover {
+      background: var(--bg-hover);
+      border-color: var(--gold-border);
+      color: var(--gold);
+    }
+
+    .carrier-pill-arrow {
+      color: var(--gold-dim);
+      font-size: 0.9rem;
+      transition: transform 0.2s ease;
+    }
+
+    .carrier-pill:hover .carrier-pill-arrow {
+      transform: translateX(3px);
+    }
+
+    /* Hero buttons */
+    .hero-buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ============================================================
+       NAVIGATION
+  ============================================================= -->
+  <nav class="nav" id="mainNav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">
+        <div class="nav-logo-mark">K</div>
+        <span class="nav-logo-text">KAIROS FINANCIAL</span>
+      </a>
+
+      <ul class="nav-links">
+        <li><a href="course.html" class="nav-link">New Agent Steps</a></li>
+
+        <li>
+          <a class="nav-link" href="#" onclick="return false;">
+            Carriers
+            <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="2 4 6 8 10 4"/>
+            </svg>
+          </a>
+          <div class="nav-dropdown">
+            <a href="carriers/aetna.html">Aetna</a>
+            <a href="carriers/aig.html">AIG</a>
+            <a href="carriers/american-amicable.html">American Amicable</a>
+            <a href="carriers/americo.html">Americo</a>
+            <a href="carriers/ameritas.html">Ameritas</a>
+            <div class="nav-dropdown-divider"></div>
+            <a href="carriers/corebridge.html">Corebridge</a>
+            <a href="carriers/ethos.html">Ethos</a>
+            <a href="carriers/foresters.html">Foresters</a>
+            <a href="carriers/instabrain.html">Instabrain</a>
+            <a href="carriers/mutual-of-omaha.html">Mutual of Omaha</a>
+            <a href="carriers/transamerica.html">Transamerica</a>
+          </div>
+        </li>
+
+        <li><a href="insurance-toolkits.html" class="nav-link">Insurance Toolkits</a></li>
+        <li><a href="ai-training.html" class="nav-link">AI Training</a></li>
+        <li><a href="agent-portal.html" class="nav-link">Agent Portal</a></li>
+        <li><a href="helpful-links.html" class="nav-link">Helpful Links</a></li>
+        <li><a href="lead-vendors.html" class="nav-link">Lead Vendors</a></li>
+      </ul>
+
+      <button class="nav-hamburger" id="hamburger" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Mobile nav -->
+  <div class="nav-mobile" id="mobileNav">
+    <a href="course.html">New Agent Steps</a>
+    <div class="nav-mobile-section">Carriers</div>
+    <a href="carriers/aetna.html">Aetna</a>
+    <a href="carriers/aig.html">AIG</a>
+    <a href="carriers/american-amicable.html">American Amicable</a>
+    <a href="carriers/americo.html">Americo</a>
+    <a href="carriers/ameritas.html">Ameritas</a>
+    <a href="carriers/corebridge.html">Corebridge</a>
+    <a href="carriers/ethos.html">Ethos</a>
+    <a href="carriers/foresters.html">Foresters</a>
+    <a href="carriers/instabrain.html">Instabrain</a>
+    <a href="carriers/mutual-of-omaha.html">Mutual of Omaha</a>
+    <a href="carriers/transamerica.html">Transamerica</a>
+    <a href="insurance-toolkits.html">Insurance Toolkits</a>
+    <a href="ai-training.html">AI Training</a>
+    <a href="agent-portal.html">Agent Portal</a>
+    <a href="helpful-links.html">Helpful Links</a>
+    <a href="lead-vendors.html">Lead Vendors</a>
+  </div>
+
+  <!-- ============================================================
+       HERO — NYC SKYLINE VIDEO
+  ============================================================= -->
+  <section class="hero">
+    <div class="hero-video-wrapper">
+      <!-- Animated fallback background (always shown behind video) -->
+      <div class="hero-video-fallback"></div>
+
+      <!--
+        NYC SKYLINE VIDEO
+        ─────────────────────────────────────────────────────────
+        Download a free looping NYC skyline timelapse and save it
+        as: assets/nyc-skyline.mp4
+
+        Great free sources:
+          • Pexels: https://www.pexels.com/search/videos/new%20york%20skyline%20night/
+          • Coverr: https://coverr.co/search?q=new+york
+
+        Tips for a perfect loop:
+          • Look for "looping" or "seamless loop" in the title
+          • Aim for a clip 15–30 seconds long
+          • 1080p or 4K quality looks best
+      -->
+      <video
+        class="hero-video"
+        autoplay
+        muted
+        loop
+        playsinline
+        preload="auto"
+        poster=""
+        id="heroVideo"
+      >
+        <source src="assets/nyc-skyline.mp4" type="video/mp4" />
+      </video>
+    </div>
+
+    <!-- Gradient overlay for text legibility + bottom fade -->
+    <div class="hero-overlay"></div>
+
+    <!-- JS-controlled scroll fade layer -->
+    <div class="hero-scroll-fade"></div>
+
+    <!-- Hero content -->
+    <div class="hero-content">
+      <div class="hero-eyebrow">
+        <span class="glow-dot"></span>
+        Agent Portal
+        <span class="glow-dot"></span>
+      </div>
+
+      <h1 class="hero-title">
+        Welcome to<br />
+        <span class="hero-title-gold">Kairos Financial</span>
+      </h1>
+
+      <p class="hero-tagline">
+        Everything you need to succeed — training, carrier resources, and tools, all in one place.
+      </p>
+
+      <div class="hero-buttons">
+        <a href="course.html" class="btn btn-primary btn-lg">
+          Start Training
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="2" y1="8" x2="14" y2="8"/><polyline points="8 2 14 8 8 14"/>
+          </svg>
+        </a>
+        <a href="#resources" class="btn btn-outline btn-lg">View Resources</a>
+      </div>
+    </div>
+
+    <!-- Scroll hint -->
+    <div class="hero-scroll-hint">
+      <span>Scroll</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="6 9 12 15 18 9"/>
+      </svg>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       MAIN CONTENT
+  ============================================================= -->
+  <div class="home-sections" id="resources">
+
+    <!-- Quick Nav Cards -->
+    <section class="section section-nav-grid dark-section">
+      <div class="container">
+        <div class="section-header fade-in">
+          <span class="section-eyebrow">Agent Resources</span>
+          <h2 class="section-title">Everything You Need</h2>
+          <p class="section-desc">Your complete hub for training, carrier contacts, and sales tools.</p>
+        </div>
+
+        <div class="feature-grid">
+          <a href="course.html" class="feature-card fade-in">
+            <div class="feature-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="5 3 19 12 5 21 5 3"/>
+              </svg>
+            </div>
+            <div class="feature-title">New Agent Steps</div>
+            <p class="feature-desc">Step through the complete onboarding video course. Everything you need to get started selling.</p>
+            <span class="feature-arrow">→</span>
+          </a>
+
+          <a href="insurance-toolkits.html" class="feature-card fade-in">
+            <div class="feature-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/>
+              </svg>
+            </div>
+            <div class="feature-title">Insurance Toolkits</div>
+            <p class="feature-desc">Access quoting tools, comparison engines, and sales resources to close more business.</p>
+            <span class="feature-arrow">→</span>
+          </a>
+
+          <a href="helpful-links.html" class="feature-card fade-in">
+            <div class="feature-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/>
+                <path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/>
+              </svg>
+            </div>
+            <div class="feature-title">Helpful Links</div>
+            <p class="feature-desc">Curated links to forms, portals, and external resources to support your day-to-day work.</p>
+            <span class="feature-arrow">→</span>
+          </a>
+
+          <a href="lead-vendors.html" class="feature-card fade-in">
+            <div class="feature-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <path d="M23 21v-2a4 4 0 00-3-3.87"/>
+                <path d="M16 3.13a4 4 0 010 7.75"/>
+              </svg>
+            </div>
+            <div class="feature-title">Lead Vendors</div>
+            <p class="feature-desc">Find and connect with approved lead vendors to keep your pipeline full and growing.</p>
+            <span class="feature-arrow">→</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Carriers Section -->
+    <section class="section-carriers">
+      <div class="container">
+        <div class="section-header fade-in">
+          <span class="section-eyebrow">Our Carriers</span>
+          <h2 class="section-title">Carrier Directory</h2>
+          <p class="section-desc">Quick access to phone numbers and business hours for every carrier we work with.</p>
+        </div>
+
+        <div class="carriers-grid">
+          <a href="carriers/aetna.html" class="carrier-pill fade-in">Aetna <span class="carrier-pill-arrow">→</span></a>
+          <a href="carriers/aig.html" class="carrier-pill fade-in">AIG <span class="carrier-pill-arrow">→</span></a>
+          <a href="carriers/american-amicable.html" class="carrier-pill fade-in">American Amicable <span class="carrier-pill-arrow">→</span></a>
+          <a href="carriers/americo.html" class="carrier-pill fade-in">Americo <span class="carrier-pill-arrow">→</span></a>
+          <a href="carriers/ameritas.html" class="carrier-pill fade-in">Ameritas <span class="carrier-pill-arrow">→</span></a>
+          <a href="carriers/corebridge.html" class="carrier-pill fade-in">Corebridge <span class="carrier-pill-arrow">→</span></a>
+          <a href="carriers/ethos.html" class="carrier-pill fade-in">Ethos <span class="carrier-pill-arrow">→</span></a>
+          <a href="carriers/foresters.html" class="carrier-pill fade-in">Foresters <span class="carrier-pill-arrow">→</span></a>
+          <a href="carriers/instabrain.html" class="carrier-pill fade-in">Instabrain <span class="carrier-pill-arrow">→</span></a>
+          <a href="carriers/mutual-of-omaha.html" class="carrier-pill fade-in">Mutual of Omaha <span class="carrier-pill-arrow">→</span></a>
+          <a href="carriers/transamerica.html" class="carrier-pill fade-in">Transamerica <span class="carrier-pill-arrow">→</span></a>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>&copy; 2026 <span>Kairos Financial</span>. Agent Portal — Internal Use Only.</p>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

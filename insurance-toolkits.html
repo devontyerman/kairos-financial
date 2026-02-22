@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Insurance Toolkits — Kairos Financial</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <style>
+    .toolkit-features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 3rem;
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .toolkit-feature-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.85rem 1.1rem;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    .toolkit-feature-item svg {
+      color: var(--gold);
+      flex-shrink: 0;
+    }
+
+    .open-btn {
+      font-size: 1.05rem;
+      padding: 1.1rem 2.75rem;
+      gap: 0.75rem;
+    }
+
+    .open-btn svg {
+      transition: transform 0.25s ease;
+    }
+
+    .open-btn:hover svg {
+      transform: translateX(3px);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVIGATION -->
+  <nav class="nav scrolled" id="mainNav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">
+        <div class="nav-logo-mark">K</div>
+        <span class="nav-logo-text">KAIROS FINANCIAL</span>
+      </a>
+
+      <ul class="nav-links">
+        <li><a href="course.html" class="nav-link">New Agent Steps</a></li>
+        <li>
+          <a class="nav-link" href="#" onclick="return false;">
+            Carriers
+            <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 4 6 8 10 4"/></svg>
+          </a>
+          <div class="nav-dropdown">
+            <a href="carriers/aetna.html">Aetna</a>
+            <a href="carriers/aig.html">AIG</a>
+            <a href="carriers/american-amicable.html">American Amicable</a>
+            <a href="carriers/americo.html">Americo</a>
+            <a href="carriers/ameritas.html">Ameritas</a>
+            <div class="nav-dropdown-divider"></div>
+            <a href="carriers/corebridge.html">Corebridge</a>
+            <a href="carriers/ethos.html">Ethos</a>
+            <a href="carriers/foresters.html">Foresters</a>
+            <a href="carriers/instabrain.html">Instabrain</a>
+            <a href="carriers/mutual-of-omaha.html">Mutual of Omaha</a>
+            <a href="carriers/transamerica.html">Transamerica</a>
+          </div>
+        </li>
+        <li><a href="insurance-toolkits.html" class="nav-link active">Insurance Toolkits</a></li>
+        <li><a href="helpful-links.html" class="nav-link">Helpful Links</a></li>
+        <li><a href="lead-vendors.html" class="nav-link">Lead Vendors</a></li>
+      </ul>
+
+      <button class="nav-hamburger" id="hamburger" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Mobile nav -->
+  <div class="nav-mobile" id="mobileNav">
+    <a href="index.html">Home</a>
+    <a href="course.html">New Agent Steps</a>
+    <div class="nav-mobile-section">Carriers</div>
+    <a href="carriers/aetna.html">Aetna</a>
+    <a href="carriers/aig.html">AIG</a>
+    <a href="carriers/american-amicable.html">American Amicable</a>
+    <a href="carriers/americo.html">Americo</a>
+    <a href="carriers/ameritas.html">Ameritas</a>
+    <a href="carriers/corebridge.html">Corebridge</a>
+    <a href="carriers/ethos.html">Ethos</a>
+    <a href="carriers/foresters.html">Foresters</a>
+    <a href="carriers/instabrain.html">Instabrain</a>
+    <a href="carriers/mutual-of-omaha.html">Mutual of Omaha</a>
+    <a href="carriers/transamerica.html">Transamerica</a>
+    <a href="insurance-toolkits.html">Insurance Toolkits</a>
+    <a href="ai-training.html">AI Training</a>
+    <a href="agent-portal.html">Agent Portal</a>
+    <a href="helpful-links.html">Helpful Links</a>
+    <a href="lead-vendors.html">Lead Vendors</a>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <main class="external-link-page">
+    <div class="external-link-card fade-in">
+
+      <div class="external-link-icon">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/>
+        </svg>
+      </div>
+
+      <div style="margin-bottom:0.5rem;">
+        <span class="section-eyebrow">Agent Tool</span>
+      </div>
+      <h1 class="external-link-title">Insurance Toolkits</h1>
+      <p class="external-link-desc">
+        Your go-to platform for quoting, product comparison, and sales tools across all our carriers. Use Insurance Toolkits to run quotes faster, compare products side-by-side, and close more business.
+      </p>
+
+      <div class="toolkit-features">
+        <div class="toolkit-feature-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+          Multi-carrier quoting
+        </div>
+        <div class="toolkit-feature-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+          Product comparison
+        </div>
+        <div class="toolkit-feature-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+          Underwriting tools
+        </div>
+        <div class="toolkit-feature-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+          Sales resources
+        </div>
+      </div>
+
+      <a
+        href="https://app.insurancetoolkits.com/"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="btn btn-primary open-btn"
+      >
+        Open Insurance Toolkits
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
+          <polyline points="15 3 21 3 21 9"/>
+          <line x1="10" y1="14" x2="21" y2="3"/>
+        </svg>
+      </a>
+
+      <p style="margin-top:1.25rem; font-size:0.78rem; color:var(--text-muted);">
+        Opens in a new tab &nbsp;·&nbsp; app.insurancetoolkits.com
+      </p>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <p>&copy; 2026 <span>Kairos Financial</span>. Agent Portal — Internal Use Only.</p>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

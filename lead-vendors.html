@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lead Vendors — Kairos Financial</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <style>
+    .vendors-section {
+      padding: 4rem 0 6rem;
+    }
+
+    .vendor-card {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.75rem;
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .vendor-card.active {
+      cursor: pointer;
+    }
+
+    .vendor-card.active:hover {
+      border-color: var(--gold-border);
+      background: var(--bg-hover);
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-md), var(--shadow-gold);
+    }
+
+    .vendor-card.coming-soon {
+      opacity: 0.45;
+    }
+
+    .vendor-card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+
+    .vendor-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 0.25rem 0.6rem;
+      border-radius: 100px;
+    }
+
+    .vendor-badge.coming {
+      background: rgba(107, 114, 128, 0.15);
+      border: 1px solid rgba(107, 114, 128, 0.25);
+      color: var(--text-muted);
+    }
+
+    .vendor-badge.approved {
+      background: rgba(34, 197, 94, 0.1);
+      border: 1px solid rgba(34, 197, 94, 0.2);
+      color: #4ade80;
+    }
+
+    .vendor-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.4rem;
+    }
+
+    .vendor-desc {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.55;
+    }
+
+    .vendor-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-top: 1rem;
+    }
+
+    .vendor-tag {
+      font-size: 0.7rem;
+      font-weight: 500;
+      padding: 0.2rem 0.55rem;
+      border-radius: 4px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+
+    .vendors-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .coming-soon-banner {
+      text-align: center;
+      padding: 3rem;
+      background: var(--bg-elevated);
+      border: 1px dashed var(--border-strong);
+      border-radius: var(--radius-xl);
+      max-width: 500px;
+      margin: 0 auto 3rem;
+    }
+
+    .coming-soon-banner svg {
+      color: var(--gold);
+      margin-bottom: 1rem;
+    }
+
+    .coming-soon-banner h3 {
+      font-size: 1.2rem;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .coming-soon-banner p {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVIGATION -->
+  <nav class="nav scrolled" id="mainNav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">
+        <div class="nav-logo-mark">K</div>
+        <span class="nav-logo-text">KAIROS FINANCIAL</span>
+      </a>
+
+      <ul class="nav-links">
+        <li><a href="course.html" class="nav-link">New Agent Steps</a></li>
+        <li>
+          <a class="nav-link" href="#" onclick="return false;">
+            Carriers
+            <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 4 6 8 10 4"/></svg>
+          </a>
+          <div class="nav-dropdown">
+            <a href="carriers/aetna.html">Aetna</a>
+            <a href="carriers/aig.html">AIG</a>
+            <a href="carriers/american-amicable.html">American Amicable</a>
+            <a href="carriers/americo.html">Americo</a>
+            <a href="carriers/ameritas.html">Ameritas</a>
+            <div class="nav-dropdown-divider"></div>
+            <a href="carriers/corebridge.html">Corebridge</a>
+            <a href="carriers/ethos.html">Ethos</a>
+            <a href="carriers/foresters.html">Foresters</a>
+            <a href="carriers/instabrain.html">Instabrain</a>
+            <a href="carriers/mutual-of-omaha.html">Mutual of Omaha</a>
+            <a href="carriers/transamerica.html">Transamerica</a>
+          </div>
+        </li>
+        <li><a href="insurance-toolkits.html" class="nav-link">Insurance Toolkits</a></li>
+        <li><a href="ai-training.html" class="nav-link">AI Training</a></li>
+        <li><a href="agent-portal.html" class="nav-link">Agent Portal</a></li>
+        <li><a href="helpful-links.html" class="nav-link">Helpful Links</a></li>
+        <li><a href="lead-vendors.html" class="nav-link active">Lead Vendors</a></li>
+      </ul>
+
+      <button class="nav-hamburger" id="hamburger" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Mobile nav -->
+  <div class="nav-mobile" id="mobileNav">
+    <a href="index.html">Home</a>
+    <a href="course.html">New Agent Steps</a>
+    <div class="nav-mobile-section">Carriers</div>
+    <a href="carriers/aetna.html">Aetna</a>
+    <a href="carriers/aig.html">AIG</a>
+    <a href="carriers/american-amicable.html">American Amicable</a>
+    <a href="carriers/americo.html">Americo</a>
+    <a href="carriers/ameritas.html">Ameritas</a>
+    <a href="carriers/corebridge.html">Corebridge</a>
+    <a href="carriers/ethos.html">Ethos</a>
+    <a href="carriers/foresters.html">Foresters</a>
+    <a href="carriers/instabrain.html">Instabrain</a>
+    <a href="carriers/mutual-of-omaha.html">Mutual of Omaha</a>
+    <a href="carriers/transamerica.html">Transamerica</a>
+    <a href="insurance-toolkits.html">Insurance Toolkits</a>
+    <a href="ai-training.html">AI Training</a>
+    <a href="agent-portal.html">Agent Portal</a>
+    <a href="helpful-links.html">Helpful Links</a>
+    <a href="lead-vendors.html">Lead Vendors</a>
+  </div>
+
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <div class="container">
+      <div class="page-header-eyebrow">Pipeline</div>
+      <h1 class="page-header-title">Lead Vendors</h1>
+      <p class="page-header-desc">Approved lead sources to keep your pipeline full. More vendors being added regularly.</p>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <section class="vendors-section">
+    <div class="container">
+
+      <div class="coming-soon-banner fade-in">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+          <circle cx="9" cy="7" r="4"/>
+          <path d="M23 21v-2a4 4 0 00-3-3.87"/>
+          <path d="M16 3.13a4 4 0 010 7.75"/>
+        </svg>
+        <h3>Vendors Coming Soon</h3>
+        <p>We're vetting and onboarding approved lead vendors. Check back soon for a curated list of the best sources for fresh, high-intent leads.</p>
+      </div>
+
+      <!--
+        ═══════════════════════════════════════════════════════════
+        HOW TO ADD VENDOR CARDS
+        ═══════════════════════════════════════════════════════════
+        Copy a vendor-card block below. Remove class "coming-soon"
+        and add class "active" to make it live. Update all fields.
+
+        Example active vendor card:
+        <a href="https://vendor-url.com" target="_blank" rel="noopener"
+           class="vendor-card active fade-in">
+          <div class="vendor-card-top">
+            <div>
+              <div class="vendor-name">Vendor Name</div>
+            </div>
+            <span class="vendor-badge approved">● Approved</span>
+          </div>
+          <div class="vendor-desc">
+            Short description — lead type, pricing model, volume.
+          </div>
+          <div class="vendor-tags">
+            <span class="vendor-tag">Final Expense</span>
+            <span class="vendor-tag">Real-time</span>
+            <span class="vendor-tag">Exclusive</span>
+          </div>
+        </a>
+        ═══════════════════════════════════════════════════════════
+      -->
+
+      <div class="vendors-grid">
+
+        <div class="vendor-card coming-soon fade-in">
+          <div class="vendor-card-top">
+            <div>
+              <div class="vendor-name">Vendor #1</div>
+            </div>
+            <span class="vendor-badge coming">Coming Soon</span>
+          </div>
+          <div class="vendor-desc">Details on lead type, pricing, and territory availability will be listed here.</div>
+          <div class="vendor-tags">
+            <span class="vendor-tag">TBD</span>
+          </div>
+        </div>
+
+        <div class="vendor-card coming-soon fade-in">
+          <div class="vendor-card-top">
+            <div>
+              <div class="vendor-name">Vendor #2</div>
+            </div>
+            <span class="vendor-badge coming">Coming Soon</span>
+          </div>
+          <div class="vendor-desc">Details on lead type, pricing, and territory availability will be listed here.</div>
+          <div class="vendor-tags">
+            <span class="vendor-tag">TBD</span>
+          </div>
+        </div>
+
+        <div class="vendor-card coming-soon fade-in">
+          <div class="vendor-card-top">
+            <div>
+              <div class="vendor-name">Vendor #3</div>
+            </div>
+            <span class="vendor-badge coming">Coming Soon</span>
+          </div>
+          <div class="vendor-desc">Details on lead type, pricing, and territory availability will be listed here.</div>
+          <div class="vendor-tags">
+            <span class="vendor-tag">TBD</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <p>&copy; 2026 <span>Kairos Financial</span>. Agent Portal — Internal Use Only.</p>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

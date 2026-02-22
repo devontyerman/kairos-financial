@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>New Agent Steps — Kairos Financial</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <style>
+    body {
+      overflow: hidden;
+    }
+
+    /* Sidebar mobile toggle */
+    .sidebar-toggle {
+      display: none;
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      z-index: 500;
+      width: 52px;
+      height: 52px;
+      background: linear-gradient(135deg, var(--gold), var(--gold-bright));
+      border: none;
+      border-radius: 50%;
+      color: var(--bg-base);
+      font-size: 1.3rem;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(201, 168, 76, 0.4);
+      align-items: center;
+      justify-content: center;
+    }
+
+    .course-sidebar.mobile-open {
+      position: fixed;
+      top: var(--nav-height);
+      left: 0;
+      bottom: 0;
+      z-index: 400;
+      width: 100%;
+      max-height: none;
+    }
+
+    /* Logout button in sidebar */
+    .sidebar-logout {
+      margin: auto 1.25rem 1.25rem;
+      padding: 0.6rem 1rem;
+      background: transparent;
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-md);
+      color: var(--text-muted);
+      font-size: 0.78rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-family: 'Inter', sans-serif;
+      letter-spacing: 0.03em;
+    }
+
+    .sidebar-logout:hover {
+      border-color: rgba(239, 68, 68, 0.4);
+      color: #f87171;
+    }
+
+    /* Scroll in course main */
+    #courseContent .course-main {
+      overflow-y: auto;
+    }
+
+    #courseContent .course-main::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    #courseContent .course-main::-webkit-scrollbar-thumb {
+      background: var(--border-strong);
+      border-radius: 4px;
+    }
+
+    /* Video wrapper with proper aspect ratio */
+    .video-responsive {
+      position: relative;
+      width: 100%;
+      background: #000;
+    }
+
+    .video-responsive::before {
+      content: '';
+      display: block;
+      padding-top: 56.25%; /* 16:9 */
+    }
+
+    .video-responsive > * {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Coming soon lesson state */
+    .lesson-coming-soon {
+      display: inline-block;
+      font-size: 0.65rem;
+      background: rgba(201, 168, 76, 0.1);
+      border: 1px solid var(--gold-border);
+      border-radius: 4px;
+      padding: 0.1rem 0.4rem;
+      color: var(--gold-dim);
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    @media (max-width: 900px) {
+      body { overflow: auto; }
+      .sidebar-toggle { display: flex; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ============================================================
+       NAVIGATION
+  ============================================================= -->
+  <nav class="nav scrolled" id="mainNav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">
+        <div class="nav-logo-mark">K</div>
+        <span class="nav-logo-text">KAIROS FINANCIAL</span>
+      </a>
+
+      <ul class="nav-links">
+        <li><a href="course.html" class="nav-link active">New Agent Steps</a></li>
+
+        <li>
+          <a class="nav-link" href="#" onclick="return false;">
+            Carriers
+            <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="2 4 6 8 10 4"/>
+            </svg>
+          </a>
+          <div class="nav-dropdown">
+            <a href="carriers/aetna.html">Aetna</a>
+            <a href="carriers/aig.html">AIG</a>
+            <a href="carriers/american-amicable.html">American Amicable</a>
+            <a href="carriers/americo.html">Americo</a>
+            <a href="carriers/ameritas.html">Ameritas</a>
+            <div class="nav-dropdown-divider"></div>
+            <a href="carriers/corebridge.html">Corebridge</a>
+            <a href="carriers/ethos.html">Ethos</a>
+            <a href="carriers/foresters.html">Foresters</a>
+            <a href="carriers/instabrain.html">Instabrain</a>
+            <a href="carriers/mutual-of-omaha.html">Mutual of Omaha</a>
+            <a href="carriers/transamerica.html">Transamerica</a>
+          </div>
+        </li>
+
+        <li><a href="insurance-toolkits.html" class="nav-link">Insurance Toolkits</a></li>
+        <li><a href="ai-training.html" class="nav-link">AI Training</a></li>
+        <li><a href="agent-portal.html" class="nav-link">Agent Portal</a></li>
+        <li><a href="helpful-links.html" class="nav-link">Helpful Links</a></li>
+        <li><a href="lead-vendors.html" class="nav-link">Lead Vendors</a></li>
+      </ul>
+
+      <button class="nav-hamburger" id="hamburger" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Mobile nav -->
+  <div class="nav-mobile" id="mobileNav">
+    <a href="index.html">Home</a>
+    <a href="course.html">New Agent Steps</a>
+    <div class="nav-mobile-section">Carriers</div>
+    <a href="carriers/aetna.html">Aetna</a>
+    <a href="carriers/aig.html">AIG</a>
+    <a href="carriers/american-amicable.html">American Amicable</a>
+    <a href="carriers/americo.html">Americo</a>
+    <a href="carriers/ameritas.html">Ameritas</a>
+    <a href="carriers/corebridge.html">Corebridge</a>
+    <a href="carriers/ethos.html">Ethos</a>
+    <a href="carriers/foresters.html">Foresters</a>
+    <a href="carriers/instabrain.html">Instabrain</a>
+    <a href="carriers/mutual-of-omaha.html">Mutual of Omaha</a>
+    <a href="carriers/transamerica.html">Transamerica</a>
+    <a href="insurance-toolkits.html">Insurance Toolkits</a>
+    <a href="ai-training.html">AI Training</a>
+    <a href="agent-portal.html">Agent Portal</a>
+    <a href="helpful-links.html">Helpful Links</a>
+    <a href="lead-vendors.html">Lead Vendors</a>
+  </div>
+
+  <!-- ============================================================
+       PASSWORD GATE
+  ============================================================= -->
+  <div class="password-gate" id="passwordGate">
+    <div class="password-gate-card">
+      <div class="password-gate-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+          <path d="M7 11V7a5 5 0 0110 0v4"/>
+        </svg>
+      </div>
+
+      <h1 class="password-gate-title">Restricted Access</h1>
+      <p class="password-gate-desc">
+        This training course is for Kairos Financial agents only.<br />
+        Enter your access code to continue.
+      </p>
+
+      <div class="password-input-wrap">
+        <input
+          type="password"
+          id="passwordInput"
+          class="password-input"
+          placeholder="Enter access code"
+          autocomplete="current-password"
+        />
+      </div>
+
+      <p class="password-error" id="passwordError"></p>
+
+      <button class="btn btn-primary" id="passwordSubmit" style="width:100%;">
+        Access Course
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="5" y1="12" x2="19" y2="12"/>
+          <polyline points="12 5 19 12 12 19"/>
+        </svg>
+      </button>
+
+      <p class="password-hint">
+        Don't have the access code?<br />Contact your sales manager.
+      </p>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       COURSE CONTENT (hidden until authenticated)
+  ============================================================= -->
+  <div id="courseContent" class="hidden" style="display:none;">
+    <div class="course-layout">
+
+      <!-- Sidebar -->
+      <aside class="course-sidebar" id="courseSidebar">
+        <div class="course-sidebar-header">
+          <div class="course-sidebar-label">Course</div>
+          <div class="course-sidebar-title">New Agent Steps</div>
+        </div>
+
+        <div class="course-progress-bar">
+          <div class="course-progress-fill" id="progressFill"></div>
+        </div>
+        <div class="course-progress-text" id="progressText">0 / 12 lessons complete</div>
+
+        <!-- MODULE 1 -->
+        <div class="course-module open">
+          <div class="course-module-header">
+            <div class="course-module-num">1</div>
+            <div class="course-module-name">Welcome &amp; Orientation</div>
+            <svg class="course-module-chevron" width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="2 4 6 8 10 4"/>
+            </svg>
+          </div>
+          <div class="course-module-lessons">
+            <div class="course-lesson"
+              data-title="Welcome to Kairos Financial"
+              data-module="Module 1 · Welcome &amp; Orientation"
+              data-desc="Get an introduction to Kairos Financial, our mission, and what to expect from this training course. This is the starting point for every new agent."
+            >
+              <div class="lesson-check">✓</div>
+              <div class="lesson-title">Welcome to Kairos Financial</div>
+              <span class="lesson-duration">—</span>
+            </div>
+            <div class="course-lesson"
+              data-title="Company Overview &amp; Mission"
+              data-module="Module 1 · Welcome &amp; Orientation"
+              data-desc="Learn about Kairos Financial's history, values, and the vision driving our team. Understanding who we are helps you represent us with confidence."
+            >
+              <div class="lesson-check">✓</div>
+              <div class="lesson-title">Company Overview &amp; Mission</div>
+              <span class="lesson-duration">—</span>
+            </div>
+            <div class="course-lesson"
+              data-title="Your Role as an Agent"
+              data-module="Module 1 · Welcome &amp; Orientation"
+              data-desc="Understand what's expected of you as a Kairos agent — your responsibilities, your opportunities, and how your performance is measured."
+            >
+              <div class="lesson-check">✓</div>
+              <div class="lesson-title">Your Role as an Agent</div>
+              <span class="lesson-duration">—</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- MODULE 2 -->
+        <div class="course-module">
+          <div class="course-module-header">
+            <div class="course-module-num">2</div>
+            <div class="course-module-name">Products &amp; Carriers</div>
+            <svg class="course-module-chevron" width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="2 4 6 8 10 4"/>
+            </svg>
+          </div>
+          <div class="course-module-lessons">
+            <div class="course-lesson"
+              data-title="Introduction to Life Insurance"
+              data-module="Module 2 · Products &amp; Carriers"
+              data-desc="A foundational overview of life insurance — term, whole, and indexed universal life. Understanding products is the first step to selling them confidently."
+            >
+              <div class="lesson-check">✓</div>
+              <div class="lesson-title">Introduction to Life Insurance</div>
+              <span class="lesson-duration">—</span>
+            </div>
+            <div class="course-lesson"
+              data-title="Our Carrier Partners"
+              data-module="Module 2 · Products &amp; Carriers"
+              data-desc="Meet the carriers we work with — Aetna, AIG, Americo, Mutual of Omaha, and more. Learn their strengths, niches, and when to recommend each."
+            >
+              <div class="lesson-check">✓</div>
+              <div class="lesson-title">Our Carrier Partners</div>
+              <span class="lesson-duration">—</span>
+            </div>
+            <div class="course-lesson"
+              data-title="Product Comparison Guide"
+              data-module="Module 2 · Products &amp; Carriers"
+              data-desc="How to compare products across carriers for a given client profile. This lesson covers underwriting niches and how to match clients with the right solution."
+            >
+              <div class="lesson-check">✓</div>
+              <div class="lesson-title">Product Comparison Guide</div>
+              <span class="lesson-duration">—</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- MODULE 3 -->
+        <div class="course-module">
+          <div class="course-module-header">
+            <div class="course-module-num">3</div>
+            <div class="course-module-name">The Sales Process</div>
+            <svg class="course-module-chevron" width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="2 4 6 8 10 4"/>
+            </svg>
+          </div>
+          <div class="course-module-lessons">
+            <div class="course-lesson"
+              data-title="Understanding Your Clients"
+              data-module="Module 3 · The Sales Process"
+              data-desc="Learn how to identify client needs, ask the right discovery questions, and position yourself as a trusted advisor from the very first call."
+            >
+              <div class="lesson-check">✓</div>
+              <div class="lesson-title">Understanding Your Clients</div>
+              <span class="lesson-duration">—</span>
+            </div>
+            <div class="course-lesson"
+              data-title="The Kairos Approach"
+              data-module="Module 3 · The Sales Process"
+              data-desc="Walk through the Kairos sales process step by step — from opening to presentation. Learn the language and structure that closes more deals."
+            >
+              <div class="lesson-check">✓</div>
+              <div class="lesson-title">The Kairos Approach</div>
+              <span class="lesson-duration">—</span>
+            </div>
+            <div class="course-lesson"
+              data-title="Handling Objections"
+              data-module="Module 3 · The Sales Process"
+              data-desc="Master the most common objections — price, timing, spouse, and 'let me think about it' — with proven response frameworks that keep the conversation moving."
+            >
+              <div class="lesson-check">✓</div>
+              <div class="lesson-title">Handling Objections</div>
+              <span class="lesson-duration">—</span>
+            </div>
+            <div class="course-lesson"
+              data-title="Closing the Sale"
+              data-module="Module 3 · The Sales Process"
+              data-desc="Learn when and how to ask for the sale. Covers assumptive closes, summary closes, and how to complete the application process efficiently."
+            >
+              <div class="lesson-check">✓</div>
+              <div class="lesson-title">Closing the Sale</div>
+              <span class="lesson-duration">—</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- MODULE 4 -->
+        <div class="course-module">
+          <div class="course-module-header">
+            <div class="course-module-num">4</div>
+            <div class="course-module-name">Tools &amp; Resources</div>
+            <svg class="course-module-chevron" width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="2 4 6 8 10 4"/>
+            </svg>
+          </div>
+          <div class="course-module-lessons">
+            <div class="course-lesson"
+              data-title="Using the Agent Portal"
+              data-module="Module 4 · Tools &amp; Resources"
+              data-desc="A walkthrough of this portal — where to find carrier information, training materials, and sales tools. Bookmark this page — you'll come back to it every day."
+            >
+              <div class="lesson-check">✓</div>
+              <div class="lesson-title">Using the Agent Portal</div>
+              <span class="lesson-duration">—</span>
+            </div>
+            <div class="course-lesson"
+              data-title="Insurance Toolkits Overview"
+              data-module="Module 4 · Tools &amp; Resources"
+              data-desc="Introduction to the Insurance Toolkits platform — how to run quotes, use comparison tools, and leverage the platform to speed up your sales cycle."
+            >
+              <div class="lesson-check">✓</div>
+              <div class="lesson-title">Insurance Toolkits Overview</div>
+              <span class="lesson-duration">—</span>
+            </div>
+            <div class="course-lesson"
+              data-title="Lead Management"
+              data-module="Module 4 · Tools &amp; Resources"
+              data-desc="Best practices for working your leads — speed to contact, follow-up cadence, and how to keep your pipeline healthy and organized."
+            >
+              <div class="lesson-check">✓</div>
+              <div class="lesson-title">Lead Management</div>
+              <span class="lesson-duration">—</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Logout -->
+        <button class="sidebar-logout" id="logoutBtn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/>
+            <polyline points="16 17 21 12 16 7"/>
+            <line x1="21" y1="12" x2="9" y2="12"/>
+          </svg>
+          Sign Out
+        </button>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="course-main">
+        <!-- Video Area -->
+        <div class="video-responsive">
+          <div class="course-video-placeholder" id="videoPlaceholder">
+            <div class="course-video-placeholder-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="5 3 19 12 5 21 5 3"/>
+              </svg>
+            </div>
+            <p>Video coming soon</p>
+            <p style="font-size:0.78rem; opacity:0.6;">Select a lesson from the sidebar to begin</p>
+          </div>
+          <!--
+            VIDEO INSTRUCTIONS:
+            ───────────────────────────────────────────────────────────────
+            To add videos, replace the placeholder above with a <video> or
+            <iframe> embed. For example:
+
+            Self-hosted:
+              <video controls width="100%" height="100%">
+                <source src="assets/videos/lesson-1.mp4" type="video/mp4" />
+              </video>
+
+            Vimeo embed:
+              <iframe src="https://player.vimeo.com/video/YOUR_VIDEO_ID"
+                frameborder="0" allowfullscreen></iframe>
+
+            YouTube embed:
+              <iframe src="https://www.youtube.com/embed/YOUR_VIDEO_ID"
+                frameborder="0" allowfullscreen></iframe>
+
+            You can show/hide different video elements using JavaScript
+            based on which lesson is selected (data-title attribute).
+          -->
+        </div>
+
+        <!-- Lesson Info -->
+        <div class="course-content-area">
+          <div class="course-lesson-eyebrow" id="videoModule">Select a lesson to begin</div>
+          <h2 class="course-lesson-title" id="videoTitle">New Agent Steps</h2>
+          <p class="course-lesson-desc" id="videoDesc">
+            Welcome to the Kairos Financial new agent training course. Select a lesson from the sidebar to get started. Work through each module in order to build a strong foundation for your career.
+          </p>
+
+          <div class="course-nav-btns">
+            <button class="btn btn-outline" id="prevBtn" disabled>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="19" y1="12" x2="5" y2="12"/>
+                <polyline points="12 19 5 12 12 5"/>
+              </svg>
+              Previous
+            </button>
+            <button class="btn btn-outline" id="nextBtn">
+              Next
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"/>
+                <polyline points="12 5 19 12 12 19"/>
+              </svg>
+            </button>
+            <button class="course-complete-btn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+              Mark Complete
+            </button>
+          </div>
+        </div>
+      </main>
+
+    </div>
+  </div>
+
+  <script src="js/main.js"></script>
+  <script>
+    // Override hidden class for display:none sync
+    document.addEventListener('DOMContentLoaded', () => {
+      const gate = document.getElementById('passwordGate');
+      const content = document.getElementById('courseContent');
+      if (content) {
+        // Watch for class removal
+        const observer = new MutationObserver(() => {
+          if (content.classList.contains('hidden')) {
+            content.style.display = 'none';
+          } else {
+            content.style.display = 'block';
+          }
+        });
+        observer.observe(content, { attributes: true, attributeFilter: ['class'] });
+      }
+    });
+  </script>
+</body>
+</html>
