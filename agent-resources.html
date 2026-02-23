@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Agent Resources — Kairos Financial</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <style>
+    .resources-section {
+      padding: 4rem 0 6rem;
+    }
+
+    .resources-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .resource-card {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      padding: 1.5rem;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      text-decoration: none;
+      transition: var(--transition);
+      cursor: pointer;
+    }
+
+    .resource-card:hover {
+      border-color: #999;
+      background: var(--bg-hover);
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .resource-card-icon {
+      width: 44px;
+      height: 44px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-primary);
+      flex-shrink: 0;
+      transition: var(--transition);
+    }
+
+    .resource-card:hover .resource-card-icon {
+      background: var(--dark);
+      border-color: var(--dark);
+      color: #ffffff;
+    }
+
+    .resource-card-body {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .resource-card-title {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--text-primary);
+      margin-bottom: 0.3rem;
+    }
+
+    .resource-card-desc {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.55;
+    }
+
+    .resource-card-tag {
+      display: inline-block;
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      margin-top: 0.6rem;
+    }
+
+    .resources-category {
+      margin-bottom: 3rem;
+    }
+
+    .resources-category-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .resources-category-icon {
+      width: 32px;
+      height: 32px;
+      background: var(--dark);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      flex-shrink: 0;
+    }
+
+    .resources-category-title {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVIGATION -->
+  <nav class="nav scrolled" id="mainNav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">
+        <div class="nav-logo-mark">K</div>
+        <span class="nav-logo-text">KAIROS FINANCIAL</span>
+      </a>
+
+      <ul class="nav-links">
+        <li><a href="course.html" class="nav-link">Training Videos</a></li>
+        <li>
+          <a class="nav-link" href="#" onclick="return false;">
+            Carriers
+            <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 4 6 8 10 4"/></svg>
+          </a>
+          <div class="nav-dropdown">
+            <a href="carriers/aetna.html">Aetna</a>
+            <a href="carriers/aig.html">AIG</a>
+            <a href="carriers/american-amicable.html">American Amicable</a>
+            <a href="carriers/americo.html">Americo</a>
+            <a href="carriers/ameritas.html">Ameritas</a>
+            <div class="nav-dropdown-divider"></div>
+            <a href="carriers/corebridge.html">Corebridge</a>
+            <a href="carriers/ethos.html">Ethos</a>
+            <a href="carriers/foresters.html">Foresters</a>
+            <a href="carriers/instabrain.html">Instabrain</a>
+            <a href="carriers/mutual-of-omaha.html">Mutual of Omaha</a>
+            <a href="carriers/transamerica.html">Transamerica</a>
+          </div>
+        </li>
+        <li><a href="insurance-toolkits.html" class="nav-link">Insurance Toolkits</a></li>
+        <li><a href="https://ai.kairos-financial.com/" class="nav-link" target="_blank" rel="noopener noreferrer">AI Training</a></li>
+        <li><a href="agent-portal.html" class="nav-link">Agent Portal</a></li>
+        <li><a href="agent-resources.html" class="nav-link active">Agent Resources</a></li>
+        <li><a href="lead-vendors.html" class="nav-link">Lead Vendors</a></li>
+        <li><a href="submit-a-sale.html" class="nav-link">Submit A Sale</a></li>
+        <li><a href="daily-kpi-tracking.html" class="nav-link">Daily KPI Tracking</a></li>
+      </ul>
+
+      <button class="nav-hamburger" id="hamburger" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Mobile nav -->
+  <div class="nav-mobile" id="mobileNav">
+    <a href="index.html">Home</a>
+    <a href="course.html">Training Videos</a>
+    <div class="nav-mobile-section">Carriers</div>
+    <a href="carriers/aetna.html">Aetna</a>
+    <a href="carriers/aig.html">AIG</a>
+    <a href="carriers/american-amicable.html">American Amicable</a>
+    <a href="carriers/americo.html">Americo</a>
+    <a href="carriers/ameritas.html">Ameritas</a>
+    <a href="carriers/corebridge.html">Corebridge</a>
+    <a href="carriers/ethos.html">Ethos</a>
+    <a href="carriers/foresters.html">Foresters</a>
+    <a href="carriers/instabrain.html">Instabrain</a>
+    <a href="carriers/mutual-of-omaha.html">Mutual of Omaha</a>
+    <a href="carriers/transamerica.html">Transamerica</a>
+    <a href="insurance-toolkits.html">Insurance Toolkits</a>
+    <a href="https://ai.kairos-financial.com/" target="_blank" rel="noopener noreferrer">AI Training</a>
+    <a href="agent-portal.html">Agent Portal</a>
+    <a href="agent-resources.html">Agent Resources</a>
+    <a href="lead-vendors.html">Lead Vendors</a>
+    <a href="submit-a-sale.html">Submit A Sale</a>
+    <a href="daily-kpi-tracking.html">Daily KPI Tracking</a>
+  </div>
+
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <div class="container">
+      <div class="page-header-eyebrow">Resources</div>
+      <h1 class="page-header-title">Agent Resources</h1>
+      <p class="page-header-desc">Scripts, guides, worksheets, and tools to help you sell with confidence.</p>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <section class="resources-section">
+    <div class="container">
+
+      <!-- SCRIPTS -->
+      <div class="resources-category">
+        <div class="resources-category-header fade-in">
+          <div class="resources-category-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+            </svg>
+          </div>
+          <div class="resources-category-title">Scripts</div>
+        </div>
+        <div class="resources-grid">
+          <a href="https://docs.google.com/document/d/15d-ckzIhq1KSIM2lvVfAMYTdzGSM0Epe/edit?usp=sharing&ouid=117071041967508429739&rtpof=true&sd=true" target="_blank" rel="noopener noreferrer" class="resource-card fade-in">
+            <div class="resource-card-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+              </svg>
+            </div>
+            <div class="resource-card-body">
+              <div class="resource-card-title">Objections</div>
+              <div class="resource-card-desc">Common objections and proven responses to keep the conversation moving forward.</div>
+              <span class="resource-card-tag">Google Doc</span>
+            </div>
+          </a>
+
+          <a href="https://docs.google.com/document/d/1Q4EL7aJAeZmBuJWzg09pMmjT_AA21Wg6aZADOBTqDEg/edit?usp=sharing" target="_blank" rel="noopener noreferrer" class="resource-card fade-in">
+            <div class="resource-card-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+                <line x1="16" y1="13" x2="8" y2="13"/>
+                <line x1="16" y1="17" x2="8" y2="17"/>
+                <polyline points="10 9 9 9 8 9"/>
+              </svg>
+            </div>
+            <div class="resource-card-body">
+              <div class="resource-card-title">Ethos Script</div>
+              <div class="resource-card-desc">Step-by-step sales script for Ethos product presentations.</div>
+              <span class="resource-card-tag">Google Doc</span>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <!-- GUIDES & TOOLS -->
+      <div class="resources-category">
+        <div class="resources-category-header fade-in">
+          <div class="resources-category-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/>
+              <path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/>
+            </svg>
+          </div>
+          <div class="resources-category-title">Guides &amp; Tools</div>
+        </div>
+        <div class="resources-grid">
+          <a href="https://docs.google.com/document/d/1_NuyIXnoXjtl55u8zbn7mzbFNdQATS0jpNEJHcWNI_U/edit?usp=sharing" target="_blank" rel="noopener noreferrer" class="resource-card fade-in">
+            <div class="resource-card-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/>
+                <path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/>
+              </svg>
+            </div>
+            <div class="resource-card-body">
+              <div class="resource-card-title">Product Guide</div>
+              <div class="resource-card-desc">Comprehensive guide to our product offerings and how to position them.</div>
+              <span class="resource-card-tag">Google Doc</span>
+            </div>
+          </a>
+
+          <a href="https://docs.google.com/document/d/1jAPNzXJddJJhMoZGes1CauJYNXdWrLv259nzZ543fnE/edit?usp=sharing" target="_blank" rel="noopener noreferrer" class="resource-card fade-in">
+            <div class="resource-card-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                <line x1="3" y1="9" x2="21" y2="9"/>
+                <line x1="9" y1="21" x2="9" y2="9"/>
+              </svg>
+            </div>
+            <div class="resource-card-body">
+              <div class="resource-card-title">Client Worksheet</div>
+              <div class="resource-card-desc">Fillable worksheet for gathering client information during discovery calls.</div>
+              <span class="resource-card-tag">Google Doc</span>
+            </div>
+          </a>
+
+          <a href="state-license-costs.html" class="resource-card fade-in">
+            <div class="resource-card-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+                <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+              </svg>
+            </div>
+            <div class="resource-card-body">
+              <div class="resource-card-title">State License Costs</div>
+              <div class="resource-card-desc">Licensing fees by state for insurance agent applications.</div>
+              <span class="resource-card-tag">Reference</span>
+            </div>
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <footer class="footer">
+    <p>&copy; 2026 <span>Kairos Financial</span>. Agent Portal — Internal Use Only.</p>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

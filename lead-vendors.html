@@ -67,9 +67,9 @@
     }
 
     .vendor-name {
-      font-family: 'Playfair Display', serif;
+      font-family: 'Plus Jakarta Sans', sans-serif;
       font-size: 1.2rem;
-      font-weight: 600;
+      font-weight: 700;
       color: var(--text-primary);
       margin-bottom: 0.4rem;
     }
@@ -142,7 +142,7 @@
       </a>
 
       <ul class="nav-links">
-        <li><a href="course.html" class="nav-link">New Agent Steps</a></li>
+        <li><a href="course.html" class="nav-link">Training Videos</a></li>
         <li>
           <a class="nav-link" href="#" onclick="return false;">
             Carriers
@@ -164,10 +164,12 @@
           </div>
         </li>
         <li><a href="insurance-toolkits.html" class="nav-link">Insurance Toolkits</a></li>
-        <li><a href="ai-training.html" class="nav-link">AI Training</a></li>
+        <li><a href="https://ai.kairos-financial.com/" class="nav-link" target="_blank" rel="noopener noreferrer">AI Training</a></li>
         <li><a href="agent-portal.html" class="nav-link">Agent Portal</a></li>
-        <li><a href="helpful-links.html" class="nav-link">Helpful Links</a></li>
+        <li><a href="agent-resources.html" class="nav-link">Agent Resources</a></li>
         <li><a href="lead-vendors.html" class="nav-link active">Lead Vendors</a></li>
+        <li><a href="submit-a-sale.html" class="nav-link">Submit A Sale</a></li>
+        <li><a href="daily-kpi-tracking.html" class="nav-link">Daily KPI Tracking</a></li>
       </ul>
 
       <button class="nav-hamburger" id="hamburger" aria-label="Toggle menu">
@@ -179,7 +181,7 @@
   <!-- Mobile nav -->
   <div class="nav-mobile" id="mobileNav">
     <a href="index.html">Home</a>
-    <a href="course.html">New Agent Steps</a>
+    <a href="course.html">Training Videos</a>
     <div class="nav-mobile-section">Carriers</div>
     <a href="carriers/aetna.html">Aetna</a>
     <a href="carriers/aig.html">AIG</a>
@@ -193,10 +195,12 @@
     <a href="carriers/mutual-of-omaha.html">Mutual of Omaha</a>
     <a href="carriers/transamerica.html">Transamerica</a>
     <a href="insurance-toolkits.html">Insurance Toolkits</a>
-    <a href="ai-training.html">AI Training</a>
+    <a href="https://ai.kairos-financial.com/" target="_blank" rel="noopener noreferrer">AI Training</a>
     <a href="agent-portal.html">Agent Portal</a>
-    <a href="helpful-links.html">Helpful Links</a>
+    <a href="agent-resources.html">Agent Resources</a>
     <a href="lead-vendors.html">Lead Vendors</a>
+    <a href="submit-a-sale.html">Submit A Sale</a>
+    <a href="daily-kpi-tracking.html">Daily KPI Tracking</a>
   </div>
 
   <!-- PAGE HEADER -->
@@ -212,85 +216,20 @@
   <section class="vendors-section">
     <div class="container">
 
-      <div class="coming-soon-banner fade-in">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
-          <circle cx="9" cy="7" r="4"/>
-          <path d="M23 21v-2a4 4 0 00-3-3.87"/>
-          <path d="M16 3.13a4 4 0 010 7.75"/>
-        </svg>
-        <h3>Vendors Coming Soon</h3>
-        <p>We're vetting and onboarding approved lead vendors. Check back soon for a curated list of the best sources for fresh, high-intent leads.</p>
-      </div>
-
-      <!--
-        ═══════════════════════════════════════════════════════════
-        HOW TO ADD VENDOR CARDS
-        ═══════════════════════════════════════════════════════════
-        Copy a vendor-card block below. Remove class "coming-soon"
-        and add class "active" to make it live. Update all fields.
-
-        Example active vendor card:
-        <a href="https://vendor-url.com" target="_blank" rel="noopener"
-           class="vendor-card active fade-in">
-          <div class="vendor-card-top">
-            <div>
-              <div class="vendor-name">Vendor Name</div>
-            </div>
-            <span class="vendor-badge approved">● Approved</span>
-          </div>
-          <div class="vendor-desc">
-            Short description — lead type, pricing model, volume.
-          </div>
-          <div class="vendor-tags">
-            <span class="vendor-tag">Final Expense</span>
-            <span class="vendor-tag">Real-time</span>
-            <span class="vendor-tag">Exclusive</span>
-          </div>
-        </a>
-        ═══════════════════════════════════════════════════════════
-      -->
-
       <div class="vendors-grid">
 
-        <div class="vendor-card coming-soon fade-in">
+        <a href="https://goatleads.com/" target="_blank" rel="noopener noreferrer" class="vendor-card active fade-in">
           <div class="vendor-card-top">
             <div>
-              <div class="vendor-name">Vendor #1</div>
+              <div class="vendor-name">Goat Leads</div>
             </div>
-            <span class="vendor-badge coming">Coming Soon</span>
+            <span class="vendor-badge approved">Approved</span>
           </div>
-          <div class="vendor-desc">Details on lead type, pricing, and territory availability will be listed here.</div>
+          <div class="vendor-desc">High-quality insurance leads to help you build your pipeline and close more deals.</div>
           <div class="vendor-tags">
-            <span class="vendor-tag">TBD</span>
+            <span class="vendor-tag">Insurance Leads</span>
           </div>
-        </div>
-
-        <div class="vendor-card coming-soon fade-in">
-          <div class="vendor-card-top">
-            <div>
-              <div class="vendor-name">Vendor #2</div>
-            </div>
-            <span class="vendor-badge coming">Coming Soon</span>
-          </div>
-          <div class="vendor-desc">Details on lead type, pricing, and territory availability will be listed here.</div>
-          <div class="vendor-tags">
-            <span class="vendor-tag">TBD</span>
-          </div>
-        </div>
-
-        <div class="vendor-card coming-soon fade-in">
-          <div class="vendor-card-top">
-            <div>
-              <div class="vendor-name">Vendor #3</div>
-            </div>
-            <span class="vendor-badge coming">Coming Soon</span>
-          </div>
-          <div class="vendor-desc">Details on lead type, pricing, and territory availability will be listed here.</div>
-          <div class="vendor-tags">
-            <span class="vendor-tag">TBD</span>
-          </div>
-        </div>
+        </a>
 
       </div>
     </div>

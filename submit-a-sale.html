@@ -3,18 +3,41 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AI Training — Kairos Financial</title>
-  <meta http-equiv="refresh" content="0;url=https://ai.kairos-financial.com/" />
+  <title>Submit A Sale — Kairos Financial</title>
   <link rel="stylesheet" href="css/styles.css" />
+  <style>
+    .submit-section {
+      padding: 4rem 0 6rem;
+    }
+
+    .submit-embed-wrap {
+      max-width: 720px;
+      margin: 0 auto;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      box-shadow: var(--shadow-md);
+    }
+
+    .submit-embed-wrap iframe {
+      display: block;
+      width: 100%;
+      min-height: 600px;
+      border: none;
+    }
+  </style>
 </head>
 <body>
 
+  <!-- NAVIGATION -->
   <nav class="nav scrolled" id="mainNav">
     <div class="nav-inner">
       <a href="index.html" class="nav-logo">
         <div class="nav-logo-mark">K</div>
         <span class="nav-logo-text">KAIROS FINANCIAL</span>
       </a>
+
       <ul class="nav-links">
         <li><a href="course.html" class="nav-link">Training Videos</a></li>
         <li>
@@ -42,15 +65,17 @@
         <li><a href="agent-portal.html" class="nav-link">Agent Portal</a></li>
         <li><a href="agent-resources.html" class="nav-link">Agent Resources</a></li>
         <li><a href="lead-vendors.html" class="nav-link">Lead Vendors</a></li>
-        <li><a href="submit-a-sale.html" class="nav-link">Submit A Sale</a></li>
+        <li><a href="submit-a-sale.html" class="nav-link active">Submit A Sale</a></li>
         <li><a href="daily-kpi-tracking.html" class="nav-link">Daily KPI Tracking</a></li>
       </ul>
+
       <button class="nav-hamburger" id="hamburger" aria-label="Toggle menu">
         <span></span><span></span><span></span>
       </button>
     </div>
   </nav>
 
+  <!-- Mobile nav -->
   <div class="nav-mobile" id="mobileNav">
     <a href="index.html">Home</a>
     <a href="course.html">Training Videos</a>
@@ -75,28 +100,27 @@
     <a href="daily-kpi-tracking.html">Daily KPI Tracking</a>
   </div>
 
-  <main class="coming-soon-page">
-    <div class="coming-soon-card">
-      <div class="coming-soon-badge">
-        <div class="coming-soon-badge-dot"></div>
-        Under Development
-      </div>
-
-      <h1 class="coming-soon-title">AI Training</h1>
-
-      <p class="coming-soon-desc">
-        We're building an AI-powered training experience to help you practice objection handling, refine your pitch, and sharpen your sales skills — on your schedule.
-      </p>
-
-      <a href="index.html" class="coming-soon-back">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="19" y1="12" x2="5" y2="12"/>
-          <polyline points="12 19 5 12 12 5"/>
-        </svg>
-        Back to Portal
-      </a>
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <div class="container">
+      <div class="page-header-eyebrow">Sales</div>
+      <h1 class="page-header-title">Submit A Sale</h1>
+      <p class="page-header-desc">Log your completed sales below. All submissions are recorded automatically.</p>
     </div>
-  </main>
+  </div>
+
+  <!-- CONTENT -->
+  <section class="submit-section">
+    <div class="container">
+      <div class="submit-embed-wrap fade-in">
+        <iframe class="airtable-embed" src="https://airtable.com/embed/app0EoPbZ7wgTrkl9/pagkZ6hjLrVZXfadl/form" onmousewheel="" width="100%" height="600" style="background: transparent;"></iframe>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <p>&copy; 2026 <span>Kairos Financial</span>. Agent Portal — Internal Use Only.</p>
+  </footer>
 
   <script src="js/main.js"></script>
 </body>
