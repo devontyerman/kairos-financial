@@ -143,7 +143,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function unlock() {
     if (passwordGate) passwordGate.classList.add('hidden');
-    if (courseContent) courseContent.classList.remove('hidden');
+    if (courseContent) {
+      courseContent.classList.remove('hidden');
+      courseContent.style.display = 'block';
+    }
   }
 
 });
