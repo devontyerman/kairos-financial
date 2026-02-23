@@ -96,6 +96,25 @@
       color: var(--text-primary);
     }
 
+    .video-card-links {
+      display: flex;
+      gap: 1rem;
+      margin-top: 0.5rem;
+    }
+
+    .video-card-links a {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--gold);
+      text-decoration: none;
+      transition: var(--transition);
+    }
+
+    .video-card-links a:hover {
+      color: var(--gold-bright);
+      text-decoration: underline;
+    }
+
     @media (max-width: 500px) {
       .video-grid {
         grid-template-columns: 1fr;
@@ -244,10 +263,14 @@
           <div class="video-grid">
             <div class="video-card">
               <div class="video-card-embed">
-                <iframe src="https://www.loom.com/embed/8e570a88116d4e0bbd3dc7eabd248a50" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+                <iframe src="https://www.loom.com/embed/ab91621c3bf94f60a5702797f58afe78" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
               </div>
               <div class="video-card-info">
                 <div class="video-card-title">New Agent First Steps</div>
+                <div class="video-card-links">
+                  <a href="https://discord.gg/7jRu7r3FnC" target="_blank" rel="noopener noreferrer">Disruption Group Discord</a>
+                  <a href="https://discord.gg/HDAvgbD4cJ" target="_blank" rel="noopener noreferrer">Kairos Discord</a>
+                </div>
               </div>
             </div>
           </div>
