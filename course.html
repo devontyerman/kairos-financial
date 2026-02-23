@@ -27,17 +27,31 @@
     .tv-sidebar::-webkit-scrollbar { width: 4px; }
     .tv-sidebar::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 4px; }
 
-    .tv-cat-label {
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: 0.7rem;
-      font-weight: 700;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      padding: 0.75rem 1.25rem 0.4rem;
+    .tv-sidebar-header {
+      padding: 0 1.25rem 1rem;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 0.5rem;
     }
 
-    .tv-cat-label:first-child { padding-top: 0; }
+    .tv-sidebar-title {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .tv-cat-label {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-primary);
+      padding: 0.6rem 1.25rem;
+      margin-top: 0.25rem;
+      background: rgba(0, 0, 0, 0.06);
+      border-bottom: 1px solid var(--border);
+    }
 
     .tv-item {
       display: block;
@@ -132,6 +146,39 @@
     }
 
     .tv-discord-btn svg { flex-shrink: 0; }
+
+    /* Resource button (A2P doc, etc.) */
+    .tv-resource-btns {
+      display: none;
+      gap: 0.75rem;
+      margin-top: 1rem;
+      max-width: 900px;
+    }
+
+    .tv-resource-btns.visible { display: flex; }
+
+    .tv-resource-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.6rem 1.1rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      font-family: 'Inter', sans-serif;
+      color: #ffffff;
+      background: var(--dark);
+      border: none;
+      border-radius: var(--radius-md);
+      text-decoration: none;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .tv-resource-btn:hover {
+      background: #444;
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-md);
+    }
 
     /* Mobile sidebar toggle */
     .tv-sidebar-toggle {
@@ -281,6 +328,9 @@
 
       <!-- Sidebar index -->
       <aside class="tv-sidebar" id="tvSidebar">
+        <div class="tv-sidebar-header">
+          <div class="tv-sidebar-title">Training Videos</div>
+        </div>
         <div class="tv-cat-label">New Agent Steps</div>
         <div class="tv-item active" data-src="https://www.loom.com/embed/ab91621c3bf94f60a5702797f58afe78" data-discord="true">New Agent First Steps</div>
         <div class="tv-item" data-src="https://www.loom.com/embed/26e71bf91983478e90b098a70cf28aa5">KPI Tracking</div>
@@ -290,7 +340,7 @@
         <div class="tv-cat-label">CRM Guide</div>
         <div class="tv-item" data-src="https://www.loom.com/embed/9ab847bb22af4c8ab2f5063d5b0981fe">How to Access CRM</div>
         <div class="tv-item" data-src="https://www.loom.com/embed/a2008c417a7e488ba749428d1d72191c">Setting Up Your Phone Numbers</div>
-        <div class="tv-item" data-src="https://www.loom.com/embed/0a94c4d2e15e40dcaaa0817631b51dfe">A2P Texting Verification</div>
+        <div class="tv-item" data-src="https://www.loom.com/embed/0a94c4d2e15e40dcaaa0817631b51dfe" data-a2p="true">A2P Texting Verification</div>
         <div class="tv-item" data-src="https://www.loom.com/embed/e04fb59f584c467c8231fd614123f244">Setting Up Wavv</div>
         <div class="tv-item" data-src="https://www.loom.com/embed/f6ebb4995f2a4d2a921658e022aa4067">Uploading Leads</div>
         <div class="tv-item" data-src="https://www.loom.com/embed/ce38f87fb64046e3b669e1d4da4c616a">Calendar and Booking Appointments</div>
@@ -319,6 +369,14 @@
             Kairos Discord
           </a>
         </div>
+
+        <!-- A2P doc button (only shown for A2P video) -->
+        <div class="tv-resource-btns" id="tvA2p">
+          <a href="https://docs.google.com/document/d/1o4-9vPWHMClHOBrhdKtnH-z_ANJCSORHKgcPD4SEgTo/edit?usp=sharing" target="_blank" rel="noopener noreferrer" class="tv-resource-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            A2P Verification Guide
+          </a>
+        </div>
       </main>
 
     </div>
@@ -343,6 +401,7 @@
       const player = document.getElementById('tvPlayer');
       const title = document.getElementById('tvTitle');
       const discord = document.getElementById('tvDiscord');
+      const a2p = document.getElementById('tvA2p');
       const sidebar = document.getElementById('tvSidebar');
       const toggle = document.getElementById('tvSidebarToggle');
 
@@ -352,11 +411,8 @@
           item.classList.add('active');
           player.src = item.dataset.src;
           title.textContent = item.textContent;
-          if (item.dataset.discord) {
-            discord.classList.add('visible');
-          } else {
-            discord.classList.remove('visible');
-          }
+          discord.classList.toggle('visible', !!item.dataset.discord);
+          a2p.classList.toggle('visible', !!item.dataset.a2p);
           // Close mobile sidebar after selection
           if (window.innerWidth <= 768) {
             sidebar.classList.remove('mobile-open');
