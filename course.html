@@ -6,119 +6,160 @@
   <title>Training Videos — Kairos Financial</title>
   <link rel="stylesheet" href="css/styles.css" />
   <style>
-    .videos-section {
-      padding: 4rem 0 6rem;
-    }
+    body { overflow: hidden; }
 
-    .video-category {
-      margin-bottom: 4rem;
-    }
-
-    .video-category:last-child {
-      margin-bottom: 0;
-    }
-
-    .video-category-header {
+    .tv-layout {
       display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      margin-bottom: 1.5rem;
-      padding-bottom: 0.75rem;
-      border-bottom: 1px solid var(--border);
+      height: calc(100vh - var(--nav-height));
+      margin-top: var(--nav-height);
     }
 
-    .video-category-num {
-      width: 32px;
-      height: 32px;
-      background: var(--dark);
-      border-radius: var(--radius-sm);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #ffffff;
+    /* --- Sidebar index --- */
+    .tv-sidebar {
+      width: 300px;
+      min-width: 300px;
+      background: var(--bg-surface);
+      border-right: 1px solid var(--border);
+      overflow-y: auto;
+      padding: 1.5rem 0;
+    }
+
+    .tv-sidebar::-webkit-scrollbar { width: 4px; }
+    .tv-sidebar::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 4px; }
+
+    .tv-cat-label {
       font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.7rem;
       font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      padding: 0.75rem 1.25rem 0.4rem;
+    }
+
+    .tv-cat-label:first-child { padding-top: 0; }
+
+    .tv-item {
+      display: block;
+      padding: 0.6rem 1.25rem 0.6rem 1.75rem;
       font-size: 0.85rem;
-      flex-shrink: 0;
-    }
-
-    .video-category-title {
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: var(--text-primary);
-      letter-spacing: -0.01em;
-    }
-
-    .video-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
-      gap: 1.5rem;
-    }
-
-    .video-card {
-      background: var(--bg-elevated);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      overflow: hidden;
+      font-weight: 500;
+      color: var(--text-secondary);
+      cursor: pointer;
       transition: var(--transition);
+      border-left: 3px solid transparent;
     }
 
-    .video-card:hover {
-      border-color: #999;
-      box-shadow: var(--shadow-md);
+    .tv-item:hover {
+      background: var(--bg-hover);
+      color: var(--text-primary);
     }
 
-    .video-card-embed {
+    .tv-item.active {
+      background: var(--bg-hover);
+      color: var(--text-primary);
+      font-weight: 600;
+      border-left-color: var(--gold);
+    }
+
+    /* --- Main video area --- */
+    .tv-main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 2rem 2.5rem 3rem;
+    }
+
+    .tv-main::-webkit-scrollbar { width: 4px; }
+    .tv-main::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 4px; }
+
+    .tv-video-wrap {
       position: relative;
       padding-bottom: 56.25%;
       height: 0;
       background: #000;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      max-width: 900px;
     }
 
-    .video-card-embed iframe {
+    .tv-video-wrap iframe {
       position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
       border: none;
     }
 
-    .video-card-info {
-      padding: 1rem 1.25rem;
-    }
-
-    .video-card-title {
+    .tv-video-title {
       font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1.2rem;
       font-weight: 700;
-      font-size: 0.95rem;
       color: var(--text-primary);
+      margin-top: 1.25rem;
+      max-width: 900px;
     }
 
-    .video-card-links {
-      display: flex;
-      gap: 1rem;
-      margin-top: 0.5rem;
+    /* Discord buttons */
+    .tv-discord-btns {
+      display: none;
+      gap: 0.75rem;
+      margin-top: 1rem;
+      max-width: 900px;
     }
 
-    .video-card-links a {
-      font-size: 0.8rem;
+    .tv-discord-btns.visible { display: flex; }
+
+    .tv-discord-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.6rem 1.1rem;
+      font-size: 0.82rem;
       font-weight: 600;
-      color: var(--gold);
+      font-family: 'Inter', sans-serif;
+      color: #ffffff;
+      background: #5865F2;
+      border: none;
+      border-radius: var(--radius-md);
       text-decoration: none;
+      cursor: pointer;
       transition: var(--transition);
     }
 
-    .video-card-links a:hover {
-      color: var(--gold-bright);
-      text-decoration: underline;
+    .tv-discord-btn:hover {
+      background: #4752c4;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(88, 101, 242, 0.35);
     }
 
-    @media (max-width: 500px) {
-      .video-grid {
-        grid-template-columns: 1fr;
-      }
+    .tv-discord-btn svg { flex-shrink: 0; }
+
+    /* Mobile sidebar toggle */
+    .tv-sidebar-toggle {
+      display: none;
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      z-index: 500;
+      width: 52px;
+      height: 52px;
+      background: linear-gradient(135deg, var(--gold), var(--gold-bright));
+      border: none;
+      border-radius: 50%;
+      color: var(--bg-base);
+      font-size: 1.3rem;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(201, 168, 76, 0.4);
+      align-items: center;
+      justify-content: center;
+    }
+
+    @media (max-width: 768px) {
+      body { overflow: auto; }
+      .tv-layout { flex-direction: column; height: auto; margin-top: 0; }
+      .tv-sidebar { width: 100%; min-width: 100%; max-height: none; border-right: none; border-bottom: 1px solid var(--border); display: none; }
+      .tv-sidebar.mobile-open { display: block; }
+      .tv-sidebar-toggle { display: flex; }
+      .tv-main { padding: 1.5rem 1rem 5rem; }
     }
   </style>
 </head>
@@ -236,130 +277,54 @@
 
   <!-- COURSE CONTENT (hidden until authenticated) -->
   <div id="courseContent" class="hidden" style="display:none;">
+    <div class="tv-layout">
 
-    <!-- PAGE HEADER -->
-    <div class="page-header">
-      <div class="container">
-        <div class="page-header-eyebrow">Training</div>
-        <h1 class="page-header-title">Training Videos</h1>
-        <p class="page-header-desc">Watch each section in order to get fully onboarded and ready to sell.</p>
-      </div>
+      <!-- Sidebar index -->
+      <aside class="tv-sidebar" id="tvSidebar">
+        <div class="tv-cat-label">New Agent Steps</div>
+        <div class="tv-item active" data-src="https://www.loom.com/embed/ab91621c3bf94f60a5702797f58afe78" data-discord="true">New Agent First Steps</div>
+        <div class="tv-item" data-src="https://www.loom.com/embed/26e71bf91983478e90b098a70cf28aa5">KPI Tracking</div>
+        <div class="tv-item" data-src="https://www.loom.com/embed/1dce58e1623847dabcad03668ac14854">How to Update Discord Leaderboard</div>
+        <div class="tv-item" data-src="https://www.loom.com/embed/bb4bec1445d94890a3a56a81152cfdc4">How to Submit a New Sale</div>
+
+        <div class="tv-cat-label">CRM Guide</div>
+        <div class="tv-item" data-src="https://www.loom.com/embed/9ab847bb22af4c8ab2f5063d5b0981fe">How to Access CRM</div>
+        <div class="tv-item" data-src="https://www.loom.com/embed/a2008c417a7e488ba749428d1d72191c">Setting Up Your Phone Numbers</div>
+        <div class="tv-item" data-src="https://www.loom.com/embed/0a94c4d2e15e40dcaaa0817631b51dfe">A2P Texting Verification</div>
+        <div class="tv-item" data-src="https://www.loom.com/embed/e04fb59f584c467c8231fd614123f244">Setting Up Wavv</div>
+        <div class="tv-item" data-src="https://www.loom.com/embed/f6ebb4995f2a4d2a921658e022aa4067">Uploading Leads</div>
+        <div class="tv-item" data-src="https://www.loom.com/embed/ce38f87fb64046e3b669e1d4da4c616a">Calendar and Booking Appointments</div>
+
+        <div class="tv-cat-label">Leads</div>
+        <div class="tv-item" data-src="https://www.loom.com/embed/8a10f1b0e3e5492aa6fd5a09474d5962">Watch First</div>
+        <div class="tv-item" data-src="https://www.loom.com/embed/83d778600ded478282e1dd8ae4c2cf43">Ethos Leads</div>
+        <div class="tv-item" data-src="https://www.loom.com/embed/66189350089e4517826b1d2d975f894a">Goat Leads</div>
+      </aside>
+
+      <!-- Video player -->
+      <main class="tv-main">
+        <div class="tv-video-wrap">
+          <iframe id="tvPlayer" src="https://www.loom.com/embed/ab91621c3bf94f60a5702797f58afe78" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+        </div>
+        <div class="tv-video-title" id="tvTitle">New Agent First Steps</div>
+
+        <!-- Discord buttons (only shown for first video) -->
+        <div class="tv-discord-btns visible" id="tvDiscord">
+          <a href="https://discord.gg/7jRu7r3FnC" target="_blank" rel="noopener noreferrer" class="tv-discord-btn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 00-4.885-1.515.074.074 0 00-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 00-5.487 0 12.64 12.64 0 00-.617-1.25.077.077 0 00-.079-.037A19.736 19.736 0 003.677 4.37a.07.07 0 00-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 00.031.057 19.9 19.9 0 005.993 3.03.078.078 0 00.084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 00-.041-.106 13.107 13.107 0 01-1.872-.892.077.077 0 01-.008-.128 10.2 10.2 0 00.372-.292.074.074 0 01.077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 01.078.01c.12.098.246.198.373.292a.077.077 0 01-.006.127 12.299 12.299 0 01-1.873.892.077.077 0 00-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 00.084.028 19.839 19.839 0 006.002-3.03.077.077 0 00.032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 00-.031-.03z"/></svg>
+            Disruption Group Discord
+          </a>
+          <a href="https://discord.gg/HDAvgbD4cJ" target="_blank" rel="noopener noreferrer" class="tv-discord-btn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 00-4.885-1.515.074.074 0 00-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 00-5.487 0 12.64 12.64 0 00-.617-1.25.077.077 0 00-.079-.037A19.736 19.736 0 003.677 4.37a.07.07 0 00-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 00.031.057 19.9 19.9 0 005.993 3.03.078.078 0 00.084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 00-.041-.106 13.107 13.107 0 01-1.872-.892.077.077 0 01-.008-.128 10.2 10.2 0 00.372-.292.074.074 0 01.077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 01.078.01c.12.098.246.198.373.292a.077.077 0 01-.006.127 12.299 12.299 0 01-1.873.892.077.077 0 00-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 00.084.028 19.839 19.839 0 006.002-3.03.077.077 0 00.032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 00-.031-.03z"/></svg>
+            Kairos Discord
+          </a>
+        </div>
+      </main>
+
     </div>
 
-    <!-- VIDEOS -->
-    <section class="videos-section">
-      <div class="container">
-
-        <!-- CATEGORY 1: New Agent Steps -->
-        <div class="video-category fade-in">
-          <div class="video-category-header">
-            <div class="video-category-num">1</div>
-            <div class="video-category-title">New Agent Steps</div>
-          </div>
-          <div class="video-grid">
-            <div class="video-card">
-              <div class="video-card-embed">
-                <iframe src="https://www.loom.com/embed/ab91621c3bf94f60a5702797f58afe78" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
-              </div>
-              <div class="video-card-info">
-                <div class="video-card-title">New Agent First Steps</div>
-                <div class="video-card-links">
-                  <a href="https://discord.gg/7jRu7r3FnC" target="_blank" rel="noopener noreferrer">Disruption Group Discord</a>
-                  <a href="https://discord.gg/HDAvgbD4cJ" target="_blank" rel="noopener noreferrer">Kairos Discord</a>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- CATEGORY 2: CRM Guide -->
-        <div class="video-category fade-in">
-          <div class="video-category-header">
-            <div class="video-category-num">2</div>
-            <div class="video-category-title">CRM Guide</div>
-          </div>
-          <div class="video-grid">
-            <div class="video-card">
-              <div class="video-card-embed">
-                <iframe src="https://www.loom.com/embed/a2008c417a7e488ba749428d1d72191c" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
-              </div>
-              <div class="video-card-info">
-                <div class="video-card-title">Setting Up Your Phone Numbers</div>
-              </div>
-            </div>
-
-            <div class="video-card">
-              <div class="video-card-embed">
-                <iframe src="https://www.loom.com/embed/0a94c4d2e15e40dcaaa0817631b51dfe" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
-              </div>
-              <div class="video-card-info">
-                <div class="video-card-title">A2P Texting Verification</div>
-              </div>
-            </div>
-
-            <div class="video-card">
-              <div class="video-card-embed">
-                <iframe src="https://www.loom.com/embed/e04fb59f584c467c8231fd614123f244" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
-              </div>
-              <div class="video-card-info">
-                <div class="video-card-title">Setting Up Wavv</div>
-              </div>
-            </div>
-
-            <div class="video-card">
-              <div class="video-card-embed">
-                <iframe src="https://www.loom.com/embed/f6ebb4995f2a4d2a921658e022aa4067" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
-              </div>
-              <div class="video-card-info">
-                <div class="video-card-title">Uploading Leads</div>
-              </div>
-            </div>
-
-            <div class="video-card">
-              <div class="video-card-embed">
-                <iframe src="https://www.loom.com/embed/ce38f87fb64046e3b669e1d4da4c616a" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
-              </div>
-              <div class="video-card-info">
-                <div class="video-card-title">Calendar and Booking Appointments</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- CATEGORY 3: Leads -->
-        <div class="video-category fade-in">
-          <div class="video-category-header">
-            <div class="video-category-num">3</div>
-            <div class="video-category-title">Leads</div>
-          </div>
-          <div class="video-grid">
-            <div class="video-card">
-              <div class="video-card-embed">
-                <iframe src="https://www.loom.com/embed/8a10f1b0e3e5492aa6fd5a09474d5962" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
-              </div>
-              <div class="video-card-info">
-                <div class="video-card-title">Watch First</div>
-              </div>
-            </div>
-
-            <div class="video-card">
-              <div class="video-card-embed">
-                <iframe src="https://www.loom.com/embed/83d778600ded478282e1dd8ae4c2cf43" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
-              </div>
-              <div class="video-card-info">
-                <div class="video-card-title">Ethos Leads</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </section>
-
-    <footer class="footer">
-      <p>&copy; 2026 <span>Kairos Financial</span>. Agent Portal — Internal Use Only.</p>
-    </footer>
-
+    <!-- Mobile sidebar toggle -->
+    <button class="tv-sidebar-toggle" id="tvSidebarToggle">&#9776;</button>
   </div>
 
   <script src="js/main.js"></script>
@@ -371,6 +336,39 @@
           content.style.display = content.classList.contains('hidden') ? 'none' : 'block';
         });
         observer.observe(content, { attributes: true, attributeFilter: ['class'] });
+      }
+
+      // Video switching
+      const items = document.querySelectorAll('.tv-item');
+      const player = document.getElementById('tvPlayer');
+      const title = document.getElementById('tvTitle');
+      const discord = document.getElementById('tvDiscord');
+      const sidebar = document.getElementById('tvSidebar');
+      const toggle = document.getElementById('tvSidebarToggle');
+
+      items.forEach(item => {
+        item.addEventListener('click', () => {
+          items.forEach(i => i.classList.remove('active'));
+          item.classList.add('active');
+          player.src = item.dataset.src;
+          title.textContent = item.textContent;
+          if (item.dataset.discord) {
+            discord.classList.add('visible');
+          } else {
+            discord.classList.remove('visible');
+          }
+          // Close mobile sidebar after selection
+          if (window.innerWidth <= 768) {
+            sidebar.classList.remove('mobile-open');
+          }
+        });
+      });
+
+      // Mobile toggle
+      if (toggle) {
+        toggle.addEventListener('click', () => {
+          sidebar.classList.toggle('mobile-open');
+        });
       }
     });
   </script>
