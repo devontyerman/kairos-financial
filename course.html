@@ -351,6 +351,10 @@
         <div class="tv-item" data-src="https://www.loom.com/embed/8a10f1b0e3e5492aa6fd5a09474d5962">Watch Before Buying Leads</div>
         <div class="tv-item" data-src="https://www.loom.com/embed/83d778600ded478282e1dd8ae4c2cf43">Ethos Leads</div>
         <div class="tv-item" data-src="https://www.loom.com/embed/66189350089e4517826b1d2d975f894a">Goat Leads</div>
+
+        <div class="tv-cat-label">Products & Underwriting</div>
+        <div class="tv-item" data-src="https://www.loom.com/embed/2c156fff8cc8472e8281f6faef0e2dcb">Product Selection</div>
+        <div class="tv-item" data-src="https://www.loom.com/embed/d7c56c9e50574348a2dec7292274d5a4" data-underwriting="true">Insurance Toolkits and Underwriting</div>
       </aside>
 
       <!-- Video player -->
@@ -379,6 +383,18 @@
             A2P Verification Guide
           </a>
         </div>
+
+        <!-- Underwriting buttons (only shown for Insurance Toolkits and Underwriting video) -->
+        <div class="tv-resource-btns" id="tvUnderwriting">
+          <a href="https://landing.insurancetoolkits.com" target="_blank" rel="noopener noreferrer" class="tv-resource-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
+            Insurance Toolkits
+          </a>
+          <a href="https://docs.google.com/spreadsheets/d/1KvCN5Izk8fHCAFhO1p-EIUpt55Io8YSl/edit?usp=sharing&ouid=117071041967508429739&rtpof=true&sd=true" target="_blank" rel="noopener noreferrer" class="tv-resource-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            Underwriting Cheat Sheet
+          </a>
+        </div>
       </main>
 
     </div>
@@ -404,6 +420,7 @@
       const title = document.getElementById('tvTitle');
       const discord = document.getElementById('tvDiscord');
       const a2p = document.getElementById('tvA2p');
+      const underwriting = document.getElementById('tvUnderwriting');
       const sidebar = document.getElementById('tvSidebar');
       const toggle = document.getElementById('tvSidebarToggle');
 
@@ -415,6 +432,7 @@
           title.textContent = item.textContent;
           discord.classList.toggle('visible', !!item.dataset.discord);
           a2p.classList.toggle('visible', !!item.dataset.a2p);
+          underwriting.classList.toggle('visible', !!item.dataset.underwriting);
           // Close mobile sidebar after selection
           if (window.innerWidth <= 768) {
             sidebar.classList.remove('mobile-open');
