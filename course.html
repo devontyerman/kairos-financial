@@ -180,6 +180,54 @@
       box-shadow: var(--shadow-md);
     }
 
+    /* Carrier email list */
+    .tv-email-list {
+      display: none;
+      max-width: 900px;
+      margin-top: 1.25rem;
+    }
+
+    .tv-email-list.visible { display: block; }
+
+    .tv-email-list-title {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.75rem;
+    }
+
+    .tv-email-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 0.6rem;
+    }
+
+    .tv-email-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 0.75rem 1rem;
+    }
+
+    .tv-email-carrier {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.3rem;
+    }
+
+    .tv-email-card a {
+      display: block;
+      font-size: 0.78rem;
+      color: var(--gold);
+      text-decoration: none;
+      word-break: break-all;
+    }
+
+    .tv-email-card a:hover { text-decoration: underline; }
+
     /* Mobile sidebar toggle */
     .tv-sidebar-toggle {
       display: none;
@@ -339,6 +387,10 @@
         <div class="tv-item" data-src="https://www.loom.com/embed/5504b88cb4474dbc9b0d3f1d0fa5e914">AI Training Bot</div>
         <div class="tv-item" data-src="https://www.loom.com/embed/f693b1b3369c4655963fce11856f8a56" data-script="true">Script and Sales Presentation</div>
 
+        <div class="tv-cat-label">Licensing</div>
+        <div class="tv-item" data-src="https://www.loom.com/embed/091f9b5527e042d1aea0422e86519c93">How To Buy Additional State Licenses</div>
+        <div class="tv-item" data-src="https://www.loom.com/embed/96cc1263b9a446e583b9f8d356a2c90a" data-licensing="true">Next Steps After Buying Licenses</div>
+
         <div class="tv-cat-label">CRM Guide</div>
         <div class="tv-item" data-src="https://www.loom.com/embed/9ab847bb22af4c8ab2f5063d5b0981fe">How to Access CRM</div>
         <div class="tv-item" data-src="https://www.loom.com/embed/a2008c417a7e488ba749428d1d72191c">Setting Up Your Phone Numbers</div>
@@ -357,6 +409,9 @@
         <div class="tv-cat-label">Products & Underwriting</div>
         <div class="tv-item" data-src="https://www.loom.com/embed/2c156fff8cc8472e8281f6faef0e2dcb">Product Selection</div>
         <div class="tv-item" data-src="https://www.loom.com/embed/d7c56c9e50574348a2dec7292274d5a4" data-underwriting="true">Insurance Toolkits and Underwriting</div>
+        <div class="tv-item" data-src="https://www.loom.com/embed/bcd4adb557dc4446958b4999226c9abe">Americo Application Walkthrough</div>
+        <div class="tv-item" data-src="https://www.loom.com/embed/e91098314c6b4641a049921959902aff">Transamerica Application Walkthrough</div>
+        <div class="tv-item" data-src="https://www.loom.com/embed/dd390290b98542218101fbbcacaf9fed">Mutual Of Omaha Application Walkthrough</div>
       </aside>
 
       <!-- Video player -->
@@ -405,6 +460,42 @@
             View Script
           </a>
         </div>
+
+        <!-- Carrier contracting emails (only shown for Next Steps After Buying Licenses video) -->
+        <div class="tv-email-list" id="tvLicensing">
+          <h3 class="tv-email-list-title">Carrier Contracting Emails</h3>
+          <div class="tv-email-grid">
+            <div class="tv-email-card">
+              <div class="tv-email-carrier">Americo</div>
+              <a href="mailto:agent.services@americo.com">agent.services@americo.com</a>
+              <a href="mailto:submit@americo.com">submit@americo.com</a>
+            </div>
+            <div class="tv-email-card">
+              <div class="tv-email-carrier">American Amicable</div>
+              <a href="mailto:agentprocessing@aatx.com">agentprocessing@aatx.com</a>
+            </div>
+            <div class="tv-email-card">
+              <div class="tv-email-carrier">Corebridge</div>
+              <a href="mailto:giwlcontracting@corebridgefinancial.com">giwlcontracting@corebridgefinancial.com</a>
+            </div>
+            <div class="tv-email-card">
+              <div class="tv-email-carrier">Ethos (Banner, Trustage, & Ameritas)</div>
+              <a href="mailto:agents@getethos.com">agents@getethos.com</a>
+            </div>
+            <div class="tv-email-card">
+              <div class="tv-email-carrier">Mutual of Omaha</div>
+              <a href="mailto:contractsandappointments@mutualofomaha.com">contractsandappointments@mutualofomaha.com</a>
+            </div>
+            <div class="tv-email-card">
+              <div class="tv-email-carrier">TransAmerica</div>
+              <a href="mailto:tlp-crcontractadmin@transamerica.com">tlp-crcontractadmin@transamerica.com</a>
+            </div>
+            <div class="tv-email-card">
+              <div class="tv-email-carrier">Aetna</div>
+              <a href="mailto:aetssiinformation@aetna.com">aetssiinformation@aetna.com</a>
+            </div>
+          </div>
+        </div>
       </main>
 
     </div>
@@ -432,6 +523,7 @@
       const a2p = document.getElementById('tvA2p');
       const underwriting = document.getElementById('tvUnderwriting');
       const script = document.getElementById('tvScript');
+      const licensing = document.getElementById('tvLicensing');
       const sidebar = document.getElementById('tvSidebar');
       const toggle = document.getElementById('tvSidebarToggle');
 
@@ -445,6 +537,7 @@
           a2p.classList.toggle('visible', !!item.dataset.a2p);
           underwriting.classList.toggle('visible', !!item.dataset.underwriting);
           script.classList.toggle('visible', !!item.dataset.script);
+          licensing.classList.toggle('visible', !!item.dataset.licensing);
           // Close mobile sidebar after selection
           if (window.innerWidth <= 768) {
             sidebar.classList.remove('mobile-open');
