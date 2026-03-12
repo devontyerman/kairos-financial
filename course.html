@@ -228,6 +228,28 @@
 
     .tv-email-card a:hover { text-decoration: underline; }
 
+    /* Wavv promo code */
+    .tv-wavv-info { display: flex; flex-direction: column; gap: 0.6rem; }
+    .tv-wavv-code {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      margin: 0;
+    }
+    .tv-wavv-code strong { color: var(--gold); }
+
+    /* Video seek-bar blocker — covers bottom controls to prevent skipping */
+    .tv-video-wrap::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 54px;
+      z-index: 10;
+      background: transparent;
+      cursor: default;
+    }
+
     /* Mobile sidebar toggle */
     .tv-sidebar-toggle {
       display: none;
@@ -393,7 +415,7 @@
         <div class="tv-item" data-src="https://www.loom.com/embed/9ab847bb22af4c8ab2f5063d5b0981fe">How to Access CRM</div>
         <div class="tv-item" data-src="https://www.loom.com/embed/a2008c417a7e488ba749428d1d72191c">Setting Up Your Phone Numbers</div>
         <div class="tv-item" data-src="https://www.loom.com/embed/0a94c4d2e15e40dcaaa0817631b51dfe" data-a2p="true">A2P Texting Verification</div>
-        <div class="tv-item" data-src="https://www.loom.com/embed/e04fb59f584c467c8231fd614123f244">Setting Up Wavv</div>
+        <div class="tv-item" data-src="https://www.loom.com/embed/e04fb59f584c467c8231fd614123f244" data-wavv="true">Setting Up Wavv</div>
         <div class="tv-item" data-src="https://www.loom.com/embed/f6ebb4995f2a4d2a921658e022aa4067">Uploading Leads</div>
         <div class="tv-item" data-src="https://www.loom.com/embed/ce38f87fb64046e3b669e1d4da4c616a">Calendar and Booking Appointments</div>
         <div class="tv-item" data-src="https://www.loom.com/embed/10dfa99d2d48470681b52f5ac7c16b4e">Using & Building Automations</div>
@@ -415,7 +437,7 @@
       <!-- Video player -->
       <main class="tv-main">
         <div class="tv-video-wrap">
-          <iframe id="tvPlayer" src="https://www.loom.com/embed/a30581bfa9ce43239b8292d32cb8e802" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+          <iframe id="tvPlayer" src="https://www.loom.com/embed/a30581bfa9ce43239b8292d32cb8e802?hide_owner=true&hide_title=true&hide_share=true&hideEmbedTopBar=true" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
         </div>
         <div class="tv-video-title" id="tvTitle">Watch First New Agents</div>
 
@@ -429,6 +451,17 @@
             <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 00-4.885-1.515.074.074 0 00-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 00-5.487 0 12.64 12.64 0 00-.617-1.25.077.077 0 00-.079-.037A19.736 19.736 0 003.677 4.37a.07.07 0 00-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 00.031.057 19.9 19.9 0 005.993 3.03.078.078 0 00.084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 00-.041-.106 13.107 13.107 0 01-1.872-.892.077.077 0 01-.008-.128 10.2 10.2 0 00.372-.292.074.074 0 01.077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 01.078.01c.12.098.246.198.373.292a.077.077 0 01-.006.127 12.299 12.299 0 01-1.873.892.077.077 0 00-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 00.084.028 19.839 19.839 0 006.002-3.03.077.077 0 00.032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 00-.031-.03z"/></svg>
             Kairos Discord
           </a>
+        </div>
+
+        <!-- Wavv sign-up (only shown for Setting Up Wavv video) -->
+        <div class="tv-resource-btns" id="tvWavv">
+          <div class="tv-wavv-info">
+            <a href="https://refer.wavv.com/?fpr=1094dk" target="_blank" rel="noopener noreferrer" class="tv-resource-btn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              <strong>Click Here to Sign Up for Wavv</strong>
+            </a>
+            <p class="tv-wavv-code">After signing up, use code <strong>SPAMPROOF</strong> to get spam monitoring for free.</p>
+          </div>
         </div>
 
         <!-- A2P doc button (only shown for A2P video) -->
@@ -521,20 +554,23 @@
       const underwriting = document.getElementById('tvUnderwriting');
       const script = document.getElementById('tvScript');
       const licensing = document.getElementById('tvLicensing');
+      const wavv = document.getElementById('tvWavv');
       const sidebar = document.getElementById('tvSidebar');
       const toggle = document.getElementById('tvSidebarToggle');
+      const loomParams = '?hide_owner=true&hide_title=true&hide_share=true&hideEmbedTopBar=true';
 
       items.forEach(item => {
         item.addEventListener('click', () => {
           items.forEach(i => i.classList.remove('active'));
           item.classList.add('active');
-          player.src = item.dataset.src;
+          player.src = item.dataset.src + loomParams;
           title.textContent = item.textContent;
           discord.classList.toggle('visible', !!item.dataset.discord);
           a2p.classList.toggle('visible', !!item.dataset.a2p);
           underwriting.classList.toggle('visible', !!item.dataset.underwriting);
           script.classList.toggle('visible', !!item.dataset.script);
           licensing.classList.toggle('visible', !!item.dataset.licensing);
+          wavv.classList.toggle('visible', !!item.dataset.wavv);
           // Close mobile sidebar after selection
           if (window.innerWidth <= 768) {
             sidebar.classList.remove('mobile-open');
