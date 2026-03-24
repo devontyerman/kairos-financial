@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="css/styles.css" />
   <style>
     body {
-      background: #faf8f4;
+      background: #ffffff;
       margin: 0;
       padding: 0;
     }
@@ -15,7 +15,7 @@
     .apply-header {
       background: #111111;
       text-align: center;
-      padding: 2rem 1.5rem;
+      padding: 1.5rem 1.5rem;
     }
 
     .apply-header a {
@@ -27,26 +27,115 @@
       letter-spacing: 0.08em;
     }
 
+    .apply-hero {
+      background: #111111;
+      text-align: center;
+      padding: 3rem 1.5rem 3.5rem;
+    }
+
+    .apply-hero h1 {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: clamp(1.6rem, 4vw, 2.2rem);
+      font-weight: 800;
+      color: #ffffff;
+      margin: 0 0 0.75rem;
+      letter-spacing: -0.02em;
+    }
+
+    .apply-hero h1 span { color: #c9a84c; }
+
+    .apply-hero p {
+      font-size: 1rem;
+      color: rgba(255,255,255,0.6);
+      max-width: 520px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    .apply-notice {
+      max-width: 720px;
+      margin: -1.5rem auto 0;
+      padding: 1.25rem 1.5rem;
+      background: #fef9e7;
+      border: 1px solid #f0d86e;
+      border-radius: 8px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .apply-notice-title {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: #111111;
+      margin-bottom: 0.3rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .apply-notice p {
+      font-size: 0.82rem;
+      color: #555;
+      line-height: 1.55;
+      margin: 0;
+    }
+
+    .apply-steps {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      max-width: 720px;
+      margin: 2rem auto 0;
+      padding: 0 1.5rem;
+    }
+
+    .apply-step {
+      text-align: center;
+      flex: 1;
+    }
+
+    .apply-step-num {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #111111;
+      color: #c9a84c;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 0.5rem;
+    }
+
+    .apply-step h4 {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #111111;
+      margin: 0 0 0.2rem;
+    }
+
+    .apply-step p {
+      font-size: 0.75rem;
+      color: #888;
+      margin: 0;
+    }
+
+    .apply-divider {
+      width: 60px;
+      height: 3px;
+      background: #c9a84c;
+      border-radius: 2px;
+      margin: 2.5rem auto 0;
+    }
+
     .apply-container {
       max-width: 720px;
-      margin: 0 auto;
-      padding: 2rem 1.5rem 4rem;
-    }
-
-    .apply-title {
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: 1.5rem;
-      font-weight: 800;
-      color: #111111;
-      text-align: center;
-      margin-bottom: 0.5rem;
-    }
-
-    .apply-sub {
-      font-size: 0.9rem;
-      color: #666;
-      text-align: center;
-      margin-bottom: 2rem;
+      margin: 2rem auto 0;
+      padding: 0 1.5rem 4rem;
     }
 
     .apply-container iframe {
@@ -59,10 +148,30 @@
       display: block;
     }
 
+    .apply-footer {
+      background: #111111;
+      text-align: center;
+      padding: 2rem 1.5rem;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .apply-footer p {
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.3);
+      margin: 0;
+    }
+
+    .apply-footer span { color: #c9a84c; }
+
     @media (max-width: 768px) {
       .apply-container iframe {
         height: 3400px !important;
       }
+      .apply-steps {
+        gap: 1rem;
+      }
+      .apply-step h4 { font-size: 0.78rem; }
+      .apply-step p { font-size: 0.7rem; }
     }
   </style>
 </head>
@@ -72,10 +181,40 @@
     <a href="careers.html">KAIROS FINANCIAL</a>
   </div>
 
-  <div class="apply-container">
-    <h1 class="apply-title">Application</h1>
-    <p class="apply-sub">Fill out the form below. It takes about 5 minutes.</p>
+  <div class="apply-hero">
+    <h1>You're One Step Away From<br /><span>Changing Your Future</span></h1>
+    <p>Complete the application below. Be detailed in your responses — the more we know about you, the faster we can get you on a call and moving forward.</p>
+  </div>
 
+  <div class="apply-notice">
+    <div class="apply-notice-title">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      Please take your time with this application
+    </div>
+    <p>Incomplete or vague applications are less likely to receive a callback. Answer each question thoughtfully — this is how we determine who gets an interview.</p>
+  </div>
+
+  <div class="apply-steps">
+    <div class="apply-step">
+      <div class="apply-step-num">1</div>
+      <h4>Fill Out the Form</h4>
+      <p>5 minutes</p>
+    </div>
+    <div class="apply-step">
+      <div class="apply-step-num">2</div>
+      <h4>We Review It</h4>
+      <p>Within 24 hours</p>
+    </div>
+    <div class="apply-step">
+      <div class="apply-step-num">3</div>
+      <h4>Get a Callback</h4>
+      <p>Schedule your intro call</p>
+    </div>
+  </div>
+
+  <div class="apply-divider"></div>
+
+  <div class="apply-container">
     <iframe
       src="https://api.leadconnectorhq.com/widget/form/bGm1drb3HYEP8hOJau7d"
       style="width:100%;height:100%;border:none;border-radius:4px"
@@ -97,9 +236,11 @@
     <script src="https://link.msgsndr.com/js/form_embed.js"></script>
   </div>
 
+  <footer class="apply-footer">
+    <p>&copy; 2026 <span>Kairos Financial</span>. All rights reserved.</p>
+  </footer>
+
   <script>
-    // GHL's form_embed.js overwrites iframe styles after load.
-    // This observer catches those changes and re-applies our overrides.
     const iframe = document.getElementById('inline-bGm1drb3HYEP8hOJau7d');
     if (iframe) {
       const enforce = () => {
