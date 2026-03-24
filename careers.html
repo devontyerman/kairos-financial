@@ -584,20 +584,12 @@
       color: rgba(255,255,255,0.45);
     }
 
-    /* Proof layout — videos left, gallery right */
-    .careers-proof-layout {
+    .careers-proof-videos {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 2rem;
-      max-width: 960px;
-      margin: 0 auto;
-      align-items: start;
-    }
-
-    .careers-proof-videos {
-      display: flex;
-      flex-direction: column;
       gap: 1.5rem;
+      max-width: 560px;
+      margin: 0 auto 3rem;
     }
 
     .careers-proof-video {
@@ -622,86 +614,29 @@
       padding-bottom: 56.25%;
     }
 
-    /* Screenshot gallery */
-    .careers-proof-gallery {
-      position: relative;
-      border-radius: var(--radius-lg);
-      overflow: hidden;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.08);
+    /* Proof screenshots — uniform row */
+    .careers-proof-photos {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 1rem;
+      max-width: 960px;
+      margin: 0 auto;
     }
 
-    .careers-proof-gallery-track {
-      display: flex;
-      transition: transform 0.4s ease;
-    }
-
-    .careers-proof-gallery-slide {
-      min-width: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 1.5rem;
-    }
-
-    .careers-proof-gallery-slide img {
-      max-height: 480px;
-      max-width: 100%;
-      object-fit: contain;
+    .careers-proof-photo {
+      width: 100%;
+      aspect-ratio: 3 / 4;
+      object-fit: cover;
       border-radius: var(--radius-md);
+      box-shadow: 0 8px 30px rgba(0,0,0,0.4);
       cursor: pointer;
-      transition: transform 0.3s ease;
+      transition: transform 0.3s ease, border-color 0.3s ease;
+      border: 2px solid rgba(255,255,255,0.1);
     }
 
-    .careers-proof-gallery-slide img:hover {
-      transform: scale(1.02);
-    }
-
-    .gallery-btn {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      border: none;
-      background: rgba(0,0,0,0.6);
-      color: #fff;
-      font-size: 1.2rem;
-      cursor: pointer;
-      z-index: 5;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: background 0.2s ease;
-    }
-
-    .gallery-btn:hover {
-      background: rgba(0,0,0,0.85);
-    }
-
-    .gallery-btn.prev { left: 0.5rem; }
-    .gallery-btn.next { right: 0.5rem; }
-
-    .gallery-dots {
-      display: flex;
-      justify-content: center;
-      gap: 0.5rem;
-      padding: 0.75rem 0;
-    }
-
-    .gallery-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.25);
-      border: none;
-      cursor: pointer;
-      transition: background 0.2s ease;
-    }
-
-    .gallery-dot.active {
-      background: var(--gold-acc);
+    .careers-proof-photo:hover {
+      transform: scale(1.03);
+      border-color: var(--gold-acc);
     }
 
     /* Lightbox */
@@ -727,18 +662,17 @@
     }
 
     @media (max-width: 768px) {
-      .careers-proof-layout {
-        grid-template-columns: 1fr;
-      }
       .careers-proof-videos {
-        flex-direction: column;
+        grid-template-columns: 1fr !important;
+        max-width: 100% !important;
       }
       .careers-proof-video.vertical,
       .careers-proof-video.horizontal {
         padding-bottom: 56.25% !important;
       }
-      .careers-proof-gallery-slide img {
-        max-height: 360px;
+      .careers-proof-photos {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.75rem;
       }
     }
 
@@ -931,30 +865,21 @@
       <p>Hear it straight from the people doing the work every day.</p>
     </div>
 
-    <div class="careers-proof-layout">
-      <!-- Videos column -->
-      <div class="careers-proof-videos">
-        <div class="careers-proof-video vertical">
-          <iframe src="https://www.loom.com/embed/b8c5a08e194946718a2b8305075da232?hide_owner=true&hide_title=true&hide_share=true&hideEmbedTopBar=true&hide_speed=false" allowfullscreen></iframe>
-        </div>
-        <div class="careers-proof-video horizontal">
-          <iframe src="https://www.loom.com/embed/d92ca05237df48b3bacb83014f303baa?hide_owner=true&hide_title=true&hide_share=true&hideEmbedTopBar=true&hide_speed=false" allowfullscreen></iframe>
-        </div>
+    <div class="careers-proof-videos">
+      <div class="careers-proof-video vertical">
+        <iframe src="https://www.loom.com/embed/b8c5a08e194946718a2b8305075da232?hide_owner=true&hide_title=true&hide_share=true&hideEmbedTopBar=true&hide_speed=false" allowfullscreen></iframe>
       </div>
+      <div class="careers-proof-video horizontal">
+        <iframe src="https://www.loom.com/embed/d92ca05237df48b3bacb83014f303baa?hide_owner=true&hide_title=true&hide_share=true&hideEmbedTopBar=true&hide_speed=false" allowfullscreen></iframe>
+      </div>
+    </div>
 
-      <!-- Screenshot gallery column -->
-      <div class="careers-proof-gallery" id="proofGallery">
-        <div class="careers-proof-gallery-track" id="galleryTrack">
-          <div class="careers-proof-gallery-slide"><img src="assets/proof-text1.jpeg" alt="Agent results — $5,000 commission in 3.5 days" /></div>
-          <div class="careers-proof-gallery-slide"><img src="assets/proof-text2.jpeg" alt="Agent results — $5,100 commission in one week" /></div>
-          <div class="careers-proof-gallery-slide"><img src="assets/proof-text3.jpg" alt="Agent results — $9,300 first full week" /></div>
-          <div class="careers-proof-gallery-slide"><img src="assets/proof-mtd.png" alt="Month-to-date leaderboard" /></div>
-          <div class="careers-proof-gallery-slide"><img src="assets/proof-aiden.png" alt="Agent closing deals — $5,000 in one day" /></div>
-        </div>
-        <button class="gallery-btn prev" onclick="moveGallery(-1)">&#8249;</button>
-        <button class="gallery-btn next" onclick="moveGallery(1)">&#8250;</button>
-        <div class="gallery-dots" id="galleryDots"></div>
-      </div>
+    <div class="careers-proof-photos">
+      <img class="careers-proof-photo" src="assets/proof-text1.jpeg" alt="Agent results — $5,000 commission in 3.5 days" />
+      <img class="careers-proof-photo" src="assets/proof-text2.jpeg" alt="Agent results — $5,100 commission in one week" />
+      <img class="careers-proof-photo" src="assets/proof-text3.jpg" alt="Agent results — $9,300 first full week" />
+      <img class="careers-proof-photo" src="assets/proof-mtd.png" alt="Month-to-date leaderboard" />
+      <img class="careers-proof-photo" src="assets/proof-aiden.png" alt="Agent closing deals — $5,000 in one day" />
     </div>
 
   </section>
@@ -1311,35 +1236,10 @@
   </div>
 
   <script>
-    // Gallery slider
-    (function() {
-      const track = document.getElementById('galleryTrack');
-      const slides = track.querySelectorAll('.careers-proof-gallery-slide');
-      const dotsWrap = document.getElementById('galleryDots');
-      let current = 0;
-
-      slides.forEach((_, i) => {
-        const dot = document.createElement('button');
-        dot.className = 'gallery-dot' + (i === 0 ? ' active' : '');
-        dot.addEventListener('click', () => goTo(i));
-        dotsWrap.appendChild(dot);
-      });
-
-      function goTo(index) {
-        current = (index + slides.length) % slides.length;
-        track.style.transform = 'translateX(-' + (current * 100) + '%)';
-        dotsWrap.querySelectorAll('.gallery-dot').forEach((d, i) => {
-          d.classList.toggle('active', i === current);
-        });
-      }
-
-      window.moveGallery = function(dir) { goTo(current + dir); };
-    })();
-
-    // Lightbox for gallery images
+    // Lightbox for proof photos
     const lightbox = document.getElementById('proofLightbox');
     const lightboxImg = document.getElementById('proofLightboxImg');
-    document.querySelectorAll('.careers-proof-gallery-slide img').forEach(img => {
+    document.querySelectorAll('.careers-proof-photo').forEach(img => {
       img.addEventListener('click', () => {
         lightboxImg.src = img.src;
         lightbox.classList.add('open');
