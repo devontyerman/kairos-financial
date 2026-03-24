@@ -628,80 +628,7 @@
       box-shadow: 0 4px 12px rgba(192,57,43,0.3);
     }
 
-    /* Step 2 — application form */
-    .modal-overlay-app {
-      overflow-y: auto;
-      overscroll-behavior: contain;
-      -webkit-overflow-scrolling: touch;
-      align-items: flex-start;
-      padding: 2rem 0;
-    }
-
-    .modal-form-container {
-      background: #ffffff;
-      border-radius: var(--radius-lg);
-      max-width: 720px;
-      width: 92%;
-      position: relative;
-      animation: modalSlideIn 0.3s ease;
-      margin: auto;
-    }
-
-    /* Iframe scroll-hijack fix: wrapper intercepts touch scroll */
-    .iframe-scroll-wrapper {
-      position: relative;
-      overflow: hidden;
-      touch-action: pan-y;
-      -webkit-overflow-scrolling: auto;
-    }
-
-    .iframe-scroll-wrapper iframe {
-      pointer-events: none;
-    }
-
-    .iframe-scroll-wrapper.active iframe {
-      pointer-events: auto;
-    }
-
-    .modal-close {
-      position: absolute;
-      top: 0.75rem;
-      right: 0.75rem;
-      z-index: 10;
-      width: 36px;
-      height: 36px;
-      background: var(--cream-2);
-      border: none;
-      border-radius: 50%;
-      font-size: 1.2rem;
-      color: var(--midnight);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: var(--transition);
-    }
-
-    .modal-close:hover { background: var(--border); }
-
-    .modal-form-body {
-      padding: 0.5rem 2rem 2rem;
-    }
-
-    .modal-form-body iframe {
-      width: 100%;
-      border: none;
-      border-radius: 4px;
-      display: block;
-    }
-
-    #inline-bGm1drb3HYEP8hOJau7d {
-      height: 2299px !important;
-      overflow: hidden !important;
-      max-height: none !important;
-      touch-action: none;
-      overscroll-behavior: none;
-    }
+    /* GHL popup form — hidden until triggered */
 
     /* ----- Responsive ----- */
     @media (max-width: 768px) {
@@ -715,16 +642,6 @@
         padding-bottom: 56.25% !important;
         max-width: 100% !important;
       }
-
-      /* Modal: full width on mobile */
-      .modal-overlay-app { padding: 0; }
-      .modal-form-container {
-        width: 100%;
-        max-width: 100%;
-        border-radius: 0;
-        min-height: 100vh;
-      }
-      .modal-form-body { padding: 0.5rem 1rem 2rem; }
 
       .careers-metrics-grid {
         grid-template-columns: repeat(2, 1fr);
@@ -1161,90 +1078,10 @@
     </div>
   </div>
 
-  <!-- Step 2 Modal — Application Form -->
-  <div class="modal-overlay modal-overlay-app" id="modalApp">
-    <div class="modal-form-container">
-      <button class="modal-close" id="modalAppClose">&times;</button>
-      <div class="modal-form-body">
-        <div class="iframe-scroll-wrapper" id="iframeWrapper">
-          <iframe
-            src="https://api.leadconnectorhq.com/widget/form/bGm1drb3HYEP8hOJau7d"
-            style="width:100%;border:none;border-radius:4px"
-            scrolling="no"
-            id="inline-bGm1drb3HYEP8hOJau7d"
-            data-layout="{'id':'INLINE'}"
-            data-trigger-type="alwaysShow"
-            data-trigger-value=""
-            data-activation-type="alwaysActivated"
-            data-activation-value=""
-            data-deactivation-type="neverDeactivate"
-            data-deactivation-value=""
-            data-form-name="Application"
-            data-height="2299"
-            data-layout-iframe-id="inline-bGm1drb3HYEP8hOJau7d"
-            data-form-id="bGm1drb3HYEP8hOJau7d"
-            title="Application"
-          ></iframe>
-        </div>
-      </div>
-    </div>
-  </div>
+  <!-- GHL Popup Form — injected when user clicks "Yes" -->
+  <div id="ghlFormContainer"></div>
 
   <script>
-    // Load form embed script once
-    if (!document.querySelector('script[src*="form_embed.js"]')) {
-      const s = document.createElement('script');
-      s.src = 'https://link.msgsndr.com/js/form_embed.js';
-      document.body.appendChild(s);
-    }
-
-    // Iframe scroll-hijack fix:
-    // pointer-events: none by default so scrolling passes through to modal.
-    // On tap (not scroll), activate pointer-events so user can interact with form fields.
-    // On scroll or touch outside, deactivate again.
-    (function() {
-      const wrapper = document.getElementById('iframeWrapper');
-      if (!wrapper) return;
-      let touchStartY = 0;
-      let isScrolling = false;
-
-      wrapper.addEventListener('touchstart', function(e) {
-        touchStartY = e.touches[0].clientY;
-        isScrolling = false;
-      }, { passive: true });
-
-      wrapper.addEventListener('touchmove', function() {
-        isScrolling = true;
-        wrapper.classList.remove('active');
-      }, { passive: true });
-
-      wrapper.addEventListener('touchend', function() {
-        if (!isScrolling) {
-          wrapper.classList.add('active');
-        }
-      }, { passive: true });
-
-      // Click activates on desktop
-      wrapper.addEventListener('click', function() {
-        wrapper.classList.add('active');
-      });
-
-      // Deactivate when scrolling the modal
-      const modalApp = document.getElementById('modalApp');
-      if (modalApp) {
-        modalApp.addEventListener('scroll', function() {
-          wrapper.classList.remove('active');
-        }, { passive: true });
-      }
-
-      // Deactivate when touching outside the wrapper
-      document.addEventListener('touchstart', function(e) {
-        if (!wrapper.contains(e.target)) {
-          wrapper.classList.remove('active');
-        }
-      }, { passive: true });
-    })();
-
     // FAQ accordion
     document.querySelectorAll('.careers-faq-q').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -1255,9 +1092,8 @@
       });
     });
 
-    // Modal logic
+    // Modal logic — Step 1 only (GHL handles Step 2)
     const modalConfirm = document.getElementById('modalConfirm');
-    const modalApp = document.getElementById('modalApp');
 
     function openModal(el) {
       el.classList.add('open');
@@ -1282,30 +1118,74 @@
       document.getElementById('overviewVideo').scrollIntoView({ behavior: 'smooth' });
     });
 
-    // Step 1 — Yes: close Step 1, open Step 2
+    // Step 1 — Yes: close confirmation, launch GHL popup form
+    let ghlLoaded = false;
     document.getElementById('modalYes').addEventListener('click', () => {
       closeModal(modalConfirm);
-      openModal(modalApp);
+
+      const container = document.getElementById('ghlFormContainer');
+
+      if (!ghlLoaded) {
+        // Inject the GHL popup iframe
+        container.innerHTML = `
+          <iframe
+            src="https://api.leadconnectorhq.com/widget/form/bGm1drb3HYEP8hOJau7d"
+            style="display:none;width:100%;height:100%;border:none;border-radius:4px"
+            id="popup-bGm1drb3HYEP8hOJau7d"
+            data-layout="{'id':'POPUP'}"
+            data-trigger-type="alwaysShow"
+            data-trigger-value=""
+            data-activation-type="alwaysActivated"
+            data-activation-value=""
+            data-deactivation-type="neverDeactivate"
+            data-deactivation-value=""
+            data-form-name="Application"
+            data-height="2217"
+            data-layout-iframe-id="popup-bGm1drb3HYEP8hOJau7d"
+            data-form-id="bGm1drb3HYEP8hOJau7d"
+            title="Application"
+          ></iframe>`;
+
+        // Load the embed script — GHL will see the popup iframe and show it
+        const s = document.createElement('script');
+        s.src = 'https://link.msgsndr.com/js/form_embed.js';
+        document.body.appendChild(s);
+        ghlLoaded = true;
+      } else {
+        // Already loaded — re-show by re-injecting iframe and script
+        container.innerHTML = `
+          <iframe
+            src="https://api.leadconnectorhq.com/widget/form/bGm1drb3HYEP8hOJau7d"
+            style="display:none;width:100%;height:100%;border:none;border-radius:4px"
+            id="popup-bGm1drb3HYEP8hOJau7d"
+            data-layout="{'id':'POPUP'}"
+            data-trigger-type="alwaysShow"
+            data-trigger-value=""
+            data-activation-type="alwaysActivated"
+            data-activation-value=""
+            data-deactivation-type="neverDeactivate"
+            data-deactivation-value=""
+            data-form-name="Application"
+            data-height="2217"
+            data-layout-iframe-id="popup-bGm1drb3HYEP8hOJau7d"
+            data-form-id="bGm1drb3HYEP8hOJau7d"
+            title="Application"
+          ></iframe>`;
+        const s = document.createElement('script');
+        s.src = 'https://link.msgsndr.com/js/form_embed.js';
+        document.body.appendChild(s);
+      }
     });
 
-    // Step 2 — Close button
-    document.getElementById('modalAppClose').addEventListener('click', () => {
-      closeModal(modalApp);
-    });
-
-    // Click outside modal content to close
+    // Click outside Step 1 modal to close
     modalConfirm.addEventListener('click', (e) => {
       if (e.target === modalConfirm) closeModal(modalConfirm);
     });
-    modalApp.addEventListener('click', (e) => {
-      if (e.target === modalApp) closeModal(modalApp);
-    });
 
-    // Escape key closes whichever is open
+    // Escape closes Step 1
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
-        if (modalApp.classList.contains('open')) closeModal(modalApp);
-        else if (modalConfirm.classList.contains('open')) closeModal(modalConfirm);
+      if (e.key === 'Escape' && modalConfirm.classList.contains('open')) {
+        closeModal(modalConfirm);
       }
     });
   </script>
