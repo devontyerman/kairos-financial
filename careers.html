@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Careers — Kairos Financial</title>
+  <meta name="description" content="Join Kairos Financial — remote insurance sales careers with uncapped income, warm leads, and full training. Apply in 2 minutes." />
+  <link rel="stylesheet" href="css/styles.css" />
+  <style>
+    /* =====================================================
+       CAREERS PAGE — Warm premium design
+       ===================================================== */
+
+    :root {
+      --cream:     #faf8f4;
+      --cream-2:   #f3f0ea;
+      --midnight:  #111111;
+      --gold-acc:  #c9a84c;
+      --gold-light:#ddc878;
+      --gold-dim:  #a68c3a;
+      --cta-red:   #c0392b;
+      --cta-hover: #a93226;
+    }
+
+    body.careers-page {
+      background: var(--cream);
+      overflow-x: hidden;
+    }
+
+    /* ----- Hero ----- */
+    .careers-hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .careers-hero-video-wrap {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+    }
+
+    .careers-hero-video-wrap video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .careers-hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        180deg,
+        rgba(0,0,0,0.5) 0%,
+        rgba(0,0,0,0.35) 40%,
+        rgba(0,0,0,0.6) 100%
+      );
+      z-index: 1;
+    }
+
+    .careers-hero-content {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      max-width: 800px;
+      padding: 2rem;
+      animation: heroFadeIn 1s ease-out;
+    }
+
+    @keyframes heroFadeIn {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .careers-hero-badge {
+      display: inline-block;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--gold-acc);
+      border: 1px solid rgba(201,168,76,0.4);
+      border-radius: 100px;
+      padding: 0.4rem 1.2rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .careers-hero h1 {
+      font-size: clamp(2.4rem, 6vw, 4.2rem);
+      font-weight: 800;
+      color: #ffffff;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      margin-bottom: 1.25rem;
+    }
+
+    .careers-hero h1 span { color: var(--gold-acc); }
+
+    .careers-hero-sub {
+      font-size: clamp(1rem, 2vw, 1.2rem);
+      color: rgba(255,255,255,0.7);
+      line-height: 1.6;
+      max-width: 580px;
+      margin: 0 auto 2.5rem;
+    }
+
+    .careers-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.9rem 2.4rem;
+      background: var(--cta-red);
+      color: #ffffff;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      border: none;
+      border-radius: var(--radius-md);
+      text-decoration: none;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .careers-cta:hover {
+      background: var(--cta-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(192,57,43,0.35);
+    }
+
+    .careers-cta-micro {
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.45);
+      margin-top: 1rem;
+    }
+
+    /* ----- Metrics Bar ----- */
+    .careers-metrics {
+      background: var(--midnight);
+      border-top: 1px solid rgba(255,255,255,0.06);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .careers-metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      max-width: 900px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .careers-metric {
+      padding: 2.5rem 1rem;
+      border-right: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .careers-metric:last-child { border-right: none; }
+
+    .careers-metric-value {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: clamp(1.8rem, 3vw, 2.4rem);
+      font-weight: 800;
+      color: var(--gold-acc);
+      letter-spacing: -0.02em;
+    }
+
+    .careers-metric-label {
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.45);
+      margin-top: 0.3rem;
+      letter-spacing: 0.04em;
+    }
+
+    /* ----- Section shared ----- */
+    .careers-section {
+      padding: 5rem 2rem;
+    }
+
+    .careers-section-dark {
+      background: var(--midnight);
+      color: #ffffff;
+    }
+
+    .careers-section-cream {
+      background: var(--cream);
+    }
+
+    .careers-section-alt {
+      background: var(--cream-2);
+    }
+
+    .careers-section-header {
+      text-align: center;
+      max-width: 640px;
+      margin: 0 auto 3.5rem;
+    }
+
+    .careers-section-header .eyebrow {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--gold-acc);
+      margin-bottom: 0.75rem;
+    }
+
+    .careers-section-header h2 {
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.75rem;
+    }
+
+    .careers-section-dark .careers-section-header h2 { color: #ffffff; }
+    .careers-section-cream .careers-section-header h2,
+    .careers-section-alt .careers-section-header h2 { color: var(--midnight); }
+
+    .careers-section-header p {
+      font-size: 1rem;
+      line-height: 1.65;
+    }
+
+    .careers-section-dark .careers-section-header p { color: rgba(255,255,255,0.5); }
+    .careers-section-cream .careers-section-header p,
+    .careers-section-alt .careers-section-header p { color: var(--text-secondary); }
+
+    /* ----- Carrier Logos ----- */
+    .careers-logos-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1.5rem 2.5rem;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .careers-logo-item {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: rgba(255,255,255,0.55);
+      padding: 0.6rem 1.2rem;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: var(--radius-md);
+      transition: var(--transition);
+    }
+
+    .careers-logo-item:hover {
+      color: var(--gold-acc);
+      border-color: rgba(201,168,76,0.3);
+      background: rgba(201,168,76,0.05);
+    }
+
+    /* ----- Value Props (6-grid) ----- */
+    .careers-values-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    .careers-value-card {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 2rem 1.75rem;
+      text-align: center;
+      transition: var(--transition);
+    }
+
+    .careers-value-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--gold-acc);
+    }
+
+    .careers-value-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: var(--radius-md);
+      background: var(--cream-2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.25rem;
+      color: var(--gold-acc);
+    }
+
+    .careers-value-card h3 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--midnight);
+      margin-bottom: 0.5rem;
+    }
+
+    .careers-value-card p {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    /* ----- Day in the Life ----- */
+    .careers-timeline {
+      max-width: 640px;
+      margin: 0 auto;
+    }
+
+    .careers-timeline-item {
+      display: flex;
+      gap: 1.5rem;
+      padding: 1.5rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .careers-timeline-item:last-child { border-bottom: none; }
+
+    .careers-timeline-time {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--gold-acc);
+      min-width: 80px;
+      padding-top: 0.15rem;
+    }
+
+    .careers-timeline-text h4 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 0.3rem;
+    }
+
+    .careers-timeline-text p {
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.5);
+      line-height: 1.55;
+    }
+
+    /* ----- 3-Step Process ----- */
+    .careers-steps-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    .careers-step-card {
+      text-align: center;
+      padding: 2rem 1.5rem;
+    }
+
+    .careers-step-number {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: var(--gold-acc);
+      color: var(--midnight);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.25rem;
+    }
+
+    .careers-step-card h3 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--midnight);
+      margin-bottom: 0.5rem;
+    }
+
+    .careers-step-card p {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .careers-step-time {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--gold-dim);
+      background: rgba(201,168,76,0.1);
+      border-radius: 100px;
+      padding: 0.25rem 0.8rem;
+      margin-top: 0.75rem;
+    }
+
+    /* ----- FAQ ----- */
+    .careers-faq-list {
+      max-width: 720px;
+      margin: 0 auto;
+    }
+
+    .careers-faq-item {
+      border-bottom: 1px solid var(--border);
+    }
+
+    .careers-faq-q {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 1.25rem 0;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--midnight);
+      text-align: left;
+      line-height: 1.4;
+    }
+
+    .careers-faq-q:hover { color: var(--gold-acc); }
+
+    .careers-faq-icon {
+      flex-shrink: 0;
+      width: 24px;
+      height: 24px;
+      margin-left: 1rem;
+      transition: transform 0.3s ease;
+      color: var(--text-muted);
+    }
+
+    .careers-faq-item.open .careers-faq-icon {
+      transform: rotate(45deg);
+      color: var(--gold-acc);
+    }
+
+    .careers-faq-a {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.35s ease, padding 0.35s ease;
+    }
+
+    .careers-faq-item.open .careers-faq-a {
+      max-height: 300px;
+      padding-bottom: 1.25rem;
+    }
+
+    .careers-faq-a p {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+
+    /* ----- Final CTA ----- */
+    .careers-final-cta {
+      text-align: center;
+      padding: 6rem 2rem;
+      background: var(--midnight);
+    }
+
+    .careers-final-cta h2 {
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 800;
+      color: #ffffff;
+      margin-bottom: 1rem;
+      letter-spacing: -0.02em;
+    }
+
+    .careers-final-cta p {
+      font-size: 1rem;
+      color: rgba(255,255,255,0.5);
+      max-width: 500px;
+      margin: 0 auto 2.5rem;
+      line-height: 1.65;
+    }
+
+    /* ----- Footer ----- */
+    .careers-footer {
+      background: var(--midnight);
+      border-top: 1px solid rgba(255,255,255,0.06);
+      text-align: center;
+      padding: 2rem;
+    }
+
+    .careers-footer p {
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.25);
+    }
+
+    .careers-footer span { color: var(--gold-acc); }
+
+    /* ----- Responsive ----- */
+    @media (max-width: 768px) {
+      .careers-metrics-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .careers-metric {
+        padding: 1.5rem 1rem;
+      }
+      .careers-metric:nth-child(2) { border-right: none; }
+      .careers-values-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+      .careers-steps-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body class="careers-page">
+
+  <!-- ============================================================
+       HERO
+  ============================================================= -->
+  <section class="careers-hero">
+    <div class="careers-hero-video-wrap">
+      <div class="hero-video-fallback"></div>
+      <video autoplay muted loop playsinline preload="auto">
+        <source src="assets/nyc-skyline.mp4" type="video/mp4" />
+      </video>
+    </div>
+    <div class="careers-hero-overlay"></div>
+
+    <div class="careers-hero-content">
+      <div class="careers-hero-badge">Now Hiring Nationwide</div>
+      <h1>Your 9-to-5 Has a Ceiling.<br /><span>This Doesn't.</span></h1>
+      <p class="careers-hero-sub">
+        Kairos Financial is looking for driven individuals ready to build a real career in insurance sales — fully remote, fully supported, fully uncapped.
+      </p>
+      <a href="#apply" class="careers-cta">
+        Apply Now
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </a>
+      <p class="careers-cta-micro">100% Free &middot; No Resume Needed &middot; 2 Minutes</p>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       METRICS BAR
+  ============================================================= -->
+  <section class="careers-metrics">
+    <div class="careers-metrics-grid">
+      <div class="careers-metric">
+        <div class="careers-metric-value">$6K+</div>
+        <div class="careers-metric-label">First-Month Potential</div>
+      </div>
+      <div class="careers-metric">
+        <div class="careers-metric-value">10+</div>
+        <div class="careers-metric-label">Carrier Partners</div>
+      </div>
+      <div class="careers-metric">
+        <div class="careers-metric-value">100%</div>
+        <div class="careers-metric-label">Remote</div>
+      </div>
+      <div class="careers-metric">
+        <div class="careers-metric-value">2 Wks</div>
+        <div class="careers-metric-label">To Licensed</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       CARRIER PARTNERS
+  ============================================================= -->
+  <section class="careers-section careers-section-dark">
+    <div class="careers-section-header">
+      <div class="eyebrow">Our Partners</div>
+      <h2>Sell Products From the Nation's Top Carriers</h2>
+      <p>Access a wide portfolio of life insurance products — not locked into a single company.</p>
+    </div>
+
+    <div class="careers-logos-grid">
+      <div class="careers-logo-item">Americo</div>
+      <div class="careers-logo-item">Mutual of Omaha</div>
+      <div class="careers-logo-item">Transamerica</div>
+      <div class="careers-logo-item">Corebridge</div>
+      <div class="careers-logo-item">Ethos</div>
+      <div class="careers-logo-item">AIG</div>
+      <div class="careers-logo-item">Aetna</div>
+      <div class="careers-logo-item">American Amicable</div>
+      <div class="careers-logo-item">Ameritas</div>
+      <div class="careers-logo-item">Foresters</div>
+      <div class="careers-logo-item">TruStage</div>
+      <div class="careers-logo-item">Banner Life</div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       VALUE PROPOSITIONS
+  ============================================================= -->
+  <section class="careers-section careers-section-cream">
+    <div class="careers-section-header">
+      <div class="eyebrow">Why Kairos</div>
+      <h2>Everything You Need to Succeed</h2>
+      <p>We built the system so you can focus on what matters — helping families and earning.</p>
+    </div>
+
+    <div class="careers-values-grid">
+      <div class="careers-value-card">
+        <div class="careers-value-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+        </div>
+        <h3>Uncapped Income</h3>
+        <p>No salary ceiling. Top agents earn six figures in their first year. Your effort determines your paycheck.</p>
+      </div>
+
+      <div class="careers-value-card">
+        <div class="careers-value-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+        </div>
+        <h3>Warm Leads Daily</h3>
+        <p>No cold calling. We provide warm, qualified leads so you spend your time closing — not chasing.</p>
+      </div>
+
+      <div class="careers-value-card">
+        <div class="careers-value-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        </div>
+        <h3>100% Remote</h3>
+        <p>Work from anywhere with a phone and internet connection. No commute, no office politics, no dress code.</p>
+      </div>
+
+      <div class="careers-value-card">
+        <div class="careers-value-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+        </div>
+        <h3>Education Fully Covered</h3>
+        <p>We cover your licensing costs and provide all the study material. Zero out-of-pocket to get started.</p>
+      </div>
+
+      <div class="careers-value-card">
+        <div class="careers-value-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </div>
+        <h3>Daily Training</h3>
+        <p>Live sales training, scripts, mentorship, and a team Discord community to keep you sharp and motivated.</p>
+      </div>
+
+      <div class="careers-value-card">
+        <div class="careers-value-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>
+        </div>
+        <h3>Own Your Business</h3>
+        <p>You're building your own book of business from day one. Renewals, overrides, and long-term wealth.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       A DAY IN THE LIFE
+  ============================================================= -->
+  <section class="careers-section careers-section-dark">
+    <div class="careers-section-header">
+      <div class="eyebrow">Your Schedule</div>
+      <h2>A Day in the Life</h2>
+      <p>What your average Tuesday looks like as a Kairos agent.</p>
+    </div>
+
+    <div class="careers-timeline">
+      <div class="careers-timeline-item">
+        <div class="careers-timeline-time">8:00 AM</div>
+        <div class="careers-timeline-text">
+          <h4>Morning Huddle</h4>
+          <p>Quick team sync on Discord. Hear wins from yesterday, get pumped for today.</p>
+        </div>
+      </div>
+      <div class="careers-timeline-item">
+        <div class="careers-timeline-time">9:00 AM</div>
+        <div class="careers-timeline-text">
+          <h4>Work Your Leads</h4>
+          <p>Dial warm leads from your CRM. These people already asked for help — you're the solution.</p>
+        </div>
+      </div>
+      <div class="careers-timeline-item">
+        <div class="careers-timeline-time">11:00 AM</div>
+        <div class="careers-timeline-text">
+          <h4>Close & Submit</h4>
+          <p>Walk clients through applications, get policies submitted, log your sales.</p>
+        </div>
+      </div>
+      <div class="careers-timeline-item">
+        <div class="careers-timeline-time">12:00 PM</div>
+        <div class="careers-timeline-text">
+          <h4>Lunch — You Earned It</h4>
+          <p>Step away. No boss watching. Take an hour or take two — you set your own pace.</p>
+        </div>
+      </div>
+      <div class="careers-timeline-item">
+        <div class="careers-timeline-time">1:00 PM</div>
+        <div class="careers-timeline-text">
+          <h4>Afternoon Push</h4>
+          <p>Follow-ups, new leads, and training. Most agents wrap up by 3–4 PM.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       3-STEP PROCESS
+  ============================================================= -->
+  <section class="careers-section careers-section-alt">
+    <div class="careers-section-header">
+      <div class="eyebrow">Getting Started</div>
+      <h2>From Application to Income in 3 Steps</h2>
+      <p>No red tape. No waiting months. Here's how fast this moves.</p>
+    </div>
+
+    <div class="careers-steps-grid">
+      <div class="careers-step-card">
+        <div class="careers-step-number">1</div>
+        <h3>Take the 2-Minute Survey</h3>
+        <p>Answer a few quick questions so we can learn about you. No resume, no cover letter.</p>
+        <span class="careers-step-time">2 min</span>
+      </div>
+      <div class="careers-step-card">
+        <div class="careers-step-number">2</div>
+        <h3>Book a 15-Min Intro Call</h3>
+        <p>Hop on a quick call with our team. We'll answer your questions and see if it's a fit.</p>
+        <span class="careers-step-time">15 min</span>
+      </div>
+      <div class="careers-step-card">
+        <div class="careers-step-number">3</div>
+        <h3>Get Licensed & Start Earning</h3>
+        <p>We cover the cost and guide you through every step. Most agents are selling within two weeks.</p>
+        <span class="careers-step-time">1–2 weeks</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       APPLICATION CTA
+  ============================================================= -->
+  <section class="careers-section careers-section-cream" id="apply" style="padding-bottom: 3rem;">
+    <div class="careers-section-header" style="margin-bottom: 2rem;">
+      <div class="eyebrow">Apply Now</div>
+      <h2>Ready to See If This Is Your Move?</h2>
+      <p>Fill out the quick form below. No commitment — just a conversation starter.</p>
+    </div>
+
+    <div style="max-width: 600px; margin: 0 auto; text-align: center;">
+      <a href="https://calendly.com" target="_blank" rel="noopener noreferrer" class="careers-cta" style="font-size: 1.1rem; padding: 1rem 3rem;">
+        Apply Now — It Takes 2 Minutes
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </a>
+      <p style="font-size: 0.78rem; color: var(--text-muted); margin-top: 1rem;">Your information is 100% secure and will never be shared.</p>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       FAQ
+  ============================================================= -->
+  <section class="careers-section careers-section-alt">
+    <div class="careers-section-header">
+      <div class="eyebrow">FAQ</div>
+      <h2>Everything You're Wondering</h2>
+      <p>Straight answers. No corporate fluff.</p>
+    </div>
+
+    <div class="careers-faq-list">
+      <div class="careers-faq-item">
+        <button class="careers-faq-q">
+          Is this fully remote?
+          <svg class="careers-faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+        <div class="careers-faq-a"><p>Yes, 100%. You work from home (or anywhere with a phone and internet). There's no office to commute to and no territory restrictions.</p></div>
+      </div>
+
+      <div class="careers-faq-item">
+        <button class="careers-faq-q">
+          Is this commission-only?
+          <svg class="careers-faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+        <div class="careers-faq-a"><p>Yes. That's how there's no cap. You're paid per policy — not per hour. The average commission per policy is roughly $800, and top agents close multiple policies per day.</p></div>
+      </div>
+
+      <div class="careers-faq-item">
+        <button class="careers-faq-q">
+          How much can I realistically earn?
+          <svg class="careers-faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+        <div class="careers-faq-a"><p>It depends on your effort. New agents who follow the system typically earn $4K–$8K in their first month. Experienced agents consistently clear $15K–$30K+ per month. There is no ceiling.</p></div>
+      </div>
+
+      <div class="careers-faq-item">
+        <button class="careers-faq-q">
+          Are leads provided?
+          <svg class="careers-faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+        <div class="careers-faq-a"><p>Yes. We connect you with vetted lead vendors who provide warm, qualified leads — people who have already expressed interest in life insurance. No cold calling.</p></div>
+      </div>
+
+      <div class="careers-faq-item">
+        <button class="careers-faq-q">
+          Do I need a license?
+          <svg class="careers-faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+        <div class="careers-faq-a"><p>Yes — you need a state life insurance license. But we cover the cost and walk you through the entire process. Most people pass within 1–2 weeks of studying.</p></div>
+      </div>
+
+      <div class="careers-faq-item">
+        <button class="careers-faq-q">
+          How soon do I get paid after a sale?
+          <svg class="careers-faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+        <div class="careers-faq-a"><p>Most carriers pay within 1–5 business days after a policy is issued. Some offer same-day advances. You're not waiting weeks for a paycheck.</p></div>
+      </div>
+
+      <div class="careers-faq-item">
+        <button class="careers-faq-q">
+          Can I start part-time?
+          <svg class="careers-faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+        <div class="careers-faq-a"><p>Yes. Many agents start part-time while keeping their current job, then transition to full-time once they see the income potential. You set your own hours.</p></div>
+      </div>
+
+      <div class="careers-faq-item">
+        <button class="careers-faq-q">
+          Are there quotas?
+          <svg class="careers-faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+        <div class="careers-faq-a"><p>No. There are no mandatory minimums or quotas. You work as much or as little as you want. That said — the agents who show up consistently are the ones who win.</p></div>
+      </div>
+
+      <div class="careers-faq-item">
+        <button class="careers-faq-q">
+          Is this a captive agency?
+          <svg class="careers-faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+        <div class="careers-faq-a"><p>No. Kairos Financial is an independent agency. You have access to 10+ carriers and can offer clients the best product for their situation — not just one company's lineup.</p></div>
+      </div>
+
+      <div class="careers-faq-item">
+        <button class="careers-faq-q">
+          What's training like?
+          <svg class="careers-faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+        <div class="careers-faq-a"><p>You get a full video training course, proven sales scripts, live mentorship calls, an AI training bot, and access to a private Discord community. We don't just hand you leads — we teach you how to close.</p></div>
+      </div>
+
+      <div class="careers-faq-item">
+        <button class="careers-faq-q">
+          What's a "warm lead"?
+          <svg class="careers-faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+        <div class="careers-faq-a"><p>A warm lead is someone who has already filled out a form requesting information about life insurance. They're expecting your call. You're not cold-calling strangers from a phone book.</p></div>
+      </div>
+
+      <div class="careers-faq-item">
+        <button class="careers-faq-q">
+          Do you support non-resident licenses?
+          <svg class="careers-faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+        <div class="careers-faq-a"><p>Yes. Once you have your resident state license, we help you expand into additional states so you can sell nationwide and maximize your earning potential.</p></div>
+      </div>
+
+      <div class="careers-faq-item">
+        <button class="careers-faq-q">
+          What tech do I need?
+          <svg class="careers-faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+        <div class="careers-faq-a"><p>A computer, reliable internet, and a phone. That's it. We provide the CRM, dialer software, and all the tools you need.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       FINAL CTA
+  ============================================================= -->
+  <section class="careers-final-cta">
+    <h2>A Year From Now, You'll Wish<br />You Started Today.</h2>
+    <p>The opportunity is here. The training is built. The leads are ready. The only thing missing is you.</p>
+    <a href="#apply" class="careers-cta">
+      Apply Now
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+    </a>
+  </section>
+
+  <!-- Footer -->
+  <footer class="careers-footer">
+    <p>&copy; 2026 <span>Kairos Financial</span>. All rights reserved.</p>
+  </footer>
+
+  <script>
+    // FAQ accordion
+    document.querySelectorAll('.careers-faq-q').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const item = btn.parentElement;
+        const wasOpen = item.classList.contains('open');
+        // Close all
+        document.querySelectorAll('.careers-faq-item').forEach(i => i.classList.remove('open'));
+        // Toggle current
+        if (!wasOpen) item.classList.add('open');
+      });
+    });
+  </script>
+</body>
+</html>

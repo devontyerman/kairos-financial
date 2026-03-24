@@ -90,9 +90,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const AUTH_KEY = 'kairos_site_auth';
   const CORRECT_PASSWORD = 'soriak2026';
 
-  // On non-index pages, redirect to index if not authenticated
+  // On non-index pages, redirect to index if not authenticated (except careers page)
   const isIndex = !!document.getElementById('passwordGate');
-  if (!isIndex && localStorage.getItem(AUTH_KEY) !== 'true') {
+  const isCareers = window.location.pathname.includes('careers');
+  if (!isIndex && !isCareers && localStorage.getItem(AUTH_KEY) !== 'true') {
     const base = window.location.pathname.includes('/carriers/') ? '../index.html' : 'index.html';
     window.location.href = base;
     return;
