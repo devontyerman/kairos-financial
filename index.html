@@ -89,14 +89,50 @@
       transform: translateX(3px);
     }
 
-    /* Password gate extras */
-    .password-gate-kairos-def {
-      font-size: 0.88rem;
-      color: var(--text-secondary);
-      margin: -0.25rem 0 0.5rem;
-      line-height: 1.5;
+    /* Password gate — hero-style layout */
+    .gate-video-wrapper {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
     }
-    .password-gate-kairos-def em {
+    .gate-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        180deg,
+        rgba(0,0,0,0.35) 0%,
+        rgba(0,0,0,0.25) 35%,
+        rgba(0,0,0,0.55) 70%,
+        rgba(0,0,0,0.8) 100%
+      );
+      z-index: 1;
+    }
+    .gate-content {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .gate-hero-title {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: clamp(2.8rem, 7vw, 5rem);
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      margin-bottom: 0.75rem;
+    }
+    .gate-definition {
+      font-family: 'Inter', sans-serif;
+      font-size: clamp(0.85rem, 1.8vw, 1.05rem);
+      color: rgba(255,255,255,0.55);
+      max-width: 520px;
+      line-height: 1.6;
+      margin-bottom: 2.5rem;
+    }
+    .gate-definition em {
       color: var(--gold);
       font-style: italic;
     }
@@ -106,8 +142,8 @@
       font-weight: 700;
       letter-spacing: 0.12em;
       text-transform: uppercase;
-      color: var(--text-secondary);
-      margin-bottom: 1.5rem;
+      color: rgba(255,255,255,0.4);
+      margin-bottom: 1.25rem;
     }
 
     /* Hero buttons */
@@ -123,43 +159,50 @@
 
   <!-- PASSWORD GATE — site-wide -->
   <div class="password-gate" id="passwordGate">
-    <div class="password-gate-card">
-      <div class="password-gate-icon">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-          <path d="M7 11V7a5 5 0 0110 0v4"/>
-        </svg>
-      </div>
+    <!-- Background video (same as hero) -->
+    <div class="gate-video-wrapper">
+      <div class="hero-video-fallback"></div>
+      <video class="hero-video" autoplay muted loop playsinline preload="auto">
+        <source src="assets/nyc-skyline.mp4" type="video/mp4" />
+      </video>
+    </div>
+    <div class="gate-overlay"></div>
 
-      <h1 class="password-gate-title">Welcome to Kairos</h1>
-      <p class="password-gate-kairos-def">
+    <!-- Big title + definition (outside the card) -->
+    <div class="gate-content">
+      <h1 class="gate-hero-title">Welcome to <span class="hero-title-gold">Kairos</span></h1>
+      <p class="gate-definition">
         <em>Kairos</em> (καιρός) — Greek: the perfect, decisive moment; the opportune time to act.
       </p>
-      <p class="password-gate-subtitle">Agent Access</p>
 
-      <div class="password-input-wrap">
-        <input
-          type="password"
-          id="passwordInput"
-          class="password-input"
-          placeholder="Enter access code"
-          autocomplete="current-password"
-        />
+      <!-- Small card with just the access form -->
+      <div class="password-gate-card">
+        <p class="password-gate-subtitle">Agent Access</p>
+
+        <div class="password-input-wrap">
+          <input
+            type="password"
+            id="passwordInput"
+            class="password-input"
+            placeholder="Enter access code"
+            autocomplete="current-password"
+          />
+        </div>
+
+        <p class="password-error" id="passwordError"></p>
+
+        <button class="btn btn-primary" id="passwordSubmit" style="width:100%;">
+          Enter
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"/>
+            <polyline points="12 5 19 12 12 19"/>
+          </svg>
+        </button>
+
+        <p class="password-hint">
+          Don't have the access code?<br />Contact your sales manager.
+        </p>
       </div>
-
-      <p class="password-error" id="passwordError"></p>
-
-      <button class="btn btn-primary" id="passwordSubmit" style="width:100%;">
-        Enter
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="5" y1="12" x2="19" y2="12"/>
-          <polyline points="12 5 19 12 12 19"/>
-        </svg>
-      </button>
-
-      <p class="password-hint">
-        Don't have the access code?<br />Contact your sales manager.
-      </p>
     </div>
   </div>
 
