@@ -89,6 +89,27 @@
       transform: translateX(3px);
     }
 
+    /* Password gate extras */
+    .password-gate-kairos-def {
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      margin: -0.25rem 0 0.5rem;
+      line-height: 1.5;
+    }
+    .password-gate-kairos-def em {
+      color: var(--gold);
+      font-style: italic;
+    }
+    .password-gate-subtitle {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      margin-bottom: 1.5rem;
+    }
+
     /* Hero buttons */
     .hero-buttons {
       display: flex;
@@ -99,6 +120,51 @@
   </style>
 </head>
 <body>
+
+  <!-- PASSWORD GATE — site-wide -->
+  <div class="password-gate" id="passwordGate">
+    <div class="password-gate-card">
+      <div class="password-gate-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+          <path d="M7 11V7a5 5 0 0110 0v4"/>
+        </svg>
+      </div>
+
+      <h1 class="password-gate-title">Welcome to Kairos</h1>
+      <p class="password-gate-kairos-def">
+        <em>Kairos</em> (καιρός) — Greek: the perfect, decisive moment; the opportune time to act.
+      </p>
+      <p class="password-gate-subtitle">Agent Access</p>
+
+      <div class="password-input-wrap">
+        <input
+          type="password"
+          id="passwordInput"
+          class="password-input"
+          placeholder="Enter access code"
+          autocomplete="current-password"
+        />
+      </div>
+
+      <p class="password-error" id="passwordError"></p>
+
+      <button class="btn btn-primary" id="passwordSubmit" style="width:100%;">
+        Enter
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="5" y1="12" x2="19" y2="12"/>
+          <polyline points="12 5 19 12 12 19"/>
+        </svg>
+      </button>
+
+      <p class="password-hint">
+        Don't have the access code?<br />Contact your sales manager.
+      </p>
+    </div>
+  </div>
+
+  <!-- SITE CONTENT (hidden until authenticated) -->
+  <div id="siteContent" class="hidden" style="display:none;">
 
   <!-- ============================================================
        NAVIGATION
@@ -341,6 +407,8 @@
   <footer class="footer">
     <p>&copy; 2026 <span>Kairos Financial</span>. Agent Portal — Internal Use Only.</p>
   </footer>
+
+  </div><!-- /siteContent -->
 
   <script src="js/main.js"></script>
 </body>

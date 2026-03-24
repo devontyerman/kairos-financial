@@ -85,23 +85,29 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /* -------------------------------------------------------
-     COURSE PAGE — password gate
+     SITE-WIDE PASSWORD GATE
   ------------------------------------------------------- */
+  const AUTH_KEY = 'kairos_site_auth';
+  const CORRECT_PASSWORD = 'soriak2026';
+
+  // On non-index pages, redirect to index if not authenticated
+  const isIndex = !!document.getElementById('passwordGate');
+  if (!isIndex && localStorage.getItem(AUTH_KEY) !== 'true') {
+    const base = window.location.pathname.includes('/carriers/') ? '../index.html' : 'index.html';
+    window.location.href = base;
+    return;
+  }
+
+  // On index page, handle the gate
   const passwordGate = document.getElementById('passwordGate');
-  const courseContent = document.getElementById('courseContent');
+  const siteContent = document.getElementById('siteContent');
   const passwordInput = document.getElementById('passwordInput');
   const passwordSubmit = document.getElementById('passwordSubmit');
   const passwordError = document.getElementById('passwordError');
-  const logoutBtn = document.getElementById('logoutBtn');
 
-  const AUTH_KEY = 'kairos_course_auth';
-  const CORRECT_PASSWORD = 'kairos2026';
-
-  if (passwordGate && courseContent) {
-    const isAuth = localStorage.getItem(AUTH_KEY) === 'true';
-
-    if (isAuth) {
-      unlock();
+  if (passwordGate && siteContent) {
+    if (localStorage.getItem(AUTH_KEY) === 'true') {
+      unlockSite();
     }
 
     const checkPassword = () => {
@@ -109,7 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (val === CORRECT_PASSWORD) {
         localStorage.setItem(AUTH_KEY, 'true');
         passwordError.textContent = '';
-        unlock();
+        unlockSite();
       } else {
         passwordInput.classList.add('error');
         passwordError.textContent = 'Incorrect access code. Please try again.';
@@ -130,22 +136,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       });
     }
-
-    if (logoutBtn) {
-      logoutBtn.addEventListener('click', () => {
-        localStorage.removeItem(AUTH_KEY);
-        courseContent.classList.add('hidden');
-        passwordGate.classList.remove('hidden');
-        if (passwordInput) passwordInput.value = '';
-      });
-    }
   }
 
-  function unlock() {
+  function unlockSite() {
     if (passwordGate) passwordGate.classList.add('hidden');
-    if (courseContent) {
-      courseContent.classList.remove('hidden');
-      courseContent.style.display = 'block';
+    if (siteContent) {
+      siteContent.classList.remove('hidden');
+      siteContent.style.display = 'block';
     }
   }
 

@@ -348,50 +348,8 @@
     <a href="lead-vendors.html">Lead Vendors</a>
   </div>
 
-  <!-- PASSWORD GATE -->
-  <div class="password-gate" id="passwordGate">
-    <div class="password-gate-card">
-      <div class="password-gate-icon">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-          <path d="M7 11V7a5 5 0 0110 0v4"/>
-        </svg>
-      </div>
-
-      <h1 class="password-gate-title">Restricted Access</h1>
-      <p class="password-gate-desc">
-        This training course is for Kairos Financial agents only.<br />
-        Enter your access code to continue.
-      </p>
-
-      <div class="password-input-wrap">
-        <input
-          type="password"
-          id="passwordInput"
-          class="password-input"
-          placeholder="Enter access code"
-          autocomplete="current-password"
-        />
-      </div>
-
-      <p class="password-error" id="passwordError"></p>
-
-      <button class="btn btn-primary" id="passwordSubmit" style="width:100%;">
-        Access Course
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="5" y1="12" x2="19" y2="12"/>
-          <polyline points="12 5 19 12 12 19"/>
-        </svg>
-      </button>
-
-      <p class="password-hint">
-        Don't have the access code?<br />Contact your sales manager.
-      </p>
-    </div>
-  </div>
-
-  <!-- COURSE CONTENT (hidden until authenticated) -->
-  <div id="courseContent" class="hidden" style="display:none;">
+  <!-- COURSE CONTENT -->
+  <div id="courseContent">
     <div class="tv-layout">
 
       <!-- Sidebar index -->
@@ -537,14 +495,6 @@
   <script src="js/main.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      const content = document.getElementById('courseContent');
-      if (content) {
-        const observer = new MutationObserver(() => {
-          content.style.display = content.classList.contains('hidden') ? 'none' : 'block';
-        });
-        observer.observe(content, { attributes: true, attributeFilter: ['class'] });
-      }
-
       // Video switching
       const items = document.querySelectorAll('.tv-item');
       const player = document.getElementById('tvPlayer');
