@@ -495,6 +495,145 @@
 
     .careers-footer span { color: var(--gold-acc); }
 
+    /* ----- Modals ----- */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 9000;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      align-items: center;
+      justify-content: center;
+      animation: modalFadeIn 0.25s ease;
+    }
+    .modal-overlay.open { display: flex; }
+
+    @keyframes modalFadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    /* Step 1 — confirmation */
+    .modal-confirm {
+      background: #ffffff;
+      border-radius: var(--radius-lg);
+      padding: 2.5rem 2rem;
+      max-width: 400px;
+      width: 90%;
+      text-align: center;
+      animation: modalSlideIn 0.3s ease;
+    }
+
+    @keyframes modalSlideIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .modal-confirm h3 {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--midnight);
+      margin-bottom: 1.75rem;
+      line-height: 1.4;
+    }
+
+    .modal-confirm-btns {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: center;
+    }
+
+    .modal-btn-no {
+      padding: 0.7rem 1.6rem;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 600;
+      background: transparent;
+      color: var(--midnight);
+      border: 2px solid var(--border);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .modal-btn-no:hover {
+      border-color: var(--midnight);
+      background: var(--cream-2);
+    }
+
+    .modal-btn-yes {
+      padding: 0.7rem 1.6rem;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 700;
+      background: var(--cta-red);
+      color: #ffffff;
+      border: none;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .modal-btn-yes:hover {
+      background: var(--cta-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(192,57,43,0.3);
+    }
+
+    /* Step 2 — application form */
+    .modal-form-scroll {
+      background: #ffffff;
+      border-radius: var(--radius-lg);
+      max-width: 720px;
+      width: 92%;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+      animation: modalSlideIn 0.3s ease;
+    }
+
+    .modal-form-scroll::-webkit-scrollbar { width: 6px; }
+    .modal-form-scroll::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 4px; }
+
+    .modal-close {
+      position: sticky;
+      top: 0;
+      float: right;
+      z-index: 10;
+      width: 36px;
+      height: 36px;
+      margin: 0.75rem 0.75rem 0 0;
+      background: var(--cream-2);
+      border: none;
+      border-radius: 50%;
+      font-size: 1.2rem;
+      color: var(--midnight);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+    }
+
+    .modal-close:hover { background: var(--border); }
+
+    .modal-form-body {
+      padding: 0.5rem 2rem 2rem;
+    }
+
+    @media (max-width: 768px) {
+      .modal-form-scroll {
+        width: 100%;
+        max-width: 100%;
+        max-height: 100vh;
+        border-radius: 0;
+        height: 100vh;
+      }
+    }
+
     /* ----- Responsive ----- */
     @media (max-width: 768px) {
       .careers-metrics-grid {
@@ -535,11 +674,27 @@
       <p class="careers-hero-sub">
         Kairos Financial is looking for driven individuals ready to build a real career in insurance sales — fully remote, fully supported, fully uncapped.
       </p>
-      <a href="#apply" class="careers-cta">
+      <button class="careers-cta careers-apply-btn">
         Apply Now
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-      </a>
+      </button>
       <p class="careers-cta-micro">100% Free &middot; No Resume Needed &middot; 5 Minutes</p>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       AGENCY OVERVIEW VIDEO
+  ============================================================= -->
+  <section id="overviewVideo" class="careers-section careers-section-dark" style="padding: 4rem 2rem;">
+    <div style="max-width: 800px; margin: 0 auto 1.5rem; background: var(--gold-acc); color: var(--midnight); padding: 1rem 1.5rem; border-radius: var(--radius-md); text-align: center; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 1rem;">
+      You must watch this video before completing your application.
+    </div>
+    <div style="position: relative; width: 100%; max-width: 800px; margin: 0 auto; padding-bottom: 45%; height: 0; border-radius: var(--radius-lg); overflow: hidden; background: #000;">
+      <iframe style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;"
+        src="https://www.youtube-nocookie.com/embed/95Px-JYD0o8?rel=0&modestbranding=1&controls=1&disablekb=1&fs=0&iv_load_policy=3"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope"></iframe>
+      <div style="position: absolute; top: 0; left: 0; width: 60px; height: 50px; z-index: 10; background: transparent; cursor: default;"></div>
+      <div style="position: absolute; top: 0; right: 0; width: 140px; height: 50px; z-index: 10; background: transparent; cursor: default;"></div>
     </div>
   </section>
 
@@ -738,26 +893,11 @@
       <p>Fill out the quick form below. No commitment — just a conversation starter.</p>
     </div>
 
-    <!-- Must-watch notice -->
-    <div style="max-width: 800px; margin: 0 auto 1.5rem; background: var(--gold-acc); color: var(--midnight); padding: 1rem 1.5rem; border-radius: var(--radius-md); text-align: center; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 1rem;">
-      You must watch this video before completing your application.
-    </div>
-
-    <!-- Agency overview video -->
-    <div style="position: relative; width: 100%; max-width: 800px; margin: 0 auto 2rem; padding-bottom: 45%; height: 0; border-radius: var(--radius-lg); overflow: hidden; background: #000;">
-      <iframe style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;"
-        src="https://www.youtube-nocookie.com/embed/95Px-JYD0o8?rel=0&modestbranding=1&controls=1&disablekb=1&fs=0&iv_load_policy=3"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope"></iframe>
-      <!-- Overlays to hide YouTube branding (channel icon top-left, Watch on YT top-right) -->
-      <div style="position: absolute; top: 0; left: 0; width: 60px; height: 50px; z-index: 10; background: transparent; cursor: default;"></div>
-      <div style="position: absolute; top: 0; right: 0; width: 140px; height: 50px; z-index: 10; background: transparent; cursor: default;"></div>
-    </div>
-
     <div style="max-width: 600px; margin: 0 auto; text-align: center;">
-      <a href="https://calendly.com" target="_blank" rel="noopener noreferrer" class="careers-cta" style="font-size: 1.1rem; padding: 1rem 3rem;">
+      <button class="careers-cta careers-apply-btn" style="font-size: 1.1rem; padding: 1rem 3rem;">
         Apply Now — It Takes 5 Minutes
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-      </a>
+      </button>
       <p style="font-size: 0.78rem; color: var(--text-muted); margin-top: 1rem;">Your information is 100% secure and will never be shared.</p>
     </div>
   </section>
@@ -885,10 +1025,10 @@
   <section class="careers-final-cta">
     <h2>A Year From Now, You'll Wish<br />You Started Today.</h2>
     <p>The opportunity is here. The training is built. The leads are ready. The only thing missing is you.</p>
-    <a href="#apply" class="careers-cta">
+    <button class="careers-cta careers-apply-btn">
       Apply Now
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-    </a>
+    </button>
   </section>
 
   <!-- Footer -->
@@ -896,17 +1036,113 @@
     <p>&copy; 2026 <span>Kairos Financial</span>. All rights reserved.</p>
   </footer>
 
+  <!-- Step 1 Modal — Confirmation -->
+  <div class="modal-overlay" id="modalConfirm">
+    <div class="modal-confirm">
+      <h3>Did you watch the entire agency overview video?</h3>
+      <div class="modal-confirm-btns">
+        <button class="modal-btn-no" id="modalNo">No</button>
+        <button class="modal-btn-yes" id="modalYes">Yes, let's go!</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 2 Modal — Application Form -->
+  <div class="modal-overlay" id="modalApp">
+    <div class="modal-form-scroll">
+      <button class="modal-close" id="modalAppClose">&times;</button>
+      <div class="modal-form-body">
+        <iframe
+          src="https://api.leadconnectorhq.com/widget/form/bGm1drb3HYEP8hOJau7d"
+          style="width:100%;height:2299px;border:none;border-radius:4px"
+          id="inline-bGm1drb3HYEP8hOJau7d"
+          data-layout="{'id':'INLINE'}"
+          data-trigger-type="alwaysShow"
+          data-trigger-value=""
+          data-activation-type="alwaysActivated"
+          data-activation-value=""
+          data-deactivation-type="neverDeactivate"
+          data-deactivation-value=""
+          data-form-name="Application"
+          data-height="2299"
+          data-layout-iframe-id="inline-bGm1drb3HYEP8hOJau7d"
+          data-form-id="bGm1drb3HYEP8hOJau7d"
+          title="Application"
+        ></iframe>
+      </div>
+    </div>
+  </div>
+
   <script>
+    // Load form embed script once
+    if (!document.querySelector('script[src*="form_embed.js"]')) {
+      const s = document.createElement('script');
+      s.src = 'https://link.msgsndr.com/js/form_embed.js';
+      document.body.appendChild(s);
+    }
+
     // FAQ accordion
     document.querySelectorAll('.careers-faq-q').forEach(btn => {
       btn.addEventListener('click', () => {
         const item = btn.parentElement;
         const wasOpen = item.classList.contains('open');
-        // Close all
         document.querySelectorAll('.careers-faq-item').forEach(i => i.classList.remove('open'));
-        // Toggle current
         if (!wasOpen) item.classList.add('open');
       });
+    });
+
+    // Modal logic
+    const modalConfirm = document.getElementById('modalConfirm');
+    const modalApp = document.getElementById('modalApp');
+
+    function openModal(el) {
+      el.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeModal(el) {
+      el.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    // All Apply Now buttons open Step 1
+    document.querySelectorAll('.careers-apply-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        openModal(modalConfirm);
+      });
+    });
+
+    // Step 1 — No: close and scroll to video
+    document.getElementById('modalNo').addEventListener('click', () => {
+      closeModal(modalConfirm);
+      document.getElementById('overviewVideo').scrollIntoView({ behavior: 'smooth' });
+    });
+
+    // Step 1 — Yes: close Step 1, open Step 2
+    document.getElementById('modalYes').addEventListener('click', () => {
+      closeModal(modalConfirm);
+      openModal(modalApp);
+    });
+
+    // Step 2 — Close button
+    document.getElementById('modalAppClose').addEventListener('click', () => {
+      closeModal(modalApp);
+    });
+
+    // Click outside modal content to close
+    modalConfirm.addEventListener('click', (e) => {
+      if (e.target === modalConfirm) closeModal(modalConfirm);
+    });
+    modalApp.addEventListener('click', (e) => {
+      if (e.target === modalApp) closeModal(modalApp);
+    });
+
+    // Escape key closes whichever is open
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        if (modalApp.classList.contains('open')) closeModal(modalApp);
+        else if (modalConfirm.classList.contains('open')) closeModal(modalConfirm);
+      }
     });
   </script>
 </body>
