@@ -30,7 +30,7 @@
     /* ----- Hero ----- */
     .careers-hero {
       position: relative;
-      min-height: 100vh;
+      min-height: 85vh;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -106,6 +106,19 @@
       50%      { opacity: 0.25; }
     }
 
+    .video-notice-flash {
+      display: inline-block;
+      font-size: 1rem !important;
+      font-weight: 700 !important;
+      color: var(--gold-acc) !important;
+      animation: noticeGlow 2s ease-in-out infinite;
+    }
+
+    @keyframes noticeGlow {
+      0%, 100% { opacity: 0.6; }
+      50%      { opacity: 1; text-shadow: 0 0 12px rgba(201,168,76,0.5); }
+    }
+
     .careers-hero h1 {
       font-size: clamp(2.4rem, 6vw, 4.2rem);
       font-weight: 800;
@@ -157,8 +170,6 @@
     /* ----- Metrics Bar ----- */
     .careers-metrics {
       background: var(--midnight);
-      border-top: 1px solid rgba(255,255,255,0.06);
-      border-bottom: 1px solid rgba(255,255,255,0.06);
     }
 
     .careers-metrics-grid {
@@ -171,10 +182,7 @@
 
     .careers-metric {
       padding: 2.5rem 1rem;
-      border-right: 1px solid rgba(255,255,255,0.06);
     }
-
-    .careers-metric:last-child { border-right: none; }
 
     .careers-metric-value {
       font-family: 'Plus Jakarta Sans', sans-serif;
@@ -743,7 +751,7 @@
     <div class="careers-section-header" style="margin-bottom: 2rem;">
       <div class="eyebrow">Watch First</div>
       <h2>Agency Overview</h2>
-      <p>Watch this video before completing your application.</p>
+      <p class="video-notice-flash">Watch this video before completing your application.</p>
     </div>
     <div style="position: relative; width: 100%; max-width: 800px; margin: 0 auto; padding-bottom: 45%; height: 0; border-radius: var(--radius-lg); overflow: hidden; background: #000;">
       <iframe style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;"
