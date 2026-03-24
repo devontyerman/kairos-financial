@@ -51,7 +51,7 @@
 
     .apply-container iframe {
       width: 100% !important;
-      height: 2299px !important;
+      height: 2800px !important;
       max-height: none !important;
       overflow: hidden !important;
       border: none !important;
@@ -61,7 +61,7 @@
 
     @media (max-width: 768px) {
       .apply-container iframe {
-        height: 2600px !important;
+        height: 3400px !important;
       }
     }
   </style>
@@ -104,7 +104,7 @@
     if (iframe) {
       const enforce = () => {
         iframe.style.setProperty('overflow', 'hidden', 'important');
-        iframe.style.setProperty('height', (window.innerWidth <= 768 ? '2600px' : '2299px'), 'important');
+        iframe.style.setProperty('height', (window.innerWidth <= 768 ? '3400px' : '2800px'), 'important');
         iframe.style.setProperty('max-height', 'none', 'important');
         iframe.setAttribute('scrolling', 'no');
       };
