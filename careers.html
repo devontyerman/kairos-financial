@@ -37,25 +37,11 @@
       overflow: hidden;
     }
 
-    .careers-hero-video-wrap {
+    .careers-hero-bg {
       position: absolute;
       inset: 0;
       z-index: 0;
-    }
-
-    .careers-hero-video-wrap video {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .careers-hero-mobile-bg {
-      display: none;
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 40%, #16213e 70%, #0f3460 100%);
+      background: url('assets/hero-bg.jpg') center center / cover no-repeat;
     }
 
     .careers-hero-overlay {
@@ -63,9 +49,10 @@
       inset: 0;
       background: linear-gradient(
         180deg,
-        rgba(0,0,0,0.5) 0%,
-        rgba(0,0,0,0.35) 40%,
-        rgba(0,0,0,0.6) 100%
+        rgba(0,0,0,0.45) 0%,
+        rgba(0,0,0,0.3) 40%,
+        rgba(17,17,17,0.85) 80%,
+        #111111 100%
       );
       z-index: 1;
     }
@@ -614,12 +601,23 @@
       padding-bottom: 56.25%;
     }
 
+    .careers-proof-photos-title {
+      text-align: center;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--gold-acc);
+      margin-bottom: 1.5rem;
+    }
+
     /* Proof screenshots — uniform row */
     .careers-proof-photos {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
-      gap: 1rem;
-      max-width: 960px;
+      gap: 1.25rem;
+      max-width: 1100px;
       margin: 0 auto;
     }
 
@@ -782,9 +780,6 @@
 
     /* ----- Responsive ----- */
     @media (max-width: 768px) {
-      /* Hero: hide video, show static bg on mobile */
-      .careers-hero-video-wrap video { display: none; }
-      .careers-hero-mobile-bg { display: block; }
 
       /* YouTube video: bigger on mobile */
       #overviewVideo .careers-section-header { margin-bottom: 1rem !important; }
@@ -817,12 +812,7 @@
        HERO
   ============================================================= -->
   <section class="careers-hero">
-    <div class="careers-hero-video-wrap">
-      <div class="careers-hero-mobile-bg"></div>
-      <video autoplay muted loop playsinline preload="auto">
-        <source src="assets/nyc-skyline.mp4" type="video/mp4" />
-      </video>
-    </div>
+    <div class="careers-hero-bg"></div>
     <div class="careers-hero-overlay"></div>
 
     <div class="careers-hero-content">
@@ -874,6 +864,7 @@
       </div>
     </div>
 
+    <div class="careers-proof-photos-title">Agent Receipts</div>
     <div class="careers-proof-photos">
       <img class="careers-proof-photo" src="assets/proof-text1.jpeg" alt="Agent results — $5,000 commission in 3.5 days" />
       <img class="careers-proof-photo" src="assets/proof-text2.jpeg" alt="Agent results — $5,100 commission in one week" />
