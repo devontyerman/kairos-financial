@@ -230,32 +230,48 @@
     .careers-section-cream .careers-section-header p,
     .careers-section-alt .careers-section-header p { color: var(--text-secondary); }
 
-    /* ----- Carrier Logos ----- */
-    .careers-logos-grid {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 1.5rem 2.5rem;
-      max-width: 900px;
+    /* ----- Carrier Logo Carousel ----- */
+    .careers-carousel-wrap {
+      position: relative;
+      overflow: hidden;
+      max-width: 960px;
       margin: 0 auto;
+      -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 8%, #000 92%, transparent 100%);
+      mask-image: linear-gradient(90deg, transparent 0%, #000 8%, #000 92%, transparent 100%);
     }
 
-    .careers-logo-item {
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: 0.88rem;
-      font-weight: 700;
-      color: rgba(255,255,255,0.55);
-      padding: 0.6rem 1.2rem;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.08);
+    .careers-carousel-track {
+      display: flex;
+      width: max-content;
+      animation: carouselScroll 35s linear infinite;
+    }
+
+    .careers-carousel-track:hover {
+      animation-play-state: paused;
+    }
+
+    @keyframes carouselScroll {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    .careers-logo-slot {
+      flex-shrink: 0;
+      width: 160px;
+      height: 60px;
+      background: #ffffff;
       border-radius: var(--radius-md);
-      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 12px;
+      margin: 0 0.75rem;
     }
 
-    .careers-logo-item:hover {
-      color: var(--gold-acc);
-      border-color: rgba(201,168,76,0.3);
-      background: rgba(201,168,76,0.05);
+    .careers-logo-slot img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
     }
 
     /* ----- Value Props (6-grid) ----- */
@@ -732,19 +748,41 @@
       <p>Access a wide portfolio of life insurance products — not locked into a single company.</p>
     </div>
 
-    <div class="careers-logos-grid">
-      <div class="careers-logo-item">Americo</div>
-      <div class="careers-logo-item">Mutual of Omaha</div>
-      <div class="careers-logo-item">Transamerica</div>
-      <div class="careers-logo-item">Corebridge</div>
-      <div class="careers-logo-item">Ethos</div>
-      <div class="careers-logo-item">AIG</div>
-      <div class="careers-logo-item">Aetna</div>
-      <div class="careers-logo-item">American Amicable</div>
-      <div class="careers-logo-item">Ameritas</div>
-      <div class="careers-logo-item">Foresters</div>
-      <div class="careers-logo-item">TruStage</div>
-      <div class="careers-logo-item">Banner Life</div>
+    <div class="careers-carousel-wrap">
+      <div class="careers-carousel-track">
+        <!-- Original set -->
+        <div class="careers-logo-slot"><img src="assets/logos/Foresters_Financial_Logo.svg.png" alt="Foresters Financial" /></div>
+        <div class="careers-logo-slot"><img src="assets/logos/Aetna-Logo.png" alt="Aetna" /></div>
+        <div class="careers-logo-slot"><img src="assets/logos/png-clipart-ameritas-life-insurance-disability-insurance-health-insurance-brochure-design-material-text-investment.png" alt="Ameritas" /></div>
+        <div class="careers-logo-slot"><img src="assets/logos/F%26G_Annuities_%26_Life.png" alt="F&G Annuities & Life" /></div>
+        <div class="careers-logo-slot"><img src="assets/logos/Corebridge_financial_logo.svg.png" alt="Corebridge Financial" /></div>
+        <div class="careers-logo-slot"><img src="assets/logos/banner_life_logo.png" alt="Banner Life" /></div>
+        <div class="careers-logo-slot"><img src="assets/logos/4ef9b10c-bda8-4996-a0d9-5dd3f3fe6b6b.png.webp" alt="Carrier" /></div>
+        <div class="careers-logo-slot"><img src="assets/logos/logo%402x.png" alt="Carrier" /></div>
+        <div class="careers-logo-slot"><img src="assets/logos/Ethos-Life.png" alt="Ethos Life" /></div>
+        <div class="careers-logo-slot"><img src="assets/logos/transamerica-logo-vector-11573939509t4wnlvkzk8.png" alt="Transamerica" /></div>
+        <div class="careers-logo-slot"><img src="assets/logos/cropped-Americologo_red_289-2.webp" alt="Americo" /></div>
+        <div class="careers-logo-slot"><img src="assets/logos/CICA-Life.webp" alt="CICA Life" /></div>
+        <div class="careers-logo-slot"><img src="assets/logos/LBIG_Logo_tag.png" alt="LBIG" /></div>
+        <div class="careers-logo-slot"><img src="assets/logos/330-3309455_royal-neighbors-of-america-life-insurance-royal-neighbors.png" alt="Royal Neighbors of America" /></div>
+        <div class="careers-logo-slot"><img src="assets/logos/Mutual-of-Omaha-logo.png" alt="Mutual of Omaha" /></div>
+        <!-- Duplicate set for seamless loop -->
+        <div class="careers-logo-slot"><img src="assets/logos/Foresters_Financial_Logo.svg.png" alt="Foresters Financial" /></div>
+        <div class="careers-logo-slot"><img src="assets/logos/Aetna-Logo.png" alt="Aetna" /></div>
+        <div class="careers-logo-slot"><img src="assets/logos/png-clipart-ameritas-life-insurance-disability-insurance-health-insurance-brochure-design-material-text-investment.png" alt="Ameritas" /></div>
+        <div class="careers-logo-slot"><img src="assets/logos/F%26G_Annuities_%26_Life.png" alt="F&G Annuities & Life" /></div>
+        <div class="careers-logo-slot"><img src="assets/logos/Corebridge_financial_logo.svg.png" alt="Corebridge Financial" /></div>
+        <div class="careers-logo-slot"><img src="assets/logos/banner_life_logo.png" alt="Banner Life" /></div>
+        <div class="careers-logo-slot"><img src="assets/logos/4ef9b10c-bda8-4996-a0d9-5dd3f3fe6b6b.png.webp" alt="Carrier" /></div>
+        <div class="careers-logo-slot"><img src="assets/logos/logo%402x.png" alt="Carrier" /></div>
+        <div class="careers-logo-slot"><img src="assets/logos/Ethos-Life.png" alt="Ethos Life" /></div>
+        <div class="careers-logo-slot"><img src="assets/logos/transamerica-logo-vector-11573939509t4wnlvkzk8.png" alt="Transamerica" /></div>
+        <div class="careers-logo-slot"><img src="assets/logos/cropped-Americologo_red_289-2.webp" alt="Americo" /></div>
+        <div class="careers-logo-slot"><img src="assets/logos/CICA-Life.webp" alt="CICA Life" /></div>
+        <div class="careers-logo-slot"><img src="assets/logos/LBIG_Logo_tag.png" alt="LBIG" /></div>
+        <div class="careers-logo-slot"><img src="assets/logos/330-3309455_royal-neighbors-of-america-life-insurance-royal-neighbors.png" alt="Royal Neighbors of America" /></div>
+        <div class="careers-logo-slot"><img src="assets/logos/Mutual-of-Omaha-logo.png" alt="Mutual of Omaha" /></div>
+      </div>
     </div>
   </section>
 
