@@ -78,7 +78,9 @@
     }
 
     .careers-hero-badge {
-      display: inline-block;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
       font-family: 'Inter', sans-serif;
       font-size: 0.78rem;
       font-weight: 600;
@@ -89,6 +91,19 @@
       border-radius: 100px;
       padding: 0.4rem 1.2rem;
       margin-bottom: 1.5rem;
+    }
+
+    .careers-hero-badge .live-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #22c55e;
+      animation: dotBlink 1.5s ease-in-out infinite;
+    }
+
+    @keyframes dotBlink {
+      0%, 100% { opacity: 1; }
+      50%      { opacity: 0.25; }
     }
 
     .careers-hero h1 {
@@ -259,8 +274,7 @@
       flex-shrink: 0;
       width: 160px;
       height: 60px;
-      background: #ffffff;
-      border-radius: var(--radius-md);
+      background: transparent;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -685,7 +699,7 @@
     <div class="careers-hero-overlay"></div>
 
     <div class="careers-hero-content">
-      <div class="careers-hero-badge">Now Hiring Nationwide</div>
+      <div class="careers-hero-badge"><span class="live-dot"></span> Now Hiring Nationwide</div>
       <h1>Your 9-to-5 Has a Ceiling.<br /><span>This Doesn't.</span></h1>
       <p class="careers-hero-sub">
         Kairos Financial is looking for driven individuals ready to build a real career in insurance sales — fully remote, fully supported, fully uncapped.
@@ -695,22 +709,6 @@
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
       </button>
       <p class="careers-cta-micro">100% Free &middot; No Resume Needed &middot; 5 Minutes</p>
-    </div>
-  </section>
-
-  <!-- ============================================================
-       AGENCY OVERVIEW VIDEO
-  ============================================================= -->
-  <section id="overviewVideo" class="careers-section careers-section-dark" style="padding: 4rem 2rem;">
-    <div style="max-width: 800px; margin: 0 auto 1.5rem; background: var(--gold-acc); color: var(--midnight); padding: 1rem 1.5rem; border-radius: var(--radius-md); text-align: center; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 1rem;">
-      You must watch this video before completing your application.
-    </div>
-    <div style="position: relative; width: 100%; max-width: 800px; margin: 0 auto; padding-bottom: 45%; height: 0; border-radius: var(--radius-lg); overflow: hidden; background: #000;">
-      <iframe style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;"
-        src="https://www.youtube-nocookie.com/embed/95Px-JYD0o8?rel=0&modestbranding=1&controls=1&disablekb=1&fs=0&iv_load_policy=3"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope"></iframe>
-      <div style="position: absolute; top: 0; left: 0; width: 60px; height: 50px; z-index: 10; background: transparent; cursor: default;"></div>
-      <div style="position: absolute; top: 0; right: 0; width: 140px; height: 50px; z-index: 10; background: transparent; cursor: default;"></div>
     </div>
   </section>
 
@@ -739,9 +737,27 @@
   </section>
 
   <!-- ============================================================
+       AGENCY OVERVIEW VIDEO
+  ============================================================= -->
+  <section id="overviewVideo" class="careers-section careers-section-dark" style="padding: 4rem 2rem 5rem;">
+    <div class="careers-section-header" style="margin-bottom: 2rem;">
+      <div class="eyebrow">Watch First</div>
+      <h2>Agency Overview</h2>
+      <p>Watch this video before completing your application.</p>
+    </div>
+    <div style="position: relative; width: 100%; max-width: 800px; margin: 0 auto; padding-bottom: 45%; height: 0; border-radius: var(--radius-lg); overflow: hidden; background: #000;">
+      <iframe style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;"
+        src="https://www.youtube-nocookie.com/embed/95Px-JYD0o8?rel=0&modestbranding=1&controls=1&disablekb=1&fs=0&iv_load_policy=3"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope"></iframe>
+      <div style="position: absolute; top: 0; left: 0; width: 60px; height: 50px; z-index: 10; background: transparent; cursor: default;"></div>
+      <div style="position: absolute; top: 0; right: 0; width: 140px; height: 50px; z-index: 10; background: transparent; cursor: default;"></div>
+    </div>
+  </section>
+
+  <!-- ============================================================
        CARRIER PARTNERS
   ============================================================= -->
-  <section class="careers-section careers-section-dark">
+  <section class="careers-section careers-section-cream">
     <div class="careers-section-header">
       <div class="eyebrow">Our Partners</div>
       <h2>Sell Products From the Nation's Top Carriers</h2>
