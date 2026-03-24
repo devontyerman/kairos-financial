@@ -51,6 +51,13 @@
       object-fit: cover;
     }
 
+    .careers-hero-mobile-bg {
+      display: none;
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 40%, #16213e 70%, #0f3460 100%);
+    }
+
     .careers-hero-overlay {
       position: absolute;
       inset: 0;
@@ -546,7 +553,7 @@
       justify-content: center;
       animation: modalFadeIn 0.25s ease;
     }
-    .modal-overlay.open { display: flex; }
+    .modal-overlay.open { display: flex; overflow-y: auto; -webkit-overflow-scrolling: touch; }
 
     @keyframes modalFadeIn {
       from { opacity: 0; }
@@ -662,18 +669,34 @@
       padding: 0.5rem 2rem 2rem;
     }
 
+    /* ----- Responsive ----- */
     @media (max-width: 768px) {
+      /* Hero: hide video, show static bg on mobile */
+      .careers-hero-video-wrap video { display: none; }
+      .careers-hero-mobile-bg { display: block; }
+
+      /* YouTube video: bigger on mobile */
+      #overviewVideo .careers-section-header { margin-bottom: 1rem !important; }
+      #overviewVideo > div:last-child {
+        padding-bottom: 56.25% !important;
+        max-width: 100% !important;
+      }
+
+      /* Modal: full screen, single scrollbar */
       .modal-form-scroll {
         width: 100%;
         max-width: 100%;
         max-height: 100vh;
         border-radius: 0;
         height: 100vh;
+        -webkit-overflow-scrolling: touch;
       }
-    }
+      .modal-form-body { padding: 0.5rem 1rem 2rem; }
+      .modal-form-body iframe {
+        height: 2600px !important;
+        overflow: hidden !important;
+      }
 
-    /* ----- Responsive ----- */
-    @media (max-width: 768px) {
       .careers-metrics-grid {
         grid-template-columns: repeat(2, 1fr);
       }
@@ -699,7 +722,7 @@
   ============================================================= -->
   <section class="careers-hero">
     <div class="careers-hero-video-wrap">
-      <div class="hero-video-fallback"></div>
+      <div class="careers-hero-mobile-bg"></div>
       <video autoplay muted loop playsinline preload="auto">
         <source src="assets/nyc-skyline.mp4" type="video/mp4" />
       </video>
