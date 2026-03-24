@@ -93,7 +93,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // On non-index pages, redirect to index if not authenticated (except careers page)
   const isIndex = !!document.getElementById('passwordGate');
   const isCareers = window.location.pathname.includes('careers');
-  if (!isIndex && !isCareers && localStorage.getItem(AUTH_KEY) !== 'true') {
+  const isApply = window.location.pathname.includes('apply');
+  if (!isIndex && !isCareers && !isApply && localStorage.getItem(AUTH_KEY) !== 'true') {
     const base = window.location.pathname.includes('/carriers/') ? '../index.html' : 'index.html';
     window.location.href = base;
     return;

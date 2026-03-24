@@ -628,7 +628,6 @@
       box-shadow: 0 4px 12px rgba(192,57,43,0.3);
     }
 
-    /* GHL popup form — hidden until triggered */
 
     /* ----- Responsive ----- */
     @media (max-width: 768px) {
@@ -1078,8 +1077,6 @@
     </div>
   </div>
 
-  <!-- GHL Popup Form — injected when user clicks "Yes" -->
-  <div id="ghlFormContainer"></div>
 
   <script>
     // FAQ accordion
@@ -1104,7 +1101,7 @@
       document.body.style.overflow = '';
     }
 
-    // All Apply Now buttons open Step 1
+    // All Apply Now buttons open Step 1 confirmation
     document.querySelectorAll('.careers-apply-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
         e.preventDefault();
@@ -1112,77 +1109,23 @@
       });
     });
 
-    // Step 1 — No: close and scroll to video
+    // No — close and scroll to video
     document.getElementById('modalNo').addEventListener('click', () => {
       closeModal(modalConfirm);
       document.getElementById('overviewVideo').scrollIntoView({ behavior: 'smooth' });
     });
 
-    // Step 1 — Yes: close confirmation, launch GHL popup form
-    let ghlLoaded = false;
+    // Yes — navigate to the application page
     document.getElementById('modalYes').addEventListener('click', () => {
-      closeModal(modalConfirm);
-
-      const container = document.getElementById('ghlFormContainer');
-
-      if (!ghlLoaded) {
-        // Inject the GHL popup iframe
-        container.innerHTML = `
-          <iframe
-            src="https://api.leadconnectorhq.com/widget/form/bGm1drb3HYEP8hOJau7d"
-            style="display:none;width:100%;height:100%;border:none;border-radius:4px"
-            id="popup-bGm1drb3HYEP8hOJau7d"
-            data-layout="{'id':'POPUP'}"
-            data-trigger-type="alwaysShow"
-            data-trigger-value=""
-            data-activation-type="alwaysActivated"
-            data-activation-value=""
-            data-deactivation-type="neverDeactivate"
-            data-deactivation-value=""
-            data-form-name="Application"
-            data-height="2217"
-            data-layout-iframe-id="popup-bGm1drb3HYEP8hOJau7d"
-            data-form-id="bGm1drb3HYEP8hOJau7d"
-            title="Application"
-          ></iframe>`;
-
-        // Load the embed script — GHL will see the popup iframe and show it
-        const s = document.createElement('script');
-        s.src = 'https://link.msgsndr.com/js/form_embed.js';
-        document.body.appendChild(s);
-        ghlLoaded = true;
-      } else {
-        // Already loaded — re-show by re-injecting iframe and script
-        container.innerHTML = `
-          <iframe
-            src="https://api.leadconnectorhq.com/widget/form/bGm1drb3HYEP8hOJau7d"
-            style="display:none;width:100%;height:100%;border:none;border-radius:4px"
-            id="popup-bGm1drb3HYEP8hOJau7d"
-            data-layout="{'id':'POPUP'}"
-            data-trigger-type="alwaysShow"
-            data-trigger-value=""
-            data-activation-type="alwaysActivated"
-            data-activation-value=""
-            data-deactivation-type="neverDeactivate"
-            data-deactivation-value=""
-            data-form-name="Application"
-            data-height="2217"
-            data-layout-iframe-id="popup-bGm1drb3HYEP8hOJau7d"
-            data-form-id="bGm1drb3HYEP8hOJau7d"
-            title="Application"
-          ></iframe>`;
-        const s = document.createElement('script');
-        s.src = 'https://link.msgsndr.com/js/form_embed.js';
-        document.body.appendChild(s);
-      }
+      window.location.href = 'apply.html';
     });
 
-    // Click outside Step 1 modal to close
+    // Click outside to close
     modalConfirm.addEventListener('click', (e) => {
       if (e.target === modalConfirm) closeModal(modalConfirm);
     });
 
-    // Escape closes Step 1
+    // Escape closes
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && modalConfirm.classList.contains('open')) {
         closeModal(modalConfirm);
