@@ -629,28 +629,30 @@
     }
 
     /* Step 2 — application form */
-    .modal-form-scroll {
+    .modal-overlay-app {
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      align-items: flex-start;
+      padding: 2rem 0;
+    }
+
+    .modal-form-container {
       background: #ffffff;
       border-radius: var(--radius-lg);
       max-width: 720px;
       width: 92%;
-      max-height: 90vh;
-      overflow-y: auto;
       position: relative;
       animation: modalSlideIn 0.3s ease;
+      margin: auto;
     }
 
-    .modal-form-scroll::-webkit-scrollbar { width: 6px; }
-    .modal-form-scroll::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 4px; }
-
     .modal-close {
-      position: sticky;
-      top: 0;
-      float: right;
+      position: absolute;
+      top: 0.75rem;
+      right: 0.75rem;
       z-index: 10;
       width: 36px;
       height: 36px;
-      margin: 0.75rem 0.75rem 0 0;
       background: var(--cream-2);
       border: none;
       border-radius: 50%;
@@ -669,6 +671,13 @@
       padding: 0.5rem 2rem 2rem;
     }
 
+    .modal-form-body iframe {
+      width: 100%;
+      border: none;
+      border-radius: 4px;
+      display: block;
+    }
+
     /* ----- Responsive ----- */
     @media (max-width: 768px) {
       /* Hero: hide video, show static bg on mobile */
@@ -682,20 +691,15 @@
         max-width: 100% !important;
       }
 
-      /* Modal: full screen, single scrollbar */
-      .modal-form-scroll {
+      /* Modal: full width on mobile */
+      .modal-overlay-app { padding: 0; }
+      .modal-form-container {
         width: 100%;
         max-width: 100%;
-        max-height: 100vh;
         border-radius: 0;
-        height: 100vh;
-        -webkit-overflow-scrolling: touch;
+        min-height: 100vh;
       }
       .modal-form-body { padding: 0.5rem 1rem 2rem; }
-      .modal-form-body iframe {
-        height: 2600px !important;
-        overflow: hidden !important;
-      }
 
       .careers-metrics-grid {
         grid-template-columns: repeat(2, 1fr);
@@ -1133,13 +1137,13 @@
   </div>
 
   <!-- Step 2 Modal — Application Form -->
-  <div class="modal-overlay" id="modalApp">
-    <div class="modal-form-scroll">
+  <div class="modal-overlay modal-overlay-app" id="modalApp">
+    <div class="modal-form-container">
       <button class="modal-close" id="modalAppClose">&times;</button>
       <div class="modal-form-body">
         <iframe
           src="https://api.leadconnectorhq.com/widget/form/bGm1drb3HYEP8hOJau7d"
-          style="width:100%;height:2299px;border:none;border-radius:4px;overflow:hidden"
+          style="height:2299px"
           scrolling="no"
           id="inline-bGm1drb3HYEP8hOJau7d"
           data-layout="{'id':'INLINE'}"
