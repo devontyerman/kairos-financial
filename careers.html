@@ -653,11 +653,36 @@
     .proof-lightbox.open { display: flex; }
 
     .proof-lightbox img {
-      max-width: 90vw;
-      max-height: 90vh;
+      max-width: 85vw;
+      max-height: 85vh;
       border-radius: var(--radius-lg);
       box-shadow: 0 0 40px rgba(0,0,0,0.5);
     }
+
+    .lightbox-arrow {
+      position: fixed;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: none;
+      background: rgba(255,255,255,0.15);
+      color: #fff;
+      font-size: 1.4rem;
+      cursor: pointer;
+      z-index: 10000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s ease;
+    }
+
+    .proof-lightbox.open ~ .lightbox-arrow { display: flex; }
+
+    .lightbox-arrow:hover { background: rgba(255,255,255,0.3); }
+    .lightbox-arrow.prev { left: 1rem; }
+    .lightbox-arrow.next { right: 1rem; }
 
     @media (max-width: 768px) {
       .careers-proof-videos {
@@ -1225,27 +1250,56 @@
   <div class="proof-lightbox" id="proofLightbox">
     <img src="" alt="Proof" id="proofLightboxImg" />
   </div>
+  <button class="lightbox-arrow prev" id="lightboxPrev">&#8249;</button>
+  <button class="lightbox-arrow next" id="lightboxNext">&#8250;</button>
 
   <script>
-    // Lightbox for proof photos
+    // Lightbox with prev/next navigation
     const lightbox = document.getElementById('proofLightbox');
     const lightboxImg = document.getElementById('proofLightboxImg');
-    document.querySelectorAll('.careers-proof-photo').forEach(img => {
-      img.addEventListener('click', () => {
-        lightboxImg.src = img.src;
-        lightbox.classList.add('open');
-        document.body.style.overflow = 'hidden';
-      });
-    });
-    lightbox.addEventListener('click', () => {
+    const photos = Array.from(document.querySelectorAll('.careers-proof-photo'));
+    let lbIndex = 0;
+
+    function openLightbox(index) {
+      lbIndex = index;
+      lightboxImg.src = photos[lbIndex].src;
+      lightbox.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeLightbox() {
       lightbox.classList.remove('open');
       document.body.style.overflow = '';
+    }
+
+    function moveLightbox(dir) {
+      lbIndex = (lbIndex + dir + photos.length) % photos.length;
+      lightboxImg.src = photos[lbIndex].src;
+    }
+
+    photos.forEach((img, i) => {
+      img.addEventListener('click', () => openLightbox(i));
     });
+
+    lightbox.addEventListener('click', (e) => {
+      if (e.target === lightbox) closeLightbox();
+    });
+
+    document.getElementById('lightboxPrev').addEventListener('click', (e) => {
+      e.stopPropagation();
+      moveLightbox(-1);
+    });
+
+    document.getElementById('lightboxNext').addEventListener('click', (e) => {
+      e.stopPropagation();
+      moveLightbox(1);
+    });
+
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && lightbox.classList.contains('open')) {
-        lightbox.classList.remove('open');
-        document.body.style.overflow = '';
-      }
+      if (!lightbox.classList.contains('open')) return;
+      if (e.key === 'Escape') closeLightbox();
+      if (e.key === 'ArrowLeft') moveLightbox(-1);
+      if (e.key === 'ArrowRight') moveLightbox(1);
     });
 
     // FAQ accordion
