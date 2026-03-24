@@ -928,10 +928,10 @@ h1, h2, h3, h4, h5 {
 .password-gate-card {
   max-width: 380px;
   width: 100%;
-  background: rgba(0,0,0,0.45);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255,255,255,0.15);
   border-radius: var(--radius-xl);
   padding: 2rem 2.25rem;
   text-align: center;
@@ -996,7 +996,7 @@ h1, h2, h3, h4, h5 {
 .password-hint {
   font-family: 'Inter', sans-serif;
   font-size: 0.75rem;
-  color: rgba(255,255,255,0.2);
+  color: rgba(255,255,255,0.5);
   margin-top: 1.25rem;
   line-height: 1.6;
 }
