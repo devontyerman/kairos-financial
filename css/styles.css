@@ -277,6 +277,7 @@ h1, h2, h3, h4, h5 {
   position: fixed;
   top: var(--nav-height);
   left: 0; right: 0;
+  bottom: 0;
   background: rgba(17, 17, 17, 0.98);
   backdrop-filter: blur(20px);
   border-bottom: 1px solid rgba(255,255,255,0.07);
@@ -286,6 +287,8 @@ h1, h2, h3, h4, h5 {
   visibility: hidden;
   transform: translateY(-8px);
   transition: var(--transition-slow);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .nav-mobile.open {
@@ -314,6 +317,54 @@ h1, h2, h3, h4, h5 {
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: rgba(255,255,255,0.25);
+}
+
+/* Carriers collapsible sub-menu in mobile nav */
+.nav-mobile-carriers-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.7rem 0;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: rgba(255,255,255,0.55);
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  cursor: pointer;
+  transition: var(--transition);
+  background: none;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  width: 100%;
+  text-align: left;
+  font-family: inherit;
+}
+
+.nav-mobile-carriers-toggle:hover { color: #ffffff; }
+
+.nav-mobile-carriers-toggle svg {
+  width: 12px; height: 12px;
+  transition: transform 0.25s ease;
+  flex-shrink: 0;
+}
+
+.nav-mobile-carriers-toggle.open svg {
+  transform: rotate(180deg);
+}
+
+.nav-mobile-carriers-list {
+  display: none;
+  padding-left: 1rem;
+}
+
+.nav-mobile-carriers-list.open {
+  display: block;
+}
+
+.nav-mobile-carriers-list a {
+  font-size: 0.82rem;
+  padding: 0.5rem 0;
+  color: rgba(255,255,255,0.4);
 }
 
 /* =============================================================

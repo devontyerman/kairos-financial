@@ -9,11 +9,17 @@ document.addEventListener('DOMContentLoaded', () => {
   ------------------------------------------------------- */
   const nav = document.querySelector('.nav');
   if (nav) {
-    const onScroll = () => {
-      nav.classList.toggle('scrolled', window.scrollY > 20);
-    };
-    window.addEventListener('scroll', onScroll, { passive: true });
-    onScroll();
+    // On non-homepage pages, always keep the nav in scrolled (dark) state
+    const isHomepage = window.location.pathname === '/' || window.location.pathname.endsWith('index.html');
+    if (!isHomepage) {
+      nav.classList.add('scrolled');
+    } else {
+      const onScroll = () => {
+        nav.classList.toggle('scrolled', window.scrollY > 20);
+      };
+      window.addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
+    }
   }
 
   /* -------------------------------------------------------
@@ -41,6 +47,18 @@ document.addEventListener('DOMContentLoaded', () => {
         mobileNav.classList.remove('open');
         document.body.style.overflow = '';
       });
+    });
+  }
+
+  /* -------------------------------------------------------
+     NAVIGATION — mobile carriers collapsible sub-menu
+  ------------------------------------------------------- */
+  const carriersToggle = document.getElementById('mobileCarriersToggle');
+  const carriersList = document.getElementById('mobileCarriersList');
+  if (carriersToggle && carriersList) {
+    carriersToggle.addEventListener('click', () => {
+      carriersToggle.classList.toggle('open');
+      carriersList.classList.toggle('open');
     });
   }
 
