@@ -371,7 +371,7 @@
         <div class="tv-item" data-src="https://www.loom.com/embed/f693b1b3369c4655963fce11856f8a56" data-script="true">Script and Sales Presentation</div>
 
         <div class="tv-cat-label">Licensing</div>
-        <div class="tv-item" data-src="https://www.loom.com/embed/091f9b5527e042d1aea0422e86519c93">How To Buy Additional State Licenses</div>
+        <div class="tv-item" data-src="https://www.loom.com/embed/badf77aa57d0430e817936e469eb6b56" data-nipr="true">How To Buy Additional State Licenses</div>
         <div class="tv-item" data-src="https://www.loom.com/embed/96cc1263b9a446e583b9f8d356a2c90a" data-licensing="true">Next Steps After Buying Licenses</div>
 
         <div class="tv-cat-label">CRM Guide</div>
@@ -425,6 +425,14 @@
             </a>
             <p class="tv-wavv-code">After signing up, use code <strong>SPAMPROOF</strong> to get spam monitoring for free.</p>
           </div>
+        </div>
+
+        <!-- NIPR button (only shown for How To Buy Additional State Licenses video) -->
+        <div class="tv-resource-btns" id="tvNipr">
+          <a href="https://nipr.com/" target="_blank" rel="noopener noreferrer" class="tv-resource-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            NIPR
+          </a>
         </div>
 
         <!-- A2P doc button (only shown for A2P video) -->
@@ -510,6 +518,7 @@
       const script = document.getElementById('tvScript');
       const licensing = document.getElementById('tvLicensing');
       const wavv = document.getElementById('tvWavv');
+      const nipr = document.getElementById('tvNipr');
       const sidebar = document.getElementById('tvSidebar');
       const toggle = document.getElementById('tvSidebarToggle');
       const loomParams = '?hide_owner=true&hide_title=true&hide_share=true&hideEmbedTopBar=true';
@@ -526,6 +535,7 @@
           script.classList.toggle('visible', !!item.dataset.script);
           licensing.classList.toggle('visible', !!item.dataset.licensing);
           wavv.classList.toggle('visible', !!item.dataset.wavv);
+          nipr.classList.toggle('visible', !!item.dataset.nipr);
           // Close mobile sidebar after selection
           if (window.innerWidth <= 768) {
             sidebar.classList.remove('mobile-open');
