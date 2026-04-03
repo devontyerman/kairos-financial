@@ -159,12 +159,10 @@
 
   <!-- PASSWORD GATE — site-wide -->
   <div class="password-gate" id="passwordGate">
-    <!-- Background video (same as hero) -->
+    <!-- Background image (same as hero) -->
     <div class="gate-video-wrapper">
       <div class="hero-video-fallback"></div>
-      <video class="hero-video" autoplay muted loop playsinline preload="auto">
-        <source src="assets/nyc-skyline.mp4" type="video/mp4" />
-      </video>
+      <img src="assets/hero-bg.jpg" alt="" class="hero-video" />
     </div>
     <div class="gate-overlay"></div>
 
@@ -285,36 +283,8 @@
   ============================================================= -->
   <section class="hero">
     <div class="hero-video-wrapper">
-      <!-- Animated fallback background (always shown behind video) -->
       <div class="hero-video-fallback"></div>
-
-      <!--
-        NYC SKYLINE VIDEO
-        ─────────────────────────────────────────────────────────
-        Download a free looping NYC skyline timelapse and save it
-        as: assets/nyc-skyline.mp4
-
-        Great free sources:
-          • Pexels: https://www.pexels.com/search/videos/new%20york%20skyline%20night/
-          • Coverr: https://coverr.co/search?q=new+york
-
-        Tips for a perfect loop:
-          • Look for "looping" or "seamless loop" in the title
-          • Aim for a clip 15–30 seconds long
-          • 1080p or 4K quality looks best
-      -->
-      <video
-        class="hero-video"
-        autoplay
-        muted
-        loop
-        playsinline
-        preload="auto"
-        poster=""
-        id="heroVideo"
-      >
-        <source src="assets/nyc-skyline.mp4" type="video/mp4" />
-      </video>
+      <img src="assets/hero-bg.jpg" alt="" class="hero-video" />
     </div>
 
     <!-- Gradient overlay for text legibility + bottom fade -->
