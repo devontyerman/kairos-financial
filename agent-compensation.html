@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Agent Compensation — Kairos Financial</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <style>
+    .comp-section {
+      padding: 4rem 0 6rem;
+    }
+
+    .comp-columns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .comp-card {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+
+    .comp-card-header {
+      padding: 1.5rem 1.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .comp-card-header h2 {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      margin: 0 0 0.25rem;
+    }
+
+    .comp-card-header p {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin: 0;
+    }
+
+    .comp-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .comp-table thead th {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      padding: 0.85rem 1.75rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg-surface);
+    }
+
+    .comp-table thead th:last-child {
+      text-align: right;
+    }
+
+    .comp-table tbody tr {
+      transition: var(--transition);
+    }
+
+    .comp-table tbody tr:hover {
+      background: var(--bg-hover);
+    }
+
+    .comp-table tbody td {
+      font-size: 0.88rem;
+      padding: 0.75rem 1.75rem;
+      border-bottom: 1px solid var(--border);
+      color: var(--text-secondary);
+    }
+
+    .comp-table tbody td:first-child {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 700;
+      color: var(--gold);
+    }
+
+    .comp-table tbody td:last-child {
+      text-align: right;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .comp-table tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* Highlight the 100% row */
+    .comp-table tbody tr.base-row {
+      background: rgba(201, 168, 76, 0.06);
+    }
+
+    .comp-table tbody tr.base-row td:first-child {
+      position: relative;
+    }
+
+    .comp-notes {
+      max-width: 900px;
+      margin: 2.5rem auto 0;
+      padding: 1.25rem 1.5rem;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+    }
+
+    .comp-notes-title {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .comp-notes ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .comp-notes li {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      padding-left: 1rem;
+      position: relative;
+    }
+
+    .comp-notes li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0.55em;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--gold);
+    }
+
+    @media (max-width: 768px) {
+      .comp-columns {
+        grid-template-columns: 1fr;
+      }
+
+      .comp-table thead th,
+      .comp-table tbody td {
+        padding: 0.65rem 1.25rem;
+        font-size: 0.82rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVIGATION -->
+  <nav class="nav scrolled" id="mainNav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">
+        <div class="nav-logo-mark">K</div>
+        <span class="nav-logo-text">KAIROS</span>
+      </a>
+
+      <ul class="nav-links">
+        <li><a href="course.html" class="nav-link">Training Videos</a></li>
+        <li>
+          <a class="nav-link" href="#" onclick="return false;">
+            Carriers
+            <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 4 6 8 10 4"/></svg>
+          </a>
+          <div class="nav-dropdown">
+            <a href="carriers/aetna.html">Aetna</a>
+            <a href="carriers/aig.html">AIG</a>
+            <a href="carriers/american-amicable.html">American Amicable</a>
+            <a href="carriers/americo.html">Americo</a>
+            <a href="carriers/ameritas.html">Ameritas</a>
+            <div class="nav-dropdown-divider"></div>
+            <a href="carriers/corebridge.html">Corebridge</a>
+            <a href="carriers/ethos.html">Ethos</a>
+            <a href="carriers/foresters.html">Foresters</a>
+            <a href="carriers/instabrain.html">Instabrain</a>
+            <a href="carriers/mutual-of-omaha.html">Mutual of Omaha</a>
+            <a href="carriers/transamerica.html">Transamerica</a>
+          </div>
+        </li>
+        <li><a href="https://app.insurancetoolkits.com/" class="nav-link" target="_blank" rel="noopener noreferrer">Insurance Toolkits</a></li>
+        <li><a href="https://ai.kairos-financial.com/" class="nav-link" target="_blank" rel="noopener noreferrer">AI Training</a></li>
+        <li><a href="agent-resources.html" class="nav-link">Agent Resources</a></li>
+        <li><a href="lead-vendors.html" class="nav-link">Lead Vendors</a></li>
+      </ul>
+
+      <button class="nav-hamburger" id="hamburger" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Mobile nav -->
+  <div class="nav-mobile" id="mobileNav">
+    <a href="index.html">Home</a>
+    <a href="course.html">Training Videos</a>
+    <button class="nav-mobile-carriers-toggle" id="mobileCarriersToggle">
+      Carriers
+      <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 4 6 8 10 4"/></svg>
+    </button>
+    <div class="nav-mobile-carriers-list" id="mobileCarriersList">
+      <a href="carriers/aetna.html">Aetna</a>
+      <a href="carriers/aig.html">AIG</a>
+      <a href="carriers/american-amicable.html">American Amicable</a>
+      <a href="carriers/americo.html">Americo</a>
+      <a href="carriers/ameritas.html">Ameritas</a>
+      <a href="carriers/corebridge.html">Corebridge</a>
+      <a href="carriers/ethos.html">Ethos</a>
+      <a href="carriers/foresters.html">Foresters</a>
+      <a href="carriers/instabrain.html">Instabrain</a>
+      <a href="carriers/mutual-of-omaha.html">Mutual of Omaha</a>
+      <a href="carriers/transamerica.html">Transamerica</a>
+    </div>
+    <a href="https://app.insurancetoolkits.com/" target="_blank" rel="noopener noreferrer">Insurance Toolkits</a>
+    <a href="https://ai.kairos-financial.com/" target="_blank" rel="noopener noreferrer">AI Training</a>
+    <a href="agent-resources.html">Agent Resources</a>
+    <a href="lead-vendors.html">Lead Vendors</a>
+  </div>
+
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <div class="container">
+      <div class="page-header-eyebrow">Compensation</div>
+      <h1 class="page-header-title">Agent Compensation</h1>
+      <p class="page-header-desc">Commission levels for producers and builders based on issued paid business.</p>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <section class="comp-section">
+    <div class="container">
+      <div class="comp-columns">
+
+        <!-- PRODUCER -->
+        <div class="comp-card fade-in">
+          <div class="comp-card-header">
+            <h2>Producer</h2>
+            <p>Individual agent commission levels</p>
+          </div>
+          <table class="comp-table">
+            <thead>
+              <tr>
+                <th>Level</th>
+                <th>Issued Paid</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>120%</td><td>$40,000</td></tr>
+              <tr><td>115%</td><td>$35,000</td></tr>
+              <tr><td>110%</td><td>$30,000</td></tr>
+              <tr><td>105%</td><td>$25,000</td></tr>
+              <tr class="base-row"><td>100%</td><td>$20,000</td></tr>
+              <tr><td>95%</td><td>$15,000</td></tr>
+              <tr><td>90%</td><td>$10,000</td></tr>
+              <tr><td>80%</td><td>$5,000</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- BUILDER -->
+        <div class="comp-card fade-in">
+          <div class="comp-card-header">
+            <h2>Builder</h2>
+            <p>Agency builder commission levels</p>
+          </div>
+          <table class="comp-table">
+            <thead>
+              <tr>
+                <th>Level</th>
+                <th>Issued Paid</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>145%</td><td>$750,000</td></tr>
+              <tr><td>140%</td><td>$500,000</td></tr>
+              <tr><td>135%</td><td>$400,000</td></tr>
+              <tr><td>130%</td><td>$300,000</td></tr>
+              <tr><td>125%</td><td>$200,000</td></tr>
+              <tr><td>120%</td><td>$150,000</td></tr>
+              <tr><td>115%</td><td>$125,000</td></tr>
+              <tr><td>110%</td><td>$100,000</td></tr>
+              <tr><td>105%</td><td>$75,000</td></tr>
+              <tr class="base-row"><td>100%</td><td>$50,000</td></tr>
+              <tr><td>95%</td><td>$40,000</td></tr>
+              <tr><td>90%</td><td>$30,000</td></tr>
+              <tr><td>85%</td><td>$20,000</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+
+      <div class="comp-notes fade-in">
+        <div class="comp-notes-title">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          Important Notes
+        </div>
+        <ul>
+          <li>Levels must be achieved 2 months in a row to take effect.</li>
+          <li>All metrics are based on issued paid business.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <p>&copy; 2026 <span>Kairos Financial</span>. Agent Portal — Internal Use Only.</p>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
