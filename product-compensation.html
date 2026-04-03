@@ -1123,15 +1123,30 @@
         return;
       }
 
+      const levels = ['145','140','135','130','125','120','115','110','105','100','95','90','85','80','75','70','65'];
+
       let html = '<div class="prod-comp-condensed-grid">';
       carrierData.forEach(carrier => {
-        const values = carrier.rows[level];
+        // Find data at selected level, or fall back to next level down
+        let values = null;
+        let usedLevel = level;
+        const startIdx = levels.indexOf(level);
+        for (let li = startIdx; li < levels.length; li++) {
+          const candidate = carrier.rows[levels[li]];
+          if (candidate && candidate.some(v => v && v !== '-')) {
+            values = candidate;
+            usedLevel = levels[li];
+            break;
+          }
+        }
         if (!values) return;
-        const hasData = values.some(v => v && v !== '-');
-        if (!hasData) return;
 
         html += '<div class="prod-comp-condensed-carrier">';
-        html += '<div class="prod-comp-condensed-carrier-name"><span class="dot" style="background:' + carrier.color + '"></span>' + carrier.name + '</div>';
+        html += '<div class="prod-comp-condensed-carrier-name"><span class="dot" style="background:' + carrier.color + '"></span>' + carrier.name;
+        if (usedLevel !== level) {
+          html += ' <span style="font-size:0.68rem;font-weight:500;color:var(--text-muted);">(max ' + usedLevel + '%)</span>';
+        }
+        html += '</div>';
         carrier.products.forEach((product, i) => {
           const val = values[i] || '-';
           if (val === '-') return;
