@@ -10,10 +10,24 @@
       padding: 4rem 0 6rem;
     }
 
+    /* Bonus row */
+    .comp-bonus-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 2rem;
+      max-width: 960px;
+      margin: 0 auto 3rem;
+      align-items: start;
+    }
+
+    @media (max-width: 768px) {
+      .comp-bonus-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
     /* Producer Bonus */
     .comp-bonus {
-      max-width: 520px;
-      margin: 0 auto 3rem;
       background: var(--bg-elevated);
       border: 1px solid var(--border);
       border-radius: 16px;
@@ -81,6 +95,84 @@
 
     .comp-bonus .comp-table tbody td:first-child {
       color: #4ade80;
+    }
+
+    /* Manager Bonus */
+    .comp-mgr-bonus {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.06);
+      max-width: 300px;
+      align-self: start;
+    }
+
+    .comp-mgr-bonus-header {
+      padding: 1.75rem 1.5rem 1.5rem;
+      background: linear-gradient(135deg, #2a1a2e 0%, #1e0d2b 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .comp-mgr-bonus-header::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      opacity: 0.07;
+      background: radial-gradient(circle at 70% 20%, #a78bfa 0%, transparent 60%);
+    }
+
+    .comp-mgr-bonus-header-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1rem;
+      background: rgba(167, 139, 250, 0.2);
+      color: #a78bfa;
+    }
+
+    .comp-mgr-bonus-header h2 {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: #ffffff;
+      margin: 0 0 0.3rem;
+    }
+
+    .comp-mgr-bonus-body {
+      padding: 1.5rem;
+    }
+
+    .comp-mgr-bonus-body .mgr-threshold {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 2rem;
+      font-weight: 900;
+      color: #a78bfa;
+      letter-spacing: -0.03em;
+      margin-bottom: 0.25rem;
+    }
+
+    .comp-mgr-bonus-body .mgr-label {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.75rem;
+    }
+
+    .comp-mgr-bonus-body .mgr-desc {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    @media (max-width: 768px) {
+      .comp-mgr-bonus {
+        max-width: 100%;
+      }
     }
 
     .comp-columns {
@@ -389,6 +481,9 @@
   <section class="comp-section">
     <div class="container">
 
+      <!-- BONUS ROW -->
+      <div class="comp-bonus-row">
+
       <!-- PRODUCER BONUS -->
       <div class="comp-bonus fade-in">
         <div class="comp-bonus-header">
@@ -419,6 +514,23 @@
           </tbody>
         </table>
       </div>
+
+      <!-- MANAGER BONUS -->
+      <div class="comp-mgr-bonus fade-in">
+        <div class="comp-mgr-bonus-header">
+          <div class="comp-mgr-bonus-header-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+          </div>
+          <h2>Manager Bonus</h2>
+        </div>
+        <div class="comp-mgr-bonus-body">
+          <div class="mgr-threshold">$150K</div>
+          <div class="mgr-label">Monthly Volume Threshold</div>
+          <p class="mgr-desc">The manager bonus kicks in once your overall agency volume hits $150K per month in issued paid business.</p>
+        </div>
+      </div>
+
+      </div><!-- end bonus row -->
 
       <div class="comp-columns">
 
