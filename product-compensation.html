@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Product Compensation — Kairos Financial</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <style>
+    .prod-comp-section {
+      padding: 4rem 0 6rem;
+    }
+
+    .prod-comp-carrier {
+      margin-bottom: 3rem;
+    }
+
+    .prod-comp-carrier-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 2px solid var(--border);
+    }
+
+    .prod-comp-carrier-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .prod-comp-carrier-name {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
+    }
+
+    .prod-comp-table-wrap {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+    }
+
+    .prod-comp-table-scroll {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .prod-comp-table-scroll::-webkit-scrollbar { height: 4px; }
+    .prod-comp-table-scroll::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 4px; }
+
+    .prod-comp-table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 500px;
+    }
+
+    .prod-comp-table thead th {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      padding: 0.75rem 1rem;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg-surface);
+      white-space: nowrap;
+    }
+
+    .prod-comp-table thead th:first-child {
+      text-align: left;
+      padding-left: 1.25rem;
+      position: sticky;
+      left: 0;
+      background: var(--bg-surface);
+      z-index: 2;
+    }
+
+    .prod-comp-table tbody tr {
+      transition: background 0.15s ease;
+    }
+
+    .prod-comp-table tbody tr:hover {
+      background: var(--bg-hover);
+    }
+
+    .prod-comp-table tbody td {
+      font-size: 0.82rem;
+      padding: 0.6rem 1rem;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+      color: var(--text-secondary);
+      white-space: nowrap;
+    }
+
+    .prod-comp-table tbody td:first-child {
+      text-align: left;
+      padding-left: 1.25rem;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 700;
+      color: var(--gold);
+      position: sticky;
+      left: 0;
+      background: var(--bg-elevated);
+      z-index: 1;
+    }
+
+    .prod-comp-table tbody tr:hover td:first-child {
+      background: var(--bg-hover);
+    }
+
+    .prod-comp-table tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .prod-comp-note {
+      text-align: center;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-top: 3rem;
+      padding: 1rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .prod-comp-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--gold);
+      text-decoration: none;
+      margin-bottom: 2rem;
+      transition: var(--transition);
+    }
+
+    .prod-comp-back:hover {
+      color: var(--text-primary);
+    }
+
+    @media (max-width: 768px) {
+      .prod-comp-table thead th,
+      .prod-comp-table tbody td {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.75rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVIGATION -->
+  <nav class="nav scrolled" id="mainNav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">
+        <div class="nav-logo-mark"><img src="assets/kf-logo.png" alt="Kairos Financial" /></div>
+        <span class="nav-logo-text">KAIROS</span>
+      </a>
+
+      <ul class="nav-links">
+        <li><a href="course.html" class="nav-link">Training Videos</a></li>
+        <li>
+          <a class="nav-link" href="#" onclick="return false;">
+            Carriers
+            <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 4 6 8 10 4"/></svg>
+          </a>
+          <div class="nav-dropdown">
+            <a href="carriers/aetna.html">Aetna</a>
+            <a href="carriers/aig.html">AIG</a>
+            <a href="carriers/american-amicable.html">American Amicable</a>
+            <a href="carriers/americo.html">Americo</a>
+            <a href="carriers/ameritas.html">Ameritas</a>
+            <div class="nav-dropdown-divider"></div>
+            <a href="carriers/corebridge.html">Corebridge</a>
+            <a href="carriers/ethos.html">Ethos</a>
+            <a href="carriers/foresters.html">Foresters</a>
+            <a href="carriers/instabrain.html">Instabrain</a>
+            <a href="carriers/mutual-of-omaha.html">Mutual of Omaha</a>
+            <a href="carriers/transamerica.html">Transamerica</a>
+          </div>
+        </li>
+        <li><a href="https://app.insurancetoolkits.com/" class="nav-link" target="_blank" rel="noopener noreferrer">Insurance Toolkits</a></li>
+        <li><a href="https://ai.kairos-financial.com/" class="nav-link" target="_blank" rel="noopener noreferrer">AI Training</a></li>
+        <li><a href="agent-resources.html" class="nav-link">Agent Resources</a></li>
+        <li><a href="lead-vendors.html" class="nav-link">Lead Vendors</a></li>
+      </ul>
+
+      <button class="nav-hamburger" id="hamburger" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Mobile nav -->
+  <div class="nav-mobile" id="mobileNav">
+    <a href="index.html">Home</a>
+    <a href="course.html">Training Videos</a>
+    <button class="nav-mobile-carriers-toggle" id="mobileCarriersToggle">
+      Carriers
+      <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 4 6 8 10 4"/></svg>
+    </button>
+    <div class="nav-mobile-carriers-list" id="mobileCarriersList">
+      <a href="carriers/aetna.html">Aetna</a>
+      <a href="carriers/aig.html">AIG</a>
+      <a href="carriers/american-amicable.html">American Amicable</a>
+      <a href="carriers/americo.html">Americo</a>
+      <a href="carriers/ameritas.html">Ameritas</a>
+      <a href="carriers/corebridge.html">Corebridge</a>
+      <a href="carriers/ethos.html">Ethos</a>
+      <a href="carriers/foresters.html">Foresters</a>
+      <a href="carriers/instabrain.html">Instabrain</a>
+      <a href="carriers/mutual-of-omaha.html">Mutual of Omaha</a>
+      <a href="carriers/transamerica.html">Transamerica</a>
+    </div>
+    <a href="https://app.insurancetoolkits.com/" target="_blank" rel="noopener noreferrer">Insurance Toolkits</a>
+    <a href="https://ai.kairos-financial.com/" target="_blank" rel="noopener noreferrer">AI Training</a>
+    <a href="agent-resources.html">Agent Resources</a>
+    <a href="lead-vendors.html">Lead Vendors</a>
+  </div>
+
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <div class="container">
+      <div class="page-header-eyebrow">Compensation</div>
+      <h1 class="page-header-title">Product Compensation</h1>
+      <p class="page-header-desc">Commission rates by carrier and product at each contract level.</p>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <section class="prod-comp-section">
+    <div class="container">
+
+      <a href="agent-compensation.html" class="prod-comp-back">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        Back to Agent Compensation
+      </a>
+
+      <!-- ============ AETNA ============ -->
+      <div class="prod-comp-carrier fade-in">
+        <div class="prod-comp-carrier-header">
+          <div class="prod-comp-carrier-dot" style="background: #7b2d8e;"></div>
+          <div class="prod-comp-carrier-name">Aetna</div>
+        </div>
+        <div class="prod-comp-table-wrap">
+          <div class="prod-comp-table-scroll">
+            <table class="prod-comp-table">
+              <thead>
+                <tr><th>FFL Contract</th><th>Whole Life</th><th>Final EX</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>145</td><td>-</td><td>-</td></tr>
+                <tr><td>140</td><td>144%</td><td>123%</td></tr>
+                <tr><td>135</td><td>137%</td><td>118%</td></tr>
+                <tr><td>130</td><td>130%</td><td>113%</td></tr>
+                <tr><td>125</td><td>125%</td><td>108%</td></tr>
+                <tr><td>120</td><td>120%</td><td>100%</td></tr>
+                <tr><td>115</td><td>115%</td><td>93%</td></tr>
+                <tr><td>110</td><td>107.5%</td><td>85%</td></tr>
+                <tr><td>105</td><td>100%</td><td>78%</td></tr>
+                <tr><td>100</td><td>92.5%</td><td>70%</td></tr>
+                <tr><td>95</td><td>85%</td><td>70%</td></tr>
+                <tr><td>90</td><td>77.5%</td><td>70%</td></tr>
+                <tr><td>85</td><td>70%</td><td>63%</td></tr>
+                <tr><td>80</td><td>70%</td><td>63%</td></tr>
+                <tr><td>75</td><td>70%</td><td>63%</td></tr>
+                <tr><td>70</td><td>70%</td><td>63%</td></tr>
+                <tr><td>65</td><td>70%</td><td>63%</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ AFLAC ============ -->
+      <div class="prod-comp-carrier fade-in">
+        <div class="prod-comp-carrier-header">
+          <div class="prod-comp-carrier-dot" style="background: #009cde;"></div>
+          <div class="prod-comp-carrier-name">Aflac</div>
+        </div>
+        <div class="prod-comp-table-wrap">
+          <div class="prod-comp-table-scroll">
+            <table class="prod-comp-table">
+              <thead>
+                <tr><th>FFL Contract</th><th>Senior/Family Choice</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>145</td><td>125%</td></tr>
+                <tr><td>140</td><td>125%</td></tr>
+                <tr><td>135</td><td>120%</td></tr>
+                <tr><td>130</td><td>115%</td></tr>
+                <tr><td>125</td><td>110%</td></tr>
+                <tr><td>120</td><td>105%</td></tr>
+                <tr><td>115</td><td>100%</td></tr>
+                <tr><td>110</td><td>95%</td></tr>
+                <tr><td>105</td><td>90%</td></tr>
+                <tr><td>100</td><td>85%</td></tr>
+                <tr><td>95</td><td>80%</td></tr>
+                <tr><td>90</td><td>75%</td></tr>
+                <tr><td>85</td><td>65%</td></tr>
+                <tr><td>80</td><td>65%</td></tr>
+                <tr><td>75</td><td>60%</td></tr>
+                <tr><td>70</td><td>55%</td></tr>
+                <tr><td>65</td><td>50%</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ AMERICAN AMICABLE ============ -->
+      <div class="prod-comp-carrier fade-in">
+        <div class="prod-comp-carrier-header">
+          <div class="prod-comp-carrier-dot" style="background: #2e5090;"></div>
+          <div class="prod-comp-carrier-name">American Amicable</div>
+        </div>
+        <div class="prod-comp-table-wrap">
+          <div class="prod-comp-table-scroll">
+            <table class="prod-comp-table">
+              <thead>
+                <tr><th>FFL Contract</th><th>EZ Term</th><th>Secure Life</th><th>Home Protector</th><th>OBA</th><th>Term Made Simple</th><th>Family Protector</th><th>XUL</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>145</td><td>100%</td><td>140%</td><td>145%</td><td>100%</td><td>130%</td><td>130%</td><td>105%</td></tr>
+                <tr><td>140</td><td>100%</td><td>140%</td><td>140%</td><td>100%</td><td>130%</td><td>130%</td><td>105%</td></tr>
+                <tr><td>135</td><td>95%</td><td>135%</td><td>135%</td><td>95%</td><td>125%</td><td>125%</td><td>100%</td></tr>
+                <tr><td>130</td><td>90%</td><td>130%</td><td>130%</td><td>90%</td><td>120%</td><td>120%</td><td>95%</td></tr>
+                <tr><td>125</td><td>85%</td><td>125%</td><td>125%</td><td>85%</td><td>115%</td><td>115%</td><td>90%</td></tr>
+                <tr><td>120</td><td>80%</td><td>120%</td><td>120%</td><td>80%</td><td>110%</td><td>110%</td><td>85%</td></tr>
+                <tr><td>115</td><td>75%</td><td>115%</td><td>115%</td><td>75%</td><td>105%</td><td>105%</td><td>80%</td></tr>
+                <tr><td>110</td><td>70%</td><td>110%</td><td>110%</td><td>70%</td><td>100%</td><td>100%</td><td>75%</td></tr>
+                <tr><td>105</td><td>65%</td><td>105%</td><td>105%</td><td>65%</td><td>95%</td><td>95%</td><td>65%</td></tr>
+                <tr><td>100</td><td>60%</td><td>100%</td><td>100%</td><td>60%</td><td>90%</td><td>90%</td><td>65%</td></tr>
+                <tr><td>95</td><td>55%</td><td>90%</td><td>90%</td><td>55%</td><td>85%</td><td>80%</td><td>55%</td></tr>
+                <tr><td>90</td><td>50%</td><td>90%</td><td>85%</td><td>50%</td><td>80%</td><td>80%</td><td>55%</td></tr>
+                <tr><td>85</td><td>45%</td><td>85%</td><td>85%</td><td>45%</td><td>75%</td><td>75%</td><td>45%</td></tr>
+                <tr><td>80</td><td>40%</td><td>80%</td><td>80%</td><td>40%</td><td>70%</td><td>70%</td><td>45%</td></tr>
+                <tr><td>75</td><td>35%</td><td>75%</td><td>70%</td><td>35%</td><td>65%</td><td>65%</td><td>45%</td></tr>
+                <tr><td>70</td><td>30%</td><td>70%</td><td>70%</td><td>30%</td><td>60%</td><td>60%</td><td>45%</td></tr>
+                <tr><td>65</td><td>25%</td><td>65%</td><td>65%</td><td>30%</td><td>55%</td><td>55%</td><td>45%</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ AMERICO ============ -->
+      <div class="prod-comp-carrier fade-in">
+        <div class="prod-comp-carrier-header">
+          <div class="prod-comp-carrier-dot" style="background: #c0392b;"></div>
+          <div class="prod-comp-carrier-name">Americo</div>
+        </div>
+        <div class="prod-comp-table-wrap">
+          <div class="prod-comp-table-scroll">
+            <table class="prod-comp-table">
+              <thead>
+                <tr><th>FFL Contract</th><th>HMS 125</th><th>Eagle Premier</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>145</td><td>145%</td><td>135%</td></tr>
+                <tr><td>140</td><td>140%</td><td>135%</td></tr>
+                <tr><td>135</td><td>135%</td><td>130%</td></tr>
+                <tr><td>130</td><td>130%</td><td>125%</td></tr>
+                <tr><td>125</td><td>125%</td><td>120%</td></tr>
+                <tr><td>120</td><td>120%</td><td>115%</td></tr>
+                <tr><td>115</td><td>115%</td><td>110%</td></tr>
+                <tr><td>110</td><td>110%</td><td>105%</td></tr>
+                <tr><td>105</td><td>105%</td><td>100%</td></tr>
+                <tr><td>100</td><td>100%</td><td>95%</td></tr>
+                <tr><td>95</td><td>95%</td><td>90%</td></tr>
+                <tr><td>90</td><td>90%</td><td>85%</td></tr>
+                <tr><td>85</td><td>85%</td><td>80%</td></tr>
+                <tr><td>80</td><td>80%</td><td>75%</td></tr>
+                <tr><td>75</td><td>75%</td><td>70%</td></tr>
+                <tr><td>70</td><td>70%</td><td>65%</td></tr>
+                <tr><td>65</td><td>65%</td><td>60%</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ CHUBB ============ -->
+      <div class="prod-comp-carrier fade-in">
+        <div class="prod-comp-carrier-header">
+          <div class="prod-comp-carrier-dot" style="background: #8e3a6d;"></div>
+          <div class="prod-comp-carrier-name">Chubb</div>
+        </div>
+        <div class="prod-comp-table-wrap">
+          <div class="prod-comp-table-scroll">
+            <table class="prod-comp-table">
+              <thead>
+                <tr><th>FFL Contract</th><th>Generational Life</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>145</td><td>120%</td></tr>
+                <tr><td>140</td><td>120%</td></tr>
+                <tr><td>135</td><td>115%</td></tr>
+                <tr><td>130</td><td>110%</td></tr>
+                <tr><td>125</td><td>105%</td></tr>
+                <tr><td>120</td><td>100%</td></tr>
+                <tr><td>115</td><td>95%</td></tr>
+                <tr><td>110</td><td>90%</td></tr>
+                <tr><td>105</td><td>85%</td></tr>
+                <tr><td>100</td><td>80%</td></tr>
+                <tr><td>95</td><td>75%</td></tr>
+                <tr><td>90</td><td>70%</td></tr>
+                <tr><td>85</td><td>65%</td></tr>
+                <tr><td>80</td><td>60%</td></tr>
+                <tr><td>75</td><td>55%</td></tr>
+                <tr><td>70</td><td>50%</td></tr>
+                <tr><td>65</td><td>45%</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ COREBRIDGE ============ -->
+      <div class="prod-comp-carrier fade-in">
+        <div class="prod-comp-carrier-header">
+          <div class="prod-comp-carrier-dot" style="background: #5b6abf;"></div>
+          <div class="prod-comp-carrier-name">Corebridge</div>
+        </div>
+        <div class="prod-comp-table-wrap">
+          <div class="prod-comp-table-scroll">
+            <table class="prod-comp-table">
+              <thead>
+                <tr><th>FFL Contract</th><th>GIWL</th><th>SIWL</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>145</td><td>-</td><td>-</td></tr>
+                <tr><td>140</td><td>80.0%</td><td>132%</td></tr>
+                <tr><td>135</td><td>77.5%</td><td>127%</td></tr>
+                <tr><td>130</td><td>75.0%</td><td>122%</td></tr>
+                <tr><td>125</td><td>72.5%</td><td>117%</td></tr>
+                <tr><td>120</td><td>70.0%</td><td>112%</td></tr>
+                <tr><td>115</td><td>67.5%</td><td>107%</td></tr>
+                <tr><td>110</td><td>65.0%</td><td>102%</td></tr>
+                <tr><td>105</td><td>62.5%</td><td>97%</td></tr>
+                <tr><td>100</td><td>60.0%</td><td>92%</td></tr>
+                <tr><td>95</td><td>57.5%</td><td>87%</td></tr>
+                <tr><td>90</td><td>57.5%</td><td>82%</td></tr>
+                <tr><td>85</td><td>55.0%</td><td>77%</td></tr>
+                <tr><td>80</td><td>55.0%</td><td>72%</td></tr>
+                <tr><td>75</td><td>55.0%</td><td>67%</td></tr>
+                <tr><td>70</td><td>55.0%</td><td>62%</td></tr>
+                <tr><td>65</td><td>55.0%</td><td>57%</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ ETHOS ============ -->
+      <div class="prod-comp-carrier fade-in">
+        <div class="prod-comp-carrier-header">
+          <div class="prod-comp-carrier-dot" style="background: #2d8c4e;"></div>
+          <div class="prod-comp-carrier-name">Ethos</div>
+        </div>
+        <div class="prod-comp-table-wrap">
+          <div class="prod-comp-table-scroll">
+            <table class="prod-comp-table">
+              <thead>
+                <tr><th>FFL Contract</th><th>LGA Prime</th><th>TruStage TAWL</th><th>TruStage SITL</th><th>TruStage GAWL</th><th>Ameritas IUL</th><th>Ameritas SI Term</th><th>JH ROP</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>145</td><td>120.0%</td><td>120.0%</td><td>55.0%</td><td>30%</td><td>125.0%</td><td>120.0%</td><td>145.0%</td></tr>
+                <tr><td>140</td><td>117.5%</td><td>120.0%</td><td>52.5%</td><td>27.5%</td><td>120.0%</td><td>117.5%</td><td>145.0%</td></tr>
+                <tr><td>135</td><td>115.0%</td><td>117.5%</td><td>50.0%</td><td>25.0%</td><td>115.0%</td><td>115.0%</td><td>135.0%</td></tr>
+                <tr><td>130</td><td>112.5%</td><td>115.0%</td><td>47.5%</td><td>22.5%</td><td>110.0%</td><td>112.5%</td><td>130.0%</td></tr>
+                <tr><td>125</td><td>110.0%</td><td>110.0%</td><td>45.0%</td><td>20.0%</td><td>105.0%</td><td>110.0%</td><td>125.0%</td></tr>
+                <tr><td>120</td><td>107.5%</td><td>105.0%</td><td>42.5%</td><td>17.5%</td><td>100.0%</td><td>107.5%</td><td>115.0%</td></tr>
+                <tr><td>115</td><td>105.0%</td><td>100.0%</td><td>40.0%</td><td>15.0%</td><td>95.0%</td><td>105.0%</td><td>105.0%</td></tr>
+                <tr><td>110</td><td>102.5%</td><td>95.0%</td><td>37.5%</td><td>12.5%</td><td>90.0%</td><td>102.5%</td><td>100.0%</td></tr>
+                <tr><td>105</td><td>100.0%</td><td>90.0%</td><td>35.0%</td><td>10.0%</td><td>85.0%</td><td>100.0%</td><td>95.0%</td></tr>
+                <tr><td>100</td><td>97.5%</td><td>87.5%</td><td>32.5%</td><td>7.5%</td><td>80.0%</td><td>97.5%</td><td>90.0%</td></tr>
+                <tr><td>95</td><td>95.0%</td><td>85.0%</td><td>30.0%</td><td>5.0%</td><td>75.0%</td><td>95.0%</td><td>85.0%</td></tr>
+                <tr><td>90</td><td>92.5%</td><td>82.5%</td><td>27.5%</td><td>2.5%</td><td>70.0%</td><td>92.5%</td><td>80.0%</td></tr>
+                <tr><td>85</td><td>90.0%</td><td>80.0%</td><td>25.0%</td><td>2.5%</td><td>65.0%</td><td>90.0%</td><td>75.0%</td></tr>
+                <tr><td>80</td><td>87.5%</td><td>77.5%</td><td>22.5%</td><td>2.5%</td><td>60.0%</td><td>87.5%</td><td>70.0%</td></tr>
+                <tr><td>75</td><td>85.0%</td><td>70.0%</td><td>20.0%</td><td>2.5%</td><td>55.0%</td><td>85.0%</td><td>65.0%</td></tr>
+                <tr><td>70</td><td>82.5%</td><td>65.0%</td><td>17.5%</td><td>2.5%</td><td>50.0%</td><td>82.5%</td><td>60.0%</td></tr>
+                <tr><td>65</td><td>80.0%</td><td>60.0%</td><td>15.0%</td><td>2.5%</td><td>50.0%</td><td>80.0%</td><td>55.0%</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ FORESTERS ============ -->
+      <div class="prod-comp-carrier fade-in">
+        <div class="prod-comp-carrier-header">
+          <div class="prod-comp-carrier-dot" style="background: #e8a020;"></div>
+          <div class="prod-comp-carrier-name">Foresters</div>
+        </div>
+        <div class="prod-comp-table-wrap">
+          <div class="prod-comp-table-scroll">
+            <table class="prod-comp-table">
+              <thead>
+                <tr><th>FFL Contract</th><th>Strong Foundation</th><th>Planright</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>145</td><td>-</td><td>-</td></tr>
+                <tr><td>140</td><td>120%</td><td>120%</td></tr>
+                <tr><td>135</td><td>115%</td><td>115%</td></tr>
+                <tr><td>130</td><td>110%</td><td>110%</td></tr>
+                <tr><td>125</td><td>105%</td><td>105%</td></tr>
+                <tr><td>120</td><td>100%</td><td>100%</td></tr>
+                <tr><td>115</td><td>95%</td><td>95%</td></tr>
+                <tr><td>110</td><td>90%</td><td>90%</td></tr>
+                <tr><td>105</td><td>85%</td><td>85%</td></tr>
+                <tr><td>100</td><td>80%</td><td>80%</td></tr>
+                <tr><td>95</td><td>75%</td><td>75%</td></tr>
+                <tr><td>90</td><td>70%</td><td>70%</td></tr>
+                <tr><td>85</td><td>65%</td><td>65%</td></tr>
+                <tr><td>80</td><td>60%</td><td>60%</td></tr>
+                <tr><td>75</td><td>55%</td><td>60%</td></tr>
+                <tr><td>70</td><td>50%</td><td>60%</td></tr>
+                <tr><td>65</td><td>45%</td><td>60%</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ INSTABRAIN ============ -->
+      <div class="prod-comp-carrier fade-in">
+        <div class="prod-comp-carrier-header">
+          <div class="prod-comp-carrier-dot" style="background: #e05a2b;"></div>
+          <div class="prod-comp-carrier-name">InstaBrain</div>
+        </div>
+        <div class="prod-comp-table-wrap">
+          <div class="prod-comp-table-scroll">
+            <table class="prod-comp-table">
+              <thead>
+                <tr><th>FFL Contract</th><th>Life Term</th><th>Senior Life Term/WL</th><th>Final Expense WL</th><th>Guaranteed Issue WL</th><th>Accidental</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>145</td><td>130%</td><td>90%</td><td>128%</td><td>73%</td><td>90%</td></tr>
+                <tr><td>140</td><td>125%</td><td>85%</td><td>125%</td><td>70%</td><td>85%</td></tr>
+                <tr><td>135</td><td>120%</td><td>80%</td><td>123%</td><td>68%</td><td>80%</td></tr>
+                <tr><td>130</td><td>115%</td><td>75%</td><td>120%</td><td>65%</td><td>75%</td></tr>
+                <tr><td>125</td><td>110%</td><td>70%</td><td>118%</td><td>63%</td><td>70%</td></tr>
+                <tr><td>120</td><td>105%</td><td>65%</td><td>115%</td><td>60%</td><td>65%</td></tr>
+                <tr><td>115</td><td>100%</td><td>60%</td><td>113%</td><td>58%</td><td>60%</td></tr>
+                <tr><td>110</td><td>95%</td><td>55%</td><td>110%</td><td>55%</td><td>55%</td></tr>
+                <tr><td>105</td><td>90%</td><td>50%</td><td>108%</td><td>53%</td><td>50%</td></tr>
+                <tr><td>100</td><td>85%</td><td>45%</td><td>103%</td><td>50%</td><td>45%</td></tr>
+                <tr><td>95</td><td>80%</td><td>40%</td><td>100%</td><td>48%</td><td>40%</td></tr>
+                <tr><td>90</td><td>75%</td><td>35%</td><td>100%</td><td>45%</td><td>35%</td></tr>
+                <tr><td>85</td><td>70%</td><td>30%</td><td>98%</td><td>43%</td><td>30%</td></tr>
+                <tr><td>80</td><td>65%</td><td>25%</td><td>95%</td><td>40%</td><td>25%</td></tr>
+                <tr><td>75</td><td>60%</td><td>20%</td><td>93%</td><td>38%</td><td>20%</td></tr>
+                <tr><td>70</td><td>55%</td><td>15%</td><td>90%</td><td>35%</td><td>15%</td></tr>
+                <tr><td>65</td><td>55%</td><td>15%</td><td>90%</td><td>35%</td><td>15%</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ LIBERTY BANKERS ============ -->
+      <div class="prod-comp-carrier fade-in">
+        <div class="prod-comp-carrier-header">
+          <div class="prod-comp-carrier-dot" style="background: #b8860b;"></div>
+          <div class="prod-comp-carrier-name">Liberty Bankers</div>
+        </div>
+        <div class="prod-comp-table-wrap">
+          <div class="prod-comp-table-scroll">
+            <table class="prod-comp-table">
+              <thead>
+                <tr><th>FFL Contract</th><th>FX</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>145</td><td>-</td></tr>
+                <tr><td>140</td><td>125%</td></tr>
+                <tr><td>135</td><td>120%</td></tr>
+                <tr><td>130</td><td>115%</td></tr>
+                <tr><td>125</td><td>110%</td></tr>
+                <tr><td>120</td><td>105%</td></tr>
+                <tr><td>115</td><td>100%</td></tr>
+                <tr><td>110</td><td>98%</td></tr>
+                <tr><td>105</td><td>90%</td></tr>
+                <tr><td>100</td><td>80%</td></tr>
+                <tr><td>95</td><td>75%</td></tr>
+                <tr><td>90</td><td>70%</td></tr>
+                <tr><td>85</td><td>65%</td></tr>
+                <tr><td>80</td><td>60%</td></tr>
+                <tr><td>75</td><td>55%</td></tr>
+                <tr><td>70</td><td>50%</td></tr>
+                <tr><td>65</td><td>50%</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ LADDER LIFE ============ -->
+      <div class="prod-comp-carrier fade-in">
+        <div class="prod-comp-carrier-header">
+          <div class="prod-comp-carrier-dot" style="background: #e74c3c;"></div>
+          <div class="prod-comp-carrier-name">Ladder Life</div>
+        </div>
+        <div class="prod-comp-table-wrap">
+          <div class="prod-comp-table-scroll">
+            <table class="prod-comp-table">
+              <thead>
+                <tr><th>FFL Contract</th><th>FX</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>145</td><td>-</td></tr>
+                <tr><td>140</td><td>120%</td></tr>
+                <tr><td>135</td><td>115%</td></tr>
+                <tr><td>130</td><td>110%</td></tr>
+                <tr><td>125</td><td>105%</td></tr>
+                <tr><td>120</td><td>100%</td></tr>
+                <tr><td>115</td><td>95%</td></tr>
+                <tr><td>110</td><td>90%</td></tr>
+                <tr><td>105</td><td>85%</td></tr>
+                <tr><td>100</td><td>75%</td></tr>
+                <tr><td>95</td><td>70%</td></tr>
+                <tr><td>90</td><td>60%</td></tr>
+                <tr><td>85</td><td>55%</td></tr>
+                <tr><td>80</td><td>50%</td></tr>
+                <tr><td>75</td><td>50%</td></tr>
+                <tr><td>70</td><td>50%</td></tr>
+                <tr><td>65</td><td>50%</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ NLG ============ -->
+      <div class="prod-comp-carrier fade-in">
+        <div class="prod-comp-carrier-header">
+          <div class="prod-comp-carrier-dot" style="background: #1a6b3c;"></div>
+          <div class="prod-comp-carrier-name">NLG (National Life Group)</div>
+        </div>
+        <div class="prod-comp-table-wrap">
+          <div class="prod-comp-table-scroll">
+            <table class="prod-comp-table">
+              <thead>
+                <tr><th>FFL Contract</th><th>Universal Life</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>145</td><td>-</td></tr>
+                <tr><td>140</td><td>110%</td></tr>
+                <tr><td>135</td><td>105%</td></tr>
+                <tr><td>130</td><td>100%</td></tr>
+                <tr><td>125</td><td>95%</td></tr>
+                <tr><td>120</td><td>90%</td></tr>
+                <tr><td>115</td><td>85%</td></tr>
+                <tr><td>110</td><td>80%</td></tr>
+                <tr><td>105</td><td>75%</td></tr>
+                <tr><td>100</td><td>70%</td></tr>
+                <tr><td>95</td><td>65%</td></tr>
+                <tr><td>90</td><td>60%</td></tr>
+                <tr><td>85</td><td>55%</td></tr>
+                <tr><td>80</td><td>50%</td></tr>
+                <tr><td>75</td><td>45%</td></tr>
+                <tr><td>70</td><td>40%</td></tr>
+                <tr><td>65</td><td>40%</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ MUTUAL OF OMAHA ============ -->
+      <div class="prod-comp-carrier fade-in">
+        <div class="prod-comp-carrier-header">
+          <div class="prod-comp-carrier-dot" style="background: #004b8d;"></div>
+          <div class="prod-comp-carrier-name">Mutual of Omaha</div>
+        </div>
+        <div class="prod-comp-table-wrap">
+          <div class="prod-comp-table-scroll">
+            <table class="prod-comp-table">
+              <thead>
+                <tr><th>FFL Contract</th><th>Term Life Express</th><th>Final Expense</th><th>IUL</th><th>Children's Whole Life</th><th>IULE</th><th>Term Life Answers</th><th>Accidental Death</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>145</td><td>145%</td><td>125%</td><td>125%</td><td>100%</td><td>130%</td><td>110%</td><td>130%</td></tr>
+                <tr><td>140</td><td>140%</td><td>125%</td><td>125%</td><td>100%</td><td>130%</td><td>110%</td><td>130%</td></tr>
+                <tr><td>135</td><td>135%</td><td>120%</td><td>120%</td><td>97%</td><td>125%</td><td>105%</td><td>125%</td></tr>
+                <tr><td>130</td><td>130%</td><td>115%</td><td>115%</td><td>95%</td><td>120%</td><td>100%</td><td>120%</td></tr>
+                <tr><td>125</td><td>125%</td><td>110%</td><td>110%</td><td>92%</td><td>115%</td><td>95%</td><td>115%</td></tr>
+                <tr><td>120</td><td>120%</td><td>105%</td><td>105%</td><td>90%</td><td>110%</td><td>90%</td><td>110%</td></tr>
+                <tr><td>115</td><td>115%</td><td>100%</td><td>100%</td><td>85%</td><td>105%</td><td>85%</td><td>105%</td></tr>
+                <tr><td>110</td><td>110%</td><td>95%</td><td>95%</td><td>80%</td><td>100%</td><td>80%</td><td>100%</td></tr>
+                <tr><td>105</td><td>105%</td><td>90%</td><td>90%</td><td>75%</td><td>95%</td><td>75%</td><td>95%</td></tr>
+                <tr><td>100</td><td>100%</td><td>86%</td><td>85%</td><td>70%</td><td>90%</td><td>70%</td><td>90%</td></tr>
+                <tr><td>95</td><td>95%</td><td>82%</td><td>80%</td><td>65%</td><td>85%</td><td>65%</td><td>85%</td></tr>
+                <tr><td>90</td><td>90%</td><td>78%</td><td>75%</td><td>60%</td><td>80%</td><td>60%</td><td>80%</td></tr>
+                <tr><td>85</td><td>85%</td><td>74%</td><td>70%</td><td>55%</td><td>75%</td><td>55%</td><td>75%</td></tr>
+                <tr><td>80</td><td>80%</td><td>70%</td><td>65%</td><td>50%</td><td>70%</td><td>50%</td><td>70%</td></tr>
+                <tr><td>75</td><td>75%</td><td>65%</td><td>60%</td><td>45%</td><td>65%</td><td>45%</td><td>65%</td></tr>
+                <tr><td>70</td><td>75%</td><td>61%</td><td>55%</td><td>40%</td><td>60%</td><td>40%</td><td>60%</td></tr>
+                <tr><td>65</td><td>65%</td><td>57%</td><td>50%</td><td>35%</td><td>55%</td><td>35%</td><td>55%</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ ROYAL NEIGHBORS ============ -->
+      <div class="prod-comp-carrier fade-in">
+        <div class="prod-comp-carrier-header">
+          <div class="prod-comp-carrier-dot" style="background: #2e7d32;"></div>
+          <div class="prod-comp-carrier-name">Royal Neighbors</div>
+        </div>
+        <div class="prod-comp-table-wrap">
+          <div class="prod-comp-table-scroll">
+            <table class="prod-comp-table">
+              <thead>
+                <tr><th>FFL Contract</th><th>Term</th><th>Royal Legacy SPWL</th><th>Secure Life IUL</th><th>SI Whole Life</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>145</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>
+                <tr><td>140</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>
+                <tr><td>135</td><td>120%</td><td>16%</td><td>125%</td><td>125%</td></tr>
+                <tr><td>130</td><td>115%</td><td>15%</td><td>120%</td><td>120%</td></tr>
+                <tr><td>125</td><td>110%</td><td>14%</td><td>112%</td><td>110%</td></tr>
+                <tr><td>120</td><td>100%</td><td>13%</td><td>105%</td><td>100%</td></tr>
+                <tr><td>115</td><td>95%</td><td>13%</td><td>105%</td><td>100%</td></tr>
+                <tr><td>110</td><td>95%</td><td>13%</td><td>100%</td><td>95%</td></tr>
+                <tr><td>105</td><td>90%</td><td>12%</td><td>98%</td><td>95%</td></tr>
+                <tr><td>100</td><td>85%</td><td>11%</td><td>90%</td><td>85%</td></tr>
+                <tr><td>95</td><td>80%</td><td>10%</td><td>80%</td><td>75%</td></tr>
+                <tr><td>90</td><td>75%</td><td>9%</td><td>80%</td><td>75%</td></tr>
+                <tr><td>85</td><td>70%</td><td>7%</td><td>70%</td><td>45%</td></tr>
+                <tr><td>80</td><td>50%</td><td>7%</td><td>40%</td><td>45%</td></tr>
+                <tr><td>75</td><td>50%</td><td>7%</td><td>40%</td><td>45%</td></tr>
+                <tr><td>70</td><td>50%</td><td>7%</td><td>40%</td><td>45%</td></tr>
+                <tr><td>65</td><td>50%</td><td>7%</td><td>40%</td><td>45%</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ TRANSAMERICA ============ -->
+      <div class="prod-comp-carrier fade-in">
+        <div class="prod-comp-carrier-header">
+          <div class="prod-comp-carrier-dot" style="background: #8b1a1a;"></div>
+          <div class="prod-comp-carrier-name">Transamerica</div>
+        </div>
+        <div class="prod-comp-table-wrap">
+          <div class="prod-comp-table-scroll">
+            <table class="prod-comp-table">
+              <thead>
+                <tr><th>FFL Contract</th><th>FE</th><th>UL</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>145</td><td>140%</td><td>120%</td></tr>
+                <tr><td>140</td><td>140%</td><td>120%</td></tr>
+                <tr><td>135</td><td>135%</td><td>115%</td></tr>
+                <tr><td>130</td><td>130%</td><td>110%</td></tr>
+                <tr><td>125</td><td>125%</td><td>105%</td></tr>
+                <tr><td>120</td><td>120%</td><td>100%</td></tr>
+                <tr><td>115</td><td>115%</td><td>95%</td></tr>
+                <tr><td>110</td><td>110%</td><td>90%</td></tr>
+                <tr><td>105</td><td>105%</td><td>80%</td></tr>
+                <tr><td>100</td><td>100%</td><td>75%</td></tr>
+                <tr><td>95</td><td>95%</td><td>70%</td></tr>
+                <tr><td>90</td><td>90%</td><td>60%</td></tr>
+                <tr><td>85</td><td>85%</td><td>55%</td></tr>
+                <tr><td>80</td><td>80%</td><td>50%</td></tr>
+                <tr><td>75</td><td>75%</td><td>45%</td></tr>
+                <tr><td>70</td><td>70%</td><td>40%</td></tr>
+                <tr><td>65</td><td>70%</td><td>40%</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ UNITED HOME LIFE ============ -->
+      <div class="prod-comp-carrier fade-in">
+        <div class="prod-comp-carrier-header">
+          <div class="prod-comp-carrier-dot" style="background: #3c6478;"></div>
+          <div class="prod-comp-carrier-name">United Home Life</div>
+        </div>
+        <div class="prod-comp-table-wrap">
+          <div class="prod-comp-table-scroll">
+            <table class="prod-comp-table">
+              <thead>
+                <tr><th>FFL Contract</th><th>FX</th><th>GIWL</th><th>Whole Life</th><th>Accidental</th><th>Term</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>145</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>
+                <tr><td>140</td><td>110%</td><td>70%</td><td>120%</td><td>100%</td><td>110%</td></tr>
+                <tr><td>135</td><td>105%</td><td>65%</td><td>115%</td><td>95%</td><td>105%</td></tr>
+                <tr><td>130</td><td>100%</td><td>60%</td><td>110%</td><td>90%</td><td>100%</td></tr>
+                <tr><td>125</td><td>95%</td><td>55%</td><td>105%</td><td>85%</td><td>95%</td></tr>
+                <tr><td>120</td><td>90%</td><td>50%</td><td>100%</td><td>80%</td><td>90%</td></tr>
+                <tr><td>115</td><td>85%</td><td>45%</td><td>95%</td><td>75%</td><td>85%</td></tr>
+                <tr><td>110</td><td>80%</td><td>40%</td><td>90%</td><td>70%</td><td>80%</td></tr>
+                <tr><td>105</td><td>75%</td><td>35%</td><td>85%</td><td>65%</td><td>75%</td></tr>
+                <tr><td>100</td><td>70%</td><td>30%</td><td>80%</td><td>60%</td><td>70%</td></tr>
+                <tr><td>95</td><td>65%</td><td>25%</td><td>75%</td><td>55%</td><td>65%</td></tr>
+                <tr><td>90</td><td>60%</td><td>25%</td><td>70%</td><td>50%</td><td>60%</td></tr>
+                <tr><td>85</td><td>55%</td><td>25%</td><td>65%</td><td>50%</td><td>55%</td></tr>
+                <tr><td>80</td><td>50%</td><td>25%</td><td>60%</td><td>50%</td><td>50%</td></tr>
+                <tr><td>75</td><td>45%</td><td>25%</td><td>55%</td><td>45%</td><td>45%</td></tr>
+                <tr><td>70</td><td>45%</td><td>25%</td><td>55%</td><td>45%</td><td>45%</td></tr>
+                <tr><td>65</td><td>45%</td><td>25%</td><td>55%</td><td>45%</td><td>45%</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="prod-comp-note">
+        Commissions may differ by term, age, and graded. Internal use only. Revised 8/05/2025.
+      </div>
+
+    </div>
+  </section>
+
+  <footer class="footer">
+    <p>&copy; 2026 <span>Kairos Financial</span>. Agent Portal — Internal Use Only.</p>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
