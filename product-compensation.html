@@ -1089,35 +1089,31 @@
     const levelSelect = document.getElementById('levelSelect');
     const condensedView = document.getElementById('condensedView');
 
-    // Color map for carrier dots
-    const dotColors = {};
-    document.querySelectorAll('.prod-comp-carrier').forEach(c => {
-      const dot = c.querySelector('.prod-comp-carrier-dot');
-      const name = c.querySelector('.prod-comp-carrier-name').textContent;
-      if (dot) dotColors[name] = dot.style.background;
-    });
-
-    // Build data structure from tables
-    function buildCarrierData() {
-      const data = [];
-      document.querySelectorAll('.prod-comp-carrier').forEach(carrier => {
-        const name = carrier.querySelector('.prod-comp-carrier-name').textContent;
-        const table = carrier.querySelector('.prod-comp-table');
-        const headers = Array.from(table.querySelectorAll('thead th')).map(th => th.textContent);
-        const products = headers.slice(1); // skip "Comp Level"
-        const rows = {};
-        table.querySelectorAll('tbody tr').forEach(tr => {
-          const cells = Array.from(tr.querySelectorAll('td'));
-          const level = cells[0].textContent.trim();
-          const values = cells.slice(1).map(td => td.textContent.trim());
-          rows[level] = values;
-        });
-        data.push({ name, products, rows });
+    // Build data from ALL carrier divs (including hidden ones)
+    const allCarrierEls = document.querySelectorAll('[data-carrier]');
+    const carrierData = [];
+    allCarrierEls.forEach(carrier => {
+      const name = carrier.querySelector('.prod-comp-carrier-name').textContent.trim();
+      const dot = carrier.querySelector('.prod-comp-carrier-dot');
+      const color = dot ? dot.style.background || dot.style.backgroundColor : '#888';
+      const table = carrier.querySelector('.prod-comp-table');
+      if (!table) return;
+      const headers = [];
+      table.querySelectorAll('thead th').forEach(th => headers.push(th.textContent.trim()));
+      const products = headers.slice(1);
+      const rows = {};
+      table.querySelectorAll('tbody tr').forEach(tr => {
+        const cells = tr.querySelectorAll('td');
+        if (cells.length < 2) return;
+        const level = cells[0].textContent.trim();
+        const values = [];
+        for (let i = 1; i < cells.length; i++) {
+          values.push(cells[i].textContent.trim());
+        }
+        rows[level] = values;
       });
-      return data;
-    }
-
-    const carrierData = buildCarrierData();
+      carrierData.push({ name, color, products, rows });
+    });
 
     levelSelect.addEventListener('change', () => {
       const level = levelSelect.value;
@@ -1134,9 +1130,8 @@
         const hasData = values.some(v => v && v !== '-');
         if (!hasData) return;
 
-        const color = dotColors[carrier.name] || '#888';
         html += '<div class="prod-comp-condensed-carrier">';
-        html += '<div class="prod-comp-condensed-carrier-name"><span class="dot" style="background:' + color + '"></span>' + carrier.name + '</div>';
+        html += '<div class="prod-comp-condensed-carrier-name"><span class="dot" style="background:' + carrier.color + '"></span>' + carrier.name + '</div>';
         carrier.products.forEach((product, i) => {
           const val = values[i] || '-';
           if (val === '-') return;
