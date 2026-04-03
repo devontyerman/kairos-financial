@@ -185,6 +185,130 @@
       border-top: 1px solid var(--border);
     }
 
+    /* Level selector */
+    .prod-comp-level-selector {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+    }
+
+    .prod-comp-level-top {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .prod-comp-level-label {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .prod-comp-level-select {
+      padding: 0.5rem 2.5rem 0.5rem 1rem;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      background: var(--bg-surface);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg width='12' height='12' viewBox='0 0 12 12' fill='none' stroke='%23888' stroke-width='2' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolyline points='2 4 6 8 10 4'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.75rem center;
+    }
+
+    .prod-comp-level-hint {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    /* Condensed results grid */
+    .prod-comp-condensed {
+      display: none;
+      margin-top: 1.25rem;
+    }
+
+    .prod-comp-condensed.visible {
+      display: block;
+    }
+
+    .prod-comp-condensed-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 0.75rem;
+    }
+
+    .prod-comp-condensed-carrier {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 1rem 1.25rem;
+    }
+
+    .prod-comp-condensed-carrier-name {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .prod-comp-condensed-carrier-name .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .prod-comp-condensed-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.25rem 0;
+      font-size: 0.78rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .prod-comp-condensed-row:last-child {
+      border-bottom: none;
+    }
+
+    .prod-comp-condensed-product {
+      color: var(--text-muted);
+    }
+
+    .prod-comp-condensed-rate {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 700;
+      color: var(--gold);
+    }
+
+    .prod-comp-divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 0 0 2rem;
+    }
+
+    .prod-comp-browse-label {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.75rem;
+    }
+
     .prod-comp-back {
       display: inline-flex;
       align-items: center;
@@ -306,6 +430,38 @@
         Back to Agent Compensation
       </a>
 
+      <!-- Level selector -->
+      <div class="prod-comp-level-selector">
+        <div class="prod-comp-level-top">
+          <span class="prod-comp-level-label">My Compensation Level:</span>
+          <select class="prod-comp-level-select" id="levelSelect">
+            <option value="">Select your level...</option>
+            <option value="145">145%</option>
+            <option value="140">140%</option>
+            <option value="135">135%</option>
+            <option value="130">130%</option>
+            <option value="125">125%</option>
+            <option value="120">120%</option>
+            <option value="115">115%</option>
+            <option value="110">110%</option>
+            <option value="105">105%</option>
+            <option value="100">100%</option>
+            <option value="95">95%</option>
+            <option value="90">90%</option>
+            <option value="85">85%</option>
+            <option value="80">80%</option>
+            <option value="75">75%</option>
+            <option value="70">70%</option>
+            <option value="65">65%</option>
+          </select>
+          <span class="prod-comp-level-hint">See what you earn on every product at your level</span>
+        </div>
+        <div class="prod-comp-condensed" id="condensedView"></div>
+      </div>
+
+      <hr class="prod-comp-divider">
+      <div class="prod-comp-browse-label">Or browse by carrier</div>
+
       <!-- Carrier selector pills -->
       <div class="prod-comp-pills" id="carrierPills">
         <button class="prod-comp-pill active" data-target="americo"><span class="prod-comp-pill-dot" style="background:#c0392b"></span>Americo</button>
@@ -336,7 +492,7 @@
           <div class="prod-comp-table-scroll">
             <table class="prod-comp-table">
               <thead>
-                <tr><th>FFL Contract</th><th>Whole Life</th><th>Final EX</th></tr>
+                <tr><th>Comp Level</th><th>Whole Life</th><th>Final EX</th></tr>
               </thead>
               <tbody>
                 <tr><td>145</td><td>-</td><td>-</td></tr>
@@ -372,7 +528,7 @@
           <div class="prod-comp-table-scroll">
             <table class="prod-comp-table">
               <thead>
-                <tr><th>FFL Contract</th><th>Senior/Family Choice</th></tr>
+                <tr><th>Comp Level</th><th>Senior/Family Choice</th></tr>
               </thead>
               <tbody>
                 <tr><td>145</td><td>125%</td></tr>
@@ -408,7 +564,7 @@
           <div class="prod-comp-table-scroll">
             <table class="prod-comp-table">
               <thead>
-                <tr><th>FFL Contract</th><th>EZ Term</th><th>Secure Life</th><th>Home Protector</th><th>OBA</th><th>Term Made Simple</th><th>Family Protector</th><th>XUL</th></tr>
+                <tr><th>Comp Level</th><th>EZ Term</th><th>Secure Life</th><th>Home Protector</th><th>OBA</th><th>Term Made Simple</th><th>Family Protector</th><th>XUL</th></tr>
               </thead>
               <tbody>
                 <tr><td>145</td><td>100%</td><td>140%</td><td>145%</td><td>100%</td><td>130%</td><td>130%</td><td>105%</td></tr>
@@ -444,7 +600,7 @@
           <div class="prod-comp-table-scroll">
             <table class="prod-comp-table">
               <thead>
-                <tr><th>FFL Contract</th><th>HMS 125</th><th>Eagle Premier</th></tr>
+                <tr><th>Comp Level</th><th>HMS 125</th><th>Eagle Premier</th></tr>
               </thead>
               <tbody>
                 <tr><td>145</td><td>145%</td><td>135%</td></tr>
@@ -480,7 +636,7 @@
           <div class="prod-comp-table-scroll">
             <table class="prod-comp-table">
               <thead>
-                <tr><th>FFL Contract</th><th>Generational Life</th></tr>
+                <tr><th>Comp Level</th><th>Generational Life</th></tr>
               </thead>
               <tbody>
                 <tr><td>145</td><td>120%</td></tr>
@@ -516,7 +672,7 @@
           <div class="prod-comp-table-scroll">
             <table class="prod-comp-table">
               <thead>
-                <tr><th>FFL Contract</th><th>GIWL</th><th>SIWL</th></tr>
+                <tr><th>Comp Level</th><th>GIWL</th><th>SIWL</th></tr>
               </thead>
               <tbody>
                 <tr><td>145</td><td>-</td><td>-</td></tr>
@@ -552,7 +708,7 @@
           <div class="prod-comp-table-scroll">
             <table class="prod-comp-table">
               <thead>
-                <tr><th>FFL Contract</th><th>LGA Prime</th><th>TruStage TAWL</th><th>TruStage SITL</th><th>TruStage GAWL</th><th>Ameritas IUL</th><th>Ameritas SI Term</th><th>JH ROP</th></tr>
+                <tr><th>Comp Level</th><th>LGA Prime</th><th>TruStage TAWL</th><th>TruStage SITL</th><th>TruStage GAWL</th><th>Ameritas IUL</th><th>Ameritas SI Term</th><th>JH ROP</th></tr>
               </thead>
               <tbody>
                 <tr><td>145</td><td>120.0%</td><td>120.0%</td><td>55.0%</td><td>30%</td><td>125.0%</td><td>120.0%</td><td>145.0%</td></tr>
@@ -588,7 +744,7 @@
           <div class="prod-comp-table-scroll">
             <table class="prod-comp-table">
               <thead>
-                <tr><th>FFL Contract</th><th>Strong Foundation</th><th>Planright</th></tr>
+                <tr><th>Comp Level</th><th>Strong Foundation</th><th>Planright</th></tr>
               </thead>
               <tbody>
                 <tr><td>145</td><td>-</td><td>-</td></tr>
@@ -624,7 +780,7 @@
           <div class="prod-comp-table-scroll">
             <table class="prod-comp-table">
               <thead>
-                <tr><th>FFL Contract</th><th>Life Term</th><th>Senior Life Term/WL</th><th>Final Expense WL</th><th>Guaranteed Issue WL</th><th>Accidental</th></tr>
+                <tr><th>Comp Level</th><th>Life Term</th><th>Senior Life Term/WL</th><th>Final Expense WL</th><th>Guaranteed Issue WL</th><th>Accidental</th></tr>
               </thead>
               <tbody>
                 <tr><td>145</td><td>130%</td><td>90%</td><td>128%</td><td>73%</td><td>90%</td></tr>
@@ -660,7 +816,7 @@
           <div class="prod-comp-table-scroll">
             <table class="prod-comp-table">
               <thead>
-                <tr><th>FFL Contract</th><th>FX</th></tr>
+                <tr><th>Comp Level</th><th>FX</th></tr>
               </thead>
               <tbody>
                 <tr><td>145</td><td>-</td></tr>
@@ -696,7 +852,7 @@
           <div class="prod-comp-table-scroll">
             <table class="prod-comp-table">
               <thead>
-                <tr><th>FFL Contract</th><th>FX</th></tr>
+                <tr><th>Comp Level</th><th>FX</th></tr>
               </thead>
               <tbody>
                 <tr><td>145</td><td>-</td></tr>
@@ -732,7 +888,7 @@
           <div class="prod-comp-table-scroll">
             <table class="prod-comp-table">
               <thead>
-                <tr><th>FFL Contract</th><th>Universal Life</th></tr>
+                <tr><th>Comp Level</th><th>Universal Life</th></tr>
               </thead>
               <tbody>
                 <tr><td>145</td><td>-</td></tr>
@@ -768,7 +924,7 @@
           <div class="prod-comp-table-scroll">
             <table class="prod-comp-table">
               <thead>
-                <tr><th>FFL Contract</th><th>Term Life Express</th><th>Final Expense</th><th>IUL</th><th>Children's Whole Life</th><th>IULE</th><th>Term Life Answers</th><th>Accidental Death</th></tr>
+                <tr><th>Comp Level</th><th>Term Life Express</th><th>Final Expense</th><th>IUL</th><th>Children's Whole Life</th><th>IULE</th><th>Term Life Answers</th><th>Accidental Death</th></tr>
               </thead>
               <tbody>
                 <tr><td>145</td><td>145%</td><td>125%</td><td>125%</td><td>100%</td><td>130%</td><td>110%</td><td>130%</td></tr>
@@ -804,7 +960,7 @@
           <div class="prod-comp-table-scroll">
             <table class="prod-comp-table">
               <thead>
-                <tr><th>FFL Contract</th><th>Term</th><th>Royal Legacy SPWL</th><th>Secure Life IUL</th><th>SI Whole Life</th></tr>
+                <tr><th>Comp Level</th><th>Term</th><th>Royal Legacy SPWL</th><th>Secure Life IUL</th><th>SI Whole Life</th></tr>
               </thead>
               <tbody>
                 <tr><td>145</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>
@@ -840,7 +996,7 @@
           <div class="prod-comp-table-scroll">
             <table class="prod-comp-table">
               <thead>
-                <tr><th>FFL Contract</th><th>FE</th><th>UL</th></tr>
+                <tr><th>Comp Level</th><th>FE</th><th>UL</th></tr>
               </thead>
               <tbody>
                 <tr><td>145</td><td>140%</td><td>120%</td></tr>
@@ -876,7 +1032,7 @@
           <div class="prod-comp-table-scroll">
             <table class="prod-comp-table">
               <thead>
-                <tr><th>FFL Contract</th><th>FX</th><th>GIWL</th><th>Whole Life</th><th>Accidental</th><th>Term</th></tr>
+                <tr><th>Comp Level</th><th>FX</th><th>GIWL</th><th>Whole Life</th><th>Accidental</th><th>Term</th></tr>
               </thead>
               <tbody>
                 <tr><td>145</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>
@@ -915,6 +1071,7 @@
 
   <script src="js/main.js"></script>
   <script>
+    // Carrier pill tabs
     const pills = document.querySelectorAll('.prod-comp-pill');
     const carriers = document.querySelectorAll('.prod-comp-carrier');
     pills.forEach(pill => {
@@ -926,6 +1083,71 @@
           c.classList.toggle('active', c.dataset.carrier === target);
         });
       });
+    });
+
+    // Level selector — parse all tables and build condensed view
+    const levelSelect = document.getElementById('levelSelect');
+    const condensedView = document.getElementById('condensedView');
+
+    // Color map for carrier dots
+    const dotColors = {};
+    document.querySelectorAll('.prod-comp-carrier').forEach(c => {
+      const dot = c.querySelector('.prod-comp-carrier-dot');
+      const name = c.querySelector('.prod-comp-carrier-name').textContent;
+      if (dot) dotColors[name] = dot.style.background;
+    });
+
+    // Build data structure from tables
+    function buildCarrierData() {
+      const data = [];
+      document.querySelectorAll('.prod-comp-carrier').forEach(carrier => {
+        const name = carrier.querySelector('.prod-comp-carrier-name').textContent;
+        const table = carrier.querySelector('.prod-comp-table');
+        const headers = Array.from(table.querySelectorAll('thead th')).map(th => th.textContent);
+        const products = headers.slice(1); // skip "Comp Level"
+        const rows = {};
+        table.querySelectorAll('tbody tr').forEach(tr => {
+          const cells = Array.from(tr.querySelectorAll('td'));
+          const level = cells[0].textContent.trim();
+          const values = cells.slice(1).map(td => td.textContent.trim());
+          rows[level] = values;
+        });
+        data.push({ name, products, rows });
+      });
+      return data;
+    }
+
+    const carrierData = buildCarrierData();
+
+    levelSelect.addEventListener('change', () => {
+      const level = levelSelect.value;
+      if (!level) {
+        condensedView.classList.remove('visible');
+        condensedView.innerHTML = '';
+        return;
+      }
+
+      let html = '<div class="prod-comp-condensed-grid">';
+      carrierData.forEach(carrier => {
+        const values = carrier.rows[level];
+        if (!values) return;
+        const hasData = values.some(v => v && v !== '-');
+        if (!hasData) return;
+
+        const color = dotColors[carrier.name] || '#888';
+        html += '<div class="prod-comp-condensed-carrier">';
+        html += '<div class="prod-comp-condensed-carrier-name"><span class="dot" style="background:' + color + '"></span>' + carrier.name + '</div>';
+        carrier.products.forEach((product, i) => {
+          const val = values[i] || '-';
+          if (val === '-') return;
+          html += '<div class="prod-comp-condensed-row"><span class="prod-comp-condensed-product">' + product + '</span><span class="prod-comp-condensed-rate">' + val + '</span></div>';
+        });
+        html += '</div>';
+      });
+      html += '</div>';
+
+      condensedView.innerHTML = html;
+      condensedView.classList.add('visible');
     });
   </script>
 </body>
