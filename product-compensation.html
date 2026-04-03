@@ -10,8 +10,64 @@
       padding: 4rem 0 6rem;
     }
 
+    /* Carrier selector pills */
+    .prod-comp-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 2rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .prod-comp-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.5rem 1rem;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .prod-comp-pill:hover {
+      border-color: var(--gold-border);
+      color: var(--text-primary);
+      background: var(--bg-hover);
+    }
+
+    .prod-comp-pill.active {
+      background: var(--dark);
+      color: #ffffff;
+      border-color: var(--dark);
+    }
+
+    .prod-comp-pill-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
     .prod-comp-carrier {
-      margin-bottom: 3rem;
+      display: none;
+      margin-bottom: 1rem;
+      animation: compFadeIn 0.3s ease;
+    }
+
+    .prod-comp-carrier.active {
+      display: block;
+    }
+
+    @keyframes compFadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     .prod-comp-carrier-header {
@@ -151,6 +207,13 @@
         padding: 0.5rem 0.75rem;
         font-size: 0.75rem;
       }
+      .prod-comp-pills {
+        gap: 0.4rem;
+      }
+      .prod-comp-pill {
+        font-size: 0.72rem;
+        padding: 0.4rem 0.8rem;
+      }
     }
   </style>
 </head>
@@ -243,8 +306,28 @@
         Back to Agent Compensation
       </a>
 
+      <!-- Carrier selector pills -->
+      <div class="prod-comp-pills" id="carrierPills">
+        <button class="prod-comp-pill active" data-target="aetna"><span class="prod-comp-pill-dot" style="background:#7b2d8e"></span>Aetna</button>
+        <button class="prod-comp-pill" data-target="aflac"><span class="prod-comp-pill-dot" style="background:#009cde"></span>Aflac</button>
+        <button class="prod-comp-pill" data-target="american-amicable"><span class="prod-comp-pill-dot" style="background:#2e5090"></span>American Amicable</button>
+        <button class="prod-comp-pill" data-target="americo"><span class="prod-comp-pill-dot" style="background:#c0392b"></span>Americo</button>
+        <button class="prod-comp-pill" data-target="chubb"><span class="prod-comp-pill-dot" style="background:#8e3a6d"></span>Chubb</button>
+        <button class="prod-comp-pill" data-target="corebridge"><span class="prod-comp-pill-dot" style="background:#5b6abf"></span>Corebridge</button>
+        <button class="prod-comp-pill" data-target="ethos"><span class="prod-comp-pill-dot" style="background:#2d8c4e"></span>Ethos</button>
+        <button class="prod-comp-pill" data-target="foresters"><span class="prod-comp-pill-dot" style="background:#e8a020"></span>Foresters</button>
+        <button class="prod-comp-pill" data-target="instabrain"><span class="prod-comp-pill-dot" style="background:#e05a2b"></span>InstaBrain</button>
+        <button class="prod-comp-pill" data-target="liberty-bankers"><span class="prod-comp-pill-dot" style="background:#b8860b"></span>Liberty Bankers</button>
+        <button class="prod-comp-pill" data-target="ladder-life"><span class="prod-comp-pill-dot" style="background:#e74c3c"></span>Ladder Life</button>
+        <button class="prod-comp-pill" data-target="nlg"><span class="prod-comp-pill-dot" style="background:#1a6b3c"></span>NLG</button>
+        <button class="prod-comp-pill" data-target="mutual-of-omaha"><span class="prod-comp-pill-dot" style="background:#004b8d"></span>Mutual of Omaha</button>
+        <button class="prod-comp-pill" data-target="royal-neighbors"><span class="prod-comp-pill-dot" style="background:#2e7d32"></span>Royal Neighbors</button>
+        <button class="prod-comp-pill" data-target="transamerica"><span class="prod-comp-pill-dot" style="background:#8b1a1a"></span>Transamerica</button>
+        <button class="prod-comp-pill" data-target="united-home-life"><span class="prod-comp-pill-dot" style="background:#3c6478"></span>United Home Life</button>
+      </div>
+
       <!-- ============ AETNA ============ -->
-      <div class="prod-comp-carrier fade-in">
+      <div class="prod-comp-carrier active" data-carrier="aetna">
         <div class="prod-comp-carrier-header">
           <div class="prod-comp-carrier-dot" style="background: #7b2d8e;"></div>
           <div class="prod-comp-carrier-name">Aetna</div>
@@ -280,7 +363,7 @@
       </div>
 
       <!-- ============ AFLAC ============ -->
-      <div class="prod-comp-carrier fade-in">
+      <div class="prod-comp-carrier" data-carrier="aflac">
         <div class="prod-comp-carrier-header">
           <div class="prod-comp-carrier-dot" style="background: #009cde;"></div>
           <div class="prod-comp-carrier-name">Aflac</div>
@@ -316,7 +399,7 @@
       </div>
 
       <!-- ============ AMERICAN AMICABLE ============ -->
-      <div class="prod-comp-carrier fade-in">
+      <div class="prod-comp-carrier" data-carrier="american-amicable">
         <div class="prod-comp-carrier-header">
           <div class="prod-comp-carrier-dot" style="background: #2e5090;"></div>
           <div class="prod-comp-carrier-name">American Amicable</div>
@@ -352,7 +435,7 @@
       </div>
 
       <!-- ============ AMERICO ============ -->
-      <div class="prod-comp-carrier fade-in">
+      <div class="prod-comp-carrier" data-carrier="americo">
         <div class="prod-comp-carrier-header">
           <div class="prod-comp-carrier-dot" style="background: #c0392b;"></div>
           <div class="prod-comp-carrier-name">Americo</div>
@@ -388,7 +471,7 @@
       </div>
 
       <!-- ============ CHUBB ============ -->
-      <div class="prod-comp-carrier fade-in">
+      <div class="prod-comp-carrier" data-carrier="chubb">
         <div class="prod-comp-carrier-header">
           <div class="prod-comp-carrier-dot" style="background: #8e3a6d;"></div>
           <div class="prod-comp-carrier-name">Chubb</div>
@@ -424,7 +507,7 @@
       </div>
 
       <!-- ============ COREBRIDGE ============ -->
-      <div class="prod-comp-carrier fade-in">
+      <div class="prod-comp-carrier" data-carrier="corebridge">
         <div class="prod-comp-carrier-header">
           <div class="prod-comp-carrier-dot" style="background: #5b6abf;"></div>
           <div class="prod-comp-carrier-name">Corebridge</div>
@@ -460,7 +543,7 @@
       </div>
 
       <!-- ============ ETHOS ============ -->
-      <div class="prod-comp-carrier fade-in">
+      <div class="prod-comp-carrier" data-carrier="ethos">
         <div class="prod-comp-carrier-header">
           <div class="prod-comp-carrier-dot" style="background: #2d8c4e;"></div>
           <div class="prod-comp-carrier-name">Ethos</div>
@@ -496,7 +579,7 @@
       </div>
 
       <!-- ============ FORESTERS ============ -->
-      <div class="prod-comp-carrier fade-in">
+      <div class="prod-comp-carrier" data-carrier="foresters">
         <div class="prod-comp-carrier-header">
           <div class="prod-comp-carrier-dot" style="background: #e8a020;"></div>
           <div class="prod-comp-carrier-name">Foresters</div>
@@ -532,7 +615,7 @@
       </div>
 
       <!-- ============ INSTABRAIN ============ -->
-      <div class="prod-comp-carrier fade-in">
+      <div class="prod-comp-carrier" data-carrier="instabrain">
         <div class="prod-comp-carrier-header">
           <div class="prod-comp-carrier-dot" style="background: #e05a2b;"></div>
           <div class="prod-comp-carrier-name">InstaBrain</div>
@@ -568,7 +651,7 @@
       </div>
 
       <!-- ============ LIBERTY BANKERS ============ -->
-      <div class="prod-comp-carrier fade-in">
+      <div class="prod-comp-carrier" data-carrier="liberty-bankers">
         <div class="prod-comp-carrier-header">
           <div class="prod-comp-carrier-dot" style="background: #b8860b;"></div>
           <div class="prod-comp-carrier-name">Liberty Bankers</div>
@@ -604,7 +687,7 @@
       </div>
 
       <!-- ============ LADDER LIFE ============ -->
-      <div class="prod-comp-carrier fade-in">
+      <div class="prod-comp-carrier" data-carrier="ladder-life">
         <div class="prod-comp-carrier-header">
           <div class="prod-comp-carrier-dot" style="background: #e74c3c;"></div>
           <div class="prod-comp-carrier-name">Ladder Life</div>
@@ -640,7 +723,7 @@
       </div>
 
       <!-- ============ NLG ============ -->
-      <div class="prod-comp-carrier fade-in">
+      <div class="prod-comp-carrier" data-carrier="nlg">
         <div class="prod-comp-carrier-header">
           <div class="prod-comp-carrier-dot" style="background: #1a6b3c;"></div>
           <div class="prod-comp-carrier-name">NLG (National Life Group)</div>
@@ -676,7 +759,7 @@
       </div>
 
       <!-- ============ MUTUAL OF OMAHA ============ -->
-      <div class="prod-comp-carrier fade-in">
+      <div class="prod-comp-carrier" data-carrier="mutual-of-omaha">
         <div class="prod-comp-carrier-header">
           <div class="prod-comp-carrier-dot" style="background: #004b8d;"></div>
           <div class="prod-comp-carrier-name">Mutual of Omaha</div>
@@ -712,7 +795,7 @@
       </div>
 
       <!-- ============ ROYAL NEIGHBORS ============ -->
-      <div class="prod-comp-carrier fade-in">
+      <div class="prod-comp-carrier" data-carrier="royal-neighbors">
         <div class="prod-comp-carrier-header">
           <div class="prod-comp-carrier-dot" style="background: #2e7d32;"></div>
           <div class="prod-comp-carrier-name">Royal Neighbors</div>
@@ -748,7 +831,7 @@
       </div>
 
       <!-- ============ TRANSAMERICA ============ -->
-      <div class="prod-comp-carrier fade-in">
+      <div class="prod-comp-carrier" data-carrier="transamerica">
         <div class="prod-comp-carrier-header">
           <div class="prod-comp-carrier-dot" style="background: #8b1a1a;"></div>
           <div class="prod-comp-carrier-name">Transamerica</div>
@@ -784,7 +867,7 @@
       </div>
 
       <!-- ============ UNITED HOME LIFE ============ -->
-      <div class="prod-comp-carrier fade-in">
+      <div class="prod-comp-carrier" data-carrier="united-home-life">
         <div class="prod-comp-carrier-header">
           <div class="prod-comp-carrier-dot" style="background: #3c6478;"></div>
           <div class="prod-comp-carrier-name">United Home Life</div>
@@ -831,5 +914,19 @@
   </footer>
 
   <script src="js/main.js"></script>
+  <script>
+    const pills = document.querySelectorAll('.prod-comp-pill');
+    const carriers = document.querySelectorAll('.prod-comp-carrier');
+    pills.forEach(pill => {
+      pill.addEventListener('click', () => {
+        pills.forEach(p => p.classList.remove('active'));
+        pill.classList.add('active');
+        const target = pill.dataset.target;
+        carriers.forEach(c => {
+          c.classList.toggle('active', c.dataset.carrier === target);
+        });
+      });
+    });
+  </script>
 </body>
 </html>
