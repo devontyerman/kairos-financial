@@ -113,7 +113,6 @@
     .prod-comp-table {
       width: 100%;
       border-collapse: collapse;
-      min-width: 500px;
     }
 
     .prod-comp-table thead th {
@@ -328,8 +327,15 @@
     @media (max-width: 768px) {
       .prod-comp-table thead th,
       .prod-comp-table tbody td {
-        padding: 0.5rem 0.75rem;
-        font-size: 0.75rem;
+        padding: 0.45rem 0.5rem;
+        font-size: 0.72rem;
+      }
+      .prod-comp-table thead th:first-child,
+      .prod-comp-table tbody td:first-child {
+        padding-left: 0.6rem;
+        padding-right: 0.4rem;
+        min-width: 42px;
+        width: 42px;
       }
       .prod-comp-pills {
         gap: 0.4rem;
@@ -360,11 +366,8 @@
           </a>
           <div class="nav-dropdown">
             <a href="carriers/aetna.html">Aetna</a>
-            <a href="carriers/aig.html">AIG</a>
             <a href="carriers/american-amicable.html">American Amicable</a>
             <a href="carriers/americo.html">Americo</a>
-            <a href="carriers/ameritas.html">Ameritas</a>
-            <div class="nav-dropdown-divider"></div>
             <a href="carriers/corebridge.html">Corebridge</a>
             <a href="carriers/ethos.html">Ethos</a>
             <a href="carriers/foresters.html">Foresters</a>
@@ -395,10 +398,8 @@
     </button>
     <div class="nav-mobile-carriers-list" id="mobileCarriersList">
       <a href="carriers/aetna.html">Aetna</a>
-      <a href="carriers/aig.html">AIG</a>
       <a href="carriers/american-amicable.html">American Amicable</a>
       <a href="carriers/americo.html">Americo</a>
-      <a href="carriers/ameritas.html">Ameritas</a>
       <a href="carriers/corebridge.html">Corebridge</a>
       <a href="carriers/ethos.html">Ethos</a>
       <a href="carriers/foresters.html">Foresters</a>
@@ -492,7 +493,7 @@
           <div class="prod-comp-table-scroll">
             <table class="prod-comp-table">
               <thead>
-                <tr><th>Comp Level</th><th>Whole Life</th><th>Final EX</th></tr>
+                <tr><th>Level</th><th>Whole Life</th><th>Final EX</th></tr>
               </thead>
               <tbody>
                 <tr><td>145</td><td>-</td><td>-</td></tr>
@@ -528,7 +529,7 @@
           <div class="prod-comp-table-scroll">
             <table class="prod-comp-table">
               <thead>
-                <tr><th>Comp Level</th><th>Senior/Family Choice</th></tr>
+                <tr><th>Level</th><th>Senior/Family Choice</th></tr>
               </thead>
               <tbody>
                 <tr><td>145</td><td>125%</td></tr>
@@ -564,7 +565,7 @@
           <div class="prod-comp-table-scroll">
             <table class="prod-comp-table">
               <thead>
-                <tr><th>Comp Level</th><th>EZ Term</th><th>Secure Life</th><th>Home Protector</th><th>OBA</th><th>Term Made Simple</th><th>Family Protector</th><th>XUL</th></tr>
+                <tr><th>Level</th><th>EZ Term</th><th>Secure Life</th><th>Home Protector</th><th>OBA</th><th>Term Made Simple</th><th>Family Protector</th><th>XUL</th></tr>
               </thead>
               <tbody>
                 <tr><td>145</td><td>100%</td><td>140%</td><td>145%</td><td>100%</td><td>130%</td><td>130%</td><td>105%</td></tr>
@@ -600,7 +601,7 @@
           <div class="prod-comp-table-scroll">
             <table class="prod-comp-table">
               <thead>
-                <tr><th>Comp Level</th><th>HMS 125</th><th>Eagle Premier</th></tr>
+                <tr><th>Level</th><th>HMS 125</th><th>Eagle Premier</th></tr>
               </thead>
               <tbody>
                 <tr><td>145</td><td>145%</td><td>135%</td></tr>
@@ -636,7 +637,7 @@
           <div class="prod-comp-table-scroll">
             <table class="prod-comp-table">
               <thead>
-                <tr><th>Comp Level</th><th>Generational Life</th></tr>
+                <tr><th>Level</th><th>Generational Life</th></tr>
               </thead>
               <tbody>
                 <tr><td>145</td><td>120%</td></tr>
@@ -672,7 +673,7 @@
           <div class="prod-comp-table-scroll">
             <table class="prod-comp-table">
               <thead>
-                <tr><th>Comp Level</th><th>GIWL</th><th>SIWL</th></tr>
+                <tr><th>Level</th><th>GIWL</th><th>SIWL</th></tr>
               </thead>
               <tbody>
                 <tr><td>145</td><td>-</td><td>-</td></tr>
@@ -708,7 +709,7 @@
           <div class="prod-comp-table-scroll">
             <table class="prod-comp-table">
               <thead>
-                <tr><th>Comp Level</th><th>LGA Prime</th><th>TruStage TAWL</th><th>TruStage SITL</th><th>TruStage GAWL</th><th>Ameritas IUL</th><th>Ameritas SI Term</th><th>JH ROP</th></tr>
+                <tr><th>Level</th><th>LGA Prime</th><th>TruStage TAWL</th><th>TruStage SITL</th><th>TruStage GAWL</th><th>Ameritas IUL</th><th>Ameritas SI Term</th><th>JH ROP</th></tr>
               </thead>
               <tbody>
                 <tr><td>145</td><td>120.0%</td><td>120.0%</td><td>55.0%</td><td>30%</td><td>125.0%</td><td>120.0%</td><td>145.0%</td></tr>
@@ -744,7 +745,7 @@
           <div class="prod-comp-table-scroll">
             <table class="prod-comp-table">
               <thead>
-                <tr><th>Comp Level</th><th>Strong Foundation</th><th>Planright</th></tr>
+                <tr><th>Level</th><th>Strong Foundation</th><th>Planright</th></tr>
               </thead>
               <tbody>
                 <tr><td>145</td><td>-</td><td>-</td></tr>
@@ -780,7 +781,7 @@
           <div class="prod-comp-table-scroll">
             <table class="prod-comp-table">
               <thead>
-                <tr><th>Comp Level</th><th>Life Term</th><th>Senior Life Term/WL</th><th>Final Expense WL</th><th>Guaranteed Issue WL</th><th>Accidental</th></tr>
+                <tr><th>Level</th><th>Life Term</th><th>Senior Life Term/WL</th><th>Final Expense WL</th><th>Guaranteed Issue WL</th><th>Accidental</th></tr>
               </thead>
               <tbody>
                 <tr><td>145</td><td>130%</td><td>90%</td><td>128%</td><td>73%</td><td>90%</td></tr>
@@ -816,7 +817,7 @@
           <div class="prod-comp-table-scroll">
             <table class="prod-comp-table">
               <thead>
-                <tr><th>Comp Level</th><th>FX</th></tr>
+                <tr><th>Level</th><th>FX</th></tr>
               </thead>
               <tbody>
                 <tr><td>145</td><td>-</td></tr>
@@ -852,7 +853,7 @@
           <div class="prod-comp-table-scroll">
             <table class="prod-comp-table">
               <thead>
-                <tr><th>Comp Level</th><th>FX</th></tr>
+                <tr><th>Level</th><th>FX</th></tr>
               </thead>
               <tbody>
                 <tr><td>145</td><td>-</td></tr>
@@ -888,7 +889,7 @@
           <div class="prod-comp-table-scroll">
             <table class="prod-comp-table">
               <thead>
-                <tr><th>Comp Level</th><th>Universal Life</th></tr>
+                <tr><th>Level</th><th>Universal Life</th></tr>
               </thead>
               <tbody>
                 <tr><td>145</td><td>-</td></tr>
@@ -924,7 +925,7 @@
           <div class="prod-comp-table-scroll">
             <table class="prod-comp-table">
               <thead>
-                <tr><th>Comp Level</th><th>Term Life Express</th><th>Final Expense</th><th>IUL</th><th>Children's Whole Life</th><th>IULE</th><th>Term Life Answers</th><th>Accidental Death</th></tr>
+                <tr><th>Level</th><th>Term Life Express</th><th>Final Expense</th><th>IUL</th><th>Children's Whole Life</th><th>IULE</th><th>Term Life Answers</th><th>Accidental Death</th></tr>
               </thead>
               <tbody>
                 <tr><td>145</td><td>145%</td><td>125%</td><td>125%</td><td>100%</td><td>130%</td><td>110%</td><td>130%</td></tr>
@@ -960,7 +961,7 @@
           <div class="prod-comp-table-scroll">
             <table class="prod-comp-table">
               <thead>
-                <tr><th>Comp Level</th><th>Term</th><th>Royal Legacy SPWL</th><th>Secure Life IUL</th><th>SI Whole Life</th></tr>
+                <tr><th>Level</th><th>Term</th><th>Royal Legacy SPWL</th><th>Secure Life IUL</th><th>SI Whole Life</th></tr>
               </thead>
               <tbody>
                 <tr><td>145</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>
@@ -996,7 +997,7 @@
           <div class="prod-comp-table-scroll">
             <table class="prod-comp-table">
               <thead>
-                <tr><th>Comp Level</th><th>FE</th><th>UL</th></tr>
+                <tr><th>Level</th><th>FE</th><th>UL</th></tr>
               </thead>
               <tbody>
                 <tr><td>145</td><td>140%</td><td>120%</td></tr>
@@ -1032,7 +1033,7 @@
           <div class="prod-comp-table-scroll">
             <table class="prod-comp-table">
               <thead>
-                <tr><th>Comp Level</th><th>FX</th><th>GIWL</th><th>Whole Life</th><th>Accidental</th><th>Term</th></tr>
+                <tr><th>Level</th><th>FX</th><th>GIWL</th><th>Whole Life</th><th>Accidental</th><th>Term</th></tr>
               </thead>
               <tbody>
                 <tr><td>145</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>
