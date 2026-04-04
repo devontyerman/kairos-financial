@@ -1157,7 +1157,11 @@
     }
 
     modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('open'); });
-    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') modal.classList.remove('open'); });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        document.querySelectorAll('.ss-modal-overlay.open, .ss-alert-overlay.open, .mp-edit-overlay.open, .ss-signup-overlay.open').forEach(el => el.classList.remove('open'));
+      }
+    });
 
     // ─── FORM SUBMIT ───
     document.getElementById('saleForm').addEventListener('submit', async (e) => {
@@ -1689,6 +1693,7 @@
       } catch (e) { console.error('Overload check failed:', e); }
     }
     document.getElementById('overloadClose').addEventListener('click', () => document.getElementById('overloadAlert').classList.remove('open'));
+    document.getElementById('overloadAlert').addEventListener('click', (e) => { if (e.target.id === 'overloadAlert') e.target.classList.remove('open'); });
 
     // ─── UNDERWRITING REMINDERS ───
     async function checkUnderwritingReminders() {
@@ -1731,6 +1736,7 @@
     }
 
     document.getElementById('uwReminderClose').addEventListener('click', () => document.getElementById('uwReminderAlert').classList.remove('open'));
+    document.getElementById('uwReminderAlert').addEventListener('click', (e) => { if (e.target.id === 'uwReminderAlert') e.target.classList.remove('open'); });
 
     async function uwApprove(id, btn) {
       const token = accessToken || SUPABASE_KEY;
