@@ -1394,6 +1394,70 @@
       color: #4ade80;
     }
 
+    .ss-calc-bonus {
+      margin-top: 1rem;
+      padding: 1.25rem 1.4rem;
+      background: linear-gradient(135deg, rgba(168,85,247,0.12), rgba(236,72,153,0.08));
+      border: 1px solid rgba(192,132,252,0.35);
+      border-radius: 12px;
+      display: none;
+      box-shadow: 0 4px 26px rgba(168,85,247,0.2), 0 0 0 1px rgba(168,85,247,0.08);
+    }
+    .ss-calc-bonus.visible { display: block; }
+    .ss-calc-bonus-title {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #e9d5ff;
+      margin-bottom: 0.65rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .ss-calc-bonus-body {
+      display: flex;
+      align-items: baseline;
+      flex-wrap: wrap;
+      gap: 0.6rem 1rem;
+      font-size: 0.92rem;
+      color: rgba(255,255,255,0.82);
+      line-height: 1.5;
+    }
+    .ss-calc-bonus-amount {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 900;
+      font-size: 1.6rem;
+      background: linear-gradient(135deg, #e9d5ff, #c084fc, #f0abfc);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 30px rgba(192,132,252,0.55);
+      letter-spacing: -0.02em;
+    }
+    .ss-calc-bonus-note {
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.6);
+      margin-top: 0.5rem;
+      width: 100%;
+    }
+    .ss-calc-bonus-nextup {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.25rem 0.65rem;
+      margin-left: 0.5rem;
+      border-radius: 100px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #fbcfe8;
+      background: rgba(236,72,153,0.14);
+      border: 1px solid rgba(236,72,153,0.3);
+    }
+
     .ss-calc-longterm {
       margin-top: 1rem;
       padding: 1.25rem 1.4rem;
@@ -1878,6 +1942,8 @@
             <div class="ss-calc-roi-result" id="roi_output">
               <div class="msg placeholder">Enter your upfront commission goal above to see your recommended lead budget.</div>
             </div>
+
+            <div class="ss-calc-bonus" id="bonus_output"></div>
 
             <div class="ss-calc-longterm" id="longterm_output"></div>
           </div>
@@ -3652,7 +3718,21 @@
       const backEl = document.getElementById('cc_outBackend');
 
       const roiOut = document.getElementById('roi_output');
+      const bonusOut = document.getElementById('bonus_output');
       const longTermOut = document.getElementById('longterm_output');
+
+      // Sorted ascending so we can pick the highest tier the user qualifies for
+      const BONUS_TIERS = [
+        { ap: 20000,  bonus: 650 },
+        { ap: 30000,  bonus: 1200 },
+        { ap: 40000,  bonus: 1600 },
+        { ap: 50000,  bonus: 2000 },
+        { ap: 75000,  bonus: 4000 },
+        { ap: 100000, bonus: 8000 },
+        { ap: 125000, bonus: 10000 },
+        { ap: 150000, bonus: 15000 },
+        { ap: 200000, bonus: 20000 }
+      ];
 
       function computeCommission() {
         // Step 1 is the NET income target — take-home AFTER lead costs
@@ -3684,7 +3764,40 @@
           roiOut.innerHTML = '<div class="msg placeholder">Enter your net income goal above to see your recommended lead budget.</div>';
           longTermOut.classList.remove('visible');
           longTermOut.innerHTML = '';
+          bonusOut.classList.remove('visible');
+          bonusOut.innerHTML = '';
           return;
+        }
+
+        // ── BONUS TIER LOOKUP ──
+        // Highest tier whose AP threshold is met by the required AP
+        let currentBonus = null;
+        let nextBonus = null;
+        for (let i = 0; i < BONUS_TIERS.length; i++) {
+          if (requiredAP >= BONUS_TIERS[i].ap) currentBonus = BONUS_TIERS[i];
+          else { nextBonus = BONUS_TIERS[i]; break; }
+        }
+        if (currentBonus) {
+          const nextUpHtml = nextBonus
+            ? '<span class="ss-calc-bonus-nextup">Next tier: ' + fmt(nextBonus.ap) + ' AP &rarr; ' + fmt(nextBonus.bonus) + '</span>'
+            : '';
+          bonusOut.classList.add('visible');
+          bonusOut.innerHTML =
+            '<div class="ss-calc-bonus-title">\ud83c\udf89 Cash Bonus Unlocked' + nextUpHtml + '</div>' +
+            '<div class="ss-calc-bonus-body">' +
+              'Congrats \u2014 if you sell <strong>' + fmt(currentBonus.ap) + ' AP</strong> this month, you also earn a ' +
+              '<span class="ss-calc-bonus-amount">' + fmt(currentBonus.bonus) + '</span> cash bonus on top of your commission.' +
+            '</div>';
+        } else {
+          const firstTier = BONUS_TIERS[0];
+          const apAway = firstTier.ap - requiredAP;
+          bonusOut.classList.add('visible');
+          bonusOut.innerHTML =
+            '<div class="ss-calc-bonus-title">\ud83c\udf81 Cash Bonus</div>' +
+            '<div class="ss-calc-bonus-body">' +
+              'Sell <strong>' + fmt(firstTier.ap) + ' AP</strong> this month (another <strong>' + fmt(apAway) + '</strong>) to unlock a ' +
+              '<span class="ss-calc-bonus-amount">' + fmt(firstTier.bonus) + '</span> cash bonus on top of your commission.' +
+            '</div>';
         }
 
         // ── LONG-TERM STACK ──
