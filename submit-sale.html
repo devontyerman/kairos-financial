@@ -1359,13 +1359,168 @@
 
     @media (max-width: 768px) {
       .ss-hero { padding: calc(var(--nav-height) + 2rem) 1rem 2rem; }
+      .ss-hero-title { font-size: 1.7rem; }
+      .ss-hero-sub { font-size: 0.82rem; }
       .ss-page { padding: 0 1rem 3rem; }
       .ss-form-grid { grid-template-columns: 1fr; }
-      .ss-tabs { margin-top: -1rem; }
-      .ss-tab { padding: 0.55rem 1.2rem; font-size: 0.8rem; }
-      .mp-edit-grid { grid-template-columns: 1fr; }
+      .ss-form-card { padding: 1.5rem 1.25rem; }
+
+      /* Tabs: scroll horizontally without wrapping */
+      .ss-tabs {
+        margin-top: -1rem;
+        padding: 0.9rem 1rem 1.2rem;
+        gap: 0.4rem;
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+      }
+      .ss-tabs::-webkit-scrollbar { display: none; }
+      .ss-tab {
+        padding: 0.55rem 1.1rem;
+        font-size: 0.78rem;
+        flex-shrink: 0;
+      }
+
+      /* Goal tracker: stack title above input row */
+      .ss-goal-tracker { padding: 1.15rem 1rem; }
+      .ss-goal-header { flex-direction: column; align-items: stretch; gap: 0.6rem; }
+      .ss-goal-input-row { width: 100%; }
+      .ss-goal-input { flex: 1; width: auto; }
+      .ss-goal-stats { justify-content: flex-end !important; }
+
+      /* Auth bar: stack vertically */
+      .ss-auth-bar { flex-direction: column; gap: 0.3rem; align-items: flex-start; }
+
+      /* Leaderboard: smaller filter pills + card padding */
+      .ss-lb-inner { padding: 1.75rem 1rem; }
+      .ss-lb-header h2 { font-size: 1.35rem; }
+      .ss-lb-filter-row { gap: 0.3rem; }
+      .ss-lb-filter { padding: 0.4rem 0.8rem; font-size: 0.72rem; }
+      .ss-lb-card { padding: 0.8rem 0.9rem; gap: 0.75rem; }
+      .ss-lb-medal { width: 40px; height: 40px; font-size: 0.88rem; }
+      .ss-lb-name { font-size: 0.88rem; }
+      .ss-lb-ap { font-size: 1rem; }
+      .ss-lb-custom-range { flex-direction: column; align-items: stretch; }
+      .ss-lb-custom-range input[type="date"] { width: 100%; box-sizing: border-box; }
+
+      /* My Policies: collapse table rows into stacked cards on mobile */
       .mp-inner { padding: 1.5rem 1rem; }
-      .mp-filter { font-size: 0.68rem; padding: 0.35rem 0.7rem; }
+      .mp-header { gap: 0.5rem; }
+      .mp-title { font-size: 1.1rem; }
+      .mp-filters { gap: 0.3rem; }
+      .mp-filter { font-size: 0.66rem; padding: 0.35rem 0.7rem; }
+      .mp-table-wrap { border: none; background: transparent; border-radius: 0; }
+      .mp-table,
+      .mp-table thead,
+      .mp-table tbody,
+      .mp-table tfoot,
+      .mp-table tr,
+      .mp-table th,
+      .mp-table td { display: block; width: 100%; }
+      .mp-table thead { display: none; }
+      .mp-table tbody tr {
+        margin-bottom: 0.75rem;
+        padding: 0.85rem 0.95rem;
+        background: rgba(255,255,255,0.035) !important;
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 12px;
+      }
+      .mp-table tbody tr:hover { background: rgba(56,120,255,0.08) !important; transform: none; }
+      .mp-table tbody td {
+        padding: 0.25rem 0;
+        border-bottom: none;
+        font-size: 0.82rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 0.75rem;
+        white-space: normal;
+      }
+      .mp-table tbody td::before {
+        content: attr(data-label);
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-size: 0.62rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: rgba(255,255,255,0.55);
+        flex-shrink: 0;
+      }
+      .mp-table tbody td.mp-client-name {
+        padding-bottom: 0.55rem;
+        margin-bottom: 0.5rem;
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+        font-size: 1rem;
+        display: block;
+        text-align: left;
+      }
+      .mp-table tbody td.mp-client-name::before { display: none; }
+      .mp-table tbody td.mp-actions {
+        margin-top: 0.6rem;
+        padding-top: 0.6rem;
+        border-top: 1px solid rgba(255,255,255,0.08);
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: 0.35rem;
+      }
+      .mp-table tbody td.mp-actions::before { display: none; }
+      .mp-table tfoot .mp-total-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 1rem 1rem;
+        background: rgba(59,130,246,0.12);
+        border: 1px solid rgba(59,130,246,0.3);
+        border-radius: 12px;
+      }
+      .mp-table tfoot .mp-total-row td { display: none; padding: 0; }
+      .mp-table tfoot .mp-total-row td.mp-total-label,
+      .mp-table tfoot .mp-total-row td.mp-total-val { display: block; padding: 0; width: auto; }
+      .mp-table tfoot .mp-total-row td.mp-total-val { text-align: right; }
+
+      /* Needs Attention on mobile */
+      .mp-attention-item { flex-direction: column; align-items: stretch; gap: 0.5rem; }
+      .mp-attention-actions { justify-content: flex-end; }
+
+      /* Edit modal */
+      .mp-edit-grid { grid-template-columns: 1fr; }
+      .mp-edit-modal { padding: 1.5rem 1.2rem; max-height: 90vh; overflow-y: auto; }
+
+      /* Milestone modal */
+      .ss-milestone-box { padding: 2rem 1.25rem 1.65rem; }
+      .ss-milestone-title { font-size: 1.3rem; }
+      .ss-milestone-amount { font-size: 2rem; }
+      .ss-milestone-emoji { font-size: 3.2rem; }
+      .ss-milestone-msg { font-size: 0.85rem; }
+
+      /* Signup modal */
+      .ss-signup-modal { padding: 2rem 1.4rem; }
+
+      /* Commission calculator */
+      .ss-calc-card { padding: 1.4rem 1.15rem; }
+      .ss-calc-results { padding: 1rem; }
+      .ss-calc-result-main .val { font-size: 1.3rem; }
+      .ss-calc-roi-hero-value { font-size: 2.2rem; }
+
+      /* Confirm modal */
+      .ss-confirm-box { padding: 1.75rem 1.25rem; }
+      .ss-confirm-btns { flex-direction: column; }
+    }
+
+    @media (max-width: 520px) {
+      .ss-hero-title { font-size: 1.45rem; }
+      .ss-tab { padding: 0.5rem 0.95rem; font-size: 0.72rem; }
+      .ss-form-card { padding: 1.25rem 1rem; }
+      .ss-calc-card { padding: 1.15rem 0.9rem; }
+      .ss-calc-steps.ss-calc-steps-4 { grid-template-columns: 1fr; }
+      .ss-lb-filter { padding: 0.38rem 0.72rem; font-size: 0.68rem; }
+      .ss-lb-badges { flex-wrap: wrap; }
+      .ss-milestone-btn { width: 100%; padding: 0.8rem 1rem; }
+      .mp-btn-edit, .mp-btn-del, .mp-btn-paid, .mp-btn-approve {
+        font-size: 0.62rem; padding: 0.3rem 0.55rem;
+      }
     }
   </style>
 </head>
@@ -2891,17 +3046,17 @@
         const dateStr = row.policy_date ? fmtPolicyDate(row.policy_date) : '—';
         const ap = parseFloat(row.annual_premium || 0);
         html += '<tr>';
-        html += '<td class="mp-client-name">' + esc(row.client_name) + '</td>';
-        html += '<td class="mp-ap">$' + ap.toLocaleString('en-US', { minimumFractionDigits: 0 }) + '</td>';
-        html += '<td>' + esc(row.carrier) + '</td>';
-        html += '<td>' + esc(row.product_type) + '</td>';
-        html += '<td>' + esc(row.policy_number) + '</td>';
+        html += '<td class="mp-client-name" data-label="Client">' + esc(row.client_name) + '</td>';
+        html += '<td class="mp-ap" data-label="AP">$' + ap.toLocaleString('en-US', { minimumFractionDigits: 0 }) + '</td>';
+        html += '<td data-label="Carrier">' + esc(row.carrier) + '</td>';
+        html += '<td data-label="Product">' + esc(row.product_type) + '</td>';
+        html += '<td data-label="Policy #">' + esc(row.policy_number) + '</td>';
         const status = row.status || 'Underwriting';
         const statusClass = status.toLowerCase().replace(/\s+/g, '-');
-        html += '<td><span class="ss-status ' + statusClass + '">' + status + '</span></td>';
-        html += '<td>' + esc(row.sales_rep) + '</td>';
-        html += '<td class="mp-date">' + dateStr + '</td>';
-        html += '<td class="mp-actions">';
+        html += '<td data-label="Status"><span class="ss-status ' + statusClass + '">' + status + '</span></td>';
+        html += '<td data-label="Rep">' + esc(row.sales_rep) + '</td>';
+        html += '<td class="mp-date" data-label="Policy Date">' + dateStr + '</td>';
+        html += '<td class="mp-actions" data-label="Actions">';
         if (status === 'Underwriting') {
           html += '<button class="mp-btn-approve" data-id="' + row.id + '">Approve</button>';
         }

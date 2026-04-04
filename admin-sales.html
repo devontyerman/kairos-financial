@@ -204,11 +204,115 @@
 
     @media (max-width: 768px) {
       .admin-page { padding: calc(var(--nav-height) + 1rem) 1rem 3rem; }
+      .admin-header { gap: 0.6rem; }
       .ae-grid { grid-template-columns: 1fr; }
-      .admin-stats { gap: 0.5rem; }
-      .admin-stat { min-width: 100px; padding: 0.75rem 1rem; }
+
+      /* Tabs: scroll horizontally on phones */
+      .admin-tabs {
+        gap: 0.35rem;
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        padding-bottom: 0.5rem;
+      }
+      .admin-tabs::-webkit-scrollbar { display: none; }
+      .admin-tabs button, .admin-tabs .admin-tab { flex-shrink: 0; white-space: nowrap; }
+
+      /* Stats: compact 2-column grid */
+      .admin-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+      .admin-stat { min-width: 0; padding: 0.75rem 0.9rem; }
+
+      /* Filters: allow wrap and shrink pills */
+      .admin-filters { gap: 0.4rem; }
+      .admin-filters .af, .admin-filters button { font-size: 0.66rem; padding: 0.35rem 0.7rem; }
+      .admin-filters input, .admin-filters select {
+        font-size: 0.78rem; padding: 0.45rem 0.65rem;
+      }
+
+      /* Policies table → stacked cards */
+      .admin-table-wrap { overflow-x: visible !important; border: none; background: transparent; border-radius: 0; }
+      .admin-table { min-width: 0 !important; }
+      .admin-table,
+      .admin-table thead,
+      .admin-table tbody,
+      .admin-table tr,
+      .admin-table th,
+      .admin-table td { display: block; width: 100%; }
+      .admin-table thead { display: none; }
+      .admin-table tbody tr {
+        margin-bottom: 0.75rem;
+        padding: 0.85rem 0.95rem;
+        background: rgba(255,255,255,0.035) !important;
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 12px;
+      }
+      .admin-table tbody tr:hover { background: rgba(56,120,255,0.08) !important; }
+      .admin-table tbody td {
+        padding: 0.25rem 0;
+        border-bottom: none;
+        font-size: 0.82rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 0.75rem;
+        white-space: normal;
+      }
+      .admin-table tbody td::before {
+        content: attr(data-label);
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-size: 0.62rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: rgba(255,255,255,0.55);
+        flex-shrink: 0;
+      }
+      .admin-table tbody td.td-rep {
+        padding-bottom: 0.55rem;
+        margin-bottom: 0.5rem;
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+        font-size: 1rem;
+        display: block;
+        text-align: left;
+      }
+      .admin-table tbody td.td-rep::before { display: none; }
+      .admin-table tbody td.admin-actions {
+        margin-top: 0.6rem;
+        padding-top: 0.6rem;
+        border-top: 1px solid rgba(255,255,255,0.08);
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: 0.35rem;
+      }
+      .admin-table tbody td.admin-actions::before { display: none; }
+
+      /* Performance dashboard */
+      .perf-header { gap: 0.6rem; }
+      .perf-header-controls { width: 100%; justify-content: space-between; }
       .perf-charts { grid-template-columns: 1fr; }
       .perf-kpis { grid-template-columns: 1fr 1fr; }
+      .perf-kpi { padding: 0.95rem 1rem; }
+      .perf-kpi-value { font-size: 1.25rem; }
+      .perf-chart-card { padding: 1.1rem 0.95rem; }
+      .perf-svg-chart { min-height: 200px; }
+      .perf-bar-label { width: 52px !important; font-size: 0.68rem; }
+      .perf-bar-val { font-size: 0.62rem; }
+      .perf-status-bars { flex-direction: column; gap: 0.85rem; }
+
+      /* Edit / Add modals */
+      .ae-modal { padding: 1.5rem 1.2rem; max-height: 90vh; overflow-y: auto; }
+      .ae-overlay { padding: 0.75rem; }
+    }
+
+    @media (max-width: 520px) {
+      .admin-stats { grid-template-columns: 1fr 1fr; }
+      .admin-stat-value { font-size: 1.1rem; }
+      .perf-kpis { grid-template-columns: 1fr; }
+      .perf-range-btn { padding: 0.4rem 0.85rem; font-size: 0.68rem; }
+      .perf-rep-select { width: 100%; }
+      .abtn { font-size: 0.62rem; padding: 0.28rem 0.55rem; }
     }
   </style>
 </head>
@@ -532,15 +636,15 @@
         const statusClass = status.toLowerCase().replace(/\s+/g, '-');
 
         html += '<tr>';
-        html += '<td class="td-date">' + dateStr + '</td>';
-        html += '<td class="td-rep">' + esc(row.sales_rep) + '</td>';
-        html += '<td>' + esc(row.client_name) + '</td>';
-        html += '<td class="td-ap">$' + ap.toLocaleString('en-US',{minimumFractionDigits:0}) + '</td>';
-        html += '<td>' + esc(row.carrier) + '</td>';
-        html += '<td>' + esc(row.product_type) + '</td>';
-        html += '<td>' + esc(row.policy_number) + '</td>';
-        html += '<td><span class="ss-status ' + statusClass + '">' + status + '</span></td>';
-        html += '<td class="admin-actions">';
+        html += '<td class="td-date" data-label="Date">' + dateStr + '</td>';
+        html += '<td class="td-rep" data-label="Sales Rep">' + esc(row.sales_rep) + '</td>';
+        html += '<td data-label="Client">' + esc(row.client_name) + '</td>';
+        html += '<td class="td-ap" data-label="AP">$' + ap.toLocaleString('en-US',{minimumFractionDigits:0}) + '</td>';
+        html += '<td data-label="Carrier">' + esc(row.carrier) + '</td>';
+        html += '<td data-label="Product">' + esc(row.product_type) + '</td>';
+        html += '<td data-label="Policy #">' + esc(row.policy_number) + '</td>';
+        html += '<td data-label="Status"><span class="ss-status ' + statusClass + '">' + status + '</span></td>';
+        html += '<td class="admin-actions" data-label="Actions">';
         if (status === 'Underwriting') html += '<button class="abtn abtn-status" data-id="' + row.id + '" data-action="approve">Approve</button>';
         if (status === 'Approved') html += '<button class="abtn abtn-status" data-id="' + row.id + '" data-action="paid">Issue Paid</button>';
         html += '<button class="abtn abtn-edit" data-id="' + row.id + '">Edit</button>';
