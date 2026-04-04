@@ -1125,6 +1125,11 @@
     .ss-calc-result-row .val.muted { color: rgba(255,255,255,0.55); font-weight: 700; }
 
     .ss-calc-roi .ss-calc-steps { grid-template-columns: minmax(220px, 340px); justify-content: start; }
+    .ss-calc-steps.ss-calc-steps-4 { grid-template-columns: repeat(4, 1fr); }
+    .ss-calc-results + .ss-calc-roi-result { margin-top: 1rem; }
+    @media (max-width: 860px) {
+      .ss-calc-steps.ss-calc-steps-4 { grid-template-columns: 1fr 1fr; }
+    }
     .ss-calc-roi-result {
       padding: 1.75rem 1.4rem;
       background: linear-gradient(135deg, rgba(34,197,94,0.1), rgba(34,197,94,0.03));
@@ -1172,6 +1177,40 @@
     }
     .ss-calc-roi-result .msg.placeholder {
       color: rgba(255,255,255,0.5);
+    }
+    .ss-calc-roi-breakdown {
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+      margin-bottom: 1rem;
+      padding: 0.9rem 1rem;
+      background: rgba(34,197,94,0.06);
+      border: 1px solid rgba(34,197,94,0.15);
+      border-radius: 10px;
+      text-align: left;
+    }
+    .ss-calc-roi-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 0.75rem;
+    }
+    .ss-calc-roi-row .lbl {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: rgba(255,255,255,0.5);
+    }
+    .ss-calc-roi-row .val {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #ffffff;
+    }
+    .ss-calc-roi-row .val.weekly {
+      color: #4ade80;
     }
 
     @media (max-width: 640px) {
@@ -1426,18 +1465,16 @@
         </form>
         </div>
 
-        <!-- COMMISSION + ROI CALCULATORS -->
+        <!-- COMMISSION CALCULATOR -->
         <div class="ss-calc-wrap">
-
-          <!-- COMMISSION CALCULATOR -->
           <div class="ss-calc-card" id="commissionCalc">
             <div class="ss-calc-title">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
               Commission Calculator
             </div>
-            <div class="ss-calc-sub">Reverse-engineer the AP you need to hit your upfront commission goal.</div>
+            <div class="ss-calc-sub">Reverse-engineer the AP you need to sell and the lead spend required to hit your upfront commission goal.</div>
 
-            <div class="ss-calc-steps">
+            <div class="ss-calc-steps ss-calc-steps-4">
               <div class="ss-calc-step">
                 <span class="ss-calc-step-num">STEP 1</span>
                 <label class="ss-calc-step-label">How much upfront commission do you want to receive this month?</label>
@@ -1452,6 +1489,11 @@
                 <span class="ss-calc-step-num">STEP 3</span>
                 <label class="ss-calc-step-label">Your Persistency Rate</label>
                 <select class="ss-calc-select" id="cc_persistency"></select>
+              </div>
+              <div class="ss-calc-step">
+                <span class="ss-calc-step-num">STEP 4</span>
+                <label class="ss-calc-step-label">Expected ROI on Lead Spend</label>
+                <select class="ss-calc-select" id="roi_multiplier"></select>
               </div>
             </div>
 
@@ -1469,29 +1511,11 @@
                 <span class="val muted" id="cc_outBackend">$0</span>
               </div>
             </div>
-          </div>
-
-          <!-- LEADS ROI CALCULATOR -->
-          <div class="ss-calc-card ss-calc-roi" id="roiCalc">
-            <div class="ss-calc-title">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
-              Leads ROI Calculator
-            </div>
-            <div class="ss-calc-sub">Using your upfront commission goal from above, see how much to spend on leads.</div>
-
-            <div class="ss-calc-steps">
-              <div class="ss-calc-step">
-                <span class="ss-calc-step-num">INPUT</span>
-                <label class="ss-calc-step-label">Expected ROI on Lead Spend</label>
-                <select class="ss-calc-select" id="roi_multiplier"></select>
-              </div>
-            </div>
 
             <div class="ss-calc-roi-result" id="roi_output">
               <div class="msg placeholder">Enter your upfront commission goal above to see your recommended lead budget.</div>
             </div>
           </div>
-
         </div>
       </div>
     </div>
@@ -3122,16 +3146,26 @@
           roiOut.innerHTML = '<div class="msg placeholder">Enter your upfront commission goal above to see your recommended lead budget.</div>';
           return;
         }
-        // ROI% = profit / spend × 100  →  profit = spend × pct/100
-        // Net income = profit, so: budget = net ÷ (pct/100)
-        const budget = netGoal / (pct / 100);
-        const gross = budget + netGoal;
+        // ROI% = profit / spend × 100  →  budget = net ÷ (pct/100)
+        const monthlyBudget = netGoal / (pct / 100);
+        const weeklyBudget = monthlyBudget / 4.33; // avg weeks per month
+        const gross = monthlyBudget + netGoal;
         roiOut.innerHTML =
           '<div class="ss-calc-roi-hero">' +
             '<span class="ss-calc-roi-hero-label">Net Income</span>' +
             '<span class="ss-calc-roi-hero-value">' + fmt(netGoal) + '</span>' +
           '</div>' +
-          '<div class="msg">Spend <strong>' + fmt(budget) + '</strong> on leads at <strong>' + pct + '% ROI</strong> to generate <strong>' + fmt(gross) + '</strong> in revenue.</div>';
+          '<div class="ss-calc-roi-breakdown">' +
+            '<div class="ss-calc-roi-row">' +
+              '<span class="lbl">Lead spend \u2014 monthly</span>' +
+              '<span class="val">' + fmt(monthlyBudget) + '</span>' +
+            '</div>' +
+            '<div class="ss-calc-roi-row">' +
+              '<span class="lbl">Lead spend \u2014 weekly</span>' +
+              '<span class="val weekly">' + fmt(weeklyBudget) + '</span>' +
+            '</div>' +
+          '</div>' +
+          '<div class="msg">At <strong>' + pct + '% ROI</strong> this generates <strong>' + fmt(gross) + '</strong> in revenue.</div>';
       }
 
       incomeEl.addEventListener('input', computeCommission);
