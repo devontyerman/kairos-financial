@@ -9,6 +9,16 @@
   <style>
     body { background: #0a0612; }
 
+    /* Transparent nav on the Sales Hub so the hero shader extends behind it */
+    .nav, .nav.scrolled { background: transparent !important; }
+    .nav::before, .nav.scrolled::before {
+      background: transparent !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+      border-bottom-color: transparent !important;
+      box-shadow: none !important;
+    }
+
     /* ── GLOBAL PURPLE GLOW KEYFRAMES ── */
     @keyframes ssPurplePulse {
       0%, 100% {
@@ -40,7 +50,9 @@
 
     .ss-hero {
       background: #0a0612;
-      padding: calc(var(--nav-height) + 3rem) 1.5rem 3.5rem;
+      /* Start from the very top of the viewport so the shader shows through the now-transparent nav */
+      margin-top: calc(var(--nav-height) * -1);
+      padding: calc(var(--nav-height) + 4rem) 1.5rem 4.5rem;
       text-align: center;
       position: relative;
       overflow: hidden;
@@ -56,7 +68,7 @@
       display: block;
       z-index: 0;
       pointer-events: none;
-      opacity: 0.78;
+      opacity: 0.5;
       -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 55%, rgba(0,0,0,0.55) 82%, transparent 100%);
               mask-image: linear-gradient(180deg, #000 0%, #000 55%, rgba(0,0,0,0.55) 82%, transparent 100%);
     }
@@ -78,11 +90,12 @@
     }
     .ss-hero-title {
       font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: clamp(1.8rem, 4vw, 2.6rem);
+      font-size: clamp(2.6rem, 6.5vw, 4.2rem);
       font-weight: 900;
       color: #ffffff;
-      letter-spacing: -0.03em;
-      margin-bottom: 0.5rem;
+      letter-spacing: -0.035em;
+      margin-bottom: 0.6rem;
+      line-height: 1;
       position: relative;
       animation: ssPurplePulse 3.2s ease-in-out infinite;
     }
@@ -93,10 +106,10 @@
       -webkit-text-fill-color: transparent;
     }
     .ss-hero-sub {
-      font-size: 0.95rem;
-      color: rgba(255,255,255,0.82);
+      font-size: 1.05rem;
+      color: rgba(255,255,255,0.85);
       position: relative;
-      text-shadow: 0 0 12px rgba(168,85,247,0.25);
+      text-shadow: 0 0 12px rgba(168,85,247,0.3);
     }
 
     /* Tabs */
@@ -1490,9 +1503,9 @@
     .mp-edit-save:hover { box-shadow: 0 4px 12px rgba(37,99,235,0.3); }
 
     @media (max-width: 768px) {
-      .ss-hero { padding: calc(var(--nav-height) + 2rem) 1rem 2rem; }
-      .ss-hero-title { font-size: 1.7rem; }
-      .ss-hero-sub { font-size: 0.82rem; }
+      .ss-hero { padding: calc(var(--nav-height) + 2.5rem) 1rem 3rem; }
+      .ss-hero-title { font-size: 2.4rem; }
+      .ss-hero-sub { font-size: 0.9rem; }
       .ss-page { padding: 0 1rem 3rem; }
       .ss-form-grid { grid-template-columns: 1fr; }
       .ss-form-card { padding: 1.5rem 1.25rem; }
@@ -1642,7 +1655,7 @@
     }
 
     @media (max-width: 520px) {
-      .ss-hero-title { font-size: 1.45rem; }
+      .ss-hero-title { font-size: 2rem; }
       .ss-tab { padding: 0.5rem 0.95rem; font-size: 0.72rem; }
       .ss-form-card { padding: 1.25rem 1rem; }
       .ss-calc-card { padding: 1.15rem 0.9rem; }
@@ -3765,7 +3778,7 @@
         'precision highp float;',
         'uniform vec2 iResolution;',
         'uniform float iTime;',
-        'const float overallSpeed = 0.2;',
+        'const float overallSpeed = 0.1;',
         'const float gridSmoothWidth = 0.015;',
         'const float scale = 5.0;',
         'const vec4 lineColor = vec4(0.55, 0.28, 0.95, 1.0);',
@@ -3798,8 +3811,8 @@
         '  space.y += random(space.x * warpFrequency + iTime * warpSpeed) * warpAmplitude * (0.5 + horizontalFade);',
         '  space.x += random(space.y * warpFrequency + iTime * warpSpeed + 2.0) * warpAmplitude * horizontalFade;',
         '  vec4 lines = vec4(0.0);',
-        '  vec4 bgColor1 = vec4(0.08, 0.04, 0.18, 1.0);',
-        '  vec4 bgColor2 = vec4(0.22, 0.07, 0.42, 1.0);',
+        '  vec4 bgColor1 = vec4(0.05, 0.03, 0.12, 1.0);',
+        '  vec4 bgColor2 = vec4(0.16, 0.05, 0.32, 1.0);',
         '  for (int l = 0; l < linesPerGroup; l++) {',
         '    float normalizedLineIndex = float(l) / float(linesPerGroup);',
         '    float offsetTime = iTime * offsetSpeed;',
