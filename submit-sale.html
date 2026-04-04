@@ -1417,33 +1417,16 @@
           <div class="ss-goal-bar-wrap">
             <div class="ss-goal-bar">
               <div class="ss-goal-bar-fill" id="goalFill" style="width:0%"></div>
-              <div class="ss-goal-bar-pace" id="goalPaceMarker" style="left:0%" title="Where you should be based on time elapsed"></div>
             </div>
             <div class="ss-goal-bar-labels">
               <span class="current" id="goalCurrent">$0 earned</span>
               <span id="goalTarget">Goal: $0</span>
             </div>
           </div>
-          <div id="goalLegend" style="display:flex;gap:1.25rem;margin-bottom:1rem;font-size:0.68rem;">
-            <span style="display:flex;align-items:center;gap:0.3rem;color:rgba(255,255,255,0.4);"><span style="width:12px;height:6px;border-radius:3px;background:linear-gradient(90deg,#2563eb,#3b82f6);display:inline-block;"></span> Your Progress</span>
-            <span style="display:flex;align-items:center;gap:0.3rem;color:rgba(255,255,255,0.4);"><span style="width:12px;height:6px;border-radius:3px;background:#fbbf24;display:inline-block;"></span> Where You Should Be</span>
-          </div>
-          <div class="ss-goal-stats">
-            <div class="ss-goal-stat">
-              <div class="ss-goal-stat-value" id="goalPaceValue">$0</div>
+          <div class="ss-goal-stats" style="justify-content:flex-end;">
+            <div class="ss-goal-stat" style="text-align:right;">
+              <div class="ss-goal-stat-value on-pace" id="goalPaceValue" style="color:#4ade80;">$0</div>
               <div class="ss-goal-stat-label">Projected Annual</div>
-            </div>
-            <div class="ss-goal-stat">
-              <div class="ss-goal-stat-value" id="goalPctValue" style="color:#3b82f6;">0%</div>
-              <div class="ss-goal-stat-label">Goal Complete</div>
-            </div>
-            <div class="ss-goal-stat">
-              <div class="ss-goal-stat-value" id="goalRemaining" style="color:rgba(255,255,255,0.5);">$0</div>
-              <div class="ss-goal-stat-label">Left to Go</div>
-            </div>
-            <div class="ss-goal-stat">
-              <div class="ss-goal-stat-value" id="goalStatus">—</div>
-              <div class="ss-goal-stat-label">Pace Status</div>
             </div>
           </div>
         </div>
@@ -3076,48 +3059,18 @@
       // Update UI
       document.getElementById('goalCurrent').textContent = '$' + Math.round(ytdAP).toLocaleString();
 
+      const paceEl = document.getElementById('goalPaceValue');
+      paceEl.textContent = '$' + Math.round(yearlyPace).toLocaleString();
+      paceEl.className = 'ss-goal-stat-value on-pace';
+      paceEl.style.color = '#4ade80';
+
       if (goal > 0) {
         document.getElementById('goalTarget').textContent = 'Goal: $' + Math.round(goal).toLocaleString();
         const pct = Math.min((ytdAP / goal) * 100, 100);
         document.getElementById('goalFill').style.width = pct + '%';
-
-        // Pace marker: where they should be based on time elapsed
-        const timePct = (dayOfYear / 365) * 100;
-        document.getElementById('goalPaceMarker').style.left = Math.min(timePct, 100) + '%';
-        document.getElementById('goalPaceMarker').style.display = 'block';
-
-        document.getElementById('goalPctValue').textContent = pct.toFixed(1) + '%';
-        document.getElementById('goalRemaining').textContent = '$' + Math.round(Math.max(goal - ytdAP, 0)).toLocaleString();
-
-        // Status
-        const statusEl = document.getElementById('goalStatus');
-        const paceEl = document.getElementById('goalPaceValue');
-        paceEl.textContent = '$' + Math.round(yearlyPace).toLocaleString();
-
-        if (yearlyPace >= goal) {
-          statusEl.textContent = '🔥 On Pace';
-          statusEl.className = 'ss-goal-stat-value on-pace';
-          paceEl.className = 'ss-goal-stat-value on-pace';
-        } else if (yearlyPace >= goal * 0.8) {
-          statusEl.textContent = '⚡ Close';
-          statusEl.className = 'ss-goal-stat-value behind';
-          paceEl.className = 'ss-goal-stat-value behind';
-        } else {
-          statusEl.textContent = '📈 Push Harder';
-          statusEl.className = 'ss-goal-stat-value off-pace';
-          paceEl.className = 'ss-goal-stat-value off-pace';
-        }
       } else {
         document.getElementById('goalTarget').textContent = 'Set a goal →';
         document.getElementById('goalFill').style.width = '0%';
-        document.getElementById('goalPaceMarker').style.display = 'none';
-        document.getElementById('goalPctValue').textContent = '—';
-        document.getElementById('goalRemaining').textContent = '—';
-        document.getElementById('goalStatus').textContent = '—';
-        document.getElementById('goalStatus').className = 'ss-goal-stat-value';
-        document.getElementById('goalPaceValue').textContent = '$' + Math.round(yearlyPace).toLocaleString();
-        document.getElementById('goalPaceValue').className = 'ss-goal-stat-value';
-        document.getElementById('goalPaceValue').style.color = '#3b82f6';
       }
     }
 
