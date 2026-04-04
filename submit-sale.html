@@ -672,6 +672,27 @@
     .ss-calc-input[type="number"] { -moz-appearance: textfield; }
     .ss-calc-input[type="number"]::-webkit-outer-spin-button,
     .ss-calc-input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
+    /* Date inputs: whole box is clickable, calendar icon white */
+    .ss-input[type="date"] {
+      color-scheme: dark;
+      cursor: pointer;
+      position: relative;
+    }
+    .ss-input[type="date"]::-webkit-calendar-picker-indicator {
+      filter: invert(1) brightness(2);
+      opacity: 0.9;
+      cursor: pointer;
+      position: absolute;
+      right: 0.85rem;
+      top: 0;
+      bottom: 0;
+      width: 18px;
+      height: 100%;
+    }
+    .ss-input[type="date"]::-webkit-calendar-picker-indicator:hover { opacity: 1; }
+    .ss-input[type="date"]::-webkit-datetime-edit { color: #ffffff; }
+    .ss-input[type="date"]::-webkit-datetime-edit-fields-wrapper { color: #ffffff; }
     .ss-goal-save {
       padding: 0.35rem 0.7rem; font-size: 0.7rem; font-weight: 700;
       color: #fff; background: #2563eb; border: none; border-radius: 6px; cursor: pointer;
@@ -1959,12 +1980,22 @@
       return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
     }
 
-    // Default Policy Date to today, clamp max to today
+    // Default Policy Date to today, clamp max to today, and open picker on click anywhere in the box
     const policyDateInput = document.getElementById('policyDate');
     if (policyDateInput) {
       const today = todayYMD();
       policyDateInput.max = today;
       if (!policyDateInput.value) policyDateInput.value = today;
+      policyDateInput.addEventListener('click', () => {
+        if (typeof policyDateInput.showPicker === 'function') {
+          try { policyDateInput.showPicker(); } catch (e) { /* ignore */ }
+        }
+      });
+      policyDateInput.addEventListener('focus', () => {
+        if (typeof policyDateInput.showPicker === 'function') {
+          try { policyDateInput.showPicker(); } catch (e) { /* ignore */ }
+        }
+      });
     }
 
     // ─── AUTH UI ───
@@ -2161,6 +2192,22 @@
           icon: '📅'
         });
         if (!proceed) { btn.disabled = false; return; }
+      } else if (policyDateValue !== todayYMD()) {
+        // Sanity check: if they picked anything other than today, confirm it wasn't sold today
+        const proceed = await showConfirmModal({
+          title: 'Double-check the Policy Date',
+          message: 'Are you sure this policy was not sold today?',
+          confirmText: 'Yes, that\u2019s the correct date',
+          cancelText: 'Use today\u2019s date',
+          variant: 'warning',
+          icon: '📅'
+        });
+        if (!proceed) {
+          // Reset to today and let the user resubmit
+          document.getElementById('policyDate').value = todayYMD();
+          btn.disabled = false;
+          return;
+        }
       }
 
       // Hard requirement: must be exactly 10 digits
