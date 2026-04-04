@@ -327,6 +327,133 @@
     }
     .ss-modal-btn.secondary:hover { background: var(--bg-hover); }
 
+    /* Signup link */
+    .ss-signup-link {
+      text-align: center;
+      margin-top: 1.5rem;
+      font-size: 0.82rem;
+      color: rgba(255,255,255,0.35);
+    }
+    .ss-signup-link a {
+      color: #3b82f6;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .ss-signup-link a:hover { color: #60a5fa; text-decoration: underline; }
+
+    /* Signup modal */
+    .ss-signup-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(6px);
+      align-items: center;
+      justify-content: center;
+      animation: ssFadeIn 0.2s ease;
+    }
+    .ss-signup-overlay.open { display: flex; }
+
+    .ss-signup-modal {
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 2.5rem 2rem;
+      max-width: 400px;
+      width: 92%;
+      position: relative;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.4);
+      animation: ssModalPop 0.35s ease;
+    }
+
+    .ss-signup-close {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      border: none;
+      background: #f3f4f6;
+      color: #666;
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.2s ease;
+    }
+    .ss-signup-close:hover { background: #e5e7eb; color: #111; }
+
+    .ss-signup-modal h3 {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: #111;
+      margin-bottom: 0.3rem;
+    }
+    .ss-signup-modal .signup-sub {
+      font-size: 0.82rem;
+      color: #888;
+      margin-bottom: 1.5rem;
+    }
+
+    .ss-signup-field {
+      margin-bottom: 1rem;
+    }
+    .ss-signup-field label {
+      display: block;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #555;
+      margin-bottom: 0.3rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .ss-signup-field input {
+      width: 100%;
+      padding: 0.6rem 0.85rem;
+      font-size: 0.85rem;
+      font-family: 'Inter', sans-serif;
+      color: #111;
+      background: #f9fafb;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+      box-sizing: border-box;
+    }
+    .ss-signup-field input:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.15); }
+    .ss-signup-field input::placeholder { color: #bbb; }
+
+    .ss-signup-submit {
+      width: 100%;
+      padding: 0.75rem;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #fff;
+      background: linear-gradient(135deg, #2563eb, #3b82f6);
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      margin-top: 0.5rem;
+    }
+    .ss-signup-submit:hover { box-shadow: 0 4px 16px rgba(37,99,235,0.35); transform: translateY(-1px); }
+    .ss-signup-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    .ss-signup-msg {
+      margin-top: 0.75rem;
+      padding: 0.6rem 0.75rem;
+      border-radius: 8px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      display: none;
+      text-align: center;
+    }
+    .ss-signup-msg.success { display: block; background: #ecfdf5; border: 1px solid #a7f3d0; color: #059669; }
+    .ss-signup-msg.error { display: block; background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; }
+
     @media (max-width: 768px) {
       .ss-hero { padding: calc(var(--nav-height) + 2rem) 1rem 2rem; }
       .ss-page { padding: 0 1rem 3rem; }
@@ -446,6 +573,9 @@
               </button>
             </div>
           </div>
+          <div class="ss-signup-link">
+            First deal? <a id="openSignup">Sign up here.</a>
+          </div>
         </form>
       </div>
     </div>
@@ -465,6 +595,31 @@
         </div>
         <div id="lbContent"><div class="ss-loading">Loading...</div></div>
       </div>
+    </div>
+  </div>
+
+  <!-- Signup Modal -->
+  <div class="ss-signup-overlay" id="signupOverlay">
+    <div class="ss-signup-modal">
+      <button class="ss-signup-close" id="signupClose">&times;</button>
+      <h3>Create Your Account</h3>
+      <p class="signup-sub">Join the team and start submitting deals.</p>
+      <form id="signupForm">
+        <div class="ss-signup-field">
+          <label>Full Name</label>
+          <input type="text" id="signupName" placeholder="Enter your full name (First and Last)" required />
+        </div>
+        <div class="ss-signup-field">
+          <label>Email</label>
+          <input type="email" id="signupEmail" placeholder="you@email.com" required />
+        </div>
+        <div class="ss-signup-field">
+          <label>Password</label>
+          <input type="password" id="signupPassword" placeholder="Create a password" minlength="6" required />
+        </div>
+        <button class="ss-signup-submit" type="submit" id="signupBtn">Sign Up</button>
+        <div class="ss-signup-msg" id="signupMsg"></div>
+      </form>
     </div>
   </div>
 
@@ -738,6 +893,58 @@
       html += '</div>';
       container.innerHTML = html;
     }
+
+    // ─── SIGNUP MODAL ───
+    const signupOverlay = document.getElementById('signupOverlay');
+    const signupMsg = document.getElementById('signupMsg');
+
+    document.getElementById('openSignup').addEventListener('click', (e) => {
+      e.preventDefault();
+      signupOverlay.classList.add('open');
+    });
+    document.getElementById('signupClose').addEventListener('click', () => signupOverlay.classList.remove('open'));
+    signupOverlay.addEventListener('click', (e) => { if (e.target === signupOverlay) signupOverlay.classList.remove('open'); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && signupOverlay.classList.contains('open')) signupOverlay.classList.remove('open'); });
+
+    document.getElementById('signupForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('signupBtn');
+      btn.disabled = true;
+      signupMsg.className = 'ss-signup-msg'; signupMsg.style.display = 'none';
+
+      const name = document.getElementById('signupName').value.trim();
+      const email = document.getElementById('signupEmail').value.trim();
+      const password = document.getElementById('signupPassword').value;
+
+      if (!name || !email || !password) {
+        signupMsg.textContent = 'Please fill out all fields.';
+        signupMsg.className = 'ss-signup-msg error';
+        btn.disabled = false;
+        return;
+      }
+
+      try {
+        const res = await fetch(SUPABASE_URL + '/auth/v1/signup', {
+          method: 'POST',
+          headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password, data: { name } })
+        });
+        const result = await res.json();
+
+        if (res.ok && !result.error) {
+          signupMsg.textContent = 'Account created! Check your email to confirm, then you can start submitting deals.';
+          signupMsg.className = 'ss-signup-msg success';
+          e.target.reset();
+        } else {
+          signupMsg.textContent = result.error_description || result.msg || result.error || 'Signup failed. Please try again.';
+          signupMsg.className = 'ss-signup-msg error';
+        }
+      } catch (err) {
+        signupMsg.textContent = 'Connection error. Please try again.';
+        signupMsg.className = 'ss-signup-msg error';
+      }
+      btn.disabled = false;
+    });
   </script>
 </body>
 </html>
