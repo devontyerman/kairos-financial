@@ -819,6 +819,328 @@
     .ss-confirm-box.danger .ss-confirm-btn.confirm { background: linear-gradient(135deg, #dc2626, #ef4444); }
     .ss-confirm-box.danger .ss-confirm-btn.confirm:hover { box-shadow: 0 6px 18px rgba(239,68,68,0.4); }
 
+    /* ── Milestone Celebration Modal ── */
+    .ss-milestone-overlay {
+      display: none; position: fixed; inset: 0; z-index: 10001;
+      background: rgba(0,0,0,0.82); backdrop-filter: blur(10px);
+      align-items: center; justify-content: center;
+      animation: ssFadeIn 0.35s ease;
+    }
+    .ss-milestone-overlay.open { display: flex; }
+    .ss-milestone-box {
+      position: relative;
+      background: linear-gradient(180deg, #141925 0%, #0b0f1a 100%);
+      border: 2px solid rgba(59,130,246,0.35);
+      border-radius: 24px;
+      padding: 2.75rem 2rem 2.25rem;
+      max-width: 480px; width: 92%;
+      text-align: center;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.6), 0 0 60px rgba(59,130,246,0.15);
+      animation: ssMilestonePop 0.55s cubic-bezier(0.34, 1.6, 0.64, 1);
+      overflow: hidden;
+    }
+    @keyframes ssMilestonePop {
+      0% { opacity: 0; transform: scale(0.7) translateY(40px); }
+      60% { opacity: 1; transform: scale(1.04) translateY(-4px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    .ss-milestone-box::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(circle at 50% 0%, rgba(255,255,255,0.08) 0%, transparent 55%);
+      pointer-events: none;
+    }
+    .ss-milestone-glow {
+      position: absolute; top: -40%; left: 50%; transform: translateX(-50%);
+      width: 120%; height: 200%;
+      background: radial-gradient(ellipse at center, rgba(59,130,246,0.18) 0%, transparent 60%);
+      pointer-events: none; animation: ssGlowPulse 3s ease-in-out infinite;
+    }
+    @keyframes ssGlowPulse {
+      0%, 100% { opacity: 0.6; }
+      50% { opacity: 1; }
+    }
+    .ss-milestone-emoji {
+      position: relative;
+      font-size: 4.2rem; line-height: 1; margin-bottom: 0.85rem;
+      display: inline-block;
+      animation: ssEmojiBounce 1s ease-in-out infinite;
+      filter: drop-shadow(0 6px 18px rgba(0,0,0,0.4));
+    }
+    @keyframes ssEmojiBounce {
+      0%, 100% { transform: translateY(0) rotate(-3deg); }
+      50% { transform: translateY(-8px) rotate(3deg); }
+    }
+    .ss-milestone-tier {
+      position: relative;
+      display: inline-block;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.68rem; font-weight: 800;
+      letter-spacing: 0.16em; text-transform: uppercase;
+      padding: 0.35rem 0.9rem; border-radius: 100px;
+      margin-bottom: 0.85rem;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      color: #fff;
+    }
+    .ss-milestone-title {
+      position: relative;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1.75rem; font-weight: 900;
+      color: #ffffff;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.75rem;
+      line-height: 1.15;
+    }
+    .ss-milestone-amount {
+      position: relative;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 2.6rem; font-weight: 900;
+      margin: 0.25rem 0 0.75rem;
+      letter-spacing: -0.03em;
+      background: linear-gradient(135deg, #60a5fa, #3b82f6);
+      -webkit-background-clip: text; background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 30px rgba(59,130,246,0.35);
+    }
+    .ss-milestone-msg {
+      position: relative;
+      font-size: 0.92rem; line-height: 1.55;
+      color: rgba(255,255,255,0.7);
+      margin-bottom: 1.6rem;
+    }
+    .ss-milestone-btn {
+      position: relative;
+      padding: 0.85rem 2.2rem;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.9rem; font-weight: 800;
+      color: #fff;
+      background: linear-gradient(135deg, #2563eb, #3b82f6);
+      border: none; border-radius: 100px;
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(37,99,235,0.4);
+      transition: all 0.25s ease;
+    }
+    .ss-milestone-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(37,99,235,0.55); }
+
+    /* Tier-specific color themes */
+    .ss-milestone-box.tier-first {
+      border-color: rgba(34,197,94,0.5);
+      box-shadow: 0 30px 80px rgba(0,0,0,0.6), 0 0 60px rgba(34,197,94,0.25);
+    }
+    .ss-milestone-box.tier-first .ss-milestone-glow { background: radial-gradient(ellipse at center, rgba(34,197,94,0.25) 0%, transparent 60%); }
+    .ss-milestone-box.tier-first .ss-milestone-amount { background: linear-gradient(135deg, #4ade80, #22c55e); -webkit-background-clip: text; background-clip: text; }
+    .ss-milestone-box.tier-first .ss-milestone-tier { background: rgba(34,197,94,0.18); border-color: rgba(34,197,94,0.4); color: #86efac; }
+    .ss-milestone-box.tier-first .ss-milestone-btn { background: linear-gradient(135deg, #16a34a, #22c55e); box-shadow: 0 8px 24px rgba(34,197,94,0.45); }
+
+    .ss-milestone-box.tier-week5k {
+      border-color: rgba(59,130,246,0.5);
+      box-shadow: 0 30px 80px rgba(0,0,0,0.6), 0 0 60px rgba(59,130,246,0.3);
+    }
+    .ss-milestone-box.tier-week5k .ss-milestone-tier { background: rgba(59,130,246,0.18); border-color: rgba(59,130,246,0.4); color: #93c5fd; }
+
+    .ss-milestone-box.tier-week10k {
+      border-color: rgba(168,85,247,0.55);
+      box-shadow: 0 30px 80px rgba(0,0,0,0.6), 0 0 70px rgba(168,85,247,0.35);
+    }
+    .ss-milestone-box.tier-week10k .ss-milestone-glow { background: radial-gradient(ellipse at center, rgba(168,85,247,0.3) 0%, transparent 60%); }
+    .ss-milestone-box.tier-week10k .ss-milestone-amount { background: linear-gradient(135deg, #c084fc, #a855f7); -webkit-background-clip: text; background-clip: text; }
+    .ss-milestone-box.tier-week10k .ss-milestone-tier { background: rgba(168,85,247,0.2); border-color: rgba(168,85,247,0.45); color: #d8b4fe; }
+    .ss-milestone-box.tier-week10k .ss-milestone-btn { background: linear-gradient(135deg, #9333ea, #a855f7); box-shadow: 0 8px 24px rgba(168,85,247,0.5); }
+
+    .ss-milestone-box.tier-month10k {
+      border-color: rgba(20,184,166,0.55);
+      box-shadow: 0 30px 80px rgba(0,0,0,0.6), 0 0 60px rgba(20,184,166,0.3);
+    }
+    .ss-milestone-box.tier-month10k .ss-milestone-glow { background: radial-gradient(ellipse at center, rgba(20,184,166,0.3) 0%, transparent 60%); }
+    .ss-milestone-box.tier-month10k .ss-milestone-amount { background: linear-gradient(135deg, #2dd4bf, #14b8a6); -webkit-background-clip: text; background-clip: text; }
+    .ss-milestone-box.tier-month10k .ss-milestone-tier { background: rgba(20,184,166,0.18); border-color: rgba(20,184,166,0.4); color: #5eead4; }
+    .ss-milestone-box.tier-month10k .ss-milestone-btn { background: linear-gradient(135deg, #0d9488, #14b8a6); box-shadow: 0 8px 24px rgba(20,184,166,0.45); }
+
+    .ss-milestone-box.tier-month20k {
+      border-color: rgba(249,115,22,0.55);
+      box-shadow: 0 30px 80px rgba(0,0,0,0.6), 0 0 70px rgba(249,115,22,0.35);
+    }
+    .ss-milestone-box.tier-month20k .ss-milestone-glow { background: radial-gradient(ellipse at center, rgba(249,115,22,0.3) 0%, transparent 60%); }
+    .ss-milestone-box.tier-month20k .ss-milestone-amount { background: linear-gradient(135deg, #fdba74, #f97316); -webkit-background-clip: text; background-clip: text; }
+    .ss-milestone-box.tier-month20k .ss-milestone-tier { background: rgba(249,115,22,0.2); border-color: rgba(249,115,22,0.45); color: #fdba74; }
+    .ss-milestone-box.tier-month20k .ss-milestone-btn { background: linear-gradient(135deg, #ea580c, #f97316); box-shadow: 0 8px 24px rgba(249,115,22,0.5); }
+
+    .ss-milestone-box.tier-month30k {
+      border-color: rgba(201,168,76,0.65);
+      box-shadow: 0 30px 80px rgba(0,0,0,0.6), 0 0 90px rgba(201,168,76,0.4);
+    }
+    .ss-milestone-box.tier-month30k .ss-milestone-glow { background: radial-gradient(ellipse at center, rgba(240,216,120,0.35) 0%, transparent 60%); }
+    .ss-milestone-box.tier-month30k .ss-milestone-amount { background: linear-gradient(135deg, #fde68a, #f0d878, #c9a84c); -webkit-background-clip: text; background-clip: text; }
+    .ss-milestone-box.tier-month30k .ss-milestone-tier { background: linear-gradient(135deg, rgba(240,216,120,0.2), rgba(201,168,76,0.2)); border-color: rgba(240,216,120,0.5); color: #fde68a; }
+    .ss-milestone-box.tier-month30k .ss-milestone-btn { background: linear-gradient(135deg, #c9a84c, #f0d878); color: #1a1a1a; box-shadow: 0 8px 28px rgba(201,168,76,0.55); }
+    .ss-milestone-box.tier-month30k .ss-milestone-title { background: linear-gradient(135deg, #fde68a, #f0d878); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+
+    /* Confetti burst */
+    .ss-confetti-piece {
+      position: fixed; width: 10px; height: 14px;
+      pointer-events: none; z-index: 10002;
+      animation: ssConfettiFall 2.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    }
+    @keyframes ssConfettiFall {
+      0% { opacity: 1; transform: translate(0, 0) rotate(0deg); }
+      100% { opacity: 0; transform: translate(var(--cx), var(--cy)) rotate(var(--cr)); }
+    }
+
+    /* ── Calculator Sections ── */
+    .ss-calc-wrap {
+      max-width: 700px;
+      margin: 2.5rem auto 0;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    .ss-calc-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(56,120,255,0.1);
+      border-radius: 16px;
+      padding: 2rem;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.2);
+    }
+    .ss-calc-title {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1.1rem; font-weight: 800;
+      color: #ffffff;
+      margin-bottom: 0.35rem;
+      display: flex; align-items: center; gap: 0.55rem;
+    }
+    .ss-calc-title svg { color: #3b82f6; }
+    .ss-calc-sub {
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.4);
+      margin-bottom: 1.4rem;
+    }
+    .ss-calc-steps {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 0.9rem;
+      margin-bottom: 1.5rem;
+    }
+    .ss-calc-step { }
+    .ss-calc-step-num {
+      display: inline-block;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.62rem; font-weight: 800;
+      color: #3b82f6;
+      background: rgba(59,130,246,0.12);
+      border: 1px solid rgba(59,130,246,0.25);
+      padding: 0.12rem 0.5rem;
+      border-radius: 100px;
+      margin-bottom: 0.3rem;
+      letter-spacing: 0.08em;
+    }
+    .ss-calc-step-label {
+      display: block;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.72rem; font-weight: 700;
+      color: rgba(255,255,255,0.6);
+      margin-bottom: 0.45rem;
+      line-height: 1.35;
+    }
+    .ss-calc-input, .ss-calc-select {
+      width: 100%;
+      padding: 0.6rem 0.85rem;
+      font-size: 0.85rem;
+      font-family: 'Inter', sans-serif;
+      color: #ffffff;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: var(--radius-md);
+      transition: all 0.2s ease;
+      box-sizing: border-box;
+    }
+    .ss-calc-input:focus, .ss-calc-select:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.2); }
+    .ss-calc-input::placeholder { color: rgba(255,255,255,0.25); }
+    .ss-calc-select {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg width='12' height='12' viewBox='0 0 12 12' fill='none' stroke='%23666' stroke-width='2' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolyline points='2 4 6 8 10 4'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.75rem center;
+      padding-right: 2rem;
+    }
+    .ss-calc-select option { background: #1a1a2e; color: #fff; }
+
+    .ss-calc-results {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0.7rem;
+      padding: 1.25rem;
+      background: linear-gradient(135deg, rgba(59,130,246,0.08), rgba(37,99,235,0.04));
+      border: 1px solid rgba(59,130,246,0.18);
+      border-radius: 12px;
+    }
+    .ss-calc-result-main {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 0.75rem;
+      padding-bottom: 0.85rem;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .ss-calc-result-main .lbl {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.72rem; font-weight: 700;
+      color: rgba(255,255,255,0.55);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .ss-calc-result-main .val {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1.55rem; font-weight: 900;
+      color: #60a5fa;
+      letter-spacing: -0.02em;
+      text-shadow: 0 0 20px rgba(59,130,246,0.35);
+    }
+    .ss-calc-result-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 0.75rem;
+    }
+    .ss-calc-result-row .lbl {
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.55);
+    }
+    .ss-calc-result-row .val {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1rem; font-weight: 800;
+      color: #ffffff;
+    }
+    .ss-calc-result-row .val.muted { color: rgba(255,255,255,0.55); font-weight: 700; }
+
+    .ss-calc-roi .ss-calc-steps { grid-template-columns: 1fr 1fr; }
+    .ss-calc-roi-result {
+      padding: 1.25rem 1.4rem;
+      background: linear-gradient(135deg, rgba(34,197,94,0.08), rgba(34,197,94,0.03));
+      border: 1px solid rgba(34,197,94,0.2);
+      border-radius: 12px;
+      text-align: center;
+    }
+    .ss-calc-roi-result .msg {
+      font-size: 0.88rem;
+      color: rgba(255,255,255,0.75);
+      line-height: 1.55;
+    }
+    .ss-calc-roi-result .msg strong {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 900;
+      color: #4ade80;
+      font-size: 1.05rem;
+    }
+
+    @media (max-width: 640px) {
+      .ss-calc-steps { grid-template-columns: 1fr; }
+      .ss-calc-roi .ss-calc-steps { grid-template-columns: 1fr; }
+      .ss-milestone-box { padding: 2.2rem 1.4rem 1.8rem; }
+      .ss-milestone-title { font-size: 1.4rem; }
+      .ss-milestone-amount { font-size: 2.1rem; }
+      .ss-milestone-emoji { font-size: 3.4rem; }
+    }
+
     .mp-actions { display: flex; gap: 0.3rem; }
     .mp-btn-edit, .mp-btn-del {
       padding: 0.25rem 0.6rem; font-size: 0.68rem; font-weight: 700; border-radius: 4px;
@@ -1061,6 +1383,94 @@
           </div>
         </form>
         </div>
+
+        <!-- COMMISSION + ROI CALCULATORS -->
+        <div class="ss-calc-wrap">
+
+          <!-- COMMISSION CALCULATOR -->
+          <div class="ss-calc-card" id="commissionCalc">
+            <div class="ss-calc-title">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+              Commission Calculator
+            </div>
+            <div class="ss-calc-sub">Reverse-engineer the AP you need to hit your monthly income goal.</div>
+
+            <div class="ss-calc-steps">
+              <div class="ss-calc-step">
+                <span class="ss-calc-step-num">STEP 1</span>
+                <label class="ss-calc-step-label">How much do you want to make this month?</label>
+                <input class="ss-calc-input" type="number" id="cc_incomeGoal" min="0" step="1" placeholder="$10,000" />
+              </div>
+              <div class="ss-calc-step">
+                <span class="ss-calc-step-num">STEP 2</span>
+                <label class="ss-calc-step-label">Your Compensation Level</label>
+                <select class="ss-calc-select" id="cc_comp"></select>
+              </div>
+              <div class="ss-calc-step">
+                <span class="ss-calc-step-num">STEP 3</span>
+                <label class="ss-calc-step-label">Your Persistency Rate</label>
+                <select class="ss-calc-select" id="cc_persistency"></select>
+              </div>
+            </div>
+
+            <div class="ss-calc-results">
+              <div class="ss-calc-result-main">
+                <span class="lbl">Required Annual Premium</span>
+                <span class="val" id="cc_outRequired">$0</span>
+              </div>
+              <div class="ss-calc-result-row">
+                <span class="lbl">You'll receive upfront (75%)</span>
+                <span class="val" id="cc_outUpfront">$0</span>
+              </div>
+              <div class="ss-calc-result-row">
+                <span class="lbl">Backend at 9 months (25%)</span>
+                <span class="val muted" id="cc_outBackend">$0</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- LEADS ROI CALCULATOR -->
+          <div class="ss-calc-card ss-calc-roi" id="roiCalc">
+            <div class="ss-calc-title">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+              Leads ROI Calculator
+            </div>
+            <div class="ss-calc-sub">Figure out how much to spend on leads based on your expected return.</div>
+
+            <div class="ss-calc-steps">
+              <div class="ss-calc-step">
+                <span class="ss-calc-step-num">INPUT 1</span>
+                <label class="ss-calc-step-label">Target Net Income (auto-filled from above)</label>
+                <input class="ss-calc-input" type="number" id="roi_income" min="0" step="1" placeholder="$10,000" />
+              </div>
+              <div class="ss-calc-step">
+                <span class="ss-calc-step-num">INPUT 2</span>
+                <label class="ss-calc-step-label">Expected ROI on Lead Spend</label>
+                <select class="ss-calc-select" id="roi_multiplier"></select>
+              </div>
+            </div>
+
+            <div class="ss-calc-roi-result">
+              <div class="msg" id="roi_output">
+                Enter your numbers above to see your recommended lead budget.
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- MILESTONE CELEBRATION MODAL -->
+    <div class="ss-milestone-overlay" id="milestoneOverlay">
+      <div class="ss-milestone-box" id="milestoneBox">
+        <div class="ss-milestone-glow"></div>
+        <div class="ss-milestone-emoji" id="milestoneEmoji">🎉</div>
+        <div class="ss-milestone-tier" id="milestoneTier">MILESTONE</div>
+        <div class="ss-milestone-title" id="milestoneTitle">Congratulations!</div>
+        <div class="ss-milestone-amount" id="milestoneAmount"></div>
+        <div class="ss-milestone-msg" id="milestoneMsg"></div>
+        <button type="button" class="ss-milestone-btn" id="milestoneClose">Keep Going</button>
       </div>
     </div>
 
@@ -1624,7 +2034,9 @@
       }
       if (result.ok) {
         e.target.reset();
-        showSuccessModal(apValue);
+        // Check milestones first — if one triggers, it replaces the normal success modal
+        const triggered = await checkAndShowMilestone();
+        if (!triggered) showSuccessModal(apValue);
         // Check underwriting overload
         if (data.status === 'Underwriting') checkUnderwritingOverload();
       } else {
@@ -1632,6 +2044,183 @@
       }
       btn.disabled = false;
     });
+
+    // ─── MILESTONE CELEBRATIONS ───
+    const MILESTONE_CONFIG = {
+      first_sale: {
+        tier: 'tier-first', emoji: '🎉', label: 'FIRST DEAL',
+        title: 'Your First Sale is in the Books!',
+        amount: '',
+        msg: 'This is the one you\u2019ll always remember. The first of many. You just proved to yourself you can do this — now keep the momentum rolling.',
+        button: 'Let\u2019s Get the Next One'
+      },
+      week_5k: {
+        tier: 'tier-week5k', emoji: '💪', label: '$5K WEEK',
+        title: 'Five Stacks in a Week!',
+        amount: '$5,000',
+        msg: 'You just crossed $5K in submitted AP this week. Solid work — this is what a closer\u2019s week looks like. Don\u2019t slow down.',
+        button: 'Keep Closing'
+      },
+      week_10k: {
+        tier: 'tier-week10k', emoji: '🔥', label: '$10K WEEK \u2022 ELITE',
+        title: '$10K Week — Elite Territory',
+        amount: '$10,000',
+        msg: 'Ten thousand in a single week is where the top performers live. You\u2019re officially in elite company — this is not average, and neither are you.',
+        button: 'Stay In the Zone'
+      },
+      month_10k: {
+        tier: 'tier-month10k', emoji: '🏆', label: '$10K MONTH',
+        title: '$10K Month Locked In',
+        amount: '$10,000',
+        msg: 'Five-figure month achieved. You\u2019re building a real business now — consistency at this level is what turns agents into career producers.',
+        button: 'On to the Next Goal'
+      },
+      month_20k: {
+        tier: 'tier-month20k', emoji: '🚀', label: '$20K MONTH',
+        title: 'Twenty Grand Month!',
+        amount: '$20,000',
+        msg: 'You just doubled the five-figure club. $20K months are where serious income lives — this is a major benchmark. Absolutely crushing it.',
+        button: 'Fuel the Fire'
+      },
+      month_30k: {
+        tier: 'tier-month30k', emoji: '👑', label: 'LEGEND TIER',
+        title: '$30K MONTH — LEGEND STATUS',
+        amount: '$30,000',
+        msg: 'Thirty thousand in a single month. This is top-of-the-board, career-defining production. Very few ever see this number — you just put your name on the list.',
+        button: 'Take a Bow'
+      }
+    };
+
+    function weekKeyForDate(d) {
+      const ws = new Date(d); ws.setHours(0,0,0,0); ws.setDate(ws.getDate() - ws.getDay());
+      return ws.toISOString().split('T')[0];
+    }
+    function monthKeyForDate(d) {
+      return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+    }
+
+    function getMilestoneStorageKey() {
+      return 'kairos_milestones_' + (currentUser?.id || 'anon');
+    }
+    function getShownMilestones() {
+      try { return JSON.parse(localStorage.getItem(getMilestoneStorageKey()) || '{}'); } catch (e) { return {}; }
+    }
+    function markMilestoneShown(key) {
+      const all = getShownMilestones();
+      all[key] = true;
+      localStorage.setItem(getMilestoneStorageKey(), JSON.stringify(all));
+    }
+
+    async function checkAndShowMilestone() {
+      if (!currentUser) return false;
+      const token = accessToken || SUPABASE_KEY;
+      const repName = currentUser.user_metadata?.name || currentUser.email;
+
+      // Pull this user's policies (by user_id when available, fall back to sales_rep for older rows)
+      let rows = [];
+      try {
+        const res = await fetch(SUPABASE_URL + '/rest/v1/policies?select=annual_premium,created_at,user_id,sales_rep&or=(user_id.eq.' + currentUser.id + ',sales_rep.eq.' + encodeURIComponent(repName) + ')', {
+          headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + token }
+        });
+        if (res.ok) rows = await res.json();
+      } catch (e) { console.error('Milestone fetch failed:', e); return false; }
+
+      if (!rows || rows.length === 0) return false;
+
+      const shown = getShownMilestones();
+
+      // 1. First ever sale
+      if (rows.length === 1 && !shown.first_sale) {
+        markMilestoneShown('first_sale');
+        showMilestoneModal('first_sale');
+        return true;
+      }
+
+      // Compute current week + month totals
+      const now = new Date();
+      const weekStart = new Date(now); weekStart.setHours(0,0,0,0); weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+      const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+      const wKey = weekKeyForDate(now);
+      const mKey = monthKeyForDate(now);
+
+      let weekTotal = 0, monthTotal = 0;
+      rows.forEach(r => {
+        const d = new Date(r.created_at);
+        const ap = parseFloat(r.annual_premium || 0);
+        if (d >= weekStart) weekTotal += ap;
+        if (d >= monthStart) monthTotal += ap;
+      });
+
+      // 2. Weekly thresholds (highest newly crossed wins)
+      const weekTiers = [
+        { threshold: 10000, key: 'week_10k:' + wKey, type: 'week_10k' },
+        { threshold: 5000,  key: 'week_5k:' + wKey,  type: 'week_5k' }
+      ];
+      for (const t of weekTiers) {
+        if (weekTotal >= t.threshold && !shown[t.key]) {
+          markMilestoneShown(t.key);
+          showMilestoneModal(t.type);
+          return true;
+        }
+      }
+
+      // 3. Monthly thresholds (highest newly crossed wins)
+      const monthTiers = [
+        { threshold: 30000, key: 'month_30k:' + mKey, type: 'month_30k' },
+        { threshold: 20000, key: 'month_20k:' + mKey, type: 'month_20k' },
+        { threshold: 10000, key: 'month_10k:' + mKey, type: 'month_10k' }
+      ];
+      for (const t of monthTiers) {
+        if (monthTotal >= t.threshold && !shown[t.key]) {
+          markMilestoneShown(t.key);
+          showMilestoneModal(t.type);
+          return true;
+        }
+      }
+
+      return false;
+    }
+
+    function showMilestoneModal(type) {
+      const cfg = MILESTONE_CONFIG[type];
+      if (!cfg) return;
+      const overlay = document.getElementById('milestoneOverlay');
+      const box = document.getElementById('milestoneBox');
+      box.className = 'ss-milestone-box ' + cfg.tier;
+      document.getElementById('milestoneEmoji').textContent = cfg.emoji;
+      document.getElementById('milestoneTier').textContent = cfg.label;
+      document.getElementById('milestoneTitle').textContent = cfg.title;
+      document.getElementById('milestoneAmount').textContent = cfg.amount || '';
+      document.getElementById('milestoneAmount').style.display = cfg.amount ? 'block' : 'none';
+      document.getElementById('milestoneMsg').textContent = cfg.msg;
+      document.getElementById('milestoneClose').textContent = cfg.button;
+      overlay.classList.add('open');
+      fireConfetti();
+    }
+
+    document.getElementById('milestoneClose').addEventListener('click', () => {
+      document.getElementById('milestoneOverlay').classList.remove('open');
+    });
+    document.getElementById('milestoneOverlay').addEventListener('click', (e) => {
+      if (e.target.id === 'milestoneOverlay') e.target.classList.remove('open');
+    });
+
+    function fireConfetti() {
+      const colors = ['#3b82f6', '#60a5fa', '#22c55e', '#4ade80', '#f0d878', '#c9a84c', '#a855f7', '#f97316', '#ef4444'];
+      const count = 70;
+      for (let i = 0; i < count; i++) {
+        const p = document.createElement('div');
+        p.className = 'ss-confetti-piece';
+        const startX = window.innerWidth / 2 + (Math.random() - 0.5) * 200;
+        const startY = window.innerHeight / 2 - 100;
+        const endX = (Math.random() - 0.5) * window.innerWidth * 1.2;
+        const endY = window.innerHeight * 0.8 + Math.random() * 200;
+        const rot = (Math.random() - 0.5) * 1080;
+        p.style.cssText = 'left:' + startX + 'px;top:' + startY + 'px;background:' + colors[Math.floor(Math.random() * colors.length)] + ';--cx:' + endX + 'px;--cy:' + endY + 'px;--cr:' + rot + 'deg;';
+        document.body.appendChild(p);
+        setTimeout(() => p.remove(), 3000);
+      }
+    }
 
     // ─── LEADERBOARD ───
     let currentRange = 'daily';
@@ -2436,6 +3025,87 @@
         document.getElementById('goalPaceValue').style.color = '#3b82f6';
       }
     }
+
+    // ─── COMMISSION + LEADS ROI CALCULATORS ───
+    (function initCalculators() {
+      const compSel = document.getElementById('cc_comp');
+      const persSel = document.getElementById('cc_persistency');
+      const roiSel = document.getElementById('roi_multiplier');
+
+      // Populate comp % (65 - 145, step 5), default 100
+      for (let v = 65; v <= 145; v += 5) {
+        const o = document.createElement('option');
+        o.value = v; o.textContent = v + '%';
+        if (v === 100) o.selected = true;
+        compSel.appendChild(o);
+      }
+      // Populate persistency (50 - 85, step 5), default 75
+      for (let v = 50; v <= 85; v += 5) {
+        const o = document.createElement('option');
+        o.value = v; o.textContent = v + '%';
+        if (v === 75) o.selected = true;
+        persSel.appendChild(o);
+      }
+      // Populate ROI multiplier (1x - 10x, step 0.5), default 3x
+      for (let v = 1; v <= 10; v += 0.5) {
+        const o = document.createElement('option');
+        o.value = v; o.textContent = v + 'x';
+        if (v === 3) o.selected = true;
+        roiSel.appendChild(o);
+      }
+
+      const fmt = (n) => '$' + Math.round(n).toLocaleString('en-US');
+
+      const incomeEl = document.getElementById('cc_incomeGoal');
+      const reqEl = document.getElementById('cc_outRequired');
+      const upEl = document.getElementById('cc_outUpfront');
+      const backEl = document.getElementById('cc_outBackend');
+
+      const roiIncomeEl = document.getElementById('roi_income');
+      const roiOut = document.getElementById('roi_output');
+
+      let roiIncomeTouched = false;
+
+      function computeCommission() {
+        const income = parseFloat(incomeEl.value) || 0;
+        const comp = parseFloat(compSel.value) / 100;
+        const pers = parseFloat(persSel.value) / 100;
+        const denom = comp * pers;
+        const required = denom > 0 ? income / denom : 0;
+        reqEl.textContent = fmt(required);
+        upEl.textContent = fmt(income * 0.75);
+        backEl.textContent = fmt(income * 0.25);
+
+        // Auto-sync ROI income unless user has manually edited it
+        if (!roiIncomeTouched) {
+          roiIncomeEl.value = income || '';
+          computeRoi();
+        }
+      }
+
+      function computeRoi() {
+        const income = parseFloat(roiIncomeEl.value) || 0;
+        const mult = parseFloat(roiSel.value) || 0;
+        if (income <= 0 || mult <= 0) {
+          roiOut.innerHTML = 'Enter your numbers above to see your recommended lead budget.';
+          return;
+        }
+        const budget = income / mult;
+        roiOut.innerHTML = 'You need to spend <strong>' + fmt(budget) + '</strong> on leads to hit your <strong>' + fmt(income) + '</strong> income goal at <strong>' + mult + 'x ROI</strong>.';
+      }
+
+      incomeEl.addEventListener('input', computeCommission);
+      compSel.addEventListener('change', computeCommission);
+      persSel.addEventListener('change', computeCommission);
+
+      roiIncomeEl.addEventListener('input', () => {
+        roiIncomeTouched = roiIncomeEl.value !== (incomeEl.value || '');
+        computeRoi();
+      });
+      roiSel.addEventListener('change', computeRoi);
+
+      computeCommission();
+    })();
 
     async function deletePolicy(id) {
       const confirmed = await showConfirmModal({
