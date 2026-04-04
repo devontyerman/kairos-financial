@@ -167,17 +167,15 @@
       margin: 0 auto;
     }
     .ss-form-card {
-      background:
-        linear-gradient(135deg, rgba(88,28,135,0.08), rgba(30,27,75,0.04)),
-        rgba(255,255,255,0.025);
-      border: 1px solid rgba(168,85,247,0.22);
+      background: #0a0612;
+      border: 1px solid rgba(168,85,247,0.28);
       border-radius: 18px;
       padding: 2rem;
       grid-column: 1 / -1;
       box-shadow:
-        0 8px 40px rgba(0,0,0,0.3),
-        0 0 0 1px rgba(168,85,247,0.1),
-        0 0 60px rgba(88,28,135,0.18);
+        0 8px 40px rgba(0,0,0,0.5),
+        0 0 0 1px rgba(168,85,247,0.12),
+        0 0 60px rgba(88,28,135,0.25);
       position: relative;
       overflow: hidden;
     }
@@ -273,14 +271,14 @@
       align-items: center;
       gap: 1rem;
       padding: 1rem 1.25rem;
-      background: linear-gradient(135deg, rgba(88,28,135,0.06), rgba(255,255,255,0.02));
-      border: 1px solid rgba(168,85,247,0.14);
+      background: #0a0612;
+      border: 1px solid rgba(168,85,247,0.2);
       border-radius: 14px;
       transition: all 0.3s ease;
-      box-shadow: 0 2px 20px rgba(88,28,135,0.12);
+      box-shadow: 0 4px 24px rgba(0,0,0,0.45), 0 0 0 1px rgba(168,85,247,0.08);
     }
-    .ss-lb-card:nth-child(even) { background: linear-gradient(135deg, rgba(88,28,135,0.04), rgba(255,255,255,0.012)); }
-    .ss-lb-card:hover { background: linear-gradient(135deg, rgba(168,85,247,0.12), rgba(139,92,246,0.04)); border-color: rgba(192,132,252,0.45); transform: translateX(6px); box-shadow: 0 6px 28px rgba(168,85,247,0.28), 0 0 40px rgba(139,92,246,0.15); }
+    .ss-lb-card:nth-child(even) { background: #0c0814; }
+    .ss-lb-card:hover { background: #120a1f; border-color: rgba(192,132,252,0.45); transform: translateX(6px); box-shadow: 0 6px 28px rgba(168,85,247,0.28), 0 0 40px rgba(139,92,246,0.15); }
 
     .ss-lb-card.rank-1 {
       background: linear-gradient(135deg, rgba(201,168,76,0.1) 0%, rgba(255,255,255,0.03) 100%);
@@ -465,10 +463,11 @@
       max-width: 700px;
       margin: 0 auto 1rem;
       padding: 1.25rem;
-      background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(255,255,255,0.08);
+      background: #0a0612;
+      border: 1px solid rgba(168,85,247,0.25);
       border-radius: 12px;
       text-align: center;
+      box-shadow: 0 6px 30px rgba(0,0,0,0.45);
     }
     .ss-auth-prompt p { color: rgba(255,255,255,0.8); font-size: 0.88rem; margin-bottom: 0.75rem; }
     .ss-auth-prompt-btns { display: flex; gap: 0.5rem; justify-content: center; }
@@ -676,9 +675,10 @@
     .mp-attention {
       margin-bottom: 2rem;
       padding: 1.25rem;
-      background: rgba(234,179,8,0.04);
-      border: 1px solid rgba(234,179,8,0.12);
+      background: #0a0612;
+      border: 1px solid rgba(234,179,8,0.3);
       border-radius: 12px;
+      box-shadow: 0 8px 36px rgba(0,0,0,0.45);
     }
     .mp-attention-title {
       font-family: 'Plus Jakarta Sans', sans-serif;
@@ -745,11 +745,11 @@
       max-width: 700px;
       margin: 0 auto 2rem;
       padding: 1.5rem;
-      background: linear-gradient(135deg, rgba(88,28,135,0.1), rgba(255,255,255,0.025));
-      border: 1px solid rgba(168,85,247,0.22);
+      background: #0a0612;
+      border: 1px solid rgba(168,85,247,0.28);
       border-radius: 16px;
       display: none;
-      box-shadow: 0 4px 32px rgba(88,28,135,0.2), 0 0 0 1px rgba(168,85,247,0.08);
+      box-shadow: 0 8px 40px rgba(0,0,0,0.5), 0 0 0 1px rgba(168,85,247,0.12), 0 0 50px rgba(88,28,135,0.25);
     }
     .ss-goal-tracker.visible { display: block; }
 
@@ -847,9 +847,9 @@
 
     .mp-table-wrap {
       border-radius: 14px;
-      border: 1px solid rgba(168,85,247,0.18);
-      background: linear-gradient(135deg, rgba(88,28,135,0.05), rgba(255,255,255,0.02));
-      box-shadow: 0 4px 30px rgba(88,28,135,0.18), 0 0 0 1px rgba(168,85,247,0.05);
+      border: 1px solid rgba(168,85,247,0.28);
+      background: #0a0612;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.5), 0 0 0 1px rgba(168,85,247,0.12), 0 0 60px rgba(88,28,135,0.25);
     }
     .mp-table { width: 100%; border-collapse: collapse; table-layout: auto; }
     .mp-table thead th {
@@ -1163,13 +1163,11 @@
       gap: 1.5rem;
     }
     .ss-calc-card {
-      background:
-        linear-gradient(135deg, rgba(88,28,135,0.08), rgba(30,27,75,0.03)),
-        rgba(255,255,255,0.02);
-      border: 1px solid rgba(168,85,247,0.22);
+      background: #0a0612;
+      border: 1px solid rgba(168,85,247,0.28);
       border-radius: 18px;
       padding: 2rem;
-      box-shadow: 0 8px 40px rgba(0,0,0,0.3), 0 0 60px rgba(88,28,135,0.18);
+      box-shadow: 0 8px 40px rgba(0,0,0,0.5), 0 0 0 1px rgba(168,85,247,0.12), 0 0 60px rgba(88,28,135,0.25);
       position: relative;
       overflow: hidden;
     }
@@ -1548,9 +1546,10 @@
       .mp-table tbody tr {
         margin-bottom: 0.75rem;
         padding: 0.85rem 0.95rem;
-        background: rgba(255,255,255,0.035) !important;
-        border: 1px solid rgba(255,255,255,0.08);
+        background: #0a0612 !important;
+        border: 1px solid rgba(168,85,247,0.22);
         border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.4);
       }
       .mp-table tbody tr:hover { background: rgba(56,120,255,0.08) !important; transform: none; }
       .mp-table tbody td {
