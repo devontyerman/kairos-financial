@@ -1472,12 +1472,12 @@
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
               Commission Calculator
             </div>
-            <div class="ss-calc-sub">Reverse-engineer the AP you need to sell and the lead spend required to hit your upfront commission goal.</div>
+            <div class="ss-calc-sub">Enter your take-home goal and we'll back out the AP to sell and lead spend required — factoring in your comp, persistency, and lead ROI.</div>
 
             <div class="ss-calc-steps ss-calc-steps-4">
               <div class="ss-calc-step">
                 <span class="ss-calc-step-num">STEP 1</span>
-                <label class="ss-calc-step-label">How much upfront commission do you want to receive this month?</label>
+                <label class="ss-calc-step-label">How much do you want to NET this month (after lead costs)?</label>
                 <input class="ss-calc-input" type="number" id="cc_incomeGoal" min="0" step="1" placeholder="$20,000" />
               </div>
               <div class="ss-calc-step">
@@ -1503,7 +1503,7 @@
                 <span class="val" id="cc_outRequired">$0</span>
               </div>
               <div class="ss-calc-result-row">
-                <span class="lbl">Upfront commission (75%)</span>
+                <span class="lbl">Upfront commission, gross (75%)</span>
                 <span class="val" id="cc_outUpfront">$0</span>
               </div>
               <div class="ss-calc-result-row">
@@ -3123,55 +3123,58 @@
       const roiOut = document.getElementById('roi_output');
 
       function computeCommission() {
-        // Step 1 is the UPFRONT commission target (75% of total income on the sold AP)
-        const upfrontGoal = parseFloat(incomeEl.value) || 0;
+        // Step 1 is the NET income target — take-home AFTER lead costs
+        const netGoal = parseFloat(incomeEl.value) || 0;
         const comp = parseFloat(compSel.value) / 100;
         const pers = parseFloat(persSel.value) / 100;
+        const roiPct = parseFloat(roiSel.value) || 0;
+
+        // ROI% = profit / spend × 100, where profit = net take-home
+        //   → Monthly lead spend = net ÷ (ROI% / 100)
+        const monthlyLeadSpend = roiPct > 0 ? netGoal / (roiPct / 100) : 0;
+        const weeklyLeadSpend = monthlyLeadSpend / 4.33; // avg weeks per month
+
+        // Upfront commission must cover the lead spend AND leave the net behind
+        const upfront = netGoal + monthlyLeadSpend;
+
         // Upfront = AP × comp × pers × 0.75  →  AP = upfront / (comp × pers × 0.75)
         const denom = comp * pers * 0.75;
-        const requiredAP = denom > 0 ? upfrontGoal / denom : 0;
-        // Backend (25%) is 1/3 of upfront
-        const backend = upfrontGoal / 3;
-        reqEl.textContent = fmt(requiredAP);
-        upEl.textContent = fmt(upfrontGoal);
-        backEl.textContent = fmt(backend);
-        // ROI calc is always linked to the upfront commission goal above
-        computeRoi();
-      }
+        const requiredAP = denom > 0 ? upfront / denom : 0;
 
-      function computeRoi() {
-        const netGoal = parseFloat(incomeEl.value) || 0;
-        const pct = parseFloat(roiSel.value) || 0;
-        if (netGoal <= 0 || pct <= 0) {
-          roiOut.innerHTML = '<div class="msg placeholder">Enter your upfront commission goal above to see your recommended lead budget.</div>';
+        // Backend at 9 months = AP × comp × pers × 0.25 = upfront / 3
+        const backend = upfront / 3;
+
+        reqEl.textContent = fmt(requiredAP);
+        upEl.textContent = fmt(upfront);
+        backEl.textContent = fmt(backend);
+
+        if (netGoal <= 0 || roiPct <= 0) {
+          roiOut.innerHTML = '<div class="msg placeholder">Enter your net income goal above to see your recommended lead budget.</div>';
           return;
         }
-        // ROI% = profit / spend × 100  →  budget = net ÷ (pct/100)
-        const monthlyBudget = netGoal / (pct / 100);
-        const weeklyBudget = monthlyBudget / 4.33; // avg weeks per month
-        const gross = monthlyBudget + netGoal;
+
         roiOut.innerHTML =
           '<div class="ss-calc-roi-hero">' +
-            '<span class="ss-calc-roi-hero-label">Net Income</span>' +
+            '<span class="ss-calc-roi-hero-label">Net Income (After Lead Costs)</span>' +
             '<span class="ss-calc-roi-hero-value">' + fmt(netGoal) + '</span>' +
           '</div>' +
           '<div class="ss-calc-roi-breakdown">' +
             '<div class="ss-calc-roi-row">' +
               '<span class="lbl">Lead spend \u2014 monthly</span>' +
-              '<span class="val">' + fmt(monthlyBudget) + '</span>' +
+              '<span class="val">' + fmt(monthlyLeadSpend) + '</span>' +
             '</div>' +
             '<div class="ss-calc-roi-row">' +
               '<span class="lbl">Lead spend \u2014 weekly</span>' +
-              '<span class="val weekly">' + fmt(weeklyBudget) + '</span>' +
+              '<span class="val weekly">' + fmt(weeklyLeadSpend) + '</span>' +
             '</div>' +
           '</div>' +
-          '<div class="msg">At <strong>' + pct + '% ROI</strong> this generates <strong>' + fmt(gross) + '</strong> in revenue.</div>';
+          '<div class="msg">At <strong>' + roiPct + '% ROI</strong>, a <strong>' + fmt(monthlyLeadSpend) + '</strong> lead budget produces <strong>' + fmt(upfront) + '</strong> in upfront commission \u2014 leaving <strong>' + fmt(netGoal) + '</strong> net after paying leads.</div>';
       }
 
       incomeEl.addEventListener('input', computeCommission);
       compSel.addEventListener('change', computeCommission);
       persSel.addEventListener('change', computeCommission);
-      roiSel.addEventListener('change', computeRoi);
+      roiSel.addEventListener('change', computeCommission);
 
       computeCommission();
     })();
