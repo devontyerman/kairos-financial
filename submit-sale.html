@@ -122,7 +122,17 @@
     .ss-msg.success { display: block; background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.2); color: #22c55e; }
     .ss-msg.error { display: block; background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.2); color: #ef4444; }
 
-    /* Leaderboard */
+    /* Leaderboard — dark/blue theme */
+    .ss-lb-wrap {
+      background: linear-gradient(180deg, #0a0e1a 0%, #0d1117 100%);
+      border-radius: 20px;
+      padding: 2.5rem 2rem;
+      max-width: 650px;
+      margin: 0 auto;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.03);
+      border: 1px solid rgba(56,120,255,0.1);
+    }
+
     .ss-lb-header {
       text-align: center;
       margin-bottom: 2rem;
@@ -131,76 +141,92 @@
       font-family: 'Plus Jakarta Sans', sans-serif;
       font-size: 1.6rem;
       font-weight: 900;
-      color: var(--text-primary);
+      color: #ffffff;
       margin-bottom: 0.3rem;
     }
-    .ss-lb-header p { font-size: 0.85rem; color: var(--text-muted); }
+    .ss-lb-header p { font-size: 0.85rem; color: rgba(255,255,255,0.4); }
 
-    .ss-lb-filters { display: flex; gap: 0.4rem; margin-bottom: 1.5rem; justify-content: center; flex-wrap: wrap; }
+    .ss-lb-filters { display: flex; gap: 0.4rem; margin-bottom: 2rem; justify-content: center; flex-wrap: wrap; }
     .ss-lb-filter {
       padding: 0.5rem 1.2rem;
       font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.8rem; font-weight: 600;
-      color: var(--text-muted);
-      background: var(--bg-elevated);
-      border: 1px solid var(--border);
-      border-radius: 100px; cursor: pointer; transition: var(--transition);
+      color: rgba(255,255,255,0.4);
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 100px; cursor: pointer; transition: all 0.25s ease;
     }
-    .ss-lb-filter:hover { border-color: var(--gold-border); color: var(--text-primary); }
-    .ss-lb-filter.active { background: linear-gradient(135deg, var(--gold), var(--gold-bright, #ddc878)); color: #111; border-color: var(--gold); font-weight: 700; }
+    .ss-lb-filter:hover { border-color: rgba(56,120,255,0.4); color: #fff; background: rgba(56,120,255,0.08); }
+    .ss-lb-filter.active {
+      background: linear-gradient(135deg, #2563eb, #3b82f6);
+      color: #fff; border-color: #3b82f6; font-weight: 700;
+      box-shadow: 0 4px 16px rgba(37,99,235,0.35);
+    }
 
-    .ss-lb-cards { display: flex; flex-direction: column; gap: 0.75rem; max-width: 600px; margin: 0 auto; }
+    .ss-lb-cards { display: flex; flex-direction: column; gap: 0.6rem; }
 
     .ss-lb-card {
       display: flex;
       align-items: center;
       gap: 1rem;
-      padding: 1rem 1.5rem;
-      background: var(--bg-elevated);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      transition: var(--transition);
+      padding: 1rem 1.25rem;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 14px;
+      transition: all 0.25s ease;
     }
-    .ss-lb-card:hover { border-color: var(--gold-border); transform: translateX(4px); }
+    .ss-lb-card:nth-child(even) { background: rgba(255,255,255,0.015); }
+    .ss-lb-card:hover { background: rgba(56,120,255,0.06); border-color: rgba(56,120,255,0.2); transform: translateX(4px); box-shadow: 0 4px 20px rgba(56,120,255,0.1); }
 
     .ss-lb-card.rank-1 {
-      background: linear-gradient(135deg, rgba(201,168,76,0.08) 0%, var(--bg-elevated) 100%);
-      border-color: rgba(201,168,76,0.3);
+      background: linear-gradient(135deg, rgba(201,168,76,0.1) 0%, rgba(255,255,255,0.03) 100%);
+      border-color: rgba(201,168,76,0.25);
+      box-shadow: 0 4px 24px rgba(201,168,76,0.1);
     }
     .ss-lb-card.rank-2 {
-      background: linear-gradient(135deg, rgba(192,192,192,0.06) 0%, var(--bg-elevated) 100%);
-      border-color: rgba(192,192,192,0.2);
+      background: linear-gradient(135deg, rgba(148,163,184,0.08) 0%, rgba(255,255,255,0.02) 100%);
+      border-color: rgba(148,163,184,0.15);
     }
     .ss-lb-card.rank-3 {
-      background: linear-gradient(135deg, rgba(205,127,50,0.06) 0%, var(--bg-elevated) 100%);
-      border-color: rgba(205,127,50,0.2);
+      background: linear-gradient(135deg, rgba(205,127,50,0.08) 0%, rgba(255,255,255,0.02) 100%);
+      border-color: rgba(205,127,50,0.15);
     }
 
     .ss-lb-medal {
-      width: 44px; height: 44px;
+      width: 46px; height: 46px;
       border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
       font-family: 'Plus Jakarta Sans', sans-serif;
       font-size: 1rem; font-weight: 900;
       flex-shrink: 0;
     }
-    .rank-1 .ss-lb-medal { background: linear-gradient(135deg, #c9a84c, #f0d878); color: #111; box-shadow: 0 4px 12px rgba(201,168,76,0.3); }
-    .rank-2 .ss-lb-medal { background: linear-gradient(135deg, #a0a0a0, #d0d0d0); color: #333; }
+    .rank-1 .ss-lb-medal { background: linear-gradient(135deg, #c9a84c, #f0d878); color: #111; box-shadow: 0 4px 16px rgba(201,168,76,0.4); }
+    .rank-2 .ss-lb-medal { background: linear-gradient(135deg, #64748b, #94a3b8); color: #fff; }
     .rank-3 .ss-lb-medal { background: linear-gradient(135deg, #cd7f32, #e8a860); color: #fff; }
-    .ss-lb-medal.default { background: var(--bg-surface); border: 1px solid var(--border); color: var(--text-muted); }
+    .ss-lb-medal.default { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.35); }
 
     .ss-lb-info { flex: 1; }
-    .ss-lb-name { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.95rem; font-weight: 700; color: var(--text-primary); }
-    .ss-lb-sales-count { font-size: 0.75rem; color: var(--text-muted); }
+    .ss-lb-name { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.95rem; font-weight: 700; color: #ffffff; }
+    .ss-lb-badges { display: flex; gap: 0.4rem; margin-top: 0.25rem; flex-wrap: wrap; }
+    .ss-lb-badge {
+      display: inline-flex; align-items: center; gap: 0.25rem;
+      font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
+      padding: 0.15rem 0.5rem; border-radius: 100px;
+    }
+    .ss-lb-badge.crown { background: rgba(201,168,76,0.15); color: #f0d878; border: 1px solid rgba(201,168,76,0.25); }
+    .ss-lb-badge.hat-trick { background: rgba(56,120,255,0.15); color: #60a5fa; border: 1px solid rgba(56,120,255,0.25); }
+    .ss-lb-sales-count { font-size: 0.72rem; color: rgba(255,255,255,0.3); margin-top: 0.15rem; }
 
     .ss-lb-ap {
       font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: 1.1rem; font-weight: 800;
-      color: var(--gold);
+      font-size: 1.15rem; font-weight: 800;
+      color: #3b82f6;
+      text-shadow: 0 0 20px rgba(59,130,246,0.3);
     }
+    .rank-1 .ss-lb-ap { color: #f0d878; text-shadow: 0 0 20px rgba(201,168,76,0.3); }
 
-    .ss-lb-empty { text-align: center; padding: 4rem 1rem; color: var(--text-muted); font-size: 0.9rem; }
-    .ss-lb-empty svg { margin-bottom: 1rem; color: var(--border-strong); }
-    .ss-loading { text-align: center; padding: 3rem; color: var(--text-muted); font-size: 0.85rem; }
+    .ss-lb-empty { text-align: center; padding: 4rem 1rem; color: rgba(255,255,255,0.3); font-size: 0.9rem; }
+    .ss-lb-empty svg { margin-bottom: 1rem; color: rgba(255,255,255,0.1); }
+    .ss-loading { text-align: center; padding: 3rem; color: rgba(255,255,255,0.35); font-size: 0.85rem; }
 
     /* Success / Error Modal */
     .ss-modal-overlay {
@@ -425,17 +451,19 @@
 
     <!-- LEADERBOARD -->
     <div class="ss-panel" id="panel-leaderboard">
-      <div class="ss-lb-header">
-        <h2>Leaderboard</h2>
-        <p>Who's closing the most business?</p>
+      <div class="ss-lb-wrap">
+        <div class="ss-lb-header">
+          <h2>Leaderboard</h2>
+          <p>Who's closing the most business?</p>
+        </div>
+        <div class="ss-lb-filters">
+          <button class="ss-lb-filter active" data-range="daily">Today</button>
+          <button class="ss-lb-filter" data-range="weekly">This Week</button>
+          <button class="ss-lb-filter" data-range="monthly">This Month</button>
+          <button class="ss-lb-filter" data-range="yearly">This Year</button>
+        </div>
+        <div id="lbContent"><div class="ss-loading">Loading...</div></div>
       </div>
-      <div class="ss-lb-filters">
-        <button class="ss-lb-filter active" data-range="daily">Today</button>
-        <button class="ss-lb-filter" data-range="weekly">This Week</button>
-        <button class="ss-lb-filter" data-range="monthly">This Month</button>
-        <button class="ss-lb-filter" data-range="yearly">This Year</button>
-      </div>
-      <div id="lbContent"><div class="ss-loading">Loading...</div></div>
     </div>
   </div>
 
@@ -566,7 +594,14 @@
       const btn = document.getElementById('submitBtn');
       btn.disabled = true;
 
-      const apValue = parseFloat(document.getElementById('annualPremium').value);
+      const apRaw = document.getElementById('annualPremium').value;
+      const apValue = parseFloat(apRaw);
+      if (!apRaw || isNaN(apValue) || apValue <= 0) {
+        showErrorModal('Annual Premium must be a positive number.');
+        btn.disabled = false;
+        return;
+      }
+
       const data = {
         sales_rep: document.getElementById('salesRep').value,
         client_name: document.getElementById('clientName').value,
@@ -611,8 +646,11 @@
       container.innerHTML = '<div class="ss-loading">Loading...</div>';
 
       const dateFilter = getDateFilter();
-      const data = await supabaseQuery('policies?select=sales_rep,annual_premium&created_at=gte.' + dateFilter);
 
+      // Fetch current period data
+      const data = await supabaseQuery('policies?select=sales_rep,annual_premium,created_at&created_at=gte.' + dateFilter);
+
+      // Aggregate totals and counts for current period
       const totals = {};
       const counts = {};
       data.forEach(row => {
@@ -621,6 +659,47 @@
         counts[row.sales_rep]++;
       });
 
+      // Count today's sales per rep for hat trick detection
+      const todayStr = new Date().toISOString().split('T')[0];
+      const todayCounts = {};
+      data.forEach(row => {
+        if (row.created_at && row.created_at.startsWith(todayStr)) {
+          if (!todayCounts[row.sales_rep]) todayCounts[row.sales_rep] = 0;
+          todayCounts[row.sales_rep]++;
+        }
+      });
+
+      // Fetch ALL historical data to detect personal bests
+      const allData = await supabaseQuery('policies?select=sales_rep,annual_premium,created_at&order=created_at.asc');
+
+      // Compute historical best for each rep for the current range type
+      function computeHistoricalBests(allRows, rangeType) {
+        const repPeriods = {}; // rep -> { period -> total }
+        allRows.forEach(row => {
+          const d = new Date(row.created_at);
+          let periodKey;
+          if (rangeType === 'daily') periodKey = d.toISOString().split('T')[0];
+          else if (rangeType === 'weekly') {
+            const weekStart = new Date(d); weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+            periodKey = weekStart.toISOString().split('T')[0];
+          } else if (rangeType === 'monthly') periodKey = d.getFullYear() + '-' + d.getMonth();
+          else periodKey = '' + d.getFullYear();
+
+          if (!repPeriods[row.sales_rep]) repPeriods[row.sales_rep] = {};
+          if (!repPeriods[row.sales_rep][periodKey]) repPeriods[row.sales_rep][periodKey] = 0;
+          repPeriods[row.sales_rep][periodKey] += parseFloat(row.annual_premium || 0);
+        });
+
+        const bests = {};
+        for (const rep in repPeriods) {
+          const periods = Object.values(repPeriods[rep]);
+          bests[rep] = Math.max(...periods);
+        }
+        return bests;
+      }
+
+      const historicalBests = computeHistoricalBests(allData, currentRange);
+
       const sorted = Object.entries(totals).sort((a, b) => b[1] - a[1]);
 
       if (sorted.length === 0) {
@@ -628,15 +707,30 @@
         return;
       }
 
+      const rangeLabels = { daily: 'day', weekly: 'week', monthly: 'month', yearly: 'year' };
+
       let html = '<div class="ss-lb-cards">';
       sorted.forEach(([name, ap], i) => {
         const rank = i + 1;
         const rankClass = rank <= 3 ? ' rank-' + rank : '';
         const medalClass = rank <= 3 ? '' : ' default';
         const salesCount = counts[name];
+        const isBest = historicalBests[name] && ap >= historicalBests[name] && ap > 0;
+        const isHatTrick = (todayCounts[name] || 0) >= 3;
+
         html += '<div class="ss-lb-card' + rankClass + '">';
         html += '<div class="ss-lb-medal' + medalClass + '">' + rank + '</div>';
-        html += '<div class="ss-lb-info"><div class="ss-lb-name">' + name + '</div><div class="ss-lb-sales-count">' + salesCount + ' sale' + (salesCount !== 1 ? 's' : '') + '</div></div>';
+        html += '<div class="ss-lb-info"><div class="ss-lb-name">' + name + '</div>';
+
+        // Badges
+        if (isBest || isHatTrick) {
+          html += '<div class="ss-lb-badges">';
+          if (isBest) html += '<span class="ss-lb-badge crown">👑 Best ' + rangeLabels[currentRange] + '</span>';
+          if (isHatTrick) html += '<span class="ss-lb-badge hat-trick">🎩 Hat Trick</span>';
+          html += '</div>';
+        }
+
+        html += '<div class="ss-lb-sales-count">' + salesCount + ' sale' + (salesCount !== 1 ? 's' : '') + '</div></div>';
         html += '<div class="ss-lb-ap">$' + ap.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }) + '</div>';
         html += '</div>';
       });
