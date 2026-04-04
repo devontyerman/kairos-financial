@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Popup Preview — Test</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <style>
+    body { background: linear-gradient(180deg, #0a0e1a 0%, #0d1117 100%); min-height: 100vh; margin: 0; padding: 2rem; }
+
+    .test-grid { max-width: 500px; margin: 4rem auto 0; display: flex; flex-direction: column; gap: 1rem; }
+    .test-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.4rem; font-weight: 900; color: #fff; text-align: center; margin-bottom: 1rem; }
+    .test-sub { font-size: 0.85rem; color: rgba(255,255,255,0.4); text-align: center; margin-bottom: 2rem; }
+    .test-btn {
+      padding: 0.8rem 1.5rem; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.88rem; font-weight: 700;
+      color: #fff; border: none; border-radius: 10px; cursor: pointer; transition: all 0.25s ease; text-align: left;
+      display: flex; align-items: center; gap: 0.75rem;
+    }
+    .test-btn:hover { transform: translateY(-2px); }
+    .test-btn .emoji { font-size: 1.3rem; }
+    .test-btn.blue { background: linear-gradient(135deg, #2563eb, #3b82f6); }
+    .test-btn.blue:hover { box-shadow: 0 6px 20px rgba(37,99,235,0.4); }
+    .test-btn.yellow { background: linear-gradient(135deg, #b45309, #d97706); }
+    .test-btn.yellow:hover { box-shadow: 0 6px 20px rgba(217,119,6,0.4); }
+    .test-btn.red { background: linear-gradient(135deg, #b91c1c, #dc2626); }
+    .test-btn.red:hover { box-shadow: 0 6px 20px rgba(220,38,38,0.4); }
+    .test-btn.green { background: linear-gradient(135deg, #15803d, #22c55e); }
+    .test-btn.green:hover { box-shadow: 0 6px 20px rgba(34,197,94,0.4); }
+
+    /* ─── Copy all popup styles from submit-sale.html ─── */
+    .ss-status { display: inline-block; padding: 0.15rem 0.55rem; font-size: 0.68rem; font-weight: 700; border-radius: 100px; text-transform: uppercase; letter-spacing: 0.04em; }
+    .ss-status.approved { background: rgba(34,197,94,0.12); color: #4ade80; border: 1px solid rgba(34,197,94,0.2); }
+    .ss-status.underwriting { background: rgba(234,179,8,0.12); color: #fbbf24; border: 1px solid rgba(234,179,8,0.2); }
+
+    .ss-alert-overlay {
+      display: none; position: fixed; inset: 0; z-index: 9997;
+      background: rgba(0,0,0,0.65); backdrop-filter: blur(4px);
+      align-items: center; justify-content: center;
+    }
+    .ss-alert-overlay.open { display: flex; }
+    .ss-alert-box {
+      background: #1a1f2e; border-radius: 16px; padding: 2rem;
+      max-width: 500px; width: 92%; border: 1px solid rgba(56,120,255,0.15);
+      animation: popIn 0.3s ease;
+    }
+    @keyframes popIn {
+      from { opacity: 0; transform: scale(0.9) translateY(20px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    .ss-alert-box.warning { border-color: rgba(234,179,8,0.3); }
+    .ss-alert-box.danger { border-color: rgba(239,68,68,0.3); }
+    .ss-alert-icon { width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; font-size: 1.6rem; }
+    .ss-alert-box.warning .ss-alert-icon { background: rgba(234,179,8,0.12); border: 2px solid rgba(234,179,8,0.25); }
+    .ss-alert-box.danger .ss-alert-icon { background: rgba(239,68,68,0.12); border: 2px solid rgba(239,68,68,0.25); }
+    .ss-alert-box h3 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.1rem; font-weight: 800; color: #fff; text-align: center; margin-bottom: 0.75rem; }
+    .ss-alert-box p { font-size: 0.85rem; color: rgba(255,255,255,0.55); text-align: center; line-height: 1.6; margin-bottom: 1.25rem; }
+    .ss-alert-close { display: block; margin: 0 auto; padding: 0.6rem 2rem; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.85rem; font-weight: 700; color: #fff; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); border-radius: 100px; cursor: pointer; transition: all 0.2s ease; }
+    .ss-alert-close:hover { background: rgba(255,255,255,0.15); }
+
+    .ss-uw-list { max-height: 250px; overflow-y: auto; margin-bottom: 1rem; }
+    .ss-uw-item { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; padding: 0.7rem 0; border-bottom: 1px solid rgba(255,255,255,0.06); flex-wrap: wrap; }
+    .ss-uw-item:last-child { border-bottom: none; }
+    .ss-uw-item-info { flex: 1; min-width: 150px; }
+    .ss-uw-item-name { font-size: 0.85rem; font-weight: 600; color: #fff; }
+    .ss-uw-item-meta { font-size: 0.72rem; color: rgba(255,255,255,0.35); }
+    .ss-uw-item-actions { display: flex; gap: 0.3rem; }
+    .ss-uw-btn { padding: 0.3rem 0.7rem; font-size: 0.7rem; font-weight: 700; border-radius: 4px; border: none; cursor: pointer; transition: all 0.2s ease; }
+    .ss-uw-btn.approve { background: rgba(34,197,94,0.15); color: #4ade80; border: 1px solid rgba(34,197,94,0.2); }
+    .ss-uw-btn.approve:hover { background: rgba(34,197,94,0.3); }
+    .ss-uw-btn.delete { background: rgba(239,68,68,0.1); color: #f87171; border: 1px solid rgba(239,68,68,0.15); }
+    .ss-uw-btn.delete:hover { background: rgba(239,68,68,0.2); }
+
+    /* Success modal */
+    .ss-modal-overlay {
+      display: none; position: fixed; inset: 0; z-index: 9999;
+      background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);
+      align-items: center; justify-content: center;
+    }
+    .ss-modal-overlay.open { display: flex; }
+    .ss-modal {
+      background: var(--bg-elevated, #1e2330); border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 20px; padding: 2.5rem 2rem; max-width: 420px; width: 92%;
+      text-align: center; animation: popIn 0.35s ease;
+    }
+    .ss-modal-icon { width: 72px; height: 72px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem; }
+    .ss-modal-icon.success { background: linear-gradient(135deg, rgba(34,197,94,0.15), rgba(34,197,94,0.05)); border: 2px solid rgba(34,197,94,0.3); color: #22c55e; }
+    .ss-modal h3 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.3rem; font-weight: 900; color: #fff; margin-bottom: 0.5rem; }
+    .ss-modal-ap { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 2.2rem; font-weight: 900; color: #c9a84c; margin: 0.75rem 0; letter-spacing: -0.03em; }
+    .ss-modal-sub { font-size: 0.85rem; color: rgba(255,255,255,0.45); margin-bottom: 1.5rem; line-height: 1.5; }
+    .ss-modal-btns { display: flex; gap: 0.75rem; }
+    .ss-modal-btn { flex: 1; padding: 0.7rem 1rem; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.85rem; font-weight: 700; border: none; border-radius: 8px; cursor: pointer; }
+    .ss-modal-btn.primary { background: linear-gradient(135deg, #c9a84c, #ddc878); color: #111; }
+    .ss-modal-btn.secondary { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.6); border: 1px solid rgba(255,255,255,0.1); }
+  </style>
+</head>
+<body>
+
+  <div class="test-grid">
+    <h1 class="test-title">Popup Preview</h1>
+    <p class="test-sub">Click each button to preview the popup. Click "Got It" / "Close" or click outside to dismiss.</p>
+
+    <button class="test-btn green" onclick="showSuccess()">
+      <span class="emoji">🎉</span> Sale Success Popup
+    </button>
+    <button class="test-btn yellow" onclick="showWarning5()">
+      <span class="emoji">⚠️</span> Overload Warning (5 in UW)
+    </button>
+    <button class="test-btn red" onclick="showWarning10()">
+      <span class="emoji">🚨</span> Overload Danger (10 in UW)
+    </button>
+    <button class="test-btn blue" onclick="showReminder()">
+      <span class="emoji">📋</span> Underwriting Reminder (weekly check-in)
+    </button>
+  </div>
+
+  <!-- SUCCESS -->
+  <div class="ss-modal-overlay" id="successModal">
+    <div class="ss-modal">
+      <div class="ss-modal-icon success">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <h3>Congratulations!</h3>
+      <div class="ss-modal-ap">$1,247</div>
+      <p class="ss-modal-sub">Another deal closed. Keep up the momentum!</p>
+      <div class="ss-modal-btns">
+        <button class="ss-modal-btn primary" onclick="close('successModal')">Submit Another Sale</button>
+        <button class="ss-modal-btn secondary" onclick="close('successModal')">View Leaderboard</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- OVERLOAD WARNING (5) -->
+  <div class="ss-alert-overlay" id="warn5">
+    <div class="ss-alert-box warning">
+      <div class="ss-alert-icon">⚠️</div>
+      <h3>Heads Up — 5 in Underwriting</h3>
+      <p>Great job on the sale! But you have 5 policies currently in underwriting. Try to prioritize simplified issue policies to maximize your earnings.</p>
+      <button class="ss-alert-close" onclick="close('warn5')">Got It</button>
+    </div>
+  </div>
+
+  <!-- OVERLOAD DANGER (10) -->
+  <div class="ss-alert-overlay" id="warn10">
+    <div class="ss-alert-box danger">
+      <div class="ss-alert-icon">🚨</div>
+      <h3>10 Policies in Underwriting</h3>
+      <p>You have 10 policies currently in underwriting. Schedule a time with your leader to prioritize simplified issue policies to avoid commission delays.</p>
+      <button class="ss-alert-close" onclick="close('warn10')">Got It</button>
+    </div>
+  </div>
+
+  <!-- UNDERWRITING REMINDER -->
+  <div class="ss-alert-overlay" id="uwReminder">
+    <div class="ss-alert-box warning" style="max-width: 550px;">
+      <div class="ss-alert-icon">📋</div>
+      <h3>Underwriting Check-In</h3>
+      <p>These policies have been in underwriting for a while. Update their status or remove them.</p>
+      <div class="ss-uw-list">
+        <div class="ss-uw-item">
+          <div class="ss-uw-item-info">
+            <div class="ss-uw-item-name">John Smith</div>
+            <div class="ss-uw-item-meta">Americo · $1,200 · 2 weeks ago</div>
+          </div>
+          <div class="ss-uw-item-actions">
+            <button class="ss-uw-btn approve" onclick="this.closest('.ss-uw-item').innerHTML='<div class=ss-uw-item-info><div class=ss-uw-item-name style=color:#4ade80>✓ Approved</div></div>'">Approve</button>
+            <button class="ss-uw-btn delete" onclick="this.closest('.ss-uw-item').remove()">Delete</button>
+          </div>
+        </div>
+        <div class="ss-uw-item">
+          <div class="ss-uw-item-info">
+            <div class="ss-uw-item-name">Sarah Johnson</div>
+            <div class="ss-uw-item-meta">Transamerica · $890 · 3 weeks ago</div>
+          </div>
+          <div class="ss-uw-item-actions">
+            <button class="ss-uw-btn approve" onclick="this.closest('.ss-uw-item').innerHTML='<div class=ss-uw-item-info><div class=ss-uw-item-name style=color:#4ade80>✓ Approved</div></div>'">Approve</button>
+            <button class="ss-uw-btn delete" onclick="this.closest('.ss-uw-item').remove()">Delete</button>
+          </div>
+        </div>
+        <div class="ss-uw-item">
+          <div class="ss-uw-item-info">
+            <div class="ss-uw-item-name">Mike Davis</div>
+            <div class="ss-uw-item-meta">Americo · $2,400 · 1 week ago</div>
+          </div>
+          <div class="ss-uw-item-actions">
+            <button class="ss-uw-btn approve" onclick="this.closest('.ss-uw-item').innerHTML='<div class=ss-uw-item-info><div class=ss-uw-item-name style=color:#4ade80>✓ Approved</div></div>'">Approve</button>
+            <button class="ss-uw-btn delete" onclick="this.closest('.ss-uw-item').remove()">Delete</button>
+          </div>
+        </div>
+        <div class="ss-uw-item">
+          <div class="ss-uw-item-info">
+            <div class="ss-uw-item-name">Lisa Williams</div>
+            <div class="ss-uw-item-meta">Transamerica · $650 · 4 weeks ago</div>
+          </div>
+          <div class="ss-uw-item-actions">
+            <button class="ss-uw-btn approve" onclick="this.closest('.ss-uw-item').innerHTML='<div class=ss-uw-item-info><div class=ss-uw-item-name style=color:#4ade80>✓ Approved</div></div>'">Approve</button>
+            <button class="ss-uw-btn delete" onclick="this.closest('.ss-uw-item').remove()">Delete</button>
+          </div>
+        </div>
+      </div>
+      <button class="ss-alert-close" onclick="close('uwReminder')">Close</button>
+    </div>
+  </div>
+
+  <script>
+    function close(id) { document.getElementById(id).classList.remove('open'); }
+    function showSuccess() { document.getElementById('successModal').classList.add('open'); }
+    function showWarning5() { document.getElementById('warn5').classList.add('open'); }
+    function showWarning10() { document.getElementById('warn10').classList.add('open'); }
+    function showReminder() { document.getElementById('uwReminder').classList.add('open'); }
+
+    // Close on click outside
+    document.querySelectorAll('.ss-alert-overlay, .ss-modal-overlay').forEach(el => {
+      el.addEventListener('click', (e) => { if (e.target === el) el.classList.remove('open'); });
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') document.querySelectorAll('.open').forEach(el => el.classList.remove('open'));
+    });
+  </script>
+</body>
+</html>
