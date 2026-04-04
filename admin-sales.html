@@ -110,13 +110,44 @@
     .perf-rep-select option { background: #1a1f2e; }
 
     .perf-kpis { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 0.75rem; margin-bottom: 2rem; }
-    .perf-kpi { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 1.25rem; }
-    .perf-kpi-label { font-size: 0.68rem; font-weight: 700; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.4rem; }
+    .perf-kpi { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 1.25rem; position: relative; overflow: hidden; }
+    .perf-kpi::before {
+      content: ''; position: absolute; inset: 0 auto 0 0; width: 3px;
+      background: linear-gradient(180deg, #3b82f6, #2563eb); opacity: 0.75;
+    }
+    .perf-kpi.up::before { background: linear-gradient(180deg, #4ade80, #16a34a); }
+    .perf-kpi.down::before { background: linear-gradient(180deg, #f87171, #dc2626); }
+    .perf-kpi.neutral::before { background: linear-gradient(180deg, #fbbf24, #d97706); }
+    .perf-kpi-label { font-size: 0.68rem; font-weight: 700; color: rgba(255,255,255,0.7); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.4rem; }
     .perf-kpi-value { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.5rem; font-weight: 900; color: #fff; }
+    .perf-kpi.up .perf-kpi-value { color: #4ade80; text-shadow: 0 0 18px rgba(74,222,128,0.3); }
+    .perf-kpi.down .perf-kpi-value { color: #f87171; text-shadow: 0 0 18px rgba(248,113,113,0.3); }
+    .perf-kpi.neutral .perf-kpi-value { color: #fbbf24; }
     .perf-kpi-change { font-size: 0.72rem; font-weight: 700; margin-top: 0.25rem; }
     .perf-kpi-change.up { color: #4ade80; }
     .perf-kpi-change.down { color: #f87171; }
-    .perf-kpi-change.neutral { color: rgba(255,255,255,0.3); }
+    .perf-kpi-change.neutral { color: rgba(255,255,255,0.5); }
+
+    /* SVG chart styles */
+    .perf-svg-chart { width: 100%; height: auto; display: block; }
+    .perf-chart-legend {
+      display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 0.9rem;
+      font-size: 0.7rem; font-weight: 600; color: rgba(255,255,255,0.7);
+    }
+    .perf-chart-legend-item { display: flex; align-items: center; gap: 0.4rem; }
+    .perf-chart-legend-swatch { width: 14px; height: 3px; border-radius: 2px; }
+    .perf-chart-summary {
+      display: flex; align-items: baseline; gap: 0.5rem; margin-top: 1rem;
+      padding: 0.75rem 1rem; border-radius: 8px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+    .perf-chart-summary.up { background: rgba(34,197,94,0.08); border-color: rgba(34,197,94,0.25); }
+    .perf-chart-summary.down { background: rgba(239,68,68,0.08); border-color: rgba(239,68,68,0.25); }
+    .perf-chart-summary-label { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: rgba(255,255,255,0.6); }
+    .perf-chart-summary-value { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.05rem; font-weight: 900; color: #fff; margin-left: auto; }
+    .perf-chart-summary.up .perf-chart-summary-value { color: #4ade80; }
+    .perf-chart-summary.down .perf-chart-summary-value { color: #f87171; }
 
     /* Bar Charts */
     .perf-charts { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem; }
@@ -124,7 +155,7 @@
     .perf-chart-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.85rem; font-weight: 800; color: #fff; margin-bottom: 1rem; }
     .perf-bars { display: flex; flex-direction: column; gap: 0.5rem; }
     .perf-bar-row { display: flex; align-items: center; gap: 0.5rem; }
-    .perf-bar-label { font-size: 0.72rem; color: rgba(255,255,255,0.5); width: 65px; flex-shrink: 0; text-align: right; }
+    .perf-bar-label { font-size: 0.72rem; color: rgba(255,255,255,0.8); width: 65px; flex-shrink: 0; text-align: right; font-weight: 600; }
     .perf-bar-track { flex: 1; height: 24px; background: rgba(255,255,255,0.04); border-radius: 6px; overflow: hidden; position: relative; }
     .perf-bar-fill { height: 100%; border-radius: 6px; transition: width 0.6s ease; display: flex; align-items: center; padding-left: 0.5rem; min-width: 0; }
     .perf-bar-fill.blue { background: linear-gradient(90deg, #2563eb, #3b82f6); }
@@ -137,7 +168,7 @@
     .perf-status-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.85rem; font-weight: 800; color: #fff; margin-bottom: 1rem; }
     .perf-status-bars { display: flex; gap: 1.5rem; flex-wrap: wrap; }
     .perf-status-item { flex: 1; min-width: 120px; }
-    .perf-status-item-label { font-size: 0.7rem; color: rgba(255,255,255,0.4); margin-bottom: 0.3rem; display: flex; justify-content: space-between; }
+    .perf-status-item-label { font-size: 0.72rem; color: rgba(255,255,255,0.85); margin-bottom: 0.3rem; display: flex; justify-content: space-between; font-weight: 600; }
     .perf-status-item-bar { height: 8px; background: rgba(255,255,255,0.06); border-radius: 4px; overflow: hidden; }
     .perf-status-item-fill { height: 100%; border-radius: 4px; transition: width 0.5s ease; }
     .perf-status-item-fill.uw { background: #f97316; }
@@ -239,6 +270,7 @@
         </select>
       </div>
       <div id="perfKpis" class="perf-kpis"></div>
+      <div id="perfExtraCharts" class="perf-charts"></div>
       <div id="perfCharts" class="perf-charts"></div>
       <div id="perfStatus"></div>
     </div>
@@ -652,15 +684,39 @@
       // Avg per policy
       const avgPerPolicy = ytd.length > 0 ? ytdAP / ytd.length : 0;
 
+      // Direction indicators: compare current month pace vs last month
+      // If MTD is already projected to exceed last month, color green.
+      const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+      const dayOfMonth = now.getDate();
+      const mtdProjection = dayOfMonth > 0 ? (mtdAP / dayOfMonth) * daysInMonth : 0;
+      const mtdTrendClass = mtdProjection >= lmAP && lmAP > 0 ? 'up' : mtdProjection < lmAP ? 'down' : 'neutral';
+      const mtdProjNote = lmAP > 0
+        ? '$' + fmtAP(mtdAP) + ' · pace ' + (mtdProjection >= lmAP ? '↑' : '↓') + ' $' + fmtAP(mtdProjection)
+        : '$' + fmtAP(mtdAP);
+
+      // Week-to-date direction vs prior week
+      const priorWeekStart = new Date(weekStart); priorWeekStart.setDate(priorWeekStart.getDate() - 7);
+      const priorWeek = data.filter(r => { const d = new Date(r.created_at); return d >= priorWeekStart && d < weekStart; });
+      const priorWeekAP = sumAP(priorWeek);
+      const wtdTrendClass = wtdAP >= priorWeekAP && priorWeekAP > 0 ? 'up' : wtdAP < priorWeekAP ? 'down' : 'neutral';
+      const wtdNote = priorWeekAP > 0
+        ? '$' + fmtAP(wtdAP) + ' · last wk $' + fmtAP(priorWeekAP)
+        : '$' + fmtAP(wtdAP);
+
       // KPIs
       document.getElementById('perfKpis').innerHTML =
-        kpi('Week to Date', wtd.length + ' policies', '$' + fmtAP(wtdAP)) +
-        kpi('Month to Date', mtd.length + ' policies', '$' + fmtAP(mtdAP)) +
-        kpi('Year to Date', ytd.length + ' policies', '$' + fmtAP(ytdAP)) +
-        kpi('Last Month', lastMonth.length + ' policies', '$' + fmtAP(lmAP)) +
-        '<div class="perf-kpi"><div class="perf-kpi-label">Month vs Last Month</div><div class="perf-kpi-value" style="font-size:1.3rem;">' + momSign + momChange.toFixed(1) + '%</div><div class="perf-kpi-change ' + momClass + '">' + (momChange > 0 ? '↑ Trending up' : momChange < 0 ? '↓ Trending down' : '— Flat') + '</div></div>' +
-        kpi('Yearly Pace', '$' + fmtAP(yearlyPace), '$' + fmtAP(monthlyPace) + '/mo') +
-        kpi('Avg Per Policy', '$' + fmtAP(avgPerPolicy), ytd.length + ' policies YTD');
+        kpi('Week to Date', wtd.length + ' policies', wtdNote, wtdTrendClass) +
+        kpi('Month to Date', mtd.length + ' policies', mtdProjNote, mtdTrendClass) +
+        kpi('Year to Date', ytd.length + ' policies', '$' + fmtAP(ytdAP), '') +
+        kpi('Last Month', lastMonth.length + ' policies', '$' + fmtAP(lmAP), '') +
+        '<div class="perf-kpi ' + momClass + '"><div class="perf-kpi-label">Month vs Last Month</div><div class="perf-kpi-value" style="font-size:1.3rem;">' + momSign + momChange.toFixed(1) + '%</div><div class="perf-kpi-change ' + momClass + '">' + (momChange > 0 ? '↑ Trending up' : momChange < 0 ? '↓ Trending down' : '— Flat') + '</div></div>' +
+        kpi('Yearly Pace', '$' + fmtAP(yearlyPace), '$' + fmtAP(monthlyPace) + '/mo', mtdTrendClass) +
+        kpi('Avg Per Policy', '$' + fmtAP(avgPerPolicy), ytd.length + ' policies YTD', '');
+
+      // Build pace line chart + month-vs-last-month comparison chart
+      document.getElementById('perfExtraCharts').innerHTML =
+        buildPaceLineChart(data, now, yearStart, ytdAP, yearlyPace) +
+        buildMonthComparisonChart(data, now);
 
       // Bar charts - monthly breakdown and rep comparison
       const months = {};
@@ -723,8 +779,189 @@
       }
     }
 
-    function kpi(label, value, sub) {
-      return '<div class="perf-kpi"><div class="perf-kpi-label">' + label + '</div><div class="perf-kpi-value">' + value + '</div><div class="perf-kpi-change neutral">' + sub + '</div></div>';
+    function kpi(label, value, sub, trend) {
+      const cls = trend ? ' ' + trend : '';
+      const changeCls = trend || 'neutral';
+      return '<div class="perf-kpi' + cls + '"><div class="perf-kpi-label">' + label + '</div><div class="perf-kpi-value">' + value + '</div><div class="perf-kpi-change ' + changeCls + '">' + sub + '</div></div>';
+    }
+
+    // ── PACE LINE CHART ──
+    // SVG line showing cumulative YTD AP vs a linear pace target line.
+    function buildPaceLineChart(data, now, yearStart, ytdAP, yearlyPace) {
+      const dayOfYear = Math.floor((now - yearStart) / (1000*60*60*24)) + 1;
+      const targetAnnual = yearlyPace > 0 ? Math.ceil(yearlyPace / 50000) * 50000 : 300000;
+      // Sample actual cumulative AP by day of year
+      const byDay = new Array(dayOfYear + 1).fill(0);
+      data.forEach(r => {
+        const d = new Date(r.created_at);
+        if (d < yearStart || d > now) return;
+        const dIdx = Math.floor((d - yearStart) / (1000*60*60*24)) + 1;
+        if (dIdx >= 0 && dIdx <= dayOfYear) byDay[dIdx] += parseFloat(r.annual_premium || 0);
+      });
+      const cumulative = [];
+      let running = 0;
+      for (let i = 1; i <= dayOfYear; i++) { running += byDay[i]; cumulative.push({ day: i, val: running }); }
+      if (cumulative.length === 0) cumulative.push({ day: 1, val: 0 });
+
+      const W = 600, H = 240, padL = 56, padR = 16, padT = 20, padB = 32;
+      const plotW = W - padL - padR;
+      const plotH = H - padT - padB;
+      const maxX = 365;
+      const maxY = Math.max(targetAnnual, ytdAP * 1.15, 1);
+      const xAt = (day) => padL + (day / maxX) * plotW;
+      const yAt = (val) => padT + plotH - (val / maxY) * plotH;
+
+      // Target line endpoints: (1, targetAnnual/365) → (365, targetAnnual)
+      const targetPath = 'M ' + xAt(1) + ' ' + yAt(targetAnnual / 365) + ' L ' + xAt(365) + ' ' + yAt(targetAnnual);
+
+      // Actual polyline
+      let actualPath = 'M ' + xAt(cumulative[0].day) + ' ' + yAt(cumulative[0].val);
+      for (let i = 1; i < cumulative.length; i++) actualPath += ' L ' + xAt(cumulative[i].day) + ' ' + yAt(cumulative[i].val);
+
+      // Area under actual
+      const areaPath = actualPath +
+        ' L ' + xAt(cumulative[cumulative.length - 1].day) + ' ' + yAt(0) +
+        ' L ' + xAt(cumulative[0].day) + ' ' + yAt(0) + ' Z';
+
+      // Where should they be by today at target pace?
+      const expectedByToday = (targetAnnual / 365) * dayOfYear;
+      const ahead = ytdAP - expectedByToday;
+      const aheadPct = expectedByToday > 0 ? (ahead / expectedByToday) * 100 : 0;
+      const summaryCls = ahead >= 0 ? 'up' : 'down';
+      const summaryTxt = ahead >= 0
+        ? '+$' + fmtAP(ahead) + ' ahead of pace (' + aheadPct.toFixed(1) + '%)'
+        : '-$' + fmtAP(Math.abs(ahead)) + ' behind pace (' + aheadPct.toFixed(1) + '%)';
+
+      // Month tick labels
+      const monthTicks = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      let ticks = '';
+      monthTicks.forEach((m, i) => {
+        const day = new Date(now.getFullYear(), i, 1);
+        const doy = Math.floor((day - yearStart) / (1000*60*60*24)) + 1;
+        const x = xAt(doy);
+        ticks += '<line x1="' + x + '" y1="' + (padT + plotH) + '" x2="' + x + '" y2="' + (padT + plotH + 4) + '" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>';
+        ticks += '<text x="' + x + '" y="' + (H - 10) + '" fill="rgba(255,255,255,0.55)" font-size="10" font-family="Inter, sans-serif" text-anchor="middle">' + m + '</text>';
+      });
+
+      // Y axis grid: 4 lines
+      let grid = '';
+      for (let i = 0; i <= 4; i++) {
+        const val = (maxY / 4) * i;
+        const y = yAt(val);
+        grid += '<line x1="' + padL + '" y1="' + y + '" x2="' + (W - padR) + '" y2="' + y + '" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>';
+        grid += '<text x="' + (padL - 8) + '" y="' + (y + 3) + '" fill="rgba(255,255,255,0.5)" font-size="9" font-family="Inter, sans-serif" text-anchor="end">$' + fmtAP(val) + '</text>';
+      }
+
+      // Last-point marker
+      const last = cumulative[cumulative.length - 1];
+      const lastDot = '<circle cx="' + xAt(last.day) + '" cy="' + yAt(last.val) + '" r="5" fill="' + (ahead >= 0 ? '#4ade80' : '#f87171') + '" stroke="#0b0f1a" stroke-width="2"/>';
+
+      const lineColor = ahead >= 0 ? '#4ade80' : '#f87171';
+      const fillColor = ahead >= 0 ? 'rgba(74,222,128,0.15)' : 'rgba(248,113,113,0.15)';
+
+      return '<div class="perf-chart-card">' +
+        '<div class="perf-chart-title">Annual Pace — YTD vs Target</div>' +
+        '<svg class="perf-svg-chart" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="xMidYMid meet">' +
+          grid +
+          '<path d="' + areaPath + '" fill="' + fillColor + '"/>' +
+          '<path d="' + targetPath + '" stroke="#fbbf24" stroke-width="2" stroke-dasharray="5 4" fill="none"/>' +
+          '<path d="' + actualPath + '" stroke="' + lineColor + '" stroke-width="2.5" fill="none" stroke-linejoin="round" stroke-linecap="round"/>' +
+          lastDot +
+          ticks +
+        '</svg>' +
+        '<div class="perf-chart-legend">' +
+          '<div class="perf-chart-legend-item"><span class="perf-chart-legend-swatch" style="background:' + lineColor + '"></span>Actual YTD</div>' +
+          '<div class="perf-chart-legend-item"><span class="perf-chart-legend-swatch" style="background:#fbbf24"></span>Target pace ($' + fmtAP(targetAnnual) + '/yr)</div>' +
+        '</div>' +
+        '<div class="perf-chart-summary ' + summaryCls + '">' +
+          '<span class="perf-chart-summary-label">vs Target Pace</span>' +
+          '<span class="perf-chart-summary-value">' + summaryTxt + '</span>' +
+        '</div>' +
+      '</div>';
+    }
+
+    // ── MONTH-OVER-MONTH COMPARISON CHART ──
+    // Grouped SVG bars comparing this month vs last month by AP + policy count.
+    function buildMonthComparisonChart(data, now) {
+      const thisMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+      const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+      const thisMonthEnd = now;
+      const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59);
+      const thisMonthRows = data.filter(r => { const d = new Date(r.created_at); return d >= thisMonthStart && d <= thisMonthEnd; });
+      const lastMonthRows = data.filter(r => { const d = new Date(r.created_at); return d >= lastMonthStart && d <= lastMonthEnd; });
+      const tmAP = thisMonthRows.reduce((s, r) => s + parseFloat(r.annual_premium || 0), 0);
+      const lmAP = lastMonthRows.reduce((s, r) => s + parseFloat(r.annual_premium || 0), 0);
+      const tmCount = thisMonthRows.length;
+      const lmCount = lastMonthRows.length;
+
+      const thisLabel = thisMonthStart.toLocaleString('default', { month: 'short' });
+      const lastLabel = lastMonthStart.toLocaleString('default', { month: 'short' });
+
+      const W = 600, H = 240, padL = 56, padR = 16, padT = 20, padB = 48;
+      const plotW = W - padL - padR;
+      const plotH = H - padT - padB;
+      const maxAP = Math.max(tmAP, lmAP, 1);
+
+      // Two groups (AP-only comparison). Two bars per group: Last vs This.
+      // Simpler: 2 bars side by side for AP
+      const barW = 90;
+      const groupGap = 60;
+      const totalBarsWidth = barW * 2 + groupGap;
+      const startX = padL + (plotW - totalBarsWidth) / 2;
+
+      const barY = (val) => padT + plotH - (val / maxAP) * plotH;
+      const lmY = barY(lmAP);
+      const tmY = barY(tmAP);
+      const lmX = startX;
+      const tmX = startX + barW + groupGap;
+      const lmHeight = padT + plotH - lmY;
+      const tmHeight = padT + plotH - tmY;
+
+      const trend = tmAP >= lmAP ? 'up' : 'down';
+      const thisColor = trend === 'up' ? '#4ade80' : '#f87171';
+      const thisColorDark = trend === 'up' ? '#16a34a' : '#dc2626';
+
+      // Y grid
+      let grid = '';
+      for (let i = 0; i <= 4; i++) {
+        const val = (maxAP / 4) * i;
+        const y = barY(val);
+        grid += '<line x1="' + padL + '" y1="' + y + '" x2="' + (W - padR) + '" y2="' + y + '" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>';
+        grid += '<text x="' + (padL - 8) + '" y="' + (y + 3) + '" fill="rgba(255,255,255,0.5)" font-size="9" font-family="Inter, sans-serif" text-anchor="end">$' + fmtAP(val) + '</text>';
+      }
+
+      const diff = tmAP - lmAP;
+      const diffPct = lmAP > 0 ? (diff / lmAP) * 100 : 0;
+      const summaryTxt = (diff >= 0 ? '+$' : '-$') + fmtAP(Math.abs(diff)) + ' (' + (diff >= 0 ? '+' : '') + diffPct.toFixed(1) + '%)';
+
+      return '<div class="perf-chart-card">' +
+        '<div class="perf-chart-title">This Month vs Last Month</div>' +
+        '<svg class="perf-svg-chart" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="xMidYMid meet">' +
+          grid +
+          '<defs>' +
+            '<linearGradient id="lmGrad" x1="0" y1="0" x2="0" y2="1">' +
+              '<stop offset="0" stop-color="#64748b" stop-opacity="0.9"/>' +
+              '<stop offset="1" stop-color="#475569" stop-opacity="0.9"/>' +
+            '</linearGradient>' +
+            '<linearGradient id="tmGrad" x1="0" y1="0" x2="0" y2="1">' +
+              '<stop offset="0" stop-color="' + thisColor + '" stop-opacity="0.95"/>' +
+              '<stop offset="1" stop-color="' + thisColorDark + '" stop-opacity="0.95"/>' +
+            '</linearGradient>' +
+          '</defs>' +
+          '<rect x="' + lmX + '" y="' + lmY + '" width="' + barW + '" height="' + lmHeight + '" rx="6" fill="url(#lmGrad)"/>' +
+          '<rect x="' + tmX + '" y="' + tmY + '" width="' + barW + '" height="' + tmHeight + '" rx="6" fill="url(#tmGrad)"/>' +
+          '<text x="' + (lmX + barW/2) + '" y="' + (lmY - 8) + '" fill="#fff" font-size="12" font-weight="800" font-family="Plus Jakarta Sans, sans-serif" text-anchor="middle">$' + fmtAP(lmAP) + '</text>' +
+          '<text x="' + (tmX + barW/2) + '" y="' + (tmY - 8) + '" fill="' + thisColor + '" font-size="12" font-weight="800" font-family="Plus Jakarta Sans, sans-serif" text-anchor="middle">$' + fmtAP(tmAP) + '</text>' +
+          '<text x="' + (lmX + barW/2) + '" y="' + (H - 22) + '" fill="rgba(255,255,255,0.85)" font-size="11" font-weight="700" font-family="Plus Jakarta Sans, sans-serif" text-anchor="middle">' + lastLabel + '</text>' +
+          '<text x="' + (lmX + barW/2) + '" y="' + (H - 8) + '" fill="rgba(255,255,255,0.5)" font-size="9" font-family="Inter, sans-serif" text-anchor="middle">' + lmCount + ' policies</text>' +
+          '<text x="' + (tmX + barW/2) + '" y="' + (H - 22) + '" fill="rgba(255,255,255,0.85)" font-size="11" font-weight="700" font-family="Plus Jakarta Sans, sans-serif" text-anchor="middle">' + thisLabel + '</text>' +
+          '<text x="' + (tmX + barW/2) + '" y="' + (H - 8) + '" fill="rgba(255,255,255,0.5)" font-size="9" font-family="Inter, sans-serif" text-anchor="middle">' + tmCount + ' policies</text>' +
+        '</svg>' +
+        '<div class="perf-chart-summary ' + trend + '">' +
+          '<span class="perf-chart-summary-label">Change</span>' +
+          '<span class="perf-chart-summary-value">' + summaryTxt + '</span>' +
+        '</div>' +
+      '</div>';
     }
 
     function fmtAP(n) { return Math.round(n).toLocaleString('en-US'); }
