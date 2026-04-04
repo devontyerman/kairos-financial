@@ -519,12 +519,109 @@
     .ss-signup-msg.success { display: block; background: #ecfdf5; border: 1px solid #a7f3d0; color: #059669; }
     .ss-signup-msg.error { display: block; background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; }
 
+    /* Manage Policies */
+    .mp-inner { max-width: 1000px; margin: 0 auto; padding: 2.5rem 1.5rem; }
+    .mp-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem; }
+    .mp-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.3rem; font-weight: 900; color: #fff; }
+    .mp-count { font-size: 0.78rem; color: rgba(255,255,255,0.35); }
+
+    .mp-filters { display: flex; gap: 0.35rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+    .mp-filter {
+      padding: 0.4rem 0.9rem; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.72rem; font-weight: 600;
+      color: rgba(255,255,255,0.4); background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 100px; cursor: pointer; transition: all 0.2s ease;
+    }
+    .mp-filter:hover { border-color: rgba(56,120,255,0.3); color: #fff; }
+    .mp-filter.active { background: linear-gradient(135deg, #2563eb, #3b82f6); color: #fff; border-color: #3b82f6; }
+
+    .mp-custom-range { display: none; gap: 0.5rem; align-items: center; margin-bottom: 1rem; }
+    .mp-custom-range.visible { display: flex; flex-wrap: wrap; }
+    .mp-custom-range input[type="date"] {
+      padding: 0.4rem 0.6rem; font-size: 0.8rem; font-family: 'Inter', sans-serif;
+      color: #fff; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 6px; color-scheme: dark;
+    }
+    .mp-custom-range button {
+      padding: 0.4rem 1rem; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.78rem; font-weight: 700;
+      color: #fff; background: #2563eb; border: none; border-radius: 6px; cursor: pointer;
+    }
+
+    .mp-table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid rgba(255,255,255,0.06); background: rgba(255,255,255,0.02); }
+    .mp-table { width: 100%; border-collapse: collapse; min-width: 750px; }
+    .mp-table thead th {
+      font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.68rem; font-weight: 700;
+      letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.35);
+      padding: 0.7rem 0.8rem; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.06);
+      background: rgba(255,255,255,0.03); cursor: pointer; user-select: none; white-space: nowrap;
+      transition: color 0.2s ease;
+    }
+    .mp-table thead th:hover { color: #3b82f6; }
+    .mp-table thead th.sorted { color: #3b82f6; }
+    .mp-table thead th .sort-arrow { font-size: 0.6rem; margin-left: 0.3rem; }
+
+    .mp-table tbody tr { transition: background 0.15s ease; }
+    .mp-table tbody tr:hover { background: rgba(56,120,255,0.05); }
+    .mp-table tbody tr:nth-child(even) { background: rgba(255,255,255,0.015); }
+    .mp-table tbody tr:nth-child(even):hover { background: rgba(56,120,255,0.05); }
+    .mp-table tbody td {
+      padding: 0.6rem 0.8rem; font-size: 0.8rem; color: rgba(255,255,255,0.7);
+      border-bottom: 1px solid rgba(255,255,255,0.04); white-space: nowrap;
+    }
+    .mp-table tbody td.mp-ap { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; color: #3b82f6; }
+    .mp-table tbody td.mp-date { color: rgba(255,255,255,0.35); font-size: 0.75rem; }
+
+    .mp-actions { display: flex; gap: 0.3rem; }
+    .mp-btn-edit, .mp-btn-del {
+      padding: 0.25rem 0.6rem; font-size: 0.68rem; font-weight: 700; border-radius: 4px;
+      border: none; cursor: pointer; transition: all 0.2s ease; text-transform: uppercase; letter-spacing: 0.04em;
+    }
+    .mp-btn-edit { background: rgba(56,120,255,0.12); color: #60a5fa; border: 1px solid rgba(56,120,255,0.2); }
+    .mp-btn-edit:hover { background: rgba(56,120,255,0.25); }
+    .mp-btn-del { background: rgba(239,68,68,0.1); color: #f87171; border: 1px solid rgba(239,68,68,0.15); }
+    .mp-btn-del:hover { background: rgba(239,68,68,0.2); }
+
+    .mp-empty { text-align: center; padding: 4rem 1rem; color: rgba(255,255,255,0.3); font-size: 0.88rem; }
+    .mp-loading { text-align: center; padding: 3rem; color: rgba(255,255,255,0.3); font-size: 0.82rem; }
+    .mp-not-auth { text-align: center; padding: 4rem 1rem; color: rgba(255,255,255,0.35); font-size: 0.9rem; }
+
+    /* Edit modal */
+    .mp-edit-overlay {
+      display: none; position: fixed; inset: 0; z-index: 9998;
+      background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
+      align-items: center; justify-content: center;
+    }
+    .mp-edit-overlay.open { display: flex; }
+    .mp-edit-modal {
+      background: #1a1f2e; border: 1px solid rgba(56,120,255,0.15); border-radius: 16px;
+      padding: 2rem; max-width: 480px; width: 92%; animation: ssModalPop 0.3s ease;
+    }
+    .mp-edit-modal h3 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.1rem; font-weight: 800; color: #fff; margin-bottom: 1.25rem; }
+    .mp-edit-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+    .mp-edit-field label { display: block; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.7rem; font-weight: 700; color: rgba(255,255,255,0.4); margin-bottom: 0.25rem; text-transform: uppercase; letter-spacing: 0.06em; }
+    .mp-edit-field input, .mp-edit-field select {
+      width: 100%; padding: 0.5rem 0.7rem; font-size: 0.82rem; color: #fff; box-sizing: border-box;
+      background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px;
+    }
+    .mp-edit-field input:focus, .mp-edit-field select:focus { outline: none; border-color: #3b82f6; }
+    .mp-edit-field select option { background: #1a1f2e; }
+    .mp-edit-btns { display: flex; gap: 0.75rem; margin-top: 1.25rem; grid-column: 1 / -1; }
+    .mp-edit-btns button {
+      flex: 1; padding: 0.6rem; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.85rem;
+      font-weight: 700; border-radius: 8px; border: none; cursor: pointer; transition: all 0.2s ease;
+    }
+    .mp-edit-cancel { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.5); }
+    .mp-edit-save { background: linear-gradient(135deg, #2563eb, #3b82f6); color: #fff; }
+    .mp-edit-save:hover { box-shadow: 0 4px 12px rgba(37,99,235,0.3); }
+
     @media (max-width: 768px) {
       .ss-hero { padding: calc(var(--nav-height) + 2rem) 1rem 2rem; }
       .ss-page { padding: 0 1rem 3rem; }
       .ss-form-grid { grid-template-columns: 1fr; }
       .ss-tabs { margin-top: -1rem; }
       .ss-tab { padding: 0.55rem 1.2rem; font-size: 0.8rem; }
+      .mp-edit-grid { grid-template-columns: 1fr; }
+      .mp-inner { padding: 1.5rem 1rem; }
+      .mp-filter { font-size: 0.68rem; padding: 0.35rem 0.7rem; }
     }
   </style>
 </head>
@@ -594,6 +691,7 @@
   <div class="ss-tabs">
     <button class="ss-tab active" data-panel="submit">Submit Sale</button>
     <button class="ss-tab" data-panel="leaderboard">Leaderboard</button>
+    <button class="ss-tab" data-panel="policies">My Policies</button>
   </div>
 
   <div class="ss-page-dark">
@@ -674,6 +772,62 @@
         </div>
         <div id="lbContent"><div class="ss-loading">Loading...</div></div>
       </div>
+    </div>
+
+    <!-- MY POLICIES -->
+    <div class="ss-panel" id="panel-policies">
+      <div class="mp-inner">
+        <div id="mpNotAuth" class="mp-not-auth" style="display:none;">
+          Sign in to view and manage your policies.
+        </div>
+        <div id="mpContent" style="display:none;">
+          <div class="mp-header">
+            <div>
+              <div class="mp-title">My Policies</div>
+              <div class="mp-count" id="mpCount"></div>
+            </div>
+          </div>
+          <div class="mp-filters" id="mpFilters">
+            <button class="mp-filter active" data-mp-range="week">This Week</button>
+            <button class="mp-filter" data-mp-range="lastweek">Last Week</button>
+            <button class="mp-filter" data-mp-range="month">This Month</button>
+            <button class="mp-filter" data-mp-range="lastmonth">Last Month</button>
+            <button class="mp-filter" data-mp-range="ytd">YTD</button>
+            <button class="mp-filter" data-mp-range="all">All Time</button>
+            <button class="mp-filter" data-mp-range="custom">Custom</button>
+          </div>
+          <div class="mp-custom-range" id="mpCustomRange">
+            <input type="date" id="mpDateFrom" />
+            <span style="color:rgba(255,255,255,0.3);">to</span>
+            <input type="date" id="mpDateTo" />
+            <button id="mpCustomApply">Apply</button>
+          </div>
+          <div class="mp-table-wrap">
+            <div id="mpTable"><div class="mp-loading">Loading...</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Policy Modal -->
+  <div class="mp-edit-overlay" id="mpEditOverlay">
+    <div class="mp-edit-modal">
+      <h3>Edit Policy</h3>
+      <form id="mpEditForm">
+        <div class="mp-edit-grid">
+          <div class="mp-edit-field"><label>Client Name</label><input type="text" id="mpEditClient" required /></div>
+          <div class="mp-edit-field"><label>Annual Premium</label><input type="number" id="mpEditAP" step="0.01" required /></div>
+          <div class="mp-edit-field"><label>Carrier</label><select id="mpEditCarrier"></select></div>
+          <div class="mp-edit-field"><label>Product Type</label><select id="mpEditProduct"></select></div>
+          <div class="mp-edit-field"><label>Policy Number</label><input type="text" id="mpEditPolicy" required /></div>
+          <div class="mp-edit-field"><label>Sales Rep</label><input type="text" id="mpEditRep" required /></div>
+          <div class="mp-edit-btns">
+            <button type="button" class="mp-edit-cancel" id="mpEditCancel">Cancel</button>
+            <button type="submit" class="mp-edit-save">Save Changes</button>
+          </div>
+        </div>
+      </form>
     </div>
   </div>
 
@@ -877,6 +1031,7 @@
         tab.classList.add('active');
         document.getElementById('panel-' + tab.dataset.panel).classList.add('active');
         if (tab.dataset.panel === 'leaderboard') loadLeaderboard();
+        if (tab.dataset.panel === 'policies') loadPolicies();
       });
     });
 
@@ -1208,6 +1363,213 @@
       }
       btn.disabled = false;
     });
+
+    // ─── MANAGE POLICIES ───
+    let mpCurrentRange = 'week';
+    let mpSortCol = 'created_at';
+    let mpSortDir = 'desc';
+    let mpAllData = [];
+    let mpEditId = null;
+
+    // Populate edit modal dropdowns
+    const mpEditCarrier = document.getElementById('mpEditCarrier');
+    const mpEditProduct = document.getElementById('mpEditProduct');
+    CARRIERS.forEach(c => { const o = document.createElement('option'); o.value = c; o.textContent = c; mpEditCarrier.appendChild(o); });
+    PRODUCT_TYPES.forEach(p => { const o = document.createElement('option'); o.value = p; o.textContent = p; mpEditProduct.appendChild(o); });
+
+    // Filter buttons
+    document.querySelectorAll('.mp-filter').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.mp-filter').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        mpCurrentRange = btn.dataset.mpRange;
+        document.getElementById('mpCustomRange').classList.toggle('visible', mpCurrentRange === 'custom');
+        if (mpCurrentRange !== 'custom') loadPolicies();
+      });
+    });
+    document.getElementById('mpCustomApply').addEventListener('click', loadPolicies);
+
+    function getMpDateRange() {
+      const now = new Date();
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      let from, to;
+
+      if (mpCurrentRange === 'week') {
+        from = new Date(today); from.setDate(from.getDate() - from.getDay());
+        to = new Date(now);
+      } else if (mpCurrentRange === 'lastweek') {
+        from = new Date(today); from.setDate(from.getDate() - from.getDay() - 7);
+        to = new Date(from); to.setDate(to.getDate() + 7);
+      } else if (mpCurrentRange === 'month') {
+        from = new Date(now.getFullYear(), now.getMonth(), 1);
+        to = new Date(now);
+      } else if (mpCurrentRange === 'lastmonth') {
+        from = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+        to = new Date(now.getFullYear(), now.getMonth(), 1);
+      } else if (mpCurrentRange === 'ytd') {
+        from = new Date(now.getFullYear(), 0, 1);
+        to = new Date(now);
+      } else if (mpCurrentRange === 'all') {
+        return { from: null, to: null };
+      } else if (mpCurrentRange === 'custom') {
+        const f = document.getElementById('mpDateFrom').value;
+        const t = document.getElementById('mpDateTo').value;
+        from = f ? new Date(f) : new Date(2020, 0, 1);
+        to = t ? new Date(t + 'T23:59:59') : new Date(now);
+      }
+      return { from: from.toISOString(), to: to.toISOString() };
+    }
+
+    async function loadPolicies() {
+      if (!currentUser) {
+        document.getElementById('mpNotAuth').style.display = 'block';
+        document.getElementById('mpContent').style.display = 'none';
+        return;
+      }
+      document.getElementById('mpNotAuth').style.display = 'none';
+      document.getElementById('mpContent').style.display = 'block';
+
+      const tableEl = document.getElementById('mpTable');
+      tableEl.innerHTML = '<div class="mp-loading">Loading...</div>';
+
+      const range = getMpDateRange();
+      let endpoint = 'policies?select=*&sales_rep=eq.' + encodeURIComponent(currentUser.user_metadata?.name || currentUser.email);
+      if (range.from) endpoint += '&created_at=gte.' + range.from;
+      if (range.to) endpoint += '&created_at=lte.' + range.to;
+      endpoint += '&order=' + mpSortCol + '.' + mpSortDir;
+
+      const token = accessToken || SUPABASE_KEY;
+      try {
+        const res = await fetch(SUPABASE_URL + '/rest/v1/' + endpoint, {
+          headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + token }
+        });
+        mpAllData = await res.json();
+      } catch (e) { mpAllData = []; }
+
+      renderPoliciesTable();
+    }
+
+    function renderPoliciesTable() {
+      const tableEl = document.getElementById('mpTable');
+      const countEl = document.getElementById('mpCount');
+      const totalAP = mpAllData.reduce((s, r) => s + parseFloat(r.annual_premium || 0), 0);
+      countEl.textContent = mpAllData.length + ' policies · $' + totalAP.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }) + ' total AP';
+
+      if (!mpAllData.length) {
+        tableEl.innerHTML = '<div class="mp-empty">No policies found for this timeframe.</div>';
+        return;
+      }
+
+      const cols = [
+        { key: 'client_name', label: 'Client' },
+        { key: 'annual_premium', label: 'AP' },
+        { key: 'carrier', label: 'Carrier' },
+        { key: 'product_type', label: 'Product' },
+        { key: 'policy_number', label: 'Policy #' },
+        { key: 'sales_rep', label: 'Rep' },
+        { key: 'created_at', label: 'Date' },
+      ];
+
+      let html = '<table class="mp-table"><thead><tr>';
+      cols.forEach(c => {
+        const sorted = mpSortCol === c.key;
+        const arrow = sorted ? (mpSortDir === 'asc' ? ' ▲' : ' ▼') : '';
+        html += '<th class="' + (sorted ? 'sorted' : '') + '" data-mp-sort="' + c.key + '">' + c.label + '<span class="sort-arrow">' + arrow + '</span></th>';
+      });
+      html += '<th>Actions</th></tr></thead><tbody>';
+
+      mpAllData.forEach(row => {
+        const d = new Date(row.created_at);
+        const dateStr = (d.getMonth()+1) + '/' + d.getDate() + '/' + d.getFullYear();
+        const ap = parseFloat(row.annual_premium || 0);
+        html += '<tr>';
+        html += '<td>' + esc(row.client_name) + '</td>';
+        html += '<td class="mp-ap">$' + ap.toLocaleString('en-US', { minimumFractionDigits: 0 }) + '</td>';
+        html += '<td>' + esc(row.carrier) + '</td>';
+        html += '<td>' + esc(row.product_type) + '</td>';
+        html += '<td>' + esc(row.policy_number) + '</td>';
+        html += '<td>' + esc(row.sales_rep) + '</td>';
+        html += '<td class="mp-date">' + dateStr + '</td>';
+        html += '<td class="mp-actions"><button class="mp-btn-edit" data-id="' + row.id + '">Edit</button><button class="mp-btn-del" data-id="' + row.id + '">Delete</button></td>';
+        html += '</tr>';
+      });
+      html += '</tbody></table>';
+      tableEl.innerHTML = html;
+
+      // Sort click handlers
+      tableEl.querySelectorAll('[data-mp-sort]').forEach(th => {
+        th.addEventListener('click', () => {
+          const col = th.dataset.mpSort;
+          if (mpSortCol === col) { mpSortDir = mpSortDir === 'asc' ? 'desc' : 'asc'; }
+          else { mpSortCol = col; mpSortDir = col === 'annual_premium' || col === 'created_at' ? 'desc' : 'asc'; }
+          loadPolicies();
+        });
+      });
+
+      // Edit handlers
+      tableEl.querySelectorAll('.mp-btn-edit').forEach(btn => {
+        btn.addEventListener('click', () => openEditModal(btn.dataset.id));
+      });
+
+      // Delete handlers
+      tableEl.querySelectorAll('.mp-btn-del').forEach(btn => {
+        btn.addEventListener('click', () => deletePolicy(btn.dataset.id));
+      });
+    }
+
+    function esc(s) { return (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+    // Edit modal
+    const mpEditOverlay = document.getElementById('mpEditOverlay');
+    document.getElementById('mpEditCancel').addEventListener('click', () => mpEditOverlay.classList.remove('open'));
+    mpEditOverlay.addEventListener('click', (e) => { if (e.target === mpEditOverlay) mpEditOverlay.classList.remove('open'); });
+
+    function openEditModal(id) {
+      const row = mpAllData.find(r => r.id === id);
+      if (!row) return;
+      mpEditId = id;
+      document.getElementById('mpEditClient').value = row.client_name || '';
+      document.getElementById('mpEditAP').value = row.annual_premium || '';
+      document.getElementById('mpEditCarrier').value = row.carrier || '';
+      document.getElementById('mpEditProduct').value = row.product_type || '';
+      document.getElementById('mpEditPolicy').value = row.policy_number || '';
+      document.getElementById('mpEditRep').value = row.sales_rep || '';
+      mpEditOverlay.classList.add('open');
+    }
+
+    document.getElementById('mpEditForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const token = accessToken || SUPABASE_KEY;
+      const body = {
+        client_name: document.getElementById('mpEditClient').value,
+        annual_premium: parseFloat(document.getElementById('mpEditAP').value),
+        carrier: document.getElementById('mpEditCarrier').value,
+        product_type: document.getElementById('mpEditProduct').value,
+        policy_number: document.getElementById('mpEditPolicy').value,
+        sales_rep: document.getElementById('mpEditRep').value
+      };
+      try {
+        await fetch(SUPABASE_URL + '/rest/v1/policies?id=eq.' + mpEditId, {
+          method: 'PATCH',
+          headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+          body: JSON.stringify(body)
+        });
+      } catch (e) {}
+      mpEditOverlay.classList.remove('open');
+      loadPolicies();
+    });
+
+    async function deletePolicy(id) {
+      if (!confirm('Delete this policy? This cannot be undone.')) return;
+      const token = accessToken || SUPABASE_KEY;
+      try {
+        await fetch(SUPABASE_URL + '/rest/v1/policies?id=eq.' + id, {
+          method: 'DELETE',
+          headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' }
+        });
+      } catch (e) {}
+      loadPolicies();
+    }
   </script>
 </body>
 </html>
