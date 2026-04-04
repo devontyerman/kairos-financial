@@ -202,6 +202,104 @@
     .ss-lb-empty svg { margin-bottom: 1rem; color: var(--border-strong); }
     .ss-loading { text-align: center; padding: 3rem; color: var(--text-muted); font-size: 0.85rem; }
 
+    /* Success / Error Modal */
+    .ss-modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(4px);
+      align-items: center;
+      justify-content: center;
+      animation: ssFadeIn 0.2s ease;
+    }
+    .ss-modal-overlay.open { display: flex; }
+
+    .ss-modal {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 2.5rem 2rem;
+      max-width: 420px;
+      width: 92%;
+      text-align: center;
+      position: relative;
+      animation: ssModalPop 0.35s ease;
+    }
+    @keyframes ssModalPop {
+      from { opacity: 0; transform: scale(0.9) translateY(20px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    .ss-modal-icon {
+      width: 72px; height: 72px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 1.25rem;
+    }
+    .ss-modal-icon.success {
+      background: linear-gradient(135deg, rgba(34,197,94,0.15), rgba(34,197,94,0.05));
+      border: 2px solid rgba(34,197,94,0.3);
+      color: #22c55e;
+    }
+    .ss-modal-icon.error {
+      background: linear-gradient(135deg, rgba(239,68,68,0.15), rgba(239,68,68,0.05));
+      border: 2px solid rgba(239,68,68,0.3);
+      color: #ef4444;
+    }
+
+    .ss-modal h3 {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 900;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .ss-modal-ap {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 2.2rem;
+      font-weight: 900;
+      color: var(--gold);
+      margin: 0.75rem 0;
+      letter-spacing: -0.03em;
+    }
+
+    .ss-modal-sub {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+    }
+
+    .ss-modal-btns {
+      display: flex;
+      gap: 0.75rem;
+    }
+    .ss-modal-btn {
+      flex: 1;
+      padding: 0.7rem 1rem;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 700;
+      border: none;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .ss-modal-btn.primary {
+      background: linear-gradient(135deg, var(--gold), var(--gold-bright, #ddc878));
+      color: #111;
+    }
+    .ss-modal-btn.primary:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(201,168,76,0.3); }
+    .ss-modal-btn.secondary {
+      background: var(--bg-surface);
+      color: var(--text-primary);
+      border: 1px solid var(--border);
+    }
+    .ss-modal-btn.secondary:hover { background: var(--bg-hover); }
+
     @media (max-width: 768px) {
       .ss-hero { padding: calc(var(--nav-height) + 2rem) 1rem 2rem; }
       .ss-page { padding: 0 1rem 3rem; }
@@ -319,7 +417,6 @@
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
                 Submit Sale
               </button>
-              <div id="formMsg" class="ss-msg"></div>
             </div>
           </div>
         </form>
@@ -339,6 +436,17 @@
         <button class="ss-lb-filter" data-range="yearly">This Year</button>
       </div>
       <div id="lbContent"><div class="ss-loading">Loading...</div></div>
+    </div>
+  </div>
+
+  <!-- Success / Error Modal -->
+  <div class="ss-modal-overlay" id="saleModal">
+    <div class="ss-modal">
+      <div class="ss-modal-icon" id="modalIcon"></div>
+      <h3 id="modalTitle"></h3>
+      <div class="ss-modal-ap" id="modalAP"></div>
+      <p class="ss-modal-sub" id="modalSub"></p>
+      <div class="ss-modal-btns" id="modalBtns"></div>
     </div>
   </div>
 
@@ -408,18 +516,61 @@
       });
     });
 
+    // ─── MODAL HELPERS ───
+    const modal = document.getElementById('saleModal');
+    const modalIcon = document.getElementById('modalIcon');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalAP = document.getElementById('modalAP');
+    const modalSub = document.getElementById('modalSub');
+    const modalBtns = document.getElementById('modalBtns');
+
+    function showSuccessModal(ap) {
+      modalIcon.className = 'ss-modal-icon success';
+      modalIcon.innerHTML = '<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+      modalTitle.textContent = 'Congratulations!';
+      modalAP.textContent = '$' + ap.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+      modalAP.style.display = 'block';
+      modalSub.textContent = 'Another deal closed. Keep up the momentum!';
+      modalBtns.innerHTML = '<button class="ss-modal-btn primary" id="modalNewSale">Submit Another Sale</button><button class="ss-modal-btn secondary" id="modalToLB">View Leaderboard</button>';
+      modal.classList.add('open');
+
+      document.getElementById('modalNewSale').addEventListener('click', () => { modal.classList.remove('open'); });
+      document.getElementById('modalToLB').addEventListener('click', () => {
+        modal.classList.remove('open');
+        document.querySelectorAll('.ss-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.ss-panel').forEach(p => p.classList.remove('active'));
+        document.querySelector('[data-panel="leaderboard"]').classList.add('active');
+        document.getElementById('panel-leaderboard').classList.add('active');
+        loadLeaderboard();
+      });
+    }
+
+    function showErrorModal(errMsg) {
+      modalIcon.className = 'ss-modal-icon error';
+      modalIcon.innerHTML = '<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>';
+      modalTitle.textContent = 'Submission Failed';
+      modalAP.style.display = 'none';
+      modalSub.textContent = errMsg || 'Something went wrong. Please try again.';
+      modalBtns.innerHTML = '<button class="ss-modal-btn primary" id="modalRetry">Try Again</button>';
+      modal.classList.add('open');
+
+      document.getElementById('modalRetry').addEventListener('click', () => { modal.classList.remove('open'); });
+    }
+
+    modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('open'); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') modal.classList.remove('open'); });
+
     // ─── FORM SUBMIT ───
     document.getElementById('saleForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const btn = document.getElementById('submitBtn');
-      const msg = document.getElementById('formMsg');
       btn.disabled = true;
-      msg.className = 'ss-msg'; msg.style.display = 'none';
 
+      const apValue = parseFloat(document.getElementById('annualPremium').value);
       const data = {
         sales_rep: document.getElementById('salesRep').value,
         client_name: document.getElementById('clientName').value,
-        annual_premium: parseFloat(document.getElementById('annualPremium').value),
+        annual_premium: apValue,
         carrier: document.getElementById('carrier').value,
         product_type: document.getElementById('productType').value,
         policy_number: document.getElementById('policyNumber').value
@@ -427,12 +578,10 @@
 
       const result = await supabaseInsert('policies', data);
       if (result.ok) {
-        msg.textContent = 'Sale submitted successfully!';
-        msg.className = 'ss-msg success';
         e.target.reset();
+        showSuccessModal(apValue);
       } else {
-        msg.textContent = 'Error: ' + (result.error || 'Unknown error. Check console.');
-        msg.className = 'ss-msg error';
+        showErrorModal(result.error || 'Unknown error. Check your connection and try again.');
       }
       btn.disabled = false;
     });
