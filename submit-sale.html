@@ -576,7 +576,7 @@
         policy_number: document.getElementById('policyNumber').value
       };
 
-      const result = await supabaseInsert('%22Policies%22', data);
+      const result = await supabaseInsert('Policies', data);
       if (result.ok) {
         e.target.reset();
         showSuccessModal(apValue);
@@ -611,7 +611,7 @@
       container.innerHTML = '<div class="ss-loading">Loading...</div>';
 
       const dateFilter = getDateFilter();
-      const data = await supabaseQuery('%22Policies%22?select=sales_rep,annual_premium&created_at=gte.' + dateFilter);
+      const data = await supabaseQuery('Policies?select=sales_rep,annual_premium&created_at=gte.' + dateFilter);
 
       const totals = {};
       const counts = {};
