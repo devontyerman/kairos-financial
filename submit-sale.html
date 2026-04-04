@@ -727,6 +727,97 @@
     }
     .mp-table tbody td.mp-ap { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; color: #3b82f6; }
     .mp-table tbody td.mp-date { color: rgba(255,255,255,0.35); font-size: 0.75rem; }
+    .mp-table tbody td.mp-client-name {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 800;
+      font-size: 0.92rem;
+      color: #ffffff;
+      letter-spacing: -0.01em;
+    }
+
+    /* Leaderboard filter rows */
+    .ss-lb-filter-rows { display: flex; flex-direction: column; gap: 0.5rem; align-items: center; margin-bottom: 1.25rem; }
+    .ss-lb-filter-row { display: flex; gap: 0.4rem; flex-wrap: wrap; justify-content: center; }
+    .ss-lb-custom-range {
+      display: none; gap: 0.5rem; align-items: center; justify-content: center;
+      margin-bottom: 2rem; flex-wrap: wrap;
+      animation: ssFadeIn 0.25s ease;
+    }
+    .ss-lb-custom-range.visible { display: flex; }
+    .ss-lb-custom-range input[type="date"] {
+      padding: 0.45rem 0.7rem; font-size: 0.8rem; font-family: 'Inter', sans-serif;
+      color: #fff; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px; color-scheme: dark;
+    }
+    .ss-lb-custom-range input[type="date"]:focus { outline: none; border-color: #3b82f6; }
+    .ss-lb-custom-range button {
+      padding: 0.5rem 1.2rem; font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.78rem; font-weight: 700; color: #fff;
+      background: linear-gradient(135deg, #2563eb, #3b82f6); border: none;
+      border-radius: 100px; cursor: pointer; transition: all 0.2s ease;
+    }
+    .ss-lb-custom-range button:hover { box-shadow: 0 4px 14px rgba(37,99,235,0.35); transform: translateY(-1px); }
+    .ss-lb-custom-range span { color: rgba(255,255,255,0.35); font-size: 0.78rem; }
+
+    /* Reusable confirm modal */
+    .ss-confirm-overlay {
+      display: none; position: fixed; inset: 0; z-index: 10000;
+      background: rgba(0,0,0,0.68); backdrop-filter: blur(6px);
+      align-items: center; justify-content: center;
+      animation: ssFadeIn 0.2s ease;
+    }
+    .ss-confirm-overlay.open { display: flex; }
+    .ss-confirm-box {
+      background: linear-gradient(180deg, #1a1f2e 0%, #141925 100%);
+      border: 1px solid rgba(59,130,246,0.2);
+      border-radius: 18px;
+      padding: 2rem 1.75rem;
+      max-width: 460px; width: 92%;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.5);
+      animation: ssModalPop 0.32s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .ss-confirm-box.warning { border-color: rgba(234,179,8,0.35); }
+    .ss-confirm-box.danger { border-color: rgba(239,68,68,0.35); }
+    .ss-confirm-icon {
+      width: 60px; height: 60px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 1rem; font-size: 1.8rem;
+      background: rgba(59,130,246,0.12);
+      border: 2px solid rgba(59,130,246,0.3);
+    }
+    .ss-confirm-box.warning .ss-confirm-icon { background: rgba(234,179,8,0.12); border-color: rgba(234,179,8,0.35); }
+    .ss-confirm-box.danger .ss-confirm-icon { background: rgba(239,68,68,0.12); border-color: rgba(239,68,68,0.35); }
+    .ss-confirm-box h3 {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1.15rem; font-weight: 800; color: #fff;
+      text-align: center; margin-bottom: 0.6rem;
+    }
+    .ss-confirm-box p {
+      font-size: 0.88rem; color: rgba(255,255,255,0.65);
+      text-align: center; line-height: 1.55; margin-bottom: 1.4rem;
+    }
+    .ss-confirm-btns { display: flex; gap: 0.6rem; }
+    .ss-confirm-btn {
+      flex: 1; padding: 0.7rem 1rem;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.85rem; font-weight: 700;
+      border-radius: 10px; border: none; cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .ss-confirm-btn.cancel {
+      background: rgba(255,255,255,0.06);
+      color: rgba(255,255,255,0.65);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    .ss-confirm-btn.cancel:hover { background: rgba(255,255,255,0.12); color: #fff; }
+    .ss-confirm-btn.confirm {
+      background: linear-gradient(135deg, #2563eb, #3b82f6); color: #fff;
+    }
+    .ss-confirm-btn.confirm:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(37,99,235,0.4); }
+    .ss-confirm-box.warning .ss-confirm-btn.confirm { background: linear-gradient(135deg, #d97706, #f59e0b); }
+    .ss-confirm-box.warning .ss-confirm-btn.confirm:hover { box-shadow: 0 6px 18px rgba(234,179,8,0.4); }
+    .ss-confirm-box.danger .ss-confirm-btn.confirm { background: linear-gradient(135deg, #dc2626, #ef4444); }
+    .ss-confirm-box.danger .ss-confirm-btn.confirm:hover { box-shadow: 0 6px 18px rgba(239,68,68,0.4); }
 
     .mp-actions { display: flex; gap: 0.3rem; }
     .mp-btn-edit, .mp-btn-del {
@@ -932,6 +1023,10 @@
               <input class="ss-input" type="text" id="clientName" required />
             </div>
             <div class="ss-field">
+              <label class="ss-label">Client Phone Number</label>
+              <input class="ss-input" type="tel" id="clientPhone" placeholder="(123) 456-7890" inputmode="numeric" autocomplete="tel" maxlength="14" required />
+            </div>
+            <div class="ss-field">
               <label class="ss-label">Annual Premium (AP)</label>
               <input class="ss-input" type="number" id="annualPremium" min="0" step="0.01" required />
             </div>
@@ -976,14 +1071,25 @@
           <h2>Leaderboard</h2>
           <p>Who's closing the most business?</p>
         </div>
-        <div class="ss-lb-filters">
-          <button class="ss-lb-filter active" data-range="daily">Today</button>
-          <button class="ss-lb-filter" data-range="yesterday">Yesterday</button>
-          <button class="ss-lb-filter" data-range="weekly">This Week</button>
-          <button class="ss-lb-filter" data-range="lastweek">Last Week</button>
-          <button class="ss-lb-filter" data-range="monthly">This Month</button>
-          <button class="ss-lb-filter" data-range="lastmonth">Last Month</button>
-          <button class="ss-lb-filter" data-range="yearly">This Year</button>
+        <div class="ss-lb-filter-rows">
+          <div class="ss-lb-filter-row">
+            <button class="ss-lb-filter active" data-range="daily">Today</button>
+            <button class="ss-lb-filter" data-range="weekly">This Week</button>
+            <button class="ss-lb-filter" data-range="monthly">This Month</button>
+            <button class="ss-lb-filter" data-range="yearly">This Year</button>
+          </div>
+          <div class="ss-lb-filter-row">
+            <button class="ss-lb-filter" data-range="yesterday">Yesterday</button>
+            <button class="ss-lb-filter" data-range="lastweek">Last Week</button>
+            <button class="ss-lb-filter" data-range="lastmonth">Last Month</button>
+            <button class="ss-lb-filter" data-range="custom">Custom Range</button>
+          </div>
+        </div>
+        <div class="ss-lb-custom-range" id="lbCustomRange">
+          <input type="date" id="lbDateFrom" />
+          <span>to</span>
+          <input type="date" id="lbDateTo" />
+          <button id="lbCustomApply">Apply</button>
         </div>
         <div id="lbContent"><div class="ss-loading">Loading...</div></div>
       </div>
@@ -1118,6 +1224,19 @@
     </div>
   </div>
 
+  <!-- Reusable Confirm Modal -->
+  <div class="ss-confirm-overlay" id="ssConfirmOverlay">
+    <div class="ss-confirm-box" id="ssConfirmBox">
+      <div class="ss-confirm-icon" id="ssConfirmIcon">⚠️</div>
+      <h3 id="ssConfirmTitle"></h3>
+      <p id="ssConfirmMsg"></p>
+      <div class="ss-confirm-btns">
+        <button type="button" class="ss-confirm-btn cancel" id="ssConfirmCancel">Cancel</button>
+        <button type="button" class="ss-confirm-btn confirm" id="ssConfirmOk">Confirm</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Success / Error Modal -->
   <div class="ss-modal-overlay" id="saleModal">
     <div class="ss-modal">
@@ -1141,6 +1260,86 @@
     // ─── AUTH STATE ───
     let currentUser = null;
     let accessToken = null;
+
+    // ─── CONFIRM MODAL HELPER ───
+    function showConfirmModal({ title, message, confirmText = 'Confirm', cancelText = 'Cancel', variant = 'info', icon = '⚠️' }) {
+      return new Promise((resolve) => {
+        const overlay = document.getElementById('ssConfirmOverlay');
+        const box = document.getElementById('ssConfirmBox');
+        const iconEl = document.getElementById('ssConfirmIcon');
+        const titleEl = document.getElementById('ssConfirmTitle');
+        const msgEl = document.getElementById('ssConfirmMsg');
+        const okBtn = document.getElementById('ssConfirmOk');
+        const cancelBtn = document.getElementById('ssConfirmCancel');
+
+        box.className = 'ss-confirm-box' + (variant && variant !== 'info' ? ' ' + variant : '');
+        iconEl.textContent = icon;
+        titleEl.textContent = title;
+        msgEl.textContent = message;
+        okBtn.textContent = confirmText;
+        cancelBtn.textContent = cancelText;
+        overlay.classList.add('open');
+
+        const cleanup = (result) => {
+          overlay.classList.remove('open');
+          okBtn.removeEventListener('click', onOk);
+          cancelBtn.removeEventListener('click', onCancel);
+          overlay.removeEventListener('click', onBackdrop);
+          document.removeEventListener('keydown', onKey);
+          resolve(result);
+        };
+        const onOk = () => cleanup(true);
+        const onCancel = () => cleanup(false);
+        const onBackdrop = (e) => { if (e.target === overlay) cleanup(false); };
+        const onKey = (e) => { if (e.key === 'Escape') cleanup(false); };
+
+        okBtn.addEventListener('click', onOk);
+        cancelBtn.addEventListener('click', onCancel);
+        overlay.addEventListener('click', onBackdrop);
+        document.addEventListener('keydown', onKey);
+      });
+    }
+
+    // ─── PHONE FORMAT + VALIDATION HELPERS ───
+    function formatPhoneInput(value) {
+      const digits = (value || '').replace(/\D/g, '').slice(0, 10);
+      if (digits.length === 0) return '';
+      if (digits.length < 4) return '(' + digits;
+      if (digits.length < 7) return '(' + digits.slice(0, 3) + ') ' + digits.slice(3);
+      return '(' + digits.slice(0, 3) + ') ' + digits.slice(3, 6) + '-' + digits.slice(6);
+    }
+    function getPhoneDigits(value) {
+      return (value || '').replace(/\D/g, '');
+    }
+    function isPhoneSuspicious(digits) {
+      if (!digits || digits.length !== 10) return true;
+      // All same digit
+      if (/^(\d)\1{9}$/.test(digits)) return true;
+      // Sequential ascending/descending
+      if (digits === '0123456789' || digits === '1234567890' || digits === '9876543210') return true;
+      // Starts with 0 or 1 (invalid US area code)
+      if (digits[0] === '0' || digits[0] === '1') return true;
+      // Common placeholder numbers
+      const fakes = ['5555555555', '1111111111', '0000000000', '1234567890', '9999999999'];
+      if (fakes.includes(digits)) return true;
+      return false;
+    }
+    function isPolicyNumberSuspicious(value) {
+      const v = (value || '').trim();
+      if (!v) return true;
+      if (v.length < 4) return true;
+      const lower = v.toLowerCase();
+      const fakeWords = ['test', 'pending', 'tbd', 'none', 'n/a', 'na', 'xxx', 'abc', 'fake', 'unknown', 'asdf', 'qwerty'];
+      if (fakeWords.some(w => lower === w || lower.includes(w))) return true;
+      // All same character
+      if (/^(.)\1+$/.test(v)) return true;
+      // Pure sequential digits like 123, 1234, 12345...
+      if (/^\d+$/.test(v) && v.length <= 6) {
+        const seq = '0123456789';
+        if (seq.includes(v) || seq.split('').reverse().join('').includes(v)) return true;
+      }
+      return false;
+    }
 
     // ─── SUPABASE HELPERS ───
     function getHeaders() {
@@ -1186,6 +1385,14 @@
     }
     populateSelect('carrier', CARRIERS);
     populateSelect('productType', PRODUCT_TYPES);
+
+    // Live phone formatting
+    const clientPhoneInput = document.getElementById('clientPhone');
+    if (clientPhoneInput) {
+      clientPhoneInput.addEventListener('input', (e) => {
+        e.target.value = formatPhoneInput(e.target.value);
+      });
+    }
 
     // ─── AUTH UI ───
     const authBar = document.getElementById('authBar');
@@ -1347,15 +1554,55 @@
         return;
       }
 
+      const phoneRaw = document.getElementById('clientPhone').value;
+      const phoneDigits = getPhoneDigits(phoneRaw);
+      const policyNumberValue = document.getElementById('policyNumber').value.trim();
+
+      // Hard requirement: must be exactly 10 digits
+      if (phoneDigits.length !== 10) {
+        showErrorModal('Please enter a valid 10-digit client phone number.');
+        btn.disabled = false;
+        return;
+      }
+
+      const formattedPhone = formatPhoneInput(phoneDigits);
+
+      // Low AP confirmation — small deal lives matter 😄
+      if (apValue < 200) {
+        const proceed = await showConfirmModal({
+          title: 'Small Deal Check',
+          message: 'Hey, small deal lives matter… but are you sure this is the ANNUAL premium and not monthly?',
+          confirmText: 'Yes, it\u2019s Annual',
+          cancelText: 'Let me fix it',
+          variant: 'warning',
+          icon: '🤔'
+        });
+        if (!proceed) { btn.disabled = false; return; }
+      }
+
+      // Fake phone / policy number detection
+      if (isPhoneSuspicious(phoneDigits) || isPolicyNumberSuspicious(policyNumberValue)) {
+        const proceed = await showConfirmModal({
+          title: 'Double-Check Client Info',
+          message: 'It looks like the phone number or policy number may not be valid. Tracking clients properly with real phone numbers and policy numbers is important for organization. Please consider entering accurate information.',
+          confirmText: 'Proceed Anyway',
+          cancelText: 'Let me fix it',
+          variant: 'warning',
+          icon: '📋'
+        });
+        if (!proceed) { btn.disabled = false; return; }
+      }
+
       const repName = currentUser.user_metadata?.name || currentUser.email;
       const data = {
         user_id: currentUser.id,
         sales_rep: repName,
         client_name: document.getElementById('clientName').value,
+        phone: formattedPhone,
         annual_premium: apValue,
         carrier: document.getElementById('carrier').value,
         product_type: document.getElementById('productType').value,
-        policy_number: document.getElementById('policyNumber').value,
+        policy_number: policyNumberValue,
         status: document.getElementById('policyStatus').value
       };
 
@@ -1394,8 +1641,31 @@
         document.querySelectorAll('.ss-lb-filter').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         currentRange = btn.dataset.range;
-        loadLeaderboard();
+        const customWrap = document.getElementById('lbCustomRange');
+        if (currentRange === 'custom') {
+          customWrap.classList.add('visible');
+          // Only load if both dates are populated
+          const f = document.getElementById('lbDateFrom').value;
+          const t = document.getElementById('lbDateTo').value;
+          if (f && t) loadLeaderboard();
+          else {
+            document.getElementById('lbContent').innerHTML = '<div class="ss-lb-empty">Pick a start and end date above, then click Apply.</div>';
+          }
+        } else {
+          customWrap.classList.remove('visible');
+          loadLeaderboard();
+        }
       });
+    });
+
+    document.getElementById('lbCustomApply').addEventListener('click', () => {
+      const f = document.getElementById('lbDateFrom').value;
+      const t = document.getElementById('lbDateTo').value;
+      if (!f || !t) {
+        document.getElementById('lbContent').innerHTML = '<div class="ss-lb-empty">Please select both a start and end date.</div>';
+        return;
+      }
+      loadLeaderboard();
     });
 
     function getDateFilter() {
@@ -1416,6 +1686,11 @@
       if (currentRange === 'monthly') return { gte: new Date(now.getFullYear(), now.getMonth(), 1).toISOString() };
       if (currentRange === 'lastmonth') {
         return { gte: new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString(), lte: new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59).toISOString() };
+      }
+      if (currentRange === 'custom') {
+        const f = document.getElementById('lbDateFrom').value;
+        const t = document.getElementById('lbDateTo').value;
+        return { gte: (f || '2020-01-01') + 'T00:00:00', lte: (t || today) + 'T23:59:59' };
       }
       return { gte: new Date(now.getFullYear(), 0, 1).toISOString() };
     }
@@ -1776,7 +2051,7 @@
         const dateStr = (d.getMonth()+1) + '/' + d.getDate() + '/' + d.getFullYear();
         const ap = parseFloat(row.annual_premium || 0);
         html += '<tr>';
-        html += '<td>' + esc(row.client_name) + '</td>';
+        html += '<td class="mp-client-name">' + esc(row.client_name) + '</td>';
         html += '<td class="mp-ap">$' + ap.toLocaleString('en-US', { minimumFractionDigits: 0 }) + '</td>';
         html += '<td>' + esc(row.carrier) + '</td>';
         html += '<td>' + esc(row.product_type) + '</td>';
@@ -2163,7 +2438,15 @@
     }
 
     async function deletePolicy(id) {
-      if (!confirm('Delete this policy? This cannot be undone.')) return;
+      const confirmed = await showConfirmModal({
+        title: 'Delete this policy?',
+        message: 'Are you sure you want to delete this policy? This action cannot be undone.',
+        confirmText: 'Delete Policy',
+        cancelText: 'Cancel',
+        variant: 'danger',
+        icon: '🗑️'
+      });
+      if (!confirmed) return;
       const token = accessToken || SUPABASE_KEY;
       try {
         await fetch(SUPABASE_URL + '/rest/v1/policies?id=eq.' + id, {
