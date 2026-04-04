@@ -654,8 +654,16 @@
       width: 120px; padding: 0.4rem 0.6rem; font-size: 0.82rem; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700;
       color: #fff; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
       border-radius: 6px; text-align: right;
+      -moz-appearance: textfield;
     }
+    .ss-goal-input::-webkit-outer-spin-button,
+    .ss-goal-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
     .ss-goal-input:focus { outline: none; border-color: #3b82f6; }
+
+    /* Hide number input spinners on commission calculator inputs */
+    .ss-calc-input[type="number"] { -moz-appearance: textfield; }
+    .ss-calc-input[type="number"]::-webkit-outer-spin-button,
+    .ss-calc-input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
     .ss-goal-save {
       padding: 0.35rem 0.7rem; font-size: 0.7rem; font-weight: 700;
       color: #fff; background: #2563eb; border: none; border-radius: 6px; cursor: pointer;
@@ -2853,7 +2861,15 @@
       // Attention delete handlers
       el.querySelectorAll('.ss-uw-btn.delete').forEach(btn => {
         btn.addEventListener('click', async () => {
-          if (!confirm('Delete this policy?')) return;
+          const ok = await showConfirmModal({
+            title: 'Delete this policy?',
+            message: 'Are you sure you want to delete this policy? This action cannot be undone.',
+            confirmText: 'Delete Policy',
+            cancelText: 'Cancel',
+            variant: 'danger',
+            icon: '🗑️'
+          });
+          if (!ok) return;
           const id = btn.dataset.id;
           const token = accessToken || SUPABASE_KEY;
           await fetch(SUPABASE_URL + '/rest/v1/policies?id=eq.' + id, {
@@ -2999,7 +3015,15 @@
     }
 
     async function uwDelete(id, btn) {
-      if (!confirm('Delete this policy?')) return;
+      const ok = await showConfirmModal({
+        title: 'Delete this policy?',
+        message: 'Are you sure you want to delete this policy? This action cannot be undone.',
+        confirmText: 'Delete Policy',
+        cancelText: 'Cancel',
+        variant: 'danger',
+        icon: '🗑️'
+      });
+      if (!ok) return;
       const token = accessToken || SUPABASE_KEY;
       await fetch(SUPABASE_URL + '/rest/v1/policies?id=eq.' + id, {
         method: 'DELETE',
