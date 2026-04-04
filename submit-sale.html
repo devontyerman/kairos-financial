@@ -1124,7 +1124,7 @@
     }
     .ss-calc-result-row .val.muted { color: rgba(255,255,255,0.55); font-weight: 700; }
 
-    .ss-calc-roi .ss-calc-steps { grid-template-columns: 1fr 1fr; }
+    .ss-calc-roi .ss-calc-steps { grid-template-columns: minmax(220px, 340px); justify-content: start; }
     .ss-calc-roi-result {
       padding: 1.25rem 1.4rem;
       background: linear-gradient(135deg, rgba(34,197,94,0.08), rgba(34,197,94,0.03));
@@ -1447,16 +1447,11 @@
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
               Leads ROI Calculator
             </div>
-            <div class="ss-calc-sub">Figure out how much to spend on leads to hit your net income goal.</div>
+            <div class="ss-calc-sub">Using your upfront commission goal from above, see how much to spend on leads.</div>
 
             <div class="ss-calc-steps">
               <div class="ss-calc-step">
-                <span class="ss-calc-step-num">INPUT 1</span>
-                <label class="ss-calc-step-label">Target Net Income (auto-filled from above)</label>
-                <input class="ss-calc-input" type="number" id="roi_income" min="0" step="1" placeholder="$20,000" />
-              </div>
-              <div class="ss-calc-step">
-                <span class="ss-calc-step-num">INPUT 2</span>
+                <span class="ss-calc-step-num">INPUT</span>
                 <label class="ss-calc-step-label">Expected ROI on Lead Spend</label>
                 <select class="ss-calc-select" id="roi_multiplier"></select>
               </div>
@@ -3073,10 +3068,7 @@
       const upEl = document.getElementById('cc_outUpfront');
       const backEl = document.getElementById('cc_outBackend');
 
-      const roiIncomeEl = document.getElementById('roi_income');
       const roiOut = document.getElementById('roi_output');
-
-      let roiIncomeTouched = false;
 
       function computeCommission() {
         // Step 1 is the UPFRONT commission target (75% of total income on the sold AP)
@@ -3091,19 +3083,15 @@
         reqEl.textContent = fmt(requiredAP);
         upEl.textContent = fmt(upfrontGoal);
         backEl.textContent = fmt(backend);
-
-        // Auto-sync ROI income unless user has manually edited it
-        if (!roiIncomeTouched) {
-          roiIncomeEl.value = upfrontGoal || '';
-          computeRoi();
-        }
+        // ROI calc is always linked to the upfront commission goal above
+        computeRoi();
       }
 
       function computeRoi() {
-        const netGoal = parseFloat(roiIncomeEl.value) || 0;
+        const netGoal = parseFloat(incomeEl.value) || 0;
         const pct = parseFloat(roiSel.value) || 0;
         if (netGoal <= 0 || pct <= 0) {
-          roiOut.innerHTML = 'Enter your numbers above to see your recommended lead budget.';
+          roiOut.innerHTML = 'Enter your upfront commission goal above to see your recommended lead budget.';
           return;
         }
         // ROI% = profit / spend × 100  →  profit = spend × pct/100
@@ -3116,11 +3104,6 @@
       incomeEl.addEventListener('input', computeCommission);
       compSel.addEventListener('change', computeCommission);
       persSel.addEventListener('change', computeCommission);
-
-      roiIncomeEl.addEventListener('input', () => {
-        roiIncomeTouched = roiIncomeEl.value !== (incomeEl.value || '');
-        computeRoi();
-      });
       roiSel.addEventListener('change', computeRoi);
 
       computeCommission();
