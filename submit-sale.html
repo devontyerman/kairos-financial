@@ -1213,6 +1213,40 @@
       color: #4ade80;
     }
 
+    .ss-calc-longterm {
+      margin-top: 1rem;
+      padding: 1.25rem 1.4rem;
+      background: linear-gradient(135deg, rgba(201,168,76,0.08), rgba(201,168,76,0.02));
+      border: 1px solid rgba(201,168,76,0.22);
+      border-radius: 12px;
+      display: none;
+    }
+    .ss-calc-longterm.visible { display: block; }
+    .ss-calc-longterm-title {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #f0d878;
+      margin-bottom: 0.65rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .ss-calc-longterm-body {
+      font-size: 0.88rem;
+      line-height: 1.6;
+      color: rgba(255,255,255,0.72);
+    }
+    .ss-calc-longterm-body strong {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 800;
+      color: #f0d878;
+    }
+    .ss-calc-longterm-body p { margin: 0 0 0.55rem; }
+    .ss-calc-longterm-body p:last-child { margin-bottom: 0; }
+
     @media (max-width: 640px) {
       .ss-calc-steps { grid-template-columns: 1fr; }
       .ss-calc-roi .ss-calc-steps { grid-template-columns: 1fr; }
@@ -1515,6 +1549,8 @@
             <div class="ss-calc-roi-result" id="roi_output">
               <div class="msg placeholder">Enter your upfront commission goal above to see your recommended lead budget.</div>
             </div>
+
+            <div class="ss-calc-longterm" id="longterm_output"></div>
           </div>
         </div>
       </div>
@@ -3121,6 +3157,7 @@
       const backEl = document.getElementById('cc_outBackend');
 
       const roiOut = document.getElementById('roi_output');
+      const longTermOut = document.getElementById('longterm_output');
 
       function computeCommission() {
         // Step 1 is the NET income target — take-home AFTER lead costs
@@ -3150,8 +3187,22 @@
 
         if (netGoal <= 0 || roiPct <= 0) {
           roiOut.innerHTML = '<div class="msg placeholder">Enter your net income goal above to see your recommended lead budget.</div>';
+          longTermOut.classList.remove('visible');
+          longTermOut.innerHTML = '';
           return;
         }
+
+        // ── LONG-TERM STACK ──
+        // Monthly renewal income from this month's AP block once renewals start
+        // (4% of AP per year, paid monthly → AP × 0.04 / 12)
+        const monthlyRenewalFromBlock = requiredAP * 0.04 / 12;
+        longTermOut.classList.add('visible');
+        longTermOut.innerHTML =
+          '<div class="ss-calc-longterm-title">\ud83d\udcb0 The Long Game</div>' +
+          '<div class="ss-calc-longterm-body">' +
+            '<p>Don\u2019t forget \u2014 you still have <strong>' + fmt(backend) + '</strong> in backend commission coming <strong>9 months</strong> from now on this month\u2019s production.</p>' +
+            '<p>If you hold this pace every month, in <strong>9 months</strong> you\u2019ll have an additional <strong>' + fmt(backend) + '/month</strong> in income rolling in from stacked backend payments. Then at <strong>12 months</strong>, renewals kick in at an average of <strong>4% of AP per year</strong> \u2014 that\u2019s another <strong>' + fmt(monthlyRenewalFromBlock) + '/month</strong> from this month\u2019s block alone, and it grows every month after as more blocks hit their 12-month mark.</p>' +
+          '</div>';
 
         roiOut.innerHTML =
           '<div class="ss-calc-roi-hero">' +
