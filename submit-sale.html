@@ -2789,6 +2789,15 @@
     }
 
     async function markApproved(id, btn) {
+      const ok = await showConfirmModal({
+        title: 'Mark as Approved?',
+        message: 'This will move the policy from Underwriting to Approved. Are you sure?',
+        confirmText: 'Yes, Approve',
+        cancelText: 'Cancel',
+        variant: 'info',
+        icon: '✅'
+      });
+      if (!ok) return;
       const token = accessToken || SUPABASE_KEY;
       fireFireworks(btn);
       await fetch(SUPABASE_URL + '/rest/v1/policies?id=eq.' + id, {
@@ -2873,6 +2882,15 @@
       // Attention approve handlers
       el.querySelectorAll('.ss-uw-btn.approve').forEach(btn => {
         btn.addEventListener('click', async () => {
+          const ok = await showConfirmModal({
+            title: 'Mark as Approved?',
+            message: 'This will move the policy from Underwriting to Approved. Are you sure?',
+            confirmText: 'Yes, Approve',
+            cancelText: 'Cancel',
+            variant: 'info',
+            icon: '✅'
+          });
+          if (!ok) return;
           const id = btn.dataset.id;
           const token = accessToken || SUPABASE_KEY;
           fireFireworks(btn);
@@ -2910,6 +2928,15 @@
 
     // ─── ISSUE PAID WITH FIREWORKS ───
     async function markIssuePaid(id, btn) {
+      const ok = await showConfirmModal({
+        title: 'Mark as Issue Paid?',
+        message: 'This will move the policy to Issue Paid status. Confirm only when the policy has actually been paid.',
+        confirmText: 'Yes, Issue Paid',
+        cancelText: 'Cancel',
+        variant: 'info',
+        icon: '💵'
+      });
+      if (!ok) return;
       const token = accessToken || SUPABASE_KEY;
       await fetch(SUPABASE_URL + '/rest/v1/policies?id=eq.' + id, {
         method: 'PATCH',
