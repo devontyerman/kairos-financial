@@ -519,6 +519,52 @@
     .ss-signup-msg.success { display: block; background: #ecfdf5; border: 1px solid #a7f3d0; color: #059669; }
     .ss-signup-msg.error { display: block; background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; }
 
+    /* Status badges */
+    .ss-status { display: inline-block; padding: 0.15rem 0.55rem; font-size: 0.68rem; font-weight: 700; border-radius: 100px; text-transform: uppercase; letter-spacing: 0.04em; }
+    .ss-status.approved { background: rgba(34,197,94,0.12); color: #4ade80; border: 1px solid rgba(34,197,94,0.2); }
+    .ss-status.underwriting { background: rgba(234,179,8,0.12); color: #fbbf24; border: 1px solid rgba(234,179,8,0.2); }
+
+    /* Alert popup */
+    .ss-alert-overlay {
+      display: none; position: fixed; inset: 0; z-index: 9997;
+      background: rgba(0,0,0,0.65); backdrop-filter: blur(4px);
+      align-items: center; justify-content: center;
+    }
+    .ss-alert-overlay.open { display: flex; }
+    .ss-alert-box {
+      background: #1a1f2e; border-radius: 16px; padding: 2rem;
+      max-width: 500px; width: 92%; border: 1px solid rgba(56,120,255,0.15);
+      animation: ssModalPop 0.3s ease;
+    }
+    .ss-alert-box.warning { border-color: rgba(234,179,8,0.3); }
+    .ss-alert-box.danger { border-color: rgba(239,68,68,0.3); }
+    .ss-alert-icon { width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; font-size: 1.6rem; }
+    .ss-alert-box.warning .ss-alert-icon { background: rgba(234,179,8,0.12); border: 2px solid rgba(234,179,8,0.25); }
+    .ss-alert-box.danger .ss-alert-icon { background: rgba(239,68,68,0.12); border: 2px solid rgba(239,68,68,0.25); }
+    .ss-alert-box h3 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.1rem; font-weight: 800; color: #fff; text-align: center; margin-bottom: 0.75rem; }
+    .ss-alert-box p { font-size: 0.85rem; color: rgba(255,255,255,0.55); text-align: center; line-height: 1.6; margin-bottom: 1.25rem; }
+    .ss-alert-close { display: block; margin: 0 auto; padding: 0.6rem 2rem; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.85rem; font-weight: 700; color: #fff; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); border-radius: 100px; cursor: pointer; transition: all 0.2s ease; }
+    .ss-alert-close:hover { background: rgba(255,255,255,0.15); }
+
+    /* Underwriting reminder popup */
+    .ss-uw-list { max-height: 250px; overflow-y: auto; margin-bottom: 1rem; }
+    .ss-uw-list::-webkit-scrollbar { width: 4px; }
+    .ss-uw-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 4px; }
+    .ss-uw-item {
+      display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;
+      padding: 0.7rem 0; border-bottom: 1px solid rgba(255,255,255,0.06); flex-wrap: wrap;
+    }
+    .ss-uw-item:last-child { border-bottom: none; }
+    .ss-uw-item-info { flex: 1; min-width: 150px; }
+    .ss-uw-item-name { font-size: 0.85rem; font-weight: 600; color: #fff; }
+    .ss-uw-item-meta { font-size: 0.72rem; color: rgba(255,255,255,0.35); }
+    .ss-uw-item-actions { display: flex; gap: 0.3rem; }
+    .ss-uw-btn { padding: 0.3rem 0.7rem; font-size: 0.7rem; font-weight: 700; border-radius: 4px; border: none; cursor: pointer; transition: all 0.2s ease; }
+    .ss-uw-btn.approve { background: rgba(34,197,94,0.15); color: #4ade80; border: 1px solid rgba(34,197,94,0.2); }
+    .ss-uw-btn.approve:hover { background: rgba(34,197,94,0.3); }
+    .ss-uw-btn.delete { background: rgba(239,68,68,0.1); color: #f87171; border: 1px solid rgba(239,68,68,0.15); }
+    .ss-uw-btn.delete:hover { background: rgba(239,68,68,0.2); }
+
     /* Manage Policies */
     .mp-inner { max-width: 1000px; margin: 0 auto; padding: 2.5rem 1.5rem; }
     .mp-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem; }
@@ -742,6 +788,13 @@
               <label class="ss-label">Product Type</label>
               <select class="ss-select" id="productType" required><option value="">Select product...</option></select>
             </div>
+            <div class="ss-field">
+              <label class="ss-label">Status</label>
+              <select class="ss-select" id="policyStatus">
+                <option value="Underwriting">Underwriting</option>
+                <option value="Approved">Approved</option>
+              </select>
+            </div>
             <div class="ss-field full">
               <button class="ss-submit" type="submit" id="submitBtn">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
@@ -796,6 +849,11 @@
             <button class="mp-filter" data-mp-range="all">All Time</button>
             <button class="mp-filter" data-mp-range="custom">Custom</button>
           </div>
+          <div class="mp-filters" id="mpStatusFilters" style="margin-bottom: 0.5rem;">
+            <button class="mp-filter active" data-mp-status="all">All Status</button>
+            <button class="mp-filter" data-mp-status="Underwriting">Underwriting</button>
+            <button class="mp-filter" data-mp-status="Approved">Approved</button>
+          </div>
           <div class="mp-custom-range" id="mpCustomRange">
             <input type="date" id="mpDateFrom" />
             <span style="color:rgba(255,255,255,0.3);">to</span>
@@ -810,6 +868,27 @@
     </div>
   </div>
 
+  <!-- Overload Alert -->
+  <div class="ss-alert-overlay" id="overloadAlert">
+    <div class="ss-alert-box warning" id="overloadBox">
+      <div class="ss-alert-icon">⚠️</div>
+      <h3 id="overloadTitle"></h3>
+      <p id="overloadMsg"></p>
+      <button class="ss-alert-close" id="overloadClose">Got It</button>
+    </div>
+  </div>
+
+  <!-- Underwriting Reminder -->
+  <div class="ss-alert-overlay" id="uwReminderAlert">
+    <div class="ss-alert-box warning" style="max-width: 550px;">
+      <div class="ss-alert-icon">📋</div>
+      <h3>Underwriting Check-In</h3>
+      <p>These policies have been in underwriting for a while. Update their status or remove them.</p>
+      <div class="ss-uw-list" id="uwReminderList"></div>
+      <button class="ss-alert-close" id="uwReminderClose">Close</button>
+    </div>
+  </div>
+
   <!-- Edit Policy Modal -->
   <div class="mp-edit-overlay" id="mpEditOverlay">
     <div class="mp-edit-modal">
@@ -821,6 +900,7 @@
           <div class="mp-edit-field"><label>Carrier</label><select id="mpEditCarrier"></select></div>
           <div class="mp-edit-field"><label>Product Type</label><select id="mpEditProduct"></select></div>
           <div class="mp-edit-field"><label>Policy Number</label><input type="text" id="mpEditPolicy" required /></div>
+          <div class="mp-edit-field"><label>Status</label><select id="mpEditStatus"><option value="Underwriting">Underwriting</option><option value="Approved">Approved</option></select></div>
           <div class="mp-edit-field"><label>Sales Rep</label><input type="text" id="mpEditRep" required /></div>
           <div class="mp-edit-btns">
             <button type="button" class="mp-edit-cancel" id="mpEditCancel">Cancel</button>
@@ -1106,7 +1186,8 @@
         annual_premium: apValue,
         carrier: document.getElementById('carrier').value,
         product_type: document.getElementById('productType').value,
-        policy_number: document.getElementById('policyNumber').value
+        policy_number: document.getElementById('policyNumber').value,
+        status: document.getElementById('policyStatus').value
       };
 
       // Use access token for insert
@@ -1128,6 +1209,8 @@
       if (result.ok) {
         e.target.reset();
         showSuccessModal(apValue);
+        // Check underwriting overload
+        if (data.status === 'Underwriting') checkUnderwritingOverload();
       } else {
         showErrorModal(result.error || 'Unknown error. Check your connection and try again.');
       }
@@ -1366,6 +1449,7 @@
 
     // ─── MANAGE POLICIES ───
     let mpCurrentRange = 'week';
+    let mpStatusFilter = 'all';
     let mpSortCol = 'created_at';
     let mpSortDir = 'desc';
     let mpAllData = [];
@@ -1377,14 +1461,24 @@
     CARRIERS.forEach(c => { const o = document.createElement('option'); o.value = c; o.textContent = c; mpEditCarrier.appendChild(o); });
     PRODUCT_TYPES.forEach(p => { const o = document.createElement('option'); o.value = p; o.textContent = p; mpEditProduct.appendChild(o); });
 
-    // Filter buttons
-    document.querySelectorAll('.mp-filter').forEach(btn => {
+    // Date filter buttons
+    document.querySelectorAll('#mpFilters .mp-filter').forEach(btn => {
       btn.addEventListener('click', () => {
-        document.querySelectorAll('.mp-filter').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('#mpFilters .mp-filter').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         mpCurrentRange = btn.dataset.mpRange;
         document.getElementById('mpCustomRange').classList.toggle('visible', mpCurrentRange === 'custom');
         if (mpCurrentRange !== 'custom') loadPolicies();
+      });
+    });
+
+    // Status filter buttons
+    document.querySelectorAll('#mpStatusFilters .mp-filter').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('#mpStatusFilters .mp-filter').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        mpStatusFilter = btn.dataset.mpStatus;
+        loadPolicies();
       });
     });
     document.getElementById('mpCustomApply').addEventListener('click', loadPolicies);
@@ -1436,6 +1530,7 @@
       let endpoint = 'policies?select=*&sales_rep=eq.' + encodeURIComponent(currentUser.user_metadata?.name || currentUser.email);
       if (range.from) endpoint += '&created_at=gte.' + range.from;
       if (range.to) endpoint += '&created_at=lte.' + range.to;
+      if (mpStatusFilter !== 'all') endpoint += '&status=eq.' + mpStatusFilter;
       endpoint += '&order=' + mpSortCol + '.' + mpSortDir;
 
       const token = accessToken || SUPABASE_KEY;
@@ -1466,6 +1561,7 @@
         { key: 'carrier', label: 'Carrier' },
         { key: 'product_type', label: 'Product' },
         { key: 'policy_number', label: 'Policy #' },
+        { key: 'status', label: 'Status' },
         { key: 'sales_rep', label: 'Rep' },
         { key: 'created_at', label: 'Date' },
       ];
@@ -1488,6 +1584,8 @@
         html += '<td>' + esc(row.carrier) + '</td>';
         html += '<td>' + esc(row.product_type) + '</td>';
         html += '<td>' + esc(row.policy_number) + '</td>';
+        const statusClass = (row.status || 'Underwriting').toLowerCase();
+        html += '<td><span class="ss-status ' + statusClass + '">' + (row.status || 'Underwriting') + '</span></td>';
         html += '<td>' + esc(row.sales_rep) + '</td>';
         html += '<td class="mp-date">' + dateStr + '</td>';
         html += '<td class="mp-actions"><button class="mp-btn-edit" data-id="' + row.id + '">Edit</button><button class="mp-btn-del" data-id="' + row.id + '">Delete</button></td>';
@@ -1533,6 +1631,7 @@
       document.getElementById('mpEditCarrier').value = row.carrier || '';
       document.getElementById('mpEditProduct').value = row.product_type || '';
       document.getElementById('mpEditPolicy').value = row.policy_number || '';
+      document.getElementById('mpEditStatus').value = row.status || 'Underwriting';
       document.getElementById('mpEditRep').value = row.sales_rep || '';
       mpEditOverlay.classList.add('open');
     }
@@ -1546,6 +1645,7 @@
         carrier: document.getElementById('mpEditCarrier').value,
         product_type: document.getElementById('mpEditProduct').value,
         policy_number: document.getElementById('mpEditPolicy').value,
+        status: document.getElementById('mpEditStatus').value,
         sales_rep: document.getElementById('mpEditRep').value
       };
       try {
@@ -1558,6 +1658,108 @@
       mpEditOverlay.classList.remove('open');
       loadPolicies();
     });
+
+    // ─── OVERLOAD CHECK ───
+    async function checkUnderwritingOverload() {
+      if (!currentUser) return;
+      const repName = currentUser.user_metadata?.name || currentUser.email;
+      const token = accessToken || SUPABASE_KEY;
+      try {
+        const res = await fetch(SUPABASE_URL + '/rest/v1/policies?select=id&sales_rep=eq.' + encodeURIComponent(repName) + '&status=eq.Underwriting', {
+          headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + token }
+        });
+        const data = await res.json();
+        const count = data.length;
+        const alertEl = document.getElementById('overloadAlert');
+        const boxEl = document.getElementById('overloadBox');
+        const titleEl = document.getElementById('overloadTitle');
+        const msgEl = document.getElementById('overloadMsg');
+
+        if (count >= 10) {
+          boxEl.className = 'ss-alert-box danger';
+          titleEl.textContent = '10 Policies in Underwriting';
+          msgEl.textContent = 'You have ' + count + ' policies currently in underwriting. Schedule a time with your leader to prioritize simplified issue policies to avoid commission delays.';
+          alertEl.classList.add('open');
+        } else if (count >= 5) {
+          boxEl.className = 'ss-alert-box warning';
+          titleEl.textContent = 'Heads Up — ' + count + ' in Underwriting';
+          msgEl.textContent = 'Great job on the sale! But you have ' + count + ' policies currently in underwriting. Try to prioritize simplified issue policies to maximize your earnings.';
+          alertEl.classList.add('open');
+        }
+      } catch (e) { console.error('Overload check failed:', e); }
+    }
+    document.getElementById('overloadClose').addEventListener('click', () => document.getElementById('overloadAlert').classList.remove('open'));
+
+    // ─── UNDERWRITING REMINDERS ───
+    async function checkUnderwritingReminders() {
+      if (!currentUser) return;
+      const repName = currentUser.user_metadata?.name || currentUser.email;
+      const token = accessToken || SUPABASE_KEY;
+      try {
+        const res = await fetch(SUPABASE_URL + '/rest/v1/policies?select=*&sales_rep=eq.' + encodeURIComponent(repName) + '&status=eq.Underwriting&order=created_at.asc', {
+          headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + token }
+        });
+        const data = await res.json();
+        const now = new Date();
+        const oneWeekMs = 7 * 24 * 60 * 60 * 1000;
+        // Show policies that are 1+ weeks old
+        const stale = data.filter(p => {
+          const age = now - new Date(p.created_at);
+          return age >= oneWeekMs;
+        });
+        if (!stale.length) return;
+
+        // Check if we already showed this reminder today
+        const lastShown = localStorage.getItem('uw_reminder_date');
+        const todayStr = now.toISOString().split('T')[0];
+        if (lastShown === todayStr) return;
+        localStorage.setItem('uw_reminder_date', todayStr);
+
+        const listEl = document.getElementById('uwReminderList');
+        let html = '';
+        stale.forEach(p => {
+          const age = Math.floor((now - new Date(p.created_at)) / oneWeekMs);
+          const weeks = age === 1 ? '1 week' : age + ' weeks';
+          html += '<div class="ss-uw-item" data-id="' + p.id + '">';
+          html += '<div class="ss-uw-item-info"><div class="ss-uw-item-name">' + esc(p.client_name) + '</div><div class="ss-uw-item-meta">' + esc(p.carrier) + ' · $' + parseFloat(p.annual_premium).toLocaleString() + ' · ' + weeks + ' ago</div></div>';
+          html += '<div class="ss-uw-item-actions"><button class="ss-uw-btn approve" onclick="uwApprove(\'' + p.id + '\',this)">Approve</button><button class="ss-uw-btn delete" onclick="uwDelete(\'' + p.id + '\',this)">Delete</button></div>';
+          html += '</div>';
+        });
+        listEl.innerHTML = html;
+        document.getElementById('uwReminderAlert').classList.add('open');
+      } catch (e) { console.error('UW reminder check failed:', e); }
+    }
+
+    document.getElementById('uwReminderClose').addEventListener('click', () => document.getElementById('uwReminderAlert').classList.remove('open'));
+
+    async function uwApprove(id, btn) {
+      const token = accessToken || SUPABASE_KEY;
+      await fetch(SUPABASE_URL + '/rest/v1/policies?id=eq.' + id, {
+        method: 'PATCH',
+        headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+        body: JSON.stringify({ status: 'Approved' })
+      });
+      const item = btn.closest('.ss-uw-item');
+      item.style.opacity = '0.3';
+      item.innerHTML = '<div class="ss-uw-item-info"><div class="ss-uw-item-name" style="color:#4ade80;">✓ Approved</div></div>';
+    }
+
+    async function uwDelete(id, btn) {
+      if (!confirm('Delete this policy?')) return;
+      const token = accessToken || SUPABASE_KEY;
+      await fetch(SUPABASE_URL + '/rest/v1/policies?id=eq.' + id, {
+        method: 'DELETE',
+        headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' }
+      });
+      btn.closest('.ss-uw-item').remove();
+    }
+
+    // Trigger reminder check after auth is confirmed
+    const origUpdateAuthUI = updateAuthUI;
+    updateAuthUI = function() {
+      origUpdateAuthUI();
+      if (currentUser) setTimeout(checkUnderwritingReminders, 1500);
+    };
 
     async function deletePolicy(id) {
       if (!confirm('Delete this policy? This cannot be undone.')) return;
