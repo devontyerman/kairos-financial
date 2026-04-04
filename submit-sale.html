@@ -1249,6 +1249,7 @@
 
       const repName = currentUser.user_metadata?.name || currentUser.email;
       const data = {
+        user_id: currentUser.id,
         sales_rep: repName,
         client_name: document.getElementById('clientName').value,
         annual_premium: apValue,
