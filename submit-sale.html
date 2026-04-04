@@ -677,22 +677,23 @@
     .ss-input[type="date"] {
       color-scheme: dark;
       cursor: pointer;
-      position: relative;
+      display: flex;
+      align-items: center;
     }
     .ss-input[type="date"]::-webkit-calendar-picker-indicator {
       filter: invert(1) brightness(2);
-      opacity: 0.9;
+      opacity: 0.85;
       cursor: pointer;
-      position: absolute;
-      right: 0.85rem;
-      top: 0;
-      bottom: 0;
-      width: 18px;
-      height: 100%;
+      margin-left: auto;
+      padding: 0;
     }
     .ss-input[type="date"]::-webkit-calendar-picker-indicator:hover { opacity: 1; }
-    .ss-input[type="date"]::-webkit-datetime-edit { color: #ffffff; }
+    .ss-input[type="date"]::-webkit-datetime-edit { color: #ffffff; padding: 0; }
     .ss-input[type="date"]::-webkit-datetime-edit-fields-wrapper { color: #ffffff; }
+    .ss-input[type="date"]::-webkit-datetime-edit-text,
+    .ss-input[type="date"]::-webkit-datetime-edit-month-field,
+    .ss-input[type="date"]::-webkit-datetime-edit-day-field,
+    .ss-input[type="date"]::-webkit-datetime-edit-year-field { color: #ffffff; }
     .ss-goal-save {
       padding: 0.35rem 0.7rem; font-size: 0.7rem; font-weight: 700;
       color: #fff; background: #2563eb; border: none; border-radius: 6px; cursor: pointer;
