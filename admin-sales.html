@@ -106,6 +106,30 @@
     /* Performance Dashboard */
     .perf-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem; }
     .perf-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.2rem; font-weight: 900; color: #fff; }
+    .perf-header-controls { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    .perf-range-toggle {
+      display: inline-flex; padding: 0.25rem;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 100px;
+      gap: 0.15rem;
+    }
+    .perf-range-btn {
+      padding: 0.45rem 1rem;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.72rem; font-weight: 700;
+      letter-spacing: 0.06em;
+      color: rgba(255,255,255,0.65);
+      background: transparent; border: none;
+      border-radius: 100px; cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .perf-range-btn:hover { color: #fff; background: rgba(255,255,255,0.05); }
+    .perf-range-btn.active {
+      background: linear-gradient(135deg, #2563eb, #3b82f6);
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(37,99,235,0.35);
+    }
     .perf-rep-select { padding: 0.45rem 2rem 0.45rem 0.8rem; font-size: 0.8rem; font-family: 'Inter', sans-serif; color: #fff; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; appearance: none; background-image: url("data:image/svg+xml,%3Csvg width='12' height='12' viewBox='0 0 12 12' fill='none' stroke='%23666' stroke-width='2' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolyline points='2 4 6 8 10 4'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 0.6rem center; }
     .perf-rep-select option { background: #1a1f2e; }
 
@@ -161,6 +185,9 @@
     .perf-bar-fill.blue { background: linear-gradient(90deg, #2563eb, #3b82f6); }
     .perf-bar-fill.green { background: linear-gradient(90deg, #15803d, #22c55e); }
     .perf-bar-fill.gold { background: linear-gradient(90deg, #a16207, #eab308); }
+    .perf-bar-fill.team { background: linear-gradient(90deg, #7c3aed, #a855f7); }
+    .perf-bar-row.perf-bar-team { padding-bottom: 0.5rem; margin-bottom: 0.4rem; border-bottom: 1px solid rgba(255,255,255,0.08); }
+    .perf-bar-row.perf-bar-team .perf-bar-track { height: 30px; }
     .perf-bar-val { font-size: 0.68rem; font-weight: 700; color: #fff; white-space: nowrap; }
 
     /* Status breakdown */
@@ -265,9 +292,16 @@
     <div class="admin-panel" id="atab-performance">
       <div class="perf-header">
         <div class="perf-title">Performance Dashboard</div>
-        <select class="perf-rep-select" id="perfRepSelect">
-          <option value="all">All Reps (Team)</option>
-        </select>
+        <div class="perf-header-controls">
+          <div class="perf-range-toggle" id="perfRangeToggle">
+            <button class="perf-range-btn" data-perf-range="wtd">WTD</button>
+            <button class="perf-range-btn" data-perf-range="mtd">MTD</button>
+            <button class="perf-range-btn active" data-perf-range="ytd">YTD</button>
+          </div>
+          <select class="perf-rep-select" id="perfRepSelect">
+            <option value="all">All Reps (Team)</option>
+          </select>
+        </div>
       </div>
       <div id="perfKpis" class="perf-kpis"></div>
       <div id="perfExtraCharts" class="perf-charts"></div>
@@ -641,7 +675,16 @@
 
     // ─── PERFORMANCE DASHBOARD ───
     let perfRep = 'all';
+    let perfRange = 'ytd'; // 'wtd' | 'mtd' | 'ytd'
     document.getElementById('perfRepSelect').addEventListener('change', (e) => { perfRep = e.target.value; renderPerformance(); });
+    document.querySelectorAll('#perfRangeToggle .perf-range-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('#perfRangeToggle .perf-range-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        perfRange = btn.dataset.perfRange;
+        renderPerformance();
+      });
+    });
 
     function renderPerformance() {
       // Populate rep dropdown
@@ -740,23 +783,39 @@
         monthBars += '<div class="perf-bar-row"><div class="perf-bar-label">' + m + '</div><div class="perf-bar-track"><div class="perf-bar-fill blue" style="width:' + pct + '%"><span class="perf-bar-val">$' + fmtAP(val) + '</span></div></div></div>';
       });
 
-      // Rep comparison (only show if viewing team)
+      // Rep comparison (only show if viewing team) — filtered by selected timeframe
       let repBars = '';
+      const rangeLabel = perfRange === 'wtd' ? 'Week to Date' : perfRange === 'mtd' ? 'Month to Date' : 'Year to Date';
       if (perfRep === 'all') {
+        // Pick the row set that matches the selected range (from the full team data, not filtered by rep)
+        const rangeRows = perfRange === 'wtd' ? wtd : perfRange === 'mtd' ? mtd : ytd;
         const repTotals = {};
-        ytd.forEach(r => { repTotals[r.sales_rep] = (repTotals[r.sales_rep] || 0) + parseFloat(r.annual_premium || 0); });
-        const sorted = Object.entries(repTotals).sort((a,b) => b[1] - a[1]);
-        const maxRepAP = sorted.length ? sorted[0][1] : 1;
-        sorted.forEach(([name, ap], i) => {
-          const pct = (ap / maxRepAP * 100).toFixed(1);
-          const color = i === 0 ? 'gold' : 'blue';
-          repBars += '<div class="perf-bar-row"><div class="perf-bar-label" style="width:90px;">' + name.split(' ')[0] + '</div><div class="perf-bar-track"><div class="perf-bar-fill ' + color + '" style="width:' + pct + '%"><span class="perf-bar-val">$' + fmtAP(ap) + '</span></div></div></div>';
+        rangeRows.forEach(r => {
+          if (!r.sales_rep) return;
+          repTotals[r.sales_rep] = (repTotals[r.sales_rep] || 0) + parseFloat(r.annual_premium || 0);
         });
+        const sorted = Object.entries(repTotals).sort((a,b) => b[1] - a[1]);
+        const teamTotal = sorted.reduce((s, [, ap]) => s + ap, 0);
+        const maxRepAP = Math.max(teamTotal, sorted.length ? sorted[0][1] : 1, 1);
+
+        // Team total row first
+        const teamPct = (teamTotal / maxRepAP * 100).toFixed(1);
+        repBars += '<div class="perf-bar-row perf-bar-team"><div class="perf-bar-label" style="width:90px;color:#fff;font-weight:800;">Team</div><div class="perf-bar-track"><div class="perf-bar-fill team" style="width:' + teamPct + '%"><span class="perf-bar-val">$' + fmtAP(teamTotal) + '</span></div></div></div>';
+
+        if (sorted.length === 0) {
+          repBars += '<div style="text-align:center;padding:1.25rem;color:rgba(255,255,255,0.4);font-size:0.8rem;">No sales recorded for this timeframe yet.</div>';
+        } else {
+          sorted.forEach(([name, ap], i) => {
+            const pct = (ap / maxRepAP * 100).toFixed(1);
+            const color = i === 0 ? 'gold' : 'blue';
+            repBars += '<div class="perf-bar-row"><div class="perf-bar-label" style="width:90px;">' + name.split(' ')[0] + '</div><div class="perf-bar-track"><div class="perf-bar-fill ' + color + '" style="width:' + pct + '%"><span class="perf-bar-val">$' + fmtAP(ap) + '</span></div></div></div>';
+          });
+        }
       }
 
       document.getElementById('perfCharts').innerHTML =
         '<div class="perf-chart-card"><div class="perf-chart-title">Monthly AP Breakdown (YTD)</div><div class="perf-bars">' + monthBars + '</div></div>' +
-        (perfRep === 'all' && repBars ? '<div class="perf-chart-card"><div class="perf-chart-title">Rep Comparison (YTD)</div><div class="perf-bars">' + repBars + '</div></div>' : '<div class="perf-chart-card"><div class="perf-chart-title">Weekly Trend</div><div class="perf-bars">' + buildWeeklyBars(data) + '</div></div>');
+        (perfRep === 'all' && repBars ? '<div class="perf-chart-card"><div class="perf-chart-title">Rep Comparison (' + rangeLabel + ')</div><div class="perf-bars">' + repBars + '</div></div>' : '<div class="perf-chart-card"><div class="perf-chart-title">Weekly Trend</div><div class="perf-bars">' + buildWeeklyBars(data) + '</div></div>');
 
       // Status breakdown (only for individual rep)
       const statusEl = document.getElementById('perfStatus');
