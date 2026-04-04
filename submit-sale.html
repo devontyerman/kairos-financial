@@ -3636,8 +3636,8 @@
         if (v === 75) o.selected = true;
         persSel.appendChild(o);
       }
-      // Populate ROI percentage (150% - 1000%, step 50%), default 200%
-      for (let v = 150; v <= 1000; v += 50) {
+      // Populate ROI percentage (150% - 500%, step 50%), default 200%
+      for (let v = 150; v <= 500; v += 50) {
         const o = document.createElement('option');
         o.value = v; o.textContent = v + '%';
         if (v === 200) o.selected = true;
