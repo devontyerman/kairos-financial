@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Admin — Sales Management</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <style>
+    .admin-gate { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 2rem; }
+    .admin-gate-card { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 16px; padding: 2.5rem; max-width: 380px; width: 100%; text-align: center; }
+    .admin-gate-card h2 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.2rem; font-weight: 800; color: var(--text-primary); margin-bottom: 1rem; }
+    .admin-gate-card input { width: 100%; padding: 0.65rem 0.9rem; font-size: 0.88rem; background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-md); margin-bottom: 1rem; color: var(--text-primary); }
+    .admin-gate-card input:focus { outline: none; border-color: var(--gold); }
+    .admin-gate-card button { width: 100%; padding: 0.7rem; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.88rem; font-weight: 700; color: #fff; background: var(--dark); border: none; border-radius: var(--radius-md); cursor: pointer; }
+    .admin-gate-card .err { color: #ef4444; font-size: 0.78rem; margin-top: 0.5rem; display: none; }
+
+    .admin-page { display: none; padding: calc(var(--nav-height) + 2rem) 1.5rem 4rem; max-width: 1200px; margin: 0 auto; }
+    .admin-page.visible { display: block; }
+
+    .admin-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem; }
+    .admin-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.3rem; font-weight: 800; color: var(--text-primary); }
+    .admin-add-btn { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.6rem 1.2rem; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.82rem; font-weight: 700; color: #fff; background: var(--dark); border: none; border-radius: var(--radius-md); cursor: pointer; transition: var(--transition); }
+    .admin-add-btn:hover { background: #333; }
+
+    .admin-table-wrap { overflow-x: auto; background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 12px; }
+    .admin-table { width: 100%; border-collapse: collapse; min-width: 800px; }
+    .admin-table thead th { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); padding: 0.7rem 0.9rem; text-align: left; border-bottom: 1px solid var(--border); background: var(--bg-surface); white-space: nowrap; }
+    .admin-table tbody td { padding: 0.55rem 0.9rem; font-size: 0.82rem; border-bottom: 1px solid var(--border); color: var(--text-secondary); }
+    .admin-table tbody tr:last-child td { border-bottom: none; }
+    .admin-table tbody tr:hover { background: var(--bg-hover); }
+    .admin-table input, .admin-table select { width: 100%; padding: 0.35rem 0.5rem; font-size: 0.8rem; background: var(--bg-surface); border: 1px solid var(--border); border-radius: 4px; color: var(--text-primary); }
+    .admin-table input:focus, .admin-table select:focus { outline: none; border-color: var(--gold); }
+
+    .admin-btn-save { padding: 0.3rem 0.7rem; font-size: 0.72rem; font-weight: 600; color: #22c55e; background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.2); border-radius: 4px; cursor: pointer; margin-right: 0.3rem; }
+    .admin-btn-del { padding: 0.3rem 0.7rem; font-size: 0.72rem; font-weight: 600; color: #ef4444; background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.2); border-radius: 4px; cursor: pointer; }
+    .admin-btn-save:hover { background: rgba(34,197,94,0.2); }
+    .admin-btn-del:hover { background: rgba(239,68,68,0.2); }
+
+    .admin-loading { text-align: center; padding: 3rem; color: var(--text-muted); }
+
+    /* Modal for adding */
+    .admin-modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center; }
+    .admin-modal-overlay.open { display: flex; }
+    .admin-modal { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 16px; padding: 2rem; max-width: 480px; width: 92%; }
+    .admin-modal h3 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.1rem; font-weight: 800; color: var(--text-primary); margin-bottom: 1.25rem; }
+    .admin-modal .ss-field { margin-bottom: 1rem; }
+    .admin-modal .ss-label { display: block; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.75rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.3rem; text-transform: uppercase; letter-spacing: 0.06em; }
+    .admin-modal .ss-input, .admin-modal .ss-select { width: 100%; padding: 0.55rem 0.8rem; font-size: 0.85rem; background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-md); color: var(--text-primary); }
+    .admin-modal .ss-select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg width='12' height='12' viewBox='0 0 12 12' fill='none' stroke='%23888' stroke-width='2' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolyline points='2 4 6 8 10 4'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 0.75rem center; }
+    .admin-modal-btns { display: flex; gap: 0.75rem; margin-top: 1.5rem; }
+    .admin-modal-btns button { flex: 1; padding: 0.6rem; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.85rem; font-weight: 700; border-radius: var(--radius-md); border: none; cursor: pointer; }
+    .admin-modal-cancel { background: var(--bg-surface); color: var(--text-muted); border: 1px solid var(--border) !important; }
+    .admin-modal-confirm { background: var(--dark); color: #fff; }
+  </style>
+</head>
+<body>
+
+  <nav class="nav scrolled" id="mainNav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">
+        <div class="nav-logo-mark"><img src="assets/kf-logo.png" alt="Kairos Financial" /></div>
+        <span class="nav-logo-text">KAIROS</span>
+      </a>
+      <ul class="nav-links"></ul>
+      <button class="nav-hamburger" id="hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
+
+  <!-- PASSWORD GATE -->
+  <div class="admin-gate" id="adminGate">
+    <div class="admin-gate-card">
+      <h2>Admin Access</h2>
+      <input type="password" id="adminPw" placeholder="Enter admin password" />
+      <button id="adminLogin">Login</button>
+      <div class="err" id="adminErr">Incorrect password.</div>
+    </div>
+  </div>
+
+  <!-- ADMIN CONTENT -->
+  <div class="admin-page" id="adminPage">
+    <div class="admin-header">
+      <div class="admin-title">Sales Management</div>
+      <button class="admin-add-btn" id="addRecordBtn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Add Record
+      </button>
+    </div>
+    <div class="admin-table-wrap">
+      <div id="adminTableContent"><div class="admin-loading">Loading...</div></div>
+    </div>
+  </div>
+
+  <!-- ADD RECORD MODAL -->
+  <div class="admin-modal-overlay" id="addModal">
+    <div class="admin-modal">
+      <h3>Add New Record</h3>
+      <form id="addForm">
+        <div class="ss-field"><label class="ss-label">Sales Rep</label><select class="ss-select" id="addRep" required></select></div>
+        <div class="ss-field"><label class="ss-label">Client Name</label><input class="ss-input" type="text" id="addClient" required /></div>
+        <div class="ss-field"><label class="ss-label">Annual Premium</label><input class="ss-input" type="number" id="addAP" min="0" step="0.01" required /></div>
+        <div class="ss-field"><label class="ss-label">Carrier</label><select class="ss-select" id="addCarrier" required></select></div>
+        <div class="ss-field"><label class="ss-label">Product Type</label><select class="ss-select" id="addProduct" required></select></div>
+        <div class="ss-field"><label class="ss-label">Policy Number</label><input class="ss-input" type="text" id="addPolicy" required /></div>
+        <div class="admin-modal-btns">
+          <button type="button" class="admin-modal-cancel" id="addCancel">Cancel</button>
+          <button type="submit" class="admin-modal-confirm">Add Record</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // ─── CONFIG ───
+    const SUPABASE_URL = 'https://mrjlbpyqvfvmegjyovzq.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_V4kzfIHC-GRTtdoJwJRZMA__2j-DUh-';
+    const ADMIN_PASSWORD = 'kairos_admin_2026';
+    const SALES_REPS = ['Devon Tyerman', 'Aiden Moore'];
+    const CARRIERS = ['Transamerica', 'Americo'];
+    const PRODUCT_TYPES = ['Whole Life', 'Term'];
+
+    const hdrs = { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY, 'Content-Type': 'application/json' };
+
+    // ─── AUTH ───
+    const gate = document.getElementById('adminGate');
+    const page = document.getElementById('adminPage');
+
+    if (sessionStorage.getItem('admin_auth') === 'true') { gate.style.display = 'none'; page.classList.add('visible'); loadAll(); }
+
+    document.getElementById('adminLogin').addEventListener('click', () => {
+      const pw = document.getElementById('adminPw').value;
+      if (pw === ADMIN_PASSWORD) {
+        sessionStorage.setItem('admin_auth', 'true');
+        gate.style.display = 'none';
+        page.classList.add('visible');
+        loadAll();
+      } else {
+        document.getElementById('adminErr').style.display = 'block';
+      }
+    });
+    document.getElementById('adminPw').addEventListener('keydown', (e) => { if (e.key === 'Enter') document.getElementById('adminLogin').click(); });
+
+    // ─── POPULATE MODAL DROPDOWNS ───
+    function fillSelect(id, items) {
+      const s = document.getElementById(id);
+      s.innerHTML = '<option value="">Select...</option>';
+      items.forEach(i => { const o = document.createElement('option'); o.value = i; o.textContent = i; s.appendChild(o); });
+    }
+    fillSelect('addRep', SALES_REPS);
+    fillSelect('addCarrier', CARRIERS);
+    fillSelect('addProduct', PRODUCT_TYPES);
+
+    // ─── LOAD ALL RECORDS ───
+    async function loadAll() {
+      const container = document.getElementById('adminTableContent');
+      container.innerHTML = '<div class="admin-loading">Loading...</div>';
+
+      const res = await fetch(SUPABASE_URL + '/rest/v1/policies?select=*&order=created_at.desc', { headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY } });
+      const data = await res.json();
+
+      if (!data.length) { container.innerHTML = '<div class="admin-loading">No records found.</div>'; return; }
+
+      let html = '<table class="admin-table"><thead><tr><th>Date</th><th>Sales Rep</th><th>Client</th><th>AP</th><th>Carrier</th><th>Product</th><th>Policy #</th><th>Actions</th></tr></thead><tbody>';
+      data.forEach(row => {
+        const d = new Date(row.created_at).toLocaleDateString();
+        html += '<tr data-id="' + row.id + '">';
+        html += '<td>' + d + '</td>';
+        html += '<td><select class="edit-rep">' + repOptions(row.sales_rep) + '</select></td>';
+        html += '<td><input type="text" class="edit-client" value="' + esc(row.client_name) + '" /></td>';
+        html += '<td><input type="number" class="edit-ap" value="' + row.annual_premium + '" step="0.01" /></td>';
+        html += '<td><select class="edit-carrier">' + carrierOptions(row.carrier) + '</select></td>';
+        html += '<td><select class="edit-product">' + productOptions(row.product_type) + '</select></td>';
+        html += '<td><input type="text" class="edit-policy" value="' + esc(row.policy_number) + '" /></td>';
+        html += '<td style="white-space:nowrap"><button class="admin-btn-save" onclick="saveRow(this)">Save</button><button class="admin-btn-del" onclick="deleteRow(this)">Delete</button></td>';
+        html += '</tr>';
+      });
+      html += '</tbody></table>';
+      container.innerHTML = html;
+    }
+
+    function esc(s) { return (s || '').replace(/"/g, '&quot;').replace(/</g, '&lt;'); }
+    function repOptions(sel) { return SALES_REPS.map(r => '<option' + (r === sel ? ' selected' : '') + '>' + r + '</option>').join(''); }
+    function carrierOptions(sel) { return CARRIERS.map(c => '<option' + (c === sel ? ' selected' : '') + '>' + c + '</option>').join(''); }
+    function productOptions(sel) { return PRODUCT_TYPES.map(p => '<option' + (p === sel ? ' selected' : '') + '>' + p + '</option>').join(''); }
+
+    // ─── SAVE ROW ───
+    async function saveRow(btn) {
+      const tr = btn.closest('tr');
+      const id = tr.dataset.id;
+      const body = {
+        sales_rep: tr.querySelector('.edit-rep').value,
+        client_name: tr.querySelector('.edit-client').value,
+        annual_premium: parseFloat(tr.querySelector('.edit-ap').value),
+        carrier: tr.querySelector('.edit-carrier').value,
+        product_type: tr.querySelector('.edit-product').value,
+        policy_number: tr.querySelector('.edit-policy').value
+      };
+      const res = await fetch(SUPABASE_URL + '/rest/v1/policies?id=eq.' + id, {
+        method: 'PATCH', headers: { ...hdrs, 'Prefer': 'return=minimal' }, body: JSON.stringify(body)
+      });
+      if (res.ok) { btn.textContent = 'Saved!'; setTimeout(() => btn.textContent = 'Save', 1500); }
+    }
+
+    // ─── DELETE ROW ───
+    async function deleteRow(btn) {
+      if (!confirm('Delete this record?')) return;
+      const tr = btn.closest('tr');
+      const id = tr.dataset.id;
+      const res = await fetch(SUPABASE_URL + '/rest/v1/policies?id=eq.' + id, {
+        method: 'DELETE', headers: { ...hdrs, 'Prefer': 'return=minimal' }
+      });
+      if (res.ok) { tr.remove(); }
+    }
+
+    // ─── ADD RECORD MODAL ───
+    document.getElementById('addRecordBtn').addEventListener('click', () => document.getElementById('addModal').classList.add('open'));
+    document.getElementById('addCancel').addEventListener('click', () => document.getElementById('addModal').classList.remove('open'));
+    document.getElementById('addModal').addEventListener('click', (e) => { if (e.target === e.currentTarget) e.currentTarget.classList.remove('open'); });
+
+    document.getElementById('addForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const body = {
+        sales_rep: document.getElementById('addRep').value,
+        client_name: document.getElementById('addClient').value,
+        annual_premium: parseFloat(document.getElementById('addAP').value),
+        carrier: document.getElementById('addCarrier').value,
+        product_type: document.getElementById('addProduct').value,
+        policy_number: document.getElementById('addPolicy').value
+      };
+      const res = await fetch(SUPABASE_URL + '/rest/v1/policies', {
+        method: 'POST', headers: { ...hdrs, 'Prefer': 'return=minimal' }, body: JSON.stringify(body)
+      });
+      if (res.ok) {
+        document.getElementById('addModal').classList.remove('open');
+        e.target.reset();
+        loadAll();
+      }
+    });
+  </script>
+</body>
+</html>

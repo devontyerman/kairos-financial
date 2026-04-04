@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Submit Sale — Kairos Financial</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <style>
+    .ss-page { padding: calc(var(--nav-height) + 2rem) 1.5rem 4rem; max-width: 1100px; margin: 0 auto; }
+
+    .ss-tabs { display: flex; gap: 0.5rem; margin-bottom: 2rem; border-bottom: 1px solid var(--border); padding-bottom: 0.75rem; }
+    .ss-tab { padding: 0.6rem 1.2rem; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); background: none; border: none; border-radius: var(--radius-md); cursor: pointer; transition: var(--transition); }
+    .ss-tab:hover { color: var(--text-primary); background: var(--bg-hover); }
+    .ss-tab.active { color: var(--gold); background: var(--bg-elevated); border: 1px solid var(--border); }
+
+    .ss-panel { display: none; }
+    .ss-panel.active { display: block; }
+
+    /* Form */
+    .ss-form { max-width: 520px; }
+    .ss-field { margin-bottom: 1.25rem; }
+    .ss-label { display: block; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.78rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.4rem; text-transform: uppercase; letter-spacing: 0.06em; }
+    .ss-input, .ss-select { width: 100%; padding: 0.65rem 0.9rem; font-size: 0.88rem; font-family: 'Inter', sans-serif; color: var(--text-primary); background: var(--bg-elevated); border: 1px solid var(--border); border-radius: var(--radius-md); transition: var(--transition); }
+    .ss-input:focus, .ss-select:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px rgba(201,168,76,0.15); }
+    .ss-select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg width='12' height='12' viewBox='0 0 12 12' fill='none' stroke='%23888' stroke-width='2' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolyline points='2 4 6 8 10 4'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 0.75rem center; }
+    .ss-submit { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1.8rem; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.88rem; font-weight: 700; color: #fff; background: var(--dark); border: none; border-radius: var(--radius-md); cursor: pointer; transition: var(--transition); }
+    .ss-submit:hover { background: #333; transform: translateY(-1px); }
+    .ss-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    .ss-msg { margin-top: 1rem; padding: 0.75rem 1rem; border-radius: var(--radius-md); font-size: 0.82rem; font-weight: 600; display: none; }
+    .ss-msg.success { display: block; background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.2); color: #22c55e; }
+    .ss-msg.error { display: block; background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.2); color: #ef4444; }
+
+    /* Leaderboard */
+    .ss-lb-filters { display: flex; gap: 0.4rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+    .ss-lb-filter { padding: 0.45rem 1rem; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.78rem; font-weight: 600; color: var(--text-muted); background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 100px; cursor: pointer; transition: var(--transition); }
+    .ss-lb-filter:hover { border-color: var(--gold-border); color: var(--text-primary); }
+    .ss-lb-filter.active { background: var(--dark); color: #fff; border-color: var(--dark); }
+
+    .ss-lb-table { width: 100%; border-collapse: collapse; background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+    .ss-lb-table thead th { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); padding: 0.75rem 1.25rem; text-align: left; border-bottom: 1px solid var(--border); background: var(--bg-surface); }
+    .ss-lb-table tbody td { padding: 0.7rem 1.25rem; font-size: 0.85rem; border-bottom: 1px solid var(--border); color: var(--text-secondary); }
+    .ss-lb-table tbody tr:last-child td { border-bottom: none; }
+    .ss-lb-table tbody tr:hover { background: var(--bg-hover); }
+    .ss-lb-rank { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; color: var(--gold); }
+    .ss-lb-name { font-weight: 600; color: var(--text-primary); }
+    .ss-lb-ap { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; color: var(--text-primary); text-align: right; }
+    .ss-lb-table thead th:last-child { text-align: right; }
+    .ss-lb-empty { text-align: center; padding: 3rem 1rem; color: var(--text-muted); font-size: 0.85rem; }
+    .ss-loading { text-align: center; padding: 2rem; color: var(--text-muted); font-size: 0.82rem; }
+
+    @media (max-width: 768px) {
+      .ss-page { padding: calc(var(--nav-height) + 1rem) 1rem 3rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="nav scrolled" id="mainNav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">
+        <div class="nav-logo-mark"><img src="assets/kf-logo.png" alt="Kairos Financial" /></div>
+        <span class="nav-logo-text">KAIROS</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="course.html" class="nav-link">Training Videos</a></li>
+        <li>
+          <a class="nav-link" href="#" onclick="return false;">Carriers <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 4 6 8 10 4"/></svg></a>
+          <div class="nav-dropdown">
+            <a href="carriers/aetna.html">Aetna</a>
+            <a href="carriers/american-amicable.html">American Amicable</a>
+            <a href="carriers/americo.html">Americo</a>
+            <a href="carriers/corebridge.html">Corebridge</a>
+            <a href="carriers/ethos.html">Ethos</a>
+            <a href="carriers/foresters.html">Foresters</a>
+            <a href="carriers/instabrain.html">Instabrain</a>
+            <a href="carriers/mutual-of-omaha.html">Mutual of Omaha</a>
+            <a href="carriers/transamerica.html">Transamerica</a>
+          </div>
+        </li>
+        <li><a href="https://app.insurancetoolkits.com/" class="nav-link" target="_blank" rel="noopener noreferrer">Insurance Toolkits</a></li>
+        <li><a href="https://ai.kairos-financial.com/" class="nav-link" target="_blank" rel="noopener noreferrer">AI Training</a></li>
+        <li><a href="agent-resources.html" class="nav-link">Agent Resources</a></li>
+        <li><a href="agent-compensation.html" class="nav-link">Compensation</a></li>
+        <li><a href="lead-vendors.html" class="nav-link">Lead Vendors</a></li>
+      </ul>
+      <button class="nav-hamburger" id="hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
+
+  <div class="nav-mobile" id="mobileNav">
+    <a href="index.html">Home</a>
+    <a href="course.html">Training Videos</a>
+    <button class="nav-mobile-carriers-toggle" id="mobileCarriersToggle">Carriers <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 4 6 8 10 4"/></svg></button>
+    <div class="nav-mobile-carriers-list" id="mobileCarriersList">
+      <a href="carriers/aetna.html">Aetna</a>
+      <a href="carriers/american-amicable.html">American Amicable</a>
+      <a href="carriers/americo.html">Americo</a>
+      <a href="carriers/corebridge.html">Corebridge</a>
+      <a href="carriers/ethos.html">Ethos</a>
+      <a href="carriers/foresters.html">Foresters</a>
+      <a href="carriers/instabrain.html">Instabrain</a>
+      <a href="carriers/mutual-of-omaha.html">Mutual of Omaha</a>
+      <a href="carriers/transamerica.html">Transamerica</a>
+    </div>
+    <a href="https://app.insurancetoolkits.com/" target="_blank" rel="noopener noreferrer">Insurance Toolkits</a>
+    <a href="https://ai.kairos-financial.com/" target="_blank" rel="noopener noreferrer">AI Training</a>
+    <a href="agent-resources.html">Agent Resources</a>
+    <a href="agent-compensation.html">Compensation</a>
+    <a href="lead-vendors.html">Lead Vendors</a>
+  </div>
+
+  <div class="ss-page">
+    <div class="ss-tabs">
+      <button class="ss-tab active" data-panel="submit">Submit Sale</button>
+      <button class="ss-tab" data-panel="leaderboard">Leaderboard</button>
+    </div>
+
+    <!-- SUBMIT FORM -->
+    <div class="ss-panel active" id="panel-submit">
+      <form class="ss-form" id="saleForm">
+        <div class="ss-field">
+          <label class="ss-label">Sales Rep</label>
+          <select class="ss-select" id="salesRep" required>
+            <option value="">Select rep...</option>
+          </select>
+        </div>
+        <div class="ss-field">
+          <label class="ss-label">Client Name</label>
+          <input class="ss-input" type="text" id="clientName" required />
+        </div>
+        <div class="ss-field">
+          <label class="ss-label">Annual Premium (AP)</label>
+          <input class="ss-input" type="number" id="annualPremium" min="0" step="0.01" required />
+        </div>
+        <div class="ss-field">
+          <label class="ss-label">Carrier</label>
+          <select class="ss-select" id="carrier" required>
+            <option value="">Select carrier...</option>
+          </select>
+        </div>
+        <div class="ss-field">
+          <label class="ss-label">Product Type</label>
+          <select class="ss-select" id="productType" required>
+            <option value="">Select product...</option>
+          </select>
+        </div>
+        <div class="ss-field">
+          <label class="ss-label">Policy Number</label>
+          <input class="ss-input" type="text" id="policyNumber" required />
+        </div>
+        <button class="ss-submit" type="submit" id="submitBtn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          Submit Sale
+        </button>
+        <div id="formMsg" class="ss-msg"></div>
+      </form>
+    </div>
+
+    <!-- LEADERBOARD -->
+    <div class="ss-panel" id="panel-leaderboard">
+      <div class="ss-lb-filters">
+        <button class="ss-lb-filter active" data-range="daily">Daily</button>
+        <button class="ss-lb-filter" data-range="weekly">Weekly</button>
+        <button class="ss-lb-filter" data-range="monthly">Monthly</button>
+        <button class="ss-lb-filter" data-range="yearly">Yearly</button>
+      </div>
+      <div id="lbContent"><div class="ss-loading">Loading...</div></div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <p>&copy; 2026 <span>Kairos Financial</span>. Agent Portal — Internal Use Only.</p>
+  </footer>
+
+  <script src="js/main.js"></script>
+  <script>
+    // ─── CONFIG (easy to update) ───
+    const SUPABASE_URL = 'https://mrjlbpyqvfvmegjyovzq.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_V4kzfIHC-GRTtdoJwJRZMA__2j-DUh-';
+    const SALES_REPS = ['Devon Tyerman', 'Aiden Moore'];
+    const CARRIERS = ['Transamerica', 'Americo'];
+    const PRODUCT_TYPES = ['Whole Life', 'Term'];
+
+    // ─── SUPABASE HELPERS ───
+    const headers = { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' };
+
+    async function supabaseQuery(endpoint) {
+      const res = await fetch(SUPABASE_URL + '/rest/v1/' + endpoint, { headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY } });
+      return res.json();
+    }
+
+    async function supabaseInsert(table, data) {
+      const res = await fetch(SUPABASE_URL + '/rest/v1/' + table, {
+        method: 'POST', headers, body: JSON.stringify(data)
+      });
+      return res.ok;
+    }
+
+    // ─── POPULATE DROPDOWNS ───
+    function populateSelect(id, items) {
+      const sel = document.getElementById(id);
+      items.forEach(item => {
+        const opt = document.createElement('option');
+        opt.value = item; opt.textContent = item;
+        sel.appendChild(opt);
+      });
+    }
+    populateSelect('salesRep', SALES_REPS);
+    populateSelect('carrier', CARRIERS);
+    populateSelect('productType', PRODUCT_TYPES);
+
+    // ─── TABS ───
+    document.querySelectorAll('.ss-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.ss-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.ss-panel').forEach(p => p.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById('panel-' + tab.dataset.panel).classList.add('active');
+        if (tab.dataset.panel === 'leaderboard') loadLeaderboard();
+      });
+    });
+
+    // ─── FORM SUBMIT ───
+    document.getElementById('saleForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('submitBtn');
+      const msg = document.getElementById('formMsg');
+      btn.disabled = true;
+      msg.className = 'ss-msg'; msg.style.display = 'none';
+
+      const data = {
+        sales_rep: document.getElementById('salesRep').value,
+        client_name: document.getElementById('clientName').value,
+        annual_premium: parseFloat(document.getElementById('annualPremium').value),
+        carrier: document.getElementById('carrier').value,
+        product_type: document.getElementById('productType').value,
+        policy_number: document.getElementById('policyNumber').value
+      };
+
+      const ok = await supabaseInsert('policies', data);
+      if (ok) {
+        msg.textContent = 'Sale submitted successfully!';
+        msg.className = 'ss-msg success';
+        e.target.reset();
+      } else {
+        msg.textContent = 'Error submitting sale. Please try again.';
+        msg.className = 'ss-msg error';
+      }
+      btn.disabled = false;
+    });
+
+    // ─── LEADERBOARD ───
+    let currentRange = 'daily';
+
+    document.querySelectorAll('.ss-lb-filter').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.ss-lb-filter').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentRange = btn.dataset.range;
+        loadLeaderboard();
+      });
+    });
+
+    function getDateFilter() {
+      const now = new Date();
+      if (currentRange === 'daily') {
+        return now.toISOString().split('T')[0] + 'T00:00:00';
+      } else if (currentRange === 'weekly') {
+        const d = new Date(now); d.setDate(d.getDate() - 7);
+        return d.toISOString();
+      } else if (currentRange === 'monthly') {
+        return new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+      } else {
+        return new Date(now.getFullYear(), 0, 1).toISOString();
+      }
+    }
+
+    async function loadLeaderboard() {
+      const container = document.getElementById('lbContent');
+      container.innerHTML = '<div class="ss-loading">Loading...</div>';
+
+      const dateFilter = getDateFilter();
+      const data = await supabaseQuery('policies?select=sales_rep,annual_premium&created_at=gte.' + dateFilter);
+
+      // Aggregate by rep
+      const totals = {};
+      data.forEach(row => {
+        if (!totals[row.sales_rep]) totals[row.sales_rep] = 0;
+        totals[row.sales_rep] += parseFloat(row.annual_premium || 0);
+      });
+
+      const sorted = Object.entries(totals).sort((a, b) => b[1] - a[1]);
+
+      if (sorted.length === 0) {
+        container.innerHTML = '<div class="ss-lb-empty">No sales recorded for this period.</div>';
+        return;
+      }
+
+      let html = '<table class="ss-lb-table"><thead><tr><th>#</th><th>Sales Rep</th><th>Total AP</th></tr></thead><tbody>';
+      sorted.forEach(([name, ap], i) => {
+        html += '<tr><td class="ss-lb-rank">' + (i + 1) + '</td><td class="ss-lb-name">' + name + '</td><td class="ss-lb-ap">$' + ap.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '</td></tr>';
+      });
+      html += '</tbody></table>';
+      container.innerHTML = html;
+    }
+  </script>
+</body>
+</html>

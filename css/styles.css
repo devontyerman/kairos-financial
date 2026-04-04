@@ -1394,7 +1394,7 @@ h1, h2, h3, h4, h5 {
    ============================================================= */
 
 .footer {
-  background: var(--bg-surface);
+  background: var(--bg-base);
   border-top: 1px solid var(--border);
   padding: 1.75rem 2rem;
   text-align: center;
