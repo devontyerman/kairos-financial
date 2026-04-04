@@ -4,53 +4,210 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="robots" content="noindex, nofollow" />
-  <title>Submit Sale — Kairos Financial</title>
+  <title>Sales Hub — Kairos Financial</title>
   <link rel="stylesheet" href="css/styles.css" />
   <style>
-    .ss-page { padding: calc(var(--nav-height) + 2rem) 1.5rem 4rem; max-width: 1100px; margin: 0 auto; }
+    .ss-hero {
+      background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+      padding: calc(var(--nav-height) + 3rem) 1.5rem 2.5rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .ss-hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 50% 0%, rgba(201,168,76,0.08) 0%, transparent 60%);
+    }
+    .ss-hero-title {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: clamp(1.8rem, 4vw, 2.6rem);
+      font-weight: 900;
+      color: #ffffff;
+      letter-spacing: -0.03em;
+      margin-bottom: 0.5rem;
+      position: relative;
+    }
+    .ss-hero-title span { color: var(--gold); }
+    .ss-hero-sub {
+      font-size: 0.95rem;
+      color: rgba(255,255,255,0.45);
+      position: relative;
+    }
 
-    .ss-tabs { display: flex; gap: 0.5rem; margin-bottom: 2rem; border-bottom: 1px solid var(--border); padding-bottom: 0.75rem; }
-    .ss-tab { padding: 0.6rem 1.2rem; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); background: none; border: none; border-radius: var(--radius-md); cursor: pointer; transition: var(--transition); }
-    .ss-tab:hover { color: var(--text-primary); background: var(--bg-hover); }
-    .ss-tab.active { color: var(--gold); background: var(--bg-elevated); border: 1px solid var(--border); }
+    /* Tabs */
+    .ss-tabs {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-top: -1.25rem;
+      margin-bottom: 2.5rem;
+      position: relative;
+      z-index: 2;
+    }
+    .ss-tab {
+      padding: 0.7rem 1.8rem;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: rgba(255,255,255,0.5);
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 100px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .ss-tab:hover { color: #fff; background: rgba(255,255,255,0.1); }
+    .ss-tab.active {
+      color: #111;
+      background: var(--gold);
+      border-color: var(--gold);
+      box-shadow: 0 4px 16px rgba(201,168,76,0.3);
+    }
 
+    .ss-page { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem 4rem; }
     .ss-panel { display: none; }
-    .ss-panel.active { display: block; }
+    .ss-panel.active { display: block; animation: ssFadeIn 0.3s ease; }
+    @keyframes ssFadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
     /* Form */
-    .ss-form { max-width: 520px; }
-    .ss-field { margin-bottom: 1.25rem; }
-    .ss-label { display: block; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.78rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.4rem; text-transform: uppercase; letter-spacing: 0.06em; }
-    .ss-input, .ss-select { width: 100%; padding: 0.65rem 0.9rem; font-size: 0.88rem; font-family: 'Inter', sans-serif; color: var(--text-primary); background: var(--bg-elevated); border: 1px solid var(--border); border-radius: var(--radius-md); transition: var(--transition); }
+    .ss-form-wrap {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      max-width: 700px;
+    }
+    .ss-form-card {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2rem;
+      grid-column: 1 / -1;
+    }
+    .ss-form-title {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .ss-form-title svg { color: var(--gold); }
+    .ss-form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    .ss-field { }
+    .ss-field.full { grid-column: 1 / -1; }
+    .ss-label { display: block; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.75rem; font-weight: 700; color: var(--text-muted); margin-bottom: 0.35rem; text-transform: uppercase; letter-spacing: 0.06em; }
+    .ss-input, .ss-select { width: 100%; padding: 0.6rem 0.85rem; font-size: 0.85rem; font-family: 'Inter', sans-serif; color: var(--text-primary); background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-md); transition: var(--transition); box-sizing: border-box; }
     .ss-input:focus, .ss-select:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px rgba(201,168,76,0.15); }
     .ss-select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg width='12' height='12' viewBox='0 0 12 12' fill='none' stroke='%23888' stroke-width='2' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolyline points='2 4 6 8 10 4'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 0.75rem center; }
-    .ss-submit { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1.8rem; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.88rem; font-weight: 700; color: #fff; background: var(--dark); border: none; border-radius: var(--radius-md); cursor: pointer; transition: var(--transition); }
-    .ss-submit:hover { background: #333; transform: translateY(-1px); }
-    .ss-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    .ss-submit {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.8rem 2rem;
+      font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.9rem; font-weight: 700;
+      color: #111; background: linear-gradient(135deg, var(--gold), var(--gold-bright, #ddc878));
+      border: none; border-radius: var(--radius-md); cursor: pointer;
+      transition: var(--transition);
+      margin-top: 0.5rem;
+    }
+    .ss-submit:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(201,168,76,0.3); }
+    .ss-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
     .ss-msg { margin-top: 1rem; padding: 0.75rem 1rem; border-radius: var(--radius-md); font-size: 0.82rem; font-weight: 600; display: none; }
     .ss-msg.success { display: block; background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.2); color: #22c55e; }
     .ss-msg.error { display: block; background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.2); color: #ef4444; }
 
     /* Leaderboard */
-    .ss-lb-filters { display: flex; gap: 0.4rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
-    .ss-lb-filter { padding: 0.45rem 1rem; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.78rem; font-weight: 600; color: var(--text-muted); background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 100px; cursor: pointer; transition: var(--transition); }
-    .ss-lb-filter:hover { border-color: var(--gold-border); color: var(--text-primary); }
-    .ss-lb-filter.active { background: var(--dark); color: #fff; border-color: var(--dark); }
+    .ss-lb-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .ss-lb-header h2 {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1.6rem;
+      font-weight: 900;
+      color: var(--text-primary);
+      margin-bottom: 0.3rem;
+    }
+    .ss-lb-header p { font-size: 0.85rem; color: var(--text-muted); }
 
-    .ss-lb-table { width: 100%; border-collapse: collapse; background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
-    .ss-lb-table thead th { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); padding: 0.75rem 1.25rem; text-align: left; border-bottom: 1px solid var(--border); background: var(--bg-surface); }
-    .ss-lb-table tbody td { padding: 0.7rem 1.25rem; font-size: 0.85rem; border-bottom: 1px solid var(--border); color: var(--text-secondary); }
-    .ss-lb-table tbody tr:last-child td { border-bottom: none; }
-    .ss-lb-table tbody tr:hover { background: var(--bg-hover); }
-    .ss-lb-rank { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; color: var(--gold); }
-    .ss-lb-name { font-weight: 600; color: var(--text-primary); }
-    .ss-lb-ap { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; color: var(--text-primary); text-align: right; }
-    .ss-lb-table thead th:last-child { text-align: right; }
-    .ss-lb-empty { text-align: center; padding: 3rem 1rem; color: var(--text-muted); font-size: 0.85rem; }
-    .ss-loading { text-align: center; padding: 2rem; color: var(--text-muted); font-size: 0.82rem; }
+    .ss-lb-filters { display: flex; gap: 0.4rem; margin-bottom: 1.5rem; justify-content: center; flex-wrap: wrap; }
+    .ss-lb-filter {
+      padding: 0.5rem 1.2rem;
+      font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.8rem; font-weight: 600;
+      color: var(--text-muted);
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 100px; cursor: pointer; transition: var(--transition);
+    }
+    .ss-lb-filter:hover { border-color: var(--gold-border); color: var(--text-primary); }
+    .ss-lb-filter.active { background: linear-gradient(135deg, var(--gold), var(--gold-bright, #ddc878)); color: #111; border-color: var(--gold); font-weight: 700; }
+
+    .ss-lb-cards { display: flex; flex-direction: column; gap: 0.75rem; max-width: 600px; margin: 0 auto; }
+
+    .ss-lb-card {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem 1.5rem;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      transition: var(--transition);
+    }
+    .ss-lb-card:hover { border-color: var(--gold-border); transform: translateX(4px); }
+
+    .ss-lb-card.rank-1 {
+      background: linear-gradient(135deg, rgba(201,168,76,0.08) 0%, var(--bg-elevated) 100%);
+      border-color: rgba(201,168,76,0.3);
+    }
+    .ss-lb-card.rank-2 {
+      background: linear-gradient(135deg, rgba(192,192,192,0.06) 0%, var(--bg-elevated) 100%);
+      border-color: rgba(192,192,192,0.2);
+    }
+    .ss-lb-card.rank-3 {
+      background: linear-gradient(135deg, rgba(205,127,50,0.06) 0%, var(--bg-elevated) 100%);
+      border-color: rgba(205,127,50,0.2);
+    }
+
+    .ss-lb-medal {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1rem; font-weight: 900;
+      flex-shrink: 0;
+    }
+    .rank-1 .ss-lb-medal { background: linear-gradient(135deg, #c9a84c, #f0d878); color: #111; box-shadow: 0 4px 12px rgba(201,168,76,0.3); }
+    .rank-2 .ss-lb-medal { background: linear-gradient(135deg, #a0a0a0, #d0d0d0); color: #333; }
+    .rank-3 .ss-lb-medal { background: linear-gradient(135deg, #cd7f32, #e8a860); color: #fff; }
+    .ss-lb-medal.default { background: var(--bg-surface); border: 1px solid var(--border); color: var(--text-muted); }
+
+    .ss-lb-info { flex: 1; }
+    .ss-lb-name { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.95rem; font-weight: 700; color: var(--text-primary); }
+    .ss-lb-sales-count { font-size: 0.75rem; color: var(--text-muted); }
+
+    .ss-lb-ap {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1.1rem; font-weight: 800;
+      color: var(--gold);
+    }
+
+    .ss-lb-empty { text-align: center; padding: 4rem 1rem; color: var(--text-muted); font-size: 0.9rem; }
+    .ss-lb-empty svg { margin-bottom: 1rem; color: var(--border-strong); }
+    .ss-loading { text-align: center; padding: 3rem; color: var(--text-muted); font-size: 0.85rem; }
 
     @media (max-width: 768px) {
-      .ss-page { padding: calc(var(--nav-height) + 1rem) 1rem 3rem; }
+      .ss-hero { padding: calc(var(--nav-height) + 2rem) 1rem 2rem; }
+      .ss-page { padding: 0 1rem 3rem; }
+      .ss-form-grid { grid-template-columns: 1fr; }
+      .ss-tabs { margin-top: -1rem; }
+      .ss-tab { padding: 0.55rem 1.2rem; font-size: 0.8rem; }
     }
   </style>
 </head>
@@ -110,60 +267,76 @@
     <a href="lead-vendors.html">Lead Vendors</a>
   </div>
 
+  <!-- HERO -->
+  <div class="ss-hero">
+    <h1 class="ss-hero-title">Sales <span>Hub</span></h1>
+    <p class="ss-hero-sub">Submit sales and track the leaderboard</p>
+  </div>
+
+  <!-- TABS -->
+  <div class="ss-tabs">
+    <button class="ss-tab active" data-panel="submit">Submit Sale</button>
+    <button class="ss-tab" data-panel="leaderboard">Leaderboard</button>
+  </div>
+
   <div class="ss-page">
-    <div class="ss-tabs">
-      <button class="ss-tab active" data-panel="submit">Submit Sale</button>
-      <button class="ss-tab" data-panel="leaderboard">Leaderboard</button>
-    </div>
 
     <!-- SUBMIT FORM -->
     <div class="ss-panel active" id="panel-submit">
-      <form class="ss-form" id="saleForm">
-        <div class="ss-field">
-          <label class="ss-label">Sales Rep</label>
-          <select class="ss-select" id="salesRep" required>
-            <option value="">Select rep...</option>
-          </select>
-        </div>
-        <div class="ss-field">
-          <label class="ss-label">Client Name</label>
-          <input class="ss-input" type="text" id="clientName" required />
-        </div>
-        <div class="ss-field">
-          <label class="ss-label">Annual Premium (AP)</label>
-          <input class="ss-input" type="number" id="annualPremium" min="0" step="0.01" required />
-        </div>
-        <div class="ss-field">
-          <label class="ss-label">Carrier</label>
-          <select class="ss-select" id="carrier" required>
-            <option value="">Select carrier...</option>
-          </select>
-        </div>
-        <div class="ss-field">
-          <label class="ss-label">Product Type</label>
-          <select class="ss-select" id="productType" required>
-            <option value="">Select product...</option>
-          </select>
-        </div>
-        <div class="ss-field">
-          <label class="ss-label">Policy Number</label>
-          <input class="ss-input" type="text" id="policyNumber" required />
-        </div>
-        <button class="ss-submit" type="submit" id="submitBtn">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-          Submit Sale
-        </button>
-        <div id="formMsg" class="ss-msg"></div>
-      </form>
+      <div class="ss-form-wrap">
+        <form class="ss-form-card" id="saleForm">
+          <div class="ss-form-title">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+            New Sale
+          </div>
+          <div class="ss-form-grid">
+            <div class="ss-field">
+              <label class="ss-label">Sales Rep</label>
+              <select class="ss-select" id="salesRep" required><option value="">Select rep...</option></select>
+            </div>
+            <div class="ss-field">
+              <label class="ss-label">Client Name</label>
+              <input class="ss-input" type="text" id="clientName" required />
+            </div>
+            <div class="ss-field">
+              <label class="ss-label">Annual Premium (AP)</label>
+              <input class="ss-input" type="number" id="annualPremium" min="0" step="0.01" required />
+            </div>
+            <div class="ss-field">
+              <label class="ss-label">Policy Number</label>
+              <input class="ss-input" type="text" id="policyNumber" required />
+            </div>
+            <div class="ss-field">
+              <label class="ss-label">Carrier</label>
+              <select class="ss-select" id="carrier" required><option value="">Select carrier...</option></select>
+            </div>
+            <div class="ss-field">
+              <label class="ss-label">Product Type</label>
+              <select class="ss-select" id="productType" required><option value="">Select product...</option></select>
+            </div>
+            <div class="ss-field full">
+              <button class="ss-submit" type="submit" id="submitBtn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                Submit Sale
+              </button>
+              <div id="formMsg" class="ss-msg"></div>
+            </div>
+          </div>
+        </form>
+      </div>
     </div>
 
     <!-- LEADERBOARD -->
     <div class="ss-panel" id="panel-leaderboard">
+      <div class="ss-lb-header">
+        <h2>Leaderboard</h2>
+        <p>Who's closing the most business?</p>
+      </div>
       <div class="ss-lb-filters">
-        <button class="ss-lb-filter active" data-range="daily">Daily</button>
-        <button class="ss-lb-filter" data-range="weekly">Weekly</button>
-        <button class="ss-lb-filter" data-range="monthly">Monthly</button>
-        <button class="ss-lb-filter" data-range="yearly">Yearly</button>
+        <button class="ss-lb-filter active" data-range="daily">Today</button>
+        <button class="ss-lb-filter" data-range="weekly">This Week</button>
+        <button class="ss-lb-filter" data-range="monthly">This Month</button>
+        <button class="ss-lb-filter" data-range="yearly">This Year</button>
       </div>
       <div id="lbContent"><div class="ss-loading">Loading...</div></div>
     </div>
@@ -183,28 +356,42 @@
     const PRODUCT_TYPES = ['Whole Life', 'Term'];
 
     // ─── SUPABASE HELPERS ───
-    const headers = { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' };
+    const supaHeaders = { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' };
 
     async function supabaseQuery(endpoint) {
-      const res = await fetch(SUPABASE_URL + '/rest/v1/' + endpoint, { headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY } });
-      return res.json();
+      try {
+        const res = await fetch(SUPABASE_URL + '/rest/v1/' + endpoint, {
+          headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
+        });
+        if (!res.ok) throw new Error('HTTP ' + res.status + ': ' + (await res.text()));
+        return await res.json();
+      } catch (err) {
+        console.error('Supabase query error:', err);
+        return [];
+      }
     }
 
     async function supabaseInsert(table, data) {
-      const res = await fetch(SUPABASE_URL + '/rest/v1/' + table, {
-        method: 'POST', headers, body: JSON.stringify(data)
-      });
-      return res.ok;
+      try {
+        const res = await fetch(SUPABASE_URL + '/rest/v1/' + table, {
+          method: 'POST', headers: supaHeaders, body: JSON.stringify(data)
+        });
+        if (!res.ok) {
+          const errText = await res.text();
+          console.error('Insert error:', res.status, errText);
+          return { ok: false, error: errText };
+        }
+        return { ok: true };
+      } catch (err) {
+        console.error('Insert exception:', err);
+        return { ok: false, error: err.message };
+      }
     }
 
     // ─── POPULATE DROPDOWNS ───
     function populateSelect(id, items) {
       const sel = document.getElementById(id);
-      items.forEach(item => {
-        const opt = document.createElement('option');
-        opt.value = item; opt.textContent = item;
-        sel.appendChild(opt);
-      });
+      items.forEach(item => { const opt = document.createElement('option'); opt.value = item; opt.textContent = item; sel.appendChild(opt); });
     }
     populateSelect('salesRep', SALES_REPS);
     populateSelect('carrier', CARRIERS);
@@ -238,13 +425,13 @@
         policy_number: document.getElementById('policyNumber').value
       };
 
-      const ok = await supabaseInsert('policies', data);
-      if (ok) {
+      const result = await supabaseInsert('policies', data);
+      if (result.ok) {
         msg.textContent = 'Sale submitted successfully!';
         msg.className = 'ss-msg success';
         e.target.reset();
       } else {
-        msg.textContent = 'Error submitting sale. Please try again.';
+        msg.textContent = 'Error: ' + (result.error || 'Unknown error. Check console.');
         msg.className = 'ss-msg error';
       }
       btn.disabled = false;
@@ -264,16 +451,10 @@
 
     function getDateFilter() {
       const now = new Date();
-      if (currentRange === 'daily') {
-        return now.toISOString().split('T')[0] + 'T00:00:00';
-      } else if (currentRange === 'weekly') {
-        const d = new Date(now); d.setDate(d.getDate() - 7);
-        return d.toISOString();
-      } else if (currentRange === 'monthly') {
-        return new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
-      } else {
-        return new Date(now.getFullYear(), 0, 1).toISOString();
-      }
+      if (currentRange === 'daily') return now.toISOString().split('T')[0] + 'T00:00:00';
+      if (currentRange === 'weekly') { const d = new Date(now); d.setDate(d.getDate() - 7); return d.toISOString(); }
+      if (currentRange === 'monthly') return new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+      return new Date(now.getFullYear(), 0, 1).toISOString();
     }
 
     async function loadLeaderboard() {
@@ -283,25 +464,34 @@
       const dateFilter = getDateFilter();
       const data = await supabaseQuery('policies?select=sales_rep,annual_premium&created_at=gte.' + dateFilter);
 
-      // Aggregate by rep
       const totals = {};
+      const counts = {};
       data.forEach(row => {
-        if (!totals[row.sales_rep]) totals[row.sales_rep] = 0;
+        if (!totals[row.sales_rep]) { totals[row.sales_rep] = 0; counts[row.sales_rep] = 0; }
         totals[row.sales_rep] += parseFloat(row.annual_premium || 0);
+        counts[row.sales_rep]++;
       });
 
       const sorted = Object.entries(totals).sort((a, b) => b[1] - a[1]);
 
       if (sorted.length === 0) {
-        container.innerHTML = '<div class="ss-lb-empty">No sales recorded for this period.</div>';
+        container.innerHTML = '<div class="ss-lb-empty"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="8" y1="15" x2="16" y2="15"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg><br>No sales recorded for this period yet.<br>Go close some deals!</div>';
         return;
       }
 
-      let html = '<table class="ss-lb-table"><thead><tr><th>#</th><th>Sales Rep</th><th>Total AP</th></tr></thead><tbody>';
+      let html = '<div class="ss-lb-cards">';
       sorted.forEach(([name, ap], i) => {
-        html += '<tr><td class="ss-lb-rank">' + (i + 1) + '</td><td class="ss-lb-name">' + name + '</td><td class="ss-lb-ap">$' + ap.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '</td></tr>';
+        const rank = i + 1;
+        const rankClass = rank <= 3 ? ' rank-' + rank : '';
+        const medalClass = rank <= 3 ? '' : ' default';
+        const salesCount = counts[name];
+        html += '<div class="ss-lb-card' + rankClass + '">';
+        html += '<div class="ss-lb-medal' + medalClass + '">' + rank + '</div>';
+        html += '<div class="ss-lb-info"><div class="ss-lb-name">' + name + '</div><div class="ss-lb-sales-count">' + salesCount + ' sale' + (salesCount !== 1 ? 's' : '') + '</div></div>';
+        html += '<div class="ss-lb-ap">$' + ap.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }) + '</div>';
+        html += '</div>';
       });
-      html += '</tbody></table>';
+      html += '</div>';
       container.innerHTML = html;
     }
   </script>
