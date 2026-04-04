@@ -2123,10 +2123,9 @@
         document.getElementById('goalFill').style.width = pct + '%';
 
         // Pace marker: where they should be based on time elapsed
-        const timePct = Math.min((dayOfYear / 365) * 100, 100);
-        const paceEl = document.getElementById('goalPaceMarker');
-        paceEl.style.cssText = 'position:absolute;left:' + timePct.toFixed(1) + '%;display:block;top:-3px;height:calc(100% + 6px);width:3px;background:#fbbf24;border-radius:2px;box-shadow:0 0 6px rgba(251,191,36,0.5);';
-        paceEl.title = Math.round(timePct) + '% of year elapsed';
+        const timePct = (dayOfYear / 365) * 100;
+        document.getElementById('goalPaceMarker').style.left = Math.min(timePct, 100) + '%';
+        document.getElementById('goalPaceMarker').style.display = 'block';
 
         document.getElementById('goalPctValue').textContent = pct.toFixed(1) + '%';
         document.getElementById('goalRemaining').textContent = '$' + Math.round(Math.max(goal - ytdAP, 0)).toLocaleString();
