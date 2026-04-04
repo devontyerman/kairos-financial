@@ -1126,22 +1126,52 @@
 
     .ss-calc-roi .ss-calc-steps { grid-template-columns: minmax(220px, 340px); justify-content: start; }
     .ss-calc-roi-result {
-      padding: 1.25rem 1.4rem;
-      background: linear-gradient(135deg, rgba(34,197,94,0.08), rgba(34,197,94,0.03));
-      border: 1px solid rgba(34,197,94,0.2);
+      padding: 1.75rem 1.4rem;
+      background: linear-gradient(135deg, rgba(34,197,94,0.1), rgba(34,197,94,0.03));
+      border: 1px solid rgba(34,197,94,0.22);
       border-radius: 12px;
       text-align: center;
     }
+    .ss-calc-roi-hero {
+      margin-bottom: 1rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid rgba(34,197,94,0.15);
+    }
+    .ss-calc-roi-hero-label {
+      display: block;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #4ade80;
+      margin-bottom: 0.5rem;
+    }
+    .ss-calc-roi-hero-value {
+      display: block;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: clamp(2.4rem, 6vw, 3.4rem);
+      font-weight: 900;
+      letter-spacing: -0.035em;
+      line-height: 1;
+      background: linear-gradient(135deg, #86efac, #4ade80, #22c55e);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 40px rgba(34,197,94,0.35);
+    }
     .ss-calc-roi-result .msg {
       font-size: 0.88rem;
-      color: rgba(255,255,255,0.75);
+      color: rgba(255,255,255,0.7);
       line-height: 1.55;
     }
     .ss-calc-roi-result .msg strong {
       font-family: 'Plus Jakarta Sans', sans-serif;
-      font-weight: 900;
-      color: #4ade80;
-      font-size: 1.05rem;
+      font-weight: 800;
+      color: #ffffff;
+    }
+    .ss-calc-roi-result .msg.placeholder {
+      color: rgba(255,255,255,0.5);
     }
 
     @media (max-width: 640px) {
@@ -1457,10 +1487,8 @@
               </div>
             </div>
 
-            <div class="ss-calc-roi-result">
-              <div class="msg" id="roi_output">
-                Enter your numbers above to see your recommended lead budget.
-              </div>
+            <div class="ss-calc-roi-result" id="roi_output">
+              <div class="msg placeholder">Enter your upfront commission goal above to see your recommended lead budget.</div>
             </div>
           </div>
 
@@ -3091,14 +3119,19 @@
         const netGoal = parseFloat(incomeEl.value) || 0;
         const pct = parseFloat(roiSel.value) || 0;
         if (netGoal <= 0 || pct <= 0) {
-          roiOut.innerHTML = 'Enter your upfront commission goal above to see your recommended lead budget.';
+          roiOut.innerHTML = '<div class="msg placeholder">Enter your upfront commission goal above to see your recommended lead budget.</div>';
           return;
         }
         // ROI% = profit / spend × 100  →  profit = spend × pct/100
         // Net income = profit, so: budget = net ÷ (pct/100)
         const budget = netGoal / (pct / 100);
         const gross = budget + netGoal;
-        roiOut.innerHTML = 'Spend <strong>' + fmt(budget) + '</strong> on leads at <strong>' + pct + '% ROI</strong> to generate <strong>' + fmt(gross) + '</strong> in revenue and net <strong>' + fmt(netGoal) + '</strong> after lead costs.';
+        roiOut.innerHTML =
+          '<div class="ss-calc-roi-hero">' +
+            '<span class="ss-calc-roi-hero-label">Net Income</span>' +
+            '<span class="ss-calc-roi-hero-value">' + fmt(netGoal) + '</span>' +
+          '</div>' +
+          '<div class="msg">Spend <strong>' + fmt(budget) + '</strong> on leads at <strong>' + pct + '% ROI</strong> to generate <strong>' + fmt(gross) + '</strong> in revenue.</div>';
       }
 
       incomeEl.addEventListener('input', computeCommission);
