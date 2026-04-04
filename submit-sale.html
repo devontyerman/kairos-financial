@@ -681,13 +681,12 @@
       align-items: center;
     }
     .ss-input[type="date"]::-webkit-calendar-picker-indicator {
-      filter: invert(1) brightness(2);
-      opacity: 0.85;
-      cursor: pointer;
-      margin-left: auto;
-      padding: 0;
+      display: none;
+      -webkit-appearance: none;
+      appearance: none;
     }
-    .ss-input[type="date"]::-webkit-calendar-picker-indicator:hover { opacity: 1; }
+    .ss-input[type="date"]::-webkit-inner-spin-button,
+    .ss-input[type="date"]::-webkit-clear-button { display: none; }
     .ss-input[type="date"]::-webkit-datetime-edit { color: #ffffff; padding: 0; }
     .ss-input[type="date"]::-webkit-datetime-edit-fields-wrapper { color: #ffffff; }
     .ss-input[type="date"]::-webkit-datetime-edit-text,
