@@ -327,6 +327,71 @@
     }
     .ss-modal-btn.secondary:hover { background: var(--bg-hover); }
 
+    /* Auth bar */
+    .ss-auth-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: 700px;
+      margin: 0 auto 1rem;
+      padding: 0.6rem 1rem;
+      background: rgba(56,120,255,0.08);
+      border: 1px solid rgba(56,120,255,0.15);
+      border-radius: 10px;
+      font-size: 0.82rem;
+    }
+    .ss-auth-bar .ss-auth-user {
+      color: #fff;
+      font-weight: 600;
+    }
+    .ss-auth-bar .ss-auth-user span { color: #3b82f6; }
+    .ss-auth-bar .ss-auth-logout {
+      color: rgba(255,255,255,0.4);
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      background: none;
+      border: none;
+      transition: all 0.2s ease;
+    }
+    .ss-auth-bar .ss-auth-logout:hover { color: #ef4444; }
+
+    .ss-auth-prompt {
+      max-width: 700px;
+      margin: 0 auto 1rem;
+      padding: 1.25rem;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+      text-align: center;
+    }
+    .ss-auth-prompt p { color: rgba(255,255,255,0.5); font-size: 0.88rem; margin-bottom: 0.75rem; }
+    .ss-auth-prompt-btns { display: flex; gap: 0.5rem; justify-content: center; }
+    .ss-auth-prompt-btn {
+      padding: 0.55rem 1.5rem;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 700;
+      border-radius: 100px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .ss-auth-prompt-btn.login { background: linear-gradient(135deg, #2563eb, #3b82f6); color: #fff; }
+    .ss-auth-prompt-btn.login:hover { box-shadow: 0 4px 12px rgba(37,99,235,0.3); }
+    .ss-auth-prompt-btn.signup { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.6); border: 1px solid rgba(255,255,255,0.1); }
+    .ss-auth-prompt-btn.signup:hover { color: #fff; border-color: rgba(255,255,255,0.2); }
+
+    /* Login modal tabs */
+    .ss-auth-tabs { display: flex; gap: 0; margin-bottom: 1.5rem; border-bottom: 1px solid #e5e7eb; }
+    .ss-auth-tab {
+      flex: 1; padding: 0.6rem; text-align: center;
+      font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.82rem; font-weight: 700;
+      color: #aaa; background: none; border: none; cursor: pointer;
+      border-bottom: 2px solid transparent; transition: all 0.2s ease;
+    }
+    .ss-auth-tab.active { color: #2563eb; border-bottom-color: #2563eb; }
+
     /* Signup link */
     .ss-signup-link {
       text-align: center;
@@ -535,17 +600,30 @@
 
     <!-- SUBMIT FORM -->
     <div class="ss-panel active" id="panel-submit">
-      <div class="ss-form-wrap" style="padding: 2.5rem 1.5rem;">
+      <div style="padding: 2.5rem 1.5rem;">
+
+        <!-- Auth bar (shown when logged in) -->
+        <div class="ss-auth-bar" id="authBar" style="display:none;">
+          <div class="ss-auth-user">Submitting as <span id="authName"></span></div>
+          <button class="ss-auth-logout" id="authLogout">Sign Out</button>
+        </div>
+
+        <!-- Auth prompt (shown when not logged in) -->
+        <div class="ss-auth-prompt" id="authPrompt" style="display:none;">
+          <p>You must be signed in to submit a sale.</p>
+          <div class="ss-auth-prompt-btns">
+            <button class="ss-auth-prompt-btn login" id="promptLogin">Log In</button>
+            <button class="ss-auth-prompt-btn signup" id="promptSignup">Sign Up</button>
+          </div>
+        </div>
+
+        <div class="ss-form-wrap">
         <form class="ss-form-card" id="saleForm">
           <div class="ss-form-title">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
             New Sale
           </div>
           <div class="ss-form-grid">
-            <div class="ss-field">
-              <label class="ss-label">Sales Rep</label>
-              <select class="ss-select" id="salesRep" required><option value="">Select rep...</option></select>
-            </div>
             <div class="ss-field">
               <label class="ss-label">Client Name</label>
               <input class="ss-input" type="text" id="clientName" required />
@@ -577,6 +655,7 @@
             First deal? <a id="openSignup">Sign up here.</a>
           </div>
         </form>
+        </div>
       </div>
     </div>
 
@@ -602,9 +681,27 @@
   <div class="ss-signup-overlay" id="signupOverlay">
     <div class="ss-signup-modal">
       <button class="ss-signup-close" id="signupClose">&times;</button>
-      <h3>Create Your Account</h3>
-      <p class="signup-sub">Join the team and start submitting deals.</p>
-      <form id="signupForm">
+      <div class="ss-auth-tabs">
+        <button class="ss-auth-tab active" data-auth-tab="login">Log In</button>
+        <button class="ss-auth-tab" data-auth-tab="signup">Sign Up</button>
+      </div>
+
+      <!-- LOGIN FORM -->
+      <form id="loginForm" class="ss-auth-form">
+        <div class="ss-signup-field">
+          <label>Email</label>
+          <input type="email" id="loginEmail" placeholder="you@email.com" required />
+        </div>
+        <div class="ss-signup-field">
+          <label>Password</label>
+          <input type="password" id="loginPassword" placeholder="Your password" required />
+        </div>
+        <button class="ss-signup-submit" type="submit" id="loginBtn">Log In</button>
+        <div class="ss-signup-msg" id="loginMsg"></div>
+      </form>
+
+      <!-- SIGNUP FORM -->
+      <form id="signupForm" class="ss-auth-form" style="display:none;">
         <div class="ss-signup-field">
           <label>Full Name</label>
           <input type="text" id="signupName" placeholder="Enter your full name (First and Last)" required />
@@ -643,11 +740,18 @@
     // ─── CONFIG (easy to update) ───
     const SUPABASE_URL = 'https://mrjlbpyqvfvmegjyovzq.supabase.co';
     const SUPABASE_KEY = 'sb_publishable_V4kzfIHC-GRTtdoJwJRZMA__2j-DUh-';
-    const SALES_REPS = ['Devon Tyerman', 'Aiden Moore'];
     const CARRIERS = ['Transamerica', 'Americo'];
     const PRODUCT_TYPES = ['Whole Life', 'Term'];
 
+    // ─── AUTH STATE ───
+    let currentUser = null;
+    let accessToken = null;
+
     // ─── SUPABASE HELPERS ───
+    function getHeaders() {
+      const token = accessToken || SUPABASE_KEY;
+      return { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' };
+    }
     const supaHeaders = { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' };
 
     async function supabaseQuery(endpoint) {
@@ -685,9 +789,85 @@
       const sel = document.getElementById(id);
       items.forEach(item => { const opt = document.createElement('option'); opt.value = item; opt.textContent = item; sel.appendChild(opt); });
     }
-    populateSelect('salesRep', SALES_REPS);
     populateSelect('carrier', CARRIERS);
     populateSelect('productType', PRODUCT_TYPES);
+
+    // ─── AUTH UI ───
+    const authBar = document.getElementById('authBar');
+    const authPrompt = document.getElementById('authPrompt');
+    const authName = document.getElementById('authName');
+    const saleForm = document.getElementById('saleForm');
+
+    function updateAuthUI() {
+      if (currentUser) {
+        const name = currentUser.user_metadata?.name || currentUser.email;
+        authName.textContent = name;
+        authBar.style.display = 'flex';
+        authPrompt.style.display = 'none';
+        saleForm.style.opacity = '1';
+        saleForm.style.pointerEvents = 'auto';
+      } else {
+        authBar.style.display = 'none';
+        authPrompt.style.display = 'block';
+        saleForm.style.opacity = '0.35';
+        saleForm.style.pointerEvents = 'none';
+      }
+    }
+
+    // Check for existing session
+    async function checkSession() {
+      const stored = localStorage.getItem('sb_access_token');
+      const refresh = localStorage.getItem('sb_refresh_token');
+      if (!stored) { updateAuthUI(); return; }
+
+      try {
+        const res = await fetch(SUPABASE_URL + '/auth/v1/user', {
+          headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + stored }
+        });
+        if (res.ok) {
+          currentUser = await res.json();
+          accessToken = stored;
+        } else if (refresh) {
+          // Try refresh
+          const rr = await fetch(SUPABASE_URL + '/auth/v1/token?grant_type=refresh_token', {
+            method: 'POST',
+            headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ refresh_token: refresh })
+          });
+          if (rr.ok) {
+            const rd = await rr.json();
+            accessToken = rd.access_token;
+            currentUser = rd.user;
+            localStorage.setItem('sb_access_token', rd.access_token);
+            localStorage.setItem('sb_refresh_token', rd.refresh_token);
+          } else {
+            localStorage.removeItem('sb_access_token');
+            localStorage.removeItem('sb_refresh_token');
+          }
+        }
+      } catch (e) { console.error('Session check failed:', e); }
+      updateAuthUI();
+    }
+    checkSession();
+
+    // Logout
+    document.getElementById('authLogout').addEventListener('click', () => {
+      currentUser = null;
+      accessToken = null;
+      localStorage.removeItem('sb_access_token');
+      localStorage.removeItem('sb_refresh_token');
+      updateAuthUI();
+    });
+
+    // Prompt buttons
+    document.getElementById('promptLogin').addEventListener('click', () => {
+      signupOverlay.classList.add('open');
+      switchAuthTab('login');
+    });
+    document.getElementById('promptSignup').addEventListener('click', () => {
+      signupOverlay.classList.add('open');
+      switchAuthTab('signup');
+    });
 
     // ─── TABS ───
     document.querySelectorAll('.ss-tab').forEach(tab => {
@@ -758,8 +938,15 @@
         return;
       }
 
+      if (!currentUser) {
+        showErrorModal('You must be signed in to submit a sale.');
+        btn.disabled = false;
+        return;
+      }
+
+      const repName = currentUser.user_metadata?.name || currentUser.email;
       const data = {
-        sales_rep: document.getElementById('salesRep').value,
+        sales_rep: repName,
         client_name: document.getElementById('clientName').value,
         annual_premium: apValue,
         carrier: document.getElementById('carrier').value,
@@ -767,7 +954,22 @@
         policy_number: document.getElementById('policyNumber').value
       };
 
-      const result = await supabaseInsert('policies', data);
+      // Use access token for insert
+      const insertHeaders = { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + (accessToken || SUPABASE_KEY), 'Content-Type': 'application/json', 'Prefer': 'return=minimal' };
+      let result;
+      try {
+        const res = await fetch(SUPABASE_URL + '/rest/v1/policies', {
+          method: 'POST', headers: insertHeaders, body: JSON.stringify(data)
+        });
+        if (!res.ok) {
+          const errText = await res.text();
+          result = { ok: false, error: errText };
+        } else {
+          result = { ok: true };
+        }
+      } catch (err) {
+        result = { ok: false, error: err.message };
+      }
       if (result.ok) {
         e.target.reset();
         showSuccessModal(apValue);
@@ -894,17 +1096,67 @@
       container.innerHTML = html;
     }
 
-    // ─── SIGNUP MODAL ───
+    // ─── AUTH MODAL ───
     const signupOverlay = document.getElementById('signupOverlay');
     const signupMsg = document.getElementById('signupMsg');
+    const loginMsg = document.getElementById('loginMsg');
+
+    // Tab switching
+    function switchAuthTab(tab) {
+      document.querySelectorAll('.ss-auth-tab').forEach(t => t.classList.toggle('active', t.dataset.authTab === tab));
+      document.getElementById('loginForm').style.display = tab === 'login' ? 'block' : 'none';
+      document.getElementById('signupForm').style.display = tab === 'signup' ? 'block' : 'none';
+      loginMsg.className = 'ss-signup-msg'; loginMsg.style.display = 'none';
+      signupMsg.className = 'ss-signup-msg'; signupMsg.style.display = 'none';
+    }
+    document.querySelectorAll('.ss-auth-tab').forEach(t => {
+      t.addEventListener('click', () => switchAuthTab(t.dataset.authTab));
+    });
 
     document.getElementById('openSignup').addEventListener('click', (e) => {
       e.preventDefault();
       signupOverlay.classList.add('open');
+      switchAuthTab('signup');
     });
     document.getElementById('signupClose').addEventListener('click', () => signupOverlay.classList.remove('open'));
     signupOverlay.addEventListener('click', (e) => { if (e.target === signupOverlay) signupOverlay.classList.remove('open'); });
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && signupOverlay.classList.contains('open')) signupOverlay.classList.remove('open'); });
+
+    // ─── LOGIN ───
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('loginBtn');
+      btn.disabled = true;
+      loginMsg.className = 'ss-signup-msg'; loginMsg.style.display = 'none';
+
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value;
+
+      try {
+        const res = await fetch(SUPABASE_URL + '/auth/v1/token?grant_type=password', {
+          method: 'POST',
+          headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        const result = await res.json();
+
+        if (res.ok && result.access_token) {
+          accessToken = result.access_token;
+          currentUser = result.user;
+          localStorage.setItem('sb_access_token', result.access_token);
+          localStorage.setItem('sb_refresh_token', result.refresh_token);
+          signupOverlay.classList.remove('open');
+          updateAuthUI();
+        } else {
+          loginMsg.textContent = result.error_description || result.msg || 'Invalid email or password.';
+          loginMsg.className = 'ss-signup-msg error';
+        }
+      } catch (err) {
+        loginMsg.textContent = 'Connection error. Please try again.';
+        loginMsg.className = 'ss-signup-msg error';
+      }
+      btn.disabled = false;
+    });
 
     document.getElementById('signupForm').addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -932,7 +1184,18 @@
         const result = await res.json();
 
         if (res.ok && !result.error) {
-          signupMsg.textContent = 'Account created! Check your email to confirm, then you can start submitting deals.';
+          // If Supabase returns a session (email confirm disabled), auto-login
+          if (result.access_token) {
+            accessToken = result.access_token;
+            currentUser = result.user;
+            localStorage.setItem('sb_access_token', result.access_token);
+            localStorage.setItem('sb_refresh_token', result.refresh_token);
+            signupOverlay.classList.remove('open');
+            updateAuthUI();
+            e.target.reset();
+            return;
+          }
+          signupMsg.textContent = 'Account created! Check your email to confirm, then log in to start submitting deals.';
           signupMsg.className = 'ss-signup-msg success';
           e.target.reset();
         } else {
