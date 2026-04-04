@@ -548,14 +548,15 @@
     }
     .money-particle {
       position: fixed;
-      font-size: 1.2rem;
+      font-size: 1.8rem;
       pointer-events: none;
       z-index: 99999;
-      animation: moneyFly 1s ease-out forwards;
+      animation: moneyFly 1.6s ease-out forwards;
     }
     @keyframes moneyFly {
       0% { opacity: 1; transform: translate(0, 0) rotate(0deg) scale(1); }
-      100% { opacity: 0; transform: translate(var(--fx), var(--fy)) rotate(var(--rot)) scale(0.4); }
+      50% { opacity: 1; }
+      100% { opacity: 0; transform: translate(var(--fx), var(--fy)) rotate(var(--rot)) scale(0.6); }
     }
 
     /* Needs Attention section */
@@ -1814,7 +1815,7 @@
         body: JSON.stringify({ status: 'Issue Paid' })
       });
       fireMoneyBills(btn);
-      setTimeout(() => loadPolicies(), 1000);
+      setTimeout(() => loadPolicies(), 1600);
     }
 
     function fireFireworks(el) {
@@ -1838,18 +1839,16 @@
       const rect = el.getBoundingClientRect();
       const cx = rect.left + rect.width / 2;
       const cy = rect.top + rect.height / 2;
-      const bills = ['💵', '💰', '💲', '🤑', '💵', '💰'];
-
-      for (let i = 0; i < 14; i++) {
+      for (let i = 0; i < 12; i++) {
         const p = document.createElement('div');
         p.className = 'money-particle';
-        p.textContent = bills[Math.floor(Math.random() * bills.length)];
-        const angle = (Math.PI * 2 * i) / 14 + (Math.random() - 0.5) * 0.5;
-        const dist = 50 + Math.random() * 70;
-        const rot = (Math.random() - 0.5) * 720;
-        p.style.cssText = 'left:' + cx + 'px;top:' + cy + 'px;--fx:' + (Math.cos(angle) * dist) + 'px;--fy:' + (Math.sin(angle) * dist - 20) + 'px;--rot:' + rot + 'deg;';
+        p.textContent = '💵';
+        const angle = (Math.PI * 2 * i) / 12 + (Math.random() - 0.5) * 0.4;
+        const dist = 60 + Math.random() * 80;
+        const rot = (Math.random() - 0.5) * 360;
+        p.style.cssText = 'left:' + cx + 'px;top:' + cy + 'px;--fx:' + (Math.cos(angle) * dist) + 'px;--fy:' + (Math.sin(angle) * dist - 30) + 'px;--rot:' + rot + 'deg;';
         document.body.appendChild(p);
-        setTimeout(() => p.remove(), 1100);
+        setTimeout(() => p.remove(), 1800);
       }
     }
 
