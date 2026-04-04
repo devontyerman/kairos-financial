@@ -1500,6 +1500,10 @@
               <select class="ss-select" id="productType" required><option value="">Select product...</option></select>
             </div>
             <div class="ss-field">
+              <label class="ss-label">Policy Date</label>
+              <input class="ss-input" type="date" id="policyDate" required />
+            </div>
+            <div class="ss-field">
               <label class="ss-label">Status</label>
               <select class="ss-select" id="policyStatus">
                 <option value="Underwriting">Underwriting</option>
@@ -1695,6 +1699,7 @@
           <div class="mp-edit-field"><label>Carrier</label><select id="mpEditCarrier"></select></div>
           <div class="mp-edit-field"><label>Product Type</label><select id="mpEditProduct"></select></div>
           <div class="mp-edit-field"><label>Policy Number</label><input type="text" id="mpEditPolicy" required /></div>
+          <div class="mp-edit-field"><label>Policy Date</label><input type="date" id="mpEditPolicyDate" required /></div>
           <div class="mp-edit-field"><label>Status</label><select id="mpEditStatus"><option value="Underwriting">Underwriting</option><option value="Approved">Approved</option><option value="Issue Paid">Issue Paid</option></select></div>
           <div class="mp-edit-field"><label>Sales Rep</label><input type="text" id="mpEditRep" required /></div>
           <div class="mp-edit-btns">
@@ -1919,6 +1924,49 @@
       });
     }
 
+    // ── POLICY DATE HELPERS ──
+    function todayYMD() {
+      const d = new Date();
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return y + '-' + m + '-' + day;
+    }
+    // Parse a YYYY-MM-DD string into a local Date (avoids UTC off-by-one)
+    function parsePolicyDate(str) {
+      if (!str) return null;
+      const parts = str.split('T')[0].split('-');
+      if (parts.length !== 3) return null;
+      return new Date(+parts[0], +parts[1] - 1, +parts[2]);
+    }
+    function fmtPolicyDate(str) {
+      const d = parsePolicyDate(str);
+      if (!d) return '';
+      return (d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear();
+    }
+    function weekKeyFromYMD(ymd) {
+      const d = parsePolicyDate(ymd);
+      if (!d) return '';
+      const ws = new Date(d); ws.setHours(0,0,0,0); ws.setDate(ws.getDate() - ws.getDay());
+      const y = ws.getFullYear();
+      const m = String(ws.getMonth() + 1).padStart(2, '0');
+      const day = String(ws.getDate()).padStart(2, '0');
+      return y + '-' + m + '-' + day;
+    }
+    function monthKeyFromYMD(ymd) {
+      const d = parsePolicyDate(ymd);
+      if (!d) return '';
+      return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+    }
+
+    // Default Policy Date to today, clamp max to today
+    const policyDateInput = document.getElementById('policyDate');
+    if (policyDateInput) {
+      const today = todayYMD();
+      policyDateInput.max = today;
+      if (!policyDateInput.value) policyDateInput.value = today;
+    }
+
     // ─── AUTH UI ───
     const authBar = document.getElementById('authBar');
     const authPrompt = document.getElementById('authPrompt');
@@ -2082,6 +2130,38 @@
       const phoneRaw = document.getElementById('clientPhone').value;
       const phoneDigits = getPhoneDigits(phoneRaw);
       const policyNumberValue = document.getElementById('policyNumber').value.trim();
+      const policyDateValue = document.getElementById('policyDate').value;
+
+      // Policy date validation
+      if (!policyDateValue) {
+        showErrorModal('Please select a Policy Date.');
+        btn.disabled = false;
+        return;
+      }
+      const pd = parsePolicyDate(policyDateValue);
+      const todayStart = new Date(); todayStart.setHours(0,0,0,0);
+      if (!pd || isNaN(pd.getTime())) {
+        showErrorModal('Please select a valid Policy Date.');
+        btn.disabled = false;
+        return;
+      }
+      if (pd > todayStart) {
+        showErrorModal('Policy Date cannot be in the future.');
+        btn.disabled = false;
+        return;
+      }
+      const daysAgo = Math.floor((todayStart - pd) / (1000 * 60 * 60 * 24));
+      if (daysAgo > 60) {
+        const proceed = await showConfirmModal({
+          title: 'Older Policy Date',
+          message: 'The policy date you selected is ' + daysAgo + ' days ago (more than 60 days old). Is this correct?',
+          confirmText: 'Yes, that\u2019s correct',
+          cancelText: 'Let me fix it',
+          variant: 'warning',
+          icon: '📅'
+        });
+        if (!proceed) { btn.disabled = false; return; }
+      }
 
       // Hard requirement: must be exactly 10 digits
       if (phoneDigits.length !== 10) {
@@ -2128,6 +2208,7 @@
         carrier: document.getElementById('carrier').value,
         product_type: document.getElementById('productType').value,
         policy_number: policyNumberValue,
+        policy_date: policyDateValue,
         status: document.getElementById('policyStatus').value
       };
 
@@ -2149,6 +2230,8 @@
       }
       if (result.ok) {
         e.target.reset();
+        // Re-default the policy date to today after reset
+        if (policyDateInput) policyDateInput.value = todayYMD();
         // Check milestones first — if one triggers, it replaces the normal success modal
         const triggered = await checkAndShowMilestone();
         if (!triggered) showSuccessModal(apValue);
@@ -2206,14 +2289,6 @@
       }
     };
 
-    function weekKeyForDate(d) {
-      const ws = new Date(d); ws.setHours(0,0,0,0); ws.setDate(ws.getDate() - ws.getDay());
-      return ws.toISOString().split('T')[0];
-    }
-    function monthKeyForDate(d) {
-      return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
-    }
-
     function getMilestoneStorageKey() {
       return 'kairos_milestones_' + (currentUser?.id || 'anon');
     }
@@ -2234,7 +2309,7 @@
       // Pull this user's policies (by user_id when available, fall back to sales_rep for older rows)
       let rows = [];
       try {
-        const res = await fetch(SUPABASE_URL + '/rest/v1/policies?select=annual_premium,created_at,user_id,sales_rep&or=(user_id.eq.' + currentUser.id + ',sales_rep.eq.' + encodeURIComponent(repName) + ')', {
+        const res = await fetch(SUPABASE_URL + '/rest/v1/policies?select=annual_premium,policy_date,user_id,sales_rep&or=(user_id.eq.' + currentUser.id + ',sales_rep.eq.' + encodeURIComponent(repName) + ')', {
           headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + token }
         });
         if (res.ok) rows = await res.json();
@@ -2251,19 +2326,18 @@
         return true;
       }
 
-      // Compute current week + month totals
+      // Compute current week + month totals based on POLICY DATE
       const now = new Date();
-      const weekStart = new Date(now); weekStart.setHours(0,0,0,0); weekStart.setDate(weekStart.getDate() - weekStart.getDay());
-      const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-      const wKey = weekKeyForDate(now);
-      const mKey = monthKeyForDate(now);
+      const todayYmd = ymd(now);
+      const wKey = weekKeyFromYMD(todayYmd);
+      const mKey = monthKeyFromYMD(todayYmd);
 
       let weekTotal = 0, monthTotal = 0;
       rows.forEach(r => {
-        const d = new Date(r.created_at);
+        if (!r.policy_date) return;
         const ap = parseFloat(r.annual_premium || 0);
-        if (d >= weekStart) weekTotal += ap;
-        if (d >= monthStart) monthTotal += ap;
+        if (weekKeyFromYMD(r.policy_date) === wKey) weekTotal += ap;
+        if (monthKeyFromYMD(r.policy_date) === mKey) monthTotal += ap;
       });
 
       // 2. Weekly thresholds (highest newly crossed wins)
@@ -2372,31 +2446,45 @@
       loadLeaderboard();
     });
 
+    // Format a Date (local) as YYYY-MM-DD
+    function ymd(d) {
+      return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    }
+    // All filters return { gte, lte } as YYYY-MM-DD date strings for policy_date column
     function getDateFilter() {
       const now = new Date();
-      const today = now.toISOString().split('T')[0];
-      if (currentRange === 'daily') return { gte: today + 'T00:00:00' };
+      const today = ymd(now);
+      if (currentRange === 'daily') return { gte: today, lte: today };
       if (currentRange === 'yesterday') {
         const y = new Date(now); y.setDate(y.getDate() - 1);
-        const yd = y.toISOString().split('T')[0];
-        return { gte: yd + 'T00:00:00', lte: yd + 'T23:59:59' };
+        const yd = ymd(y);
+        return { gte: yd, lte: yd };
       }
-      if (currentRange === 'weekly') { const d = new Date(now); d.setDate(d.getDate() - d.getDay()); d.setHours(0,0,0,0); return { gte: d.toISOString() }; }
+      if (currentRange === 'weekly') {
+        const d = new Date(now); d.setDate(d.getDate() - d.getDay()); d.setHours(0,0,0,0);
+        return { gte: ymd(d), lte: today };
+      }
       if (currentRange === 'lastweek') {
         const end = new Date(now); end.setDate(end.getDate() - end.getDay()); end.setHours(0,0,0,0);
         const start = new Date(end); start.setDate(start.getDate() - 7);
-        return { gte: start.toISOString(), lte: end.toISOString() };
+        const endInclusive = new Date(end); endInclusive.setDate(endInclusive.getDate() - 1);
+        return { gte: ymd(start), lte: ymd(endInclusive) };
       }
-      if (currentRange === 'monthly') return { gte: new Date(now.getFullYear(), now.getMonth(), 1).toISOString() };
+      if (currentRange === 'monthly') {
+        return { gte: ymd(new Date(now.getFullYear(), now.getMonth(), 1)), lte: today };
+      }
       if (currentRange === 'lastmonth') {
-        return { gte: new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString(), lte: new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59).toISOString() };
+        return {
+          gte: ymd(new Date(now.getFullYear(), now.getMonth() - 1, 1)),
+          lte: ymd(new Date(now.getFullYear(), now.getMonth(), 0))
+        };
       }
       if (currentRange === 'custom') {
         const f = document.getElementById('lbDateFrom').value;
         const t = document.getElementById('lbDateTo').value;
-        return { gte: (f || '2020-01-01') + 'T00:00:00', lte: (t || today) + 'T23:59:59' };
+        return { gte: f || '2020-01-01', lte: t || today };
       }
-      return { gte: new Date(now.getFullYear(), 0, 1).toISOString() };
+      return { gte: ymd(new Date(now.getFullYear(), 0, 1)), lte: today };
     }
 
     async function loadLeaderboard() {
@@ -2405,9 +2493,9 @@
 
       const dateFilter = getDateFilter();
 
-      // Fetch current period data
-      let endpoint = 'policies?select=sales_rep,annual_premium,created_at&created_at=gte.' + dateFilter.gte;
-      if (dateFilter.lte) endpoint += '&created_at=lte.' + dateFilter.lte;
+      // Fetch current period data (filter by policy_date)
+      let endpoint = 'policies?select=sales_rep,annual_premium,policy_date&policy_date=gte.' + dateFilter.gte;
+      if (dateFilter.lte) endpoint += '&policy_date=lte.' + dateFilter.lte;
       const data = await supabaseQuery(endpoint);
 
       // Aggregate totals and counts for current period
@@ -2419,30 +2507,30 @@
         counts[row.sales_rep]++;
       });
 
-      // Count today's sales per rep for hat trick detection
-      const todayStr = new Date().toISOString().split('T')[0];
+      // Count today's sales per rep for hat trick detection (by policy_date)
+      const todayStr = ymd(new Date());
       const todayCounts = {};
       data.forEach(row => {
-        if (row.created_at && row.created_at.startsWith(todayStr)) {
+        if (row.policy_date && row.policy_date.startsWith(todayStr)) {
           if (!todayCounts[row.sales_rep]) todayCounts[row.sales_rep] = 0;
           todayCounts[row.sales_rep]++;
         }
       });
 
-      // Fetch ALL historical data to detect personal bests
-      const allData = await supabaseQuery('policies?select=sales_rep,annual_premium,created_at&order=created_at.asc');
+      // Fetch ALL historical data to detect personal bests (by policy_date)
+      const allData = await supabaseQuery('policies?select=sales_rep,annual_premium,policy_date&order=policy_date.asc');
 
       // Compute historical best for each rep for the current range type
       function computeHistoricalBests(allRows, rangeType) {
         const repPeriods = {}; // rep -> { period -> total }
         allRows.forEach(row => {
-          const d = new Date(row.created_at);
+          if (!row.policy_date) return;
+          const d = parsePolicyDate(row.policy_date);
+          if (!d) return;
           let periodKey;
-          if (rangeType === 'daily') periodKey = d.toISOString().split('T')[0];
-          else if (rangeType === 'weekly') {
-            const weekStart = new Date(d); weekStart.setDate(weekStart.getDate() - weekStart.getDay());
-            periodKey = weekStart.toISOString().split('T')[0];
-          } else if (rangeType === 'monthly') periodKey = d.getFullYear() + '-' + d.getMonth();
+          if (rangeType === 'daily') periodKey = row.policy_date;
+          else if (rangeType === 'weekly') periodKey = weekKeyFromYMD(row.policy_date);
+          else if (rangeType === 'monthly') periodKey = d.getFullYear() + '-' + d.getMonth();
           else periodKey = '' + d.getFullYear();
 
           if (!repPeriods[row.sales_rep]) repPeriods[row.sales_rep] = {};
@@ -2614,7 +2702,7 @@
     // ─── MANAGE POLICIES ───
     let mpCurrentRange = 'week';
     let mpStatusFilter = 'all';
-    let mpSortCol = 'created_at';
+    let mpSortCol = 'policy_date';
     let mpSortDir = 'desc';
     let mpAllData = [];
     let mpEditId = null;
@@ -2647,35 +2735,36 @@
     });
     document.getElementById('mpCustomApply').addEventListener('click', loadPolicies);
 
+    // Returns YYYY-MM-DD date-string bounds for policy_date filtering
     function getMpDateRange() {
       const now = new Date();
-      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const today = ymd(now);
       let from, to;
 
       if (mpCurrentRange === 'week') {
-        from = new Date(today); from.setDate(from.getDate() - from.getDay());
-        to = new Date(now);
+        const d = new Date(now); d.setDate(d.getDate() - d.getDay());
+        return { from: ymd(d), to: today };
       } else if (mpCurrentRange === 'lastweek') {
-        from = new Date(today); from.setDate(from.getDate() - from.getDay() - 7);
-        to = new Date(from); to.setDate(to.getDate() + 7);
+        const end = new Date(now); end.setDate(end.getDate() - end.getDay() - 1);
+        const start = new Date(end); start.setDate(start.getDate() - 6);
+        return { from: ymd(start), to: ymd(end) };
       } else if (mpCurrentRange === 'month') {
-        from = new Date(now.getFullYear(), now.getMonth(), 1);
-        to = new Date(now);
+        return { from: ymd(new Date(now.getFullYear(), now.getMonth(), 1)), to: today };
       } else if (mpCurrentRange === 'lastmonth') {
-        from = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-        to = new Date(now.getFullYear(), now.getMonth(), 1);
+        return {
+          from: ymd(new Date(now.getFullYear(), now.getMonth() - 1, 1)),
+          to: ymd(new Date(now.getFullYear(), now.getMonth(), 0))
+        };
       } else if (mpCurrentRange === 'ytd') {
-        from = new Date(now.getFullYear(), 0, 1);
-        to = new Date(now);
+        return { from: ymd(new Date(now.getFullYear(), 0, 1)), to: today };
       } else if (mpCurrentRange === 'all') {
         return { from: null, to: null };
       } else if (mpCurrentRange === 'custom') {
         const f = document.getElementById('mpDateFrom').value;
         const t = document.getElementById('mpDateTo').value;
-        from = f ? new Date(f) : new Date(2020, 0, 1);
-        to = t ? new Date(t + 'T23:59:59') : new Date(now);
+        return { from: f || '2020-01-01', to: t || today };
       }
-      return { from: from.toISOString(), to: to.toISOString() };
+      return { from: null, to: null };
     }
 
     let mpUwData = []; // persistent underwriting policies
@@ -2696,16 +2785,17 @@
       const token = accessToken || SUPABASE_KEY;
       const hdrs = { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + token };
 
-      // Fetch filtered policies for the table
+      // Fetch filtered policies for the table (by policy_date)
       const range = getMpDateRange();
       let endpoint = 'policies?select=*&sales_rep=eq.' + repName;
-      if (range.from) endpoint += '&created_at=gte.' + range.from;
-      if (range.to) endpoint += '&created_at=lte.' + range.to;
+      if (range.from) endpoint += '&policy_date=gte.' + range.from;
+      if (range.to) endpoint += '&policy_date=lte.' + range.to;
       if (mpStatusFilter !== 'all') endpoint += '&status=eq.' + encodeURIComponent(mpStatusFilter);
-      endpoint += '&order=' + mpSortCol + '.' + mpSortDir;
+      // Order by selected column with created_at as a silent tiebreaker for stable ordering
+      endpoint += '&order=' + mpSortCol + '.' + mpSortDir + ',created_at.desc';
 
       // Fetch ALL underwriting policies (no date filter) for attention section
-      const uwEndpoint = 'policies?select=*&sales_rep=eq.' + repName + '&status=eq.Underwriting&order=created_at.asc';
+      const uwEndpoint = 'policies?select=*&sales_rep=eq.' + repName + '&status=eq.Underwriting&order=policy_date.asc';
 
       try {
         const [mainRes, uwRes] = await Promise.all([
@@ -2739,7 +2829,7 @@
         { key: 'policy_number', label: 'Policy #' },
         { key: 'status', label: 'Status' },
         { key: 'sales_rep', label: 'Rep' },
-        { key: 'created_at', label: 'Date' },
+        { key: 'policy_date', label: 'Policy Date' },
       ];
 
       let html = '<table class="mp-table"><thead><tr>';
@@ -2751,8 +2841,7 @@
       html += '<th>Actions</th></tr></thead><tbody>';
 
       mpAllData.forEach(row => {
-        const d = new Date(row.created_at);
-        const dateStr = (d.getMonth()+1) + '/' + d.getDate() + '/' + d.getFullYear();
+        const dateStr = row.policy_date ? fmtPolicyDate(row.policy_date) : '—';
         const ap = parseFloat(row.annual_premium || 0);
         html += '<tr>';
         html += '<td class="mp-client-name">' + esc(row.client_name) + '</td>';
@@ -2790,7 +2879,7 @@
         th.addEventListener('click', () => {
           const col = th.dataset.mpSort;
           if (mpSortCol === col) { mpSortDir = mpSortDir === 'asc' ? 'desc' : 'asc'; }
-          else { mpSortCol = col; mpSortDir = col === 'annual_premium' || col === 'created_at' ? 'desc' : 'asc'; }
+          else { mpSortCol = col; mpSortDir = col === 'annual_premium' || col === 'policy_date' ? 'desc' : 'asc'; }
           loadPolicies();
         });
       });
@@ -2852,6 +2941,8 @@
       document.getElementById('mpEditCarrier').value = row.carrier || '';
       document.getElementById('mpEditProduct').value = row.product_type || '';
       document.getElementById('mpEditPolicy').value = row.policy_number || '';
+      document.getElementById('mpEditPolicyDate').value = row.policy_date ? row.policy_date.split('T')[0] : '';
+      document.getElementById('mpEditPolicyDate').max = todayYMD();
       document.getElementById('mpEditStatus').value = row.status || 'Underwriting';
       document.getElementById('mpEditRep').value = row.sales_rep || '';
       mpEditOverlay.classList.add('open');
@@ -2860,12 +2951,22 @@
     document.getElementById('mpEditForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const token = accessToken || SUPABASE_KEY;
+      const editPolicyDate = document.getElementById('mpEditPolicyDate').value;
+      if (editPolicyDate) {
+        const pd = parsePolicyDate(editPolicyDate);
+        const todayStart = new Date(); todayStart.setHours(0,0,0,0);
+        if (pd && pd > todayStart) {
+          showErrorModal('Policy Date cannot be in the future.');
+          return;
+        }
+      }
       const body = {
         client_name: document.getElementById('mpEditClient').value,
         annual_premium: parseFloat(document.getElementById('mpEditAP').value),
         carrier: document.getElementById('mpEditCarrier').value,
         product_type: document.getElementById('mpEditProduct').value,
         policy_number: document.getElementById('mpEditPolicy').value,
+        policy_date: editPolicyDate,
         status: document.getElementById('mpEditStatus').value,
         sales_rep: document.getElementById('mpEditRep').value
       };
@@ -2890,9 +2991,10 @@
       let html = '<div class="mp-attention"><div class="mp-attention-title">⚠️ Needs Attention — Underwriting</div><div class="mp-attention-list">';
 
       mpUwData.forEach(p => {
-        const age = now - new Date(p.created_at);
+        const pdate = p.policy_date ? parsePolicyDate(p.policy_date) : null;
+        const age = pdate ? (now - pdate) : 0;
         const weeks = Math.floor(age / oneWeekMs);
-        const timeLabel = weeks < 1 ? 'Less than a week' : weeks === 1 ? '1 week ago' : weeks + ' weeks ago';
+        const timeLabel = !pdate ? '—' : weeks < 1 ? 'Less than a week' : weeks === 1 ? '1 week ago' : weeks + ' weeks ago';
         const ap = parseFloat(p.annual_premium || 0);
 
         html += '<div class="mp-attention-item" data-id="' + p.id + '">';
@@ -3047,16 +3149,18 @@
       const repName = currentUser.user_metadata?.name || currentUser.email;
       const token = accessToken || SUPABASE_KEY;
       try {
-        const res = await fetch(SUPABASE_URL + '/rest/v1/policies?select=*&sales_rep=eq.' + encodeURIComponent(repName) + '&status=eq.Underwriting&order=created_at.asc', {
+        const res = await fetch(SUPABASE_URL + '/rest/v1/policies?select=*&sales_rep=eq.' + encodeURIComponent(repName) + '&status=eq.Underwriting&order=policy_date.asc', {
           headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + token }
         });
         const data = await res.json();
         const now = new Date();
         const oneWeekMs = 7 * 24 * 60 * 60 * 1000;
-        // Show policies that are 1+ weeks old
+        // Show policies whose policy_date is 1+ weeks old
         const stale = data.filter(p => {
-          const age = now - new Date(p.created_at);
-          return age >= oneWeekMs;
+          if (!p.policy_date) return false;
+          const pd = parsePolicyDate(p.policy_date);
+          if (!pd) return false;
+          return (now - pd) >= oneWeekMs;
         });
         if (!stale.length) return;
 
@@ -3069,7 +3173,8 @@
         const listEl = document.getElementById('uwReminderList');
         let html = '';
         stale.forEach(p => {
-          const age = Math.floor((now - new Date(p.created_at)) / oneWeekMs);
+          const pd = parsePolicyDate(p.policy_date);
+          const age = Math.floor((now - pd) / oneWeekMs);
           const weeks = age === 1 ? '1 week' : age + ' weeks';
           html += '<div class="ss-uw-item" data-id="' + p.id + '">';
           html += '<div class="ss-uw-item-info"><div class="ss-uw-item-name">' + esc(p.client_name) + '</div><div class="ss-uw-item-meta">' + esc(p.carrier) + ' · $' + parseFloat(p.annual_premium).toLocaleString() + ' · ' + weeks + ' ago</div></div>';
@@ -3143,13 +3248,13 @@
       if (saved) goalInput.value = saved;
       const goal = parseFloat(saved) || 0;
 
-      // Fetch YTD AP for this user
+      // Fetch YTD AP for this user (by policy_date)
       const repName = currentUser.user_metadata?.name || currentUser.email;
-      const yearStart = new Date(new Date().getFullYear(), 0, 1).toISOString();
+      const yearStartYmd = new Date().getFullYear() + '-01-01';
       const token = accessToken || SUPABASE_KEY;
       let ytdAP = 0;
       try {
-        const res = await fetch(SUPABASE_URL + '/rest/v1/policies?select=annual_premium&sales_rep=eq.' + encodeURIComponent(repName) + '&created_at=gte.' + yearStart, {
+        const res = await fetch(SUPABASE_URL + '/rest/v1/policies?select=annual_premium&sales_rep=eq.' + encodeURIComponent(repName) + '&policy_date=gte.' + yearStartYmd, {
           headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + token }
         });
         const data = await res.json();
