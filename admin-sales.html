@@ -95,11 +95,62 @@
     .ae-cancel { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.5); }
     .ae-save { background: linear-gradient(135deg, #2563eb, #3b82f6); color: #fff; }
 
+    /* Admin Tabs */
+    .admin-tabs { display: flex; gap: 0.5rem; margin-bottom: 2rem; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 0.75rem; }
+    .admin-tab { padding: 0.6rem 1.4rem; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.85rem; font-weight: 700; color: rgba(255,255,255,0.4); background: none; border: 1px solid transparent; border-radius: 100px; cursor: pointer; transition: all 0.2s; }
+    .admin-tab:hover { color: #fff; }
+    .admin-tab.active { color: #fff; background: linear-gradient(135deg, #2563eb, #3b82f6); border-color: #3b82f6; box-shadow: 0 4px 16px rgba(37,99,235,0.3); }
+    .admin-panel { display: none; }
+    .admin-panel.active { display: block; animation: aePop 0.3s ease; }
+
+    /* Performance Dashboard */
+    .perf-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem; }
+    .perf-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.2rem; font-weight: 900; color: #fff; }
+    .perf-rep-select { padding: 0.45rem 2rem 0.45rem 0.8rem; font-size: 0.8rem; font-family: 'Inter', sans-serif; color: #fff; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; appearance: none; background-image: url("data:image/svg+xml,%3Csvg width='12' height='12' viewBox='0 0 12 12' fill='none' stroke='%23666' stroke-width='2' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolyline points='2 4 6 8 10 4'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 0.6rem center; }
+    .perf-rep-select option { background: #1a1f2e; }
+
+    .perf-kpis { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 0.75rem; margin-bottom: 2rem; }
+    .perf-kpi { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 1.25rem; }
+    .perf-kpi-label { font-size: 0.68rem; font-weight: 700; color: rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.4rem; }
+    .perf-kpi-value { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.5rem; font-weight: 900; color: #fff; }
+    .perf-kpi-change { font-size: 0.72rem; font-weight: 700; margin-top: 0.25rem; }
+    .perf-kpi-change.up { color: #4ade80; }
+    .perf-kpi-change.down { color: #f87171; }
+    .perf-kpi-change.neutral { color: rgba(255,255,255,0.3); }
+
+    /* Bar Charts */
+    .perf-charts { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem; }
+    .perf-chart-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 1.5rem; }
+    .perf-chart-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.85rem; font-weight: 800; color: #fff; margin-bottom: 1rem; }
+    .perf-bars { display: flex; flex-direction: column; gap: 0.5rem; }
+    .perf-bar-row { display: flex; align-items: center; gap: 0.5rem; }
+    .perf-bar-label { font-size: 0.72rem; color: rgba(255,255,255,0.5); width: 65px; flex-shrink: 0; text-align: right; }
+    .perf-bar-track { flex: 1; height: 24px; background: rgba(255,255,255,0.04); border-radius: 6px; overflow: hidden; position: relative; }
+    .perf-bar-fill { height: 100%; border-radius: 6px; transition: width 0.6s ease; display: flex; align-items: center; padding-left: 0.5rem; min-width: 0; }
+    .perf-bar-fill.blue { background: linear-gradient(90deg, #2563eb, #3b82f6); }
+    .perf-bar-fill.green { background: linear-gradient(90deg, #15803d, #22c55e); }
+    .perf-bar-fill.gold { background: linear-gradient(90deg, #a16207, #eab308); }
+    .perf-bar-val { font-size: 0.68rem; font-weight: 700; color: #fff; white-space: nowrap; }
+
+    /* Status breakdown */
+    .perf-status-section { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem; }
+    .perf-status-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.85rem; font-weight: 800; color: #fff; margin-bottom: 1rem; }
+    .perf-status-bars { display: flex; gap: 1.5rem; flex-wrap: wrap; }
+    .perf-status-item { flex: 1; min-width: 120px; }
+    .perf-status-item-label { font-size: 0.7rem; color: rgba(255,255,255,0.4); margin-bottom: 0.3rem; display: flex; justify-content: space-between; }
+    .perf-status-item-bar { height: 8px; background: rgba(255,255,255,0.06); border-radius: 4px; overflow: hidden; }
+    .perf-status-item-fill { height: 100%; border-radius: 4px; transition: width 0.5s ease; }
+    .perf-status-item-fill.uw { background: #eab308; }
+    .perf-status-item-fill.app { background: #22c55e; }
+    .perf-status-item-fill.paid { background: #3b82f6; }
+
     @media (max-width: 768px) {
       .admin-page { padding: calc(var(--nav-height) + 1rem) 1rem 3rem; }
       .ae-grid { grid-template-columns: 1fr; }
       .admin-stats { gap: 0.5rem; }
       .admin-stat { min-width: 100px; padding: 0.75rem 1rem; }
+      .perf-charts { grid-template-columns: 1fr; }
+      .perf-kpis { grid-template-columns: 1fr 1fr; }
     }
   </style>
 </head>
@@ -128,6 +179,14 @@
 
   <!-- ADMIN CONTENT -->
   <div class="admin-page" id="adminPage">
+    <div class="admin-tabs">
+      <button class="admin-tab active" data-atab="policies">Policies</button>
+      <button class="admin-tab" data-atab="performance">Performance Dashboard</button>
+    </div>
+
+    <!-- ═══ POLICIES TAB ═══ -->
+    <div class="admin-panel active" id="atab-policies">
+
     <div class="admin-header">
       <div>
         <div class="admin-title">Sales Admin</div>
@@ -168,7 +227,23 @@
     <div class="admin-table-wrap">
       <div id="adminTableContent"><div class="admin-loading">Loading...</div></div>
     </div>
-  </div>
+
+    </div><!-- end policies panel -->
+
+    <!-- ═══ PERFORMANCE TAB ═══ -->
+    <div class="admin-panel" id="atab-performance">
+      <div class="perf-header">
+        <div class="perf-title">Performance Dashboard</div>
+        <select class="perf-rep-select" id="perfRepSelect">
+          <option value="all">All Reps (Team)</option>
+        </select>
+      </div>
+      <div id="perfKpis" class="perf-kpis"></div>
+      <div id="perfCharts" class="perf-charts"></div>
+      <div id="perfStatus"></div>
+    </div>
+
+  </div><!-- end admin-page -->
 
   <!-- EDIT MODAL -->
   <div class="ae-overlay" id="aeOverlay">
@@ -491,6 +566,160 @@
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') { aeOverlay.classList.remove('open'); addOverlay.classList.remove('open'); }
     });
+
+    // ─── ADMIN TABS ───
+    document.querySelectorAll('.admin-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.admin-panel').forEach(p => p.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById('atab-' + tab.dataset.atab).classList.add('active');
+        if (tab.dataset.atab === 'performance') renderPerformance();
+      });
+    });
+
+    // ─── PERFORMANCE DASHBOARD ───
+    let perfRep = 'all';
+    document.getElementById('perfRepSelect').addEventListener('change', (e) => { perfRep = e.target.value; renderPerformance(); });
+
+    function renderPerformance() {
+      // Populate rep dropdown
+      const reps = [...new Set(allData.map(r => r.sales_rep).filter(Boolean))].sort();
+      const sel = document.getElementById('perfRepSelect');
+      const prev = sel.value;
+      sel.innerHTML = '<option value="all">All Reps (Team)</option>';
+      reps.forEach(r => { const o = document.createElement('option'); o.value = r; o.textContent = r; sel.appendChild(o); });
+      sel.value = prev || 'all';
+      perfRep = sel.value;
+
+      // Filter data by rep
+      const data = perfRep === 'all' ? allData : allData.filter(r => r.sales_rep === perfRep);
+
+      const now = new Date();
+      const weekStart = new Date(now); weekStart.setDate(weekStart.getDate() - weekStart.getDay()); weekStart.setHours(0,0,0,0);
+      const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+      const yearStart = new Date(now.getFullYear(), 0, 1);
+      const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+      const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59);
+
+      const wtd = data.filter(r => new Date(r.created_at) >= weekStart);
+      const mtd = data.filter(r => new Date(r.created_at) >= monthStart);
+      const ytd = data.filter(r => new Date(r.created_at) >= yearStart);
+      const lastMonth = data.filter(r => { const d = new Date(r.created_at); return d >= lastMonthStart && d <= lastMonthEnd; });
+
+      const sumAP = arr => arr.reduce((s, r) => s + parseFloat(r.annual_premium || 0), 0);
+      const wtdAP = sumAP(wtd), mtdAP = sumAP(mtd), ytdAP = sumAP(ytd), lmAP = sumAP(lastMonth);
+
+      // Month over month change
+      const momChange = lmAP > 0 ? ((mtdAP - lmAP) / lmAP * 100) : (mtdAP > 0 ? 100 : 0);
+      const momClass = momChange > 0 ? 'up' : momChange < 0 ? 'down' : 'neutral';
+      const momSign = momChange > 0 ? '+' : '';
+
+      // Yearly pace: (ytdAP / days elapsed) * 365
+      const dayOfYear = Math.floor((now - yearStart) / (1000*60*60*24)) + 1;
+      const yearlyPace = dayOfYear > 0 ? (ytdAP / dayOfYear) * 365 : 0;
+      const monthlyPace = dayOfYear > 0 ? (ytdAP / dayOfYear) * 30.44 : 0;
+
+      // Avg per policy
+      const avgPerPolicy = ytd.length > 0 ? ytdAP / ytd.length : 0;
+
+      // KPIs
+      document.getElementById('perfKpis').innerHTML =
+        kpi('Week to Date', wtd.length + ' policies', '$' + fmtAP(wtdAP)) +
+        kpi('Month to Date', mtd.length + ' policies', '$' + fmtAP(mtdAP)) +
+        kpi('Year to Date', ytd.length + ' policies', '$' + fmtAP(ytdAP)) +
+        kpi('Last Month', lastMonth.length + ' policies', '$' + fmtAP(lmAP)) +
+        '<div class="perf-kpi"><div class="perf-kpi-label">Month vs Last Month</div><div class="perf-kpi-value" style="font-size:1.3rem;">' + momSign + momChange.toFixed(1) + '%</div><div class="perf-kpi-change ' + momClass + '">' + (momChange > 0 ? '↑ Trending up' : momChange < 0 ? '↓ Trending down' : '— Flat') + '</div></div>' +
+        kpi('Yearly Pace', '$' + fmtAP(yearlyPace), '$' + fmtAP(monthlyPace) + '/mo') +
+        kpi('Avg Per Policy', '$' + fmtAP(avgPerPolicy), ytd.length + ' policies YTD');
+
+      // Bar charts - monthly breakdown and rep comparison
+      const months = {};
+      ytd.forEach(r => {
+        const d = new Date(r.created_at);
+        const key = d.toLocaleString('default', { month: 'short' });
+        if (!months[key]) months[key] = { count: 0, ap: 0 };
+        months[key].count++;
+        months[key].ap += parseFloat(r.annual_premium || 0);
+      });
+
+      const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      const currentMonthIdx = now.getMonth();
+      const activeMonths = monthNames.slice(0, currentMonthIdx + 1);
+      const maxMonthAP = Math.max(...activeMonths.map(m => (months[m]?.ap || 0)), 1);
+
+      let monthBars = '';
+      activeMonths.forEach(m => {
+        const val = months[m]?.ap || 0;
+        const pct = (val / maxMonthAP * 100).toFixed(1);
+        monthBars += '<div class="perf-bar-row"><div class="perf-bar-label">' + m + '</div><div class="perf-bar-track"><div class="perf-bar-fill blue" style="width:' + pct + '%"><span class="perf-bar-val">$' + fmtAP(val) + '</span></div></div></div>';
+      });
+
+      // Rep comparison (only show if viewing team)
+      let repBars = '';
+      if (perfRep === 'all') {
+        const repTotals = {};
+        ytd.forEach(r => { repTotals[r.sales_rep] = (repTotals[r.sales_rep] || 0) + parseFloat(r.annual_premium || 0); });
+        const sorted = Object.entries(repTotals).sort((a,b) => b[1] - a[1]);
+        const maxRepAP = sorted.length ? sorted[0][1] : 1;
+        sorted.forEach(([name, ap], i) => {
+          const pct = (ap / maxRepAP * 100).toFixed(1);
+          const color = i === 0 ? 'gold' : 'blue';
+          repBars += '<div class="perf-bar-row"><div class="perf-bar-label" style="width:90px;">' + name.split(' ')[0] + '</div><div class="perf-bar-track"><div class="perf-bar-fill ' + color + '" style="width:' + pct + '%"><span class="perf-bar-val">$' + fmtAP(ap) + '</span></div></div></div>';
+        });
+      }
+
+      document.getElementById('perfCharts').innerHTML =
+        '<div class="perf-chart-card"><div class="perf-chart-title">Monthly AP Breakdown (YTD)</div><div class="perf-bars">' + monthBars + '</div></div>' +
+        (perfRep === 'all' && repBars ? '<div class="perf-chart-card"><div class="perf-chart-title">Rep Comparison (YTD)</div><div class="perf-bars">' + repBars + '</div></div>' : '<div class="perf-chart-card"><div class="perf-chart-title">Weekly Trend</div><div class="perf-bars">' + buildWeeklyBars(data) + '</div></div>');
+
+      // Status breakdown (only for individual rep)
+      const statusEl = document.getElementById('perfStatus');
+      if (perfRep !== 'all') {
+        const uwCount = mtd.filter(r => r.status === 'Underwriting').length;
+        const appCount = mtd.filter(r => r.status === 'Approved').length;
+        const paidCount = mtd.filter(r => (r.status === 'Issue Paid')).length;
+        const total = mtd.length || 1;
+        const uwPct = (uwCount / total * 100).toFixed(0);
+        const appPct = (appCount / total * 100).toFixed(0);
+        const paidPct = (paidCount / total * 100).toFixed(0);
+
+        statusEl.innerHTML = '<div class="perf-status-section"><div class="perf-status-title">Status Breakdown (Month to Date)</div><div class="perf-status-bars">' +
+          statusBar('Underwriting', uwPct, 'uw') +
+          statusBar('Approved', appPct, 'app') +
+          statusBar('Issue Paid', paidPct, 'paid') +
+          '</div></div>';
+      } else {
+        statusEl.innerHTML = '';
+      }
+    }
+
+    function kpi(label, value, sub) {
+      return '<div class="perf-kpi"><div class="perf-kpi-label">' + label + '</div><div class="perf-kpi-value">' + value + '</div><div class="perf-kpi-change neutral">' + sub + '</div></div>';
+    }
+
+    function fmtAP(n) { return Math.round(n).toLocaleString('en-US'); }
+
+    function statusBar(label, pct, cls) {
+      return '<div class="perf-status-item"><div class="perf-status-item-label"><span>' + label + '</span><span>' + pct + '%</span></div><div class="perf-status-item-bar"><div class="perf-status-item-fill ' + cls + '" style="width:' + pct + '%"></div></div></div>';
+    }
+
+    function buildWeeklyBars(data) {
+      const now = new Date();
+      const weeks = [];
+      for (let i = 3; i >= 0; i--) {
+        const wEnd = new Date(now); wEnd.setDate(wEnd.getDate() - (i * 7));
+        const wStart = new Date(wEnd); wStart.setDate(wStart.getDate() - 7);
+        const label = i === 0 ? 'This Week' : i === 1 ? 'Last Week' : i + 'w ago';
+        const ap = data.filter(r => { const d = new Date(r.created_at); return d >= wStart && d < wEnd; }).reduce((s,r) => s + parseFloat(r.annual_premium||0), 0);
+        weeks.push({ label, ap });
+      }
+      const max = Math.max(...weeks.map(w => w.ap), 1);
+      return weeks.map(w => {
+        const pct = (w.ap / max * 100).toFixed(1);
+        return '<div class="perf-bar-row"><div class="perf-bar-label">' + w.label + '</div><div class="perf-bar-track"><div class="perf-bar-fill green" style="width:' + pct + '%"><span class="perf-bar-val">$' + fmtAP(w.ap) + '</span></div></div></div>';
+      }).join('');
+    }
   </script>
 </body>
 </html>
