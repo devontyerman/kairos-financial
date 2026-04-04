@@ -546,6 +546,17 @@
       0% { opacity: 1; transform: translate(0, 0) scale(1); }
       100% { opacity: 0; transform: translate(var(--fx), var(--fy)) scale(0); }
     }
+    .money-particle {
+      position: fixed;
+      font-size: 1.2rem;
+      pointer-events: none;
+      z-index: 99999;
+      animation: moneyFly 1s ease-out forwards;
+    }
+    @keyframes moneyFly {
+      0% { opacity: 1; transform: translate(0, 0) rotate(0deg) scale(1); }
+      100% { opacity: 0; transform: translate(var(--fx), var(--fy)) rotate(var(--rot)) scale(0.4); }
+    }
 
     /* Needs Attention section */
     .mp-attention {
@@ -1769,12 +1780,13 @@
         btn.addEventListener('click', async () => {
           const id = btn.dataset.id;
           const token = accessToken || SUPABASE_KEY;
+          fireFireworks(btn);
           await fetch(SUPABASE_URL + '/rest/v1/policies?id=eq.' + id, {
             method: 'PATCH',
             headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
             body: JSON.stringify({ status: 'Approved' })
           });
-          loadPolicies();
+          setTimeout(() => loadPolicies(), 800);
         });
       });
 
@@ -1801,8 +1813,8 @@
         headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
         body: JSON.stringify({ status: 'Issue Paid' })
       });
-      fireFireworks(btn);
-      setTimeout(() => loadPolicies(), 900);
+      fireMoneyBills(btn);
+      setTimeout(() => loadPolicies(), 1000);
     }
 
     function fireFireworks(el) {
@@ -1819,6 +1831,25 @@
         particle.style.cssText = 'position:fixed;left:' + cx + 'px;top:' + cy + 'px;width:6px;height:6px;border-radius:50%;pointer-events:none;z-index:99999;background:' + colors[Math.floor(Math.random() * colors.length)] + ';--fx:' + (Math.cos(angle) * dist) + 'px;--fy:' + (Math.sin(angle) * dist) + 'px;animation:fireworkBurst 0.7s ease-out forwards;';
         document.body.appendChild(particle);
         setTimeout(() => particle.remove(), 800);
+      }
+    }
+
+    function fireMoneyBills(el) {
+      const rect = el.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      const bills = ['💵', '💰', '💲', '🤑', '💵', '💰'];
+
+      for (let i = 0; i < 14; i++) {
+        const p = document.createElement('div');
+        p.className = 'money-particle';
+        p.textContent = bills[Math.floor(Math.random() * bills.length)];
+        const angle = (Math.PI * 2 * i) / 14 + (Math.random() - 0.5) * 0.5;
+        const dist = 50 + Math.random() * 70;
+        const rot = (Math.random() - 0.5) * 720;
+        p.style.cssText = 'left:' + cx + 'px;top:' + cy + 'px;--fx:' + (Math.cos(angle) * dist) + 'px;--fy:' + (Math.sin(angle) * dist - 20) + 'px;--rot:' + rot + 'deg;';
+        document.body.appendChild(p);
+        setTimeout(() => p.remove(), 1100);
       }
     }
 
