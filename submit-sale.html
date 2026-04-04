@@ -665,9 +665,9 @@
     .ss-goal-bar-labels { display: flex; justify-content: space-between; margin-bottom: 0.35rem; }
     .ss-goal-bar-labels span { font-size: 0.7rem; color: rgba(255,255,255,0.4); }
     .ss-goal-bar-labels .current { color: #3b82f6; font-weight: 700; }
-    .ss-goal-bar { height: 12px; background: rgba(255,255,255,0.06); border-radius: 6px; overflow: hidden; position: relative; }
-    .ss-goal-bar-fill { height: 100%; border-radius: 6px; transition: width 0.8s ease; background: linear-gradient(90deg, #2563eb, #3b82f6); position: relative; }
-    .ss-goal-bar-pace { position: absolute; top: 0; height: 100%; width: 2px; background: #fbbf24; border-radius: 1px; }
+    .ss-goal-bar { height: 16px; background: rgba(255,255,255,0.06); border-radius: 8px; overflow: visible; position: relative; }
+    .ss-goal-bar-fill { height: 100%; border-radius: 8px; transition: width 0.8s ease; background: linear-gradient(90deg, #2563eb, #3b82f6); position: relative; overflow: hidden; }
+    .ss-goal-bar-pace { position: absolute; top: -3px; height: calc(100% + 6px); width: 3px; background: #fbbf24; border-radius: 2px; box-shadow: 0 0 6px rgba(251,191,36,0.5); }
 
     .ss-goal-stats { display: flex; gap: 1.5rem; flex-wrap: wrap; }
     .ss-goal-stat { }
@@ -883,35 +883,39 @@
             <div class="ss-goal-input-row">
               <span class="ss-goal-input-label">$</span>
               <input type="number" class="ss-goal-input" id="goalInput" placeholder="e.g. 250000" />
-              <button class="ss-goal-save" id="goalSave">Set</button>
+              <button class="ss-goal-save" id="goalSave">Set Goal</button>
             </div>
           </div>
           <div class="ss-goal-bar-wrap">
-            <div class="ss-goal-bar-labels">
-              <span class="current" id="goalCurrent">$0</span>
-              <span id="goalTarget">Goal: $0</span>
-            </div>
             <div class="ss-goal-bar">
               <div class="ss-goal-bar-fill" id="goalFill" style="width:0%"></div>
-              <div class="ss-goal-bar-pace" id="goalPaceMarker" style="left:0%"></div>
+              <div class="ss-goal-bar-pace" id="goalPaceMarker" style="left:0%" title="Where you should be based on time elapsed"></div>
             </div>
+            <div class="ss-goal-bar-labels">
+              <span class="current" id="goalCurrent">$0 earned</span>
+              <span id="goalTarget">Goal: $0</span>
+            </div>
+          </div>
+          <div id="goalLegend" style="display:flex;gap:1.25rem;margin-bottom:1rem;font-size:0.68rem;">
+            <span style="display:flex;align-items:center;gap:0.3rem;color:rgba(255,255,255,0.4);"><span style="width:12px;height:6px;border-radius:3px;background:linear-gradient(90deg,#2563eb,#3b82f6);display:inline-block;"></span> Your Progress</span>
+            <span style="display:flex;align-items:center;gap:0.3rem;color:rgba(255,255,255,0.4);"><span style="width:12px;height:6px;border-radius:3px;background:#fbbf24;display:inline-block;"></span> Where You Should Be</span>
           </div>
           <div class="ss-goal-stats">
             <div class="ss-goal-stat">
               <div class="ss-goal-stat-value" id="goalPaceValue">$0</div>
-              <div class="ss-goal-stat-label">On Pace For</div>
+              <div class="ss-goal-stat-label">Projected Annual</div>
             </div>
             <div class="ss-goal-stat">
               <div class="ss-goal-stat-value" id="goalPctValue" style="color:#3b82f6;">0%</div>
-              <div class="ss-goal-stat-label">of Goal</div>
+              <div class="ss-goal-stat-label">Goal Complete</div>
             </div>
             <div class="ss-goal-stat">
               <div class="ss-goal-stat-value" id="goalRemaining" style="color:rgba(255,255,255,0.5);">$0</div>
-              <div class="ss-goal-stat-label">Remaining</div>
+              <div class="ss-goal-stat-label">Left to Go</div>
             </div>
             <div class="ss-goal-stat">
               <div class="ss-goal-stat-value" id="goalStatus">—</div>
-              <div class="ss-goal-stat-label">Status</div>
+              <div class="ss-goal-stat-label">Pace Status</div>
             </div>
           </div>
         </div>
@@ -974,8 +978,11 @@
         </div>
         <div class="ss-lb-filters">
           <button class="ss-lb-filter active" data-range="daily">Today</button>
+          <button class="ss-lb-filter" data-range="yesterday">Yesterday</button>
           <button class="ss-lb-filter" data-range="weekly">This Week</button>
+          <button class="ss-lb-filter" data-range="lastweek">Last Week</button>
           <button class="ss-lb-filter" data-range="monthly">This Month</button>
+          <button class="ss-lb-filter" data-range="lastmonth">Last Month</button>
           <button class="ss-lb-filter" data-range="yearly">This Year</button>
         </div>
         <div id="lbContent"><div class="ss-loading">Loading...</div></div>
@@ -1187,6 +1194,7 @@
     const saleForm = document.getElementById('saleForm');
 
     function updateAuthUI() {
+      const signupLink = document.querySelector('.ss-signup-link');
       if (currentUser) {
         const name = currentUser.user_metadata?.name || currentUser.email;
         authName.textContent = name;
@@ -1194,11 +1202,13 @@
         authPrompt.style.display = 'none';
         saleForm.style.opacity = '1';
         saleForm.style.pointerEvents = 'auto';
+        if (signupLink) signupLink.style.display = 'none';
       } else {
         authBar.style.display = 'none';
         authPrompt.style.display = 'block';
         saleForm.style.opacity = '0.35';
         saleForm.style.pointerEvents = 'none';
+        if (signupLink) signupLink.style.display = 'block';
       }
     }
 
@@ -1390,10 +1400,24 @@
 
     function getDateFilter() {
       const now = new Date();
-      if (currentRange === 'daily') return now.toISOString().split('T')[0] + 'T00:00:00';
-      if (currentRange === 'weekly') { const d = new Date(now); d.setDate(d.getDate() - 7); return d.toISOString(); }
-      if (currentRange === 'monthly') return new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
-      return new Date(now.getFullYear(), 0, 1).toISOString();
+      const today = now.toISOString().split('T')[0];
+      if (currentRange === 'daily') return { gte: today + 'T00:00:00' };
+      if (currentRange === 'yesterday') {
+        const y = new Date(now); y.setDate(y.getDate() - 1);
+        const yd = y.toISOString().split('T')[0];
+        return { gte: yd + 'T00:00:00', lte: yd + 'T23:59:59' };
+      }
+      if (currentRange === 'weekly') { const d = new Date(now); d.setDate(d.getDate() - d.getDay()); d.setHours(0,0,0,0); return { gte: d.toISOString() }; }
+      if (currentRange === 'lastweek') {
+        const end = new Date(now); end.setDate(end.getDate() - end.getDay()); end.setHours(0,0,0,0);
+        const start = new Date(end); start.setDate(start.getDate() - 7);
+        return { gte: start.toISOString(), lte: end.toISOString() };
+      }
+      if (currentRange === 'monthly') return { gte: new Date(now.getFullYear(), now.getMonth(), 1).toISOString() };
+      if (currentRange === 'lastmonth') {
+        return { gte: new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString(), lte: new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59).toISOString() };
+      }
+      return { gte: new Date(now.getFullYear(), 0, 1).toISOString() };
     }
 
     async function loadLeaderboard() {
@@ -1403,7 +1427,9 @@
       const dateFilter = getDateFilter();
 
       // Fetch current period data
-      const data = await supabaseQuery('policies?select=sales_rep,annual_premium,created_at&created_at=gte.' + dateFilter);
+      let endpoint = 'policies?select=sales_rep,annual_premium,created_at&created_at=gte.' + dateFilter.gte;
+      if (dateFilter.lte) endpoint += '&created_at=lte.' + dateFilter.lte;
+      const data = await supabaseQuery(endpoint);
 
       // Aggregate totals and counts for current period
       const totals = {};
