@@ -3058,11 +3058,11 @@
         if (v === 75) o.selected = true;
         persSel.appendChild(o);
       }
-      // Populate ROI multiplier (1x - 10x, step 0.5), default 3x
-      for (let v = 1; v <= 10; v += 0.5) {
+      // Populate ROI percentage (150% - 1000%, step 50%), default 200%
+      for (let v = 150; v <= 1000; v += 50) {
         const o = document.createElement('option');
-        o.value = v; o.textContent = v + 'x';
-        if (v === 3) o.selected = true;
+        o.value = v; o.textContent = v + '%';
+        if (v === 200) o.selected = true;
         roiSel.appendChild(o);
       }
 
@@ -3101,20 +3101,16 @@
 
       function computeRoi() {
         const netGoal = parseFloat(roiIncomeEl.value) || 0;
-        const mult = parseFloat(roiSel.value) || 0;
-        if (netGoal <= 0 || mult <= 0) {
+        const pct = parseFloat(roiSel.value) || 0;
+        if (netGoal <= 0 || pct <= 0) {
           roiOut.innerHTML = 'Enter your numbers above to see your recommended lead budget.';
           return;
         }
-        if (mult <= 1) {
-          roiOut.innerHTML = 'At <strong>1x ROI</strong> you only break even on lead spend \u2014 you can\u2019t net any income. Increase your ROI target.';
-          return;
-        }
-        // Net = Gross − Budget = Budget × ROI − Budget = Budget × (ROI − 1)
-        // → Budget = Net ÷ (ROI − 1)
-        const budget = netGoal / (mult - 1);
-        const gross = budget * mult;
-        roiOut.innerHTML = 'Spend <strong>' + fmt(budget) + '</strong> on leads at <strong>' + mult + 'x ROI</strong> to generate <strong>' + fmt(gross) + '</strong> in revenue and net <strong>' + fmt(netGoal) + '</strong> after lead costs.';
+        // ROI% = profit / spend × 100  →  profit = spend × pct/100
+        // Net income = profit, so: budget = net ÷ (pct/100)
+        const budget = netGoal / (pct / 100);
+        const gross = budget + netGoal;
+        roiOut.innerHTML = 'Spend <strong>' + fmt(budget) + '</strong> on leads at <strong>' + pct + '% ROI</strong> to generate <strong>' + fmt(gross) + '</strong> in revenue and net <strong>' + fmt(netGoal) + '</strong> after lead costs.';
       }
 
       incomeEl.addEventListener('input', computeCommission);
