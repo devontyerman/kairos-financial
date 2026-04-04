@@ -523,6 +523,56 @@
     .ss-status { display: inline-block; padding: 0.15rem 0.55rem; font-size: 0.68rem; font-weight: 700; border-radius: 100px; text-transform: uppercase; letter-spacing: 0.04em; }
     .ss-status.approved { background: rgba(34,197,94,0.12); color: #4ade80; border: 1px solid rgba(34,197,94,0.2); }
     .ss-status.underwriting { background: rgba(234,179,8,0.12); color: #fbbf24; border: 1px solid rgba(234,179,8,0.2); }
+    .ss-status.issue-paid { background: rgba(56,120,255,0.12); color: #60a5fa; border: 1px solid rgba(56,120,255,0.2); }
+
+    /* Issue Paid button */
+    .mp-btn-paid {
+      padding: 0.25rem 0.6rem; font-size: 0.68rem; font-weight: 700; border-radius: 4px;
+      border: none; cursor: pointer; transition: all 0.2s ease; text-transform: uppercase; letter-spacing: 0.04em;
+      background: rgba(34,197,94,0.12); color: #4ade80; border: 1px solid rgba(34,197,94,0.2);
+      position: relative; overflow: visible;
+    }
+    .mp-btn-paid:hover { background: rgba(34,197,94,0.25); }
+
+    /* Firework particles */
+    .firework-particle {
+      position: absolute;
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      pointer-events: none;
+      animation: fireworkBurst 0.7s ease-out forwards;
+    }
+    @keyframes fireworkBurst {
+      0% { opacity: 1; transform: translate(0, 0) scale(1); }
+      100% { opacity: 0; transform: translate(var(--fx), var(--fy)) scale(0); }
+    }
+
+    /* Needs Attention section */
+    .mp-attention {
+      margin-bottom: 2rem;
+      padding: 1.25rem;
+      background: rgba(234,179,8,0.04);
+      border: 1px solid rgba(234,179,8,0.12);
+      border-radius: 12px;
+    }
+    .mp-attention-title {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.85rem; font-weight: 800; color: #fbbf24;
+      margin-bottom: 0.75rem;
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    .mp-attention-list { display: flex; flex-direction: column; gap: 0.4rem; }
+    .mp-attention-item {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.5rem 0.75rem; background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.04); border-radius: 8px;
+      gap: 0.75rem; flex-wrap: wrap;
+    }
+    .mp-attention-info { flex: 1; min-width: 140px; }
+    .mp-attention-name { font-size: 0.82rem; font-weight: 600; color: #fff; }
+    .mp-attention-meta { font-size: 0.68rem; color: rgba(255,255,255,0.3); }
+    .mp-attention-actions { display: flex; gap: 0.3rem; }
+    .mp-attention-empty { font-size: 0.8rem; color: rgba(255,255,255,0.25); text-align: center; padding: 0.5rem; }
 
     /* Alert popup */
     .ss-alert-overlay {
@@ -853,6 +903,7 @@
             <button class="mp-filter active" data-mp-status="all">All Status</button>
             <button class="mp-filter" data-mp-status="Underwriting">Underwriting</button>
             <button class="mp-filter" data-mp-status="Approved">Approved</button>
+            <button class="mp-filter" data-mp-status="Issue Paid">Issue Paid</button>
           </div>
           <div class="mp-custom-range" id="mpCustomRange">
             <input type="date" id="mpDateFrom" />
@@ -860,6 +911,7 @@
             <input type="date" id="mpDateTo" />
             <button id="mpCustomApply">Apply</button>
           </div>
+          <div id="mpAttention"></div>
           <div class="mp-table-wrap">
             <div id="mpTable"><div class="mp-loading">Loading...</div></div>
           </div>
@@ -900,7 +952,7 @@
           <div class="mp-edit-field"><label>Carrier</label><select id="mpEditCarrier"></select></div>
           <div class="mp-edit-field"><label>Product Type</label><select id="mpEditProduct"></select></div>
           <div class="mp-edit-field"><label>Policy Number</label><input type="text" id="mpEditPolicy" required /></div>
-          <div class="mp-edit-field"><label>Status</label><select id="mpEditStatus"><option value="Underwriting">Underwriting</option><option value="Approved">Approved</option></select></div>
+          <div class="mp-edit-field"><label>Status</label><select id="mpEditStatus"><option value="Underwriting">Underwriting</option><option value="Approved">Approved</option><option value="Issue Paid">Issue Paid</option></select></div>
           <div class="mp-edit-field"><label>Sales Rep</label><input type="text" id="mpEditRep" required /></div>
           <div class="mp-edit-btns">
             <button type="button" class="mp-edit-cancel" id="mpEditCancel">Cancel</button>
@@ -1518,6 +1570,8 @@
       return { from: from.toISOString(), to: to.toISOString() };
     }
 
+    let mpUwData = []; // persistent underwriting policies
+
     async function loadPolicies() {
       if (!currentUser) {
         document.getElementById('mpNotAuth').style.display = 'block';
@@ -1530,21 +1584,31 @@
       const tableEl = document.getElementById('mpTable');
       tableEl.innerHTML = '<div class="mp-loading">Loading...</div>';
 
+      const repName = encodeURIComponent(currentUser.user_metadata?.name || currentUser.email);
+      const token = accessToken || SUPABASE_KEY;
+      const hdrs = { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + token };
+
+      // Fetch filtered policies for the table
       const range = getMpDateRange();
-      let endpoint = 'policies?select=*&sales_rep=eq.' + encodeURIComponent(currentUser.user_metadata?.name || currentUser.email);
+      let endpoint = 'policies?select=*&sales_rep=eq.' + repName;
       if (range.from) endpoint += '&created_at=gte.' + range.from;
       if (range.to) endpoint += '&created_at=lte.' + range.to;
-      if (mpStatusFilter !== 'all') endpoint += '&status=eq.' + mpStatusFilter;
+      if (mpStatusFilter !== 'all') endpoint += '&status=eq.' + encodeURIComponent(mpStatusFilter);
       endpoint += '&order=' + mpSortCol + '.' + mpSortDir;
 
-      const token = accessToken || SUPABASE_KEY;
-      try {
-        const res = await fetch(SUPABASE_URL + '/rest/v1/' + endpoint, {
-          headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + token }
-        });
-        mpAllData = await res.json();
-      } catch (e) { mpAllData = []; }
+      // Fetch ALL underwriting policies (no date filter) for attention section
+      const uwEndpoint = 'policies?select=*&sales_rep=eq.' + repName + '&status=eq.Underwriting&order=created_at.asc';
 
+      try {
+        const [mainRes, uwRes] = await Promise.all([
+          fetch(SUPABASE_URL + '/rest/v1/' + endpoint, { headers: hdrs }),
+          fetch(SUPABASE_URL + '/rest/v1/' + uwEndpoint, { headers: hdrs })
+        ]);
+        mpAllData = await mainRes.json();
+        mpUwData = await uwRes.json();
+      } catch (e) { mpAllData = []; mpUwData = []; }
+
+      renderAttentionSection();
       renderPoliciesTable();
     }
 
@@ -1588,11 +1652,16 @@
         html += '<td>' + esc(row.carrier) + '</td>';
         html += '<td>' + esc(row.product_type) + '</td>';
         html += '<td>' + esc(row.policy_number) + '</td>';
-        const statusClass = (row.status || 'Underwriting').toLowerCase();
-        html += '<td><span class="ss-status ' + statusClass + '">' + (row.status || 'Underwriting') + '</span></td>';
+        const status = row.status || 'Underwriting';
+        const statusClass = status.toLowerCase().replace(/\s+/g, '-');
+        html += '<td><span class="ss-status ' + statusClass + '">' + status + '</span></td>';
         html += '<td>' + esc(row.sales_rep) + '</td>';
         html += '<td class="mp-date">' + dateStr + '</td>';
-        html += '<td class="mp-actions"><button class="mp-btn-edit" data-id="' + row.id + '">Edit</button><button class="mp-btn-del" data-id="' + row.id + '">Delete</button></td>';
+        html += '<td class="mp-actions">';
+        if (status === 'Approved') {
+          html += '<button class="mp-btn-paid" data-id="' + row.id + '">Issue Paid</button>';
+        }
+        html += '<button class="mp-btn-edit" data-id="' + row.id + '">Edit</button><button class="mp-btn-del" data-id="' + row.id + '">Delete</button></td>';
         html += '</tr>';
       });
       html += '</tbody></table>';
@@ -1616,6 +1685,11 @@
       // Delete handlers
       tableEl.querySelectorAll('.mp-btn-del').forEach(btn => {
         btn.addEventListener('click', () => deletePolicy(btn.dataset.id));
+      });
+
+      // Issue Paid handlers
+      tableEl.querySelectorAll('.mp-btn-paid').forEach(btn => {
+        btn.addEventListener('click', () => markIssuePaid(btn.dataset.id, btn));
       });
     }
 
@@ -1662,6 +1736,91 @@
       mpEditOverlay.classList.remove('open');
       loadPolicies();
     });
+
+    // ─── NEEDS ATTENTION SECTION ───
+    function renderAttentionSection() {
+      const el = document.getElementById('mpAttention');
+      if (!mpUwData.length) { el.innerHTML = ''; return; }
+
+      const now = new Date();
+      const oneWeekMs = 7 * 24 * 60 * 60 * 1000;
+      let html = '<div class="mp-attention"><div class="mp-attention-title">⚠️ Needs Attention — Underwriting</div><div class="mp-attention-list">';
+
+      mpUwData.forEach(p => {
+        const age = now - new Date(p.created_at);
+        const weeks = Math.floor(age / oneWeekMs);
+        const timeLabel = weeks < 1 ? 'Less than a week' : weeks === 1 ? '1 week ago' : weeks + ' weeks ago';
+        const ap = parseFloat(p.annual_premium || 0);
+
+        html += '<div class="mp-attention-item" data-id="' + p.id + '">';
+        html += '<div class="mp-attention-info"><div class="mp-attention-name">' + esc(p.client_name) + '</div>';
+        html += '<div class="mp-attention-meta">' + esc(p.carrier) + ' · $' + ap.toLocaleString() + ' · ' + timeLabel + '</div></div>';
+        html += '<div class="mp-attention-actions">';
+        html += '<button class="ss-uw-btn approve" data-id="' + p.id + '">Approve</button>';
+        html += '<button class="ss-uw-btn delete" data-id="' + p.id + '">Delete</button>';
+        html += '</div></div>';
+      });
+
+      html += '</div></div>';
+      el.innerHTML = html;
+
+      // Attention approve handlers
+      el.querySelectorAll('.ss-uw-btn.approve').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const id = btn.dataset.id;
+          const token = accessToken || SUPABASE_KEY;
+          await fetch(SUPABASE_URL + '/rest/v1/policies?id=eq.' + id, {
+            method: 'PATCH',
+            headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+            body: JSON.stringify({ status: 'Approved' })
+          });
+          loadPolicies();
+        });
+      });
+
+      // Attention delete handlers
+      el.querySelectorAll('.ss-uw-btn.delete').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          if (!confirm('Delete this policy?')) return;
+          const id = btn.dataset.id;
+          const token = accessToken || SUPABASE_KEY;
+          await fetch(SUPABASE_URL + '/rest/v1/policies?id=eq.' + id, {
+            method: 'DELETE',
+            headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' }
+          });
+          loadPolicies();
+        });
+      });
+    }
+
+    // ─── ISSUE PAID WITH FIREWORKS ───
+    async function markIssuePaid(id, btn) {
+      const token = accessToken || SUPABASE_KEY;
+      await fetch(SUPABASE_URL + '/rest/v1/policies?id=eq.' + id, {
+        method: 'PATCH',
+        headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+        body: JSON.stringify({ status: 'Issue Paid' })
+      });
+      fireFireworks(btn);
+      setTimeout(() => loadPolicies(), 900);
+    }
+
+    function fireFireworks(el) {
+      const rect = el.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      const colors = ['#4ade80', '#3b82f6', '#f0d878', '#60a5fa', '#22c55e', '#fbbf24', '#a78bfa'];
+
+      for (let i = 0; i < 18; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'firework-particle';
+        const angle = (Math.PI * 2 * i) / 18;
+        const dist = 40 + Math.random() * 50;
+        particle.style.cssText = 'position:fixed;left:' + cx + 'px;top:' + cy + 'px;width:6px;height:6px;border-radius:50%;pointer-events:none;z-index:99999;background:' + colors[Math.floor(Math.random() * colors.length)] + ';--fx:' + (Math.cos(angle) * dist) + 'px;--fy:' + (Math.sin(angle) * dist) + 'px;animation:fireworkBurst 0.7s ease-out forwards;';
+        document.body.appendChild(particle);
+        setTimeout(() => particle.remove(), 800);
+      }
+    }
 
     // ─── OVERLOAD CHECK ───
     async function checkUnderwritingOverload() {
