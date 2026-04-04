@@ -39,38 +39,42 @@
     }
 
     .ss-hero {
-      background: linear-gradient(135deg, #0a0612 0%, #1a0a2e 40%, #2a1147 75%, #16213e 100%);
-      padding: calc(var(--nav-height) + 3rem) 1.5rem 2.5rem;
+      background: #0a0612;
+      padding: calc(var(--nav-height) + 3rem) 1.5rem 3.5rem;
       text-align: center;
       position: relative;
       overflow: hidden;
+      isolation: isolate;
     }
-    .ss-hero::before {
-      content: '';
+    /* WebGL shader canvas — fills the hero, fades out at the bottom
+       so it transitions seamlessly into the tabs/body below */
+    .ss-shader-bg {
       position: absolute;
-      inset: -50%;
-      background:
-        radial-gradient(circle at 30% 20%, rgba(168,85,247,0.25) 0%, transparent 45%),
-        radial-gradient(circle at 70% 80%, rgba(139,92,246,0.22) 0%, transparent 45%),
-        radial-gradient(circle at 50% 0%, rgba(201,168,76,0.06) 0%, transparent 60%);
-      animation: ssAuroraDrift 18s ease-in-out infinite;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+      z-index: 0;
       pointer-events: none;
+      opacity: 0.78;
+      -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 55%, rgba(0,0,0,0.55) 82%, transparent 100%);
+              mask-image: linear-gradient(180deg, #000 0%, #000 55%, rgba(0,0,0,0.55) 82%, transparent 100%);
     }
+    /* Soft vignette on top of the shader so the text stays readable
+       and the bottom edge blends to pure black */
     .ss-hero::after {
       content: '';
       position: absolute;
       inset: 0;
-      background-image:
-        radial-gradient(1px 1px at 20% 30%, #fff, transparent),
-        radial-gradient(1px 1px at 80% 20%, #e9d5ff, transparent),
-        radial-gradient(1px 1px at 45% 70%, #fff, transparent),
-        radial-gradient(1px 1px at 65% 45%, #c4b5fd, transparent),
-        radial-gradient(1px 1px at 90% 60%, #fff, transparent),
-        radial-gradient(1px 1px at 15% 80%, #d8b4fe, transparent);
-      background-size: 100% 100%;
-      opacity: 0.6;
-      animation: ssStarTwinkle 4s ease-in-out infinite;
+      background:
+        radial-gradient(ellipse 70% 55% at 50% 45%, rgba(10,6,18,0) 0%, rgba(10,6,18,0) 50%, rgba(10,6,18,0.55) 100%),
+        linear-gradient(180deg, rgba(10,6,18,0) 60%, rgba(10,6,18,0.85) 92%, #0a0612 100%);
+      z-index: 1;
       pointer-events: none;
+    }
+    .ss-hero-inner {
+      position: relative;
+      z-index: 2;
     }
     .ss-hero-title {
       font-family: 'Plus Jakarta Sans', sans-serif;
@@ -102,7 +106,7 @@
       gap: 0.5rem;
       padding: 1rem 1.5rem 1.5rem;
       margin-bottom: 0;
-      background: linear-gradient(180deg, #0c0818 0%, #0a0612 100%);
+      background: linear-gradient(180deg, #0a0612 0%, #0a0714 100%);
       border-bottom: 1px solid rgba(168,85,247,0.12);
       position: relative;
     }
@@ -1710,8 +1714,11 @@
 
   <!-- HERO -->
   <div class="ss-hero">
-    <h1 class="ss-hero-title">Sales <span>Hub</span></h1>
-    <p class="ss-hero-sub">Submit sales and track the leaderboard</p>
+    <canvas class="ss-shader-bg" id="ssShaderBg" aria-hidden="true"></canvas>
+    <div class="ss-hero-inner">
+      <h1 class="ss-hero-title">Sales <span>Hub</span></h1>
+      <p class="ss-hero-sub">Submit sales and track the leaderboard</p>
+    </div>
   </div>
 
   <!-- TABS -->
@@ -3743,6 +3750,146 @@
       } catch (e) {}
       loadPolicies();
     }
+
+    // ─── HERO SHADER BACKGROUND (WebGL) ───
+    (function initSalesHubShader() {
+      const canvas = document.getElementById('ssShaderBg');
+      if (!canvas) return;
+      const hero = canvas.parentElement;
+      const gl = canvas.getContext('webgl', { antialias: false, premultipliedAlpha: false });
+      if (!gl) { console.warn('WebGL not supported — falling back to CSS hero background.'); return; }
+
+      const vsSource = 'attribute vec4 aVertexPosition; void main() { gl_Position = aVertexPosition; }';
+
+      const fsSource = [
+        'precision highp float;',
+        'uniform vec2 iResolution;',
+        'uniform float iTime;',
+        'const float overallSpeed = 0.2;',
+        'const float gridSmoothWidth = 0.015;',
+        'const float scale = 5.0;',
+        'const vec4 lineColor = vec4(0.55, 0.28, 0.95, 1.0);',
+        'const float minLineWidth = 0.01;',
+        'const float maxLineWidth = 0.2;',
+        'const float lineSpeed = 1.0 * overallSpeed;',
+        'const float lineAmplitude = 1.0;',
+        'const float lineFrequency = 0.2;',
+        'const float warpSpeed = 0.2 * overallSpeed;',
+        'const float warpFrequency = 0.5;',
+        'const float warpAmplitude = 1.0;',
+        'const float offsetFrequency = 0.5;',
+        'const float offsetSpeed = 1.33 * overallSpeed;',
+        'const float minOffsetSpread = 0.6;',
+        'const float maxOffsetSpread = 2.0;',
+        'const int linesPerGroup = 16;',
+        '#define drawCircle(pos, radius, coord) smoothstep(radius + gridSmoothWidth, radius, length(coord - (pos)))',
+        '#define drawSmoothLine(pos, halfWidth, t) smoothstep(halfWidth, 0.0, abs(pos - (t)))',
+        '#define drawCrispLine(pos, halfWidth, t) smoothstep(halfWidth + gridSmoothWidth, halfWidth, abs(pos - (t)))',
+        'float random(float t) { return (cos(t) + cos(t * 1.3 + 1.3) + cos(t * 1.4 + 1.4)) / 3.0; }',
+        'float getPlasmaY(float x, float horizontalFade, float offset) {',
+        '  return random(x * lineFrequency + iTime * lineSpeed) * horizontalFade * lineAmplitude + offset;',
+        '}',
+        'void main() {',
+        '  vec2 fragCoord = gl_FragCoord.xy;',
+        '  vec2 uv = fragCoord.xy / iResolution.xy;',
+        '  vec2 space = (fragCoord - iResolution.xy / 2.0) / iResolution.x * 2.0 * scale;',
+        '  float horizontalFade = 1.0 - (cos(uv.x * 6.28) * 0.5 + 0.5);',
+        '  float verticalFade = 1.0 - (cos(uv.y * 6.28) * 0.5 + 0.5);',
+        '  space.y += random(space.x * warpFrequency + iTime * warpSpeed) * warpAmplitude * (0.5 + horizontalFade);',
+        '  space.x += random(space.y * warpFrequency + iTime * warpSpeed + 2.0) * warpAmplitude * horizontalFade;',
+        '  vec4 lines = vec4(0.0);',
+        '  vec4 bgColor1 = vec4(0.08, 0.04, 0.18, 1.0);',
+        '  vec4 bgColor2 = vec4(0.22, 0.07, 0.42, 1.0);',
+        '  for (int l = 0; l < linesPerGroup; l++) {',
+        '    float normalizedLineIndex = float(l) / float(linesPerGroup);',
+        '    float offsetTime = iTime * offsetSpeed;',
+        '    float offsetPosition = float(l) + space.x * offsetFrequency;',
+        '    float rand = random(offsetPosition + offsetTime) * 0.5 + 0.5;',
+        '    float halfWidth = mix(minLineWidth, maxLineWidth, rand * horizontalFade) / 2.0;',
+        '    float offset = random(offsetPosition + offsetTime * (1.0 + normalizedLineIndex)) * mix(minOffsetSpread, maxOffsetSpread, horizontalFade);',
+        '    float linePosition = getPlasmaY(space.x, horizontalFade, offset);',
+        '    float line = drawSmoothLine(linePosition, halfWidth, space.y) / 2.0 + drawCrispLine(linePosition, halfWidth * 0.15, space.y);',
+        '    float circleX = mod(float(l) + iTime * lineSpeed, 25.0) - 12.0;',
+        '    vec2 circlePosition = vec2(circleX, getPlasmaY(circleX, horizontalFade, offset));',
+        '    float circle = drawCircle(circlePosition, 0.01, space) * 4.0;',
+        '    line = line + circle;',
+        '    lines += line * lineColor * rand;',
+        '  }',
+        '  vec4 fragColor = mix(bgColor1, bgColor2, uv.x);',
+        '  fragColor *= verticalFade;',
+        '  fragColor.a = 1.0;',
+        '  fragColor += lines;',
+        '  gl_FragColor = fragColor;',
+        '}'
+      ].join('\n');
+
+      function compileShader(type, src) {
+        const sh = gl.createShader(type);
+        gl.shaderSource(sh, src);
+        gl.compileShader(sh);
+        if (!gl.getShaderParameter(sh, gl.COMPILE_STATUS)) {
+          console.error('Shader compile error:', gl.getShaderInfoLog(sh));
+          gl.deleteShader(sh);
+          return null;
+        }
+        return sh;
+      }
+
+      const vs = compileShader(gl.VERTEX_SHADER, vsSource);
+      const fs = compileShader(gl.FRAGMENT_SHADER, fsSource);
+      if (!vs || !fs) return;
+      const program = gl.createProgram();
+      gl.attachShader(program, vs);
+      gl.attachShader(program, fs);
+      gl.linkProgram(program);
+      if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+        console.error('Shader link error:', gl.getProgramInfoLog(program));
+        return;
+      }
+
+      const posBuffer = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, posBuffer);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
+
+      const aPos = gl.getAttribLocation(program, 'aVertexPosition');
+      const uRes = gl.getUniformLocation(program, 'iResolution');
+      const uTime = gl.getUniformLocation(program, 'iTime');
+
+      function resize() {
+        const rect = hero.getBoundingClientRect();
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        const w = Math.max(1, Math.floor(rect.width * dpr));
+        const h = Math.max(1, Math.floor(rect.height * dpr));
+        if (canvas.width !== w || canvas.height !== h) {
+          canvas.width = w;
+          canvas.height = h;
+          gl.viewport(0, 0, w, h);
+        }
+      }
+
+      window.addEventListener('resize', resize);
+      if (typeof ResizeObserver !== 'undefined') {
+        try { new ResizeObserver(resize).observe(hero); } catch (e) {}
+      }
+      resize();
+
+      const start = performance.now();
+      function frame() {
+        resize();
+        const t = (performance.now() - start) / 1000;
+        gl.clearColor(0.039, 0.024, 0.07, 1.0);
+        gl.clear(gl.COLOR_BUFFER_BIT);
+        gl.useProgram(program);
+        gl.uniform2f(uRes, canvas.width, canvas.height);
+        gl.uniform1f(uTime, t);
+        gl.bindBuffer(gl.ARRAY_BUFFER, posBuffer);
+        gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
+        gl.enableVertexAttribArray(aPos);
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+        requestAnimationFrame(frame);
+      }
+      requestAnimationFrame(frame);
+    })();
   </script>
 </body>
 </html>
