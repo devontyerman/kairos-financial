@@ -273,7 +273,8 @@
       <h3>Add New Record</h3>
       <form id="addForm">
         <div class="ae-grid">
-          <div class="ae-field"><label>Sales Rep</label><input type="text" id="addRep" required /></div>
+          <div class="ae-field"><label>Sales Rep</label><select id="addRep" required><option value="">Select agent...</option></select></div>
+          <input type="hidden" id="addUserId" />
           <div class="ae-field"><label>Client Name</label><input type="text" id="addClient" required /></div>
           <div class="ae-field"><label>Annual Premium</label><input type="number" id="addAP" step="0.01" required /></div>
           <div class="ae-field"><label>Policy Number</label><input type="text" id="addPolicy" required /></div>
@@ -313,6 +314,28 @@
     }
     fillSel('aeCarrier', CARRIERS); fillSel('aeProduct', PRODUCT_TYPES);
     fillSel('addCarrier', CARRIERS); fillSel('addProduct', PRODUCT_TYPES);
+
+    // Fetch registered users for agent dropdown
+    let userList = [];
+    async function loadUserList() {
+      try {
+        const res = await fetch(SUPABASE_URL + '/rest/v1/user_list?select=*&order=name.asc', {
+          headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
+        });
+        userList = await res.json();
+      } catch (e) { userList = []; }
+
+      const sel = document.getElementById('addRep');
+      sel.innerHTML = '<option value="">Select agent...</option>';
+      userList.forEach(u => {
+        const o = document.createElement('option');
+        o.value = u.id;
+        o.textContent = (u.name || u.email) + (u.name ? ' (' + u.email + ')' : '');
+        o.dataset.name = u.name || u.email;
+        sel.appendChild(o);
+      });
+    }
+    loadUserList();
 
     // ─── AUTH ───
     const gate = document.getElementById('adminGate');
@@ -545,10 +568,16 @@
 
     document.getElementById('addForm').addEventListener('submit', async (e) => {
       e.preventDefault();
+      const repSel = document.getElementById('addRep');
+      const selectedOption = repSel.options[repSel.selectedIndex];
+      const userId = repSel.value; // this is the user's UUID
+      const repName = selectedOption.dataset.name || '';
+
       await fetch(SUPABASE_URL + '/rest/v1/policies', {
         method: 'POST', headers: hdrs,
         body: JSON.stringify({
-          sales_rep: document.getElementById('addRep').value,
+          user_id: userId || null,
+          sales_rep: repName,
           client_name: document.getElementById('addClient').value,
           annual_premium: parseFloat(document.getElementById('addAP').value),
           policy_number: document.getElementById('addPolicy').value,
