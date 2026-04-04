@@ -627,6 +627,54 @@
     .ss-uw-btn.delete { background: rgba(239,68,68,0.1); color: #f87171; border: 1px solid rgba(239,68,68,0.15); }
     .ss-uw-btn.delete:hover { background: rgba(239,68,68,0.2); }
 
+    /* Goal Tracker */
+    .ss-goal-tracker {
+      max-width: 700px;
+      margin: 0 auto 2rem;
+      padding: 1.5rem;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(56,120,255,0.1);
+      border-radius: 14px;
+      display: none;
+    }
+    .ss-goal-tracker.visible { display: block; }
+
+    .ss-goal-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 1rem; flex-wrap: wrap; gap: 0.75rem;
+    }
+    .ss-goal-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.9rem; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 0.4rem; }
+    .ss-goal-title svg { color: #3b82f6; }
+
+    .ss-goal-input-row { display: flex; align-items: center; gap: 0.5rem; }
+    .ss-goal-input-label { font-size: 0.72rem; font-weight: 600; color: rgba(255,255,255,0.4); }
+    .ss-goal-input {
+      width: 120px; padding: 0.4rem 0.6rem; font-size: 0.82rem; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700;
+      color: #fff; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 6px; text-align: right;
+    }
+    .ss-goal-input:focus { outline: none; border-color: #3b82f6; }
+    .ss-goal-save {
+      padding: 0.35rem 0.7rem; font-size: 0.7rem; font-weight: 700;
+      color: #fff; background: #2563eb; border: none; border-radius: 6px; cursor: pointer;
+    }
+
+    .ss-goal-bar-wrap { margin-bottom: 0.75rem; }
+    .ss-goal-bar-labels { display: flex; justify-content: space-between; margin-bottom: 0.35rem; }
+    .ss-goal-bar-labels span { font-size: 0.7rem; color: rgba(255,255,255,0.4); }
+    .ss-goal-bar-labels .current { color: #3b82f6; font-weight: 700; }
+    .ss-goal-bar { height: 12px; background: rgba(255,255,255,0.06); border-radius: 6px; overflow: hidden; position: relative; }
+    .ss-goal-bar-fill { height: 100%; border-radius: 6px; transition: width 0.8s ease; background: linear-gradient(90deg, #2563eb, #3b82f6); position: relative; }
+    .ss-goal-bar-pace { position: absolute; top: 0; height: 100%; width: 2px; background: #fbbf24; border-radius: 1px; }
+
+    .ss-goal-stats { display: flex; gap: 1.5rem; flex-wrap: wrap; }
+    .ss-goal-stat { }
+    .ss-goal-stat-value { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1rem; font-weight: 800; }
+    .ss-goal-stat-value.on-pace { color: #4ade80; }
+    .ss-goal-stat-value.behind { color: #fbbf24; }
+    .ss-goal-stat-value.off-pace { color: #f87171; }
+    .ss-goal-stat-label { font-size: 0.68rem; color: rgba(255,255,255,0.35); }
+
     /* Manage Policies */
     .mp-inner { max-width: 1000px; margin: 0 auto; padding: 2.5rem 1.5rem; }
     .mp-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem; }
@@ -820,6 +868,49 @@
           <div class="ss-auth-prompt-btns">
             <button class="ss-auth-prompt-btn login" id="promptLogin">Log In</button>
             <button class="ss-auth-prompt-btn signup" id="promptSignup">Sign Up</button>
+          </div>
+        </div>
+
+        <!-- Goal Tracker -->
+        <div class="ss-goal-tracker" id="goalTracker">
+          <div class="ss-goal-header">
+            <div class="ss-goal-title">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+              Annual Goal
+            </div>
+            <div class="ss-goal-input-row">
+              <span class="ss-goal-input-label">$</span>
+              <input type="number" class="ss-goal-input" id="goalInput" placeholder="e.g. 250000" />
+              <button class="ss-goal-save" id="goalSave">Set</button>
+            </div>
+          </div>
+          <div class="ss-goal-bar-wrap">
+            <div class="ss-goal-bar-labels">
+              <span class="current" id="goalCurrent">$0</span>
+              <span id="goalTarget">Goal: $0</span>
+            </div>
+            <div class="ss-goal-bar">
+              <div class="ss-goal-bar-fill" id="goalFill" style="width:0%"></div>
+              <div class="ss-goal-bar-pace" id="goalPaceMarker" style="left:0%"></div>
+            </div>
+          </div>
+          <div class="ss-goal-stats">
+            <div class="ss-goal-stat">
+              <div class="ss-goal-stat-value" id="goalPaceValue">$0</div>
+              <div class="ss-goal-stat-label">On Pace For</div>
+            </div>
+            <div class="ss-goal-stat">
+              <div class="ss-goal-stat-value" id="goalPctValue" style="color:#3b82f6;">0%</div>
+              <div class="ss-goal-stat-label">of Goal</div>
+            </div>
+            <div class="ss-goal-stat">
+              <div class="ss-goal-stat-value" id="goalRemaining" style="color:rgba(255,255,255,0.5);">$0</div>
+              <div class="ss-goal-stat-label">Remaining</div>
+            </div>
+            <div class="ss-goal-stat">
+              <div class="ss-goal-stat-value" id="goalStatus">—</div>
+              <div class="ss-goal-stat-label">Status</div>
+            </div>
           </div>
         </div>
 
@@ -1029,9 +1120,6 @@
     </div>
   </div>
 
-  <footer style="background: #0a0e1a; border-top: 1px solid rgba(255,255,255,0.04); padding: 1.75rem 2rem; text-align: center;">
-    <p style="font-size: 0.78rem; color: rgba(255,255,255,0.2);">&copy; 2026 <span style="color: rgba(255,255,255,0.35);">Kairos Financial</span>. Agent Portal — Internal Use Only.</p>
-  </footer>
 
   <script src="js/main.js"></script>
   <script>
@@ -1954,8 +2042,97 @@
     const origUpdateAuthUI = updateAuthUI;
     updateAuthUI = function() {
       origUpdateAuthUI();
-      if (currentUser) setTimeout(checkUnderwritingReminders, 1500);
+      if (currentUser) {
+        setTimeout(checkUnderwritingReminders, 1500);
+        loadGoalTracker();
+      }
     };
+
+    // ─── GOAL TRACKER ───
+    const goalTracker = document.getElementById('goalTracker');
+    const goalInput = document.getElementById('goalInput');
+
+    document.getElementById('goalSave').addEventListener('click', () => {
+      const val = parseFloat(goalInput.value);
+      if (!val || val <= 0) return;
+      localStorage.setItem('kairos_goal_' + (currentUser?.id || 'anon'), val);
+      loadGoalTracker();
+    });
+
+    async function loadGoalTracker() {
+      if (!currentUser) { goalTracker.classList.remove('visible'); return; }
+      goalTracker.classList.add('visible');
+
+      const saved = localStorage.getItem('kairos_goal_' + currentUser.id);
+      if (saved) goalInput.value = saved;
+      const goal = parseFloat(saved) || 0;
+
+      // Fetch YTD AP for this user
+      const repName = currentUser.user_metadata?.name || currentUser.email;
+      const yearStart = new Date(new Date().getFullYear(), 0, 1).toISOString();
+      const token = accessToken || SUPABASE_KEY;
+      let ytdAP = 0;
+      try {
+        const res = await fetch(SUPABASE_URL + '/rest/v1/policies?select=annual_premium&sales_rep=eq.' + encodeURIComponent(repName) + '&created_at=gte.' + yearStart, {
+          headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + token }
+        });
+        const data = await res.json();
+        ytdAP = data.reduce((s, r) => s + parseFloat(r.annual_premium || 0), 0);
+      } catch (e) {}
+
+      // Calculate pace
+      const now = new Date();
+      const yearStartDate = new Date(now.getFullYear(), 0, 1);
+      const dayOfYear = Math.floor((now - yearStartDate) / (1000*60*60*24)) + 1;
+      const yearlyPace = dayOfYear > 0 ? (ytdAP / dayOfYear) * 365 : 0;
+
+      // Update UI
+      document.getElementById('goalCurrent').textContent = '$' + Math.round(ytdAP).toLocaleString();
+
+      if (goal > 0) {
+        document.getElementById('goalTarget').textContent = 'Goal: $' + Math.round(goal).toLocaleString();
+        const pct = Math.min((ytdAP / goal) * 100, 100);
+        document.getElementById('goalFill').style.width = pct + '%';
+
+        // Pace marker: where they should be based on time elapsed
+        const timePct = (dayOfYear / 365) * 100;
+        document.getElementById('goalPaceMarker').style.left = Math.min(timePct, 100) + '%';
+        document.getElementById('goalPaceMarker').style.display = 'block';
+
+        document.getElementById('goalPctValue').textContent = pct.toFixed(1) + '%';
+        document.getElementById('goalRemaining').textContent = '$' + Math.round(Math.max(goal - ytdAP, 0)).toLocaleString();
+
+        // Status
+        const statusEl = document.getElementById('goalStatus');
+        const paceEl = document.getElementById('goalPaceValue');
+        paceEl.textContent = '$' + Math.round(yearlyPace).toLocaleString();
+
+        if (yearlyPace >= goal) {
+          statusEl.textContent = '🔥 On Pace';
+          statusEl.className = 'ss-goal-stat-value on-pace';
+          paceEl.className = 'ss-goal-stat-value on-pace';
+        } else if (yearlyPace >= goal * 0.8) {
+          statusEl.textContent = '⚡ Close';
+          statusEl.className = 'ss-goal-stat-value behind';
+          paceEl.className = 'ss-goal-stat-value behind';
+        } else {
+          statusEl.textContent = '📈 Push Harder';
+          statusEl.className = 'ss-goal-stat-value off-pace';
+          paceEl.className = 'ss-goal-stat-value off-pace';
+        }
+      } else {
+        document.getElementById('goalTarget').textContent = 'Set a goal →';
+        document.getElementById('goalFill').style.width = '0%';
+        document.getElementById('goalPaceMarker').style.display = 'none';
+        document.getElementById('goalPctValue').textContent = '—';
+        document.getElementById('goalRemaining').textContent = '—';
+        document.getElementById('goalStatus').textContent = '—';
+        document.getElementById('goalStatus').className = 'ss-goal-stat-value';
+        document.getElementById('goalPaceValue').textContent = '$' + Math.round(yearlyPace).toLocaleString();
+        document.getElementById('goalPaceValue').className = 'ss-goal-stat-value';
+        document.getElementById('goalPaceValue').style.color = '#3b82f6';
+      }
+    }
 
     async function deletePolicy(id) {
       if (!confirm('Delete this policy? This cannot be undone.')) return;
