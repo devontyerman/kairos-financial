@@ -786,10 +786,10 @@
     .ss-goal-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
     .ss-goal-input:focus { outline: none; border-color: #3b82f6; }
 
-    /* Hide number input spinners on commission calculator inputs */
-    .ss-calc-input[type="number"] { -moz-appearance: textfield; }
-    .ss-calc-input[type="number"]::-webkit-outer-spin-button,
-    .ss-calc-input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+    /* Hide number input spinners on all number inputs sitewide */
+    input[type="number"] { -moz-appearance: textfield; }
+    input[type="number"]::-webkit-outer-spin-button,
+    input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 
     /* Date inputs: whole box is clickable, calendar icon white */
     .ss-input[type="date"] {
@@ -819,7 +819,7 @@
     .ss-goal-bar-wrap { margin-bottom: 0.75rem; }
     .ss-goal-bar-labels { display: flex; justify-content: space-between; margin-bottom: 0.35rem; }
     .ss-goal-bar-labels span { font-size: 0.7rem; color: rgba(255,255,255,0.75); }
-    .ss-goal-bar-labels .current { color: #c084fc; font-weight: 700; text-shadow: 0 0 12px rgba(168,85,247,0.5); }
+    .ss-goal-bar-labels .current { color: #c084fc; font-weight: 900; font-size: 1.4rem; text-shadow: 0 0 16px rgba(168,85,247,0.55); font-family: 'Plus Jakarta Sans', sans-serif; letter-spacing: -0.02em; }
     .ss-goal-bar { height: 16px; background: rgba(255,255,255,0.06); border-radius: 8px; overflow: visible; position: relative; box-shadow: inset 0 0 10px rgba(0,0,0,0.3); }
     .ss-goal-bar-fill { height: 100%; border-radius: 8px; transition: width 0.8s ease; background: linear-gradient(90deg, #7c3aed, #a855f7, #c084fc); position: relative; overflow: hidden; box-shadow: 0 0 18px rgba(168,85,247,0.55), 0 0 36px rgba(139,92,246,0.3); }
     .ss-goal-bar-pace { position: absolute; top: -3px; height: calc(100% + 6px); width: 3px; background: #fbbf24; border-radius: 2px; box-shadow: 0 0 6px rgba(251,191,36,0.5); }
@@ -884,13 +884,15 @@
     .mp-custom-range.visible { display: flex; flex-wrap: wrap; }
     .mp-custom-range input[type="date"] {
       padding: 0.4rem 0.6rem; font-size: 0.8rem; font-family: 'Inter', sans-serif;
-      color: #fff; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+      color: #fff; background: #0a0612; border: 1px solid rgba(168,85,247,0.28);
       border-radius: 6px; color-scheme: dark;
     }
     .mp-custom-range button {
       padding: 0.4rem 1rem; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.78rem; font-weight: 700;
-      color: #fff; background: #2563eb; border: none; border-radius: 6px; cursor: pointer;
+      color: #fff; background: linear-gradient(135deg, #7c3aed, #a855f7); border: none; border-radius: 6px; cursor: pointer;
+      box-shadow: 0 4px 14px rgba(168,85,247,0.4);
     }
+    .mp-custom-range button:hover { box-shadow: 0 6px 20px rgba(168,85,247,0.55); }
 
     .mp-table-wrap {
       border-radius: 14px;
@@ -928,6 +930,13 @@
       color: #ffffff;
       letter-spacing: -0.01em;
     }
+    .mp-phone-link {
+      color: #c084fc;
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.2s ease;
+    }
+    .mp-phone-link:hover { color: #e9d5ff; text-decoration: underline; }
     .mp-table .mp-actions { white-space: nowrap; }
     .mp-table tfoot .mp-total-row td {
       padding: 0.9rem 0.55rem;
@@ -961,17 +970,18 @@
     .ss-lb-custom-range.visible { display: flex; }
     .ss-lb-custom-range input[type="date"] {
       padding: 0.45rem 0.7rem; font-size: 0.8rem; font-family: 'Inter', sans-serif;
-      color: #fff; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+      color: #fff; background: #0a0612; border: 1px solid rgba(168,85,247,0.28);
       border-radius: 8px; color-scheme: dark;
     }
-    .ss-lb-custom-range input[type="date"]:focus { outline: none; border-color: #3b82f6; }
+    .ss-lb-custom-range input[type="date"]:focus { outline: none; border-color: #a855f7; box-shadow: 0 0 0 3px rgba(168,85,247,0.25); }
     .ss-lb-custom-range button {
       padding: 0.5rem 1.2rem; font-family: 'Plus Jakarta Sans', sans-serif;
       font-size: 0.78rem; font-weight: 700; color: #fff;
-      background: linear-gradient(135deg, #2563eb, #3b82f6); border: none;
+      background: linear-gradient(135deg, #7c3aed, #a855f7); border: none;
       border-radius: 100px; cursor: pointer; transition: all 0.2s ease;
+      box-shadow: 0 4px 14px rgba(168,85,247,0.4);
     }
-    .ss-lb-custom-range button:hover { box-shadow: 0 4px 14px rgba(37,99,235,0.35); transform: translateY(-1px); }
+    .ss-lb-custom-range button:hover { box-shadow: 0 6px 20px rgba(168,85,247,0.55); transform: translateY(-1px); }
     .ss-lb-custom-range span { color: rgba(255,255,255,0.9); font-size: 0.78rem; }
 
     /* Reusable confirm modal */
@@ -1906,7 +1916,7 @@
             </div>
             <div class="ss-goal-input-row">
               <span class="ss-goal-input-label">$</span>
-              <input type="number" class="ss-goal-input" id="goalInput" placeholder="e.g. 250000" />
+              <input type="text" class="ss-goal-input" id="goalInput" placeholder="e.g. 250,000" inputmode="numeric" />
               <button class="ss-goal-save" id="goalSave">Set Goal</button>
             </div>
           </div>
@@ -3335,6 +3345,7 @@
 
       const cols = [
         { key: 'client_name', label: 'Client' },
+        { key: 'phone', label: 'Phone' },
         { key: 'annual_premium', label: 'AP' },
         { key: 'carrier', label: 'Carrier' },
         { key: 'product_type', label: 'Product' },
@@ -3357,6 +3368,13 @@
         const ap = parseFloat(row.annual_premium || 0);
         html += '<tr>';
         html += '<td class="mp-client-name" data-label="Client">' + esc(row.client_name) + '</td>';
+        const phone = row.phone || '';
+        const phoneDigitsOnly = phone.replace(/\D/g, '');
+        if (phone) {
+          html += '<td data-label="Phone"><a href="tel:' + phoneDigitsOnly + '" class="mp-phone-link">' + esc(phone) + '</a></td>';
+        } else {
+          html += '<td data-label="Phone" style="color:rgba(255,255,255,0.4);">No number</td>';
+        }
         html += '<td class="mp-ap" data-label="AP">$' + ap.toLocaleString('en-US', { minimumFractionDigits: 0 }) + '</td>';
         html += '<td data-label="Carrier">' + esc(row.carrier) + '</td>';
         html += '<td data-label="Product">' + esc(row.product_type) + '</td>';
@@ -3380,6 +3398,7 @@
       // Footer total row
       html += '<tfoot><tr class="mp-total-row">';
       html += '<td class="mp-total-label">Total</td>';
+      html += '<td></td>'; // phone column spacer
       html += '<td class="mp-ap mp-total-val">$' + Math.round(totalAP).toLocaleString('en-US') + '</td>';
       html += '<td colspan="7"></td>';
       html += '</tr></tfoot>';
@@ -3745,8 +3764,16 @@
     const goalTracker = document.getElementById('goalTracker');
     const goalInput = document.getElementById('goalInput');
 
+    // Live comma formatting for the goal input
+    function formatWithCommas(n) { return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
+    function parseGoalInput(v) { return parseFloat((v || '').replace(/,/g, '')) || 0; }
+    goalInput.addEventListener('input', () => {
+      const raw = goalInput.value.replace(/[^0-9]/g, '');
+      goalInput.value = raw ? formatWithCommas(raw) : '';
+    });
+
     document.getElementById('goalSave').addEventListener('click', () => {
-      const val = parseFloat(goalInput.value);
+      const val = parseGoalInput(goalInput.value);
       if (!val || val <= 0) return;
       localStorage.setItem('kairos_goal_' + (currentUser?.id || 'anon'), val);
       loadGoalTracker();
@@ -3757,7 +3784,7 @@
       goalTracker.classList.add('visible');
 
       const saved = localStorage.getItem('kairos_goal_' + currentUser.id);
-      if (saved) goalInput.value = saved;
+      if (saved) goalInput.value = formatWithCommas(Math.round(parseFloat(saved)));
       const goal = parseFloat(saved) || 0;
 
       // Fetch YTD AP for this user (by policy_date)
