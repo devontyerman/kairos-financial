@@ -3254,11 +3254,66 @@
           });
           if (!insRes.ok) throw new Error(await insRes.text());
         }
-        msg.textContent = 'KPIs submitted for ' + kpiData.kpi_date + '!';
-        msg.style.color = '#4ade80';
-        msg.style.display = 'block';
         // Reset fields but keep date
         ['kpiDials','kpiAnswers','kpiAppointments','kpiPresentations','kpiDeals','kpiLeadSpend','kpiDeposits'].forEach(id => document.getElementById(id).value = '');
+
+        // ── KPI Feedback Popup ──
+        const kpiDow = new Date(kpiData.kpi_date + 'T12:00:00').getDay(); // 0=Sun, 6=Sat
+        const hasDials = kpiData.dials > 0;
+        const hasDeals = kpiData.deals > 0;
+        const preCount = kpiData.presentations || 0;
+        const dialCount = kpiData.dials || 0;
+
+        if (kpiDow === 6 && hasDials) {
+          // Saturday — always props
+          await showConfirmModal({
+            title: 'Separation Saturday!',
+            message: 'Most people are sleeping in — you\'re out here putting in work. This is what separates the top producers from the rest. Keep grinding!',
+            confirmText: 'Let\'s Go',
+            cancelText: '',
+            variant: 'info',
+            icon: '🔥'
+          });
+        } else if (kpiDow === 0 && hasDials) {
+          // Sunday — props for working
+          await showConfirmModal({
+            title: 'Sunday Grind!',
+            message: 'Working on a Sunday? That\'s elite-level dedication. While everyone else is resting, you\'re building your future. Respect.',
+            confirmText: 'Let\'s Go',
+            cancelText: '',
+            variant: 'info',
+            icon: '💪'
+          });
+        } else if (hasDeals) {
+          // Got a deal — congrats no matter what
+          await showConfirmModal({
+            title: 'Deal Closed!',
+            message: 'You got a deal today — that\'s what it\'s all about. Every closed deal is proof that the process works. Keep stacking!',
+            confirmText: 'On to the Next',
+            cancelText: '',
+            variant: 'info',
+            icon: '🎯'
+          });
+        } else if (preCount >= 3) {
+          // 3+ presentations, no deal — say nothing, just confirm
+          msg.textContent = 'KPIs submitted for ' + kpiData.kpi_date + '!';
+          msg.style.color = '#4ade80';
+          msg.style.display = 'block';
+        } else if (hasDials && dialCount < 200 && preCount <= 1) {
+          // Low activity day — gentle nudge (not on Sat/Sun, already handled above)
+          await showConfirmModal({
+            title: 'KPIs Are a Little Low',
+            message: 'Looks like today was a lighter day. If you didn\'t close a deal or get 3+ presentations, aim for 300+ dials to maximize your chances. The numbers don\'t lie — more dials, more deals.',
+            confirmText: 'Got It',
+            cancelText: '',
+            variant: 'warning',
+            icon: '📊'
+          });
+        } else {
+          msg.textContent = 'KPIs submitted for ' + kpiData.kpi_date + '!';
+          msg.style.color = '#4ade80';
+          msg.style.display = 'block';
+        }
       } catch (err) {
         msg.textContent = 'Error: ' + err.message;
         msg.style.color = '#f87171';
