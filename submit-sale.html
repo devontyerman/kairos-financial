@@ -2446,7 +2446,27 @@
           <div class="perf-agent-section" id="agentTrend"></div>
 
           <!-- KPI Stats -->
-          <div class="perf-agent-section" id="agentKpiStats"></div>
+          <div class="perf-agent-section" id="agentKpiStats">
+            <div class="perf-agent-section-title">Daily KPIs</div>
+            <div style="display:flex;flex-wrap:wrap;gap:0.4rem;align-items:center;margin-bottom:0.75rem;">
+              <button class="mp-filter active" data-kpi-range="mtd">MTD</button>
+              <button class="mp-filter" data-kpi-range="wtd">WTD</button>
+              <button class="mp-filter" data-kpi-range="ytd">YTD</button>
+              <button class="mp-filter" data-kpi-range="lastweek">Last Week</button>
+              <button class="mp-filter" data-kpi-range="lastmonth">Last Month</button>
+              <button class="mp-filter" data-kpi-range="custom">Custom</button>
+              <label style="margin-left:auto;display:flex;align-items:center;gap:0.35rem;font-size:0.7rem;color:rgba(255,255,255,0.55);cursor:pointer;">
+                <input type="checkbox" id="kpiExcludeWeekends" style="accent-color:#a855f7;" /> Exclude weekends
+              </label>
+            </div>
+            <div id="kpiCustomRange" style="display:none;gap:0.5rem;align-items:center;margin-bottom:0.75rem;flex-wrap:wrap;">
+              <input type="date" id="kpiDateFrom" style="padding:0.35rem 0.6rem;font-size:0.78rem;background:#0a0612;border:1px solid rgba(168,85,247,0.28);border-radius:8px;color:#fff;color-scheme:dark;" />
+              <span style="color:rgba(255,255,255,0.7);font-size:0.78rem;">to</span>
+              <input type="date" id="kpiDateTo" style="padding:0.35rem 0.6rem;font-size:0.78rem;background:#0a0612;border:1px solid rgba(168,85,247,0.28);border-radius:8px;color:#fff;color-scheme:dark;" />
+              <button id="kpiCustomApply" style="padding:0.35rem 0.9rem;font-size:0.72rem;font-weight:700;background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;border:none;border-radius:100px;cursor:pointer;">Apply</button>
+            </div>
+            <div id="kpiStatsContent"></div>
+          </div>
         </div>
       </div>
     </div>
@@ -3314,47 +3334,101 @@
       }
       document.getElementById('agentTrend').innerHTML = '<div class="perf-agent-section-title">Monthly Trend (YTD)</div>' + trendBars;
 
-      // ── KPI Stats ──
-      const kpiEl = document.getElementById('agentKpiStats');
+      // ── KPI Stats ── fetch once, render via filter
       try {
         const kpiRes = await fetch(SUPABASE_URL + '/rest/v1/daily_kpis?user_id=eq.' + currentUser.id + '&order=kpi_date.desc', {
           headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + (accessToken || SUPABASE_KEY) }
         });
-        const kpiRows = await kpiRes.json();
-        if (!kpiRows || !kpiRows.length) {
-          kpiEl.innerHTML = '<div class="perf-agent-section-title">Daily KPIs</div><div style="color:rgba(255,255,255,0.4);font-size:0.8rem;">No KPI data yet — submit your daily numbers from the Submit Sale tab.</div>';
-        } else {
-          // Compute totals and averages
-          const totalDials = kpiRows.reduce((s, r) => s + (r.dials || 0), 0);
-          const totalAnswers = kpiRows.reduce((s, r) => s + (r.answers || 0), 0);
-          const totalAppts = kpiRows.reduce((s, r) => s + (r.appointments || 0), 0);
-          const totalPres = kpiRows.reduce((s, r) => s + (r.presentations || 0), 0);
-          const totalDeals = kpiRows.reduce((s, r) => s + (r.deals || 0), 0);
-          const days = kpiRows.length;
+        agentKpiAllRows = await kpiRes.json();
+      } catch (e) { agentKpiAllRows = []; }
+      renderAgentKpiStats();
 
-          const pct = (a, b) => b > 0 ? (a / b * 100).toFixed(1) + '%' : '0%';
+      // Wire up KPI filter buttons
+      document.querySelectorAll('[data-kpi-range]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('[data-kpi-range]').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          agentKpiRange = btn.dataset.kpiRange;
+          document.getElementById('kpiCustomRange').style.display = agentKpiRange === 'custom' ? 'flex' : 'none';
+          if (agentKpiRange !== 'custom') renderAgentKpiStats();
+        });
+      });
+      document.getElementById('kpiCustomApply').addEventListener('click', () => renderAgentKpiStats());
+      document.getElementById('kpiExcludeWeekends').addEventListener('change', () => renderAgentKpiStats());
+    }
 
-          let kpiHtml = '<div class="perf-agent-section-title">Daily KPIs (' + days + ' days tracked)</div>';
-          kpiHtml += '<div class="perf-agent-kpis" style="margin-bottom:1rem;">';
-          kpiHtml += agentKpi('Avg Dials/Day', Math.round(totalDials / days), totalDials + ' total');
-          kpiHtml += agentKpi('Avg Answers/Day', Math.round(totalAnswers / days), totalAnswers + ' total');
-          kpiHtml += agentKpi('Avg Appts/Day', (totalAppts / days).toFixed(1), totalAppts + ' total');
-          kpiHtml += agentKpi('Avg Deals/Day', (totalDeals / days).toFixed(1), totalDeals + ' total');
-          kpiHtml += '</div>';
+    let agentKpiAllRows = [];
+    let agentKpiRange = 'mtd';
 
-          // Conversion funnel
-          kpiHtml += '<div style="margin-bottom:0.25rem;font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:rgba(255,255,255,0.45);">Conversion Rates</div>';
-          kpiHtml += statusRow('Dials → Answers', totalAnswers, pct(totalAnswers, totalDials).replace('%',''), 'uw').replace('perf-agent-status-fill uw', 'perf-agent-status-fill uw" title="' + pct(totalAnswers, totalDials));
-          kpiHtml += statusRow('Answers → Appts', totalAppts, pct(totalAppts, totalAnswers).replace('%',''), 'app').replace('perf-agent-status-fill app', 'perf-agent-status-fill app" title="' + pct(totalAppts, totalAnswers));
-          kpiHtml += statusRow('Appts → Presentations', totalPres, pct(totalPres, totalAppts).replace('%',''), 'paid').replace('perf-agent-status-fill paid', 'perf-agent-status-fill paid" title="' + pct(totalPres, totalAppts));
-          kpiHtml += statusRow('Presentations → Deals', totalDeals, pct(totalDeals, totalPres).replace('%',''), 'app').replace('perf-agent-status-fill app', 'perf-agent-status-fill app" title="' + pct(totalDeals, totalPres));
-          kpiHtml += '<div style="margin-top:0.6rem;font-size:0.72rem;color:rgba(255,255,255,0.4);">Overall: ' + pct(totalDeals, totalDials) + ' of dials convert to deals</div>';
-
-          kpiEl.innerHTML = kpiHtml;
-        }
-      } catch (e) {
-        kpiEl.innerHTML = '';
+    function renderAgentKpiStats() {
+      const contentEl = document.getElementById('kpiStatsContent');
+      if (!agentKpiAllRows || !agentKpiAllRows.length) {
+        contentEl.innerHTML = '<div style="color:rgba(255,255,255,0.4);font-size:0.8rem;">No KPI data yet — submit your daily numbers from the Submit Sale tab.</div>';
+        return;
       }
+
+      const now = new Date();
+      const weekStart = new Date(now); weekStart.setDate(weekStart.getDate() - weekStart.getDay()); weekStart.setHours(0,0,0,0);
+      const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+      const yearStart = new Date(now.getFullYear(), 0, 1);
+      const lastWeekStart = new Date(weekStart); lastWeekStart.setDate(lastWeekStart.getDate() - 7);
+      const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+      const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59);
+
+      let filtered = agentKpiAllRows;
+      const range = agentKpiRange;
+      if (range === 'wtd') filtered = filtered.filter(r => new Date(r.kpi_date) >= weekStart);
+      else if (range === 'mtd') filtered = filtered.filter(r => new Date(r.kpi_date) >= monthStart);
+      else if (range === 'ytd') filtered = filtered.filter(r => new Date(r.kpi_date) >= yearStart);
+      else if (range === 'lastweek') filtered = filtered.filter(r => { const d = new Date(r.kpi_date); return d >= lastWeekStart && d < weekStart; });
+      else if (range === 'lastmonth') filtered = filtered.filter(r => { const d = new Date(r.kpi_date); return d >= lastMonthStart && d <= lastMonthEnd; });
+      else if (range === 'custom') {
+        const from = document.getElementById('kpiDateFrom').value;
+        const to = document.getElementById('kpiDateTo').value;
+        if (from && to) filtered = filtered.filter(r => r.kpi_date >= from && r.kpi_date <= to);
+      }
+
+      const excludeWeekends = document.getElementById('kpiExcludeWeekends').checked;
+      if (excludeWeekends) {
+        filtered = filtered.filter(r => { const d = new Date(r.kpi_date); const day = d.getUTCDay(); return day !== 0 && day !== 6; });
+      }
+
+      if (!filtered.length) {
+        contentEl.innerHTML = '<div style="color:rgba(255,255,255,0.4);font-size:0.8rem;">No KPI data for this time period.</div>';
+        return;
+      }
+
+      const totalDials = filtered.reduce((s, r) => s + (r.dials || 0), 0);
+      const totalAnswers = filtered.reduce((s, r) => s + (r.answers || 0), 0);
+      const totalAppts = filtered.reduce((s, r) => s + (r.appointments || 0), 0);
+      const totalPres = filtered.reduce((s, r) => s + (r.presentations || 0), 0);
+      const totalDeals = filtered.reduce((s, r) => s + (r.deals || 0), 0);
+      const days = filtered.length;
+      const pct = (a, b) => b > 0 ? (a / b * 100).toFixed(1) + '%' : '0%';
+
+      function agentKpi(label, value, sub, cls) {
+        return '<div class="perf-agent-kpi ' + (cls || '') + '"><div class="perf-agent-kpi-label">' + label + '</div><div class="perf-agent-kpi-value">' + value + '</div><div class="perf-agent-kpi-sub">' + sub + '</div></div>';
+      }
+      function statusRow(label, count, pctVal, cls) {
+        return '<div class="perf-agent-status-row"><div class="perf-agent-status-label">' + label + '</div><div class="perf-agent-status-bar"><div class="perf-agent-status-fill ' + cls + '" style="width:' + pctVal + '%"></div></div><div class="perf-agent-status-pct">' + pctVal + '%</div></div>';
+      }
+
+      let html = '<div style="margin-bottom:0.5rem;font-size:0.7rem;color:rgba(255,255,255,0.4);">' + days + ' day' + (days !== 1 ? 's' : '') + ' tracked' + (excludeWeekends ? ' (weekdays only)' : '') + '</div>';
+      html += '<div class="perf-agent-kpis" style="margin-bottom:1rem;">';
+      html += agentKpi('Avg Dials/Day', Math.round(totalDials / days), totalDials + ' total');
+      html += agentKpi('Avg Answers/Day', Math.round(totalAnswers / days), totalAnswers + ' total');
+      html += agentKpi('Avg Appts/Day', (totalAppts / days).toFixed(1), totalAppts + ' total');
+      html += agentKpi('Avg Deals/Day', (totalDeals / days).toFixed(1), totalDeals + ' total');
+      html += '</div>';
+
+      html += '<div style="margin-bottom:0.25rem;font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:rgba(255,255,255,0.45);">Conversion Rates</div>';
+      html += statusRow('Dials → Answers', totalAnswers, pct(totalAnswers, totalDials).replace('%',''), 'uw');
+      html += statusRow('Answers → Appts', totalAppts, pct(totalAppts, totalAnswers).replace('%',''), 'app');
+      html += statusRow('Appts → Presentations', totalPres, pct(totalPres, totalAppts).replace('%',''), 'paid');
+      html += statusRow('Presentations → Deals', totalDeals, pct(totalDeals, totalPres).replace('%',''), 'app');
+      html += '<div style="margin-top:0.6rem;font-size:0.72rem;color:rgba(255,255,255,0.4);">Overall: ' + pct(totalDeals, totalDials) + ' of dials convert to deals</div>';
+
+      contentEl.innerHTML = html;
     }
 
     // ─── MILESTONE CELEBRATIONS ───
