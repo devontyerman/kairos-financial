@@ -3490,15 +3490,30 @@
         let tableRows = '';
         let lastWeekNum = -1;
         const thStyle = 'text-align:left;padding:0.5rem 0.4rem;color:rgba(255,255,255,0.5);font-size:0.78rem;';
+        const tdStyle = 'padding:0.45rem 0.4rem;';
+        const totalStyle = 'padding:0.5rem 0.4rem;font-weight:800;border-top:2px solid rgba(59,130,246,0.25);background:rgba(59,130,246,0.06);';
+
+        // Track weekly totals
+        let weekTotals = { dials: 0, answers: 0, appts: 0, pres: 0, deals: 0, spend: 0, dep: 0 };
+        let weekHasData = false;
+
+        function insertWeekTotal() {
+          if (!weekHasData) return '';
+          const wRoi = weekTotals.spend > 0 ? ((weekTotals.dep - weekTotals.spend) / weekTotals.spend * 100).toFixed(0) + '%' : '—';
+          const row = '<tr style="color:#60a5fa;"><td style="' + totalStyle + 'font-style:italic;">Week Total</td><td style="' + totalStyle + '"></td><td style="' + totalStyle + '">' + weekTotals.dials + '</td><td style="' + totalStyle + '">' + weekTotals.answers + '</td><td style="' + totalStyle + '">' + weekTotals.appts + '</td><td style="' + totalStyle + '">' + weekTotals.pres + '</td><td style="' + totalStyle + '">' + weekTotals.deals + '</td><td style="' + totalStyle + '">$' + Math.round(weekTotals.spend) + '</td><td style="' + totalStyle + '">$' + Math.round(weekTotals.dep) + '</td><td style="' + totalStyle + '">' + wRoi + '</td></tr>';
+          weekTotals = { dials: 0, answers: 0, appts: 0, pres: 0, deals: 0, spend: 0, dep: 0 };
+          weekHasData = false;
+          return row;
+        }
 
         while (walkDate <= walkEnd) {
           const dow = walkDate.getDay();
           if ((excludeSat && dow === 6) || (excludeSun && dow === 0)) { walkDate.setDate(walkDate.getDate() + 1); continue; }
 
-          // Week separator — insert a header row when we enter a new week (Sunday = start)
           const weekNum = Math.floor((walkDate - rangeStart) / (7 * 24 * 60 * 60 * 1000));
           if (weekNum !== lastWeekNum && lastWeekNum !== -1) {
-            // Get the Monday of this week for the label
+            // Insert previous week's total before the separator
+            tableRows += insertWeekTotal();
             const weekLabel = new Date(walkDate);
             const wDay = weekLabel.getDay();
             const mondayOffset = wDay === 0 ? -6 : 1 - wDay;
@@ -3512,17 +3527,30 @@
           const dayLabel = dayNames[dow];
           const dateLabel = (walkDate.getMonth() + 1) + '/' + walkDate.getDate();
           const row = dataMap[ymd];
-          const tdStyle = 'padding:0.45rem 0.4rem;';
           if (row) {
             const dSpend = parseFloat(row.lead_spend || 0);
             const dDep = parseFloat(row.deposits || 0);
-            const dRoi = dSpend > 0 ? ((dDep - dSpend) / dSpend * 100).toFixed(0) + '%' : '—';
-            tableRows += '<tr><td style="' + tdStyle + 'font-weight:700;">' + dayLabel + '</td><td style="' + tdStyle + 'color:rgba(255,255,255,0.45);">' + dateLabel + '</td><td style="' + tdStyle + '">' + (row.dials || 0) + '</td><td style="' + tdStyle + '">' + (row.answers || 0) + '</td><td style="' + tdStyle + '">' + (row.appointments || 0) + '</td><td style="' + tdStyle + '">' + (row.presentations || 0) + '</td><td style="' + tdStyle + '">' + (row.deals || 0) + '</td><td style="' + tdStyle + '">$' + Math.round(dSpend) + '</td><td style="' + tdStyle + '">$' + Math.round(dDep) + '</td><td style="' + tdStyle + '">' + dRoi + '</td></tr>';
+            tableRows += '<tr><td style="' + tdStyle + 'font-weight:700;">' + dayLabel + '</td><td style="' + tdStyle + 'color:rgba(255,255,255,0.45);">' + dateLabel + '</td><td style="' + tdStyle + '">' + (row.dials || 0) + '</td><td style="' + tdStyle + '">' + (row.answers || 0) + '</td><td style="' + tdStyle + '">' + (row.appointments || 0) + '</td><td style="' + tdStyle + '">' + (row.presentations || 0) + '</td><td style="' + tdStyle + '">' + (row.deals || 0) + '</td><td style="' + tdStyle + '">$' + Math.round(dSpend) + '</td><td style="' + tdStyle + '">$' + Math.round(dDep) + '</td><td style="' + tdStyle + '"></td></tr>';
+            weekTotals.dials += (row.dials || 0);
+            weekTotals.answers += (row.answers || 0);
+            weekTotals.appts += (row.appointments || 0);
+            weekTotals.pres += (row.presentations || 0);
+            weekTotals.deals += (row.deals || 0);
+            weekTotals.spend += dSpend;
+            weekTotals.dep += dDep;
+            weekHasData = true;
           } else {
-            tableRows += '<tr style="opacity:0.3;"><td style="' + tdStyle + 'font-weight:700;">' + dayLabel + '</td><td style="' + tdStyle + 'color:rgba(255,255,255,0.45);">' + dateLabel + '</td><td style="' + tdStyle + '">—</td><td style="' + tdStyle + '">—</td><td style="' + tdStyle + '">—</td><td style="' + tdStyle + '">—</td><td style="' + tdStyle + '">—</td><td style="' + tdStyle + '">—</td><td style="' + tdStyle + '">—</td><td style="' + tdStyle + '">—</td></tr>';
+            tableRows += '<tr style="opacity:0.3;"><td style="' + tdStyle + 'font-weight:700;">' + dayLabel + '</td><td style="' + tdStyle + 'color:rgba(255,255,255,0.45);">' + dateLabel + '</td><td style="' + tdStyle + '">—</td><td style="' + tdStyle + '">—</td><td style="' + tdStyle + '">—</td><td style="' + tdStyle + '">—</td><td style="' + tdStyle + '">—</td><td style="' + tdStyle + '">—</td><td style="' + tdStyle + '">—</td><td style="' + tdStyle + '"></td></tr>';
           }
           walkDate.setDate(walkDate.getDate() + 1);
         }
+        // Insert final week total
+        tableRows += insertWeekTotal();
+
+        // Grand total row
+        const grandRoi = totalSpend > 0 ? ((totalDeposits - totalSpend) / totalSpend * 100).toFixed(0) + '%' : '—';
+        const gtStyle = 'padding:0.6rem 0.4rem;font-weight:900;border-top:3px solid rgba(168,85,247,0.4);background:rgba(168,85,247,0.08);';
+        tableRows += '<tr style="color:#c084fc;"><td style="' + gtStyle + '">TOTAL</td><td style="' + gtStyle + '"></td><td style="' + gtStyle + '">' + totalDials + '</td><td style="' + gtStyle + '">' + totalAnswers + '</td><td style="' + gtStyle + '">' + totalAppts + '</td><td style="' + gtStyle + '">' + totalPres + '</td><td style="' + gtStyle + '">' + totalDeals + '</td><td style="' + gtStyle + '">$' + Math.round(totalSpend) + '</td><td style="' + gtStyle + '">$' + Math.round(totalDeposits) + '</td><td style="' + gtStyle + '">' + grandRoi + '</td></tr>';
 
         html += '<div style="margin-top:1.5rem;overflow-x:auto;background:rgba(10,14,28,0.7);border:1px solid rgba(59,130,246,0.1);border-radius:12px;padding:1rem;"><div style="margin-bottom:0.6rem;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:rgba(255,255,255,0.45);">Daily Breakdown</div>';
         html += '<table style="width:100%;border-collapse:collapse;font-size:0.82rem;min-width:650px;color:#fff;"><thead><tr style="border-bottom:1px solid rgba(255,255,255,0.1);">';
