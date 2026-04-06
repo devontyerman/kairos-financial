@@ -1255,6 +1255,7 @@
           let bRows = '';
           let lastWk = -1;
           const bTd = 'padding:0.45rem 0.4rem;';
+          const bTh = 'text-align:left;padding:0.5rem 0.4rem;color:rgba(255,255,255,0.5);font-size:0.78rem;';
           const bTotalStyle = 'padding:0.5rem 0.4rem;font-weight:800;border-top:2px solid rgba(59,130,246,0.25);background:rgba(59,130,246,0.06);';
           let wkT = { dials: 0, answers: 0, appts: 0, pres: 0, deals: 0, spend: 0, dep: 0 };
           let wkHas = false;
@@ -1277,6 +1278,7 @@
               const wd = wl.getDay();
               wl.setDate(wl.getDate() + (wd === 0 ? -6 : 1 - wd));
               bRows += '<tr><td colspan="10" style="padding:0.75rem 0.4rem 0.35rem;font-size:0.7rem;font-weight:800;color:rgba(59,130,246,0.7);text-transform:uppercase;letter-spacing:0.08em;border-top:2px solid rgba(59,130,246,0.15);">Week of ' + (wl.getMonth() + 1) + '/' + wl.getDate() + '</td></tr>';
+              bRows += '<tr style="border-bottom:1px solid rgba(255,255,255,0.1);"><th style="' + bTh + '">Day</th><th style="' + bTh + '">Date</th><th style="' + bTh + '">Dials</th><th style="' + bTh + '">Ans</th><th style="' + bTh + '">Appts</th><th style="' + bTh + '">Pres</th><th style="' + bTh + '">Deals</th><th style="' + bTh + '">Spend</th><th style="' + bTh + '">Dep</th><th style="' + bTh + '">ROI</th></tr>';
             }
             lastWk = weekNum;
 
@@ -1303,7 +1305,6 @@
           const gtStyle = 'padding:0.6rem 0.4rem;font-weight:900;border-top:3px solid rgba(168,85,247,0.4);background:rgba(168,85,247,0.08);';
           bRows += '<tr style="color:#c084fc;"><td style="' + gtStyle + '">TOTAL</td><td style="' + gtStyle + '"></td><td style="' + gtStyle + '">' + totalDials + '</td><td style="' + gtStyle + '">' + totalAnswers + '</td><td style="' + gtStyle + '">' + totalAppts + '</td><td style="' + gtStyle + '">' + totalPres + '</td><td style="' + gtStyle + '">' + totalDeals + '</td><td style="' + gtStyle + '">$' + fmtAP(totalSpend) + '</td><td style="' + gtStyle + '">$' + fmtAP(totalDeposits) + '</td><td style="' + gtStyle + '">' + grandRoi + '</td></tr>';
 
-          const bTh = 'text-align:left;padding:0.5rem 0.4rem;color:rgba(255,255,255,0.5);font-size:0.78rem;';
           html += '<div style="margin-top:1.5rem;overflow-x:auto;"><div style="margin-bottom:0.5rem;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:rgba(255,255,255,0.45);">Daily Breakdown' + (perfRep !== 'all' ? ' · ' + perfRep : ' · Team Total') + '</div>';
           html += '<table class="admin-table" style="min-width:650px;font-size:0.82rem;"><thead><tr style="border-bottom:1px solid rgba(255,255,255,0.1);">';
           html += '<th style="' + bTh + '">Day</th><th style="' + bTh + '">Date</th><th style="' + bTh + '">Dials</th><th style="' + bTh + '">Ans</th><th style="' + bTh + '">Appts</th><th style="' + bTh + '">Pres</th><th style="' + bTh + '">Deals</th><th style="' + bTh + '">Spend</th><th style="' + bTh + '">Dep</th><th style="' + bTh + '">ROI</th>';
