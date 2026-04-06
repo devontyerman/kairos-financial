@@ -2305,9 +2305,9 @@
               <div class="mp-title">My Policies</div>
               <div class="mp-count" id="mpCount"></div>
             </div>
-            <button class="mp-export-btn" id="mpExportPdf">
+            <button class="mp-export-btn" id="mpExportCsv">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-              Export PDF
+              Export CSV
             </button>
           </div>
           <div class="mp-filters" id="mpFilters">
@@ -4508,70 +4508,36 @@
     }
   </script>
 
-  <!-- jsPDF for PDF export -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.4/jspdf.plugin.autotable.min.js"></script>
+  <!-- CSV export -->
   <script>
-    document.getElementById('mpExportPdf').addEventListener('click', function() {
+    document.getElementById('mpExportCsv').addEventListener('click', function() {
       if (!mpAllData || !mpAllData.length) {
         showConfirmModal({ title: 'No Data', message: 'There are no policies to export for the current filter.', confirmText: 'OK', cancelText: '', variant: 'info', icon: '\ud83d\udcc4' });
         return;
       }
-
-      var doc = new jspdf.jsPDF({ orientation: 'landscape', unit: 'pt', format: 'letter' });
-
-      var repName = currentUser ? (currentUser.user_metadata?.name || currentUser.email) : 'Agent';
-      var today = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-
-      // Title
-      doc.setFontSize(18);
-      doc.setFont('helvetica', 'bold');
-      doc.text('My Policies — ' + repName, 40, 40);
-      doc.setFontSize(10);
-      doc.setFont('helvetica', 'normal');
-      doc.text('Exported ' + today + ' · ' + mpAllData.length + ' policies', 40, 58);
-
-      // Table data
-      var headers = [['Client', 'Phone', 'AP', 'Carrier', 'Product', 'Policy #', 'Status', 'Rep', 'Policy Date']];
-      var rows = mpAllData.map(function(r) {
-        var ap = parseFloat(r.annual_premium || 0);
-        var dateStr = r.policy_date ? fmtPolicyDate(r.policy_date) : '';
-        return [
-          r.client_name || '',
-          r.phone || '',
-          '$' + Math.round(ap).toLocaleString('en-US'),
-          r.carrier || '',
-          r.product_type || '',
-          r.policy_number || '',
-          r.status || '',
-          r.sales_rep || '',
-          dateStr
+      var headers = ['Client','Phone','Annual Premium','Carrier','Product','Policy Number','Status','Sales Rep','Policy Date'];
+      var csvRows = [headers.join(',')];
+      mpAllData.forEach(function(r) {
+        var row = [
+          '"' + (r.client_name || '').replace(/"/g, '""') + '"',
+          '"' + (r.phone || '').replace(/"/g, '""') + '"',
+          parseFloat(r.annual_premium || 0),
+          '"' + (r.carrier || '').replace(/"/g, '""') + '"',
+          '"' + (r.product_type || '').replace(/"/g, '""') + '"',
+          '"' + (r.policy_number || '').replace(/"/g, '""') + '"',
+          '"' + (r.status || '').replace(/"/g, '""') + '"',
+          '"' + (r.sales_rep || '').replace(/"/g, '""') + '"',
+          r.policy_date ? fmtPolicyDate(r.policy_date) : ''
         ];
+        csvRows.push(row.join(','));
       });
-
-      // Total row
-      var totalAP = mpAllData.reduce(function(s, r) { return s + parseFloat(r.annual_premium || 0); }, 0);
-      rows.push(['TOTAL', '', '$' + Math.round(totalAP).toLocaleString('en-US'), '', '', '', '', '', '']);
-
-      doc.autoTable({
-        head: headers,
-        body: rows,
-        startY: 72,
-        theme: 'striped',
-        styles: { fontSize: 8, cellPadding: 4 },
-        headStyles: { fillColor: [124, 58, 237], textColor: 255, fontStyle: 'bold' },
-        footStyles: { fillColor: [30, 20, 50], textColor: 255, fontStyle: 'bold' },
-        alternateRowStyles: { fillColor: [245, 243, 255] },
-        didParseCell: function(data) {
-          // Bold the total row
-          if (data.row.index === rows.length - 1) {
-            data.cell.styles.fontStyle = 'bold';
-            data.cell.styles.fillColor = [240, 235, 255];
-          }
-        }
-      });
-
-      doc.save('policies-' + repName.replace(/\s+/g, '-').toLowerCase() + '-' + new Date().toISOString().split('T')[0] + '.pdf');
+      var blob = new Blob([csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+      var link = document.createElement('a');
+      var repName = currentUser ? (currentUser.user_metadata?.name || currentUser.email) : 'agent';
+      link.href = URL.createObjectURL(blob);
+      link.download = 'policies-' + repName.replace(/\s+/g, '-').toLowerCase() + '-' + new Date().toISOString().split('T')[0] + '.csv';
+      link.click();
+      URL.revokeObjectURL(link.href);
     });
   </script>
 </body>
