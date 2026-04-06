@@ -172,6 +172,37 @@
     .ss-panel.active { display: block; animation: ssFadeIn 0.3s ease; }
     @keyframes ssFadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
+    /* ─── Agent Performance Tab ─── */
+    .perf-agent-kpis { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 0.6rem; margin-bottom: 1.5rem; }
+    .perf-agent-kpi { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 1rem 1.1rem; }
+    .perf-agent-kpi-label { font-size: 0.65rem; font-weight: 700; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.3rem; }
+    .perf-agent-kpi-value { font-size: 1.35rem; font-weight: 900; color: #fff; }
+    .perf-agent-kpi-sub { font-size: 0.7rem; color: rgba(255,255,255,0.4); margin-top: 0.2rem; }
+    .perf-agent-kpi.up .perf-agent-kpi-value { color: #4ade80; }
+    .perf-agent-kpi.down .perf-agent-kpi-value { color: #f87171; }
+    .perf-agent-section { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 14px; padding: 1.25rem; margin-bottom: 1rem; }
+    .perf-agent-section-title { font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(255,255,255,0.55); margin-bottom: 0.85rem; }
+    .perf-agent-bar-row { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.45rem; }
+    .perf-agent-bar-label { width: 80px; font-size: 0.72rem; font-weight: 700; color: rgba(255,255,255,0.75); text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .perf-agent-bar-track { flex: 1; height: 22px; background: rgba(255,255,255,0.06); border-radius: 6px; overflow: hidden; position: relative; }
+    .perf-agent-bar-fill { height: 100%; border-radius: 6px; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; min-width: 2px; transition: width 0.5s ease; }
+    .perf-agent-bar-fill.blue { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
+    .perf-agent-bar-fill.green { background: linear-gradient(90deg, #22c55e, #4ade80); }
+    .perf-agent-bar-fill.amber { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+    .perf-agent-bar-fill.red { background: linear-gradient(90deg, #ef4444, #f87171); }
+    .perf-agent-bar-val { font-size: 0.65rem; font-weight: 800; color: #fff; white-space: nowrap; }
+    .perf-agent-status-row { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem; }
+    .perf-agent-status-label { font-size: 0.78rem; font-weight: 600; color: rgba(255,255,255,0.7); width: 100px; }
+    .perf-agent-status-bar { flex: 1; height: 10px; background: rgba(255,255,255,0.08); border-radius: 5px; overflow: hidden; }
+    .perf-agent-status-fill { height: 100%; border-radius: 5px; transition: width 0.5s ease; }
+    .perf-agent-status-fill.uw { background: #f59e0b; }
+    .perf-agent-status-fill.app { background: #3b82f6; }
+    .perf-agent-status-fill.paid { background: #22c55e; }
+    .perf-agent-status-pct { font-size: 0.72rem; font-weight: 700; color: rgba(255,255,255,0.6); width: 40px; text-align: right; }
+    .perf-agent-trend-arrow { font-size: 0.7rem; font-weight: 700; margin-left: 0.25rem; }
+    .perf-agent-trend-arrow.up { color: #4ade80; }
+    .perf-agent-trend-arrow.down { color: #f87171; }
+
     /* Form — dark/blue theme */
     .ss-form-wrap {
       display: grid;
@@ -2083,6 +2114,7 @@
     <button class="ss-tab active" data-panel="submit">Submit Sale</button>
     <button class="ss-tab" data-panel="leaderboard">Leaderboard</button>
     <button class="ss-tab" data-panel="policies">My Policies</button>
+    <button class="ss-tab" data-panel="performance">My Performance</button>
   </div>
 
   <div class="ss-page-dark">
@@ -2348,6 +2380,34 @@
         </div>
       </div>
     </div>
+
+    <!-- ═══ PERFORMANCE TAB ═══ -->
+    <div class="ss-panel" id="panel-performance">
+      <div class="mp-inner">
+        <div id="perfNotAuth" class="mp-not-auth" style="display:none;">Sign in to view your performance.</div>
+        <div id="perfContent" style="display:none;">
+          <div class="mp-header" style="margin-bottom:1.25rem;">
+            <div>
+              <div class="mp-title">My Performance</div>
+              <div class="mp-count" id="perfSummary" style="color:rgba(255,255,255,0.5);font-size:0.78rem;"></div>
+            </div>
+          </div>
+
+          <!-- KPI Cards -->
+          <div class="perf-agent-kpis" id="agentKpis"></div>
+
+          <!-- Carrier Breakdown -->
+          <div class="perf-agent-section" id="agentCarriers"></div>
+
+          <!-- Status Conversion -->
+          <div class="perf-agent-section" id="agentStatus"></div>
+
+          <!-- Monthly Trend -->
+          <div class="perf-agent-section" id="agentTrend"></div>
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <!-- Overload Alert -->
@@ -2773,6 +2833,7 @@
         document.getElementById('panel-' + tab.dataset.panel).classList.add('active');
         if (tab.dataset.panel === 'leaderboard') loadLeaderboard();
         if (tab.dataset.panel === 'policies') loadPolicies();
+        if (tab.dataset.panel === 'performance') loadAgentPerformance();
       });
     });
 
@@ -3031,6 +3092,125 @@
       }
       btn.disabled = false;
     });
+
+    // ─── AGENT PERFORMANCE TAB ───
+    async function loadAgentPerformance() {
+      const notAuth = document.getElementById('perfNotAuth');
+      const content = document.getElementById('perfContent');
+      if (!currentUser) { notAuth.style.display = 'block'; content.style.display = 'none'; return; }
+      notAuth.style.display = 'none'; content.style.display = 'block';
+
+      const token = accessToken || SUPABASE_KEY;
+      let rows = [];
+      try {
+        const res = await fetch(SUPABASE_URL + '/rest/v1/policies?user_id=eq.' + currentUser.id + '&order=created_at.desc', {
+          headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + token }
+        });
+        rows = await res.json();
+      } catch (e) { return; }
+      if (!rows || !rows.length) {
+        document.getElementById('perfSummary').textContent = 'No policies yet — submit your first sale!';
+        document.getElementById('agentKpis').innerHTML = '';
+        document.getElementById('agentCarriers').innerHTML = '';
+        document.getElementById('agentStatus').innerHTML = '';
+        document.getElementById('agentTrend').innerHTML = '';
+        return;
+      }
+
+      const fmt = n => '$' + Math.round(n).toLocaleString('en-US');
+      const sumAP = arr => arr.reduce((s, r) => s + parseFloat(r.annual_premium || 0), 0);
+      const now = new Date();
+      const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+      const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+      const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59);
+      const yearStart = new Date(now.getFullYear(), 0, 1);
+
+      const mtd = rows.filter(r => new Date(r.policy_date || r.created_at) >= monthStart);
+      const lastMonth = rows.filter(r => { const d = new Date(r.policy_date || r.created_at); return d >= lastMonthStart && d <= lastMonthEnd; });
+      const ytd = rows.filter(r => new Date(r.policy_date || r.created_at) >= yearStart);
+
+      const mtdAP = sumAP(mtd), lmAP = sumAP(lastMonth), ytdAP = sumAP(ytd), totalAP = sumAP(rows);
+      const momChange = lmAP > 0 ? ((mtdAP - lmAP) / lmAP * 100) : (mtdAP > 0 ? 100 : 0);
+      const momClass = momChange > 0 ? 'up' : momChange < 0 ? 'down' : '';
+      const avgAP = ytd.length > 0 ? ytdAP / ytd.length : 0;
+
+      document.getElementById('perfSummary').textContent = rows.length + ' total policies · ' + fmt(totalAP) + ' lifetime AP';
+
+      // ── KPIs ──
+      function agentKpi(label, value, sub, cls) {
+        return '<div class="perf-agent-kpi ' + (cls || '') + '"><div class="perf-agent-kpi-label">' + label + '</div><div class="perf-agent-kpi-value">' + value + '</div><div class="perf-agent-kpi-sub">' + sub + '</div></div>';
+      }
+      document.getElementById('agentKpis').innerHTML =
+        agentKpi('Month to Date', fmt(mtdAP), mtd.length + ' policies') +
+        agentKpi('Last Month', fmt(lmAP), lastMonth.length + ' policies') +
+        agentKpi('Month vs Last', (momChange > 0 ? '+' : '') + momChange.toFixed(1) + '%', momChange > 0 ? '↑ Trending up' : momChange < 0 ? '↓ Trending down' : '— Flat', momClass) +
+        agentKpi('YTD Total', fmt(ytdAP), ytd.length + ' policies') +
+        agentKpi('Avg Per Policy', fmt(avgAP), 'based on YTD');
+
+      // ── Top Carriers ──
+      const carrierMap = {};
+      ytd.forEach(r => {
+        const c = r.carrier || 'Unknown';
+        if (!carrierMap[c]) carrierMap[c] = { count: 0, ap: 0 };
+        carrierMap[c].count++;
+        carrierMap[c].ap += parseFloat(r.annual_premium || 0);
+      });
+      const carriersSorted = Object.entries(carrierMap).sort((a, b) => b[1].ap - a[1].ap);
+      const maxCarrierAP = carriersSorted.length ? carriersSorted[0][1].ap : 1;
+      let carrierBars = '';
+      carriersSorted.forEach(([name, d]) => {
+        const pct = (d.ap / maxCarrierAP * 100).toFixed(1);
+        carrierBars += '<div class="perf-agent-bar-row"><div class="perf-agent-bar-label">' + name + '</div><div class="perf-agent-bar-track"><div class="perf-agent-bar-fill blue" style="width:' + pct + '%"><span class="perf-agent-bar-val">' + fmt(d.ap) + ' · ' + d.count + '</span></div></div></div>';
+      });
+      document.getElementById('agentCarriers').innerHTML = '<div class="perf-agent-section-title">Top Carriers (YTD)</div>' + (carrierBars || '<div style="color:rgba(255,255,255,0.4);font-size:0.8rem;">No data yet</div>');
+
+      // ── Status Conversion ──
+      const uwCount = ytd.filter(r => r.status === 'Underwriting').length;
+      const appCount = ytd.filter(r => r.status === 'Approved').length;
+      const paidCount = ytd.filter(r => r.status === 'Issue Paid').length;
+      const total = ytd.length || 1;
+      const uwPct = (uwCount / total * 100).toFixed(0);
+      const appPct = (appCount / total * 100).toFixed(0);
+      const paidPct = (paidCount / total * 100).toFixed(0);
+
+      function statusRow(label, count, pct, cls) {
+        return '<div class="perf-agent-status-row"><div class="perf-agent-status-label">' + label + '</div><div class="perf-agent-status-bar"><div class="perf-agent-status-fill ' + cls + '" style="width:' + pct + '%"></div></div><div class="perf-agent-status-pct">' + pct + '%</div></div>';
+      }
+      document.getElementById('agentStatus').innerHTML =
+        '<div class="perf-agent-section-title">Status Breakdown (YTD)</div>' +
+        statusRow('Underwriting', uwCount, uwPct, 'uw') +
+        statusRow('Approved', appCount, appPct, 'app') +
+        statusRow('Issue Paid', paidCount, paidPct, 'paid') +
+        '<div style="margin-top:0.6rem;font-size:0.72rem;color:rgba(255,255,255,0.4);">' + paidCount + ' of ' + ytd.length + ' policies issued — ' + paidPct + '% placement rate</div>';
+
+      // ── Monthly Trend ──
+      const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      const monthData = {};
+      ytd.forEach(r => {
+        const d = new Date(r.policy_date || r.created_at);
+        const key = monthNames[d.getMonth()];
+        if (!monthData[key]) monthData[key] = { ap: 0, count: 0 };
+        monthData[key].ap += parseFloat(r.annual_premium || 0);
+        monthData[key].count++;
+      });
+      const activeMonths = monthNames.slice(0, now.getMonth() + 1);
+      const maxMonthAP = Math.max(...activeMonths.map(m => (monthData[m]?.ap || 0)), 1);
+      let trendBars = '';
+      for (let i = 0; i < activeMonths.length; i++) {
+        const m = activeMonths[i];
+        const val = monthData[m]?.ap || 0;
+        const prev = i > 0 ? (monthData[activeMonths[i - 1]]?.ap || 0) : 0;
+        const pct = (val / maxMonthAP * 100).toFixed(1);
+        let arrow = '';
+        if (i > 0) {
+          if (val > prev) arrow = '<span class="perf-agent-trend-arrow up">↑</span>';
+          else if (val < prev) arrow = '<span class="perf-agent-trend-arrow down">↓</span>';
+        }
+        const color = val > prev && i > 0 ? 'green' : val < prev && i > 0 ? 'red' : 'blue';
+        trendBars += '<div class="perf-agent-bar-row"><div class="perf-agent-bar-label">' + m + arrow + '</div><div class="perf-agent-bar-track"><div class="perf-agent-bar-fill ' + color + '" style="width:' + pct + '%"><span class="perf-agent-bar-val">' + fmt(val) + '</span></div></div></div>';
+      }
+      document.getElementById('agentTrend').innerHTML = '<div class="perf-agent-section-title">Monthly Trend (YTD)</div>' + trendBars;
+    }
 
     // ─── MILESTONE CELEBRATIONS ───
     const MILESTONE_CONFIG = {
