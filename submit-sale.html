@@ -203,6 +203,9 @@
     .perf-agent-trend-arrow.up { color: #4ade80; }
     .perf-agent-trend-arrow.down { color: #f87171; }
 
+    /* KPI form grid */
+    .kpi-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem; }
+
     /* Form — dark/blue theme */
     .ss-form-wrap {
       display: grid;
@@ -1882,6 +1885,7 @@
       .ss-hero-title { font-size: 3rem; }
       .ss-page { padding: 0 1rem 3rem; }
       .ss-form-grid { grid-template-columns: 1fr; }
+      .kpi-form-grid { grid-template-columns: 1fr; }
       .ss-form-card { padding: 1.5rem 1.25rem; }
 
       /* Tabs: scroll horizontally without wrapping */
@@ -2217,7 +2221,7 @@
               Daily KPIs
             </div>
             <form id="kpiForm">
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:0.75rem;">
+              <div class="kpi-form-grid">
                 <div class="ss-field">
                   <label class="ss-label">Date</label>
                   <input type="date" class="ss-input" id="kpiDate" required />
