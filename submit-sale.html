@@ -4213,18 +4213,6 @@
       }
 
       function toggleTeam(val) {
-        const compPct = parseFloat(compSel.value);
-        if (val && compPct < 95) {
-          showConfirmModal({
-            title: 'Not Eligible for Team Building Yet',
-            message: 'You can begin building a team once you hit $20,000 AP in a month, which puts you at the 100% comp level. You\u2019re currently at ' + compPct + '% compensation, so you don\u2019t meet the qualifications for team building yet.',
-            confirmText: 'Got It',
-            cancelText: '',
-            variant: 'warning',
-            icon: '\ud83d\udeab'
-          });
-          return;
-        }
         hasTeam = val;
         teamYesBtn.classList.toggle('active', val);
         teamNoBtn.classList.toggle('active', !val);
@@ -4237,39 +4225,23 @@
       teamNoBtn.addEventListener('click', () => toggleTeam(false));
       teamAgentSel.addEventListener('change', computeLeadership);
 
-      // Recompute leadership when comp changes; collapse team if comp drops below 95%
-      compSel.addEventListener('change', () => {
-        if (hasTeam) {
-          const newComp = parseFloat(compSel.value);
-          if (newComp < 95) {
-            toggleTeam(false);
-          } else {
-            computeLeadership();
-          }
-        }
-      });
+      // Recompute leadership when comp or persistency changes
+      compSel.addEventListener('change', () => { if (hasTeam) computeLeadership(); });
+      persSel.addEventListener('change', () => { if (hasTeam) computeLeadership(); });
 
       function computeLeadership() {
         if (!hasTeam) return;
         const compPct = parseFloat(compSel.value);
+        const persPct = parseFloat(persSel.value) / 100;
         const agents = parseInt(teamAgentSel.value) || 1;
         const agentAPperMonth = 10000;
 
         // Override rate = comp% - 90%
-        // e.g. 100% comp → 10% override, 130% → 40%
-        const overrideRate = (compPct - 90) / 100;
-        if (overrideRate <= 0) {
-          leadershipOut.classList.add('visible');
-          leadershipOut.innerHTML =
-            '<div class="ss-calc-leadership-title">\ud83d\udc65 Leadership Override</div>' +
-            '<div class="ss-calc-leadership-body">' +
-              '<p>At <strong>' + compPct + '% compensation</strong>, your override rate is <strong>0%</strong>. You need to be above 90% comp to earn overrides on your team\u2019s production.</p>' +
-            '</div>';
-          return;
-        }
-
+        const overrideRate = Math.max((compPct - 90) / 100, 0);
         const totalTeamAP = agentAPperMonth * agents;
-        const grossOverride = totalTeamAP * overrideRate;
+
+        // Factor in persistency on the override just like personal production
+        const grossOverride = totalTeamAP * overrideRate * persPct;
         const upfrontOverride = grossOverride * 0.75;
         const backendOverride = grossOverride * 0.25;
         const annualUpfront = upfrontOverride * 12;
@@ -4279,17 +4251,13 @@
         leadershipOut.classList.add('visible');
         leadershipOut.innerHTML =
           '<div class="ss-calc-leadership-title">\ud83d\udc65 Leadership Override</div>' +
-          '<div class="ss-calc-leadership-body">' +
-            '<p>At <strong>' + compPct + '% compensation</strong>, your override is <strong>' + (compPct - 90) + '%</strong> of everything your team sells. With <strong>' + agents + ' agent' + (agents > 1 ? 's' : '') + '</strong> each selling <strong>' + fmt(agentAPperMonth) + ' AP/month</strong>, your team produces <strong>' + fmt(totalTeamAP) + '/month</strong> in AP.</p>' +
-            '<p>Your <strong>monthly leadership override</strong> is <strong>' + fmt(grossOverride) + '</strong> \u2014 you receive <strong>75% upfront (' + fmt(upfrontOverride) + ')</strong> and the remaining <strong>25% (' + fmt(backendOverride) + ')</strong> hits as a leadership backend at 9 months, just like your personal deals.</p>' +
-          '</div>' +
           '<div class="ss-calc-leadership-grid">' +
             '<div class="ss-calc-leadership-stat">' +
-              '<div class="ss-calc-leadership-stat-label">Monthly Upfront</div>' +
+              '<div class="ss-calc-leadership-stat-label">Monthly Upfront (75%)</div>' +
               '<div class="ss-calc-leadership-stat-value">' + fmt(upfrontOverride) + '</div>' +
             '</div>' +
             '<div class="ss-calc-leadership-stat">' +
-              '<div class="ss-calc-leadership-stat-label">Monthly Backend</div>' +
+              '<div class="ss-calc-leadership-stat-label">Monthly Backend (25%)</div>' +
               '<div class="ss-calc-leadership-stat-value">' + fmt(backendOverride) + '</div>' +
             '</div>' +
             '<div class="ss-calc-leadership-stat">' +
@@ -4297,9 +4265,10 @@
               '<div class="ss-calc-leadership-stat-value green">' + fmt(annualTotal) + '</div>' +
             '</div>' +
           '</div>' +
-          '<div class="ss-calc-leadership-body" style="margin-top:0.75rem;">' +
-            '<p style="font-size:0.78rem; color:rgba(255,255,255,0.6);">The 25% leadership backend works the same as your personal backend \u2014 it\u2019s paid at the 9-month mark on each agent\u2019s production. As your team grows, these stacked backends become a significant recurring income stream on top of your personal earnings.</p>' +
-          '</div>';
+          '<div class="ss-calc-leadership-body" style="margin-top:0.85rem;">' +
+            '<p>The 25% leadership backend is paid at 9 months on each agent\u2019s production, just like your personal deals. As your team grows, these stacked backends become a significant recurring income stream on top of your personal earnings.</p>' +
+          '</div>' +
+          '<p style="font-size:0.68rem; color:rgba(255,255,255,0.45); margin-top:0.75rem; line-height:1.5; text-align:center;">These numbers are based on agency averages analyzed from thousands of agent data points. Your own results may vary, but this is a good estimate of what to expect.</p>';
       }
 
       computeCommission();
