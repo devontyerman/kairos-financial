@@ -2210,9 +2210,9 @@
         </div>
 
         <!-- DAILY KPI FORM -->
-        <div class="ss-form-wrap" id="kpiFormWrap" style="display:none;">
-          <div class="ss-form-card" style="padding:1.5rem;">
-            <div class="ss-form-title" style="margin-bottom:1rem;">
+        <div class="ss-form-wrap" id="kpiFormWrap" style="display:none;margin-top:2.5rem;">
+          <div class="ss-form-card" style="padding:1.5rem;background:linear-gradient(135deg,rgba(14,20,36,0.95),rgba(22,28,48,0.95));border:1px solid rgba(59,130,246,0.2);box-shadow:0 8px 32px rgba(0,0,0,0.4),0 0 20px rgba(59,130,246,0.08);">
+            <div class="ss-form-title" style="margin-bottom:1rem;color:#60a5fa;">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
               Daily KPIs
             </div>
@@ -2457,7 +2457,7 @@
           <div class="perf-agent-section" id="agentTrend"></div>
 
           <!-- KPI Stats -->
-          <div class="perf-agent-section" id="agentKpiStats">
+          <div class="perf-agent-section" id="agentKpiStats" style="background:rgba(14,20,36,0.9);border:1px solid rgba(59,130,246,0.15);">
             <div class="perf-agent-section-title">Daily KPIs</div>
             <div style="display:flex;flex-wrap:wrap;gap:0.4rem;align-items:center;margin-bottom:0.75rem;">
               <button class="mp-filter active" data-kpi-range="mtd">MTD</button>
@@ -3486,44 +3486,60 @@
       // ── Daily Breakdown (only for short ranges) ──
       if (['wtd','mtd','lastweek','lastmonth'].includes(range)) {
         const dayNames = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-        // Build a map of kpi_date → row
         const dataMap = {};
         filtered.forEach(r => { dataMap[r.kpi_date] = r; });
 
-        // Walk through each calendar day in range
         const walkDate = new Date(rangeStart); walkDate.setHours(0,0,0,0);
         const walkEnd = new Date(rangeEnd); walkEnd.setHours(0,0,0,0);
         let tableRows = '';
+        let lastWeekNum = -1;
+        const thStyle = 'text-align:left;padding:0.5rem 0.4rem;color:rgba(255,255,255,0.5);font-size:0.78rem;';
+
         while (walkDate <= walkEnd) {
           const dow = walkDate.getDay();
           if ((excludeSat && dow === 6) || (excludeSun && dow === 0)) { walkDate.setDate(walkDate.getDate() + 1); continue; }
+
+          // Week separator — insert a header row when we enter a new week (Sunday = start)
+          const weekNum = Math.floor((walkDate - rangeStart) / (7 * 24 * 60 * 60 * 1000));
+          if (weekNum !== lastWeekNum && lastWeekNum !== -1) {
+            // Get the Monday of this week for the label
+            const weekLabel = new Date(walkDate);
+            const wDay = weekLabel.getDay();
+            const mondayOffset = wDay === 0 ? -6 : 1 - wDay;
+            weekLabel.setDate(weekLabel.getDate() + mondayOffset);
+            const wkLabel = 'Week of ' + (weekLabel.getMonth() + 1) + '/' + weekLabel.getDate();
+            tableRows += '<tr><td colspan="10" style="padding:0.75rem 0.4rem 0.35rem;font-size:0.7rem;font-weight:800;color:rgba(59,130,246,0.7);text-transform:uppercase;letter-spacing:0.08em;border-top:2px solid rgba(59,130,246,0.15);">' + wkLabel + '</td></tr>';
+          }
+          lastWeekNum = weekNum;
+
           const ymd = walkDate.getFullYear() + '-' + String(walkDate.getMonth() + 1).padStart(2,'0') + '-' + String(walkDate.getDate()).padStart(2,'0');
           const dayLabel = dayNames[dow];
           const dateLabel = (walkDate.getMonth() + 1) + '/' + walkDate.getDate();
           const row = dataMap[ymd];
+          const tdStyle = 'padding:0.45rem 0.4rem;';
           if (row) {
             const dSpend = parseFloat(row.lead_spend || 0);
             const dDep = parseFloat(row.deposits || 0);
             const dRoi = dSpend > 0 ? ((dDep - dSpend) / dSpend * 100).toFixed(0) + '%' : '—';
-            tableRows += '<tr><td style="font-weight:700;">' + dayLabel + '</td><td style="color:rgba(255,255,255,0.4);font-size:0.72rem;">' + dateLabel + '</td><td>' + (row.dials || 0) + '</td><td>' + (row.answers || 0) + '</td><td>' + (row.appointments || 0) + '</td><td>' + (row.presentations || 0) + '</td><td>' + (row.deals || 0) + '</td><td>$' + Math.round(dSpend) + '</td><td>$' + Math.round(dDep) + '</td><td>' + dRoi + '</td></tr>';
+            tableRows += '<tr><td style="' + tdStyle + 'font-weight:700;">' + dayLabel + '</td><td style="' + tdStyle + 'color:rgba(255,255,255,0.45);">' + dateLabel + '</td><td style="' + tdStyle + '">' + (row.dials || 0) + '</td><td style="' + tdStyle + '">' + (row.answers || 0) + '</td><td style="' + tdStyle + '">' + (row.appointments || 0) + '</td><td style="' + tdStyle + '">' + (row.presentations || 0) + '</td><td style="' + tdStyle + '">' + (row.deals || 0) + '</td><td style="' + tdStyle + '">$' + Math.round(dSpend) + '</td><td style="' + tdStyle + '">$' + Math.round(dDep) + '</td><td style="' + tdStyle + '">' + dRoi + '</td></tr>';
           } else {
-            tableRows += '<tr style="opacity:0.35;"><td style="font-weight:700;">' + dayLabel + '</td><td style="color:rgba(255,255,255,0.4);font-size:0.72rem;">' + dateLabel + '</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>';
+            tableRows += '<tr style="opacity:0.3;"><td style="' + tdStyle + 'font-weight:700;">' + dayLabel + '</td><td style="' + tdStyle + 'color:rgba(255,255,255,0.45);">' + dateLabel + '</td><td style="' + tdStyle + '">—</td><td style="' + tdStyle + '">—</td><td style="' + tdStyle + '">—</td><td style="' + tdStyle + '">—</td><td style="' + tdStyle + '">—</td><td style="' + tdStyle + '">—</td><td style="' + tdStyle + '">—</td><td style="' + tdStyle + '">—</td></tr>';
           }
           walkDate.setDate(walkDate.getDate() + 1);
         }
 
-        html += '<div style="margin-top:1.25rem;overflow-x:auto;"><div style="margin-bottom:0.5rem;font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:rgba(255,255,255,0.45);">Daily Breakdown</div>';
-        html += '<table style="width:100%;border-collapse:collapse;font-size:0.72rem;min-width:600px;"><thead><tr style="border-bottom:1px solid rgba(255,255,255,0.1);">';
-        html += '<th style="text-align:left;padding:0.4rem 0.3rem;color:rgba(255,255,255,0.5);">Day</th>';
-        html += '<th style="text-align:left;padding:0.4rem 0.3rem;color:rgba(255,255,255,0.5);">Date</th>';
-        html += '<th style="text-align:left;padding:0.4rem 0.3rem;color:rgba(255,255,255,0.5);">Dials</th>';
-        html += '<th style="text-align:left;padding:0.4rem 0.3rem;color:rgba(255,255,255,0.5);">Ans</th>';
-        html += '<th style="text-align:left;padding:0.4rem 0.3rem;color:rgba(255,255,255,0.5);">Appts</th>';
-        html += '<th style="text-align:left;padding:0.4rem 0.3rem;color:rgba(255,255,255,0.5);">Pres</th>';
-        html += '<th style="text-align:left;padding:0.4rem 0.3rem;color:rgba(255,255,255,0.5);">Deals</th>';
-        html += '<th style="text-align:left;padding:0.4rem 0.3rem;color:rgba(255,255,255,0.5);">Spend</th>';
-        html += '<th style="text-align:left;padding:0.4rem 0.3rem;color:rgba(255,255,255,0.5);">Dep</th>';
-        html += '<th style="text-align:left;padding:0.4rem 0.3rem;color:rgba(255,255,255,0.5);">ROI</th>';
+        html += '<div style="margin-top:1.5rem;overflow-x:auto;background:rgba(10,14,28,0.7);border:1px solid rgba(59,130,246,0.1);border-radius:12px;padding:1rem;"><div style="margin-bottom:0.6rem;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:rgba(255,255,255,0.45);">Daily Breakdown</div>';
+        html += '<table style="width:100%;border-collapse:collapse;font-size:0.82rem;min-width:650px;"><thead><tr style="border-bottom:1px solid rgba(255,255,255,0.1);">';
+        html += '<th style="' + thStyle + '">Day</th>';
+        html += '<th style="' + thStyle + '">Date</th>';
+        html += '<th style="' + thStyle + '">Dials</th>';
+        html += '<th style="' + thStyle + '">Ans</th>';
+        html += '<th style="' + thStyle + '">Appts</th>';
+        html += '<th style="' + thStyle + '">Pres</th>';
+        html += '<th style="' + thStyle + '">Deals</th>';
+        html += '<th style="' + thStyle + '">Spend</th>';
+        html += '<th style="' + thStyle + '">Dep</th>';
+        html += '<th style="' + thStyle + '">ROI</th>';
         html += '</tr></thead><tbody>';
         html += tableRows;
         html += '</tbody></table></div>';
