@@ -4624,15 +4624,15 @@
         if (v === 100) o.selected = true;
         compSel.appendChild(o);
       }
-      // Populate persistency (50 - 85, step 5), default 75
-      for (let v = 50; v <= 85; v += 5) {
+      // Populate persistency (50 - 90, step 5), default 75
+      for (let v = 50; v <= 90; v += 5) {
         const o = document.createElement('option');
         o.value = v; o.textContent = v + '%';
         if (v === 75) o.selected = true;
         persSel.appendChild(o);
       }
-      // Populate ROI percentage (150% - 500%, step 50%), default 200%
-      for (let v = 150; v <= 500; v += 50) {
+      // Populate ROI percentage (50% - 500%, step 50%), default 200%
+      for (let v = 50; v <= 500; v += 50) {
         const o = document.createElement('option');
         o.value = v; o.textContent = v + '%';
         if (v === 200) o.selected = true;
