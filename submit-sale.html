@@ -3288,12 +3288,14 @@
           const dealCount = kpiData.deals;
           const dealMsgs = {
             1: { title: 'Deal Closed!', msg: 'Congrats!', icon: '🎯' },
-            2: { title: 'Two Deals!', msg: 'Double kill — you\'re on fire today.', icon: '🔥' },
-            3: { title: 'Three Deals!', msg: 'Hat trick! That\'s an elite day right there.', icon: '🏆' },
-            4: { title: 'Four Deals!', msg: 'Absolutely dominant. This is what a top producer looks like.', icon: '💎' },
-            5: { title: 'Five Deals!', msg: 'Five in a day?! You\'re built different. Legendary performance.', icon: '👑' }
+            2: { title: 'Double Deal!', msg: '', icon: '🔥' },
+            3: { title: 'Triple Deal!', msg: '', icon: '🔥' },
+            4: { title: 'Overkill!', msg: '', icon: '💀' },
+            5: { title: 'Dealtacular!', msg: '', icon: '☠️' },
+            6: { title: 'Dealimanjaro!', msg: '', icon: '⚡' },
+            7: { title: 'Dealpocalypse!', msg: '', icon: '💥' }
           };
-          const dm = dealMsgs[dealCount] || { title: dealCount + ' Deals!', msg: dealCount + ' deals in one day — that\'s unheard of. You\'re in a league of your own.', icon: '🚀' };
+          const dm = dealMsgs[dealCount] || { title: 'UNFRIGGINBELIEVABLE!', msg: dealCount + ' deals.', icon: '👑' };
           await showConfirmModal({
             title: dm.title,
             message: dm.msg,
