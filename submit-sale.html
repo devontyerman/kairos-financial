@@ -3183,6 +3183,16 @@
     if (kpiDateInput) {
       kpiDateInput.value = todayYMD();
       kpiDateInput.max = todayYMD();
+      kpiDateInput.addEventListener('click', () => {
+        if (typeof kpiDateInput.showPicker === 'function') {
+          try { kpiDateInput.showPicker(); } catch (e) { /* ignore */ }
+        }
+      });
+      kpiDateInput.addEventListener('focus', () => {
+        if (typeof kpiDateInput.showPicker === 'function') {
+          try { kpiDateInput.showPicker(); } catch (e) { /* ignore */ }
+        }
+      });
     }
 
     document.getElementById('kpiForm').addEventListener('submit', async (e) => {
