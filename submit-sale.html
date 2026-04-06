@@ -4226,12 +4226,10 @@
 
       // Recompute leadership when comp or persistency changes
       compSel.addEventListener('change', () => { if (hasTeam) computeLeadership(); });
-      persSel.addEventListener('change', () => { if (hasTeam) computeLeadership(); });
 
       function computeLeadership() {
         if (!hasTeam) return;
         const compPct = parseFloat(compSel.value);
-        const persPct = parseFloat(persSel.value) / 100;
         const agents = parseInt(teamAgentSel.value) || 1;
         const agentAPperMonth = 10000;
 
@@ -4239,17 +4237,17 @@
         const overrideRate = Math.max((compPct - 90) / 100, 0);
         const totalTeamAP = agentAPperMonth * agents;
 
-        // Factor in persistency on the override just like personal production
-        const grossOverride = totalTeamAP * overrideRate * persPct;
+        // No persistency on leadership — flat $10K per agent
+        const grossOverride = totalTeamAP * overrideRate;
         const upfrontOverride = grossOverride * 0.75;
         const backendOverride = grossOverride * 0.25;
         const annualUpfront = upfrontOverride * 12;
         const annualBackend = backendOverride * 12;
         const annualTotal = annualUpfront + annualBackend;
 
-        // Team bonus: 2% of team production when total volume ≥ $150,000/mo
+        // Team bonus: 1.5% of team production when total volume ≥ $150,000/mo
         const teamBonusThreshold = 150000;
-        const teamBonusRate = 0.02;
+        const teamBonusRate = 0.015;
         const teamBonusQualified = totalTeamAP >= teamBonusThreshold;
         const monthlyTeamBonus = teamBonusQualified ? totalTeamAP * teamBonusRate : 0;
         const annualTeamBonus = monthlyTeamBonus * 12;
@@ -4268,16 +4266,16 @@
               '<div class="ss-calc-leadership-stat-value">' + fmt(backendOverride) + '</div>' +
             '</div>' +
             '<div class="ss-calc-leadership-stat">' +
-              '<div class="ss-calc-leadership-stat-label">Team Bonus (2%)</div>' +
+              '<div class="ss-calc-leadership-stat-label">Team Bonus (1.5%)</div>' +
               '<div class="ss-calc-leadership-stat-value">' + (teamBonusQualified ? fmt(monthlyTeamBonus) + '/mo' : 'Not yet') + '</div>' +
             '</div>' +
           '</div>' +
           (teamBonusQualified
             ? '<div class="ss-calc-leadership-body" style="margin-top:0.75rem;">' +
-                '<p>Your team\u2019s total volume of <strong>' + fmt(totalTeamAP) + '/month</strong> qualifies for the <strong>2% team bonus</strong> \u2014 an additional <strong>' + fmt(monthlyTeamBonus) + '/month</strong> (' + fmt(annualTeamBonus) + '/year).</p>' +
+                '<p>Your team\u2019s total volume of <strong>' + fmt(totalTeamAP) + '/month</strong> qualifies for the <strong>1.5% team bonus</strong> \u2014 an additional <strong>' + fmt(monthlyTeamBonus) + '/month</strong> (' + fmt(annualTeamBonus) + '/year).</p>' +
               '</div>'
             : '<div class="ss-calc-leadership-body" style="margin-top:0.75rem;">' +
-                '<p>The <strong>2% team bonus</strong> kicks in once your team\u2019s total volume reaches <strong>' + fmt(teamBonusThreshold) + '/month</strong> (about 15 agents). You\u2019re currently at <strong>' + fmt(totalTeamAP) + '/month</strong> \u2014 ' + fmt(teamBonusThreshold - totalTeamAP) + ' to go.</p>' +
+                '<p>The <strong>1.5% team bonus</strong> kicks in once your team\u2019s total volume reaches <strong>' + fmt(teamBonusThreshold) + '/month</strong> (about 15 agents). You\u2019re currently at <strong>' + fmt(totalTeamAP) + '/month</strong> \u2014 ' + fmt(teamBonusThreshold - totalTeamAP) + ' to go.</p>' +
               '</div>'
           ) +
           '<div class="ss-calc-leadership-body" style="margin-top:0.5rem;">' +
