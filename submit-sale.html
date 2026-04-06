@@ -842,6 +842,26 @@
       font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; color: #c084fc;
     }
     @media (max-width: 520px) { .ss-goal-kpis { grid-template-columns: 1fr; } }
+    /* Goal chart line draw animation */
+    .ss-goal-chart .goal-line-animated {
+      stroke-dasharray: 2000;
+      stroke-dashoffset: 2000;
+      animation: ssDrawLine 1.2s ease-out forwards;
+    }
+    @keyframes ssDrawLine {
+      to { stroke-dashoffset: 0; }
+    }
+    .ss-goal-chart .goal-area-animated { animation: ssFadeIn 1s ease-out; }
+    .ss-goal-chart .goal-dot-animated { animation: ssDotPop 0.4s ease-out 1s both; }
+    @keyframes ssDotPop {
+      0% { r: 0; opacity: 0; }
+      100% { r: 5; opacity: 1; }
+    }
+    .ss-goal-kpi-value.counting {
+      display: inline-block;
+      overflow: hidden;
+      transition: none;
+    }
 
     /* Manage Policies */
     .mp-inner { max-width: 1400px; margin: 0 auto; padding: 2.5rem 1.5rem; }
@@ -2924,6 +2944,8 @@
         // Check milestones first — if one triggers, it replaces the normal success modal
         const triggered = await checkAndShowMilestone();
         if (!triggered) showSuccessModal(apValue);
+        // Refresh goal tracker immediately with animation
+        loadGoalTracker(true);
         // Check underwriting overload
         if (data.status === 'Underwriting') checkUnderwritingOverload();
       } else {
@@ -4064,7 +4086,7 @@
       loadGoalTracker();
     });
 
-    async function loadGoalTracker() {
+    async function loadGoalTracker(animate) {
       if (!currentUser) { goalTracker.classList.remove('visible'); return; }
       goalTracker.classList.add('visible');
 
@@ -4177,23 +4199,35 @@
       const lineColor = ahead ? '#4ade80' : '#f87171';
       const fillColor = ahead ? 'rgba(74,222,128,0.12)' : 'rgba(248,113,113,0.12)';
 
+      const anim = animate ? true : false;
+      const lineAnim = anim ? ' class="goal-line-animated"' : '';
+      const areaAnim = anim ? ' class="goal-area-animated"' : '';
+      const dotAnim = anim ? ' class="goal-dot-animated"' : '';
+
       let svg = '<svg class="ss-goal-chart" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="xMidYMid meet">' +
         grid + ticks +
         (goal > 0 ? '<path d="' + goalLine + '" stroke="#fbbf24" stroke-width="2" stroke-dasharray="5 4" fill="none"/>' : '') +
-        '<path d="' + areaPath + '" fill="' + fillColor + '"/>' +
-        '<path d="' + actualLine + '" stroke="' + lineColor + '" stroke-width="2.5" fill="none" stroke-linejoin="round" stroke-linecap="round"/>' +
-        '<circle cx="' + xAt(lastIdx) + '" cy="' + yAt(cumActual[lastIdx]) + '" r="5" fill="' + dotColor + '" stroke="#0a0612" stroke-width="2"/>' +
+        '<path d="' + areaPath + '" fill="' + fillColor + '"' + areaAnim + '/>' +
+        '<path d="' + actualLine + '" stroke="' + lineColor + '" stroke-width="2.5" fill="none" stroke-linejoin="round" stroke-linecap="round"' + lineAnim + '/>' +
+        '<circle cx="' + xAt(lastIdx) + '" cy="' + yAt(cumActual[lastIdx]) + '" r="' + (anim ? '0' : '5') + '" fill="' + dotColor + '" stroke="#0a0612" stroke-width="2"' + dotAnim + '/>' +
         '</svg>';
 
-      // KPIs
-      let kpis = '<div class="ss-goal-kpis">';
-      kpis += '<div class="ss-goal-kpi"><div class="ss-goal-kpi-label">YTD Earned</div><div class="ss-goal-kpi-value purple">' + fmtG(ytdAP) + '</div></div>';
-      kpis += '<div class="ss-goal-kpi"><div class="ss-goal-kpi-label">Projected Annual</div><div class="ss-goal-kpi-value ' + (ahead ? 'green' : 'red') + '">' + fmtG(yearlyPace) + '</div></div>';
+      // KPI values — use data attributes for animated count-up
+      const kpiData = [
+        { label: 'YTD Earned', value: ytdAP, cls: 'purple', prefix: '$', sign: '' },
+        { label: 'Projected Annual', value: yearlyPace, cls: ahead ? 'green' : 'red', prefix: '$', sign: '' }
+      ];
       if (goal > 0) {
-        kpis += '<div class="ss-goal-kpi"><div class="ss-goal-kpi-label">' + (ahead ? 'Ahead of Pace' : 'Behind Pace') + '</div><div class="ss-goal-kpi-value ' + (ahead ? 'green' : 'red') + '">' + (ahead ? '+' : '-') + fmtG(Math.abs(diff)) + '</div></div>';
+        kpiData.push({ label: ahead ? 'Ahead of Pace' : 'Behind Pace', value: Math.abs(diff), cls: ahead ? 'green' : 'red', prefix: '$', sign: ahead ? '+' : '-' });
       } else {
-        kpis += '<div class="ss-goal-kpi"><div class="ss-goal-kpi-label">Set a Goal</div><div class="ss-goal-kpi-value gold">→</div></div>';
+        kpiData.push({ label: 'Set a Goal', value: 0, cls: 'gold', prefix: '', sign: '→', static: true });
       }
+
+      let kpis = '<div class="ss-goal-kpis">';
+      kpiData.forEach(function(k, i) {
+        const displayVal = k.static ? k.sign : k.sign + k.prefix + Math.round(k.value).toLocaleString();
+        kpis += '<div class="ss-goal-kpi"><div class="ss-goal-kpi-label">' + k.label + '</div><div class="ss-goal-kpi-value ' + k.cls + '" data-goal-countup="' + (k.static ? '' : Math.round(k.value)) + '" data-goal-prefix="' + (k.sign + k.prefix) + '">' + (anim && !k.static ? k.sign + k.prefix + '0' : displayVal) + '</div></div>';
+      });
       kpis += '</div>';
 
       // Monthly needed message
@@ -4211,6 +4245,27 @@
       legend += '</div>';
 
       chartArea.innerHTML = svg + legend + kpis + monthly;
+
+      // Odometer count-up animation
+      if (anim) {
+        chartArea.querySelectorAll('[data-goal-countup]').forEach(function(el) {
+          const target = parseInt(el.dataset.goalCountup);
+          if (!target) return;
+          const prefix = el.dataset.goalPrefix || '';
+          const duration = 1200;
+          const start = performance.now();
+          function tick(now) {
+            const elapsed = now - start;
+            const progress = Math.min(elapsed / duration, 1);
+            // Ease-out cubic
+            const eased = 1 - Math.pow(1 - progress, 3);
+            const current = Math.round(target * eased);
+            el.textContent = prefix + current.toLocaleString();
+            if (progress < 1) requestAnimationFrame(tick);
+          }
+          requestAnimationFrame(tick);
+        });
+      }
     }
 
     // ─── COMMISSION + LEADS ROI CALCULATORS ───
