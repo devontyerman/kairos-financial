@@ -3952,6 +3952,14 @@
 
       // Also keep localStorage as a fast cache
       localStorage.setItem('kairos_goal_' + currentUser.id, val);
+      showConfirmModal({
+        title: 'Goal Updated',
+        message: 'New annual goal set: $' + Math.round(val).toLocaleString() + '. Let\u2019s get after it.',
+        confirmText: 'Let\u2019s Go',
+        cancelText: '',
+        variant: 'info',
+        icon: '\ud83c\udfaf'
+      });
       loadGoalTracker();
     });
 
