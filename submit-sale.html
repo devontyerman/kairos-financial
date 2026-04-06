@@ -4058,6 +4058,8 @@
         { ap: 200000, bonus: 20000 }
       ];
 
+      let personalAnnualIncome = 0; // set by computeCommission, read by computeLeadership
+
       function computeCommission() {
         // Step 1 is the NET income target — take-home AFTER lead costs
         const netGoal = parseCommInput(incomeEl.value);
@@ -4187,7 +4189,7 @@
       }
 
         // Keep leadership in sync whenever commission recalculates
-        if (hasTeam) computeLeadership();
+        try { if (hasTeam) computeLeadership(); } catch(e) {}
 
       incomeEl.addEventListener('input', () => {
         const raw = incomeEl.value.replace(/[^0-9]/g, '');
@@ -4199,7 +4201,6 @@
       roiSel.addEventListener('change', computeCommission);
 
       // ── TEAM / LEADERSHIP OVERRIDE ──
-      let personalAnnualIncome = 0; // set by computeCommission, read by computeLeadership
       let hasTeam = false;
       const teamYesBtn = document.getElementById('teamYes');
       const teamNoBtn = document.getElementById('teamNo');
