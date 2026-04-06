@@ -2197,8 +2197,8 @@
         </div>
         <div class="ss-lb-filter-rows">
           <div class="ss-lb-filter-row">
-            <button class="ss-lb-filter active" data-range="daily">Today</button>
-            <button class="ss-lb-filter" data-range="weekly">This Week</button>
+            <button class="ss-lb-filter" data-range="daily">Today</button>
+            <button class="ss-lb-filter active" data-range="weekly">This Week</button>
             <button class="ss-lb-filter" data-range="monthly">This Month</button>
             <button class="ss-lb-filter" data-range="yearly">This Year</button>
           </div>
@@ -3038,7 +3038,7 @@
     }
 
     // ─── LEADERBOARD ───
-    let currentRange = 'daily';
+    let currentRange = 'weekly';
 
     document.querySelectorAll('.ss-lb-filter').forEach(btn => {
       btn.addEventListener('click', () => {
