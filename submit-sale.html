@@ -4137,6 +4137,7 @@
         const year1UpfrontTotal = netGoal * 12;
         const year1BackendTotal = backend * 3;
         const year1Total = year1UpfrontTotal + year1BackendTotal;
+        personalAnnualIncome = year1Total;
 
         // Year 2: upfront for 12 months + backend for ALL 12 months + renewals for 12 months
         // By Year 2 every month has a backend arriving from 9 months prior
@@ -4185,6 +4186,9 @@
           '<div class="msg">At <strong>' + roiPct + '% ROI</strong>, a <strong>' + fmt(monthlyLeadSpend) + '</strong> lead budget produces <strong>' + fmt(upfront) + '</strong> in upfront commission \u2014 leaving <strong>' + fmt(netGoal) + '</strong> net after paying leads.</div>';
       }
 
+        // Keep leadership in sync whenever commission recalculates
+        if (hasTeam) computeLeadership();
+
       incomeEl.addEventListener('input', () => {
         const raw = incomeEl.value.replace(/[^0-9]/g, '');
         localStorage.setItem(getCommGoalKey(), raw);
@@ -4195,6 +4199,7 @@
       roiSel.addEventListener('change', computeCommission);
 
       // ── TEAM / LEADERSHIP OVERRIDE ──
+      let personalAnnualIncome = 0; // set by computeCommission, read by computeLeadership
       let hasTeam = false;
       const teamYesBtn = document.getElementById('teamYes');
       const teamNoBtn = document.getElementById('teamNo');
@@ -4267,6 +4272,11 @@
           '</div>' +
           '<div class="ss-calc-leadership-body" style="margin-top:0.85rem;">' +
             '<p>The 25% leadership backend is paid at 9 months on each agent\u2019s production, just like your personal deals. As your team grows, these stacked backends become a significant recurring income stream on top of your personal earnings.</p>' +
+          '</div>' +
+          '<div style="margin-top:1.25rem; padding:1.15rem; background:linear-gradient(135deg,rgba(74,222,128,0.1),rgba(34,197,94,0.04)); border:1px solid rgba(74,222,128,0.3); border-radius:12px; text-align:center;">' +
+            '<div style="font-family:\'Plus Jakarta Sans\',sans-serif; font-size:0.66rem; font-weight:800; letter-spacing:0.14em; text-transform:uppercase; color:#86efac; margin-bottom:0.5rem;">Combined Annual Income</div>' +
+            '<div style="font-family:\'Plus Jakarta Sans\',sans-serif; font-size:2.2rem; font-weight:900; color:#4ade80; text-shadow:0 0 24px rgba(74,222,128,0.55); letter-spacing:-0.02em;">' + fmt(personalAnnualIncome + annualTotal) + '</div>' +
+            '<div style="font-size:0.75rem; color:rgba(255,255,255,0.65); margin-top:0.35rem;">Personal earnings + Leadership overrides</div>' +
           '</div>' +
           '<p style="font-size:0.68rem; color:rgba(255,255,255,0.45); margin-top:0.75rem; line-height:1.5; text-align:center;">These numbers are based on agency averages analyzed from thousands of agent data points. Your own results may vary, but this is a good estimate of what to expect.</p>';
       }
