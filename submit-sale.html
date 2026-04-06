@@ -695,7 +695,18 @@
     .mp-attention-info { flex: 1; min-width: 140px; }
     .mp-attention-name { font-size: 0.82rem; font-weight: 600; color: #fff; }
     .mp-attention-meta { font-size: 0.68rem; color: rgba(255,255,255,0.88); }
-    .mp-attention-actions { display: flex; gap: 0.3rem; }
+    .mp-attention-actions { display: flex; align-items: center; gap: 0.4rem; }
+    .mp-attention-actions .mp-more-wrap { margin-left: auto; }
+    .mp-attention-actions .att-del {
+      padding: 0.5rem 0.75rem;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.75rem; font-weight: 600;
+      border-radius: 6px; border: none;
+      cursor: pointer; transition: all 0.15s ease;
+      text-align: left; width: 100%;
+      background: transparent; color: #f87171;
+    }
+    .mp-attention-actions .att-del:hover { background: rgba(239,68,68,0.12); color: #fca5a5; }
     .mp-attention-empty { font-size: 0.8rem; color: rgba(255,255,255,0.82); text-align: center; padding: 0.5rem; }
 
     /* Alert popup */
@@ -3776,16 +3787,29 @@
         html += '<div class="mp-attention-info"><div class="mp-attention-name">' + esc(p.client_name) + '</div>';
         html += '<div class="mp-attention-meta">' + esc(p.carrier) + ' · $' + ap.toLocaleString() + ' · ' + timeLabel + '</div></div>';
         html += '<div class="mp-attention-actions">';
-        html += '<button class="ss-uw-btn approve" data-id="' + p.id + '">Approve</button>';
-        html += '<button class="ss-uw-btn delete" data-id="' + p.id + '">Delete</button>';
+        html += '<button class="mp-action-btn mp-action-approve att-approve" data-id="' + p.id + '">Approve Policy</button>';
+        html += '<div class="mp-more-wrap"><button class="mp-more-btn att-more" data-id="' + p.id + '">&#8943;</button><div class="mp-more-menu"><button class="att-del" data-id="' + p.id + '">Delete Policy</button></div></div>';
         html += '</div></div>';
       });
 
       html += '</div></div>';
       el.innerHTML = html;
 
+      // Attention 3-dot menu toggle
+      el.querySelectorAll('.att-more').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const menu = btn.nextElementSibling;
+          el.querySelectorAll('.mp-more-menu.open').forEach(m => { if (m !== menu) m.classList.remove('open'); });
+          menu.classList.toggle('open');
+        });
+      });
+      document.addEventListener('click', () => {
+        el.querySelectorAll('.mp-more-menu.open').forEach(m => m.classList.remove('open'));
+      });
+
       // Attention approve handlers
-      el.querySelectorAll('.ss-uw-btn.approve').forEach(btn => {
+      el.querySelectorAll('.att-approve').forEach(btn => {
         btn.addEventListener('click', async () => {
           const ok = await showConfirmModal({
             title: 'Mark as Approved?',
@@ -3808,9 +3832,10 @@
         });
       });
 
-      // Attention delete handlers
-      el.querySelectorAll('.ss-uw-btn.delete').forEach(btn => {
+      // Attention delete handlers (inside 3-dot menu)
+      el.querySelectorAll('.att-del').forEach(btn => {
         btn.addEventListener('click', async () => {
+          btn.closest('.mp-more-menu').classList.remove('open');
           const ok = await showConfirmModal({
             title: 'Delete this policy?',
             message: 'Are you sure you want to delete this policy? This action cannot be undone.',
