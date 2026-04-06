@@ -2945,7 +2945,13 @@
         const triggered = await checkAndShowMilestone();
         if (!triggered) showSuccessModal(apValue);
         // Refresh goal tracker immediately with animation
-        loadGoalTracker(true);
+        // Small delay so the data has time to propagate on Supabase
+        setTimeout(async () => {
+          await loadGoalTracker(true);
+          // Scroll to goal tracker so the animation is visible
+          const gt = document.getElementById('goalTracker');
+          if (gt) gt.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 600);
         // Check underwriting overload
         if (data.status === 'Underwriting') checkUnderwritingOverload();
       } else {
@@ -4150,7 +4156,7 @@
       const perMonthNeeded = goal > 0 && remaining > 0 ? remaining / monthsRemaining : 0;
 
       // Ahead/behind
-      const expectedByNow = goal > 0 ? (goal / 12) * (currentMonthIdx + 1) : 0;
+      const expectedByNow = goal > 0 ? (goal / 365) * dayOfYear : 0;
       const diff = ytdAP - expectedByNow;
       const ahead = diff >= 0;
 
