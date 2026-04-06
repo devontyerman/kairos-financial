@@ -2432,8 +2432,8 @@
           <input type="password" id="signupPassword" placeholder="Create a password" minlength="6" required />
         </div>
         <div class="ss-signup-field">
-          <label>Discord User ID <span style="font-weight:400;color:#999;">(optional)</span></label>
-          <input type="text" id="signupDiscordId" placeholder="e.g. 123456789012345678" />
+          <label>Discord User ID</label>
+          <input type="text" id="signupDiscordId" placeholder="e.g. 123456789012345678" required />
           <small style="color:#999;font-size:0.75rem;margin-top:2px;display:block;"><a href="#" id="discordIdHelp" style="color:#60a5fa;text-decoration:none;">Don't know it? Click here to find out</a></small>
         </div>
         <button class="ss-signup-submit" type="submit" id="signupBtn">Sign Up</button>
@@ -3454,8 +3454,8 @@
       const password = document.getElementById('signupPassword').value;
       const discordId = document.getElementById('signupDiscordId').value.trim();
 
-      if (!name || !email || !password) {
-        signupMsg.textContent = 'Please fill out all fields.';
+      if (!name || !email || !password || !discordId) {
+        signupMsg.textContent = 'Please fill out all fields, including your Discord User ID.';
         signupMsg.className = 'ss-signup-msg error';
         btn.disabled = false;
         return;

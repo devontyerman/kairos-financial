@@ -375,14 +375,15 @@
     </div>
   </nav>
 
-  <!-- PASSWORD GATE -->
+  <!-- LOGIN GATE -->
   <div class="admin-gate" id="adminGate">
     <div class="admin-gate-card">
       <h2>Admin Access</h2>
       <p>Restricted to authorized personnel only.</p>
-      <input type="password" id="adminPw" placeholder="Enter admin password" />
+      <input type="email" id="adminEmail" placeholder="Email" style="margin-bottom:0.5rem;" />
+      <input type="password" id="adminPw" placeholder="Password" />
       <button id="adminLogin">Login</button>
-      <div class="err" id="adminErr">Incorrect password.</div>
+      <div class="err" id="adminErr"></div>
     </div>
   </div>
 
@@ -511,7 +512,7 @@
   <script>
     const SUPABASE_URL = 'https://mrjlbpyqvfvmegjyovzq.supabase.co';
     const SUPABASE_KEY = 'sb_publishable_V4kzfIHC-GRTtdoJwJRZMA__2j-DUh-';
-    const ADMIN_PASSWORD = 'kairos_admin_2026';
+    const ADMIN_EMAILS = ['dev@kairos-financial.com'];
     const CARRIERS = ['Mutual of Omaha', 'Americo', 'Transamerica', 'AmAm', 'Corebridge', 'Chubb', 'Ethos', 'Aetna', 'InstaBrain', 'Banner', 'AHL', 'F&G', 'KCL', 'Royal Neighbors', 'Cica', 'Baltimore Life', 'Foresters', 'Liberty Bankers', 'UHL'];
     const PRODUCT_TYPES = ['Whole Life', 'Term', 'IUL', 'Health/Accidental'];
     const hdrs = { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' };
@@ -558,15 +559,47 @@
     // ─── AUTH ───
     const gate = document.getElementById('adminGate');
     const page = document.getElementById('adminPage');
-    if (sessionStorage.getItem('admin_auth') === 'true') { gate.style.display = 'none'; page.classList.add('visible'); loadAll(); }
+    const adminErr = document.getElementById('adminErr');
 
-    document.getElementById('adminLogin').addEventListener('click', () => {
-      if (document.getElementById('adminPw').value === ADMIN_PASSWORD) {
-        sessionStorage.setItem('admin_auth', 'true');
-        gate.style.display = 'none'; page.classList.add('visible'); loadAll();
-      } else { document.getElementById('adminErr').style.display = 'block'; }
-    });
-    document.getElementById('adminPw').addEventListener('keydown', (e) => { if (e.key === 'Enter') document.getElementById('adminLogin').click(); });
+    // Check for existing session
+    const savedToken = sessionStorage.getItem('admin_access_token');
+    const savedEmail = sessionStorage.getItem('admin_email');
+    if (savedToken && ADMIN_EMAILS.includes(savedEmail)) {
+      gate.style.display = 'none'; page.classList.add('visible'); loadAll();
+    }
+
+    async function adminLogin() {
+      const email = document.getElementById('adminEmail').value.trim();
+      const pw = document.getElementById('adminPw').value;
+      adminErr.style.display = 'none';
+
+      if (!email || !pw) { adminErr.textContent = 'Please enter email and password.'; adminErr.style.display = 'block'; return; }
+      if (!ADMIN_EMAILS.includes(email)) { adminErr.textContent = 'This account does not have admin access.'; adminErr.style.display = 'block'; return; }
+
+      try {
+        const res = await fetch(SUPABASE_URL + '/auth/v1/token?grant_type=password', {
+          method: 'POST',
+          headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password: pw })
+        });
+        const data = await res.json();
+        if (res.ok && data.access_token) {
+          sessionStorage.setItem('admin_access_token', data.access_token);
+          sessionStorage.setItem('admin_email', email);
+          gate.style.display = 'none'; page.classList.add('visible'); loadAll();
+        } else {
+          adminErr.textContent = data.error_description || 'Invalid email or password.';
+          adminErr.style.display = 'block';
+        }
+      } catch (e) {
+        adminErr.textContent = 'Connection error. Please try again.';
+        adminErr.style.display = 'block';
+      }
+    }
+
+    document.getElementById('adminLogin').addEventListener('click', adminLogin);
+    document.getElementById('adminPw').addEventListener('keydown', (e) => { if (e.key === 'Enter') adminLogin(); });
+    document.getElementById('adminEmail').addEventListener('keydown', (e) => { if (e.key === 'Enter') adminLogin(); });
 
     // ─── FILTERS ───
     document.querySelectorAll('#adminTimeFilters .af').forEach(b => {
