@@ -1215,6 +1215,101 @@
           html += '</tbody></table></div>';
         }
 
+        // ── Daily Breakdown (short ranges only) ──
+        if (['wtd','mtd','lastweek','lastmonth'].includes(perfRange)) {
+          const dayNames = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+          const kpiDataMap = {};
+          filtered.forEach(r => {
+            const key = r.kpi_date + '|' + r.sales_rep;
+            // For team view, aggregate by date; for individual, use as-is
+            if (perfRep === 'all') {
+              if (!kpiDataMap[r.kpi_date]) kpiDataMap[r.kpi_date] = { dials: 0, answers: 0, appointments: 0, presentations: 0, deals: 0, lead_spend: 0, deposits: 0 };
+              kpiDataMap[r.kpi_date].dials += r.dials || 0;
+              kpiDataMap[r.kpi_date].answers += r.answers || 0;
+              kpiDataMap[r.kpi_date].appointments += r.appointments || 0;
+              kpiDataMap[r.kpi_date].presentations += r.presentations || 0;
+              kpiDataMap[r.kpi_date].deals += r.deals || 0;
+              kpiDataMap[r.kpi_date].lead_spend += parseFloat(r.lead_spend || 0);
+              kpiDataMap[r.kpi_date].deposits += parseFloat(r.deposits || 0);
+            } else {
+              kpiDataMap[r.kpi_date] = r;
+            }
+          });
+
+          // Determine range boundaries
+          const bNow = new Date();
+          const bWeekStart = new Date(bNow); bWeekStart.setDate(bWeekStart.getDate() - bWeekStart.getDay()); bWeekStart.setHours(0,0,0,0);
+          const bMonthStart = new Date(bNow.getFullYear(), bNow.getMonth(), 1);
+          const bLastWeekStart = new Date(bWeekStart); bLastWeekStart.setDate(bLastWeekStart.getDate() - 7);
+          const bLastMonthStart = new Date(bNow.getFullYear(), bNow.getMonth() - 1, 1);
+          const bLastMonthEnd = new Date(bNow.getFullYear(), bNow.getMonth(), 0, 23, 59, 59);
+
+          let bStart, bEnd;
+          if (perfRange === 'wtd') { bStart = bWeekStart; bEnd = bNow; }
+          else if (perfRange === 'mtd') { bStart = bMonthStart; bEnd = bNow; }
+          else if (perfRange === 'lastweek') { bStart = bLastWeekStart; bEnd = new Date(bWeekStart - 1); }
+          else if (perfRange === 'lastmonth') { bStart = bLastMonthStart; bEnd = bLastMonthEnd; }
+
+          const walkDate = new Date(bStart); walkDate.setHours(0,0,0,0);
+          const walkEnd = new Date(bEnd); walkEnd.setHours(0,0,0,0);
+          let bRows = '';
+          let lastWk = -1;
+          const bTd = 'padding:0.45rem 0.4rem;';
+          const bTotalStyle = 'padding:0.5rem 0.4rem;font-weight:800;border-top:2px solid rgba(59,130,246,0.25);background:rgba(59,130,246,0.06);';
+          let wkT = { dials: 0, answers: 0, appts: 0, pres: 0, deals: 0, spend: 0, dep: 0 };
+          let wkHas = false;
+
+          function adminWeekTotal() {
+            if (!wkHas) return '';
+            const wRoi = wkT.spend > 0 ? ((wkT.dep - wkT.spend) / wkT.spend * 100).toFixed(0) + '%' : '—';
+            const r = '<tr style="color:#60a5fa;"><td style="' + bTotalStyle + 'font-style:italic;">Week Total</td><td style="' + bTotalStyle + '"></td><td style="' + bTotalStyle + '">' + wkT.dials + '</td><td style="' + bTotalStyle + '">' + wkT.answers + '</td><td style="' + bTotalStyle + '">' + wkT.appts + '</td><td style="' + bTotalStyle + '">' + wkT.pres + '</td><td style="' + bTotalStyle + '">' + wkT.deals + '</td><td style="' + bTotalStyle + '">$' + fmtAP(wkT.spend) + '</td><td style="' + bTotalStyle + '">$' + fmtAP(wkT.dep) + '</td><td style="' + bTotalStyle + '">' + wRoi + '</td></tr>';
+            wkT = { dials: 0, answers: 0, appts: 0, pres: 0, deals: 0, spend: 0, dep: 0 };
+            wkHas = false;
+            return r;
+          }
+
+          while (walkDate <= walkEnd) {
+            const dow = walkDate.getDay();
+            const weekNum = Math.floor((walkDate - bStart) / (7 * 24 * 60 * 60 * 1000));
+            if (weekNum !== lastWk && lastWk !== -1) {
+              bRows += adminWeekTotal();
+              const wl = new Date(walkDate);
+              const wd = wl.getDay();
+              wl.setDate(wl.getDate() + (wd === 0 ? -6 : 1 - wd));
+              bRows += '<tr><td colspan="10" style="padding:0.75rem 0.4rem 0.35rem;font-size:0.7rem;font-weight:800;color:rgba(59,130,246,0.7);text-transform:uppercase;letter-spacing:0.08em;border-top:2px solid rgba(59,130,246,0.15);">Week of ' + (wl.getMonth() + 1) + '/' + wl.getDate() + '</td></tr>';
+            }
+            lastWk = weekNum;
+
+            const ymd = walkDate.getFullYear() + '-' + String(walkDate.getMonth() + 1).padStart(2,'0') + '-' + String(walkDate.getDate()).padStart(2,'0');
+            const dayLabel = dayNames[dow];
+            const dateLabel = (walkDate.getMonth() + 1) + '/' + walkDate.getDate();
+            const row = kpiDataMap[ymd];
+            if (row) {
+              const dSpend = parseFloat(row.lead_spend || 0);
+              const dDep = parseFloat(row.deposits || 0);
+              bRows += '<tr><td style="' + bTd + 'font-weight:700;">' + dayLabel + '</td><td style="' + bTd + 'color:rgba(255,255,255,0.45);">' + dateLabel + '</td><td style="' + bTd + '">' + (row.dials || 0) + '</td><td style="' + bTd + '">' + (row.answers || 0) + '</td><td style="' + bTd + '">' + (row.appointments || 0) + '</td><td style="' + bTd + '">' + (row.presentations || 0) + '</td><td style="' + bTd + '">' + (row.deals || 0) + '</td><td style="' + bTd + '">$' + fmtAP(dSpend) + '</td><td style="' + bTd + '">$' + fmtAP(dDep) + '</td><td style="' + bTd + '"></td></tr>';
+              wkT.dials += (row.dials || 0); wkT.answers += (row.answers || 0); wkT.appts += (row.appointments || 0);
+              wkT.pres += (row.presentations || 0); wkT.deals += (row.deals || 0); wkT.spend += dSpend; wkT.dep += dDep;
+              wkHas = true;
+            } else {
+              bRows += '<tr style="opacity:0.3;"><td style="' + bTd + 'font-weight:700;">' + dayLabel + '</td><td style="' + bTd + 'color:rgba(255,255,255,0.45);">' + dateLabel + '</td><td style="' + bTd + '">—</td><td style="' + bTd + '">—</td><td style="' + bTd + '">—</td><td style="' + bTd + '">—</td><td style="' + bTd + '">—</td><td style="' + bTd + '">—</td><td style="' + bTd + '">—</td><td style="' + bTd + '"></td></tr>';
+            }
+            walkDate.setDate(walkDate.getDate() + 1);
+          }
+          bRows += adminWeekTotal();
+
+          // Grand total
+          const grandRoi = totalSpend > 0 ? ((totalDeposits - totalSpend) / totalSpend * 100).toFixed(0) + '%' : '—';
+          const gtStyle = 'padding:0.6rem 0.4rem;font-weight:900;border-top:3px solid rgba(168,85,247,0.4);background:rgba(168,85,247,0.08);';
+          bRows += '<tr style="color:#c084fc;"><td style="' + gtStyle + '">TOTAL</td><td style="' + gtStyle + '"></td><td style="' + gtStyle + '">' + totalDials + '</td><td style="' + gtStyle + '">' + totalAnswers + '</td><td style="' + gtStyle + '">' + totalAppts + '</td><td style="' + gtStyle + '">' + totalPres + '</td><td style="' + gtStyle + '">' + totalDeals + '</td><td style="' + gtStyle + '">$' + fmtAP(totalSpend) + '</td><td style="' + gtStyle + '">$' + fmtAP(totalDeposits) + '</td><td style="' + gtStyle + '">' + grandRoi + '</td></tr>';
+
+          const bTh = 'text-align:left;padding:0.5rem 0.4rem;color:rgba(255,255,255,0.5);font-size:0.78rem;';
+          html += '<div style="margin-top:1.5rem;overflow-x:auto;"><div style="margin-bottom:0.5rem;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:rgba(255,255,255,0.45);">Daily Breakdown' + (perfRep !== 'all' ? ' · ' + perfRep : ' · Team Total') + '</div>';
+          html += '<table class="admin-table" style="min-width:650px;font-size:0.82rem;"><thead><tr style="border-bottom:1px solid rgba(255,255,255,0.1);">';
+          html += '<th style="' + bTh + '">Day</th><th style="' + bTh + '">Date</th><th style="' + bTh + '">Dials</th><th style="' + bTh + '">Ans</th><th style="' + bTh + '">Appts</th><th style="' + bTh + '">Pres</th><th style="' + bTh + '">Deals</th><th style="' + bTh + '">Spend</th><th style="' + bTh + '">Dep</th><th style="' + bTh + '">ROI</th>';
+          html += '</tr></thead><tbody>' + bRows + '</tbody></table></div>';
+        }
+
         html += '</div>';
         el.innerHTML = html;
       } catch (e) {
