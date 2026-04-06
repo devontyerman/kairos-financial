@@ -3454,6 +3454,15 @@
         mpUwData = await uwRes.json();
       } catch (e) { mpAllData = []; mpUwData = []; }
 
+      // Custom sort for status column: Underwriting → Approved → Issue Paid
+      if (mpSortCol === 'status') {
+        const statusOrder = { 'Underwriting': 0, 'Approved': 1, 'Issue Paid': 2 };
+        mpAllData.sort((a, b) => {
+          const diff = (statusOrder[a.status] ?? 9) - (statusOrder[b.status] ?? 9);
+          return mpSortDir === 'asc' ? diff : -diff;
+        });
+      }
+
       renderAttentionSection();
       renderPoliciesTable();
     }
