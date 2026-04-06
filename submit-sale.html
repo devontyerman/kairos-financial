@@ -2431,9 +2431,32 @@
           <label>Password</label>
           <input type="password" id="signupPassword" placeholder="Create a password" minlength="6" required />
         </div>
+        <div class="ss-signup-field">
+          <label>Discord User ID <span style="font-weight:400;color:#999;">(optional)</span></label>
+          <input type="text" id="signupDiscordId" placeholder="e.g. 123456789012345678" />
+          <small style="color:#999;font-size:0.75rem;margin-top:2px;display:block;"><a href="#" id="discordIdHelp" style="color:#60a5fa;text-decoration:none;">Don't know it? Click here to find out</a></small>
+        </div>
         <button class="ss-signup-submit" type="submit" id="signupBtn">Sign Up</button>
         <div class="ss-signup-msg" id="signupMsg"></div>
       </form>
+    </div>
+  </div>
+
+  <!-- Discord ID Help Modal -->
+  <div class="ss-discord-help-overlay" id="discordHelpOverlay" style="display:none;position:fixed;inset:0;z-index:10001;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);align-items:center;justify-content:center;">
+    <div style="background:#fff;border-radius:16px;max-width:480px;width:90%;padding:2rem;position:relative;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
+      <button id="discordHelpClose" style="position:absolute;top:12px;right:14px;background:none;border:none;font-size:1.4rem;cursor:pointer;color:#999;">&times;</button>
+      <h3 style="margin:0 0 1rem;font-size:1.15rem;color:#111;">How to Find Your Discord User ID</h3>
+      <ol style="margin:0;padding:0 0 0 1.2rem;color:#444;font-size:0.9rem;line-height:1.7;">
+        <li>Open <strong>Discord</strong> (desktop or mobile)</li>
+        <li>Go to <strong>Settings</strong> (gear icon ⚙️)</li>
+        <li>Scroll down to <strong>Advanced</strong></li>
+        <li>Toggle on <strong>Developer Mode</strong></li>
+        <li>Go back and tap/right-click <strong>your own name</strong></li>
+        <li>Select <strong>Copy User ID</strong></li>
+        <li>Paste it into the field — it'll look like <code style="background:#f3f4f6;padding:2px 6px;border-radius:4px;font-size:0.85rem;">123456789012345678</code></li>
+      </ol>
+      <p style="margin:1rem 0 0;font-size:0.8rem;color:#999;">You can always add this later from your profile settings.</p>
     </div>
   </div>
 
@@ -3378,6 +3401,12 @@
     signupOverlay.addEventListener('click', (e) => { if (e.target === signupOverlay) signupOverlay.classList.remove('open'); });
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && signupOverlay.classList.contains('open')) signupOverlay.classList.remove('open'); });
 
+    // Discord ID help popup
+    const discordHelpOverlay = document.getElementById('discordHelpOverlay');
+    document.getElementById('discordIdHelp').addEventListener('click', (e) => { e.preventDefault(); discordHelpOverlay.style.display = 'flex'; });
+    document.getElementById('discordHelpClose').addEventListener('click', () => { discordHelpOverlay.style.display = 'none'; });
+    discordHelpOverlay.addEventListener('click', (e) => { if (e.target === discordHelpOverlay) discordHelpOverlay.style.display = 'none'; });
+
     // ─── LOGIN ───
     document.getElementById('loginForm').addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -3423,6 +3452,7 @@
       const name = document.getElementById('signupName').value.trim();
       const email = document.getElementById('signupEmail').value.trim();
       const password = document.getElementById('signupPassword').value;
+      const discordId = document.getElementById('signupDiscordId').value.trim();
 
       if (!name || !email || !password) {
         signupMsg.textContent = 'Please fill out all fields.';
@@ -3447,7 +3477,7 @@
               await fetch(SUPABASE_URL + '/rest/v1/agent_profiles', {
                 method: 'POST',
                 headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
-                body: JSON.stringify({ user_id: newUserId, agent_name: name })
+                body: JSON.stringify({ user_id: newUserId, agent_name: name, discord_id: discordId || null })
               });
             } catch (e) { /* profile creation is best-effort */ }
           }
