@@ -2407,6 +2407,7 @@
         msgEl.textContent = message;
         okBtn.textContent = confirmText;
         cancelBtn.textContent = cancelText;
+        cancelBtn.style.display = cancelText ? '' : 'none';
         overlay.classList.add('open');
 
         const cleanup = (result) => {
@@ -4212,6 +4213,18 @@
       }
 
       function toggleTeam(val) {
+        const compPct = parseFloat(compSel.value);
+        if (val && compPct < 95) {
+          showConfirmModal({
+            title: 'Not Eligible for Team Building Yet',
+            message: 'You can begin building a team once you hit $20,000 AP in a month, which puts you at the 100% comp level. You\u2019re currently at ' + compPct + '% compensation, so you don\u2019t meet the qualifications for team building yet.',
+            confirmText: 'Got It',
+            cancelText: '',
+            variant: 'warning',
+            icon: '\ud83d\udeab'
+          });
+          return;
+        }
         hasTeam = val;
         teamYesBtn.classList.toggle('active', val);
         teamNoBtn.classList.toggle('active', !val);
@@ -4224,8 +4237,17 @@
       teamNoBtn.addEventListener('click', () => toggleTeam(false));
       teamAgentSel.addEventListener('change', computeLeadership);
 
-      // Recompute leadership when comp changes (override depends on it)
-      compSel.addEventListener('change', () => { if (hasTeam) computeLeadership(); });
+      // Recompute leadership when comp changes; collapse team if comp drops below 95%
+      compSel.addEventListener('change', () => {
+        if (hasTeam) {
+          const newComp = parseFloat(compSel.value);
+          if (newComp < 95) {
+            toggleTeam(false);
+          } else {
+            computeLeadership();
+          }
+        }
+      });
 
       function computeLeadership() {
         if (!hasTeam) return;
