@@ -3285,14 +3285,22 @@
             icon: '💪'
           });
         } else if (hasDeals) {
-          // Got a deal — congrats no matter what
+          const dealCount = kpiData.deals;
+          const dealMsgs = {
+            1: { title: 'Deal Closed!', msg: 'Congrats!', icon: '🎯' },
+            2: { title: 'Two Deals!', msg: 'Double kill — you\'re on fire today.', icon: '🔥' },
+            3: { title: 'Three Deals!', msg: 'Hat trick! That\'s an elite day right there.', icon: '🏆' },
+            4: { title: 'Four Deals!', msg: 'Absolutely dominant. This is what a top producer looks like.', icon: '💎' },
+            5: { title: 'Five Deals!', msg: 'Five in a day?! You\'re built different. Legendary performance.', icon: '👑' }
+          };
+          const dm = dealMsgs[dealCount] || { title: dealCount + ' Deals!', msg: dealCount + ' deals in one day — that\'s unheard of. You\'re in a league of your own.', icon: '🚀' };
           await showConfirmModal({
-            title: 'Deal Closed!',
-            message: 'You got a deal today — that\'s what it\'s all about. Every closed deal is proof that the process works. Keep stacking!',
+            title: dm.title,
+            message: dm.msg,
             confirmText: 'On to the Next',
             cancelText: '',
             variant: 'info',
-            icon: '🎯'
+            icon: dm.icon
           });
         } else if (preCount >= 3) {
           // 3+ presentations, no deal — say nothing, just confirm
