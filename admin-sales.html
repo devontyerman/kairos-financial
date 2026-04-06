@@ -507,6 +507,7 @@
       <div id="perfCharts" class="perf-charts"></div>
       <div id="perfStatus"></div>
       <div id="perfGoals"></div>
+      <div id="perfKpiSection"></div>
     </div>
 
   </div><!-- end admin-page -->
@@ -1092,6 +1093,77 @@
 
       // ── AGENT GOALS SECTION ──
       renderGoals(ytd);
+
+      // ── KPI SECTION ──
+      renderKpiSection();
+    }
+
+    async function renderKpiSection() {
+      const el = document.getElementById('perfKpiSection');
+      try {
+        const res = await fetch(SUPABASE_URL + '/rest/v1/daily_kpis?order=kpi_date.desc&limit=1000', {
+          headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
+        });
+        const kpiRows = await res.json();
+        if (!kpiRows || !kpiRows.length) { el.innerHTML = ''; return; }
+
+        // Filter by selected rep
+        const filtered = perfRep === 'all' ? kpiRows : kpiRows.filter(r => r.sales_rep === perfRep);
+        if (!filtered.length) { el.innerHTML = ''; return; }
+
+        const totalDials = filtered.reduce((s, r) => s + (r.dials || 0), 0);
+        const totalAnswers = filtered.reduce((s, r) => s + (r.answers || 0), 0);
+        const totalAppts = filtered.reduce((s, r) => s + (r.appointments || 0), 0);
+        const totalPres = filtered.reduce((s, r) => s + (r.presentations || 0), 0);
+        const totalDeals = filtered.reduce((s, r) => s + (r.deals || 0), 0);
+        const days = filtered.length;
+        const pct = (a, b) => b > 0 ? (a / b * 100).toFixed(1) + '%' : '0%';
+
+        let html = '<div class="perf-chart-card" style="margin-top:1.5rem;"><div class="perf-chart-title">KPI Conversion Funnel (' + days + ' days' + (perfRep !== 'all' ? ' · ' + perfRep : ' · All Reps') + ')</div>';
+
+        // KPI summary row
+        html += '<div class="perf-kpis" style="margin-bottom:1rem;">';
+        html += kpi('Avg Dials/Day', Math.round(totalDials / days), totalDials + ' total', '');
+        html += kpi('Avg Answers/Day', Math.round(totalAnswers / days), totalAnswers + ' total', '');
+        html += kpi('Avg Appts/Day', (totalAppts / days).toFixed(1), totalAppts + ' total', '');
+        html += kpi('Avg Deals/Day', (totalDeals / days).toFixed(1), totalDeals + ' total', '');
+        html += '</div>';
+
+        // Conversion rates
+        html += '<div class="perf-status-section"><div class="perf-status-title">Conversion Rates</div><div class="perf-status-bars">';
+        html += statusBar('Dials → Answers', pct(totalAnswers, totalDials).replace('%',''), 'uw');
+        html += statusBar('Answers → Appts', pct(totalAppts, totalAnswers).replace('%',''), 'app');
+        html += statusBar('Appts → Presentations', pct(totalPres, totalAppts).replace('%',''), 'paid');
+        html += statusBar('Presentations → Deals', pct(totalDeals, totalPres).replace('%',''), 'app');
+        html += '</div></div>';
+        html += '<div style="margin-top:0.5rem;font-size:0.72rem;color:rgba(255,255,255,0.4);">Overall: ' + pct(totalDeals, totalDials) + ' of dials convert to deals</div>';
+
+        // Per-agent table (team view)
+        if (perfRep === 'all') {
+          const byRep = {};
+          filtered.forEach(r => {
+            if (!byRep[r.sales_rep]) byRep[r.sales_rep] = { dials: 0, answers: 0, appts: 0, pres: 0, deals: 0, days: 0 };
+            byRep[r.sales_rep].dials += r.dials || 0;
+            byRep[r.sales_rep].answers += r.answers || 0;
+            byRep[r.sales_rep].appts += r.appointments || 0;
+            byRep[r.sales_rep].pres += r.presentations || 0;
+            byRep[r.sales_rep].deals += r.deals || 0;
+            byRep[r.sales_rep].days++;
+          });
+          const sorted = Object.entries(byRep).sort((a, b) => b[1].dials - a[1].dials);
+          html += '<div style="margin-top:1.25rem;"><table class="admin-table" style="min-width:0;"><thead><tr><th>Agent</th><th>Days</th><th>Dials</th><th>Answers</th><th>Appts</th><th>Pres</th><th>Deals</th><th>Dial→Deal</th></tr></thead><tbody>';
+          sorted.forEach(([name, d]) => {
+            html += '<tr><td>' + esc(name.split(' ')[0]) + '</td><td>' + d.days + '</td><td>' + d.dials + '</td><td>' + d.answers + '</td><td>' + d.appts + '</td><td>' + d.pres + '</td><td>' + d.deals + '</td><td>' + pct(d.deals, d.dials) + '</td></tr>';
+          });
+          html += '</tbody></table></div>';
+        }
+
+        html += '</div>';
+        el.innerHTML = html;
+      } catch (e) {
+        el.innerHTML = '';
+        console.error('KPI render failed:', e);
+      }
     }
 
     async function renderGoals(ytdRows) {

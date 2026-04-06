@@ -2209,6 +2209,46 @@
         </form>
         </div>
 
+        <!-- DAILY KPI FORM -->
+        <div class="ss-form-wrap" id="kpiFormWrap" style="display:none;">
+          <div class="ss-form-card" style="padding:1.5rem;">
+            <div class="ss-form-title" style="margin-bottom:1rem;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+              Daily KPIs
+            </div>
+            <form id="kpiForm">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:0.75rem;">
+                <div class="ss-field">
+                  <label class="ss-label">Date</label>
+                  <input type="date" class="ss-input" id="kpiDate" required />
+                </div>
+                <div class="ss-field">
+                  <label class="ss-label">Dials</label>
+                  <input type="number" class="ss-input" id="kpiDials" min="0" placeholder="0" required />
+                </div>
+                <div class="ss-field">
+                  <label class="ss-label">Answers</label>
+                  <input type="number" class="ss-input" id="kpiAnswers" min="0" placeholder="0" required />
+                </div>
+                <div class="ss-field">
+                  <label class="ss-label">Appointments</label>
+                  <input type="number" class="ss-input" id="kpiAppointments" min="0" placeholder="0" required />
+                </div>
+                <div class="ss-field">
+                  <label class="ss-label">Presentations</label>
+                  <input type="number" class="ss-input" id="kpiPresentations" min="0" placeholder="0" required />
+                </div>
+                <div class="ss-field">
+                  <label class="ss-label">Deals</label>
+                  <input type="number" class="ss-input" id="kpiDeals" min="0" placeholder="0" required />
+                </div>
+              </div>
+              <button type="submit" class="ss-submit" id="kpiSubmitBtn">Submit KPIs</button>
+              <div id="kpiMsg" style="margin-top:0.5rem;font-size:0.8rem;text-align:center;display:none;"></div>
+            </form>
+          </div>
+        </div>
+
         <!-- COMMISSION CALCULATOR -->
         <div class="ss-calc-wrap">
           <div class="ss-calc-card" id="commissionCalc">
@@ -2404,6 +2444,9 @@
 
           <!-- Monthly Trend -->
           <div class="perf-agent-section" id="agentTrend"></div>
+
+          <!-- KPI Stats -->
+          <div class="perf-agent-section" id="agentKpiStats"></div>
         </div>
       </div>
     </div>
@@ -2759,12 +2802,14 @@
         authPrompt.style.display = 'none';
         saleForm.style.opacity = '1';
         saleForm.style.pointerEvents = 'auto';
+        document.getElementById('kpiFormWrap').style.display = 'block';
         if (signupLink) signupLink.style.display = 'none';
       } else {
         authBar.style.display = 'none';
         authPrompt.style.display = 'block';
         saleForm.style.opacity = '0.35';
         saleForm.style.pointerEvents = 'none';
+        document.getElementById('kpiFormWrap').style.display = 'none';
         if (signupLink) signupLink.style.display = 'block';
       }
     }
@@ -3093,6 +3138,64 @@
       btn.disabled = false;
     });
 
+    // ─── DAILY KPI FORM ───
+    const kpiDateInput = document.getElementById('kpiDate');
+    if (kpiDateInput) {
+      kpiDateInput.value = todayYMD();
+      kpiDateInput.max = todayYMD();
+    }
+
+    document.getElementById('kpiForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('kpiSubmitBtn');
+      const msg = document.getElementById('kpiMsg');
+      btn.disabled = true;
+      msg.style.display = 'none';
+
+      if (!currentUser) { msg.textContent = 'You must be signed in.'; msg.style.color = '#f87171'; msg.style.display = 'block'; btn.disabled = false; return; }
+
+      const kpiData = {
+        user_id: currentUser.id,
+        sales_rep: currentUser.user_metadata?.name || currentUser.email,
+        kpi_date: kpiDateInput.value,
+        dials: parseInt(document.getElementById('kpiDials').value) || 0,
+        answers: parseInt(document.getElementById('kpiAnswers').value) || 0,
+        appointments: parseInt(document.getElementById('kpiAppointments').value) || 0,
+        presentations: parseInt(document.getElementById('kpiPresentations').value) || 0,
+        deals: parseInt(document.getElementById('kpiDeals').value) || 0,
+        updated_at: new Date().toISOString()
+      };
+
+      try {
+        // Try update first (upsert by user_id + kpi_date)
+        const patchRes = await fetch(SUPABASE_URL + '/rest/v1/daily_kpis?user_id=eq.' + currentUser.id + '&kpi_date=eq.' + kpiData.kpi_date, {
+          method: 'PATCH',
+          headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + (accessToken || SUPABASE_KEY), 'Content-Type': 'application/json', 'Prefer': 'return=representation' },
+          body: JSON.stringify(kpiData)
+        });
+        const patchResult = await patchRes.json();
+        if (!patchResult || patchResult.length === 0) {
+          // No existing row — insert
+          const insRes = await fetch(SUPABASE_URL + '/rest/v1/daily_kpis', {
+            method: 'POST',
+            headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + (accessToken || SUPABASE_KEY), 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+            body: JSON.stringify(kpiData)
+          });
+          if (!insRes.ok) throw new Error(await insRes.text());
+        }
+        msg.textContent = 'KPIs submitted for ' + kpiData.kpi_date + '!';
+        msg.style.color = '#4ade80';
+        msg.style.display = 'block';
+        // Reset fields but keep date
+        ['kpiDials','kpiAnswers','kpiAppointments','kpiPresentations','kpiDeals'].forEach(id => document.getElementById(id).value = '');
+      } catch (err) {
+        msg.textContent = 'Error: ' + err.message;
+        msg.style.color = '#f87171';
+        msg.style.display = 'block';
+      }
+      btn.disabled = false;
+    });
+
     // ─── AGENT PERFORMANCE TAB ───
     async function loadAgentPerformance() {
       const notAuth = document.getElementById('perfNotAuth');
@@ -3210,6 +3313,48 @@
         trendBars += '<div class="perf-agent-bar-row"><div class="perf-agent-bar-label">' + m + arrow + '</div><div class="perf-agent-bar-track"><div class="perf-agent-bar-fill ' + color + '" style="width:' + pct + '%"><span class="perf-agent-bar-val">' + fmt(val) + '</span></div></div></div>';
       }
       document.getElementById('agentTrend').innerHTML = '<div class="perf-agent-section-title">Monthly Trend (YTD)</div>' + trendBars;
+
+      // ── KPI Stats ──
+      const kpiEl = document.getElementById('agentKpiStats');
+      try {
+        const kpiRes = await fetch(SUPABASE_URL + '/rest/v1/daily_kpis?user_id=eq.' + currentUser.id + '&order=kpi_date.desc', {
+          headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + (accessToken || SUPABASE_KEY) }
+        });
+        const kpiRows = await kpiRes.json();
+        if (!kpiRows || !kpiRows.length) {
+          kpiEl.innerHTML = '<div class="perf-agent-section-title">Daily KPIs</div><div style="color:rgba(255,255,255,0.4);font-size:0.8rem;">No KPI data yet — submit your daily numbers from the Submit Sale tab.</div>';
+        } else {
+          // Compute totals and averages
+          const totalDials = kpiRows.reduce((s, r) => s + (r.dials || 0), 0);
+          const totalAnswers = kpiRows.reduce((s, r) => s + (r.answers || 0), 0);
+          const totalAppts = kpiRows.reduce((s, r) => s + (r.appointments || 0), 0);
+          const totalPres = kpiRows.reduce((s, r) => s + (r.presentations || 0), 0);
+          const totalDeals = kpiRows.reduce((s, r) => s + (r.deals || 0), 0);
+          const days = kpiRows.length;
+
+          const pct = (a, b) => b > 0 ? (a / b * 100).toFixed(1) + '%' : '0%';
+
+          let kpiHtml = '<div class="perf-agent-section-title">Daily KPIs (' + days + ' days tracked)</div>';
+          kpiHtml += '<div class="perf-agent-kpis" style="margin-bottom:1rem;">';
+          kpiHtml += agentKpi('Avg Dials/Day', Math.round(totalDials / days), totalDials + ' total');
+          kpiHtml += agentKpi('Avg Answers/Day', Math.round(totalAnswers / days), totalAnswers + ' total');
+          kpiHtml += agentKpi('Avg Appts/Day', (totalAppts / days).toFixed(1), totalAppts + ' total');
+          kpiHtml += agentKpi('Avg Deals/Day', (totalDeals / days).toFixed(1), totalDeals + ' total');
+          kpiHtml += '</div>';
+
+          // Conversion funnel
+          kpiHtml += '<div style="margin-bottom:0.25rem;font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:rgba(255,255,255,0.45);">Conversion Rates</div>';
+          kpiHtml += statusRow('Dials → Answers', totalAnswers, pct(totalAnswers, totalDials).replace('%',''), 'uw').replace('perf-agent-status-fill uw', 'perf-agent-status-fill uw" title="' + pct(totalAnswers, totalDials));
+          kpiHtml += statusRow('Answers → Appts', totalAppts, pct(totalAppts, totalAnswers).replace('%',''), 'app').replace('perf-agent-status-fill app', 'perf-agent-status-fill app" title="' + pct(totalAppts, totalAnswers));
+          kpiHtml += statusRow('Appts → Presentations', totalPres, pct(totalPres, totalAppts).replace('%',''), 'paid').replace('perf-agent-status-fill paid', 'perf-agent-status-fill paid" title="' + pct(totalPres, totalAppts));
+          kpiHtml += statusRow('Presentations → Deals', totalDeals, pct(totalDeals, totalPres).replace('%',''), 'app').replace('perf-agent-status-fill app', 'perf-agent-status-fill app" title="' + pct(totalDeals, totalPres));
+          kpiHtml += '<div style="margin-top:0.6rem;font-size:0.72rem;color:rgba(255,255,255,0.4);">Overall: ' + pct(totalDeals, totalDials) + ' of dials convert to deals</div>';
+
+          kpiEl.innerHTML = kpiHtml;
+        }
+      } catch (e) {
+        kpiEl.innerHTML = '';
+      }
     }
 
     // ─── MILESTONE CELEBRATIONS ───
