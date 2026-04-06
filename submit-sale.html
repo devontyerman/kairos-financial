@@ -846,21 +846,22 @@
     .ss-goal-chart .goal-line-animated {
       stroke-dasharray: 2000;
       stroke-dashoffset: 2000;
-      animation: ssDrawLine 1.2s ease-out forwards;
+      animation: ssDrawLine 4s ease-in-out forwards;
     }
     @keyframes ssDrawLine {
       to { stroke-dashoffset: 0; }
     }
-    .ss-goal-chart .goal-area-animated { animation: ssFadeIn 1s ease-out; }
-    .ss-goal-chart .goal-dot-animated { animation: ssDotPop 0.4s ease-out 1s both; }
+    .ss-goal-chart .goal-area-animated { animation: ssFadeIn 3s ease-out; }
+    .ss-goal-chart .goal-dot-animated { animation: ssDotPop 0.6s cubic-bezier(0.34,1.56,0.64,1) 3.8s both; }
     @keyframes ssDotPop {
       0% { r: 0; opacity: 0; }
+      60% { r: 8; opacity: 1; }
       100% { r: 5; opacity: 1; }
     }
-    .ss-goal-kpi-value.counting {
-      display: inline-block;
-      overflow: hidden;
-      transition: none;
+    .ss-goal-chart .goal-proj-animated {
+      stroke-dasharray: 2000;
+      stroke-dashoffset: 2000;
+      animation: ssDrawLine 1.5s ease-out 4s forwards;
     }
 
     /* Manage Policies */
@@ -2944,14 +2945,26 @@
         // Check milestones first — if one triggers, it replaces the normal success modal
         const triggered = await checkAndShowMilestone();
         if (!triggered) showSuccessModal(apValue);
-        // Refresh goal tracker immediately with animation
-        // Small delay so the data has time to propagate on Supabase
-        setTimeout(async () => {
-          await loadGoalTracker(true);
-          // Scroll to goal tracker so the animation is visible
-          const gt = document.getElementById('goalTracker');
-          if (gt) gt.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }, 600);
+        // Wait for ALL modals to close, then animate the goal tracker
+        (function waitForModalsAndAnimate() {
+          function allModalsClosed() {
+            return !document.querySelector('.ss-modal-overlay.open, .ss-alert-overlay.open, .ss-milestone-overlay.open, .ss-confirm-overlay.open');
+          }
+          function check() {
+            if (allModalsClosed()) {
+              // Small extra delay so Supabase has the new row
+              setTimeout(async () => {
+                await loadGoalTracker(true);
+                const gt = document.getElementById('goalTracker');
+                if (gt) gt.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              }, 400);
+            } else {
+              setTimeout(check, 300);
+            }
+          }
+          // Start checking after a short initial delay
+          setTimeout(check, 500);
+        })();
         // Check underwriting overload
         if (data.status === 'Underwriting') checkUnderwritingOverload();
       } else {
@@ -4205,16 +4218,34 @@
       const lineColor = ahead ? '#4ade80' : '#f87171';
       const fillColor = ahead ? 'rgba(74,222,128,0.12)' : 'rgba(248,113,113,0.12)';
 
+      // Projection line: extend from current month to Dec at current pace
+      const projectedDec = yearlyPace;
+      let projLine = '';
+      if (cumActual.length > 0 && cumActual.length < 12) {
+        projLine = 'M ' + xAt(lastIdx) + ' ' + yAt(cumActual[lastIdx]);
+        // Linear projection from current cumulative to projected Dec total
+        const monthsLeft = 11 - lastIdx;
+        if (monthsLeft > 0) {
+          const monthlyRate = (projectedDec - cumActual[lastIdx]) / monthsLeft;
+          for (let i = lastIdx + 1; i <= 11; i++) {
+            const projVal = cumActual[lastIdx] + monthlyRate * (i - lastIdx);
+            projLine += ' L ' + xAt(i) + ' ' + yAt(Math.max(projVal, 0));
+          }
+        }
+      }
+
       const anim = animate ? true : false;
       const lineAnim = anim ? ' class="goal-line-animated"' : '';
       const areaAnim = anim ? ' class="goal-area-animated"' : '';
       const dotAnim = anim ? ' class="goal-dot-animated"' : '';
+      const projAnim = anim ? ' class="goal-proj-animated"' : '';
 
       let svg = '<svg class="ss-goal-chart" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="xMidYMid meet">' +
         grid + ticks +
-        (goal > 0 ? '<path d="' + goalLine + '" stroke="#fbbf24" stroke-width="2" stroke-dasharray="5 4" fill="none"/>' : '') +
+        (goal > 0 ? '<path d="' + goalLine + '" stroke="#fbbf24" stroke-width="2" stroke-dasharray="5 4" fill="none" opacity="0.7"/>' : '') +
         '<path d="' + areaPath + '" fill="' + fillColor + '"' + areaAnim + '/>' +
         '<path d="' + actualLine + '" stroke="' + lineColor + '" stroke-width="2.5" fill="none" stroke-linejoin="round" stroke-linecap="round"' + lineAnim + '/>' +
+        (projLine ? '<path d="' + projLine + '" stroke="' + lineColor + '" stroke-width="1.5" stroke-dasharray="6 4" fill="none" opacity="0.35"' + projAnim + '/>' : '') +
         '<circle cx="' + xAt(lastIdx) + '" cy="' + yAt(cumActual[lastIdx]) + '" r="' + (anim ? '0' : '5') + '" fill="' + dotColor + '" stroke="#0a0612" stroke-width="2"' + dotAnim + '/>' +
         '</svg>';
 
@@ -4247,30 +4278,78 @@
       // Legend
       let legend = '<div style="display:flex;gap:1.2rem;justify-content:center;margin-bottom:0.75rem;font-size:0.68rem;">';
       legend += '<span style="display:flex;align-items:center;gap:0.3rem;color:rgba(255,255,255,0.6);"><span style="width:14px;height:3px;border-radius:2px;background:' + lineColor + ';display:inline-block;"></span> Your Production</span>';
-      if (goal > 0) legend += '<span style="display:flex;align-items:center;gap:0.3rem;color:rgba(255,255,255,0.6);"><span style="width:14px;height:3px;border-radius:2px;background:#fbbf24;display:inline-block;"></span> Goal Pace</span>';
+      legend += '<span style="display:flex;align-items:center;gap:0.3rem;color:rgba(255,255,255,0.4);"><span style="width:14px;height:2px;border-radius:2px;background:' + lineColor + ';opacity:0.4;display:inline-block;border-top:1px dashed ' + lineColor + ';"></span> Projected Pace</span>';
+      if (goal > 0) legend += '<span style="display:flex;align-items:center;gap:0.3rem;color:rgba(255,255,255,0.6);"><span style="width:14px;height:3px;border-radius:2px;background:#fbbf24;display:inline-block;"></span> Goal</span>';
       legend += '</div>';
 
       chartArea.innerHTML = svg + legend + kpis + monthly;
 
-      // Odometer count-up animation
+      // Odometer count-up animation + fireworks + money bills
       if (anim) {
-        chartArea.querySelectorAll('[data-goal-countup]').forEach(function(el) {
-          const target = parseInt(el.dataset.goalCountup);
-          if (!target) return;
-          const prefix = el.dataset.goalPrefix || '';
-          const duration = 1200;
+        const countDuration = 4500;
+        const countDelay = 500; // start counting a bit after the line starts drawing
+        const allCountEls = chartArea.querySelectorAll('[data-goal-countup]');
+
+        setTimeout(function() {
           const start = performance.now();
           function tick(now) {
             const elapsed = now - start;
-            const progress = Math.min(elapsed / duration, 1);
-            // Ease-out cubic
+            const progress = Math.min(elapsed / countDuration, 1);
             const eased = 1 - Math.pow(1 - progress, 3);
-            const current = Math.round(target * eased);
-            el.textContent = prefix + current.toLocaleString();
+            allCountEls.forEach(function(el) {
+              const target = parseInt(el.dataset.goalCountup);
+              if (!target) return;
+              const prefix = el.dataset.goalPrefix || '';
+              el.textContent = prefix + Math.round(target * eased).toLocaleString();
+            });
             if (progress < 1) requestAnimationFrame(tick);
+            else {
+              // Animation complete — fire celebratory effects
+              // Fireworks from the dot on the chart
+              const dot = chartArea.querySelector('.goal-dot-animated, circle');
+              if (dot) {
+                const rect = dot.getBoundingClientRect();
+                const cx = rect.left + rect.width / 2;
+                const cy = rect.top + rect.height / 2;
+                fireGoalFireworks(cx, cy);
+              }
+              // Money bills from the Projected Annual KPI
+              const projEl = chartArea.querySelectorAll('.ss-goal-kpi')[1];
+              if (projEl) fireGoalMoneyBills(projEl);
+            }
           }
           requestAnimationFrame(tick);
-        });
+        }, countDelay);
+      }
+    }
+
+    function fireGoalFireworks(cx, cy) {
+      var colors = ['#c084fc', '#a855f7', '#4ade80', '#fbbf24', '#60a5fa', '#f0abfc', '#22c55e'];
+      for (var i = 0; i < 24; i++) {
+        var p = document.createElement('div');
+        p.className = 'firework-particle';
+        var angle = (Math.PI * 2 * i) / 24;
+        var dist = 35 + Math.random() * 55;
+        p.style.cssText = 'position:fixed;left:' + cx + 'px;top:' + cy + 'px;width:7px;height:7px;border-radius:50%;pointer-events:none;z-index:99999;background:' + colors[Math.floor(Math.random() * colors.length)] + ';--fx:' + (Math.cos(angle) * dist) + 'px;--fy:' + (Math.sin(angle) * dist) + 'px;animation:fireworkBurst 0.9s ease-out forwards;';
+        document.body.appendChild(p);
+        setTimeout(function() { p.remove(); }, 1000);
+      }
+    }
+
+    function fireGoalMoneyBills(el) {
+      var rect = el.getBoundingClientRect();
+      var cx = rect.left + rect.width / 2;
+      var cy = rect.top + rect.height / 2;
+      for (var i = 0; i < 16; i++) {
+        var p = document.createElement('div');
+        p.className = 'money-particle';
+        p.textContent = '\ud83d\udcb5';
+        var angle = (Math.PI * 2 * i) / 16 + (Math.random() - 0.5) * 0.5;
+        var dist = 50 + Math.random() * 90;
+        var rot = (Math.random() - 0.5) * 400;
+        p.style.cssText = 'left:' + cx + 'px;top:' + cy + 'px;--fx:' + (Math.cos(angle) * dist) + 'px;--fy:' + (Math.sin(angle) * dist - 40) + 'px;--rot:' + rot + 'deg;';
+        document.body.appendChild(p);
+        setTimeout(function() { p.remove(); }, 2000);
       }
     }
 
