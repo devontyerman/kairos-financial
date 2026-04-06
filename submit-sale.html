@@ -4245,14 +4245,14 @@
         (goal > 0 ? '<path d="' + goalLine + '" stroke="#fbbf24" stroke-width="2" stroke-dasharray="5 4" fill="none" opacity="0.7"/>' : '') +
         '<path d="' + areaPath + '" fill="' + fillColor + '"' + areaAnim + '/>' +
         '<path d="' + actualLine + '" stroke="' + lineColor + '" stroke-width="2.5" fill="none" stroke-linejoin="round" stroke-linecap="round"' + lineAnim + '/>' +
-        (projLine ? '<path d="' + projLine + '" stroke="' + lineColor + '" stroke-width="1.5" stroke-dasharray="6 4" fill="none" opacity="0.35"' + projAnim + '/>' : '') +
+        (projLine ? '<path d="' + projLine + '" stroke="' + lineColor + '" stroke-width="2.5" stroke-dasharray="8 5" fill="none" opacity="0.5"' + projAnim + '/>' : '') +
         '<circle cx="' + xAt(lastIdx) + '" cy="' + yAt(cumActual[lastIdx]) + '" r="' + (anim ? '0' : '5') + '" fill="' + dotColor + '" stroke="#0a0612" stroke-width="2"' + dotAnim + '/>' +
         '</svg>';
 
       // KPI values — use data attributes for animated count-up
       const kpiData = [
-        { label: 'YTD Earned', value: ytdAP, cls: 'purple', prefix: '$', sign: '' },
-        { label: 'Projected Annual', value: yearlyPace, cls: ahead ? 'green' : 'red', prefix: '$', sign: '' }
+        { label: 'YTD Sold', value: ytdAP, cls: 'green', prefix: '$', sign: '' },
+        { label: 'Projected Annual', value: yearlyPace, cls: 'purple', prefix: '$', sign: '' }
       ];
       if (goal > 0) {
         kpiData.push({ label: ahead ? 'Ahead of Pace' : 'Behind Pace', value: Math.abs(diff), cls: ahead ? 'green' : 'red', prefix: '$', sign: ahead ? '+' : '-' });
@@ -4313,8 +4313,8 @@
                 const cy = rect.top + rect.height / 2;
                 fireGoalFireworks(cx, cy);
               }
-              // Money bills from the Projected Annual KPI
-              const projEl = chartArea.querySelectorAll('.ss-goal-kpi')[1];
+              // Money bills from the YTD Sold KPI
+              const projEl = chartArea.querySelectorAll('.ss-goal-kpi')[0];
               if (projEl) fireGoalMoneyBills(projEl);
             }
           }
