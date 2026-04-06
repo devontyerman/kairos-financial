@@ -1163,8 +1163,11 @@
         const totalAppts = filtered.reduce((s, r) => s + (r.appointments || 0), 0);
         const totalPres = filtered.reduce((s, r) => s + (r.presentations || 0), 0);
         const totalDeals = filtered.reduce((s, r) => s + (r.deals || 0), 0);
+        const totalSpend = filtered.reduce((s, r) => s + parseFloat(r.lead_spend || 0), 0);
+        const totalDeposits = filtered.reduce((s, r) => s + parseFloat(r.deposits || 0), 0);
         const days = filtered.length;
         const pct = (a, b) => b > 0 ? (a / b * 100).toFixed(1) + '%' : '0%';
+        const roi = totalSpend > 0 ? ((totalDeposits - totalSpend) / totalSpend * 100).toFixed(1) : '0.0';
 
         let html = '<div class="perf-chart-card" style="margin-top:1.5rem;"><div class="perf-chart-title">KPI Conversion Funnel (' + days + ' days' + (perfRep !== 'all' ? ' · ' + perfRep : ' · All Reps') + ')</div>';
 
@@ -1174,6 +1177,10 @@
         html += kpi('Avg Answers/Day', Math.round(totalAnswers / days), totalAnswers + ' total', '');
         html += kpi('Avg Appts/Day', (totalAppts / days).toFixed(1), totalAppts + ' total', '');
         html += kpi('Avg Deals/Day', (totalDeals / days).toFixed(1), totalDeals + ' total', '');
+        html += kpi('Lead Spend', '$' + fmtAP(totalSpend), '$' + fmtAP(Math.round(totalSpend / days)) + '/day', '');
+        html += kpi('Deposits', '$' + fmtAP(totalDeposits), '$' + fmtAP(Math.round(totalDeposits / days)) + '/day', '');
+        const roiCls = parseFloat(roi) > 0 ? 'up' : parseFloat(roi) < 0 ? 'down' : 'neutral';
+        html += kpi('ROI', roi + '%', '$' + fmtAP(totalDeposits) + ' on $' + fmtAP(totalSpend) + ' spend', roiCls);
         html += '</div>';
 
         // Conversion rates
@@ -1189,18 +1196,21 @@
         if (perfRep === 'all') {
           const byRep = {};
           filtered.forEach(r => {
-            if (!byRep[r.sales_rep]) byRep[r.sales_rep] = { dials: 0, answers: 0, appts: 0, pres: 0, deals: 0, days: 0 };
+            if (!byRep[r.sales_rep]) byRep[r.sales_rep] = { dials: 0, answers: 0, appts: 0, pres: 0, deals: 0, spend: 0, dep: 0, days: 0 };
             byRep[r.sales_rep].dials += r.dials || 0;
             byRep[r.sales_rep].answers += r.answers || 0;
             byRep[r.sales_rep].appts += r.appointments || 0;
             byRep[r.sales_rep].pres += r.presentations || 0;
             byRep[r.sales_rep].deals += r.deals || 0;
+            byRep[r.sales_rep].spend += parseFloat(r.lead_spend || 0);
+            byRep[r.sales_rep].dep += parseFloat(r.deposits || 0);
             byRep[r.sales_rep].days++;
           });
           const sorted = Object.entries(byRep).sort((a, b) => b[1].dials - a[1].dials);
-          html += '<div style="margin-top:1.25rem;"><table class="admin-table" style="min-width:0;"><thead><tr><th>Agent</th><th>Days</th><th>Dials</th><th>Answers</th><th>Appts</th><th>Pres</th><th>Deals</th><th>Dial→Deal</th></tr></thead><tbody>';
+          html += '<div style="margin-top:1.25rem;overflow-x:auto;"><table class="admin-table" style="min-width:0;"><thead><tr><th>Agent</th><th>Days</th><th>Dials</th><th>Answers</th><th>Appts</th><th>Pres</th><th>Deals</th><th>Spend</th><th>Dep</th><th>ROI</th><th>Dial→Deal</th></tr></thead><tbody>';
           sorted.forEach(([name, d]) => {
-            html += '<tr><td>' + esc(name.split(' ')[0]) + '</td><td>' + d.days + '</td><td>' + d.dials + '</td><td>' + d.answers + '</td><td>' + d.appts + '</td><td>' + d.pres + '</td><td>' + d.deals + '</td><td>' + pct(d.deals, d.dials) + '</td></tr>';
+            const repRoi = d.spend > 0 ? ((d.dep - d.spend) / d.spend * 100).toFixed(0) + '%' : '—';
+            html += '<tr><td>' + esc(name.split(' ')[0]) + '</td><td>' + d.days + '</td><td>' + d.dials + '</td><td>' + d.answers + '</td><td>' + d.appts + '</td><td>' + d.pres + '</td><td>' + d.deals + '</td><td>$' + fmtAP(d.spend) + '</td><td>$' + fmtAP(d.dep) + '</td><td>' + repRoi + '</td><td>' + pct(d.deals, d.dials) + '</td></tr>';
           });
           html += '</tbody></table></div>';
         }

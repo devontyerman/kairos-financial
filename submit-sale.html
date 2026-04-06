@@ -2242,6 +2242,14 @@
                   <label class="ss-label">Deals</label>
                   <input type="number" class="ss-input" id="kpiDeals" min="0" placeholder="0" required />
                 </div>
+                <div class="ss-field">
+                  <label class="ss-label">Lead Spend ($)</label>
+                  <input type="number" class="ss-input" id="kpiLeadSpend" min="0" step="0.01" placeholder="0.00" />
+                </div>
+                <div class="ss-field">
+                  <label class="ss-label">Deposits ($)</label>
+                  <input type="number" class="ss-input" id="kpiDeposits" min="0" step="0.01" placeholder="0.00" />
+                </div>
               </div>
               <button type="submit" class="ss-submit" id="kpiSubmitBtn">Submit KPIs</button>
               <div id="kpiMsg" style="margin-top:0.5rem;font-size:0.8rem;text-align:center;display:none;"></div>
@@ -2458,9 +2466,14 @@
               <button class="mp-filter" data-kpi-range="lastweek">Last Week</button>
               <button class="mp-filter" data-kpi-range="lastmonth">Last Month</button>
               <button class="mp-filter" data-kpi-range="custom">Custom</button>
-              <label style="margin-left:auto;display:flex;align-items:center;gap:0.35rem;font-size:0.7rem;color:rgba(255,255,255,0.55);cursor:pointer;">
-                <input type="checkbox" id="kpiExcludeWeekends" style="accent-color:#a855f7;" /> Exclude weekends
-              </label>
+              <div style="margin-left:auto;display:flex;gap:0.75rem;">
+                <label style="display:flex;align-items:center;gap:0.3rem;font-size:0.7rem;color:rgba(255,255,255,0.55);cursor:pointer;">
+                  <input type="checkbox" id="kpiExcludeSat" style="accent-color:#a855f7;" /> Exclude Sat
+                </label>
+                <label style="display:flex;align-items:center;gap:0.3rem;font-size:0.7rem;color:rgba(255,255,255,0.55);cursor:pointer;">
+                  <input type="checkbox" id="kpiExcludeSun" style="accent-color:#a855f7;" /> Exclude Sun
+                </label>
+              </div>
             </div>
             <div id="kpiCustomRange" style="display:none;gap:0.5rem;align-items:center;margin-bottom:0.75rem;flex-wrap:wrap;">
               <input type="date" id="kpiDateFrom" style="padding:0.35rem 0.6rem;font-size:0.78rem;background:#0a0612;border:1px solid rgba(168,85,247,0.28);border-radius:8px;color:#fff;color-scheme:dark;" />
@@ -3190,6 +3203,8 @@
         appointments: parseInt(document.getElementById('kpiAppointments').value) || 0,
         presentations: parseInt(document.getElementById('kpiPresentations').value) || 0,
         deals: parseInt(document.getElementById('kpiDeals').value) || 0,
+        lead_spend: parseFloat(document.getElementById('kpiLeadSpend').value) || 0,
+        deposits: parseFloat(document.getElementById('kpiDeposits').value) || 0,
         updated_at: new Date().toISOString()
       };
 
@@ -3214,7 +3229,7 @@
         msg.style.color = '#4ade80';
         msg.style.display = 'block';
         // Reset fields but keep date
-        ['kpiDials','kpiAnswers','kpiAppointments','kpiPresentations','kpiDeals'].forEach(id => document.getElementById(id).value = '');
+        ['kpiDials','kpiAnswers','kpiAppointments','kpiPresentations','kpiDeals','kpiLeadSpend','kpiDeposits'].forEach(id => document.getElementById(id).value = '');
       } catch (err) {
         msg.textContent = 'Error: ' + err.message;
         msg.style.color = '#f87171';
@@ -3361,7 +3376,8 @@
         });
       });
       document.getElementById('kpiCustomApply').addEventListener('click', () => renderAgentKpiStats());
-      document.getElementById('kpiExcludeWeekends').addEventListener('change', () => renderAgentKpiStats());
+      document.getElementById('kpiExcludeSat').addEventListener('change', () => renderAgentKpiStats());
+      document.getElementById('kpiExcludeSun').addEventListener('change', () => renderAgentKpiStats());
     }
 
     let agentKpiAllRows = [];
@@ -3382,26 +3398,48 @@
       const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
       const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59);
 
-      let filtered = agentKpiAllRows;
+      // Determine the date range boundaries for calendar day counting
       const range = agentKpiRange;
-      if (range === 'wtd') filtered = filtered.filter(r => new Date(r.kpi_date) >= weekStart);
-      else if (range === 'mtd') filtered = filtered.filter(r => new Date(r.kpi_date) >= monthStart);
-      else if (range === 'ytd') filtered = filtered.filter(r => new Date(r.kpi_date) >= yearStart);
-      else if (range === 'lastweek') filtered = filtered.filter(r => { const d = new Date(r.kpi_date); return d >= lastWeekStart && d < weekStart; });
-      else if (range === 'lastmonth') filtered = filtered.filter(r => { const d = new Date(r.kpi_date); return d >= lastMonthStart && d <= lastMonthEnd; });
+      let rangeStart, rangeEnd;
+      if (range === 'wtd') { rangeStart = weekStart; rangeEnd = now; }
+      else if (range === 'mtd') { rangeStart = monthStart; rangeEnd = now; }
+      else if (range === 'ytd') { rangeStart = yearStart; rangeEnd = now; }
+      else if (range === 'lastweek') { rangeStart = lastWeekStart; rangeEnd = new Date(weekStart - 1); }
+      else if (range === 'lastmonth') { rangeStart = lastMonthStart; rangeEnd = lastMonthEnd; }
       else if (range === 'custom') {
         const from = document.getElementById('kpiDateFrom').value;
         const to = document.getElementById('kpiDateTo').value;
-        if (from && to) filtered = filtered.filter(r => r.kpi_date >= from && r.kpi_date <= to);
+        if (from && to) { rangeStart = new Date(from); rangeStart.setHours(0,0,0,0); rangeEnd = new Date(to); rangeEnd.setHours(23,59,59,999); }
+        else { rangeStart = yearStart; rangeEnd = now; }
+      } else { rangeStart = yearStart; rangeEnd = now; }
+
+      // Filter data rows by range
+      let filtered = agentKpiAllRows.filter(r => {
+        const d = new Date(r.kpi_date);
+        return d >= rangeStart && d <= rangeEnd;
+      });
+
+      const excludeSat = document.getElementById('kpiExcludeSat').checked;
+      const excludeSun = document.getElementById('kpiExcludeSun').checked;
+
+      // Count calendar days in range (for averages), excluding toggled-off days
+      let calendarDays = 0;
+      const cursor = new Date(rangeStart);
+      cursor.setHours(0,0,0,0);
+      const endDay = new Date(rangeEnd); endDay.setHours(0,0,0,0);
+      while (cursor <= endDay) {
+        const dow = cursor.getDay();
+        if (!(excludeSat && dow === 6) && !(excludeSun && dow === 0)) calendarDays++;
+        cursor.setDate(cursor.getDate() + 1);
       }
 
-      const excludeWeekends = document.getElementById('kpiExcludeWeekends').checked;
-      if (excludeWeekends) {
-        filtered = filtered.filter(r => { const d = new Date(r.kpi_date); const day = d.getUTCDay(); return day !== 0 && day !== 6; });
+      // Also filter out excluded days from the data
+      if (excludeSat || excludeSun) {
+        filtered = filtered.filter(r => { const d = new Date(r.kpi_date); const day = d.getUTCDay(); if (excludeSat && day === 6) return false; if (excludeSun && day === 0) return false; return true; });
       }
 
-      if (!filtered.length) {
-        contentEl.innerHTML = '<div style="color:rgba(255,255,255,0.4);font-size:0.8rem;">No KPI data for this time period.</div>';
+      if (calendarDays === 0) {
+        contentEl.innerHTML = '<div style="color:rgba(255,255,255,0.4);font-size:0.8rem;">No days in this time period.</div>';
         return;
       }
 
@@ -3410,8 +3448,14 @@
       const totalAppts = filtered.reduce((s, r) => s + (r.appointments || 0), 0);
       const totalPres = filtered.reduce((s, r) => s + (r.presentations || 0), 0);
       const totalDeals = filtered.reduce((s, r) => s + (r.deals || 0), 0);
-      const days = filtered.length;
-      const pct = (a, b) => b > 0 ? (a / b * 100).toFixed(1) + '%' : '0%';
+      const totalSpend = filtered.reduce((s, r) => s + parseFloat(r.lead_spend || 0), 0);
+      const totalDeposits = filtered.reduce((s, r) => s + parseFloat(r.deposits || 0), 0);
+      const days = calendarDays;
+      const pctFn = (a, b) => b > 0 ? (a / b * 100).toFixed(1) + '%' : '0%';
+      const fmt = n => '$' + Math.round(n).toLocaleString('en-US');
+      const roi = totalSpend > 0 ? ((totalDeposits - totalSpend) / totalSpend * 100).toFixed(1) : '0.0';
+
+      const excludeLabel = (excludeSat && excludeSun) ? ' (excl. weekends)' : excludeSat ? ' (excl. Sat)' : excludeSun ? ' (excl. Sun)' : '';
 
       function agentKpi(label, value, sub, cls) {
         return '<div class="perf-agent-kpi ' + (cls || '') + '"><div class="perf-agent-kpi-label">' + label + '</div><div class="perf-agent-kpi-value">' + value + '</div><div class="perf-agent-kpi-sub">' + sub + '</div></div>';
@@ -3420,20 +3464,70 @@
         return '<div class="perf-agent-status-row"><div class="perf-agent-status-label">' + label + '</div><div class="perf-agent-status-bar"><div class="perf-agent-status-fill ' + cls + '" style="width:' + pctVal + '%"></div></div><div class="perf-agent-status-pct">' + pctVal + '%</div></div>';
       }
 
-      let html = '<div style="margin-bottom:0.5rem;font-size:0.7rem;color:rgba(255,255,255,0.4);">' + days + ' day' + (days !== 1 ? 's' : '') + ' tracked' + (excludeWeekends ? ' (weekdays only)' : '') + '</div>';
+      let html = '<div style="margin-bottom:0.5rem;font-size:0.7rem;color:rgba(255,255,255,0.4);">' + days + ' calendar day' + (days !== 1 ? 's' : '') + ' · ' + filtered.length + ' reported' + excludeLabel + '</div>';
       html += '<div class="perf-agent-kpis" style="margin-bottom:1rem;">';
       html += agentKpi('Avg Dials/Day', Math.round(totalDials / days), totalDials + ' total');
       html += agentKpi('Avg Answers/Day', Math.round(totalAnswers / days), totalAnswers + ' total');
       html += agentKpi('Avg Appts/Day', (totalAppts / days).toFixed(1), totalAppts + ' total');
       html += agentKpi('Avg Deals/Day', (totalDeals / days).toFixed(1), totalDeals + ' total');
+      html += agentKpi('Lead Spend', fmt(totalSpend), fmt(Math.round(totalSpend / days)) + '/day');
+      html += agentKpi('Deposits', fmt(totalDeposits), fmt(Math.round(totalDeposits / days)) + '/day');
+      const roiCls = parseFloat(roi) > 0 ? 'up' : parseFloat(roi) < 0 ? 'down' : '';
+      html += agentKpi('ROI', roi + '%', fmt(totalDeposits) + ' on ' + fmt(totalSpend) + ' spend', roiCls);
       html += '</div>';
 
       html += '<div style="margin-bottom:0.25rem;font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:rgba(255,255,255,0.45);">Conversion Rates</div>';
-      html += statusRow('Dials → Answers', totalAnswers, pct(totalAnswers, totalDials).replace('%',''), 'uw');
-      html += statusRow('Answers → Appts', totalAppts, pct(totalAppts, totalAnswers).replace('%',''), 'app');
-      html += statusRow('Appts → Presentations', totalPres, pct(totalPres, totalAppts).replace('%',''), 'paid');
-      html += statusRow('Presentations → Deals', totalDeals, pct(totalDeals, totalPres).replace('%',''), 'app');
-      html += '<div style="margin-top:0.6rem;font-size:0.72rem;color:rgba(255,255,255,0.4);">Overall: ' + pct(totalDeals, totalDials) + ' of dials convert to deals</div>';
+      html += statusRow('Dials → Answers', totalAnswers, pctFn(totalAnswers, totalDials).replace('%',''), 'uw');
+      html += statusRow('Answers → Appts', totalAppts, pctFn(totalAppts, totalAnswers).replace('%',''), 'app');
+      html += statusRow('Appts → Presentations', totalPres, pctFn(totalPres, totalAppts).replace('%',''), 'paid');
+      html += statusRow('Presentations → Deals', totalDeals, pctFn(totalDeals, totalPres).replace('%',''), 'app');
+      html += '<div style="margin-top:0.6rem;font-size:0.72rem;color:rgba(255,255,255,0.4);">Overall: ' + pctFn(totalDeals, totalDials) + ' of dials convert to deals</div>';
+
+      // ── Daily Breakdown (only for short ranges) ──
+      if (['wtd','mtd','lastweek','lastmonth'].includes(range)) {
+        const dayNames = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+        // Build a map of kpi_date → row
+        const dataMap = {};
+        filtered.forEach(r => { dataMap[r.kpi_date] = r; });
+
+        // Walk through each calendar day in range
+        const walkDate = new Date(rangeStart); walkDate.setHours(0,0,0,0);
+        const walkEnd = new Date(rangeEnd); walkEnd.setHours(0,0,0,0);
+        let tableRows = '';
+        while (walkDate <= walkEnd) {
+          const dow = walkDate.getDay();
+          if ((excludeSat && dow === 6) || (excludeSun && dow === 0)) { walkDate.setDate(walkDate.getDate() + 1); continue; }
+          const ymd = walkDate.getFullYear() + '-' + String(walkDate.getMonth() + 1).padStart(2,'0') + '-' + String(walkDate.getDate()).padStart(2,'0');
+          const dayLabel = dayNames[dow];
+          const dateLabel = (walkDate.getMonth() + 1) + '/' + walkDate.getDate();
+          const row = dataMap[ymd];
+          if (row) {
+            const dSpend = parseFloat(row.lead_spend || 0);
+            const dDep = parseFloat(row.deposits || 0);
+            const dRoi = dSpend > 0 ? ((dDep - dSpend) / dSpend * 100).toFixed(0) + '%' : '—';
+            tableRows += '<tr><td style="font-weight:700;">' + dayLabel + '</td><td style="color:rgba(255,255,255,0.4);font-size:0.72rem;">' + dateLabel + '</td><td>' + (row.dials || 0) + '</td><td>' + (row.answers || 0) + '</td><td>' + (row.appointments || 0) + '</td><td>' + (row.presentations || 0) + '</td><td>' + (row.deals || 0) + '</td><td>$' + Math.round(dSpend) + '</td><td>$' + Math.round(dDep) + '</td><td>' + dRoi + '</td></tr>';
+          } else {
+            tableRows += '<tr style="opacity:0.35;"><td style="font-weight:700;">' + dayLabel + '</td><td style="color:rgba(255,255,255,0.4);font-size:0.72rem;">' + dateLabel + '</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>';
+          }
+          walkDate.setDate(walkDate.getDate() + 1);
+        }
+
+        html += '<div style="margin-top:1.25rem;overflow-x:auto;"><div style="margin-bottom:0.5rem;font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:rgba(255,255,255,0.45);">Daily Breakdown</div>';
+        html += '<table style="width:100%;border-collapse:collapse;font-size:0.72rem;min-width:600px;"><thead><tr style="border-bottom:1px solid rgba(255,255,255,0.1);">';
+        html += '<th style="text-align:left;padding:0.4rem 0.3rem;color:rgba(255,255,255,0.5);">Day</th>';
+        html += '<th style="text-align:left;padding:0.4rem 0.3rem;color:rgba(255,255,255,0.5);">Date</th>';
+        html += '<th style="text-align:left;padding:0.4rem 0.3rem;color:rgba(255,255,255,0.5);">Dials</th>';
+        html += '<th style="text-align:left;padding:0.4rem 0.3rem;color:rgba(255,255,255,0.5);">Ans</th>';
+        html += '<th style="text-align:left;padding:0.4rem 0.3rem;color:rgba(255,255,255,0.5);">Appts</th>';
+        html += '<th style="text-align:left;padding:0.4rem 0.3rem;color:rgba(255,255,255,0.5);">Pres</th>';
+        html += '<th style="text-align:left;padding:0.4rem 0.3rem;color:rgba(255,255,255,0.5);">Deals</th>';
+        html += '<th style="text-align:left;padding:0.4rem 0.3rem;color:rgba(255,255,255,0.5);">Spend</th>';
+        html += '<th style="text-align:left;padding:0.4rem 0.3rem;color:rgba(255,255,255,0.5);">Dep</th>';
+        html += '<th style="text-align:left;padding:0.4rem 0.3rem;color:rgba(255,255,255,0.5);">ROI</th>';
+        html += '</tr></thead><tbody>';
+        html += tableRows;
+        html += '</tbody></table></div>';
+      }
 
       contentEl.innerHTML = html;
     }
