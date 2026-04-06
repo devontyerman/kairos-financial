@@ -3433,16 +3433,12 @@
         cursor.setDate(cursor.getDate() + 1);
       }
 
-      // Also filter out excluded days from the data
-      if (excludeSat || excludeSun) {
-        filtered = filtered.filter(r => { const d = new Date(r.kpi_date); const day = d.getUTCDay(); if (excludeSat && day === 6) return false; if (excludeSun && day === 0) return false; return true; });
-      }
-
       if (calendarDays === 0) {
         contentEl.innerHTML = '<div style="color:rgba(255,255,255,0.4);font-size:0.8rem;">No days in this time period.</div>';
         return;
       }
 
+      // Totals use ALL data (including Sat/Sun) — excludes only affect the day count for averages
       const totalDials = filtered.reduce((s, r) => s + (r.dials || 0), 0);
       const totalAnswers = filtered.reduce((s, r) => s + (r.answers || 0), 0);
       const totalAppts = filtered.reduce((s, r) => s + (r.appointments || 0), 0);
