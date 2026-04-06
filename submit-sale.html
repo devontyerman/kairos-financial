@@ -812,35 +812,36 @@
       color: #fff; background: #2563eb; border: none; border-radius: 6px; cursor: pointer;
     }
 
-    .ss-goal-bar-wrap { margin-bottom: 0.75rem; }
-    .ss-goal-bar-labels { display: flex; justify-content: space-between; margin-bottom: 0.35rem; }
-    .ss-goal-bar-labels span { font-size: 0.7rem; color: rgba(255,255,255,0.75); }
-    .ss-goal-bar-labels .current { color: #c084fc; font-weight: 900; font-size: 1.4rem; text-shadow: 0 0 16px rgba(168,85,247,0.55); font-family: 'Plus Jakarta Sans', sans-serif; letter-spacing: -0.02em; }
-    .ss-goal-bar { height: 16px; background: rgba(255,255,255,0.06); border-radius: 8px; overflow: visible; position: relative; box-shadow: inset 0 0 10px rgba(0,0,0,0.3); }
-    .ss-goal-bar-fill { height: 100%; border-radius: 8px; transition: width 0.8s ease; background: linear-gradient(90deg, #7c3aed, #a855f7, #c084fc); position: relative; overflow: hidden; box-shadow: 0 0 18px rgba(168,85,247,0.55), 0 0 36px rgba(139,92,246,0.3); }
-    .ss-goal-bar-pace { position: absolute; top: -3px; height: calc(100% + 6px); width: 3px; background: #fbbf24; border-radius: 2px; box-shadow: 0 0 6px rgba(251,191,36,0.5); }
-
-    .ss-goal-stats { display: flex; gap: 1.5rem; flex-wrap: wrap; }
-    .ss-goal-stat { }
-    .ss-goal-stat-value { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1rem; font-weight: 800; }
-    .ss-goal-stat-value.on-pace { color: #4ade80; }
-    .ss-goal-stat-value.behind { color: #fbbf24; }
-    .ss-goal-stat-value.off-pace { color: #f87171; }
-    .ss-goal-stat-label { font-size: 0.68rem; color: rgba(255,255,255,0.9); }
+    .ss-goal-chart { width: 100%; height: auto; display: block; margin-bottom: 0.75rem; }
+    .ss-goal-kpis {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.65rem;
+      margin-bottom: 0.75rem;
+    }
+    .ss-goal-kpi {
+      padding: 0.7rem 0.85rem; border-radius: 10px; text-align: center;
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(168,85,247,0.18);
+    }
+    .ss-goal-kpi-label {
+      font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.58rem; font-weight: 800;
+      letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.6);
+      margin-bottom: 0.25rem;
+    }
+    .ss-goal-kpi-value {
+      font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.15rem; font-weight: 900;
+      letter-spacing: -0.02em;
+    }
+    .ss-goal-kpi-value.purple { color: #c084fc; text-shadow: 0 0 12px rgba(168,85,247,0.4); }
+    .ss-goal-kpi-value.green { color: #4ade80; }
+    .ss-goal-kpi-value.red { color: #f87171; }
+    .ss-goal-kpi-value.gold { color: #fbbf24; }
     .ss-goal-monthly {
-      margin-top: 0.75rem;
-      padding-top: 0.65rem;
-      border-top: 1px solid rgba(168,85,247,0.18);
-      font-size: 0.8rem;
-      color: rgba(255,255,255,0.82);
-      text-align: center;
-      line-height: 1.5;
+      padding-top: 0.6rem; border-top: 1px solid rgba(168,85,247,0.18);
+      font-size: 0.8rem; color: rgba(255,255,255,0.82); text-align: center; line-height: 1.5;
     }
     .ss-goal-monthly strong {
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      font-weight: 800;
-      color: #c084fc;
+      font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; color: #c084fc;
     }
+    @media (max-width: 520px) { .ss-goal-kpis { grid-template-columns: 1fr; } }
 
     /* Manage Policies */
     .mp-inner { max-width: 1400px; margin: 0 auto; padding: 2.5rem 1.5rem; }
@@ -2097,22 +2098,7 @@
               <button class="ss-goal-save" id="goalSave">Set Goal</button>
             </div>
           </div>
-          <div class="ss-goal-bar-wrap">
-            <div class="ss-goal-bar">
-              <div class="ss-goal-bar-fill" id="goalFill" style="width:0%"></div>
-            </div>
-            <div class="ss-goal-bar-labels">
-              <span class="current" id="goalCurrent">$0 earned</span>
-              <span id="goalTarget">Goal: $0</span>
-            </div>
-          </div>
-          <div class="ss-goal-stats" style="justify-content:flex-end;">
-            <div class="ss-goal-stat" style="text-align:right;">
-              <div class="ss-goal-stat-value on-pace" id="goalPaceValue" style="color:#4ade80;">$0</div>
-              <div class="ss-goal-stat-label">Projected Annual</div>
-            </div>
-          </div>
-          <div class="ss-goal-monthly" id="goalMonthly"></div>
+          <div id="goalChartArea"></div>
         </div>
 
         <div class="ss-form-wrap">
@@ -4105,52 +4091,126 @@
       const repName = currentUser.user_metadata?.name || currentUser.email;
       const yearStartYmd = new Date().getFullYear() + '-01-01';
       const token = accessToken || SUPABASE_KEY;
-      let ytdAP = 0;
+      // Fetch YTD policies with policy_date for monthly bucketing
+      let policies = [];
       try {
-        const res = await fetch(SUPABASE_URL + '/rest/v1/policies?select=annual_premium&sales_rep=eq.' + encodeURIComponent(repName) + '&policy_date=gte.' + yearStartYmd, {
-          headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + token }
+        const res = await fetch(SUPABASE_URL + '/rest/v1/policies?select=annual_premium,policy_date&sales_rep=eq.' + encodeURIComponent(repName) + '&policy_date=gte.' + yearStartYmd, {
+          headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + goalToken }
         });
-        const data = await res.json();
-        ytdAP = data.reduce((s, r) => s + parseFloat(r.annual_premium || 0), 0);
+        policies = await res.json();
       } catch (e) {}
 
-      // Calculate pace
       const now = new Date();
+      const currentMonthIdx = now.getMonth(); // 0-indexed
+      const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+      // Bucket AP by month
+      const monthlyAP = new Array(12).fill(0);
+      policies.forEach(r => {
+        const d = parsePolicyDate(r.policy_date);
+        if (d) monthlyAP[d.getMonth()] += parseFloat(r.annual_premium || 0);
+      });
+
+      // Cumulative actual
+      const cumActual = [];
+      let running = 0;
+      for (let i = 0; i <= currentMonthIdx; i++) { running += monthlyAP[i]; cumActual.push(running); }
+      const ytdAP = running;
+
+      // Pace
       const yearStartDate = new Date(now.getFullYear(), 0, 1);
       const dayOfYear = Math.floor((now - yearStartDate) / (1000*60*60*24)) + 1;
       const yearlyPace = dayOfYear > 0 ? (ytdAP / dayOfYear) * 365 : 0;
 
-      // Update UI
-      document.getElementById('goalCurrent').textContent = '$' + Math.round(ytdAP).toLocaleString();
+      // Monthly needed
+      const monthsRemaining = 12 - currentMonthIdx; // includes current partial month
+      const remaining = Math.max(goal - ytdAP, 0);
+      const perMonthNeeded = goal > 0 && remaining > 0 ? remaining / monthsRemaining : 0;
 
-      const paceEl = document.getElementById('goalPaceValue');
-      paceEl.textContent = '$' + Math.round(yearlyPace).toLocaleString();
-      paceEl.className = 'ss-goal-stat-value on-pace';
-      paceEl.style.color = '#4ade80';
+      // Ahead/behind
+      const expectedByNow = goal > 0 ? (goal / 12) * (currentMonthIdx + 1) : 0;
+      const diff = ytdAP - expectedByNow;
+      const ahead = diff >= 0;
 
-      const goalMonthlyEl = document.getElementById('goalMonthly');
+      const chartArea = document.getElementById('goalChartArea');
+      const fmtG = (n) => '$' + Math.round(n).toLocaleString();
+
+      // ── SVG LINE CHART ──
+      const W = 620, H = 200, padL = 52, padR = 16, padT = 16, padB = 28;
+      const plotW = W - padL - padR;
+      const plotH = H - padT - padB;
+      const maxY = Math.max(goal, ytdAP * 1.1, 1);
+      const xAt = (i) => padL + (i / 11) * plotW;
+      const yAt = (v) => padT + plotH - (v / maxY) * plotH;
+
+      // Goal line (linear Jan→Dec)
+      let goalLine = '';
       if (goal > 0) {
-        document.getElementById('goalTarget').textContent = 'Goal: $' + Math.round(goal).toLocaleString();
-        const pct = Math.min((ytdAP / goal) * 100, 100);
-        document.getElementById('goalFill').style.width = pct + '%';
-
-        // How much per month for the rest of the year?
-        const currentMonth = now.getMonth(); // 0-indexed
-        const monthsRemaining = 12 - currentMonth; // includes current month
-        const remaining = Math.max(goal - ytdAP, 0);
-        if (remaining > 0 && monthsRemaining > 0) {
-          const perMonth = remaining / monthsRemaining;
-          goalMonthlyEl.innerHTML = 'You need to sell <strong>$' + Math.round(perMonth).toLocaleString() + '/month</strong> for the remaining <strong>' + monthsRemaining + ' month' + (monthsRemaining > 1 ? 's' : '') + '</strong> to hit your goal.';
-        } else if (remaining <= 0) {
-          goalMonthlyEl.innerHTML = '<strong style="color:#4ade80;">Goal reached! Keep stacking.</strong>';
-        } else {
-          goalMonthlyEl.innerHTML = '';
-        }
-      } else {
-        document.getElementById('goalTarget').textContent = 'Set a goal →';
-        document.getElementById('goalFill').style.width = '0%';
-        goalMonthlyEl.innerHTML = '';
+        goalLine = 'M ' + xAt(0) + ' ' + yAt(goal / 12);
+        for (let i = 1; i < 12; i++) goalLine += ' L ' + xAt(i) + ' ' + yAt((goal / 12) * (i + 1));
       }
+
+      // Actual line (cumulative, only up to current month)
+      let actualLine = 'M ' + xAt(0) + ' ' + yAt(cumActual[0]);
+      for (let i = 1; i < cumActual.length; i++) actualLine += ' L ' + xAt(i) + ' ' + yAt(cumActual[i]);
+
+      // Area fill under actual
+      const areaPath = actualLine + ' L ' + xAt(cumActual.length - 1) + ' ' + yAt(0) + ' L ' + xAt(0) + ' ' + yAt(0) + ' Z';
+
+      // Grid + labels
+      let grid = '';
+      for (let i = 0; i <= 4; i++) {
+        const v = (maxY / 4) * i; const y = yAt(v);
+        grid += '<line x1="' + padL + '" y1="' + y + '" x2="' + (W - padR) + '" y2="' + y + '" stroke="rgba(168,85,247,0.12)" stroke-width="1"/>';
+        grid += '<text x="' + (padL - 6) + '" y="' + (y + 3) + '" fill="rgba(255,255,255,0.5)" font-size="8" font-family="Inter,sans-serif" text-anchor="end">$' + Math.round(v / 1000) + 'k</text>';
+      }
+      let ticks = '';
+      monthNames.forEach((m, i) => {
+        const x = xAt(i);
+        const isFuture = i > currentMonthIdx;
+        ticks += '<text x="' + x + '" y="' + (H - 8) + '" fill="' + (isFuture ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.65)') + '" font-size="9" font-family="Inter,sans-serif" text-anchor="middle">' + m + '</text>';
+      });
+
+      // Last point dot
+      const lastIdx = cumActual.length - 1;
+      const dotColor = ahead ? '#4ade80' : '#f87171';
+      const lineColor = ahead ? '#4ade80' : '#f87171';
+      const fillColor = ahead ? 'rgba(74,222,128,0.12)' : 'rgba(248,113,113,0.12)';
+
+      let svg = '<svg class="ss-goal-chart" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="xMidYMid meet">' +
+        grid + ticks +
+        (goal > 0 ? '<path d="' + goalLine + '" stroke="#fbbf24" stroke-width="2" stroke-dasharray="5 4" fill="none"/>' : '') +
+        '<path d="' + areaPath + '" fill="' + fillColor + '"/>' +
+        '<path d="' + actualLine + '" stroke="' + lineColor + '" stroke-width="2.5" fill="none" stroke-linejoin="round" stroke-linecap="round"/>' +
+        '<circle cx="' + xAt(lastIdx) + '" cy="' + yAt(cumActual[lastIdx]) + '" r="5" fill="' + dotColor + '" stroke="#0a0612" stroke-width="2"/>' +
+        '</svg>';
+
+      // KPIs
+      let kpis = '<div class="ss-goal-kpis">';
+      kpis += '<div class="ss-goal-kpi"><div class="ss-goal-kpi-label">YTD Earned</div><div class="ss-goal-kpi-value purple">' + fmtG(ytdAP) + '</div></div>';
+      kpis += '<div class="ss-goal-kpi"><div class="ss-goal-kpi-label">Projected Annual</div><div class="ss-goal-kpi-value ' + (ahead ? 'green' : 'red') + '">' + fmtG(yearlyPace) + '</div></div>';
+      if (goal > 0) {
+        kpis += '<div class="ss-goal-kpi"><div class="ss-goal-kpi-label">' + (ahead ? 'Ahead of Pace' : 'Behind Pace') + '</div><div class="ss-goal-kpi-value ' + (ahead ? 'green' : 'red') + '">' + (ahead ? '+' : '-') + fmtG(Math.abs(diff)) + '</div></div>';
+      } else {
+        kpis += '<div class="ss-goal-kpi"><div class="ss-goal-kpi-label">Set a Goal</div><div class="ss-goal-kpi-value gold">→</div></div>';
+      }
+      kpis += '</div>';
+
+      // Monthly needed message
+      let monthly = '';
+      if (goal > 0 && remaining > 0) {
+        monthly = '<div class="ss-goal-monthly">You need to sell <strong>' + fmtG(perMonthNeeded) + '/month</strong> for the remaining <strong>' + monthsRemaining + ' month' + (monthsRemaining > 1 ? 's' : '') + '</strong> to hit your goal of <strong>' + fmtG(goal) + '</strong>.</div>';
+      } else if (goal > 0) {
+        monthly = '<div class="ss-goal-monthly"><strong style="color:#4ade80;">Goal reached! Keep stacking.</strong></div>';
+      }
+
+      // Legend
+      let legend = '<div style="display:flex;gap:1.2rem;justify-content:center;margin-bottom:0.75rem;font-size:0.68rem;">';
+      legend += '<span style="display:flex;align-items:center;gap:0.3rem;color:rgba(255,255,255,0.6);"><span style="width:14px;height:3px;border-radius:2px;background:' + lineColor + ';display:inline-block;"></span> Your Production</span>';
+      if (goal > 0) legend += '<span style="display:flex;align-items:center;gap:0.3rem;color:rgba(255,255,255,0.6);"><span style="width:14px;height:3px;border-radius:2px;background:#fbbf24;display:inline-block;"></span> Goal Pace</span>';
+      legend += '</div>';
+
+      chartArea.innerHTML = svg + legend + kpis + monthly;
     }
 
     // ─── COMMISSION + LEADS ROI CALCULATORS ───
@@ -4510,11 +4570,20 @@
 
   <!-- CSV export -->
   <script>
-    document.getElementById('mpExportCsv').addEventListener('click', function() {
+    document.getElementById('mpExportCsv').addEventListener('click', async function() {
       if (!mpAllData || !mpAllData.length) {
         showConfirmModal({ title: 'No Data', message: 'There are no policies to export for the current filter.', confirmText: 'OK', cancelText: '', variant: 'info', icon: '\ud83d\udcc4' });
         return;
       }
+      var ok = await showConfirmModal({
+        title: 'Export Policies',
+        message: 'Download a CSV file with ' + mpAllData.length + ' policies from the current filter?',
+        confirmText: 'Download CSV',
+        cancelText: 'Cancel',
+        variant: 'info',
+        icon: '\ud83d\udce5'
+      });
+      if (!ok) return;
       var headers = ['Client','Phone','Annual Premium','Carrier','Product','Policy Number','Status','Sales Rep','Policy Date'];
       var csvRows = [headers.join(',')];
       mpAllData.forEach(function(r) {
