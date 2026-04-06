@@ -4131,24 +4131,23 @@
         // (4% of AP per year, paid monthly → AP × 0.04 / 12)
         const monthlyRenewalFromBlock = requiredAP * 0.04 / 12;
 
+        // Cash bonus (annual) — if the required AP qualifies for a tier
+        const annualCashBonus = currentBonus ? currentBonus.bonus * 12 : 0;
+
         // ── YEAR 1 / YEAR 2 PROJECTIONS ──
-        // Year 1 (the first 12 months at this pace):
-        //   Months 1-9: upfront only (net after leads) = netGoal × 12
-        //   Months 10-12: backend starts arriving (9-month lag) = backend × 3 months
-        //   Renewals: none yet (12-month lag)
         const year1UpfrontTotal = netGoal * 12;
         const year1BackendTotal = backend * 3;
-        const year1Total = year1UpfrontTotal + year1BackendTotal;
+        const year1BonusTotal = annualCashBonus;
+        const year1Total = year1UpfrontTotal + year1BackendTotal + year1BonusTotal;
         personalAnnualIncome = year1Total;
 
-        // Year 2: upfront for 12 months + backend for ALL 12 months + renewals for 12 months
-        // By Year 2 every month has a backend arriving from 9 months prior
-        // Renewals start month 13 — by month 24 you have 12 blocks each paying 4%/yr monthly
-        // Average renewal across Year 2 = 6 blocks avg × monthlyRenewalFromBlock × 12 months
         const year2UpfrontTotal = netGoal * 12;
         const year2BackendTotal = backend * 12;
-        const year2RenewalTotal = monthlyRenewalFromBlock * 6 * 12; // avg 6 blocks paying for 12 months
-        const year2Total = year2UpfrontTotal + year2BackendTotal + year2RenewalTotal;
+        const year2RenewalTotal = monthlyRenewalFromBlock * 6 * 12;
+        const year2BonusTotal = annualCashBonus;
+        const year2Total = year2UpfrontTotal + year2BackendTotal + year2RenewalTotal + year2BonusTotal;
+
+        const bonusNote = annualCashBonus > 0 ? ' + ' + fmt(annualCashBonus) + ' cash bonus' : '';
 
         longTermOut.classList.add('visible');
         longTermOut.innerHTML =
@@ -4161,12 +4160,12 @@
             '<div class="ss-calc-longterm-proj">' +
               '<div class="ss-calc-longterm-proj-label">Year 1 Total Income</div>' +
               '<div class="ss-calc-longterm-proj-value">' + fmt(year1Total) + '</div>' +
-              '<div class="ss-calc-longterm-proj-detail">' + fmt(year1UpfrontTotal) + ' net upfront + ' + fmt(year1BackendTotal) + ' backend (last 3 months)</div>' +
+              '<div class="ss-calc-longterm-proj-detail">' + fmt(year1UpfrontTotal) + ' net upfront + ' + fmt(year1BackendTotal) + ' backend (last 3 months)' + bonusNote + '</div>' +
             '</div>' +
             '<div class="ss-calc-longterm-proj">' +
               '<div class="ss-calc-longterm-proj-label">Year 2 Total Income</div>' +
               '<div class="ss-calc-longterm-proj-value year2">' + fmt(year2Total) + '</div>' +
-              '<div class="ss-calc-longterm-proj-detail">' + fmt(year2UpfrontTotal) + ' net upfront + ' + fmt(year2BackendTotal) + ' backend (all 12 months) + ' + fmt(year2RenewalTotal) + ' renewals</div>' +
+              '<div class="ss-calc-longterm-proj-detail">' + fmt(year2UpfrontTotal) + ' net upfront + ' + fmt(year2BackendTotal) + ' backend (all 12 months) + ' + fmt(year2RenewalTotal) + ' renewals' + bonusNote + '</div>' +
             '</div>' +
           '</div>';
 
