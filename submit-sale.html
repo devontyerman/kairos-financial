@@ -2165,7 +2165,7 @@
               <div class="ss-calc-step" style="max-width:220px; margin-bottom:1rem;">
                 <span class="ss-calc-step-num">TEAM</span>
                 <label class="ss-calc-step-label" style="min-height:auto;">How many agents on your team?</label>
-                <select class="ss-calc-select" id="teamAgentCount"></select>
+                <input class="ss-calc-input" type="number" id="teamAgentCount" min="1" placeholder="e.g. 5" />
               </div>
             </div>
 
@@ -4211,13 +4211,6 @@
       // Default: No selected
       teamNoBtn.classList.add('active');
 
-      // Populate agent count (1-20)
-      for (let i = 1; i <= 20; i++) {
-        const o = document.createElement('option');
-        o.value = i; o.textContent = i + ' agent' + (i > 1 ? 's' : '');
-        teamAgentSel.appendChild(o);
-      }
-
       function toggleTeam(val) {
         hasTeam = val;
         teamYesBtn.classList.toggle('active', val);
@@ -4229,7 +4222,7 @@
 
       teamYesBtn.addEventListener('click', () => toggleTeam(true));
       teamNoBtn.addEventListener('click', () => toggleTeam(false));
-      teamAgentSel.addEventListener('change', computeLeadership);
+      teamAgentSel.addEventListener('input', computeLeadership);
 
       // Recompute leadership when comp or persistency changes
       compSel.addEventListener('change', () => { if (hasTeam) computeLeadership(); });
@@ -4254,6 +4247,14 @@
         const annualBackend = backendOverride * 12;
         const annualTotal = annualUpfront + annualBackend;
 
+        // Team bonus: 2% of team production when total volume ≥ $150,000/mo
+        const teamBonusThreshold = 150000;
+        const teamBonusRate = 0.02;
+        const teamBonusQualified = totalTeamAP >= teamBonusThreshold;
+        const monthlyTeamBonus = teamBonusQualified ? totalTeamAP * teamBonusRate : 0;
+        const annualTeamBonus = monthlyTeamBonus * 12;
+        const annualTotalWithBonus = annualTotal + annualTeamBonus;
+
         leadershipOut.classList.add('visible');
         leadershipOut.innerHTML =
           '<div class="ss-calc-leadership-title">\ud83d\udc65 Leadership Override</div>' +
@@ -4267,17 +4268,32 @@
               '<div class="ss-calc-leadership-stat-value">' + fmt(backendOverride) + '</div>' +
             '</div>' +
             '<div class="ss-calc-leadership-stat">' +
-              '<div class="ss-calc-leadership-stat-label">Annual Total</div>' +
-              '<div class="ss-calc-leadership-stat-value green">' + fmt(annualTotal) + '</div>' +
+              '<div class="ss-calc-leadership-stat-label">Team Bonus (2%)</div>' +
+              '<div class="ss-calc-leadership-stat-value">' + (teamBonusQualified ? fmt(monthlyTeamBonus) + '/mo' : 'Not yet') + '</div>' +
             '</div>' +
           '</div>' +
-          '<div class="ss-calc-leadership-body" style="margin-top:0.85rem;">' +
+          (teamBonusQualified
+            ? '<div class="ss-calc-leadership-body" style="margin-top:0.75rem;">' +
+                '<p>Your team\u2019s total volume of <strong>' + fmt(totalTeamAP) + '/month</strong> qualifies for the <strong>2% team bonus</strong> \u2014 an additional <strong>' + fmt(monthlyTeamBonus) + '/month</strong> (' + fmt(annualTeamBonus) + '/year).</p>' +
+              '</div>'
+            : '<div class="ss-calc-leadership-body" style="margin-top:0.75rem;">' +
+                '<p>The <strong>2% team bonus</strong> kicks in once your team\u2019s total volume reaches <strong>' + fmt(teamBonusThreshold) + '/month</strong> (about 15 agents). You\u2019re currently at <strong>' + fmt(totalTeamAP) + '/month</strong> \u2014 ' + fmt(teamBonusThreshold - totalTeamAP) + ' to go.</p>' +
+              '</div>'
+          ) +
+          '<div class="ss-calc-leadership-body" style="margin-top:0.5rem;">' +
             '<p>The 25% leadership backend is paid at 9 months on each agent\u2019s production, just like your personal deals. As your team grows, these stacked backends become a significant recurring income stream on top of your personal earnings.</p>' +
+          '</div>' +
+          '<div class="ss-calc-leadership-grid" style="grid-template-columns:1fr; margin-top:1rem;">' +
+            '<div class="ss-calc-leadership-stat" style="background:rgba(74,222,128,0.08); border-color:rgba(74,222,128,0.3);">' +
+              '<div class="ss-calc-leadership-stat-label" style="color:#86efac;">Annual Leadership Total</div>' +
+              '<div class="ss-calc-leadership-stat-value green" style="font-size:1.6rem;">' + fmt(annualTotalWithBonus) + '</div>' +
+              '<div style="font-size:0.72rem; color:rgba(255,255,255,0.55); margin-top:0.25rem;">Overrides' + (teamBonusQualified ? ' + Team Bonus' : '') + '</div>' +
+            '</div>' +
           '</div>' +
           '<div style="margin-top:1.25rem; padding:1.15rem; background:linear-gradient(135deg,rgba(74,222,128,0.1),rgba(34,197,94,0.04)); border:1px solid rgba(74,222,128,0.3); border-radius:12px; text-align:center;">' +
             '<div style="font-family:\'Plus Jakarta Sans\',sans-serif; font-size:0.66rem; font-weight:800; letter-spacing:0.14em; text-transform:uppercase; color:#86efac; margin-bottom:0.5rem;">Combined Annual Income</div>' +
-            '<div style="font-family:\'Plus Jakarta Sans\',sans-serif; font-size:2.2rem; font-weight:900; color:#4ade80; text-shadow:0 0 24px rgba(74,222,128,0.55); letter-spacing:-0.02em;">' + fmt(personalAnnualIncome + annualTotal) + '</div>' +
-            '<div style="font-size:0.75rem; color:rgba(255,255,255,0.65); margin-top:0.35rem;">Personal earnings + Leadership overrides</div>' +
+            '<div style="font-family:\'Plus Jakarta Sans\',sans-serif; font-size:2.2rem; font-weight:900; color:#4ade80; text-shadow:0 0 24px rgba(74,222,128,0.55); letter-spacing:-0.02em;">' + fmt(personalAnnualIncome + annualTotalWithBonus) + '</div>' +
+            '<div style="font-size:0.75rem; color:rgba(255,255,255,0.65); margin-top:0.35rem;">Personal earnings + Leadership overrides' + (teamBonusQualified ? ' + Team bonus' : '') + '</div>' +
           '</div>' +
           '<p style="font-size:0.68rem; color:rgba(255,255,255,0.45); margin-top:0.75rem; line-height:1.5; text-align:center;">These numbers are based on agency averages analyzed from thousands of agent data points. Your own results may vary, but this is a good estimate of what to expect.</p>';
       }
