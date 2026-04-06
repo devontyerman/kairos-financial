@@ -2343,6 +2343,8 @@
     <!-- LEADERBOARD -->
     <div class="ss-panel" id="panel-leaderboard">
       <div class="ss-lb-inner">
+        <div id="lbNotAuth" class="mp-not-auth" style="display:none;">Sign in to view the leaderboard.</div>
+        <div id="lbAuthWrap">
         <div class="ss-lb-header">
           <h2>Leaderboard</h2>
           <p>Who's closing the most business?</p>
@@ -2368,6 +2370,7 @@
           <button id="lbCustomApply">Apply</button>
         </div>
         <div id="lbContent"><div class="ss-loading">Loading...</div></div>
+        </div><!-- end lbAuthWrap -->
       </div>
     </div>
 
@@ -2823,6 +2826,8 @@
         saleForm.style.opacity = '1';
         saleForm.style.pointerEvents = 'auto';
         document.getElementById('kpiFormWrap').style.display = 'block';
+        document.getElementById('lbNotAuth').style.display = 'none';
+        document.getElementById('lbAuthWrap').style.display = 'block';
         if (signupLink) signupLink.style.display = 'none';
       } else {
         authBar.style.display = 'none';
@@ -2830,6 +2835,8 @@
         saleForm.style.opacity = '0.35';
         saleForm.style.pointerEvents = 'none';
         document.getElementById('kpiFormWrap').style.display = 'none';
+        document.getElementById('lbNotAuth').style.display = 'block';
+        document.getElementById('lbAuthWrap').style.display = 'none';
         if (signupLink) signupLink.style.display = 'block';
       }
     }
