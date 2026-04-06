@@ -1285,7 +1285,7 @@
       grid-template-columns: 1fr 1fr 1fr;
       gap: 0.9rem;
       margin-bottom: 1.5rem;
-      align-items: end;
+      align-items: stretch;
     }
     .ss-calc-step {
       display: flex;
@@ -1543,6 +1543,80 @@
       color: #fbcfe8;
       background: rgba(236,72,153,0.14);
       border: 1px solid rgba(236,72,153,0.3);
+    }
+
+    /* Team toggle + leadership override */
+    .ss-calc-team-btns {
+      display: inline-flex; gap: 0; border-radius: 100px; overflow: hidden;
+      border: 1px solid rgba(168,85,247,0.28); background: #0a0612;
+    }
+    .ss-calc-team-btn {
+      padding: 0.45rem 1.4rem;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.78rem; font-weight: 700;
+      color: rgba(255,255,255,0.7);
+      background: #0a0612; border: none;
+      cursor: pointer; transition: all 0.2s ease;
+    }
+    .ss-calc-team-btn.active {
+      background: linear-gradient(135deg, #7c3aed, #a855f7);
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(168,85,247,0.45);
+    }
+    .ss-calc-team-btn:first-child { border-right: 1px solid rgba(168,85,247,0.2); }
+    .ss-calc-team-config { animation: ssFadeIn 0.3s ease; }
+
+    .ss-calc-leadership {
+      margin-top: 1rem;
+      padding: 1.25rem 1.4rem;
+      background: linear-gradient(135deg, rgba(59,130,246,0.1), rgba(37,99,235,0.04));
+      border: 1px solid rgba(59,130,246,0.3);
+      border-radius: 12px;
+      display: none;
+      box-shadow: 0 4px 24px rgba(59,130,246,0.15);
+    }
+    .ss-calc-leadership.visible { display: block; }
+    .ss-calc-leadership-title {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.72rem; font-weight: 800;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: #60a5fa; margin-bottom: 0.65rem;
+      display: flex; align-items: center; gap: 0.4rem;
+    }
+    .ss-calc-leadership-body {
+      font-size: 0.88rem; line-height: 1.6;
+      color: rgba(255,255,255,0.82);
+    }
+    .ss-calc-leadership-body strong {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 800; color: #60a5fa;
+    }
+    .ss-calc-leadership-body p { margin: 0 0 0.55rem; }
+    .ss-calc-leadership-body p:last-child { margin-bottom: 0; }
+    .ss-calc-leadership-grid {
+      display: grid; grid-template-columns: 1fr 1fr 1fr;
+      gap: 0.75rem; margin-top: 1rem;
+    }
+    .ss-calc-leadership-stat {
+      padding: 0.85rem 0.9rem;
+      background: rgba(59,130,246,0.08);
+      border: 1px solid rgba(59,130,246,0.22);
+      border-radius: 10px; text-align: center;
+    }
+    .ss-calc-leadership-stat-label {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.62rem; font-weight: 800;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: rgba(255,255,255,0.6); margin-bottom: 0.3rem;
+    }
+    .ss-calc-leadership-stat-value {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1.3rem; font-weight: 900;
+      color: #60a5fa; text-shadow: 0 0 14px rgba(59,130,246,0.4);
+    }
+    .ss-calc-leadership-stat-value.green { color: #4ade80; text-shadow: 0 0 14px rgba(74,222,128,0.4); }
+    @media (max-width: 520px) {
+      .ss-calc-leadership-grid { grid-template-columns: 1fr; }
     }
 
     .ss-calc-longterm {
@@ -2077,6 +2151,25 @@
             <div class="ss-calc-bonus" id="bonus_output"></div>
 
             <div class="ss-calc-longterm" id="longterm_output"></div>
+
+            <!-- LEADERSHIP OVERRIDE SECTION -->
+            <div class="ss-calc-team-toggle" style="margin-top: 1rem;">
+              <label class="ss-calc-step-label" style="min-height:auto; margin-bottom:0.5rem;">Do you have a team?</label>
+              <div class="ss-calc-team-btns">
+                <button type="button" class="ss-calc-team-btn" id="teamNo" data-team="no">No</button>
+                <button type="button" class="ss-calc-team-btn" id="teamYes" data-team="yes">Yes</button>
+              </div>
+            </div>
+
+            <div class="ss-calc-team-config" id="teamConfig" style="display:none;">
+              <div class="ss-calc-step" style="max-width:220px; margin-bottom:1rem;">
+                <span class="ss-calc-step-num">TEAM</span>
+                <label class="ss-calc-step-label" style="min-height:auto;">How many agents on your team?</label>
+                <select class="ss-calc-select" id="teamAgentCount"></select>
+              </div>
+            </div>
+
+            <div class="ss-calc-leadership" id="leadershipOutput"></div>
           </div>
         </div>
       </div>
@@ -4099,6 +4192,93 @@
       compSel.addEventListener('change', computeCommission);
       persSel.addEventListener('change', computeCommission);
       roiSel.addEventListener('change', computeCommission);
+
+      // ── TEAM / LEADERSHIP OVERRIDE ──
+      let hasTeam = false;
+      const teamYesBtn = document.getElementById('teamYes');
+      const teamNoBtn = document.getElementById('teamNo');
+      const teamConfig = document.getElementById('teamConfig');
+      const teamAgentSel = document.getElementById('teamAgentCount');
+      const leadershipOut = document.getElementById('leadershipOutput');
+
+      // Default: No selected
+      teamNoBtn.classList.add('active');
+
+      // Populate agent count (1-20)
+      for (let i = 1; i <= 20; i++) {
+        const o = document.createElement('option');
+        o.value = i; o.textContent = i + ' agent' + (i > 1 ? 's' : '');
+        teamAgentSel.appendChild(o);
+      }
+
+      function toggleTeam(val) {
+        hasTeam = val;
+        teamYesBtn.classList.toggle('active', val);
+        teamNoBtn.classList.toggle('active', !val);
+        teamConfig.style.display = val ? 'block' : 'none';
+        if (!val) { leadershipOut.classList.remove('visible'); leadershipOut.innerHTML = ''; }
+        else computeLeadership();
+      }
+
+      teamYesBtn.addEventListener('click', () => toggleTeam(true));
+      teamNoBtn.addEventListener('click', () => toggleTeam(false));
+      teamAgentSel.addEventListener('change', computeLeadership);
+
+      // Recompute leadership when comp changes (override depends on it)
+      compSel.addEventListener('change', () => { if (hasTeam) computeLeadership(); });
+
+      function computeLeadership() {
+        if (!hasTeam) return;
+        const compPct = parseFloat(compSel.value);
+        const agents = parseInt(teamAgentSel.value) || 1;
+        const agentAPperMonth = 10000;
+
+        // Override rate = comp% - 90%
+        // e.g. 100% comp → 10% override, 130% → 40%
+        const overrideRate = (compPct - 90) / 100;
+        if (overrideRate <= 0) {
+          leadershipOut.classList.add('visible');
+          leadershipOut.innerHTML =
+            '<div class="ss-calc-leadership-title">\ud83d\udc65 Leadership Override</div>' +
+            '<div class="ss-calc-leadership-body">' +
+              '<p>At <strong>' + compPct + '% compensation</strong>, your override rate is <strong>0%</strong>. You need to be above 90% comp to earn overrides on your team\u2019s production.</p>' +
+            '</div>';
+          return;
+        }
+
+        const totalTeamAP = agentAPperMonth * agents;
+        const grossOverride = totalTeamAP * overrideRate;
+        const upfrontOverride = grossOverride * 0.75;
+        const backendOverride = grossOverride * 0.25;
+        const annualUpfront = upfrontOverride * 12;
+        const annualBackend = backendOverride * 12;
+        const annualTotal = annualUpfront + annualBackend;
+
+        leadershipOut.classList.add('visible');
+        leadershipOut.innerHTML =
+          '<div class="ss-calc-leadership-title">\ud83d\udc65 Leadership Override</div>' +
+          '<div class="ss-calc-leadership-body">' +
+            '<p>At <strong>' + compPct + '% compensation</strong>, your override is <strong>' + (compPct - 90) + '%</strong> of everything your team sells. With <strong>' + agents + ' agent' + (agents > 1 ? 's' : '') + '</strong> each selling <strong>' + fmt(agentAPperMonth) + ' AP/month</strong>, your team produces <strong>' + fmt(totalTeamAP) + '/month</strong> in AP.</p>' +
+            '<p>Your <strong>monthly leadership override</strong> is <strong>' + fmt(grossOverride) + '</strong> \u2014 you receive <strong>75% upfront (' + fmt(upfrontOverride) + ')</strong> and the remaining <strong>25% (' + fmt(backendOverride) + ')</strong> hits as a leadership backend at 9 months, just like your personal deals.</p>' +
+          '</div>' +
+          '<div class="ss-calc-leadership-grid">' +
+            '<div class="ss-calc-leadership-stat">' +
+              '<div class="ss-calc-leadership-stat-label">Monthly Upfront</div>' +
+              '<div class="ss-calc-leadership-stat-value">' + fmt(upfrontOverride) + '</div>' +
+            '</div>' +
+            '<div class="ss-calc-leadership-stat">' +
+              '<div class="ss-calc-leadership-stat-label">Monthly Backend</div>' +
+              '<div class="ss-calc-leadership-stat-value">' + fmt(backendOverride) + '</div>' +
+            '</div>' +
+            '<div class="ss-calc-leadership-stat">' +
+              '<div class="ss-calc-leadership-stat-label">Annual Total</div>' +
+              '<div class="ss-calc-leadership-stat-value green">' + fmt(annualTotal) + '</div>' +
+            '</div>' +
+          '</div>' +
+          '<div class="ss-calc-leadership-body" style="margin-top:0.75rem;">' +
+            '<p style="font-size:0.78rem; color:rgba(255,255,255,0.6);">The 25% leadership backend works the same as your personal backend \u2014 it\u2019s paid at the 9-month mark on each agent\u2019s production. As your team grows, these stacked backends become a significant recurring income stream on top of your personal earnings.</p>' +
+          '</div>';
+      }
 
       computeCommission();
     })();
