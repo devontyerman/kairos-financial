@@ -860,6 +860,10 @@
     }
     .mp-filter:hover { border-color: rgba(168,85,247,0.5); color: #fff; background: #140a22; box-shadow: 0 0 16px rgba(168,85,247,0.25); }
     .mp-filter.active { background: linear-gradient(135deg, #7c3aed, #a855f7); color: #fff; border-color: #c084fc; box-shadow: 0 4px 20px rgba(168,85,247,0.5); }
+    /* Status filter buttons match their status color when active */
+    .mp-sf-uw.active { background: linear-gradient(135deg, #ea580c, #f97316); border-color: #fb923c; box-shadow: 0 4px 18px rgba(249,115,22,0.5); }
+    .mp-sf-app.active { background: linear-gradient(135deg, #2563eb, #3b82f6); border-color: #60a5fa; box-shadow: 0 4px 18px rgba(59,130,246,0.5); }
+    .mp-sf-paid.active { background: linear-gradient(135deg, #16a34a, #22c55e); border-color: #4ade80; box-shadow: 0 4px 18px rgba(34,197,94,0.5); }
     .mp-range-dropdown {
       padding: 0.42rem 2rem 0.42rem 0.85rem;
       font-family: 'Plus Jakarta Sans', sans-serif;
@@ -930,6 +934,32 @@
       color: #ffffff;
       letter-spacing: -0.01em;
     }
+    .mp-pagination {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      padding: 1.25rem 0 0.5rem;
+    }
+    .mp-page-btn {
+      padding: 0.5rem 1.2rem;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.78rem; font-weight: 700;
+      color: #fff;
+      background: #0a0612;
+      border: 1px solid rgba(168,85,247,0.28);
+      border-radius: 100px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .mp-page-btn:hover:not(:disabled) { background: #140a22; border-color: rgba(168,85,247,0.5); box-shadow: 0 0 16px rgba(168,85,247,0.25); }
+    .mp-page-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+    .mp-page-info {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: rgba(255,255,255,0.7);
+    }
+
     .mp-phone-link {
       color: #c084fc;
       text-decoration: none;
@@ -2123,11 +2153,11 @@
               <option value="custom">Custom Range</option>
             </select>
           </div>
-          <div class="mp-filters" id="mpStatusFilters" style="margin-bottom: 0.5rem;">
-            <button class="mp-filter active" data-mp-status="all">All Status</button>
-            <button class="mp-filter" data-mp-status="Underwriting">Underwriting</button>
-            <button class="mp-filter" data-mp-status="Approved">Approved</button>
-            <button class="mp-filter" data-mp-status="Issue Paid">Issue Paid</button>
+          <div class="mp-filters mp-status-filters" id="mpStatusFilters" style="margin-bottom: 0.5rem;">
+            <button class="mp-filter mp-sf-all active" data-mp-status="all">All Status</button>
+            <button class="mp-filter mp-sf-uw" data-mp-status="Underwriting">Underwriting</button>
+            <button class="mp-filter mp-sf-app" data-mp-status="Approved">Approved</button>
+            <button class="mp-filter mp-sf-paid" data-mp-status="Issue Paid">Issue Paid</button>
           </div>
           <div class="mp-custom-range" id="mpCustomRange">
             <input type="date" id="mpDateFrom" />
@@ -3206,6 +3236,8 @@
     let mpStatusFilter = 'all';
     let mpSortCol = 'policy_date';
     let mpSortDir = 'desc';
+    let mpPage = 0;
+    const MP_PER_PAGE = 25;
     let mpAllData = [];
     let mpEditId = null;
 
@@ -3224,6 +3256,7 @@
         mpThisMonthBtn.classList.add('active');
         mpRangeDropdown.value = '';
         mpCurrentRange = 'month';
+        mpPage = 0;
         document.getElementById('mpCustomRange').classList.remove('visible');
         loadPolicies();
       });
@@ -3232,6 +3265,7 @@
     if (mpRangeDropdown) {
       mpRangeDropdown.addEventListener('change', () => {
         mpCurrentRange = mpRangeDropdown.value;
+        mpPage = 0;
         // De-highlight "This Month" button when another option is picked
         if (mpCurrentRange !== 'month') {
           mpThisMonthBtn.classList.remove('active');
@@ -3249,6 +3283,7 @@
         document.querySelectorAll('#mpStatusFilters .mp-filter').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         mpStatusFilter = btn.dataset.mpStatus;
+        mpPage = 0;
         loadPolicies();
       });
     });
@@ -3336,12 +3371,22 @@
       countEl.textContent = mpAllData.length + ' policies · $' + totalAP.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }) + ' total AP';
 
       if (!mpAllData.length) {
+        mpPage = 0;
         const emptyMsg = mpCurrentRange === 'week'
           ? 'No deals so far this week, time to get to work.'
+          : mpCurrentRange === 'month'
+          ? 'No deals this month yet. Let\u2019s change that.'
           : 'No policies found for this timeframe.';
         tableEl.innerHTML = '<div class="mp-empty">' + emptyMsg + '</div>';
         return;
       }
+
+      // Pagination
+      const totalPages = Math.ceil(mpAllData.length / MP_PER_PAGE);
+      if (mpPage >= totalPages) mpPage = totalPages - 1;
+      if (mpPage < 0) mpPage = 0;
+      const startIdx = mpPage * MP_PER_PAGE;
+      const pageData = mpAllData.slice(startIdx, startIdx + MP_PER_PAGE);
 
       const cols = [
         { key: 'client_name', label: 'Client' },
@@ -3363,7 +3408,7 @@
       });
       html += '<th>Actions</th></tr></thead><tbody>';
 
-      mpAllData.forEach(row => {
+      pageData.forEach(row => {
         const dateStr = row.policy_date ? fmtPolicyDate(row.policy_date) : '—';
         const ap = parseFloat(row.annual_premium || 0);
         html += '<tr>';
@@ -3403,6 +3448,14 @@
       html += '<td colspan="7"></td>';
       html += '</tr></tfoot>';
       html += '</table>';
+      // Pagination controls
+      if (totalPages > 1) {
+        html += '<div class="mp-pagination">';
+        html += '<button class="mp-page-btn" id="mpPrev"' + (mpPage === 0 ? ' disabled' : '') + '>&larr; Previous</button>';
+        html += '<span class="mp-page-info">Page ' + (mpPage + 1) + ' of ' + totalPages + '</span>';
+        html += '<button class="mp-page-btn" id="mpNext"' + (mpPage >= totalPages - 1 ? ' disabled' : '') + '>Next &rarr;</button>';
+        html += '</div>';
+      }
       tableEl.innerHTML = html;
 
       // Sort click handlers
@@ -3434,6 +3487,12 @@
       tableEl.querySelectorAll('.mp-btn-approve').forEach(btn => {
         btn.addEventListener('click', () => markApproved(btn.dataset.id, btn));
       });
+
+      // Pagination handlers
+      const prevBtn = tableEl.querySelector('#mpPrev');
+      const nextBtn = tableEl.querySelector('#mpNext');
+      if (prevBtn) prevBtn.addEventListener('click', () => { mpPage--; renderPoliciesTable(); });
+      if (nextBtn) nextBtn.addEventListener('click', () => { mpPage++; renderPoliciesTable(); });
     }
 
     async function markApproved(id, btn) {
@@ -3525,7 +3584,8 @@
         const pdate = p.policy_date ? parsePolicyDate(p.policy_date) : null;
         const age = pdate ? (now - pdate) : 0;
         const weeks = Math.floor(age / oneWeekMs);
-        const timeLabel = !pdate ? '—' : weeks < 1 ? 'Less than a week' : weeks === 1 ? '1 week ago' : weeks + ' weeks ago';
+        const dayCount = pdate ? Math.floor(age / (24 * 60 * 60 * 1000)) : 0;
+        const timeLabel = !pdate ? '—' : dayCount + ' day' + (dayCount !== 1 ? 's' : '') + ' in underwriting';
         const ap = parseFloat(p.annual_premium || 0);
 
         html += '<div class="mp-attention-item" data-id="' + p.id + '">';
@@ -3705,10 +3765,10 @@
         let html = '';
         stale.forEach(p => {
           const pd = parsePolicyDate(p.policy_date);
-          const age = Math.floor((now - pd) / oneWeekMs);
-          const weeks = age === 1 ? '1 week' : age + ' weeks';
+          const dayCount = Math.floor((now - pd) / (1000 * 60 * 60 * 24));
+          const daysLabel = dayCount + ' day' + (dayCount !== 1 ? 's' : '') + ' in underwriting';
           html += '<div class="ss-uw-item" data-id="' + p.id + '">';
-          html += '<div class="ss-uw-item-info"><div class="ss-uw-item-name">' + esc(p.client_name) + '</div><div class="ss-uw-item-meta">' + esc(p.carrier) + ' · $' + parseFloat(p.annual_premium).toLocaleString() + ' · ' + weeks + ' ago</div></div>';
+          html += '<div class="ss-uw-item-info"><div class="ss-uw-item-name">' + esc(p.client_name) + '</div><div class="ss-uw-item-meta">' + esc(p.carrier) + ' · $' + parseFloat(p.annual_premium).toLocaleString() + ' · ' + daysLabel + '</div></div>';
           html += '<div class="ss-uw-item-actions"><button class="ss-uw-btn approve" onclick="uwApprove(\'' + p.id + '\',this)">Approve</button><button class="ss-uw-btn delete" onclick="uwDelete(\'' + p.id + '\',this)">Delete</button></div>';
           html += '</div>';
         });
@@ -3878,6 +3938,11 @@
       const bonusOut = document.getElementById('bonus_output');
       const longTermOut = document.getElementById('longterm_output');
 
+      // Restore persisted commission goal for this user
+      function getCommGoalKey() { return 'kairos_comm_goal_' + (currentUser?.id || 'anon'); }
+      const savedCommGoal = localStorage.getItem(getCommGoalKey());
+      if (savedCommGoal) incomeEl.value = savedCommGoal;
+
       // Sorted ascending so we can pick the highest tier the user qualifies for
       const BONUS_TIERS = [
         { ap: 20000,  bonus: 650 },
@@ -4018,7 +4083,10 @@
           '<div class="msg">At <strong>' + roiPct + '% ROI</strong>, a <strong>' + fmt(monthlyLeadSpend) + '</strong> lead budget produces <strong>' + fmt(upfront) + '</strong> in upfront commission \u2014 leaving <strong>' + fmt(netGoal) + '</strong> net after paying leads.</div>';
       }
 
-      incomeEl.addEventListener('input', computeCommission);
+      incomeEl.addEventListener('input', () => {
+        localStorage.setItem(getCommGoalKey(), incomeEl.value);
+        computeCommission();
+      });
       compSel.addEventListener('change', computeCommission);
       persSel.addEventListener('change', computeCommission);
       roiSel.addEventListener('change', computeCommission);
