@@ -2036,7 +2036,7 @@
               <div class="ss-calc-step">
                 <span class="ss-calc-step-num">STEP 1</span>
                 <label class="ss-calc-step-label">How much do you want to NET this month (after lead costs)?</label>
-                <input class="ss-calc-input" type="number" id="cc_incomeGoal" min="0" step="1" placeholder="$20,000" />
+                <input class="ss-calc-input" type="text" id="cc_incomeGoal" inputmode="numeric" placeholder="$20,000" />
               </div>
               <div class="ss-calc-step">
                 <span class="ss-calc-step-num">STEP 2</span>
@@ -3938,10 +3938,18 @@
       const bonusOut = document.getElementById('bonus_output');
       const longTermOut = document.getElementById('longterm_output');
 
+      // Live comma formatting for commission goal input
+      function fmtCommas(n) { return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
+      function parseCommInput(v) { return parseFloat((v || '').replace(/[^0-9.]/g, '')) || 0; }
+      incomeEl.addEventListener('input', function() {
+        const raw = incomeEl.value.replace(/[^0-9]/g, '');
+        incomeEl.value = raw ? fmtCommas(raw) : '';
+      });
+
       // Restore persisted commission goal for this user
       function getCommGoalKey() { return 'kairos_comm_goal_' + (currentUser?.id || 'anon'); }
       const savedCommGoal = localStorage.getItem(getCommGoalKey());
-      if (savedCommGoal) incomeEl.value = savedCommGoal;
+      if (savedCommGoal) incomeEl.value = fmtCommas(savedCommGoal);
 
       // Sorted ascending so we can pick the highest tier the user qualifies for
       const BONUS_TIERS = [
@@ -3958,7 +3966,7 @@
 
       function computeCommission() {
         // Step 1 is the NET income target — take-home AFTER lead costs
-        const netGoal = parseFloat(incomeEl.value) || 0;
+        const netGoal = parseCommInput(incomeEl.value);
         const comp = parseFloat(compSel.value) / 100;
         const pers = parseFloat(persSel.value) / 100;
         const roiPct = parseFloat(roiSel.value) || 0;
@@ -4084,7 +4092,8 @@
       }
 
       incomeEl.addEventListener('input', () => {
-        localStorage.setItem(getCommGoalKey(), incomeEl.value);
+        const raw = incomeEl.value.replace(/[^0-9]/g, '');
+        localStorage.setItem(getCommGoalKey(), raw);
         computeCommission();
       });
       compSel.addEventListener('change', computeCommission);
