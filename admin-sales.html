@@ -202,7 +202,54 @@
     .perf-status-item-fill.app { background: #3b82f6; }
     .perf-status-item-fill.paid { background: #22c55e; }
 
+    /* Agent Goals section */
+    .perf-goals-card {
+      background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 12px; padding: 1.5rem; margin-top: 2rem;
+    }
+    .perf-goals-title {
+      font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.85rem; font-weight: 800;
+      color: #fff; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;
+    }
+    .perf-goals-grid { display: flex; flex-direction: column; gap: 0.65rem; }
+    .perf-goal-row {
+      display: flex; align-items: center; gap: 0.85rem; padding: 0.75rem 1rem;
+      background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 10px; transition: background 0.15s;
+    }
+    .perf-goal-row:hover { background: rgba(255,255,255,0.05); }
+    .perf-goal-name {
+      font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.88rem; font-weight: 700;
+      color: #fff; width: 120px; flex-shrink: 0;
+    }
+    .perf-goal-bar-wrap { flex: 1; }
+    .perf-goal-bar-labels {
+      display: flex; justify-content: space-between; margin-bottom: 0.25rem;
+      font-size: 0.68rem; font-weight: 600; color: rgba(255,255,255,0.6);
+    }
+    .perf-goal-bar-labels .current { color: #60a5fa; font-weight: 700; }
+    .perf-goal-bar {
+      height: 14px; background: rgba(255,255,255,0.06); border-radius: 7px;
+      overflow: hidden; position: relative;
+    }
+    .perf-goal-fill {
+      height: 100%; border-radius: 7px; transition: width 0.6s ease;
+      background: linear-gradient(90deg, #2563eb, #3b82f6);
+    }
+    .perf-goal-fill.ahead { background: linear-gradient(90deg, #16a34a, #22c55e); }
+    .perf-goal-fill.behind { background: linear-gradient(90deg, #dc2626, #ef4444); }
+    .perf-goal-status {
+      font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.72rem; font-weight: 700;
+      width: 90px; text-align: right; flex-shrink: 0;
+    }
+    .perf-goal-status.ahead { color: #4ade80; }
+    .perf-goal-status.behind { color: #f87171; }
+    .perf-goal-status.no-goal { color: rgba(255,255,255,0.35); }
+
     @media (max-width: 768px) {
+      .perf-goal-row { flex-wrap: wrap; gap: 0.5rem; }
+      .perf-goal-name { width: 100%; }
+      .perf-goal-status { width: auto; text-align: left; }
       .admin-page { padding: calc(var(--nav-height) + 1rem) 1rem 3rem; }
       .admin-header { gap: 0.6rem; }
       .ae-grid { grid-template-columns: 1fr; }
@@ -411,6 +458,7 @@
       <div id="perfExtraCharts" class="perf-charts"></div>
       <div id="perfCharts" class="perf-charts"></div>
       <div id="perfStatus"></div>
+      <div id="perfGoals"></div>
     </div>
 
   </div><!-- end admin-page -->
@@ -939,6 +987,79 @@
           '</div></div>';
       } else {
         statusEl.innerHTML = '';
+      }
+
+      // ── AGENT GOALS SECTION ──
+      renderGoals(ytd);
+    }
+
+    async function renderGoals(ytdRows) {
+      const goalsEl = document.getElementById('perfGoals');
+      try {
+        const res = await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?select=user_id,annual_goal&annual_goal=gt.0', {
+          headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
+        });
+        const profiles = await res.json();
+        if (!profiles || !profiles.length) { goalsEl.innerHTML = ''; return; }
+
+        // We need to match user_id to sales_rep name. Fetch from policies table.
+        const repMap = {}; // user_id → sales_rep name
+        ytdRows.forEach(r => { if (r.user_id && r.sales_rep) repMap[r.user_id] = r.sales_rep; });
+
+        // Also fetch user_id→sales_rep from all policies if ytd didn't cover everyone
+        const allReps = await fetch(SUPABASE_URL + '/rest/v1/policies?select=user_id,sales_rep&order=created_at.desc&limit=500', {
+          headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
+        });
+        const allRepData = await allReps.json();
+        allRepData.forEach(r => { if (r.user_id && r.sales_rep && !repMap[r.user_id]) repMap[r.user_id] = r.sales_rep; });
+
+        // Compute YTD AP per user_id
+        const ytdByUser = {};
+        const yearStart = new Date(new Date().getFullYear(), 0, 1);
+        // Use allData (already fetched in renderPerformance scope) for YTD
+        allData.forEach(r => {
+          if (!r.user_id) return;
+          if (new Date(r.created_at) >= yearStart) {
+            ytdByUser[r.user_id] = (ytdByUser[r.user_id] || 0) + parseFloat(r.annual_premium || 0);
+          }
+        });
+
+        const now = new Date();
+        const dayOfYear = Math.floor((now - yearStart) / (1000*60*60*24)) + 1;
+
+        let html = '<div class="perf-goals-card"><div class="perf-goals-title">\ud83c\udfaf Agent Annual Goals</div><div class="perf-goals-grid">';
+
+        profiles.sort((a, b) => (b.annual_goal || 0) - (a.annual_goal || 0));
+
+        profiles.forEach(p => {
+          const name = repMap[p.user_id] || 'Unknown Agent';
+          const goal = parseFloat(p.annual_goal) || 0;
+          const ytdAP = ytdByUser[p.user_id] || 0;
+          const pct = goal > 0 ? Math.min((ytdAP / goal) * 100, 100) : 0;
+          const pace = dayOfYear > 0 ? (ytdAP / dayOfYear) * 365 : 0;
+          const expectedByNow = (goal / 365) * dayOfYear;
+          const ahead = ytdAP >= expectedByNow;
+          const fillClass = ahead ? 'ahead' : 'behind';
+          const statusClass = ahead ? 'ahead' : 'behind';
+          const statusText = ahead
+            ? '+$' + fmtAP(ytdAP - expectedByNow) + ' ahead'
+            : '-$' + fmtAP(expectedByNow - ytdAP) + ' behind';
+
+          html += '<div class="perf-goal-row">';
+          html += '<div class="perf-goal-name">' + name.split(' ')[0] + '</div>';
+          html += '<div class="perf-goal-bar-wrap">';
+          html += '<div class="perf-goal-bar-labels"><span class="current">$' + fmtAP(ytdAP) + '</span><span>Goal: $' + fmtAP(goal) + '</span></div>';
+          html += '<div class="perf-goal-bar"><div class="perf-goal-fill ' + fillClass + '" style="width:' + pct.toFixed(1) + '%"></div></div>';
+          html += '</div>';
+          html += '<div class="perf-goal-status ' + statusClass + '">' + statusText + '</div>';
+          html += '</div>';
+        });
+
+        html += '</div></div>';
+        goalsEl.innerHTML = html;
+      } catch (e) {
+        console.error('Goals render failed:', e);
+        goalsEl.innerHTML = '';
       }
     }
 
