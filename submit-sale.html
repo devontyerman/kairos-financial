@@ -31,6 +31,19 @@
       background: rgba(0,0,0,0.28);
       pointer-events: none;
     }
+    /* On mobile: use a static CSS gradient instead of the WebGL shader
+       for fast load times and lower GPU/battery usage */
+    @media (max-width: 768px) {
+      .ss-page-bg {
+        background:
+          radial-gradient(ellipse 90% 60% at 10% 15%, hsla(14,100%,30%,0.55) 0%, transparent 60%),
+          radial-gradient(ellipse 80% 55% at 85% 80%, hsla(340,82%,28%,0.5) 0%, transparent 55%),
+          radial-gradient(ellipse 70% 50% at 50% 50%, hsla(45,100%,26%,0.35) 0%, transparent 55%),
+          #000;
+      }
+      .ss-page-bg > div, .ss-page-bg canvas { display: none !important; }
+      .ss-page-bg::after { background: rgba(0,0,0,0.18); }
+    }
 
     /* Non-fixed transparent nav on the Sales Hub so the gradient shows
        through and the nav scrolls away with the page */
@@ -90,12 +103,13 @@
     }
     .ss-hero-title {
       font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: clamp(2.6rem, 6.5vw, 4.2rem);
+      font-size: clamp(3.2rem, 9vw, 5.5rem);
       font-weight: 900;
       color: #ffffff;
-      letter-spacing: -0.035em;
-      margin-bottom: 0.6rem;
+      letter-spacing: 0.06em;
+      margin-bottom: 0;
       line-height: 1;
+      text-transform: uppercase;
       position: relative;
       animation: ssPurplePulse 3.2s ease-in-out infinite;
     }
@@ -207,8 +221,8 @@
     .ss-field { }
     .ss-field.full { grid-column: 1 / -1; }
     .ss-label { display: block; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.75rem; font-weight: 700; color: rgba(255,255,255,0.75); margin-bottom: 0.35rem; text-transform: uppercase; letter-spacing: 0.06em; }
-    .ss-input, .ss-select { width: 100%; padding: 0.6rem 0.85rem; font-size: 0.85rem; font-family: 'Inter', sans-serif; color: #ffffff; background: rgba(168,85,247,0.04); border: 1px solid rgba(168,85,247,0.18); border-radius: var(--radius-md); transition: all 0.25s ease; box-sizing: border-box; }
-    .ss-input:focus, .ss-select:focus { outline: none; border-color: #a855f7; box-shadow: 0 0 0 3px rgba(168,85,247,0.25), 0 0 20px rgba(168,85,247,0.3); background: rgba(168,85,247,0.07); }
+    .ss-input, .ss-select { width: 100%; padding: 0.6rem 0.85rem; font-size: 0.85rem; font-family: 'Inter', sans-serif; color: #ffffff; background: rgba(255,255,255,0.1); border: 1px solid rgba(168,85,247,0.35); border-radius: var(--radius-md); transition: all 0.25s ease; box-sizing: border-box; }
+    .ss-input:focus, .ss-select:focus { outline: none; border-color: #a855f7; box-shadow: 0 0 0 3px rgba(168,85,247,0.25), 0 0 20px rgba(168,85,247,0.3); background: rgba(255,255,255,0.14); }
     .ss-input::placeholder { color: rgba(255,255,255,0.45); }
     .ss-select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg width='12' height='12' viewBox='0 0 12 12' fill='none' stroke='%23666' stroke-width='2' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolyline points='2 4 6 8 10 4'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 0.75rem center; }
     .ss-select option { background: #1a1a2e; color: #fff; }
@@ -817,6 +831,20 @@
     .ss-goal-stat-value.behind { color: #fbbf24; }
     .ss-goal-stat-value.off-pace { color: #f87171; }
     .ss-goal-stat-label { font-size: 0.68rem; color: rgba(255,255,255,0.9); }
+    .ss-goal-monthly {
+      margin-top: 0.75rem;
+      padding-top: 0.65rem;
+      border-top: 1px solid rgba(168,85,247,0.18);
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.82);
+      text-align: center;
+      line-height: 1.5;
+    }
+    .ss-goal-monthly strong {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 800;
+      color: #c084fc;
+    }
 
     /* Manage Policies */
     .mp-inner { max-width: 1400px; margin: 0 auto; padding: 2.5rem 1.5rem; }
@@ -1491,6 +1519,51 @@
     }
     .ss-calc-longterm-body p { margin: 0 0 0.55rem; }
     .ss-calc-longterm-body p:last-child { margin-bottom: 0; }
+    .ss-calc-longterm-projections {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.85rem;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(201,168,76,0.22);
+    }
+    .ss-calc-longterm-proj {
+      padding: 0.9rem 1rem;
+      background: rgba(201,168,76,0.08);
+      border: 1px solid rgba(201,168,76,0.25);
+      border-radius: 10px;
+      text-align: center;
+    }
+    .ss-calc-longterm-proj-label {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.66rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #f0d878;
+      margin-bottom: 0.4rem;
+    }
+    .ss-calc-longterm-proj-value {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1.55rem;
+      font-weight: 900;
+      color: #f0d878;
+      text-shadow: 0 0 18px rgba(201,168,76,0.5);
+      letter-spacing: -0.02em;
+    }
+    .ss-calc-longterm-proj-value.year2 {
+      color: #4ade80;
+      text-shadow: 0 0 18px rgba(74,222,128,0.5);
+    }
+    .ss-calc-longterm-proj-detail {
+      font-size: 0.68rem;
+      color: rgba(255,255,255,0.6);
+      margin-top: 0.35rem;
+      line-height: 1.4;
+    }
+    @media (max-width: 520px) {
+      .ss-calc-longterm-projections { grid-template-columns: 1fr; }
+    }
 
     @media (max-width: 640px) {
       .ss-calc-steps { grid-template-columns: 1fr; }
@@ -1545,9 +1618,8 @@
     .mp-edit-save:hover { box-shadow: 0 4px 12px rgba(37,99,235,0.3); }
 
     @media (max-width: 768px) {
-      .ss-hero { padding: calc(var(--nav-height) + 2.5rem) 1rem 3rem; }
-      .ss-hero-title { font-size: 2.4rem; }
-      .ss-hero-sub { font-size: 0.9rem; }
+      .ss-hero { padding: calc(var(--nav-height) + 2.5rem) 1rem 2.5rem; }
+      .ss-hero-title { font-size: 3rem; }
       .ss-page { padding: 0 1rem 3rem; }
       .ss-form-grid { grid-template-columns: 1fr; }
       .ss-form-card { padding: 1.5rem 1.25rem; }
@@ -1698,7 +1770,7 @@
     }
 
     @media (max-width: 520px) {
-      .ss-hero-title { font-size: 2rem; }
+      .ss-hero-title { font-size: 2.6rem; }
       .ss-tab { padding: 0.5rem 0.95rem; font-size: 0.72rem; }
       .ss-form-card { padding: 1.25rem 1rem; }
       .ss-calc-card { padding: 1.15rem 0.9rem; }
@@ -1774,8 +1846,7 @@
   <!-- HERO -->
   <div class="ss-hero">
     <div class="ss-hero-inner">
-      <h1 class="ss-hero-title">Sales <span>Hub</span></h1>
-      <p class="ss-hero-sub">Submit sales and track the leaderboard</p>
+      <h1 class="ss-hero-title">SALES <span>HUB</span></h1>
     </div>
   </div>
 
@@ -1835,6 +1906,7 @@
               <div class="ss-goal-stat-label">Projected Annual</div>
             </div>
           </div>
+          <div class="ss-goal-monthly" id="goalMonthly"></div>
         </div>
 
         <div class="ss-form-wrap">
@@ -3214,7 +3286,10 @@
       countEl.textContent = mpAllData.length + ' policies · $' + totalAP.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }) + ' total AP';
 
       if (!mpAllData.length) {
-        tableEl.innerHTML = '<div class="mp-empty">No policies found for this timeframe.</div>';
+        const emptyMsg = mpCurrentRange === 'week'
+          ? 'No deals so far this week, time to get to work.'
+          : 'No policies found for this timeframe.';
+        tableEl.innerHTML = '<div class="mp-empty">' + emptyMsg + '</div>';
         return;
       }
 
@@ -3672,13 +3747,28 @@
       paceEl.className = 'ss-goal-stat-value on-pace';
       paceEl.style.color = '#4ade80';
 
+      const goalMonthlyEl = document.getElementById('goalMonthly');
       if (goal > 0) {
         document.getElementById('goalTarget').textContent = 'Goal: $' + Math.round(goal).toLocaleString();
         const pct = Math.min((ytdAP / goal) * 100, 100);
         document.getElementById('goalFill').style.width = pct + '%';
+
+        // How much per month for the rest of the year?
+        const currentMonth = now.getMonth(); // 0-indexed
+        const monthsRemaining = 12 - currentMonth; // includes current month
+        const remaining = Math.max(goal - ytdAP, 0);
+        if (remaining > 0 && monthsRemaining > 0) {
+          const perMonth = remaining / monthsRemaining;
+          goalMonthlyEl.innerHTML = 'You need to sell <strong>$' + Math.round(perMonth).toLocaleString() + '/month</strong> for the remaining <strong>' + monthsRemaining + ' month' + (monthsRemaining > 1 ? 's' : '') + '</strong> to hit your goal.';
+        } else if (remaining <= 0) {
+          goalMonthlyEl.innerHTML = '<strong style="color:#4ade80;">Goal reached! Keep stacking.</strong>';
+        } else {
+          goalMonthlyEl.innerHTML = '';
+        }
       } else {
         document.getElementById('goalTarget').textContent = 'Set a goal →';
         document.getElementById('goalFill').style.width = '0%';
+        goalMonthlyEl.innerHTML = '';
       }
     }
 
@@ -3804,12 +3894,43 @@
         // Monthly renewal income from this month's AP block once renewals start
         // (4% of AP per year, paid monthly → AP × 0.04 / 12)
         const monthlyRenewalFromBlock = requiredAP * 0.04 / 12;
+
+        // ── YEAR 1 / YEAR 2 PROJECTIONS ──
+        // Year 1 (the first 12 months at this pace):
+        //   Months 1-9: upfront only (net after leads) = netGoal × 12
+        //   Months 10-12: backend starts arriving (9-month lag) = backend × 3 months
+        //   Renewals: none yet (12-month lag)
+        const year1UpfrontTotal = netGoal * 12;
+        const year1BackendTotal = backend * 3;
+        const year1Total = year1UpfrontTotal + year1BackendTotal;
+
+        // Year 2: upfront for 12 months + backend for ALL 12 months + renewals for 12 months
+        // By Year 2 every month has a backend arriving from 9 months prior
+        // Renewals start month 13 — by month 24 you have 12 blocks each paying 4%/yr monthly
+        // Average renewal across Year 2 = 6 blocks avg × monthlyRenewalFromBlock × 12 months
+        const year2UpfrontTotal = netGoal * 12;
+        const year2BackendTotal = backend * 12;
+        const year2RenewalTotal = monthlyRenewalFromBlock * 6 * 12; // avg 6 blocks paying for 12 months
+        const year2Total = year2UpfrontTotal + year2BackendTotal + year2RenewalTotal;
+
         longTermOut.classList.add('visible');
         longTermOut.innerHTML =
           '<div class="ss-calc-longterm-title">\ud83d\udcb0 The Long Game</div>' +
           '<div class="ss-calc-longterm-body">' +
             '<p>Don\u2019t forget \u2014 you still have <strong>' + fmt(backend) + '</strong> in backend commission coming <strong>9 months</strong> from now on this month\u2019s production.</p>' +
             '<p>If you hold this pace every month, in <strong>9 months</strong> you\u2019ll have an additional <strong>' + fmt(backend) + '/month</strong> in income rolling in from stacked backend payments. Then at <strong>12 months</strong>, renewals kick in at an average of <strong>4% of AP per year</strong> \u2014 that\u2019s another <strong>' + fmt(monthlyRenewalFromBlock) + '/month</strong> from this month\u2019s block alone, and it grows every month after as more blocks hit their 12-month mark.</p>' +
+          '</div>' +
+          '<div class="ss-calc-longterm-projections">' +
+            '<div class="ss-calc-longterm-proj">' +
+              '<div class="ss-calc-longterm-proj-label">Year 1 Total Income</div>' +
+              '<div class="ss-calc-longterm-proj-value">' + fmt(year1Total) + '</div>' +
+              '<div class="ss-calc-longterm-proj-detail">' + fmt(year1UpfrontTotal) + ' net upfront + ' + fmt(year1BackendTotal) + ' backend (last 3 months)</div>' +
+            '</div>' +
+            '<div class="ss-calc-longterm-proj">' +
+              '<div class="ss-calc-longterm-proj-label">Year 2 Total Income</div>' +
+              '<div class="ss-calc-longterm-proj-value year2">' + fmt(year2Total) + '</div>' +
+              '<div class="ss-calc-longterm-proj-detail">' + fmt(year2UpfrontTotal) + ' net upfront + ' + fmt(year2BackendTotal) + ' backend (all 12 months) + ' + fmt(year2RenewalTotal) + ' renewals</div>' +
+            '</div>' +
           '</div>';
 
         roiOut.innerHTML =
