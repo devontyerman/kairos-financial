@@ -644,21 +644,6 @@
     .ss-status.issue-paid { background: rgba(34,197,94,0.12); color: #4ade80; border: 1px solid rgba(34,197,94,0.2); }
 
     /* Issue Paid button */
-    .mp-btn-paid {
-      padding: 0.25rem 0.6rem; font-size: 0.68rem; font-weight: 700; border-radius: 4px;
-      border: none; cursor: pointer; transition: all 0.2s ease; text-transform: uppercase; letter-spacing: 0.04em;
-      background: rgba(34,197,94,0.12); color: #4ade80; border: 1px solid rgba(34,197,94,0.2);
-      position: relative; overflow: visible;
-    }
-    .mp-btn-paid:hover { background: rgba(34,197,94,0.25); }
-    .mp-btn-approve {
-      padding: 0.25rem 0.6rem; font-size: 0.68rem; font-weight: 700; border-radius: 4px;
-      border: 1px solid rgba(56,120,255,0.25); cursor: pointer; transition: all 0.2s ease;
-      text-transform: uppercase; letter-spacing: 0.04em;
-      background: rgba(56,120,255,0.12); color: #60a5fa;
-      position: relative; overflow: visible;
-    }
-    .mp-btn-approve:hover { background: rgba(56,120,255,0.25); }
 
     /* Firework particles */
     .firework-particle {
@@ -1708,14 +1693,72 @@
     }
 
     .mp-actions { display: flex; gap: 0.3rem; }
-    .mp-btn-edit, .mp-btn-del {
-      padding: 0.25rem 0.6rem; font-size: 0.68rem; font-weight: 700; border-radius: 4px;
-      border: none; cursor: pointer; transition: all 0.2s ease; text-transform: uppercase; letter-spacing: 0.04em;
+    /* Action buttons (Approve Policy / Mark as Paid) — distinct from status badges */
+    .mp-action-btn {
+      padding: 0.35rem 0.85rem;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.7rem; font-weight: 800;
+      border-radius: 6px; border: none;
+      cursor: pointer; transition: all 0.2s ease;
+      letter-spacing: 0.03em;
+      text-transform: none;
     }
-    .mp-btn-edit { background: rgba(168,85,247,0.14); color: #c084fc; border: 1px solid rgba(168,85,247,0.3); }
-    .mp-btn-edit:hover { background: rgba(168,85,247,0.28); box-shadow: 0 0 16px rgba(168,85,247,0.4); }
-    .mp-btn-del { background: rgba(239,68,68,0.1); color: #f87171; border: 1px solid rgba(239,68,68,0.15); }
-    .mp-btn-del:hover { background: rgba(239,68,68,0.2); }
+    .mp-action-approve {
+      background: linear-gradient(135deg, #2563eb, #3b82f6);
+      color: #fff;
+      box-shadow: 0 3px 12px rgba(37,99,235,0.4);
+    }
+    .mp-action-approve:hover { box-shadow: 0 5px 18px rgba(37,99,235,0.55); transform: translateY(-1px); }
+    .mp-action-paid {
+      background: linear-gradient(135deg, #16a34a, #22c55e);
+      color: #fff;
+      box-shadow: 0 3px 12px rgba(34,197,94,0.4);
+    }
+    .mp-action-paid:hover { box-shadow: 0 5px 18px rgba(34,197,94,0.55); transform: translateY(-1px); }
+
+    /* 3-dot menu */
+    .mp-more-wrap { position: relative; display: inline-block; }
+    .mp-more-btn {
+      width: 30px; height: 30px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem; font-weight: 900;
+      color: rgba(255,255,255,0.5);
+      background: #0a0612;
+      border: 1px solid rgba(168,85,247,0.2);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      letter-spacing: 2px;
+    }
+    .mp-more-btn:hover { color: #fff; border-color: rgba(168,85,247,0.5); background: #140a22; }
+    .mp-more-menu {
+      display: none;
+      position: absolute;
+      right: 0; top: 100%;
+      margin-top: 0.35rem;
+      min-width: 140px;
+      background: #0e0818;
+      border: 1px solid rgba(168,85,247,0.35);
+      border-radius: 10px;
+      padding: 0.35rem;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.55), 0 0 20px rgba(168,85,247,0.15);
+      z-index: 50;
+      animation: ssFadeIn 0.15s ease;
+    }
+    .mp-more-menu.open { display: flex; flex-direction: column; gap: 0.2rem; }
+    .mp-btn-edit, .mp-btn-del {
+      padding: 0.5rem 0.75rem;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.75rem; font-weight: 600;
+      border-radius: 6px; border: none;
+      cursor: pointer; transition: all 0.15s ease;
+      text-align: left;
+      width: 100%;
+    }
+    .mp-btn-edit { background: transparent; color: rgba(255,255,255,0.85); }
+    .mp-btn-edit:hover { background: rgba(168,85,247,0.15); color: #fff; }
+    .mp-btn-del { background: transparent; color: #f87171; }
+    .mp-btn-del:hover { background: rgba(239,68,68,0.12); color: #fca5a5; }
 
     .mp-empty { text-align: center; padding: 4rem 1rem; color: rgba(255,255,255,0.88); font-size: 0.88rem; }
     .mp-loading { text-align: center; padding: 3rem; color: rgba(255,255,255,0.88); font-size: 0.82rem; }
@@ -1911,9 +1954,8 @@
       .ss-lb-filter { padding: 0.38rem 0.72rem; font-size: 0.68rem; }
       .ss-lb-badges { flex-wrap: wrap; }
       .ss-milestone-btn { width: 100%; padding: 0.8rem 1rem; }
-      .mp-btn-edit, .mp-btn-del, .mp-btn-paid, .mp-btn-approve {
-        font-size: 0.62rem; padding: 0.3rem 0.55rem;
-      }
+      .mp-action-btn { font-size: 0.65rem; padding: 0.3rem 0.7rem; }
+      .mp-more-btn { width: 28px; height: 28px; }
     }
   </style>
 </head>
@@ -3534,12 +3576,12 @@
         html += '<td class="mp-date" data-label="Policy Date">' + dateStr + '</td>';
         html += '<td class="mp-actions" data-label="Actions">';
         if (status === 'Underwriting') {
-          html += '<button class="mp-btn-approve" data-id="' + row.id + '">Approve</button>';
+          html += '<button class="mp-action-btn mp-action-approve" data-id="' + row.id + '">Approve Policy</button>';
         }
         if (status === 'Approved') {
-          html += '<button class="mp-btn-paid" data-id="' + row.id + '">Issue Paid</button>';
+          html += '<button class="mp-action-btn mp-action-paid" data-id="' + row.id + '">Mark as Paid</button>';
         }
-        html += '<button class="mp-btn-edit" data-id="' + row.id + '">Edit</button><button class="mp-btn-del" data-id="' + row.id + '">Delete</button></td>';
+        html += '<div class="mp-more-wrap"><button class="mp-more-btn" data-id="' + row.id + '">&#8943;</button><div class="mp-more-menu"><button class="mp-btn-edit" data-id="' + row.id + '">Edit Policy</button><button class="mp-btn-del" data-id="' + row.id + '">Delete Policy</button></div></div></td>';
         html += '</tr>';
       });
       html += '</tbody>';
@@ -3571,24 +3613,39 @@
         });
       });
 
+      // 3-dot menu toggle
+      tableEl.querySelectorAll('.mp-more-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const menu = btn.nextElementSibling;
+          // Close all other open menus first
+          tableEl.querySelectorAll('.mp-more-menu.open').forEach(m => { if (m !== menu) m.classList.remove('open'); });
+          menu.classList.toggle('open');
+        });
+      });
+      // Close menus on outside click
+      document.addEventListener('click', () => {
+        tableEl.querySelectorAll('.mp-more-menu.open').forEach(m => m.classList.remove('open'));
+      });
+
       // Edit handlers
       tableEl.querySelectorAll('.mp-btn-edit').forEach(btn => {
-        btn.addEventListener('click', () => openEditModal(btn.dataset.id));
+        btn.addEventListener('click', () => { openEditModal(btn.dataset.id); btn.closest('.mp-more-menu').classList.remove('open'); });
       });
 
       // Delete handlers
       tableEl.querySelectorAll('.mp-btn-del').forEach(btn => {
-        btn.addEventListener('click', () => deletePolicy(btn.dataset.id));
+        btn.addEventListener('click', () => { deletePolicy(btn.dataset.id); btn.closest('.mp-more-menu').classList.remove('open'); });
       });
 
-      // Issue Paid handlers
-      tableEl.querySelectorAll('.mp-btn-paid').forEach(btn => {
-        btn.addEventListener('click', () => markIssuePaid(btn.dataset.id, btn));
-      });
-
-      // Approve handlers
-      tableEl.querySelectorAll('.mp-btn-approve').forEach(btn => {
+      // Approve Policy handlers
+      tableEl.querySelectorAll('.mp-action-approve').forEach(btn => {
         btn.addEventListener('click', () => markApproved(btn.dataset.id, btn));
+      });
+
+      // Mark as Paid handlers
+      tableEl.querySelectorAll('.mp-action-paid').forEach(btn => {
+        btn.addEventListener('click', () => markIssuePaid(btn.dataset.id, btn));
       });
 
       // Pagination handlers
