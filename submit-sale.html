@@ -1888,22 +1888,20 @@
       .kpi-form-grid { grid-template-columns: 1fr; }
       .ss-form-card { padding: 1.5rem 1.25rem; }
       .ss-input[type="date"] { width: 100%; min-width: 0; max-width: 100%; -webkit-appearance: none; appearance: none; font-size: 0.85rem; }
+      .perf-agent-kpis { grid-template-columns: 1fr 1fr; }
 
       /* Tabs: scroll horizontally without wrapping */
       .ss-tabs {
         margin-top: -1rem;
         padding: 0.9rem 1rem 1.2rem;
-        gap: 0.4rem;
-        overflow-x: auto;
-        flex-wrap: nowrap;
-        justify-content: flex-start;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: none;
+        gap: 0.35rem;
+        overflow-x: visible;
+        flex-wrap: wrap;
+        justify-content: center;
       }
-      .ss-tabs::-webkit-scrollbar { display: none; }
       .ss-tab {
-        padding: 0.55rem 1.1rem;
-        font-size: 0.78rem;
+        padding: 0.5rem 0.9rem;
+        font-size: 0.72rem;
         flex-shrink: 0;
       }
 
@@ -3377,6 +3375,8 @@
       const momChange = lmAP > 0 ? ((mtdAP - lmAP) / lmAP * 100) : (mtdAP > 0 ? 100 : 0);
       const momClass = momChange > 0 ? 'up' : momChange < 0 ? 'down' : '';
       const avgAP = ytd.length > 0 ? ytdAP / ytd.length : 0;
+      const dayOfYear = Math.floor((now - yearStart) / (1000*60*60*24)) + 1;
+      const yearlyPace = dayOfYear > 0 ? (ytdAP / dayOfYear) * 365 : 0;
 
       document.getElementById('perfSummary').textContent = rows.length + ' total policies · ' + fmt(totalAP) + ' lifetime AP';
 
@@ -3386,10 +3386,11 @@
       }
       document.getElementById('agentKpis').innerHTML =
         agentKpi('Month to Date', fmt(mtdAP), mtd.length + ' policies') +
+        agentKpi('YTD Total', fmt(ytdAP), ytd.length + ' policies') +
         agentKpi('Last Month', fmt(lmAP), lastMonth.length + ' policies') +
         agentKpi('Month vs Last', (momChange > 0 ? '+' : '') + momChange.toFixed(1) + '%', momChange > 0 ? '↑ Trending up' : momChange < 0 ? '↓ Trending down' : '— Flat', momClass) +
-        agentKpi('YTD Total', fmt(ytdAP), ytd.length + ' policies') +
-        agentKpi('Avg Per Policy', fmt(avgAP), 'based on YTD');
+        agentKpi('Avg Per Policy', fmt(avgAP), 'based on YTD') +
+        agentKpi('Yearly Pace', fmt(yearlyPace), fmt(Math.round(yearlyPace / 12)) + '/mo avg');
 
       // ── Top Carriers ──
       const carrierMap = {};
