@@ -126,51 +126,130 @@
       text-shadow: 0 0 12px rgba(168,85,247,0.3);
     }
 
-    /* Tabs */
-    .ss-tabs {
+    /* ─── Sidebar Navigation ─── */
+    .ss-dashboard { display: flex; min-height: calc(100vh - 80px); }
+    .ss-sidebar {
+      width: 80px;
+      position: fixed;
+      top: var(--nav-height, 64px);
+      left: 0;
+      bottom: 0;
+      background: #06040e;
+      border-right: 1px solid rgba(168,85,247,0.12);
       display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1rem 0;
+      gap: 0.35rem;
+      z-index: 100;
+      overflow-y: auto;
+      scrollbar-width: none;
+    }
+    .ss-sidebar::-webkit-scrollbar { display: none; }
+    .ss-sidebar-btn {
+      width: 60px;
+      height: 60px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
       justify-content: center;
-      gap: 0.5rem;
-      padding: 1rem 1.5rem 1.5rem;
-      margin-bottom: 0;
-      background: transparent;
-      border-bottom: none;
-      position: relative;
-    }
-    .ss-tab {
-      padding: 0.7rem 1.8rem;
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: 0.88rem;
-      font-weight: 700;
-      color: rgba(255,255,255,0.8);
-      background: #0a0612;
-      border: 1px solid rgba(168,85,247,0.22);
-      border-radius: 100px;
+      gap: 0.25rem;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 12px;
       cursor: pointer;
-      transition: all 0.25s ease;
+      transition: all 0.2s ease;
+      padding: 0.4rem;
+      color: rgba(255,255,255,0.5);
+      flex-shrink: 0;
     }
-    .ss-tab:hover {
+    .ss-sidebar-btn svg { width: 20px; height: 20px; flex-shrink: 0; }
+    .ss-sidebar-btn span {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.52rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      line-height: 1.1;
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+    }
+    .ss-sidebar-btn:hover {
       color: #fff;
-      border-color: rgba(168,85,247,0.5);
-      background: #140a22;
-      box-shadow: 0 0 20px rgba(168,85,247,0.25);
+      background: rgba(168,85,247,0.1);
+      border-color: rgba(168,85,247,0.3);
     }
-    .ss-tab.active {
+    .ss-sidebar-btn.active {
       color: #fff;
       background: linear-gradient(135deg, #7c3aed, #a855f7);
       border-color: #c084fc;
-      box-shadow: 0 4px 24px rgba(168,85,247,0.55), 0 0 40px rgba(192,132,252,0.35);
+      box-shadow: 0 4px 20px rgba(168,85,247,0.45);
     }
 
-    .ss-page { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem 4rem; }
+    .ss-main {
+      flex: 1;
+      margin-left: 80px;
+      max-width: 1100px;
+      padding: 0 1.5rem 4rem;
+    }
     .ss-page-dark {
       background: transparent;
-      max-width: none; margin: 0; padding: 0 0 4rem;
+      max-width: none; margin: 0; padding: 0;
       position: relative;
     }
     .ss-panel { display: none; }
     .ss-panel.active { display: block; animation: ssFadeIn 0.3s ease; }
     @keyframes ssFadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* ─── Compensation (migrated from agent-compensation.html) ─── */
+    .comp-bonus-row { display: flex; flex-direction: column; gap: 2rem; max-width: 520px; margin: 0 auto 3rem; }
+    .comp-bonus { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; overflow: hidden; }
+    .comp-bonus-header { padding: 1.75rem; background: linear-gradient(135deg, #1a2a1a 0%, #0d2b0d 100%); position: relative; overflow: hidden; }
+    .comp-bonus-header::before { content: ''; position: absolute; inset: 0; opacity: 0.07; background: radial-gradient(circle at 70% 20%, #22c55e 0%, transparent 60%); }
+    .comp-bonus-header-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem; background: rgba(34,197,94,0.25); color: #22c55e; }
+    .comp-bonus-header h2 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.4rem; font-weight: 800; color: #fff; margin: 0 0 0.3rem; }
+    .comp-bonus-header p { font-size: 0.8rem; color: rgba(255,255,255,0.5); margin: 0; }
+    .comp-bonus-header .comp-bonus-watermark { position: absolute; top: 1.5rem; right: 1.75rem; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.8rem; font-weight: 900; color: rgba(34,197,94,0.75); }
+    .comp-bonus .comp-table tbody td:first-child { color: #22c55e; }
+    .comp-mgr-bonus { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; overflow: hidden; }
+    .comp-mgr-bonus-header { padding: 1.75rem 1.5rem 1.5rem; background: linear-gradient(135deg, #2a1a2e 0%, #1e0d2b 100%); position: relative; overflow: hidden; }
+    .comp-mgr-bonus-header::before { content: ''; position: absolute; inset: 0; opacity: 0.07; background: radial-gradient(circle at 70% 20%, #a78bfa 0%, transparent 60%); }
+    .comp-mgr-bonus-header-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem; background: rgba(167,139,250,0.2); color: #a78bfa; }
+    .comp-mgr-bonus-header h2 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.2rem; font-weight: 800; color: #fff; margin: 0 0 0.3rem; }
+    .comp-mgr-bonus-body { padding: 1.5rem; }
+    .comp-mgr-bonus-body .mgr-threshold { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 2rem; font-weight: 900; color: #a78bfa; margin-bottom: 0.25rem; }
+    .comp-mgr-bonus-body .mgr-label { font-size: 0.82rem; font-weight: 600; color: rgba(255,255,255,0.85); margin-bottom: 0.75rem; }
+    .comp-mgr-bonus-body .mgr-desc { font-size: 0.78rem; color: rgba(255,255,255,0.5); line-height: 1.6; }
+    .comp-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin: 0 auto; }
+    .comp-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; overflow: hidden; }
+    .comp-card-header { padding: 2rem 1.75rem 1.75rem; position: relative; overflow: hidden; }
+    .comp-card-header::before { content: ''; position: absolute; inset: 0; opacity: 0.07; background: radial-gradient(circle at 70% 20%, #c9a84c 0%, transparent 60%); }
+    .comp-card.producer .comp-card-header { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); }
+    .comp-card.builder .comp-card-header { background: linear-gradient(135deg, #1a1a1a 0%, #2d2006 100%); }
+    .comp-card-header-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem; font-size: 1.2rem; }
+    .comp-card.producer .comp-card-header-icon { background: rgba(130,165,255,0.25); color: #a0b8ff; }
+    .comp-card.builder .comp-card-header-icon { background: rgba(220,190,100,0.25); color: #e0c870; }
+    .comp-card-header h2 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.4rem; font-weight: 800; color: #fff; margin: 0 0 0.3rem; }
+    .comp-card-header p { font-size: 0.8rem; color: rgba(255,255,255,0.5); margin: 0; }
+    .comp-card-header .comp-top-level { position: absolute; top: 1.5rem; right: 1.75rem; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.8rem; font-weight: 900; }
+    .comp-card.producer .comp-top-level { color: rgba(130,165,255,0.8); }
+    .comp-card.builder .comp-top-level { color: rgba(220,190,100,0.75); }
+    .comp-table { width: 100%; border-collapse: collapse; }
+    .comp-table thead th { font-family: 'Inter', sans-serif; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.45); padding: 0.85rem 1.75rem; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.02); }
+    .comp-table thead th:last-child { text-align: right; }
+    .comp-table tbody td { font-size: 0.88rem; padding: 0.7rem 1.75rem; border-bottom: 1px solid rgba(255,255,255,0.06); color: rgba(255,255,255,0.7); }
+    .comp-card.producer .comp-table tbody td:first-child { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; color: #6488ff; }
+    .comp-card.builder .comp-table tbody td:first-child { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; color: #e0c870; }
+    .comp-table tbody td:last-child { text-align: right; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 600; color: rgba(255,255,255,0.85); }
+    .comp-table tbody tr:last-child td { border-bottom: none; }
+    .comp-notes { margin: 2.5rem auto 0; padding: 1.25rem 1.5rem; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; }
+    .comp-notes-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.82rem; font-weight: 700; color: rgba(255,255,255,0.85); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.4rem; }
+    .comp-notes ul { list-style: none; padding: 0; margin: 0; }
+    .comp-notes li { font-size: 0.82rem; color: rgba(255,255,255,0.5); line-height: 1.6; padding-left: 1rem; position: relative; }
+    .comp-notes li::before { content: ''; position: absolute; left: 0; top: 0.55em; width: 4px; height: 4px; border-radius: 50%; background: #c9a84c; }
 
     /* ─── Agent Performance Tab ─── */
     .perf-agent-kpis { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 0.6rem; margin-bottom: 1.5rem; }
@@ -1889,20 +1968,39 @@
       .ss-form-card { padding: 1.5rem 1.25rem; }
       .ss-input[type="date"] { width: 100%; min-width: 0; max-width: 100%; -webkit-appearance: none; appearance: none; font-size: 0.85rem; }
       .perf-agent-kpis { grid-template-columns: 1fr 1fr; }
+      .comp-columns { grid-template-columns: 1fr; }
+      .comp-table thead th, .comp-table tbody td { padding: 0.65rem 1.25rem; font-size: 0.82rem; }
+      .comp-card-header .comp-top-level { font-size: 1.4rem; }
 
       /* Tabs: scroll horizontally without wrapping */
-      .ss-tabs {
-        margin-top: -1rem;
-        padding: 0.9rem 1rem 1.2rem;
+      .ss-dashboard { flex-direction: column; }
+      .ss-sidebar {
+        position: fixed;
+        top: var(--nav-height, 64px);
+        left: 0; right: 0; bottom: auto;
+        width: 100%;
+        height: auto;
+        flex-direction: row;
+        border-right: none;
+        border-bottom: 1px solid rgba(168,85,247,0.12);
+        padding: 0.5rem 0.75rem;
         gap: 0.35rem;
-        overflow-x: visible;
-        flex-wrap: wrap;
-        justify-content: center;
+        overflow-x: auto;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
+        z-index: 100;
       }
-      .ss-tab {
-        padding: 0.5rem 0.9rem;
-        font-size: 0.72rem;
-        flex-shrink: 0;
+      .ss-sidebar-btn {
+        width: 52px; height: 52px;
+        min-width: 52px;
+        gap: 0.15rem;
+      }
+      .ss-sidebar-btn svg { width: 16px; height: 16px; }
+      .ss-sidebar-btn span { font-size: 0.45rem; }
+      .ss-main {
+        margin-left: 0;
+        margin-top: 68px;
+        padding: 0 1rem 3rem;
       }
 
       /* Goal tracker: stack title above input row */
@@ -2034,7 +2132,8 @@
 
     @media (max-width: 520px) {
       .ss-hero-title { font-size: 2.6rem; }
-      .ss-tab { padding: 0.5rem 0.95rem; font-size: 0.72rem; }
+      .ss-sidebar-btn { width: 46px; height: 46px; min-width: 46px; }
+      .ss-sidebar-btn span { font-size: 0.4rem; }
       .ss-form-card { padding: 1.25rem 1rem; }
       .ss-calc-card { padding: 1.15rem 0.9rem; }
       .ss-calc-steps.ss-calc-steps-4 { grid-template-columns: 1fr; }
@@ -2105,21 +2204,42 @@
   <!-- Global animated gradient background (fixed behind everything) -->
   <div id="gradientBgRoot" class="ss-page-bg" aria-hidden="true"></div>
 
-  <!-- HERO -->
-  <div class="ss-hero">
-    <div class="ss-hero-inner">
-      <h1 class="ss-hero-title">SALES <span>HUB</span></h1>
-    </div>
-  </div>
+  <div class="ss-dashboard">
 
-  <!-- TABS -->
-  <div class="ss-tabs">
-    <button class="ss-tab active" data-panel="submit">Submit Sale</button>
-    <button class="ss-tab" data-panel="leaderboard">Leaderboard</button>
-    <button class="ss-tab" data-panel="policies">My Policies</button>
-    <button class="ss-tab" data-panel="performance">My Performance</button>
-  </div>
+  <!-- SIDEBAR NAV -->
+  <nav class="ss-sidebar" id="ssSidebar">
+    <button class="ss-sidebar-btn active" data-panel="submit">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+      <span>Sales &amp; KPIs</span>
+    </button>
+    <button class="ss-sidebar-btn" data-panel="goals">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+      <span>Goals</span>
+    </button>
+    <button class="ss-sidebar-btn" data-panel="leaderboard">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 010-5C7 4 6 9 6 9zm12 0h1.5a2.5 2.5 0 000-5C17 4 18 9 18 9zm-9 11a6 6 0 0012 0V9H3v11z"/></svg>
+      <span>Leaders</span>
+    </button>
+    <button class="ss-sidebar-btn" data-panel="policies">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+      <span>Book of Biz</span>
+    </button>
+    <button class="ss-sidebar-btn" data-panel="performance">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      <span>Perform.</span>
+    </button>
+    <button class="ss-sidebar-btn" data-panel="calculator">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+      <span>Calc</span>
+    </button>
+    <button class="ss-sidebar-btn" data-panel="compensation">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+      <span>Comp</span>
+    </button>
+  </nav>
 
+  <!-- MAIN CONTENT -->
+  <div class="ss-main">
   <div class="ss-page-dark">
 
     <!-- SUBMIT FORM -->
@@ -2139,22 +2259,6 @@
             <button class="ss-auth-prompt-btn login" id="promptLogin">Log In</button>
             <button class="ss-auth-prompt-btn signup" id="promptSignup">Sign Up</button>
           </div>
-        </div>
-
-        <!-- Goal Tracker -->
-        <div class="ss-goal-tracker" id="goalTracker">
-          <div class="ss-goal-header">
-            <div class="ss-goal-title">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
-              Annual Goal
-            </div>
-            <div class="ss-goal-input-row">
-              <span class="ss-goal-input-label">$</span>
-              <input type="text" class="ss-goal-input" id="goalInput" placeholder="e.g. 250,000" inputmode="numeric" />
-              <button class="ss-goal-save" id="goalSave">Set Goal</button>
-            </div>
-          </div>
-          <div id="goalChartArea"></div>
         </div>
 
         <div class="ss-form-wrap">
@@ -2260,7 +2364,32 @@
           </div>
         </div>
 
-        <!-- COMMISSION CALCULATOR -->
+      </div>
+    </div>
+
+    <!-- ═══ GOAL TRACKER PANEL ═══ -->
+    <div class="ss-panel" id="panel-goals">
+      <div style="padding: 2.5rem 1.5rem;">
+        <div class="ss-goal-tracker visible" id="goalTracker">
+          <div class="ss-goal-header">
+            <div class="ss-goal-title">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+              Annual Goal
+            </div>
+            <div class="ss-goal-input-row">
+              <span class="ss-goal-input-label">$</span>
+              <input type="text" class="ss-goal-input" id="goalInput" placeholder="e.g. 250,000" inputmode="numeric" />
+              <button class="ss-goal-save" id="goalSave">Set Goal</button>
+            </div>
+          </div>
+          <div id="goalChartArea"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ COMMISSION CALCULATOR PANEL ═══ -->
+    <div class="ss-panel" id="panel-calculator">
+      <div style="padding: 2.5rem 1.5rem;">
         <div class="ss-calc-wrap">
           <div class="ss-calc-card" id="commissionCalc">
             <div class="ss-calc-title">
@@ -2395,7 +2524,7 @@
         <div id="mpContent" style="display:none;">
           <div class="mp-header">
             <div>
-              <div class="mp-title">My Policies</div>
+              <div class="mp-title">Book of Business</div>
               <div class="mp-count" id="mpCount"></div>
             </div>
             <button class="mp-export-btn" id="mpExportCsv">
@@ -2490,7 +2619,152 @@
       </div>
     </div>
 
-  </div>
+    <!-- ═══ COMPENSATION PANEL ═══ -->
+    <div class="ss-panel" id="panel-compensation">
+      <div style="padding: 2rem 1rem;">
+        <div class="comp-bonus-row">
+          <div class="comp-bonus">
+            <div class="comp-bonus-header">
+              <div class="comp-bonus-header-icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              </div>
+              <span class="comp-bonus-watermark">$20K</span>
+              <h2>Producer Bonus</h2>
+              <p>Bonus milestones based on issued paid production</p>
+            </div>
+            <table class="comp-table">
+              <thead><tr><th>Issued Paid</th><th>Bonus</th></tr></thead>
+              <tbody>
+                <tr><td>$20,000</td><td>$650</td></tr>
+                <tr><td>$30,000</td><td>$1,200</td></tr>
+                <tr><td>$40,000</td><td>$1,600</td></tr>
+                <tr><td>$50,000</td><td>$2,000</td></tr>
+                <tr><td>$75,000</td><td>$4,000</td></tr>
+                <tr><td>$100,000</td><td>$8,000</td></tr>
+                <tr><td>$125,000</td><td>$10,000</td></tr>
+                <tr><td>$150,000</td><td>$15,000</td></tr>
+                <tr><td>$200,000</td><td>$20,000</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="comp-mgr-bonus">
+            <div class="comp-mgr-bonus-header">
+              <div class="comp-mgr-bonus-header-icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+              </div>
+              <h2>Manager Bonus</h2>
+            </div>
+            <div class="comp-mgr-bonus-body">
+              <div class="mgr-threshold">$150K</div>
+              <div class="mgr-label">Monthly Volume Threshold</div>
+              <p class="mgr-desc">The manager bonus kicks in once your overall agency volume hits $150K per month in issued paid business.</p>
+            </div>
+          </div>
+          <div class="comp-mgr-bonus">
+            <div class="comp-mgr-bonus-header" style="background: linear-gradient(135deg, #2a1f0a 0%, #1a1505 100%);">
+              <div class="comp-mgr-bonus-header-icon" style="background: rgba(220, 190, 100, 0.25); color: #e0c870;">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12V8H6a2 2 0 01-2-2c0-1.1.9-2 2-2h12v4"/><path d="M4 6v12c0 1.1.9 2 2 2h14v-4"/><path d="M18 12a2 2 0 000 4h4v-4h-4z"/></svg>
+              </div>
+              <h2>Carrier Bonuses</h2>
+            </div>
+            <div class="comp-mgr-bonus-body">
+              <p class="mgr-desc" style="margin-bottom: 1rem;">On top of your base commission, each carrier runs their own bonus programs throughout the year:</p>
+              <div style="display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 1rem;">
+                <div style="display: flex; align-items: center; gap: 0.6rem; font-size: 0.82rem;">
+                  <span style="color: var(--gold); font-weight: 700; font-size: 1rem;">+10%</span>
+                  <span style="color: var(--text-secondary);">Temporary commission increases on select products</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.6rem; font-size: 0.82rem;">
+                  <span style="color: var(--gold); font-weight: 700; font-size: 1.4rem;">&#9992;</span>
+                  <span style="color: var(--text-secondary);">International trips and prizes for top producers</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.6rem; font-size: 0.82rem;">
+                  <span style="color: var(--gold); font-weight: 700; font-size: 1rem;">$$$</span>
+                  <span style="color: var(--text-secondary);">Cash bonuses paid out quarterly or annually</span>
+                </div>
+              </div>
+              <p class="mgr-desc">Check your carrier portals for the current incentives they are running.</p>
+            </div>
+          </div>
+        </div>
+        <div class="comp-columns">
+          <div class="comp-card producer">
+            <div class="comp-card-header">
+              <div class="comp-card-header-icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              </div>
+              <span class="comp-top-level">120%</span>
+              <h2>Producer</h2>
+              <p>Individual agent commission levels</p>
+            </div>
+            <table class="comp-table">
+              <thead><tr><th>Level</th><th>Issued Paid</th></tr></thead>
+              <tbody>
+                <tr><td>120%</td><td>$40,000</td></tr>
+                <tr><td>115%</td><td>$35,000</td></tr>
+                <tr><td>110%</td><td>$30,000</td></tr>
+                <tr><td>105%</td><td>$25,000</td></tr>
+                <tr><td>100%</td><td>$20,000</td></tr>
+                <tr><td>95%</td><td>$15,000</td></tr>
+                <tr><td>90%</td><td>$10,000</td></tr>
+                <tr><td>85%</td><td>$5,000</td></tr>
+                <tr><td>80%</td><td>Starting Contract</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="comp-card builder">
+            <div class="comp-card-header">
+              <div class="comp-card-header-icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+              </div>
+              <span class="comp-top-level">145%</span>
+              <h2>Builder</h2>
+              <p>Agency builder commission levels</p>
+            </div>
+            <table class="comp-table">
+              <thead><tr><th>Level</th><th>Issued Paid</th></tr></thead>
+              <tbody>
+                <tr><td>145%</td><td>$750,000</td></tr>
+                <tr><td>140%</td><td>$500,000</td></tr>
+                <tr><td>135%</td><td>$400,000</td></tr>
+                <tr><td>130%</td><td>$300,000</td></tr>
+                <tr><td>125%</td><td>$200,000</td></tr>
+                <tr><td>120%</td><td>$150,000</td></tr>
+                <tr><td>115%</td><td>$125,000</td></tr>
+                <tr><td>110%</td><td>$100,000</td></tr>
+                <tr><td>105%</td><td>$75,000</td></tr>
+                <tr><td>100%</td><td>$50,000</td></tr>
+                <tr><td>95%</td><td>$40,000</td></tr>
+                <tr><td>90%</td><td>$30,000</td></tr>
+                <tr><td>85%</td><td>$20,000</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div style="text-align: center; margin-top: 2.5rem;">
+          <a href="product-compensation.html" style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.8rem 1.8rem; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.9rem; font-weight: 700; color: #ffffff; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 10px; text-decoration: none; transition: all 0.2s ease;"
+            onmouseover="this.style.background='rgba(255,255,255,0.12)';this.style.transform='translateY(-2px)'"
+            onmouseout="this.style.background='rgba(255,255,255,0.08)';this.style.transform='none'">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            View Product Compensation by Carrier
+          </a>
+        </div>
+        <div class="comp-notes" style="max-width:none;">
+          <div class="comp-notes-title">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Important Notes
+          </div>
+          <ul>
+            <li>Levels must be achieved 2 months in a row to take effect.</li>
+            <li>All metrics are based on issued paid business.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end ss-page-dark -->
+  </div><!-- end ss-main -->
+  </div><!-- end ss-dashboard -->
 
   <!-- Overload Alert -->
   <div class="ss-alert-overlay" id="overloadAlert">
@@ -2912,16 +3186,19 @@
       switchAuthTab('signup');
     });
 
-    // ─── TABS ───
-    document.querySelectorAll('.ss-tab').forEach(tab => {
-      tab.addEventListener('click', () => {
-        document.querySelectorAll('.ss-tab').forEach(t => t.classList.remove('active'));
+    // ─── SIDEBAR NAV ───
+    document.querySelectorAll('.ss-sidebar-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.ss-sidebar-btn').forEach(b => b.classList.remove('active'));
         document.querySelectorAll('.ss-panel').forEach(p => p.classList.remove('active'));
-        tab.classList.add('active');
-        document.getElementById('panel-' + tab.dataset.panel).classList.add('active');
-        if (tab.dataset.panel === 'leaderboard') loadLeaderboard();
-        if (tab.dataset.panel === 'policies') loadPolicies();
-        if (tab.dataset.panel === 'performance') loadAgentPerformance();
+        btn.classList.add('active');
+        document.getElementById('panel-' + btn.dataset.panel).classList.add('active');
+        if (btn.dataset.panel === 'leaderboard') loadLeaderboard();
+        if (btn.dataset.panel === 'policies') loadPolicies();
+        if (btn.dataset.panel === 'performance') loadAgentPerformance();
+        if (btn.dataset.panel === 'goals' && currentUser) loadGoalTracker();
+        // Scroll to top of content on mobile
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       });
     });
 
@@ -2946,9 +3223,9 @@
       document.getElementById('modalNewSale').addEventListener('click', () => { modal.classList.remove('open'); });
       document.getElementById('modalToLB').addEventListener('click', () => {
         modal.classList.remove('open');
-        document.querySelectorAll('.ss-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.ss-sidebar-btn').forEach(b => b.classList.remove('active'));
         document.querySelectorAll('.ss-panel').forEach(p => p.classList.remove('active'));
-        document.querySelector('[data-panel="leaderboard"]').classList.add('active');
+        document.querySelector('.ss-sidebar-btn[data-panel="leaderboard"]').classList.add('active');
         document.getElementById('panel-leaderboard').classList.add('active');
         loadLeaderboard();
       });
