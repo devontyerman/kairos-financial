@@ -139,8 +139,8 @@
     .ss-sidebar-title {
       position: relative;
       width: 100%;
-      height: 36px;
-      padding: 0.9rem 0 0.7rem;
+      height: 52px;
+      padding: 1rem 0 0.8rem;
       box-sizing: content-box;
       flex-shrink: 0;
       filter: url(#morphThreshold) blur(0.4px);
@@ -150,16 +150,13 @@
       left: 0; right: 0; top: 50%;
       transform: translateY(-50%);
       font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: 1.15rem;
+      font-size: 2.2rem;
       font-weight: 900;
       text-transform: uppercase;
       letter-spacing: 0.1em;
       text-align: center;
       width: 100%;
-      background: linear-gradient(135deg, #c084fc 0%, #a855f7 50%, #7c3aed 100%);
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
+      color: #ffffff;
     }
     .ss-sidebar-header {
       display: flex;
@@ -2080,8 +2077,8 @@
       }
       .ss-sidebar-title {
         display: block;
-        height: 28px;
-        padding: 0.6rem 0 0.4rem;
+        height: 38px;
+        padding: 0.5rem 0 0.3rem;
       }
       .ss-sidebar-hamburger { display: flex; }
       .ss-sidebar-grid {
@@ -2604,71 +2601,8 @@
 
         <!-- ═══ COMPENSATION SECTION (merged into Pay panel) ═══ -->
         <div style="margin-top: 3rem;">
-        <div class="comp-bonus-row">
-          <div class="comp-bonus" style="background: #0a0612;">
-            <div class="comp-bonus-header">
-              <div class="comp-bonus-header-icon">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-              </div>
-              <span class="comp-bonus-watermark">$20K</span>
-              <h2>Producer Bonus</h2>
-              <p>Bonus milestones based on issued paid production</p>
-            </div>
-            <table class="comp-table">
-              <thead><tr><th>Issued Paid</th><th>Bonus</th></tr></thead>
-              <tbody>
-                <tr><td>$20,000</td><td>$650</td></tr>
-                <tr><td>$30,000</td><td>$1,200</td></tr>
-                <tr><td>$40,000</td><td>$1,600</td></tr>
-                <tr><td>$50,000</td><td>$2,000</td></tr>
-                <tr><td>$75,000</td><td>$4,000</td></tr>
-                <tr><td>$100,000</td><td>$8,000</td></tr>
-                <tr><td>$125,000</td><td>$10,000</td></tr>
-                <tr><td>$150,000</td><td>$15,000</td></tr>
-                <tr><td>$200,000</td><td>$20,000</td></tr>
-              </tbody>
-            </table>
-          </div>
-          <div class="comp-mgr-bonus" style="background: #0a0612;">
-            <div class="comp-mgr-bonus-header">
-              <div class="comp-mgr-bonus-header-icon">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
-              </div>
-              <h2>Manager Bonus</h2>
-            </div>
-            <div class="comp-mgr-bonus-body">
-              <div class="mgr-threshold">$150K</div>
-              <div class="mgr-label">Monthly Volume Threshold</div>
-              <p class="mgr-desc">The manager bonus kicks in once your overall agency volume hits $150K per month in issued paid business.</p>
-            </div>
-          </div>
-          <div class="comp-mgr-bonus" style="background: #0a0612;">
-            <div class="comp-mgr-bonus-header" style="background: linear-gradient(135deg, #2a1f0a 0%, #1a1505 100%);">
-              <div class="comp-mgr-bonus-header-icon" style="background: rgba(220, 190, 100, 0.25); color: #e0c870;">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12V8H6a2 2 0 01-2-2c0-1.1.9-2 2-2h12v4"/><path d="M4 6v12c0 1.1.9 2 2 2h14v-4"/><path d="M18 12a2 2 0 000 4h4v-4h-4z"/></svg>
-              </div>
-              <h2>Carrier Bonuses</h2>
-            </div>
-            <div class="comp-mgr-bonus-body">
-              <p class="mgr-desc" style="margin-bottom: 1rem;">On top of your base commission, each carrier runs their own bonus programs throughout the year:</p>
-              <div style="display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 1rem;">
-                <div style="display: flex; align-items: center; gap: 0.6rem; font-size: 0.82rem;">
-                  <span style="color: var(--gold); font-weight: 700; font-size: 1rem;">+10%</span>
-                  <span style="color: rgba(255,255,255,0.7);">Temporary commission increases on select products</span>
-                </div>
-                <div style="display: flex; align-items: center; gap: 0.6rem; font-size: 0.82rem;">
-                  <span style="color: var(--gold); font-weight: 700; font-size: 1.4rem;">&#9992;</span>
-                  <span style="color: rgba(255,255,255,0.7);">International trips and prizes for top producers</span>
-                </div>
-                <div style="display: flex; align-items: center; gap: 0.6rem; font-size: 0.82rem;">
-                  <span style="color: var(--gold); font-weight: 700; font-size: 1rem;">$$$</span>
-                  <span style="color: rgba(255,255,255,0.7);">Cash bonuses paid out quarterly or annually</span>
-                </div>
-              </div>
-              <p class="mgr-desc">Check your carrier portals for the current incentives they are running.</p>
-            </div>
-          </div>
-        </div>
+
+        <!-- 1. Producer & Builder Pay Scale -->
         <div class="comp-columns">
           <div class="comp-card producer" style="background: #0a0612;">
             <div class="comp-card-header">
@@ -2723,6 +2657,63 @@
             </table>
           </div>
         </div>
+
+        <!-- 2. Producer Bonus -->
+        <div class="comp-bonus-row" style="margin-top: 2.5rem;">
+          <div class="comp-bonus" style="background: #0a0612;">
+            <div class="comp-bonus-header">
+              <div class="comp-bonus-header-icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              </div>
+              <span class="comp-bonus-watermark">$20K</span>
+              <h2>Producer Bonus</h2>
+              <p>Bonus milestones based on issued paid production</p>
+            </div>
+            <table class="comp-table">
+              <thead><tr><th>Issued Paid</th><th>Bonus</th></tr></thead>
+              <tbody>
+                <tr><td>$20,000</td><td>$650</td></tr>
+                <tr><td>$30,000</td><td>$1,200</td></tr>
+                <tr><td>$40,000</td><td>$1,600</td></tr>
+                <tr><td>$50,000</td><td>$2,000</td></tr>
+                <tr><td>$75,000</td><td>$4,000</td></tr>
+                <tr><td>$100,000</td><td>$8,000</td></tr>
+                <tr><td>$125,000</td><td>$10,000</td></tr>
+                <tr><td>$150,000</td><td>$15,000</td></tr>
+                <tr><td>$200,000</td><td>$20,000</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- 3. Carrier Bonuses -->
+          <div class="comp-mgr-bonus" style="background: #0a0612;">
+            <div class="comp-mgr-bonus-header" style="background: linear-gradient(135deg, #2a1f0a 0%, #1a1505 100%);">
+              <div class="comp-mgr-bonus-header-icon" style="background: rgba(220, 190, 100, 0.25); color: #e0c870;">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12V8H6a2 2 0 01-2-2c0-1.1.9-2 2-2h12v4"/><path d="M4 6v12c0 1.1.9 2 2 2h14v-4"/><path d="M18 12a2 2 0 000 4h4v-4h-4z"/></svg>
+              </div>
+              <h2>Carrier Bonuses</h2>
+            </div>
+            <div class="comp-mgr-bonus-body">
+              <p class="mgr-desc" style="margin-bottom: 1rem;">On top of your base commission, each carrier runs their own bonus programs throughout the year:</p>
+              <div style="display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 1rem;">
+                <div style="display: flex; align-items: center; gap: 0.6rem; font-size: 0.82rem;">
+                  <span style="color: var(--gold); font-weight: 700; font-size: 1rem;">+10%</span>
+                  <span style="color: rgba(255,255,255,0.7);">Temporary commission increases on select products</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.6rem; font-size: 0.82rem;">
+                  <span style="color: var(--gold); font-weight: 700; font-size: 1.4rem;">&#9992;</span>
+                  <span style="color: rgba(255,255,255,0.7);">International trips and prizes for top producers</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.6rem; font-size: 0.82rem;">
+                  <span style="color: var(--gold); font-weight: 700; font-size: 1rem;">$$$</span>
+                  <span style="color: rgba(255,255,255,0.7);">Cash bonuses paid out quarterly or annually</span>
+                </div>
+              </div>
+              <p class="mgr-desc">Check your carrier portals for the current incentives they are running.</p>
+            </div>
+          </div>
+        </div>
+
         <div style="text-align: center; margin-top: 2.5rem;">
           <button onclick="document.querySelectorAll('.ss-sidebar-btn').forEach(b=>b.classList.remove('active'));document.querySelector('.ss-sidebar-btn[data-panel=compgrid]').classList.add('active');document.querySelectorAll('.ss-panel').forEach(p=>p.classList.remove('active'));document.getElementById('panel-compgrid').classList.add('active');" style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.8rem 1.8rem; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.9rem; font-weight: 700; color: #ffffff; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 10px; cursor: pointer; transition: all 0.2s ease;"
             onmouseover="this.style.background='rgba(255,255,255,0.12)';this.style.transform='translateY(-2px)'"
@@ -2741,6 +2732,24 @@
             <li>All metrics are based on issued paid business.</li>
           </ul>
         </div>
+
+        <!-- 4. Manager Bonus (bottom) -->
+        <div style="margin-top: 2.5rem; max-width: 520px; margin-left: auto; margin-right: auto;">
+          <div class="comp-mgr-bonus" style="background: #0a0612;">
+            <div class="comp-mgr-bonus-header">
+              <div class="comp-mgr-bonus-header-icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+              </div>
+              <h2>Manager Bonus</h2>
+            </div>
+            <div class="comp-mgr-bonus-body">
+              <div class="mgr-threshold">$150K</div>
+              <div class="mgr-label">Monthly Volume Threshold</div>
+              <p class="mgr-desc">The manager bonus kicks in once your overall agency volume hits $150K per month in issued paid business.</p>
+            </div>
+          </div>
+        </div>
+
         </div>
       </div>
     </div>
