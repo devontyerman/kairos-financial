@@ -1028,6 +1028,42 @@
     .ss-uw-btn.delete:hover { background: rgba(239,68,68,0.2); }
 
     /* Goal Tracker */
+    /* Goal tracker popup overlay */
+    .ss-goal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(6px);
+      align-items: center;
+      justify-content: center;
+      animation: ssFadeIn 0.3s ease;
+    }
+    .ss-goal-overlay.open { display: flex; }
+    .ss-goal-overlay-inner {
+      max-width: 700px;
+      width: 92%;
+      max-height: 90vh;
+      overflow-y: auto;
+      animation: ssModalPop 0.4s ease;
+    }
+    .ss-goal-overlay-close {
+      display: block;
+      margin: 1rem auto 0;
+      padding: 0.65rem 2.5rem;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: #fff;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .ss-goal-overlay-close:hover { background: rgba(255,255,255,0.15); }
+
     .ss-goal-tracker {
       max-width: 100%;
       margin: 0 auto 2.5rem;
@@ -2870,6 +2906,14 @@
       </div>
     </div>
 
+    <!-- GOAL TRACKER POPUP (shown after deal submit) -->
+    <div class="ss-goal-overlay" id="goalOverlay">
+      <div class="ss-goal-overlay-inner">
+        <div id="goalPopupContent"></div>
+        <button class="ss-goal-overlay-close" id="goalOverlayClose">Close</button>
+      </div>
+    </div>
+
     <!-- MILESTONE CELEBRATION MODAL -->
     <div class="ss-milestone-overlay" id="milestoneOverlay">
       <div class="ss-milestone-box" id="milestoneBox">
@@ -4119,24 +4163,30 @@
         // Check milestones first — if one triggers, it replaces the normal success modal
         const triggered = await checkAndShowMilestone();
         if (!triggered) showSuccessModal(apValue);
-        // Wait for ALL modals to close, then animate the goal tracker
+        // Wait for ALL modals to close, then show goal tracker in popup overlay
         (function waitForModalsAndAnimate() {
           function allModalsClosed() {
             return !document.querySelector('.ss-modal-overlay.open, .ss-alert-overlay.open, .ss-milestone-overlay.open, .ss-confirm-overlay.open');
           }
           function check() {
             if (allModalsClosed()) {
-              // Small extra delay so Supabase has the new row
               setTimeout(async () => {
                 await loadGoalTracker(true);
+                // Clone the goal tracker into the popup overlay
                 const gt = document.getElementById('goalTracker');
-                if (gt) gt.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                const popupContent = document.getElementById('goalPopupContent');
+                if (gt && popupContent) {
+                  popupContent.innerHTML = gt.outerHTML;
+                  // Make the cloned tracker visible
+                  const cloned = popupContent.querySelector('.ss-goal-tracker');
+                  if (cloned) { cloned.classList.add('visible'); cloned.style.margin = '0'; }
+                  document.getElementById('goalOverlay').classList.add('open');
+                }
               }, 400);
             } else {
               setTimeout(check, 300);
             }
           }
-          // Start checking after a short initial delay
           setTimeout(check, 500);
         })();
         // Check underwriting overload
@@ -4887,6 +4937,14 @@
     });
     document.getElementById('milestoneOverlay').addEventListener('click', (e) => {
       if (e.target.id === 'milestoneOverlay') e.target.classList.remove('open');
+    });
+
+    // Goal tracker popup close
+    document.getElementById('goalOverlayClose').addEventListener('click', () => {
+      document.getElementById('goalOverlay').classList.remove('open');
+    });
+    document.getElementById('goalOverlay').addEventListener('click', (e) => {
+      if (e.target.id === 'goalOverlay') e.target.classList.remove('open');
     });
 
     function fireConfetti() {
