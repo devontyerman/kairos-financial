@@ -137,20 +137,29 @@
     }
     .ss-sidebar::-webkit-scrollbar { display: none; }
     .ss-sidebar-title {
+      position: relative;
+      width: 100%;
+      height: 36px;
+      padding: 0.9rem 0 0.7rem;
+      box-sizing: content-box;
+      flex-shrink: 0;
+      filter: url(#morphThreshold) blur(0.4px);
+    }
+    .ss-sidebar-title .morph-text {
+      position: absolute;
+      left: 0; right: 0; top: 50%;
+      transform: translateY(-50%);
       font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: 1.05rem;
+      font-size: 1.15rem;
       font-weight: 900;
-      color: #fff;
       text-transform: uppercase;
-      letter-spacing: 0.08em;
-      padding: 1.1rem 0 0.9rem;
+      letter-spacing: 0.1em;
       text-align: center;
       width: 100%;
       background: linear-gradient(135deg, #c084fc 0%, #a855f7 50%, #7c3aed 100%);
       -webkit-background-clip: text;
       background-clip: text;
       -webkit-text-fill-color: transparent;
-      flex-shrink: 0;
     }
     .ss-sidebar-header {
       display: flex;
@@ -2071,8 +2080,8 @@
       }
       .ss-sidebar-title {
         display: block;
-        font-size: 0.95rem;
-        padding: 0.7rem 0 0.5rem;
+        height: 28px;
+        padding: 0.6rem 0 0.4rem;
       }
       .ss-sidebar-hamburger { display: flex; }
       .ss-sidebar-grid {
@@ -2327,7 +2336,11 @@
   <!-- SIDEBAR NAV -->
   <nav class="ss-sidebar" id="ssSidebar">
     <div class="ss-sidebar-header">
-      <div class="ss-sidebar-title">Sales Hub</div>
+      <div class="ss-sidebar-title">
+        <span class="morph-text" id="morphText1"></span>
+        <span class="morph-text" id="morphText2"></span>
+      </div>
+      <svg class="hidden" preserveAspectRatio="xMidYMid slice"><defs><filter id="morphThreshold"><feColorMatrix in="SourceGraphic" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 255 -140"/></filter></defs></svg>
       <button class="ss-sidebar-hamburger" id="ssHamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
     </div>
     <div class="ss-sidebar-grid">
@@ -3510,6 +3523,59 @@
         window.scrollTo({ top: 0, behavior: 'smooth' });
       });
     });
+
+    // ─── MORPHING TEXT (Sales Hub logo) ───
+    (function() {
+      const texts = ['SALES', 'HUB'];
+      const morphTime = 2.5;    // slower morph
+      const cooldownTime = 1.5; // longer pause between morphs
+      const text1 = document.getElementById('morphText1');
+      const text2 = document.getElementById('morphText2');
+      if (!text1 || !text2) return;
+
+      let textIndex = 0;
+      let morph = 0;
+      let cooldown = cooldownTime;
+      let lastTime = Date.now();
+
+      text1.textContent = texts[0];
+      text2.textContent = texts[1];
+      text2.style.opacity = '0%';
+      text2.style.filter = 'blur(100px)';
+
+      function setMorphStyles(fraction) {
+        text2.style.filter = 'blur(' + Math.min(8 / fraction - 8, 100) + 'px)';
+        text2.style.opacity = (Math.pow(fraction, 0.4) * 100) + '%';
+        var inv = 1 - fraction;
+        text1.style.filter = 'blur(' + Math.min(8 / inv - 8, 100) + 'px)';
+        text1.style.opacity = (Math.pow(inv, 0.4) * 100) + '%';
+        text1.textContent = texts[textIndex % texts.length];
+        text2.textContent = texts[(textIndex + 1) % texts.length];
+      }
+
+      function animate() {
+        requestAnimationFrame(animate);
+        var now = Date.now();
+        var dt = (now - lastTime) / 1000;
+        lastTime = now;
+        cooldown -= dt;
+        if (cooldown <= 0) {
+          morph -= cooldown;
+          cooldown = 0;
+          var fraction = morph / morphTime;
+          if (fraction > 1) { cooldown = cooldownTime; fraction = 1; }
+          setMorphStyles(fraction);
+          if (fraction === 1) { textIndex++; }
+        } else {
+          morph = 0;
+          text2.style.filter = 'none';
+          text2.style.opacity = '100%';
+          text1.style.filter = 'none';
+          text1.style.opacity = '0%';
+        }
+      }
+      animate();
+    })();
 
     // ─── SIDEBAR HAMBURGER (opens mobile nav) ───
     const ssHamburger = document.getElementById('ssHamburger');
