@@ -297,14 +297,20 @@
     .ss-main {
       max-width: 1100px;
       padding: 1.5rem 2rem 4rem;
-      /* Center in the remaining viewport space after the 200px sidebar */
-      margin-left: calc(200px + ((100vw - 200px - 1100px) / 2));
-      margin-right: auto;
+      /* Center within the space to the right of the 200px sidebar */
+      margin-left: 200px;
+      margin-right: 0;
+      /* On wide screens, auto-center in remaining space */
+      width: calc(100vw - 200px);
+      box-sizing: border-box;
     }
-    @media (max-width: 1350px) {
+    @media (min-width: 1400px) {
       .ss-main {
-        margin-left: 200px;
-        margin-right: 0;
+        margin-left: auto;
+        margin-right: auto;
+        /* offset by half the sidebar so it centers in remaining space */
+        transform: translateX(100px);
+        width: auto;
       }
     }
     .ss-page-dark {
@@ -1017,9 +1023,9 @@
 
     /* Goal Tracker */
     .ss-goal-tracker {
-      max-width: 900px;
+      max-width: 100%;
       margin: 0 auto 2.5rem;
-      padding: 2rem 2.5rem;
+      padding: 2.5rem 3rem;
       background: #0a0612;
       border: 1px solid rgba(168,85,247,0.28);
       border-radius: 16px;
@@ -2437,7 +2443,7 @@
     </a>
     <a class="ss-sidebar-btn" href="https://app.insurancetoolkits.com/fex/quoter" target="_blank" rel="noopener noreferrer" style="text-decoration:none;">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
-      <span>Ins. Toolkit</span>
+      <span>Toolkit</span>
     </a>
     </div>
 
