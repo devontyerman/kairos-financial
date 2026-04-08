@@ -47,7 +47,7 @@
 
     /* Hide the top nav entirely on the Sales Hub page */
     .nav, .nav.scrolled { display: none !important; }
-    .nav-mobile { top: 0 !important; }
+    .nav-mobile { top: 0 !important; z-index: 999; }
 
     /* Footer: transparent so the background shows through seamlessly */
     .footer { background: transparent !important; border-top: none !important; }
@@ -2127,8 +2127,8 @@
       /* Tabs: scroll horizontally without wrapping */
       .ss-dashboard { flex-direction: column; }
       .ss-sidebar {
-        position: fixed;
-        top: 0; left: 0; right: 0; bottom: auto;
+        position: relative;
+        top: auto; left: auto; right: auto; bottom: auto;
         width: 100%;
         height: auto;
         border-right: none;
@@ -2162,11 +2162,8 @@
       .ss-main {
         margin-left: 0 !important;
         margin-top: 0;
-        padding: 0.75rem 0.75rem 3rem;
+        padding: 0.5rem 0.75rem 3rem;
       }
-      /* Push main content below the fixed sidebar */
-      .ss-page-dark { padding-top: 0; }
-      .ss-panel > div:first-child { padding-top: 0.5rem !important; }
 
       /* Performance: prevent horizontal scroll */
       .perf-agent-bar-label { width: 55px; font-size: 0.62rem; }
@@ -2338,7 +2335,7 @@
 
   <nav class="nav scrolled" id="mainNav">
     <div class="nav-inner">
-      <a href="submit-sale.html" class="nav-logo">
+      <a href="saleshub.html" class="nav-logo">
         <div class="nav-logo-mark"><img src="assets/kf-logo.png" alt="Sales Hub" /></div>
         <span class="nav-logo-text">SALES HUB</span>
       </a>
@@ -2434,7 +2431,7 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
       <span>Comp Grid</span>
     </button>
-    <a class="ss-sidebar-btn" href="https://apply.kairos-financial.com/" target="_blank" rel="noopener noreferrer" style="text-decoration:none;">
+    <a class="ss-sidebar-btn" href="https://app.kairos-financial.com/" target="_blank" rel="noopener noreferrer" style="text-decoration:none;">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
       <span>CRM</span>
     </a>
@@ -3705,6 +3702,7 @@
     const mobileNavEl = document.getElementById('mobileNav');
     if (ssHamburger && mobileNavEl) {
       ssHamburger.addEventListener('click', () => {
+        positionMobileNav();
         const isOpen = ssHamburger.classList.toggle('open');
         if (isOpen) {
           mobileNavEl.classList.add('open');
@@ -3716,18 +3714,18 @@
       });
     }
 
-    // ─── DYNAMIC SIDEBAR HEIGHT FOR MOBILE ───
-    function adjustMobileContentPadding() {
+    // ─── MOBILE NAV POSITION (below sidebar) ───
+    function positionMobileNav() {
       if (window.innerWidth <= 768) {
         const sidebar = document.getElementById('ssSidebar');
-        if (sidebar) {
-          const h = sidebar.offsetHeight;
-          document.querySelector('.ss-main').style.paddingTop = (h + 8) + 'px';
+        const mobileNav = document.getElementById('mobileNav');
+        if (sidebar && mobileNav) {
+          mobileNav.style.top = sidebar.offsetHeight + 'px';
         }
       }
     }
-    adjustMobileContentPadding();
-    window.addEventListener('resize', adjustMobileContentPadding);
+    positionMobileNav();
+    window.addEventListener('resize', positionMobileNav);
 
     // ─── MODAL HELPERS ───
     const modal = document.getElementById('saleModal');
