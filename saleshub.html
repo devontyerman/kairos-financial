@@ -3704,32 +3704,49 @@
     // ─── SIDEBAR HAMBURGER (opens mobile nav) ───
     const ssHamburger = document.getElementById('ssHamburger');
     const mobileNavEl = document.getElementById('mobileNav');
-    if (ssHamburger && mobileNavEl) {
+    const ssSidebar = document.getElementById('ssSidebar');
+    if (ssHamburger && mobileNavEl && ssSidebar) {
       ssHamburger.addEventListener('click', () => {
-        positionMobileNav();
         const isOpen = ssHamburger.classList.toggle('open');
         if (isOpen) {
+          // Fix sidebar to top so nav appears below it
+          if (window.innerWidth <= 768) {
+            window.scrollTo({ top: 0 });
+            ssSidebar.style.position = 'fixed';
+            ssSidebar.style.top = '0';
+            ssSidebar.style.left = '0';
+            ssSidebar.style.right = '0';
+            mobileNavEl.style.top = ssSidebar.offsetHeight + 'px';
+          }
           mobileNavEl.classList.add('open');
           document.body.style.overflow = 'hidden';
         } else {
           mobileNavEl.classList.remove('open');
           document.body.style.overflow = '';
+          // Revert sidebar to relative
+          if (window.innerWidth <= 768) {
+            ssSidebar.style.position = '';
+            ssSidebar.style.top = '';
+            ssSidebar.style.left = '';
+            ssSidebar.style.right = '';
+          }
         }
       });
+      // Close nav on link click
+      mobileNavEl.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+          ssHamburger.classList.remove('open');
+          mobileNavEl.classList.remove('open');
+          document.body.style.overflow = '';
+          if (window.innerWidth <= 768) {
+            ssSidebar.style.position = '';
+            ssSidebar.style.top = '';
+            ssSidebar.style.left = '';
+            ssSidebar.style.right = '';
+          }
+        });
+      });
     }
-
-    // ─── MOBILE NAV POSITION (below sidebar) ───
-    function positionMobileNav() {
-      if (window.innerWidth <= 768) {
-        const sidebar = document.getElementById('ssSidebar');
-        const mobileNav = document.getElementById('mobileNav');
-        if (sidebar && mobileNav) {
-          mobileNav.style.top = sidebar.offsetHeight + 'px';
-        }
-      }
-    }
-    positionMobileNav();
-    window.addEventListener('resize', positionMobileNav);
 
     // ─── MODAL HELPERS ───
     const modal = document.getElementById('saleModal');
