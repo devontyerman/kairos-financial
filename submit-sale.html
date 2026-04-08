@@ -237,6 +237,63 @@
       box-shadow: 0 4px 20px rgba(168,85,247,0.45);
     }
 
+    /* Sidebar bottom area */
+    .ss-sidebar-bottom {
+      margin-top: auto;
+      width: 100%;
+      padding: 0.5rem 0 0.5rem;
+      flex-shrink: 0;
+    }
+    .ss-nav-toggle {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      padding: 0.6rem;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: rgba(255,255,255,0.5);
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .ss-nav-toggle svg { width: 16px; height: 16px; flex-shrink: 0; }
+    .ss-nav-toggle:hover { color: #fff; background: rgba(168,85,247,0.1); border-color: rgba(168,85,247,0.3); }
+    .ss-nav-toggle.open { color: #c084fc; border-color: rgba(168,85,247,0.4); }
+
+    .ss-nav-links {
+      display: none;
+      flex-direction: column;
+      gap: 0.2rem;
+      margin-top: 0.5rem;
+      padding: 0.5rem;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 10px;
+    }
+    .ss-nav-links.open { display: flex; }
+    .ss-nav-links a {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.5rem 0.6rem;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: rgba(255,255,255,0.65);
+      text-decoration: none;
+      border-radius: 8px;
+      transition: all 0.15s ease;
+    }
+    .ss-nav-links a:hover { color: #fff; background: rgba(168,85,247,0.12); }
+    .ss-nav-links a svg { width: 14px; height: 14px; flex-shrink: 0; opacity: 0.6; }
+
     .ss-main {
       max-width: 1100px;
       padding: 1.5rem 2rem 4rem;
@@ -2088,6 +2145,7 @@
         padding: 0.5rem 0 0.3rem;
       }
       .ss-sidebar-hamburger { display: flex; }
+      .ss-sidebar-bottom { display: none; }
       .ss-sidebar-grid {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
@@ -2376,6 +2434,52 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
       <span>Comp Grid</span>
     </button>
+    <a class="ss-sidebar-btn" href="https://apply.kairos-financial.com/" target="_blank" rel="noopener noreferrer" style="text-decoration:none;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+      <span>CRM</span>
+    </a>
+    </div>
+
+    <!-- Navigator (bottom of sidebar) -->
+    <div class="ss-sidebar-bottom">
+      <button class="ss-nav-toggle" id="ssNavToggle">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+        Navigate
+      </button>
+      <div class="ss-nav-links" id="ssNavLinks">
+        <a href="index.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          Home
+        </a>
+        <a href="course.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+          Training Videos
+        </a>
+        <a href="carriers/index.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>
+          Carriers
+        </a>
+        <a href="agent-resources.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+          Agent Resources
+        </a>
+        <a href="agent-compensation.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+          Compensation
+        </a>
+        <a href="lead-vendors.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+          Lead Vendors
+        </a>
+        <a href="https://app.insurancetoolkits.com/" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
+          Insurance Toolkits
+        </a>
+        <a href="https://ai.kairos-financial.com/" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a4 4 0 014 4v1a1 1 0 001 1h1a4 4 0 010 8h-1a1 1 0 00-1 1v1a4 4 0 01-8 0v-1a1 1 0 00-1-1H6a4 4 0 010-8h1a1 1 0 001-1V6a4 4 0 014-4z"/></svg>
+          AI Training
+        </a>
+      </div>
     </div>
   </nav>
 
@@ -3585,6 +3689,16 @@
       }
       animate();
     })();
+
+    // ─── SIDEBAR NAVIGATOR TOGGLE ───
+    const navToggle = document.getElementById('ssNavToggle');
+    const navLinks = document.getElementById('ssNavLinks');
+    if (navToggle && navLinks) {
+      navToggle.addEventListener('click', () => {
+        navToggle.classList.toggle('open');
+        navLinks.classList.toggle('open');
+      });
+    }
 
     // ─── SIDEBAR HAMBURGER (opens mobile nav) ───
     const ssHamburger = document.getElementById('ssHamburger');
