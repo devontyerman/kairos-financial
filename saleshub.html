@@ -373,10 +373,24 @@
 
     /* ─── Carrier Directory Panel ─── */
     .sh-carriers-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1rem; }
-    .sh-carrier-card { display: block; background: #0a0612; border: 1px solid rgba(168,85,247,0.22); border-radius: 14px; padding: 1.25rem 1.5rem; transition: all 0.2s ease; text-decoration: none; position: relative; }
+    .sh-carrier-card { display: block; background: #0a0612; border: 1px solid rgba(168,85,247,0.22); border-radius: 14px; padding: 1.25rem 1.5rem; transition: all 0.2s ease; text-decoration: none; position: relative; cursor: pointer; }
     .sh-carrier-card:hover { border-color: rgba(168,85,247,0.5); transform: translateY(-2px); box-shadow: 0 6px 24px rgba(168,85,247,0.15); }
     .sh-carrier-card .name { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.05rem; font-weight: 700; color: #fff; margin-bottom: 0.25rem; }
     .sh-carrier-card .phone { font-size: 0.78rem; color: rgba(255,255,255,0.5); }
+    .sh-carrier-detail { display: none; max-width: 500px; margin: 0 auto; }
+    .sh-carrier-detail.active { display: block; animation: ssFadeIn 0.3s ease; }
+    .sh-carrier-detail-card { background: #0a0612; border: 1px solid rgba(168,85,247,0.28); border-radius: 18px; padding: 2rem; text-align: center; box-shadow: 0 8px 40px rgba(0,0,0,0.5), 0 0 50px rgba(88,28,135,0.2); }
+    .sh-carrier-detail-name { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.6rem; font-weight: 900; color: #fff; margin-bottom: 0.25rem; }
+    .sh-carrier-detail-divider { width: 60px; height: 3px; background: linear-gradient(90deg, #7c3aed, #a855f7); margin: 1rem auto; border-radius: 2px; }
+    .sh-carrier-detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; text-align: left; }
+    .sh-carrier-detail-label { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(255,255,255,0.45); margin-bottom: 0.2rem; }
+    .sh-carrier-detail-value { font-size: 0.9rem; font-weight: 600; color: #fff; }
+    .sh-carrier-detail-btns { display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; }
+    .sh-carrier-detail-btn { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.65rem 1.4rem; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.82rem; font-weight: 700; border-radius: 10px; text-decoration: none; transition: all 0.2s ease; border: none; cursor: pointer; }
+    .sh-carrier-detail-btn.primary { color: #fff; background: linear-gradient(135deg, #7c3aed, #a855f7); box-shadow: 0 4px 18px rgba(168,85,247,0.4); }
+    .sh-carrier-detail-btn.primary:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(168,85,247,0.5); }
+    .sh-carrier-detail-btn.secondary { color: rgba(255,255,255,0.75); background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); }
+    .sh-carrier-detail-btn.secondary:hover { color: #fff; border-color: rgba(255,255,255,0.2); }
 
     /* ─── Lead Vendors Panel ─── */
     .sh-vendors-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 1rem; }
@@ -3186,18 +3200,43 @@
       <div style="padding: 2.5rem 1.5rem;">
         <div style="text-align:center;margin-bottom:2rem;">
           <h2 style="font-family:'Plus Jakarta Sans',sans-serif;font-size:1.4rem;font-weight:900;color:#fff;margin-bottom:0.3rem;">Carrier Directory</h2>
-          <p style="font-size:0.85rem;color:rgba(255,255,255,0.5);">Quick access to all carrier portals and contact info.</p>
+          <p style="font-size:0.85rem;color:rgba(255,255,255,0.5);">Tap a carrier to view details.</p>
         </div>
-        <div class="sh-carriers-grid">
-          <a href="carriers/aetna.html" class="sh-carrier-card"><div class="name">Aetna</div><div class="phone">(866) 272-6630</div></a>
-          <a href="carriers/american-amicable.html" class="sh-carrier-card"><div class="name">American Amicable</div><div class="phone">(800) 736-7311</div></a>
-          <a href="carriers/americo.html" class="sh-carrier-card"><div class="name">Americo</div><div class="phone">(800) 231-0801</div></a>
-          <a href="carriers/corebridge.html" class="sh-carrier-card"><div class="name">Corebridge</div><div class="phone">(800) 247-8837</div></a>
-          <a href="carriers/ethos.html" class="sh-carrier-card"><div class="name">Ethos</div><div class="phone">(888) 384-6754</div></a>
-          <a href="carriers/foresters.html" class="sh-carrier-card"><div class="name">Foresters</div><div class="phone">(800) 828-1540</div></a>
-          <a href="carriers/instabrain.html" class="sh-carrier-card"><div class="name">Instabrain</div><div class="phone">(800) 835-5095</div></a>
-          <a href="carriers/mutual-of-omaha.html" class="sh-carrier-card"><div class="name">Mutual of Omaha</div><div class="phone">(800) 693-6083</div></a>
-          <a href="carriers/transamerica.html" class="sh-carrier-card"><div class="name">Transamerica</div><div class="phone">(800) 851-9777</div></a>
+
+        <!-- Carrier grid (visible by default) -->
+        <div class="sh-carriers-grid" id="carrierGrid">
+          <div class="sh-carrier-card" data-carrier-id="aetna"><div class="name">Aetna</div><div class="phone">(866) 272-6630</div></div>
+          <div class="sh-carrier-card" data-carrier-id="american-amicable"><div class="name">American Amicable</div><div class="phone">(800) 736-7311</div></div>
+          <div class="sh-carrier-card" data-carrier-id="americo"><div class="name">Americo</div><div class="phone">(800) 231-0801</div></div>
+          <div class="sh-carrier-card" data-carrier-id="corebridge"><div class="name">Corebridge</div><div class="phone">(800) 247-8837</div></div>
+          <div class="sh-carrier-card" data-carrier-id="ethos"><div class="name">Ethos</div><div class="phone">(888) 384-6754</div></div>
+          <div class="sh-carrier-card" data-carrier-id="foresters"><div class="name">Foresters</div><div class="phone">(800) 828-1540</div></div>
+          <div class="sh-carrier-card" data-carrier-id="instabrain"><div class="name">Instabrain</div><div class="phone">(800) 835-5095</div></div>
+          <div class="sh-carrier-card" data-carrier-id="mutual-of-omaha"><div class="name">Mutual of Omaha</div><div class="phone">(800) 693-6083</div></div>
+          <div class="sh-carrier-card" data-carrier-id="transamerica"><div class="name">Transamerica</div><div class="phone">(800) 851-9777</div></div>
+        </div>
+
+        <!-- Carrier detail view (shown when a carrier is clicked) -->
+        <div class="sh-carrier-detail" id="carrierDetail">
+          <div class="sh-carrier-detail-card">
+            <div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:rgba(168,85,247,0.7);margin-bottom:0.5rem;">Carrier</div>
+            <div class="sh-carrier-detail-name" id="cdName"></div>
+            <div class="sh-carrier-detail-divider"></div>
+            <div class="sh-carrier-detail-grid">
+              <div><div class="sh-carrier-detail-label">Phone</div><div class="sh-carrier-detail-value" id="cdPhone"></div></div>
+              <div><div class="sh-carrier-detail-label">Business Hours</div><div class="sh-carrier-detail-value" id="cdHours"></div></div>
+            </div>
+            <div class="sh-carrier-detail-btns">
+              <a class="sh-carrier-detail-btn primary" id="cdCallBtn" href="#">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>
+                Call Now
+              </a>
+              <button class="sh-carrier-detail-btn secondary" id="cdBackBtn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                All Carriers
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -4173,6 +4212,49 @@
       }
       btn.disabled = false;
     });
+
+    // ─── CARRIER DIRECTORY ───
+    (function() {
+      var carrierData = {
+        'aetna': { name: 'Aetna', phone: '(866) 272-6630', hours: 'Mon – Fri, 8:00 AM – 5:00 PM CT' },
+        'american-amicable': { name: 'American Amicable', phone: '(800) 736-7311', hours: 'Mon – Fri, 8:00 AM – 4:45 PM CT' },
+        'americo': { name: 'Americo', phone: '(800) 231-0801', hours: 'Mon – Fri, 8:00 AM – 5:00 PM CT' },
+        'corebridge': { name: 'Corebridge', phone: '(800) 247-8837', hours: 'Mon – Fri, 7:00 AM – 8:00 PM CT' },
+        'ethos': { name: 'Ethos', phone: '(888) 384-6754', hours: 'Mon – Fri, 8:00 AM – 6:00 PM ET' },
+        'foresters': { name: 'Foresters', phone: '(800) 828-1540', hours: 'Mon – Fri, 9:00 AM – 6:00 PM ET' },
+        'instabrain': { name: 'Instabrain', phone: '(800) 835-5095', hours: 'Mon – Fri, 8:30 AM – 7:00 PM ET' },
+        'mutual-of-omaha': { name: 'Mutual of Omaha', phone: '(800) 693-6083', hours: 'Mon – Fri, 8:00 AM – 5:00 PM CT' },
+        'transamerica': { name: 'Transamerica', phone: '(800) 851-9777', hours: 'Mon – Fri, 8:00 AM – 7:00 PM ET' }
+      };
+      var grid = document.getElementById('carrierGrid');
+      var detail = document.getElementById('carrierDetail');
+      var cdName = document.getElementById('cdName');
+      var cdPhone = document.getElementById('cdPhone');
+      var cdHours = document.getElementById('cdHours');
+      var cdCallBtn = document.getElementById('cdCallBtn');
+      var cdBackBtn = document.getElementById('cdBackBtn');
+
+      if (grid && detail) {
+        grid.querySelectorAll('.sh-carrier-card').forEach(function(card) {
+          card.addEventListener('click', function() {
+            var id = card.dataset.carrierId;
+            var c = carrierData[id];
+            if (!c) return;
+            cdName.textContent = c.name;
+            cdPhone.textContent = c.phone;
+            cdHours.textContent = c.hours;
+            cdCallBtn.href = 'tel:' + c.phone.replace(/[^0-9+]/g, '');
+            grid.style.display = 'none';
+            detail.classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          });
+        });
+        cdBackBtn.addEventListener('click', function() {
+          detail.classList.remove('active');
+          grid.style.display = '';
+        });
+      }
+    })();
 
     // ─── COMP GRID TAB ───
     (function() {
