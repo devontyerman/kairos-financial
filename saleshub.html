@@ -402,6 +402,19 @@
     .sh-vendor-desc { font-size: 0.8rem; color: rgba(255,255,255,0.5); line-height: 1.5; }
     .sh-vendor-tag { display: inline-block; font-size: 0.65rem; font-weight: 500; padding: 0.18rem 0.5rem; border-radius: 4px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); color: rgba(255,255,255,0.45); margin-top: 0.75rem; }
 
+    /* ─── Agent Resources Panel ─── */
+    .sh-resources-cat { margin-bottom: 2rem; }
+    .sh-resources-cat-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(255,255,255,0.4); margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.4rem; }
+    .sh-resources-cat-title svg { width: 14px; height: 14px; }
+    .sh-resources-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 0.85rem; }
+    .sh-resource-card { display: flex; align-items: flex-start; gap: 0.85rem; background: #0a0612; border: 1px solid rgba(168,85,247,0.22); border-radius: 14px; padding: 1.15rem 1.25rem; text-decoration: none; transition: all 0.2s ease; }
+    .sh-resource-card:hover { border-color: rgba(168,85,247,0.5); transform: translateY(-2px); box-shadow: 0 6px 24px rgba(168,85,247,0.15); }
+    .sh-resource-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; background: rgba(168,85,247,0.12); color: #c084fc; flex-shrink: 0; }
+    .sh-resource-icon svg { width: 18px; height: 18px; }
+    .sh-resource-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.88rem; font-weight: 700; color: #fff; margin-bottom: 0.15rem; }
+    .sh-resource-desc { font-size: 0.72rem; color: rgba(255,255,255,0.45); line-height: 1.4; }
+    .sh-resource-tag { display: inline-block; font-size: 0.58rem; font-weight: 600; padding: 0.12rem 0.4rem; border-radius: 4px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); color: rgba(255,255,255,0.4); margin-top: 0.4rem; }
+
     /* ─── Agent Performance Tab ─── */
     .perf-agent-kpis { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 0.6rem; margin-bottom: 1.5rem; }
     .perf-agent-kpi { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 1rem 1.1rem; }
@@ -2411,7 +2424,7 @@
       <span>Goals</span>
     </button>
     <button class="ss-sidebar-btn" data-panel="leaderboard">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8"/><path d="M12 17v4"/><path d="M7 4h10l-1 7H8L7 4z"/><path d="M5 4h14"/><path d="M17 4l1.5-2"/><path d="M7 4L5.5 2"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h12v6a6 6 0 01-12 0V2z"/><path d="M6 4H4a2 2 0 00-2 2v1a4 4 0 004 4"/><path d="M18 4h2a2 2 0 012 2v1a4 4 0 01-4 4"/><path d="M12 14v4"/><path d="M8 22h8"/><path d="M8 22a2 2 0 01-2-2h12a2 2 0 01-2 2"/></svg>
       <span>Leaders</span>
     </button>
     <button class="ss-sidebar-btn" data-panel="policies">
@@ -2424,7 +2437,7 @@
     </button>
     <button class="ss-sidebar-btn" data-panel="calculator">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
-      <span>Pay Calc</span>
+      <span>Pay Calculator</span>
     </button>
     <button class="ss-sidebar-btn" data-panel="compgrid">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
@@ -2438,6 +2451,10 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
       <span>Leads</span>
     </button>
+    <button class="ss-sidebar-btn" data-panel="resources">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+      <span>Resources</span>
+    </button>
     </div>
 
     <!-- Page links (always visible below grid) -->
@@ -2449,10 +2466,6 @@
       <a href="course.html">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
         Training Videos
-      </a>
-      <a href="agent-resources.html">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
-        Agent Resources
       </a>
       <a href="https://ai.kairos-financial.com/" target="_blank" rel="noopener noreferrer">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a4 4 0 014 4v1a1 1 0 001 1h1a4 4 0 010 8h-1a1 1 0 00-1 1v1a4 4 0 01-8 0v-1a1 1 0 00-1-1H6a4 4 0 010-8h1a1 1 0 001-1V6a4 4 0 014-4z"/></svg>
@@ -2646,7 +2659,7 @@
               <div class="ss-calc-step">
                 <span class="ss-calc-step-num">STEP 1</span>
                 <label class="ss-calc-step-label">How much do you want to NET this month (after lead costs)?</label>
-                <input class="ss-calc-input" type="text" id="cc_incomeGoal" inputmode="numeric" placeholder="$20,000" />
+                <input class="ss-calc-input" type="text" id="cc_incomeGoal" inputmode="numeric" placeholder="$20,000" value="8,000" />
               </div>
               <div class="ss-calc-step">
                 <span class="ss-calc-step-num">STEP 2</span>
@@ -3270,6 +3283,70 @@
             <div class="sh-vendor-desc">Contact your upline before ordering to get a first-time discount on leads.</div>
             <span class="sh-vendor-tag">Insurance Leads</span>
           </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ AGENT RESOURCES PANEL ═══ -->
+    <div class="ss-panel" id="panel-resources">
+      <div style="padding: 2.5rem 1.5rem;">
+        <div style="text-align:center;margin-bottom:2rem;">
+          <h2 style="font-family:'Plus Jakarta Sans',sans-serif;font-size:1.4rem;font-weight:900;color:#fff;margin-bottom:0.3rem;">Agent Resources</h2>
+          <p style="font-size:0.85rem;color:rgba(255,255,255,0.5);">Scripts, guides, and tools to help you sell.</p>
+        </div>
+
+        <div class="sh-resources-cat">
+          <div class="sh-resources-cat-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+            Main Resources
+          </div>
+          <div class="sh-resources-grid">
+            <a href="https://docs.google.com/document/d/15d-ckzIhq1KSIM2lvVfAMYTdzGSM0Epe/edit?usp=sharing&ouid=117071041967508429739&rtpof=true&sd=true" target="_blank" rel="noopener noreferrer" class="sh-resource-card">
+              <div class="sh-resource-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div>
+              <div><div class="sh-resource-title">Objection Responses</div><div class="sh-resource-desc">Common objections and proven responses to keep the conversation moving forward.</div><span class="sh-resource-tag">Google Doc</span></div>
+            </a>
+            <a href="https://docs.google.com/document/d/1Q4EL7aJAeZmBuJWzg09pMmjT_AA21Wg6aZADOBTqDEg/edit?usp=sharing" target="_blank" rel="noopener noreferrer" class="sh-resource-card">
+              <div class="sh-resource-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+              <div><div class="sh-resource-title">Script</div><div class="sh-resource-desc">Step-by-step sales script for product presentations.</div><span class="sh-resource-tag">Google Doc</span></div>
+            </a>
+            <a href="https://docs.google.com/document/d/1_NuyIXnoXjtl55u8zbn7mzbFNdQATS0jpNEJHcWNI_U/edit?usp=sharing" target="_blank" rel="noopener noreferrer" class="sh-resource-card">
+              <div class="sh-resource-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg></div>
+              <div><div class="sh-resource-title">Product Guide</div><div class="sh-resource-desc">Comprehensive guide to our product offerings and how to position them.</div><span class="sh-resource-tag">Google Doc</span></div>
+            </a>
+            <a href="https://docs.google.com/document/d/1jAPNzXJddJJhMoZGes1CauJYNXdWrLv259nzZ543fnE/edit?usp=sharing" target="_blank" rel="noopener noreferrer" class="sh-resource-card">
+              <div class="sh-resource-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg></div>
+              <div><div class="sh-resource-title">Client Worksheet</div><div class="sh-resource-desc">Fillable worksheet for gathering client information during discovery calls.</div><span class="sh-resource-tag">Google Doc</span></div>
+            </a>
+          </div>
+        </div>
+
+        <div class="sh-resources-cat">
+          <div class="sh-resources-cat-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+            Guides & Tools
+          </div>
+          <div class="sh-resources-grid">
+            <a href="agent-compensation.html" class="sh-resource-card">
+              <div class="sh-resource-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
+              <div><div class="sh-resource-title">Agent Compensation</div><div class="sh-resource-desc">Commission levels for producers and builders based on issued paid business.</div><span class="sh-resource-tag">Reference</span></div>
+            </a>
+            <a href="state-license-costs.html" class="sh-resource-card">
+              <div class="sh-resource-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l8-4v18"/><path d="M19 21V11l-6-4"/></svg></div>
+              <div><div class="sh-resource-title">State License Costs</div><div class="sh-resource-desc">Licensing fees by state for insurance agent applications.</div><span class="sh-resource-tag">Reference</span></div>
+            </a>
+            <a href="https://omnisconn.com/" target="_blank" rel="noopener noreferrer" class="sh-resource-card">
+              <div class="sh-resource-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a4 4 0 014 4v1a1 1 0 001 1h1a4 4 0 010 8h-1a1 1 0 00-1 1v1a4 4 0 01-8 0v-1a1 1 0 00-1-1H6a4 4 0 010-8h1a1 1 0 001-1V6a4 4 0 014-4z"/></svg></div>
+              <div><div class="sh-resource-title">OmniSconn</div><div class="sh-resource-desc">AI-powered assistant to help answer insurance-related questions instantly.</div><span class="sh-resource-tag">AI Tool</span></div>
+            </a>
+            <a href="https://crm.kairos-financial.com" target="_blank" rel="noopener noreferrer" class="sh-resource-card">
+              <div class="sh-resource-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div>
+              <div><div class="sh-resource-title">Buy CRM</div><div class="sh-resource-desc">Purchase your Kairos Financial CRM to manage leads, clients, and follow-ups.</div><span class="sh-resource-tag">CRM</span></div>
+            </a>
+            <a href="https://app.kairos-financial.com/" target="_blank" rel="noopener noreferrer" class="sh-resource-card">
+              <div class="sh-resource-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg></div>
+              <div><div class="sh-resource-title">Log In to CRM</div><div class="sh-resource-desc">Access your Kairos Financial CRM dashboard to manage your pipeline.</div><span class="sh-resource-tag">CRM</span></div>
+            </a>
+          </div>
         </div>
       </div>
     </div>
@@ -6066,25 +6143,25 @@
       const persSel = document.getElementById('cc_persistency');
       const roiSel = document.getElementById('roi_multiplier');
 
-      // Populate comp % (65 - 145, step 5), default 100
+      // Populate comp % (65 - 145, step 5), default 90
       for (let v = 65; v <= 145; v += 5) {
         const o = document.createElement('option');
         o.value = v; o.textContent = v + '%';
-        if (v === 100) o.selected = true;
+        if (v === 90) o.selected = true;
         compSel.appendChild(o);
       }
-      // Populate persistency (50 - 90, step 5), default 75
+      // Populate persistency (50 - 90, step 5), default 80
       for (let v = 50; v <= 90; v += 5) {
         const o = document.createElement('option');
         o.value = v; o.textContent = v + '%';
-        if (v === 75) o.selected = true;
+        if (v === 80) o.selected = true;
         persSel.appendChild(o);
       }
-      // Populate ROI percentage (50% - 500%, step 50%), default 200%
+      // Populate ROI percentage (50% - 500%, step 50%), default 150%
       for (let v = 50; v <= 500; v += 50) {
         const o = document.createElement('option');
         o.value = v; o.textContent = v + '%';
-        if (v === 200) o.selected = true;
+        if (v === 150) o.selected = true;
         roiSel.appendChild(o);
       }
 
