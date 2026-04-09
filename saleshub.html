@@ -420,7 +420,7 @@
     .perf-agent-kpi-label { font-size: 0.65rem; font-weight: 700; color: #555555; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.3rem; }
     .perf-agent-kpi-value { font-size: 1.35rem; font-weight: 900; color: #1a1a1a; }
     .perf-agent-kpi-sub { font-size: 0.7rem; color: #666666; margin-top: 0.2rem; }
-    .perf-agent-kpi.up .perf-agent-kpi-value { color: #1a1a1a; }
+    .perf-agent-kpi.up .perf-agent-kpi-value { color: #16a34a; }
     .perf-agent-kpi.down .perf-agent-kpi-value { color: #dc2626; }
     .perf-agent-section { background: #ffffff; border: 1px solid #e5e5ea; border-radius: 14px; padding: 1.25rem; margin-bottom: 1rem; }
     .perf-agent-section-title { font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: #777; margin-bottom: 0.85rem; }
@@ -4676,26 +4676,22 @@
 
         const statsStart = new Date(rangeStart); statsStart.setHours(0,0,0,0);
         const statsEnd = new Date(rangeEnd); statsEnd.setHours(23,59,59,999);
+        let weekCount = 0;
 
         while (walkDate <= walkEnd) {
           const dow = walkDate.getDay();
           if ((excludeSat && dow === 6) || (excludeSun && dow === 0)) { walkDate.setDate(walkDate.getDate() + 1); continue; }
 
           const isInRange = walkDate >= statsStart && walkDate <= statsEnd;
-          const weekNum = Math.floor((walkDate - new Date(walkDate.getFullYear(), walkDate.getMonth(), walkDate.getDate() - walkDate.getDay())) / (7 * 24 * 60 * 60 * 1000));
-          const absWeekNum = Math.floor((walkDate.getTime() - walkDate.getTimezoneOffset()*60000) / (7*24*60*60*1000));
-          if (absWeekNum !== lastWeekNum && lastWeekNum !== -1) {
-            // Insert previous week's total before the separator
+
+          // New week starts on Sunday (dow === 0)
+          if (dow === 0 && weekCount > 0) {
             tableRows += insertWeekTotal();
-            const weekLabel = new Date(walkDate);
-            const wDay = weekLabel.getDay();
-            const mondayOffset = wDay === 0 ? -6 : 1 - wDay;
-            weekLabel.setDate(weekLabel.getDate() + mondayOffset);
-            const wkLabel = 'Week of ' + (weekLabel.getMonth() + 1) + '/' + weekLabel.getDate();
-            tableRows += '<tr><td colspan="10" style="padding:0.75rem 0.4rem 0.35rem;font-size:0.7rem;font-weight:800;color:rgba(59,130,246,0.7);text-transform:uppercase;letter-spacing:0.08em;border-top:2px solid rgba(59,130,246,0.15);">' + wkLabel + '</td></tr>';
+            const wkLabel = 'Week of ' + (walkDate.getMonth() + 1) + '/' + walkDate.getDate();
+            tableRows += '<tr><td colspan="10" style="padding:0.75rem 0.4rem 0.35rem;font-size:0.7rem;font-weight:800;color:#2563eb;text-transform:uppercase;letter-spacing:0.08em;border-top:2px solid #e0e0e5;">' + wkLabel + '</td></tr>';
             tableRows += '<tr style="border-bottom:1px solid #e5e5ea;"><th style="' + thStyle + '">Day</th><th style="' + thStyle + '">Date</th><th style="' + thStyle + '">Dials</th><th style="' + thStyle + '">Ans</th><th style="' + thStyle + '">Appts</th><th style="' + thStyle + '">Pres</th><th style="' + thStyle + '">Deals</th><th style="' + thStyle + '">Spend</th><th style="' + thStyle + '">Dep</th><th style="' + thStyle + '">ROI</th></tr>';
           }
-          lastWeekNum = absWeekNum;
+          weekCount++;
 
           const ymd = walkDate.getFullYear() + '-' + String(walkDate.getMonth() + 1).padStart(2,'0') + '-' + String(walkDate.getDate()).padStart(2,'0');
           const dayLabel = dayNames[dow];
