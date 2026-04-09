@@ -4126,10 +4126,9 @@
         e.target.reset();
         // Re-default the policy date to today after reset
         if (policyDateInput) policyDateInput.value = todayYMD();
-        // Check milestones first — if one triggers, it replaces the normal success modal
-        const triggered = await checkAndShowMilestone();
-        if (!triggered) showSuccessModal(apValue);
-        // Wait for ALL modals to close, then show goal tracker in popup overlay
+        // Check milestones (celebration modal for big milestones)
+        await checkAndShowMilestone();
+        // Wait for any milestone modal to close, then show goal tracker popup
         (function waitForModalsAndAnimate() {
           function allModalsClosed() {
             return !document.querySelector('.ss-modal-overlay.open, .ss-alert-overlay.open, .ss-milestone-overlay.open, .ss-confirm-overlay.open');
