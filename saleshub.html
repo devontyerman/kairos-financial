@@ -2679,6 +2679,10 @@
               <input class="ss-input" type="date" id="policyDate" required />
             </div>
             <div class="ss-field">
+              <label class="ss-label">Effective Date</label>
+              <input class="ss-input" type="date" id="effectiveDate" />
+            </div>
+            <div class="ss-field">
               <label class="ss-label">Status</label>
               <select class="ss-select" id="policyStatus">
                 <option value="Underwriting">Underwriting</option>
@@ -4041,6 +4045,7 @@
       }
 
       const repName = currentUser.user_metadata?.name || currentUser.email;
+      const effectiveDateValue = document.getElementById('effectiveDate').value || null;
       const data = {
         user_id: currentUser.id,
         sales_rep: repName,
@@ -4051,6 +4056,7 @@
         product_type: document.getElementById('productType').value,
         policy_number: policyNumberValue,
         policy_date: policyDateValue,
+        effective_date: effectiveDateValue,
         status: document.getElementById('policyStatus').value
       };
 
@@ -4089,6 +4095,7 @@
           const statusEmoji = data.status === 'Approved' ? '✅' : data.status === 'Underwriting' ? '🔄' : '';
           const apFormatted = '$' + Number(data.annual_premium).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
+          const effectiveLine = data.effective_date ? '\n📅 **Effective Date:** ' + data.effective_date : '';
           const discordMsg = [
             '💰 **NEW POLICY SIGNED** 💰',
             '',
@@ -4097,7 +4104,7 @@
             '🏢 **Carrier:** ' + data.carrier,
             '🛡️ **Product:** ' + data.product_type,
             '💵 **AP:** ' + apFormatted,
-            '📝 **Status:** ' + data.status + ' ' + statusEmoji
+            '📝 **Status:** ' + data.status + ' ' + statusEmoji + effectiveLine
           ].join('\n');
 
           fetch(DISCORD_WEBHOOK, {
