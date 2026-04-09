@@ -3302,6 +3302,7 @@
           <div class="sh-carrier-card" data-carrier-id="instabrain"><div class="name">Instabrain</div><div class="phone">(800) 835-5095</div></div>
           <div class="sh-carrier-card" data-carrier-id="mutual-of-omaha"><div class="name">Mutual of Omaha</div><div class="phone">(800) 228-7104</div></div>
           <div class="sh-carrier-card" data-carrier-id="transamerica"><div class="name">Transamerica</div><div class="phone">(877) 234-4848</div></div>
+          <div class="sh-carrier-card" data-carrier-id="royal-neighbors"><div class="name">Royal Neighbors</div><div class="phone">(309) 788-4561</div></div>
         </div>
 
         <!-- Carrier detail view (shown when a carrier is clicked) -->
@@ -3313,6 +3314,10 @@
             <div class="sh-carrier-detail-grid">
               <div><div class="sh-carrier-detail-label">Phone</div><div class="sh-carrier-detail-value" id="cdPhone"></div></div>
               <div><div class="sh-carrier-detail-label">Business Hours</div><div class="sh-carrier-detail-value" id="cdHours"></div></div>
+            </div>
+            <div id="cdEmailRow" style="display:none;text-align:center;margin-bottom:1rem;">
+              <div class="sh-carrier-detail-label">Email</div>
+              <a id="cdEmail" href="#" style="font-size:0.88rem;font-weight:600;color:#2563eb;text-decoration:none;"></a>
             </div>
             <div class="sh-carrier-detail-btns">
               <a class="sh-carrier-detail-btn primary" id="cdCallBtn" href="#">
@@ -4296,7 +4301,8 @@
         'foresters': { name: 'Foresters', phone: '(866) 466-7166', hours: 'Mon – Fri, 9:00 AM – 6:00 PM ET' },
         'instabrain': { name: 'Instabrain', phone: '(800) 835-5095', hours: 'Mon – Fri, 8:30 AM – 7:00 PM ET' },
         'mutual-of-omaha': { name: 'Mutual of Omaha', phone: '(800) 228-7104', hours: 'Mon – Fri, 8:00 AM – 5:00 PM CT' },
-        'transamerica': { name: 'Transamerica', phone: '(877) 234-4848', hours: 'Mon – Fri, 8:00 AM – 7:00 PM ET' }
+        'transamerica': { name: 'Transamerica', phone: '(877) 234-4848', hours: 'Mon – Fri, 8:00 AM – 7:00 PM ET' },
+        'royal-neighbors': { name: 'Royal Neighbors', phone: '(309) 788-4561', hours: 'Mon – Fri, 8:00 AM – 5:00 PM CT', email: 'salessupport@royalneighbors.org' }
       };
       var grid = document.getElementById('carrierGrid');
       var detail = document.getElementById('carrierDetail');
@@ -4316,6 +4322,15 @@
             cdPhone.textContent = c.phone;
             cdHours.textContent = c.hours;
             cdCallBtn.href = 'tel:' + c.phone.replace(/[^0-9+]/g, '');
+            var emailRow = document.getElementById('cdEmailRow');
+            var emailEl = document.getElementById('cdEmail');
+            if (c.email) {
+              emailEl.textContent = c.email;
+              emailEl.href = 'mailto:' + c.email;
+              emailRow.style.display = 'block';
+            } else {
+              emailRow.style.display = 'none';
+            }
             grid.style.display = 'none';
             detail.classList.add('active');
             window.scrollTo({ top: 0, behavior: 'smooth' });
