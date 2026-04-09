@@ -2754,7 +2754,10 @@
             <div class="ss-calc-results">
               <div class="ss-calc-result-main">
                 <span class="lbl">Annual Premium You Need to Sell</span>
-                <input class="ss-calc-input" type="text" id="cc_outRequired" inputmode="numeric" placeholder="—" style="max-width:200px;font-size:1.4rem;font-weight:900;text-align:right;color:#1a1a1a;padding:0.4rem 0.7rem;" />
+                <div style="display:flex;align-items:center;gap:0.25rem;">
+                  <span style="font-size:1.4rem;font-weight:900;color:#1a1a1a;">$</span>
+                  <input class="ss-calc-input" type="text" id="cc_outRequired" inputmode="numeric" placeholder="—" style="max-width:200px;font-size:1.4rem;font-weight:900;text-align:right;color:#1a1a1a;padding:0.4rem 0.7rem;" />
+                </div>
               </div>
             </div>
 
@@ -6385,9 +6388,14 @@
         localStorage.setItem(getCommGoalKey(), raw);
         computeCommission();
       });
-      compSel.addEventListener('change', () => computeCommission());
-      persSel.addEventListener('change', () => computeCommission());
-      roiSel.addEventListener('change', () => computeCommission());
+      function recalcFromAP() {
+        const apVal = parseCommInput(reqEl.value);
+        if (apVal > 0) computeCommission(apVal);
+        else computeCommission();
+      }
+      compSel.addEventListener('change', recalcFromAP);
+      persSel.addEventListener('change', recalcFromAP);
+      roiSel.addEventListener('change', recalcFromAP);
 
       // AP input — reverse calculate income from AP
       reqEl.addEventListener('input', function() {
