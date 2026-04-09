@@ -769,7 +769,7 @@
       cursor: pointer;
       transition: all 0.2s ease;
     }
-    .ss-auth-prompt-btn.login { background: linear-gradient(135deg, #2563eb, #3b82f6); color: #ffffff; }
+    .ss-auth-prompt-btn.login { background: #1a1a1a; color: #ffffff; }
     .ss-auth-prompt-btn.login:hover { box-shadow: 0 4px 12px rgba(37,99,235,0.3); }
     .ss-auth-prompt-btn.signup { background: #f0f0f3; color: #333333; border: 1px solid #dcdce0; }
     .ss-auth-prompt-btn.signup:hover { color: #1a1a1a; border-color: #d0d0d5; }
@@ -889,7 +889,7 @@
       font-size: 0.9rem;
       font-weight: 700;
       color: #1a1a1a;
-      background: linear-gradient(135deg, #2563eb, #3b82f6);
+      background: #1a1a1a;
       border: none;
       border-radius: 8px;
       cursor: pointer;
@@ -1365,18 +1365,18 @@
     /* Reusable confirm modal */
     .ss-confirm-overlay {
       display: none; position: fixed; inset: 0; z-index: 10000;
-      background: rgba(0,0,0,0.68); backdrop-filter: blur(10px);
+      background: rgba(0,0,0,0.25); backdrop-filter: blur(10px);
       align-items: center; justify-content: center;
       animation: ssFadeIn 0.2s ease;
     }
     .ss-confirm-overlay.open { display: flex; }
     .ss-confirm-box {
-      background: linear-gradient(180deg, #1a1f2e 0%, #141925 100%);
-      border: 1px solid rgba(59,130,246,0.2);
+      background: #ffffff;
+      border: 1px solid #ddd;
       border-radius: 18px;
       padding: 2rem 1.75rem;
       max-width: 460px; width: 92%;
-      box-shadow: 0 24px 60px rgba(0,0,0,0.5);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
       animation: ssModalPop 0.32s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
     .ss-confirm-box.warning { border-color: rgba(234,179,8,0.35); }
@@ -1414,31 +1414,31 @@
     }
     .ss-confirm-btn.cancel:hover { background: #e5e5ea; color: #1a1a1a; }
     .ss-confirm-btn.confirm {
-      background: linear-gradient(135deg, #2563eb, #3b82f6); color: #1a1a1a;
+      background: #2563eb; color: #ffffff;
     }
     .ss-confirm-btn.confirm:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(37,99,235,0.4); }
-    .ss-confirm-box.warning .ss-confirm-btn.confirm { background: linear-gradient(135deg, #d97706, #f59e0b); }
+    .ss-confirm-box.warning .ss-confirm-btn.confirm { background: #d97706; color: #ffffff; }
     .ss-confirm-box.warning .ss-confirm-btn.confirm:hover { box-shadow: 0 6px 18px rgba(234,179,8,0.4); }
-    .ss-confirm-box.danger .ss-confirm-btn.confirm { background: linear-gradient(135deg, #dc2626, #ef4444); }
+    .ss-confirm-box.danger .ss-confirm-btn.confirm { background: #dc2626; color: #ffffff; }
     .ss-confirm-box.danger .ss-confirm-btn.confirm:hover { box-shadow: 0 6px 18px rgba(239,68,68,0.4); }
 
     /* ── Milestone Celebration Modal ── */
     .ss-milestone-overlay {
       display: none; position: fixed; inset: 0; z-index: 10001;
-      background: rgba(0,0,0,0.82); backdrop-filter: blur(10px);
+      background: rgba(0,0,0,0.25); backdrop-filter: blur(10px);
       align-items: center; justify-content: center;
       animation: ssFadeIn 0.35s ease;
     }
     .ss-milestone-overlay.open { display: flex; }
     .ss-milestone-box {
       position: relative;
-      background: linear-gradient(180deg, #141925 0%, #0b0f1a 100%);
-      border: 2px solid rgba(59,130,246,0.35);
+      background: #ffffff;
+      border: 1px solid #ddd;
       border-radius: 24px;
       padding: 2.75rem 2rem 2.25rem;
       max-width: 480px; width: 92%;
       text-align: center;
-      box-shadow: 0 30px 80px rgba(0,0,0,0.6), 0 0 60px rgba(59,130,246,0.15);
+      box-shadow: 0 8px 30px rgba(0,0,0,0.12);
       animation: ssMilestonePop 0.55s cubic-bezier(0.34, 1.6, 0.64, 1);
       overflow: hidden;
     }
@@ -1455,7 +1455,7 @@
     .ss-milestone-glow {
       position: absolute; top: -40%; left: 50%; transform: translateX(-50%);
       width: 120%; height: 200%;
-      background: radial-gradient(ellipse at center, rgba(59,130,246,0.18) 0%, transparent 60%);
+      background: none;
       pointer-events: none; animation: ssGlowPulse 3s ease-in-out infinite;
     }
     @keyframes ssGlowPulse {
@@ -1467,7 +1467,7 @@
       font-size: 4.2rem; line-height: 1; margin-bottom: 0.85rem;
       display: inline-block;
       animation: ssEmojiBounce 1s ease-in-out infinite;
-      filter: drop-shadow(0 6px 18px rgba(0,0,0,0.4));
+      filter: drop-shadow(0 4px 10px rgba(0,0,0,0.15));
     }
     @keyframes ssEmojiBounce {
       0%, 100% { transform: translateY(0) rotate(-3deg); }
@@ -1503,7 +1503,7 @@
       background: linear-gradient(135deg, #60a5fa, #3b82f6);
        
       
-      text-shadow: 0 0 30px rgba(59,130,246,0.35);
+      text-shadow: none; color: #1a1a1a;
     }
     .ss-milestone-msg {
       position: relative;
@@ -1516,14 +1516,14 @@
       padding: 0.85rem 2.2rem;
       font-family: 'Plus Jakarta Sans', sans-serif;
       font-size: 0.9rem; font-weight: 800;
-      color: #1a1a1a;
-      background: linear-gradient(135deg, #2563eb, #3b82f6);
+      color: #ffffff;
+      background: #1a1a1a;
       border: none; border-radius: 100px;
       cursor: pointer;
-      box-shadow: 0 8px 24px rgba(37,99,235,0.4);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
       transition: all 0.25s ease;
     }
-    .ss-milestone-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(37,99,235,0.55); }
+    .ss-milestone-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
 
     /* Tier-specific color themes */
     .ss-milestone-box.tier-first {
@@ -1575,7 +1575,7 @@
     .ss-milestone-box.tier-month30k .ss-milestone-glow { background: radial-gradient(ellipse at center, rgba(240,216,120,0.35) 0%, transparent 60%); }
     .ss-milestone-box.tier-month30k .ss-milestone-amount { background: linear-gradient(135deg, #fde68a, #f0d878, #c9a84c);   }
     .ss-milestone-box.tier-month30k .ss-milestone-tier { background: linear-gradient(135deg, rgba(240,216,120,0.2), rgba(201,168,76,0.2)); border-color: rgba(240,216,120,0.5); color: #fde68a; }
-    .ss-milestone-box.tier-month30k .ss-milestone-btn { background: linear-gradient(135deg, #c9a84c, #f0d878); color: #1a1a1a; box-shadow: 0 8px 28px rgba(201,168,76,0.55); }
+    .ss-milestone-box.tier-month30k .ss-milestone-btn { background: linear-gradient(135deg, #c9a84c, #f0d878); color: #ffffff; box-shadow: 0 8px 28px rgba(201,168,76,0.55); }
     .ss-milestone-box.tier-month30k .ss-milestone-title { background: linear-gradient(135deg, #fde68a, #f0d878);    }
 
     /* Confetti burst */
@@ -2156,7 +2156,7 @@
       font-weight: 700; border-radius: 8px; border: none; cursor: pointer; transition: all 0.2s ease;
     }
     .mp-edit-cancel { background: #f0f0f3; color: #333333; }
-    .mp-edit-save { background: linear-gradient(135deg, #2563eb, #3b82f6); color: #1a1a1a; }
+    .mp-edit-save { background: #2563eb; color: #ffffff; }
     .mp-edit-save:hover { box-shadow: 0 4px 12px rgba(37,99,235,0.3); }
 
     @media (max-width: 768px) {
@@ -3527,7 +3527,7 @@
   </div>
 
   <!-- Discord ID Help Modal -->
-  <div class="ss-discord-help-overlay" id="discordHelpOverlay" style="display:none;position:fixed;inset:0;z-index:10001;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);align-items:center;justify-content:center;">
+  <div class="ss-discord-help-overlay" id="discordHelpOverlay" style="display:none;position:fixed;inset:0;z-index:10001;background:rgba(0,0,0,0.25);backdrop-filter:blur(6px);align-items:center;justify-content:center;">
     <div style="background:#fff;border-radius:16px;max-width:480px;width:90%;padding:2rem;position:relative;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
       <button id="discordHelpClose" style="position:absolute;top:12px;right:14px;background:none;border:none;font-size:1.4rem;cursor:pointer;color:#999;">&times;</button>
       <h3 style="margin:0 0 1rem;font-size:1.15rem;color:#111;">How to Find Your Discord User ID</h3>
