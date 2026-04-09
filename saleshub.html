@@ -2674,7 +2674,7 @@
               <select class="ss-select" id="productType" required><option value="">Select product...</option></select>
             </div>
             <div class="ss-field">
-              <label class="ss-label">Policy Date</label>
+              <label class="ss-label">Sold Date</label>
               <input class="ss-input" type="date" id="policyDate" required />
             </div>
             <div class="ss-field">
@@ -3465,7 +3465,7 @@
           <div class="mp-edit-field"><label>Carrier</label><select id="mpEditCarrier"></select></div>
           <div class="mp-edit-field"><label>Product Type</label><select id="mpEditProduct"></select></div>
           <div class="mp-edit-field"><label>Policy Number</label><input type="text" id="mpEditPolicy" required /></div>
-          <div class="mp-edit-field"><label>Policy Date</label><input type="date" id="mpEditPolicyDate" required /></div>
+          <div class="mp-edit-field"><label>Sold Date</label><input type="date" id="mpEditPolicyDate" required /></div>
           <div class="mp-edit-field"><label>Effective Date</label><input type="date" id="mpEditEffectiveDate" /></div>
           <div class="mp-edit-field"><label>Status</label><select id="mpEditStatus"><option value="Underwriting">Underwriting</option><option value="Approved">Approved</option><option value="Issue Paid">Issue Paid</option></select></div>
           <div class="mp-edit-field"><label>Sales Rep</label><input type="text" id="mpEditRep" required /></div>
@@ -3964,26 +3964,26 @@
 
       // Policy date validation
       if (!policyDateValue) {
-        showErrorModal('Please select a Policy Date.');
+        showErrorModal('Please select a Sold Date.');
         btn.disabled = false;
         return;
       }
       const pd = parsePolicyDate(policyDateValue);
       const todayStart = new Date(); todayStart.setHours(0,0,0,0);
       if (!pd || isNaN(pd.getTime())) {
-        showErrorModal('Please select a valid Policy Date.');
+        showErrorModal('Please select a valid Sold Date.');
         btn.disabled = false;
         return;
       }
       if (pd > todayStart) {
-        showErrorModal('Policy Date cannot be in the future.');
+        showErrorModal('Sold Date cannot be in the future.');
         btn.disabled = false;
         return;
       }
       const daysAgo = Math.floor((todayStart - pd) / (1000 * 60 * 60 * 24));
       if (daysAgo > 60) {
         const proceed = await showConfirmModal({
-          title: 'Older Policy Date',
+          title: 'Older Sold Date',
           message: 'The policy date you selected is ' + daysAgo + ' days ago (more than 60 days old). Is this correct?',
           confirmText: 'Yes, that\u2019s correct',
           cancelText: 'Let me fix it',
@@ -3994,7 +3994,7 @@
       } else if (policyDateValue !== todayYMD()) {
         // Sanity check: if they picked anything other than today, confirm it wasn't sold today
         const proceed = await showConfirmModal({
-          title: 'Double-check the Policy Date',
+          title: 'Double-check the Sold Date',
           message: 'Are you sure this policy was not sold today?',
           confirmText: 'Yes, that\u2019s the correct date',
           cancelText: 'Use today\u2019s date',
@@ -5445,7 +5445,7 @@
         { key: 'policy_number', label: 'Policy #' },
         { key: 'status', label: 'Status' },
         { key: 'sales_rep', label: 'Rep' },
-        { key: 'policy_date', label: 'Policy Date' },
+        { key: 'policy_date', label: 'Sold Date' },
         { key: 'effective_date', label: 'Effective Date' },
       ];
 
@@ -5478,7 +5478,7 @@
         html += '<td data-label="Status"><span class="ss-status ' + statusClass + '">' + status + '</span></td>';
         html += '<td data-label="Rep">' + esc(row.sales_rep) + '</td>';
         html += '<td class="mp-date" data-label="Policy Date">' + dateStr + '</td>';
-        const effStr = row.effective_date ? fmtPolicyDate(row.effective_date) : '—';
+        const effStr = row.effective_date ? fmtPolicyDate(row.effective_date) : '';
         html += '<td class="mp-date" data-label="Effective Date">' + effStr + '</td>';
         html += '<td class="mp-actions" data-label="Actions">';
         if (status === 'Underwriting') {
@@ -5613,7 +5613,7 @@
         const pd = parsePolicyDate(editPolicyDate);
         const todayStart = new Date(); todayStart.setHours(0,0,0,0);
         if (pd && pd > todayStart) {
-          showErrorModal('Policy Date cannot be in the future.');
+          showErrorModal('Sold Date cannot be in the future.');
           return;
         }
       }
