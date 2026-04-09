@@ -2189,7 +2189,6 @@
       .comp-table thead th, .comp-table tbody td { padding: 0.65rem 1.25rem; font-size: 0.82rem; }
       .comp-card-header .comp-top-level { font-size: 1.4rem; }
 
-      /* Tabs: scroll horizontally without wrapping */
       .ss-dashboard { flex-direction: column; }
       .ss-sidebar {
         position: relative;
@@ -2197,44 +2196,62 @@
         width: 100%;
         height: auto;
         border-right: none;
-        border-bottom: 1px solid rgba(168,85,247,0.12);
-        padding: 0 0.5rem 0.5rem;
+        border-bottom: 1px solid rgba(168,85,247,0.15);
+        padding: 0.5rem 0 0;
         gap: 0;
-        overflow-x: hidden;
-        overflow-y: hidden;
+        overflow: visible;
         z-index: 1000;
+        background: #06040e;
       }
       .ss-sidebar-logo {
-        padding: 0.5rem 0 0.3rem;
+        padding: 0.4rem 0 0.5rem;
       }
       .ss-sidebar-logo .logo-sales,
       .ss-sidebar-logo .logo-hub {
-        font-size: 1.1rem;
+        font-size: 1rem;
+        text-shadow: 0 0 12px rgba(255,255,255,0.25), 0 0 30px rgba(168,85,247,0.15);
       }
+      .ss-sidebar-header { position: relative; }
       .ss-sidebar-hamburger { display: flex; }
       .ss-nav-links { display: none; }
+
+      /* Horizontal scrolling pill tabs */
       .ss-sidebar-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 0.35rem;
+        display: flex;
+        flex-direction: row;
+        gap: 0.4rem;
         width: 100%;
+        overflow-x: auto;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
+        padding: 0 0.75rem 0.6rem;
+        scrollbar-width: none;
       }
+      .ss-sidebar-grid::-webkit-scrollbar { display: none; }
       .ss-sidebar-btn {
-        width: auto; height: 0; min-width: 0;
-        padding-bottom: 100%; /* perfect square */
-        position: relative;
-        gap: 0;
+        aspect-ratio: auto;
+        flex-shrink: 0;
+        display: inline-flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.5rem 0.85rem;
+        border-radius: 100px;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.1);
+        overflow: visible;
       }
-      .ss-sidebar-btn svg,
+      .ss-sidebar-btn svg { width: 15px; height: 15px; }
       .ss-sidebar-btn span {
-        position: absolute;
-        left: 50%;
-        transform: translateX(-50%);
+        font-size: 0.68rem;
+        white-space: nowrap;
+        max-width: none;
+        word-break: normal;
+        line-height: 1;
       }
-      .ss-sidebar-btn svg { top: 28%; }
-      .ss-sidebar-btn span { bottom: 18%; }
-      .ss-sidebar-btn svg { width: 16px; height: 16px; }
-      .ss-sidebar-btn span { font-size: 0.48rem; white-space: normal; line-height: 1.15; }
+      .ss-sidebar-btn.active {
+        border-radius: 100px;
+      }
       .ss-main {
         margin-left: 0 !important;
         margin-top: 0;
@@ -2390,9 +2407,9 @@
 
     @media (max-width: 520px) {
       .ss-hero-title { font-size: 2.6rem; }
-      .ss-sidebar-grid { grid-template-columns: repeat(3, 1fr); }
-      .ss-sidebar-btn svg { width: 14px; height: 14px; }
-      .ss-sidebar-btn span { font-size: 0.4rem; }
+      .ss-sidebar-btn { padding: 0.45rem 0.7rem; }
+      .ss-sidebar-btn svg { width: 13px; height: 13px; }
+      .ss-sidebar-btn span { font-size: 0.62rem; }
       .ss-form-card { padding: 1.25rem 1rem; }
       .ss-calc-card { padding: 1.15rem 0.9rem; }
       .ss-calc-steps.ss-calc-steps-4 { grid-template-columns: 1fr; }
@@ -2443,23 +2460,9 @@
   <div class="nav-mobile" id="mobileNav">
     <a href="index.html">Home</a>
     <a href="course.html">Training Videos</a>
-    <button class="nav-mobile-carriers-toggle" id="mobileCarriersToggle">Carriers <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 4 6 8 10 4"/></svg></button>
-    <div class="nav-mobile-carriers-list" id="mobileCarriersList">
-      <a href="carriers/aetna.html">Aetna</a>
-      <a href="carriers/american-amicable.html">American Amicable</a>
-      <a href="carriers/americo.html">Americo</a>
-      <a href="carriers/corebridge.html">Corebridge</a>
-      <a href="carriers/ethos.html">Ethos</a>
-      <a href="carriers/foresters.html">Foresters</a>
-      <a href="carriers/instabrain.html">Instabrain</a>
-      <a href="carriers/mutual-of-omaha.html">Mutual of Omaha</a>
-      <a href="carriers/transamerica.html">Transamerica</a>
-    </div>
-    <a href="https://app.insurancetoolkits.com/" target="_blank" rel="noopener noreferrer">Insurance Toolkits</a>
     <a href="https://ai.kairos-financial.com/" target="_blank" rel="noopener noreferrer">AI Training</a>
-    <a href="agent-resources.html">Agent Resources</a>
-    <a href="agent-compensation.html">Compensation</a>
-    <a href="lead-vendors.html">Lead Vendors</a>
+    <a href="https://app.kairos-financial.com/" target="_blank" rel="noopener noreferrer">CRM</a>
+    <a href="https://app.insurancetoolkits.com/fex/quoter" target="_blank" rel="noopener noreferrer">Toolkit</a>
   </div>
 
   <!-- Global animated gradient background (fixed behind everything) -->
