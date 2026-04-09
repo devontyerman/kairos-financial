@@ -1260,13 +1260,12 @@
     .mp-table thead th .sort-arrow { font-size: 0.6rem; margin-left: 0.3rem; }
 
     .mp-table tbody tr { transition: background 0.15s ease; }
-    .mp-table tbody tr:hover { background: rgba(168,85,247,0.08); }
+    .mp-table tbody tr:hover { background: #f0f0f5; }
     .mp-table tbody tr:nth-child(even) { background: #fafafa; }
-    .mp-table tbody tr:nth-child(even):hover { background: rgba(168,85,247,0.08); }
+    .mp-table tbody tr:nth-child(even):hover { background: #f0f0f5; }
     .mp-table tbody td {
       padding: 0.55rem 0.55rem; font-size: 0.78rem; color: #222222;
-      border-bottom: 1px solid #ececf0; white-space: normal;
-      word-break: break-word;
+      border-bottom: 1px solid #ececf0; white-space: nowrap;
     }
     .mp-table tbody td.mp-ap { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; color: #4a4a5a; white-space: nowrap; text-shadow: none; }
     .mp-table tbody td.mp-date { color: #222222; font-size: 0.72rem; white-space: nowrap; }
@@ -3467,6 +3466,7 @@
           <div class="mp-edit-field"><label>Product Type</label><select id="mpEditProduct"></select></div>
           <div class="mp-edit-field"><label>Policy Number</label><input type="text" id="mpEditPolicy" required /></div>
           <div class="mp-edit-field"><label>Policy Date</label><input type="date" id="mpEditPolicyDate" required /></div>
+          <div class="mp-edit-field"><label>Effective Date</label><input type="date" id="mpEditEffectiveDate" /></div>
           <div class="mp-edit-field"><label>Status</label><select id="mpEditStatus"><option value="Underwriting">Underwriting</option><option value="Approved">Approved</option><option value="Issue Paid">Issue Paid</option></select></div>
           <div class="mp-edit-field"><label>Sales Rep</label><input type="text" id="mpEditRep" required /></div>
           <div class="mp-edit-btns">
@@ -5446,6 +5446,7 @@
         { key: 'status', label: 'Status' },
         { key: 'sales_rep', label: 'Rep' },
         { key: 'policy_date', label: 'Policy Date' },
+        { key: 'effective_date', label: 'Effective Date' },
       ];
 
       let html = '<table class="mp-table"><thead><tr>';
@@ -5477,6 +5478,8 @@
         html += '<td data-label="Status"><span class="ss-status ' + statusClass + '">' + status + '</span></td>';
         html += '<td data-label="Rep">' + esc(row.sales_rep) + '</td>';
         html += '<td class="mp-date" data-label="Policy Date">' + dateStr + '</td>';
+        const effStr = row.effective_date ? fmtPolicyDate(row.effective_date) : '—';
+        html += '<td class="mp-date" data-label="Effective Date">' + effStr + '</td>';
         html += '<td class="mp-actions" data-label="Actions">';
         if (status === 'Underwriting') {
           html += '<button class="mp-action-btn mp-action-approve" data-id="' + row.id + '">Approve Policy</button>';
@@ -5596,6 +5599,7 @@
       document.getElementById('mpEditPolicy').value = row.policy_number || '';
       document.getElementById('mpEditPolicyDate').value = row.policy_date ? row.policy_date.split('T')[0] : '';
       document.getElementById('mpEditPolicyDate').max = todayYMD();
+      document.getElementById('mpEditEffectiveDate').value = row.effective_date ? row.effective_date.split('T')[0] : '';
       document.getElementById('mpEditStatus').value = row.status || 'Underwriting';
       document.getElementById('mpEditRep').value = row.sales_rep || '';
       mpEditOverlay.classList.add('open');
@@ -5620,6 +5624,7 @@
         product_type: document.getElementById('mpEditProduct').value,
         policy_number: document.getElementById('mpEditPolicy').value,
         policy_date: editPolicyDate,
+        effective_date: document.getElementById('mpEditEffectiveDate').value || null,
         status: document.getElementById('mpEditStatus').value,
         sales_rep: document.getElementById('mpEditRep').value
       };
