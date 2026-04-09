@@ -424,15 +424,16 @@
     .perf-agent-kpi.down .perf-agent-kpi-value { color: #dc2626; }
     .perf-agent-section { background: #ffffff; border: 1px solid #e5e5ea; border-radius: 14px; padding: 1.25rem; margin-bottom: 1rem; }
     .perf-agent-section-title { font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: #777; margin-bottom: 0.85rem; }
-    .perf-agent-bar-row { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.45rem; }
-    .perf-agent-bar-label { width: 80px; font-size: 0.72rem; font-weight: 700; color: #444444; text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .perf-agent-bar-track { flex: 1; height: 22px; background: #f0f0f3; border-radius: 6px; position: relative; overflow: visible; }
+    .perf-agent-bar-row { display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.45rem; }
+    .perf-agent-bar-label { width: 70px; font-size: 0.72rem; font-weight: 700; color: #444444; text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex-shrink: 0; }
+    .perf-agent-bar-val-left { width: 90px; font-size: 0.65rem; font-weight: 800; color: #1a1a1a; white-space: nowrap; text-align: right; flex-shrink: 0; }
+    .perf-agent-bar-track { flex: 1; height: 20px; background: #f0f0f3; border-radius: 6px; position: relative; overflow: hidden; }
     .perf-agent-bar-fill { height: 100%; border-radius: 6px; transition: width 0.5s ease; }
     .perf-agent-bar-fill.blue { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
     .perf-agent-bar-fill.green { background: linear-gradient(90deg, #22c55e, #4ade80); }
     .perf-agent-bar-fill.amber { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
     .perf-agent-bar-fill.red { background: linear-gradient(90deg, #ef4444, #f87171); }
-    .perf-agent-bar-val { position: absolute; right: -8px; top: 50%; transform: translateY(-50%) translateX(100%); font-size: 0.65rem; font-weight: 800; color: #1a1a1a; white-space: nowrap; z-index: 1; text-shadow: none; }
+    .perf-agent-bar-val { display: none; }
     .perf-agent-status-row { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem; }
     .perf-agent-status-label { font-size: 0.78rem; font-weight: 600; color: #555555; width: 100px; }
     .perf-agent-status-bar { flex: 1; height: 10px; background: #ececf0; border-radius: 5px; overflow: hidden; }
@@ -4463,7 +4464,7 @@
       let carrierBars = '';
       carriersSorted.forEach(([name, d]) => {
         const pct = (d.ap / maxCarrierAP * 100).toFixed(1);
-        carrierBars += '<div class="perf-agent-bar-row"><div class="perf-agent-bar-label">' + name + '</div><div class="perf-agent-bar-track"><div class="perf-agent-bar-fill blue" style="width:' + pct + '%"></div><span class="perf-agent-bar-val">' + fmt(d.ap) + ' · ' + d.count + '</span></div></div>';
+        carrierBars += '<div class="perf-agent-bar-row"><div class="perf-agent-bar-label">' + name + '</div><div class="perf-agent-bar-val-left">' + fmt(d.ap) + ' · ' + d.count + '</div><div class="perf-agent-bar-track"><div class="perf-agent-bar-fill blue" style="width:' + pct + '%"></div></div></div>';
       });
       document.getElementById('agentCarriers').innerHTML = '<div class="perf-agent-section-title">Top Carriers (YTD)</div>' + (carrierBars || '<div style="color:#888;font-size:0.8rem;">No data yet</div>');
 
@@ -4510,7 +4511,7 @@
           else if (val < prev) arrow = '<span class="perf-agent-trend-arrow down">↓</span>';
         }
         const color = val > prev && i > 0 ? 'green' : val < prev && i > 0 ? 'red' : 'blue';
-        trendBars += '<div class="perf-agent-bar-row"><div class="perf-agent-bar-label">' + m + arrow + '</div><div class="perf-agent-bar-track"><div class="perf-agent-bar-fill ' + color + '" style="width:' + pct + '%"></div><span class="perf-agent-bar-val">' + fmt(val) + '</span></div></div>';
+        trendBars += '<div class="perf-agent-bar-row"><div class="perf-agent-bar-label">' + m + arrow + '</div><div class="perf-agent-bar-val-left">' + fmt(val) + '</div><div class="perf-agent-bar-track"><div class="perf-agent-bar-fill ' + color + '" style="width:' + pct + '%"></div></div></div>';
       }
       document.getElementById('agentTrend').innerHTML = '<div class="perf-agent-section-title">Monthly Trend (YTD)</div>' + trendBars;
 
