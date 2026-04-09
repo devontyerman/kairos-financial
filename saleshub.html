@@ -2753,15 +2753,7 @@
             <div class="ss-calc-results">
               <div class="ss-calc-result-main">
                 <span class="lbl">Annual Premium You Need to Sell</span>
-                <span class="val" id="cc_outRequired">$0</span>
-              </div>
-              <div class="ss-calc-result-row">
-                <span class="lbl">Upfront commission, gross (75%)</span>
-                <span class="val" id="cc_outUpfront">$0</span>
-              </div>
-              <div class="ss-calc-result-row">
-                <span class="lbl">Backend at 9 months (25%)</span>
-                <span class="val muted" id="cc_outBackend">$0</span>
+                <span class="val" id="cc_outRequired">—</span>
               </div>
             </div>
 
@@ -6193,8 +6185,7 @@
 
       const incomeEl = document.getElementById('cc_incomeGoal');
       const reqEl = document.getElementById('cc_outRequired');
-      const upEl = document.getElementById('cc_outUpfront');
-      const backEl = document.getElementById('cc_outBackend');
+      // upfront/backend now rendered inline in roi_output
 
       const roiOut = document.getElementById('roi_output');
       const bonusOut = document.getElementById('bonus_output');
@@ -6252,8 +6243,6 @@
 
         if (netGoal <= 0) {
           reqEl.textContent = '—';
-          upEl.textContent = '—';
-          backEl.textContent = '—';
           roiOut.innerHTML = '<div class="msg placeholder">Enter your net income goal above to see your results.</div>';
           longTermOut.classList.remove('visible');
           longTermOut.innerHTML = '';
@@ -6263,8 +6252,6 @@
         }
 
         reqEl.textContent = fmt(requiredAP);
-        upEl.textContent = fmt(upfront);
-        backEl.textContent = fmt(backend);
 
         if (roiPct <= 0) {
           roiOut.innerHTML = '<div class="msg placeholder">Select your expected ROI to see your lead budget.</div>';
@@ -6350,8 +6337,18 @@
           '</div>';
 
         roiOut.innerHTML =
+          '<div class="ss-calc-roi-breakdown" style="margin-bottom:1rem;">' +
+            '<div class="ss-calc-roi-row">' +
+              '<span class="lbl">Upfront commission, gross (75%)</span>' +
+              '<span class="val">' + fmt(upfront) + '</span>' +
+            '</div>' +
+            '<div class="ss-calc-roi-row">' +
+              '<span class="lbl">Backend at 9 months (25%)</span>' +
+              '<span class="val" style="color:#888;">' + fmt(backend) + '</span>' +
+            '</div>' +
+          '</div>' +
           '<div class="ss-calc-roi-hero">' +
-            '<span class="ss-calc-roi-hero-label">Net Income (After Lead Costs)</span>' +
+            '<span class="ss-calc-roi-hero-label">Net Income <strong>(After Lead Costs)</strong></span>' +
             '<span class="ss-calc-roi-hero-value">' + fmt(netGoal) + '</span>' +
           '</div>' +
           '<div class="ss-calc-roi-breakdown">' +
