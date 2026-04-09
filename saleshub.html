@@ -5657,8 +5657,13 @@
         const ap = parseFloat(p.annual_premium || 0);
 
         html += '<div class="mp-attention-item" data-id="' + p.id + '">';
+        var phoneLink = '';
+        if (p.phone) {
+          var digits = p.phone.replace(/\D/g, '');
+          phoneLink = ' · <a href="tel:' + digits + '" style="color:#2563eb;text-decoration:none;font-weight:600;">' + esc(p.phone) + '</a>';
+        }
         html += '<div class="mp-attention-info"><div class="mp-attention-name">' + esc(p.client_name) + '</div>';
-        html += '<div class="mp-attention-meta">' + esc(p.carrier) + ' · $' + ap.toLocaleString() + ' · ' + timeLabel + '</div></div>';
+        html += '<div class="mp-attention-meta">' + esc(p.carrier) + ' · $' + ap.toLocaleString() + phoneLink + ' · ' + timeLabel + '</div></div>';
         html += '<div class="mp-attention-actions">';
         html += '<button class="mp-action-btn mp-action-approve att-approve" data-id="' + p.id + '">Approve Policy</button>';
         html += '<div class="mp-more-wrap"><button class="mp-more-btn att-more" data-id="' + p.id + '">&#8943;</button><div class="mp-more-menu"><button class="att-del" data-id="' + p.id + '">Delete Policy</button></div></div>';
