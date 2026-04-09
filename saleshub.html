@@ -4697,7 +4697,7 @@
           const dayLabel = dayNames[dow];
           const dateLabel = (walkDate.getMonth() + 1) + '/' + walkDate.getDate();
           const row = dataMap[ymd];
-          const dimStyle = isInRange ? '' : 'opacity:0.35;';
+          const dimStyle = '';
           if (row) {
             const dSpend = parseFloat(row.lead_spend || 0);
             const dDep = parseFloat(row.deposits || 0);
@@ -4712,7 +4712,7 @@
             weekTotals.dep += dDep;
             weekHasData = true;
           } else {
-            tableRows += '<tr style="opacity:0.2;"><td style="' + tdStyle + 'font-weight:700;">' + dayLabel + '</td><td style="' + tdStyle + 'color:#888;">' + dateLabel + '</td><td style="' + tdStyle + '">—</td><td style="' + tdStyle + '">—</td><td style="' + tdStyle + '">—</td><td style="' + tdStyle + '">—</td><td style="' + tdStyle + '">—</td><td style="' + tdStyle + '">—</td><td style="' + tdStyle + '">—</td><td style="' + tdStyle + '"></td></tr>';
+            tableRows += '<tr><td style="' + tdStyle + 'font-weight:700;">' + dayLabel + '</td><td style="' + tdStyle + 'color:#888;">' + dateLabel + '</td><td style="' + tdStyle + '">—</td><td style="' + tdStyle + '">—</td><td style="' + tdStyle + '">—</td><td style="' + tdStyle + '">—</td><td style="' + tdStyle + '">—</td><td style="' + tdStyle + '">—</td><td style="' + tdStyle + '">—</td><td style="' + tdStyle + '"></td></tr>';
           }
           walkDate.setDate(walkDate.getDate() + 1);
         }
