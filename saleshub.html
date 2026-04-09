@@ -4443,13 +4443,15 @@
       function agentKpi(label, value, sub, cls) {
         return '<div class="perf-agent-kpi ' + (cls || '') + '"><div class="perf-agent-kpi-label">' + label + '</div><div class="perf-agent-kpi-value">' + value + '</div><div class="perf-agent-kpi-sub">' + sub + '</div></div>';
       }
+      const mtdCls = mtdAP > lmAP ? 'up' : mtdAP < lmAP ? 'down' : '';
+      const paceCls = yearlyPace > ytdAP ? 'up' : '';
       document.getElementById('agentKpis').innerHTML =
-        agentKpi('Month to Date', fmt(mtdAP), mtd.length + ' policies') +
-        agentKpi('YTD Total', fmt(ytdAP), ytd.length + ' policies') +
+        agentKpi('Month to Date', fmt(mtdAP), mtd.length + ' policies', mtdCls) +
+        agentKpi('YTD Total', fmt(ytdAP), ytd.length + ' policies', ytdAP > 0 ? 'up' : '') +
         agentKpi('Last Month', fmt(lmAP), lastMonth.length + ' policies') +
         agentKpi('Month vs Last', (momChange > 0 ? '+' : '') + momChange.toFixed(1) + '%', momChange > 0 ? '↑ Trending up' : momChange < 0 ? '↓ Trending down' : '— Flat', momClass) +
         agentKpi('Avg Per Policy', fmt(avgAP), 'based on YTD') +
-        agentKpi('Yearly Pace', fmt(yearlyPace), fmt(Math.round(yearlyPace / 12)) + '/mo avg');
+        agentKpi('Yearly Pace', fmt(yearlyPace), fmt(Math.round(yearlyPace / 12)) + '/mo avg', paceCls);
 
       // ── Top Carriers ──
       const carrierMap = {};
@@ -4639,13 +4641,20 @@
       html += '<div style="margin-top:0.6rem;font-size:0.72rem;color:#888;">Overall: ' + pctFn(totalDeals, totalDials) + ' of dials convert to deals</div>';
 
       // ── Daily Breakdown (only for short ranges) ──
+      // Always show full weeks (Sunday–Saturday), even if range starts/ends mid-week.
+      // Days outside the stats range are shown but dimmed and not counted in stats above.
       if (['wtd','mtd','lastweek','lastmonth'].includes(range)) {
         const dayNames = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
         const dataMap = {};
-        filtered.forEach(r => { dataMap[r.kpi_date] = r; });
+        // Include ALL kpi rows for the visual breakdown (not just filtered)
+        agentKpiAllRows.forEach(r => { dataMap[r.kpi_date] = r; });
 
+        // Extend walk range to full weeks (Sunday start, Saturday end)
         const walkDate = new Date(rangeStart); walkDate.setHours(0,0,0,0);
+        walkDate.setDate(walkDate.getDate() - walkDate.getDay()); // back to Sunday
         const walkEnd = new Date(rangeEnd); walkEnd.setHours(0,0,0,0);
+        const daysUntilSat = 6 - walkEnd.getDay();
+        if (daysUntilSat > 0) walkEnd.setDate(walkEnd.getDate() + daysUntilSat); // forward to Saturday
         let tableRows = '';
         let lastWeekNum = -1;
         const thStyle = 'text-align:left;padding:0.5rem 0.4rem;color:#888;font-size:0.78rem;';
@@ -4665,12 +4674,17 @@
           return row;
         }
 
+        const statsStart = new Date(rangeStart); statsStart.setHours(0,0,0,0);
+        const statsEnd = new Date(rangeEnd); statsEnd.setHours(23,59,59,999);
+
         while (walkDate <= walkEnd) {
           const dow = walkDate.getDay();
           if ((excludeSat && dow === 6) || (excludeSun && dow === 0)) { walkDate.setDate(walkDate.getDate() + 1); continue; }
 
-          const weekNum = Math.floor((walkDate - rangeStart) / (7 * 24 * 60 * 60 * 1000));
-          if (weekNum !== lastWeekNum && lastWeekNum !== -1) {
+          const isInRange = walkDate >= statsStart && walkDate <= statsEnd;
+          const weekNum = Math.floor((walkDate - new Date(walkDate.getFullYear(), walkDate.getMonth(), walkDate.getDate() - walkDate.getDay())) / (7 * 24 * 60 * 60 * 1000));
+          const absWeekNum = Math.floor((walkDate.getTime() - walkDate.getTimezoneOffset()*60000) / (7*24*60*60*1000));
+          if (absWeekNum !== lastWeekNum && lastWeekNum !== -1) {
             // Insert previous week's total before the separator
             tableRows += insertWeekTotal();
             const weekLabel = new Date(walkDate);
@@ -4681,16 +4695,18 @@
             tableRows += '<tr><td colspan="10" style="padding:0.75rem 0.4rem 0.35rem;font-size:0.7rem;font-weight:800;color:rgba(59,130,246,0.7);text-transform:uppercase;letter-spacing:0.08em;border-top:2px solid rgba(59,130,246,0.15);">' + wkLabel + '</td></tr>';
             tableRows += '<tr style="border-bottom:1px solid #e5e5ea;"><th style="' + thStyle + '">Day</th><th style="' + thStyle + '">Date</th><th style="' + thStyle + '">Dials</th><th style="' + thStyle + '">Ans</th><th style="' + thStyle + '">Appts</th><th style="' + thStyle + '">Pres</th><th style="' + thStyle + '">Deals</th><th style="' + thStyle + '">Spend</th><th style="' + thStyle + '">Dep</th><th style="' + thStyle + '">ROI</th></tr>';
           }
-          lastWeekNum = weekNum;
+          lastWeekNum = absWeekNum;
 
           const ymd = walkDate.getFullYear() + '-' + String(walkDate.getMonth() + 1).padStart(2,'0') + '-' + String(walkDate.getDate()).padStart(2,'0');
           const dayLabel = dayNames[dow];
           const dateLabel = (walkDate.getMonth() + 1) + '/' + walkDate.getDate();
           const row = dataMap[ymd];
+          const dimStyle = isInRange ? '' : 'opacity:0.35;';
           if (row) {
             const dSpend = parseFloat(row.lead_spend || 0);
             const dDep = parseFloat(row.deposits || 0);
-            tableRows += '<tr><td style="' + tdStyle + 'font-weight:700;">' + dayLabel + '</td><td style="' + tdStyle + 'color:#888;">' + dateLabel + '</td><td style="' + tdStyle + '">' + (row.dials || 0) + '</td><td style="' + tdStyle + '">' + (row.answers || 0) + '</td><td style="' + tdStyle + '">' + (row.appointments || 0) + '</td><td style="' + tdStyle + '">' + (row.presentations || 0) + '</td><td style="' + tdStyle + '">' + (row.deals || 0) + '</td><td style="' + tdStyle + '">$' + Math.round(dSpend) + '</td><td style="' + tdStyle + '">$' + Math.round(dDep) + '</td><td style="' + tdStyle + '"></td></tr>';
+            tableRows += '<tr style="' + dimStyle + '"><td style="' + tdStyle + 'font-weight:700;">' + dayLabel + '</td><td style="' + tdStyle + 'color:#888;">' + dateLabel + '</td><td style="' + tdStyle + '">' + (row.dials || 0) + '</td><td style="' + tdStyle + '">' + (row.answers || 0) + '</td><td style="' + tdStyle + '">' + (row.appointments || 0) + '</td><td style="' + tdStyle + '">' + (row.presentations || 0) + '</td><td style="' + tdStyle + '">' + (row.deals || 0) + '</td><td style="' + tdStyle + '">$' + Math.round(dSpend) + '</td><td style="' + tdStyle + '">$' + Math.round(dDep) + '</td><td style="' + tdStyle + '"></td></tr>';
+            // Always count in week totals (full week view)
             weekTotals.dials += (row.dials || 0);
             weekTotals.answers += (row.answers || 0);
             weekTotals.appts += (row.appointments || 0);
@@ -4700,7 +4716,7 @@
             weekTotals.dep += dDep;
             weekHasData = true;
           } else {
-            tableRows += '<tr style="opacity:0.3;"><td style="' + tdStyle + 'font-weight:700;">' + dayLabel + '</td><td style="' + tdStyle + 'color:#888;">' + dateLabel + '</td><td style="' + tdStyle + '">—</td><td style="' + tdStyle + '">—</td><td style="' + tdStyle + '">—</td><td style="' + tdStyle + '">—</td><td style="' + tdStyle + '">—</td><td style="' + tdStyle + '">—</td><td style="' + tdStyle + '">—</td><td style="' + tdStyle + '"></td></tr>';
+            tableRows += '<tr style="opacity:0.2;"><td style="' + tdStyle + 'font-weight:700;">' + dayLabel + '</td><td style="' + tdStyle + 'color:#888;">' + dateLabel + '</td><td style="' + tdStyle + '">—</td><td style="' + tdStyle + '">—</td><td style="' + tdStyle + '">—</td><td style="' + tdStyle + '">—</td><td style="' + tdStyle + '">—</td><td style="' + tdStyle + '">—</td><td style="' + tdStyle + '">—</td><td style="' + tdStyle + '"></td></tr>';
           }
           walkDate.setDate(walkDate.getDate() + 1);
         }
@@ -4709,7 +4725,7 @@
 
         // Grand total row
         const grandRoi = totalSpend > 0 ? ((totalDeposits - totalSpend) / totalSpend * 100).toFixed(0) + '%' : '—';
-        const gtStyle = 'padding:0.6rem 0.4rem;font-weight:900;border-top:3px solid rgba(168,85,247,0.4);background:rgba(168,85,247,0.08);';
+        const gtStyle = 'padding:0.6rem 0.4rem;font-weight:900;border-top:3px solid #1a1a1a;background:#f0f0f3;';
         tableRows += '<tr style="color:#4a4a5a;"><td style="' + gtStyle + '">TOTAL</td><td style="' + gtStyle + '"></td><td style="' + gtStyle + '">' + totalDials + '</td><td style="' + gtStyle + '">' + totalAnswers + '</td><td style="' + gtStyle + '">' + totalAppts + '</td><td style="' + gtStyle + '">' + totalPres + '</td><td style="' + gtStyle + '">' + totalDeals + '</td><td style="' + gtStyle + '">$' + Math.round(totalSpend) + '</td><td style="' + gtStyle + '">$' + Math.round(totalDeposits) + '</td><td style="' + gtStyle + '">' + grandRoi + '</td></tr>';
 
         html += '<div style="margin-top:1.5rem;overflow-x:auto;background:#f8f8fa;border:1px solid #ddd;border-radius:12px;padding:1rem;"><div style="margin-bottom:0.6rem;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#888;">Daily Breakdown</div>';
