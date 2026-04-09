@@ -267,12 +267,12 @@
 
     .ss-main {
       max-width: 1100px;
-      width: 100%;
+      width: calc(100vw - 210px);
       padding: 1.5rem 2rem 4rem;
       box-sizing: border-box;
-      /* Always center in the space right of the sidebar */
       margin-left: max(210px, calc(50vw - 550px + 105px));
       margin-right: auto;
+      overflow-x: auto;
     }
     .ss-page-dark {
       background: transparent;
@@ -1245,6 +1245,7 @@
       border: 1px solid #ddd;
       background: #ffffff;
       box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+      overflow-x: auto;
     }
     .mp-table { width: 100%; border-collapse: collapse; table-layout: auto; }
     .mp-table thead th {
@@ -2067,14 +2068,14 @@
       text-transform: none;
     }
     .mp-action-approve {
-      background: linear-gradient(135deg, #2563eb, #3b82f6);
-      color: #1a1a1a;
+      background: #2563eb;
+      color: #ffffff;
       box-shadow: 0 1px 4px rgba(0,0,0,0.1);
     }
     .mp-action-approve:hover { box-shadow: 0 2px 6px rgba(0,0,0,0.12); transform: translateY(-1px); }
     .mp-action-paid {
-      background: linear-gradient(135deg, #16a34a, #22c55e);
-      color: #1a1a1a;
+      background: #16a34a;
+      color: #ffffff;
       box-shadow: 0 1px 4px rgba(0,0,0,0.1);
     }
     .mp-action-paid:hover { box-shadow: 0 2px 6px rgba(0,0,0,0.12); transform: translateY(-1px); }
