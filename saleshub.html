@@ -1948,22 +1948,22 @@
     }
     .ss-calc-leadership-stat {
       padding: 0.85rem 0.9rem;
-      background: rgba(59,130,246,0.08);
-      border: 1px solid rgba(59,130,246,0.22);
+      background: #f5f5f8;
+      border: 1px solid #ddd;
       border-radius: 10px; text-align: center;
     }
     .ss-calc-leadership-stat-label {
       font-family: 'Plus Jakarta Sans', sans-serif;
       font-size: 0.62rem; font-weight: 800;
       letter-spacing: 0.1em; text-transform: uppercase;
-      color: #666; margin-bottom: 0.3rem;
+      color: #1a1a1a; margin-bottom: 0.3rem;
     }
     .ss-calc-leadership-stat-value {
       font-family: 'Plus Jakarta Sans', sans-serif;
       font-size: 1.3rem; font-weight: 900;
-      color: #2563eb; text-shadow: none;
+      color: #16a34a; text-shadow: none;
     }
-    .ss-calc-leadership-stat-value.green { color: #1a1a1a; text-shadow: none; }
+    .ss-calc-leadership-stat-value.green { color: #16a34a; text-shadow: none; }
     @media (max-width: 520px) {
       .ss-calc-leadership-grid { grid-template-columns: 1fr; }
     }
@@ -6487,15 +6487,15 @@
             '<p>The 25% leadership backend is paid at 9 months on each agent\u2019s production, just like your personal deals. As your team grows, these stacked backends become a significant recurring income stream on top of your personal earnings.</p>' +
           '</div>' +
           '<div class="ss-calc-leadership-grid" style="grid-template-columns:1fr; margin-top:1rem;">' +
-            '<div class="ss-calc-leadership-stat" style="background:rgba(74,222,128,0.08); border-color:rgba(74,222,128,0.3);">' +
-              '<div class="ss-calc-leadership-stat-label" style="color:#86efac;">Annual Leadership Total</div>' +
-              '<div class="ss-calc-leadership-stat-value green" style="font-size:1.6rem;">' + fmt(annualTotalWithBonus) + '</div>' +
+            '<div class="ss-calc-leadership-stat">' +
+              '<div class="ss-calc-leadership-stat-label">Annual Leadership Total</div>' +
+              '<div class="ss-calc-leadership-stat-value" style="font-size:1.6rem;">' + fmt(annualTotalWithBonus) + '</div>' +
               '<div style="font-size:0.72rem; color:#777; margin-top:0.25rem;">Overrides' + (teamBonusQualified ? ' + Team Bonus' : '') + '</div>' +
             '</div>' +
           '</div>' +
-          '<div style="margin-top:1.25rem; padding:1.15rem; background:linear-gradient(135deg,rgba(74,222,128,0.1),rgba(34,197,94,0.04)); border:1px solid rgba(74,222,128,0.3); border-radius:12px; text-align:center;">' +
-            '<div style="font-family:\'Plus Jakarta Sans\',sans-serif; font-size:0.66rem; font-weight:800; letter-spacing:0.14em; text-transform:uppercase; color:#86efac; margin-bottom:0.5rem;">Combined Annual Income</div>' +
-            '<div style="font-family:\'Plus Jakarta Sans\',sans-serif; font-size:2.2rem; font-weight:900; color:#4ade80; text-shadow:0 0 24px rgba(74,222,128,0.55); letter-spacing:-0.02em;">' + fmt(personalAnnualIncome + annualTotalWithBonus) + '</div>' +
+          '<div style="margin-top:1.25rem; padding:1.15rem; background:#f5f5f8; border:1px solid #ddd; border-radius:12px; text-align:center;">' +
+            '<div style="font-family:\'Plus Jakarta Sans\',sans-serif; font-size:0.66rem; font-weight:800; letter-spacing:0.14em; text-transform:uppercase; color:#1a1a1a; margin-bottom:0.5rem;">Combined Annual Income</div>' +
+            '<div style="font-family:\'Plus Jakarta Sans\',sans-serif; font-size:2.2rem; font-weight:900; color:#16a34a; letter-spacing:-0.02em;">' + fmt(personalAnnualIncome + annualTotalWithBonus) + '</div>' +
             '<div style="font-size:0.75rem; color:#555; margin-top:0.35rem;">Personal earnings + Leadership overrides' + (teamBonusQualified ? ' + Team bonus' : '') + '</div>' +
           '</div>' +
           '<p style="font-size:0.68rem; color:#888; margin-top:0.75rem; line-height:1.5; text-align:center;">These numbers are based on agency averages analyzed from thousands of agent data points. Your own results may vary, but this is a good estimate of what to expect.</p>';
