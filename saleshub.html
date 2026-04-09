@@ -195,7 +195,7 @@
       padding: 6px;
       background: none;
       border: none;
-      z-index: 10;
+      z-index: 1002;
     }
     .ss-sidebar-hamburger span {
       display: block;
@@ -3863,6 +3863,7 @@
             ssSidebar.style.top = '0';
             ssSidebar.style.left = '0';
             ssSidebar.style.right = '0';
+            ssSidebar.style.zIndex = '1002';
             // Wait for reflow before measuring height
             requestAnimationFrame(() => {
               mobileNavEl.style.top = ssSidebar.offsetHeight + 'px';
@@ -3879,6 +3880,7 @@
             ssSidebar.style.top = '';
             ssSidebar.style.left = '';
             ssSidebar.style.right = '';
+            ssSidebar.style.zIndex = '';
           }
         }
       });
@@ -3893,6 +3895,7 @@
             ssSidebar.style.top = '';
             ssSidebar.style.left = '';
             ssSidebar.style.right = '';
+            ssSidebar.style.zIndex = '';
           }
         });
       });
