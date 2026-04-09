@@ -2754,7 +2754,7 @@
             <div class="ss-calc-results">
               <div class="ss-calc-result-main">
                 <span class="lbl">Annual Premium You Need to Sell</span>
-                <span class="val" id="cc_outRequired">—</span>
+                <input class="ss-calc-input" type="text" id="cc_outRequired" inputmode="numeric" placeholder="—" style="max-width:200px;font-size:1.4rem;font-weight:900;text-align:right;color:#1a1a1a;padding:0.4rem 0.7rem;" />
               </div>
             </div>
 
@@ -6220,30 +6220,37 @@
 
       let personalAnnualIncome = 0; // set by computeCommission, read by computeLeadership
 
-      function computeCommission() {
-        // Step 1 is the NET income target — take-home AFTER lead costs
-        const netGoal = parseCommInput(incomeEl.value);
+      function computeCommission(apOverride) {
         const comp = parseFloat(compSel.value) / 100;
         const pers = parseFloat(persSel.value) / 100;
         const roiPct = parseFloat(roiSel.value) || 0;
-
-        // ROI% = profit / spend × 100, where profit = net take-home
-        //   → Monthly lead spend = net ÷ (ROI% / 100)
-        const monthlyLeadSpend = roiPct > 0 ? netGoal / (roiPct / 100) : 0;
-        const weeklyLeadSpend = monthlyLeadSpend / 4.33; // avg weeks per month
-
-        // Upfront commission must cover the lead spend AND leave the net behind
-        const upfront = netGoal + monthlyLeadSpend;
-
-        // Upfront = AP × comp × pers × 0.75  →  AP = upfront / (comp × pers × 0.75)
         const denom = comp * pers * 0.75;
-        const requiredAP = denom > 0 ? upfront / denom : 0;
 
-        // Backend at 9 months = AP × comp × pers × 0.25 = upfront / 3
-        const backend = upfront / 3;
+        let netGoal, requiredAP, upfront, backend, monthlyLeadSpend, weeklyLeadSpend;
+
+        if (apOverride && apOverride > 0) {
+          // Reverse calc: AP → income
+          requiredAP = apOverride;
+          upfront = requiredAP * denom;
+          backend = requiredAP * comp * pers * 0.25;
+          monthlyLeadSpend = roiPct > 0 ? upfront / (1 + roiPct / 100) * (1 / (roiPct / 100)) : 0;
+          // Simpler: lead spend = upfront / (1 + ROI/100) ... net = upfront - leadSpend
+          monthlyLeadSpend = roiPct > 0 ? upfront / (1 + roiPct / 100) : 0;
+          netGoal = upfront - monthlyLeadSpend;
+          weeklyLeadSpend = monthlyLeadSpend / 4.33;
+          incomeEl.value = fmtCommas(Math.round(netGoal));
+        } else {
+          // Forward calc: income → AP
+          netGoal = parseCommInput(incomeEl.value);
+          monthlyLeadSpend = roiPct > 0 ? netGoal / (roiPct / 100) : 0;
+          weeklyLeadSpend = monthlyLeadSpend / 4.33;
+          upfront = netGoal + monthlyLeadSpend;
+          requiredAP = denom > 0 ? upfront / denom : 0;
+          backend = upfront / 3;
+        }
 
         if (netGoal <= 0) {
-          reqEl.textContent = '—';
+          reqEl.value = '';
           roiOut.innerHTML = '<div class="msg placeholder">Enter your net income goal above to see your results.</div>';
           longTermOut.classList.remove('visible');
           longTermOut.innerHTML = '';
@@ -6252,7 +6259,7 @@
           return;
         }
 
-        reqEl.textContent = fmt(requiredAP);
+        if (!apOverride) reqEl.value = fmtCommas(Math.round(requiredAP));
 
         if (roiPct <= 0) {
           roiOut.innerHTML = '<div class="msg placeholder">Select your expected ROI to see your lead budget.</div>';
@@ -6346,11 +6353,11 @@
           '<div class="ss-calc-roi-breakdown" style="margin-top:1rem;">' +
             '<div class="ss-calc-roi-row">' +
               '<span class="lbl">Upfront commission (75%)</span>' +
-              '<span class="val">' + fmt(upfront) + '</span>' +
+              '<span class="val" style="color:#16a34a;">' + fmt(upfront) + '</span>' +
             '</div>' +
             '<div class="ss-calc-roi-row">' +
               '<span class="lbl">Backend at 9 months (25%)</span>' +
-              '<span class="val" style="color:#888;">' + fmt(backend) + '</span>' +
+              '<span class="val" style="color:#86efac;">' + fmt(backend) + '</span>' +
             '</div>' +
           '</div>' +
           '<div class="ss-calc-roi-breakdown" style="margin-top:1rem;">' +
@@ -6378,9 +6385,17 @@
         localStorage.setItem(getCommGoalKey(), raw);
         computeCommission();
       });
-      compSel.addEventListener('change', computeCommission);
-      persSel.addEventListener('change', computeCommission);
-      roiSel.addEventListener('change', computeCommission);
+      compSel.addEventListener('change', () => computeCommission());
+      persSel.addEventListener('change', () => computeCommission());
+      roiSel.addEventListener('change', () => computeCommission());
+
+      // AP input — reverse calculate income from AP
+      reqEl.addEventListener('input', function() {
+        const raw = reqEl.value.replace(/[^0-9]/g, '');
+        reqEl.value = raw ? fmtCommas(raw) : '';
+        const apVal = parseFloat(raw) || 0;
+        if (apVal > 0) computeCommission(apVal);
+      });
 
       // ── TEAM / LEADERSHIP OVERRIDE ──
       let hasTeam = false;
