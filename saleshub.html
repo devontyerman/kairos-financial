@@ -4170,14 +4170,13 @@
                 const gt = document.getElementById('goalTracker');
                 const popupContent = document.getElementById('goalPopupContent');
                 if (gt && popupContent) {
-                  // Move the actual goal tracker into the overlay
+                  goalAnimCancelled = false;
                   gt._originalParent = gt.parentNode;
                   popupContent.appendChild(gt);
                   gt.classList.add('visible');
                   gt.style.margin = '0';
-                  // Now load fresh data with animation
                   await loadGoalTracker(true);
-                  document.getElementById('goalOverlay').classList.add('open');
+                  if (!goalAnimCancelled) document.getElementById('goalOverlay').classList.add('open');
                 }
               }, 400);
             } else {
@@ -4936,9 +4935,13 @@
       if (e.target.id === 'milestoneOverlay') e.target.classList.remove('open');
     });
 
-    // Goal tracker popup close — move tracker back to its panel
+    // Goal tracker popup close — move tracker back, kill animations
+    var goalAnimCancelled = false;
     function closeGoalOverlay() {
+      goalAnimCancelled = true;
       document.getElementById('goalOverlay').classList.remove('open');
+      // Remove any lingering particles
+      document.querySelectorAll('.firework-particle, .money-particle').forEach(function(p) { p.remove(); });
       const gt = document.getElementById('goalTracker');
       if (gt && gt._originalParent) {
         gt._originalParent.appendChild(gt);
@@ -6133,12 +6136,14 @@
       // Odometer count-up animation + fireworks + money bills
       if (anim) {
         const countDuration = 4500;
-        const countDelay = 500; // start counting a bit after the line starts drawing
+        const countDelay = 500;
         const allCountEls = chartArea.querySelectorAll('[data-goal-countup]');
 
         setTimeout(function() {
+          if (goalAnimCancelled) return;
           const start = performance.now();
           function tick(now) {
+            if (goalAnimCancelled) return;
             const elapsed = now - start;
             const progress = Math.min(elapsed / countDuration, 1);
             const eased = 1 - Math.pow(1 - progress, 3);
@@ -6149,9 +6154,7 @@
               el.textContent = prefix + Math.round(target * eased).toLocaleString();
             });
             if (progress < 1) requestAnimationFrame(tick);
-            else {
-              // Animation complete — fire celebratory effects
-              // Fireworks from the dot on the chart
+            else if (!goalAnimCancelled) {
               const dot = chartArea.querySelector('.goal-dot-animated, circle');
               if (dot) {
                 const rect = dot.getBoundingClientRect();
@@ -6159,7 +6162,6 @@
                 const cy = rect.top + rect.height / 2;
                 fireGoalFireworks(cx, cy);
               }
-              // Money bills from the YTD Sold KPI
               const projEl = chartArea.querySelectorAll('.ss-goal-kpi')[0];
               if (projEl) fireGoalMoneyBills(projEl);
             }
