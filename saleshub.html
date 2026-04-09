@@ -4100,9 +4100,9 @@
             var today = new Date(); today.setHours(0,0,0,0);
             var effDate = new Date(data.effective_date + 'T00:00:00'); effDate.setHours(0,0,0,0);
             if (effDate.getTime() === today.getTime()) {
-              effectiveLine = '\n🔥 **Effective Immediately**';
+              effectiveLine = '🔥 **Effective Immediately**';
             } else {
-              effectiveLine = '\n⏳ **Effective Date:** ' + data.effective_date;
+              effectiveLine = '⏳ **Effective Date:** ' + data.effective_date;
             }
           }
           const discordMsg = [
@@ -4113,8 +4113,9 @@
             '🏢 **Carrier:** ' + data.carrier,
             '🛡️ **Product:** ' + data.product_type,
             '💵 **AP:** ' + apFormatted,
-            '📝 **Status:** ' + data.status + ' ' + statusEmoji + effectiveLine
-          ].join('\n');
+            '📝 **Status:** ' + data.status + ' ' + statusEmoji,
+            effectiveLine
+          ].filter(Boolean).join('\n');
 
           fetch(DISCORD_WEBHOOK, {
             method: 'POST',
