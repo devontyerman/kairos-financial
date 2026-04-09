@@ -385,18 +385,18 @@
     .pcg-carrier-header { display: flex; align-items: center; gap: 0.65rem; margin-bottom: 1rem; padding-bottom: 0.65rem; border-bottom: 2px solid rgba(255,255,255,0.08); }
     .pcg-carrier-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
     .pcg-carrier-name { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.15rem; font-weight: 800; color: #fff; }
-    .pcg-table-wrap { background: #0a0612; border: 1px solid rgba(168,85,247,0.22); border-radius: 12px; overflow: hidden; }
+    .pcg-table-wrap { background: #141220; border: 1px solid rgba(168,85,247,0.3); border-radius: 12px; overflow: hidden; }
     .pcg-table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
     .pcg-table { width: 100%; border-collapse: collapse; }
     .pcg-table thead th { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: rgba(255,255,255,0.7); padding: 0.7rem 0.85rem; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.03); white-space: nowrap; }
-    .pcg-table thead th:first-child { text-align: left; padding-left: 1.1rem; position: sticky; left: 0; background: #0a0612; z-index: 2; }
+    .pcg-table thead th:first-child { text-align: left; padding-left: 1.1rem; position: sticky; left: 0; background: #141220; z-index: 2; }
     .pcg-table tbody tr { transition: background 0.15s ease; }
     .pcg-table tbody tr:hover { background: rgba(168,85,247,0.06); }
     .pcg-table tbody td { font-size: 0.8rem; padding: 0.55rem 0.85rem; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.06); color: rgba(255,255,255,0.88); white-space: nowrap; }
-    .pcg-table tbody td:first-child { text-align: left; padding-left: 1.1rem; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; color: #c084fc; position: sticky; left: 0; background: #0a0612; z-index: 1; }
-    .pcg-table tbody tr:hover td:first-child { background: rgba(168,85,247,0.06); }
+    .pcg-table tbody td:first-child { text-align: left; padding-left: 1.1rem; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; color: #c084fc; position: sticky; left: 0; background: #141220; z-index: 1; }
+    .pcg-table tbody tr:hover td:first-child { background: #1a1630; }
     .pcg-table tbody tr:last-child td { border-bottom: none; }
-    .pcg-level-selector { background: #0a0612; border: 1px solid rgba(168,85,247,0.22); border-radius: 12px; padding: 1.25rem; margin-bottom: 1.5rem; }
+    .pcg-level-selector { background: #141220; border: 1px solid rgba(168,85,247,0.3); border-radius: 12px; padding: 1.25rem; margin-bottom: 1.5rem; }
     .pcg-level-top { display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap; }
     .pcg-level-label { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.85rem; font-weight: 700; color: #fff; }
     .pcg-level-select { padding: 0.45rem 2.2rem 0.45rem 0.85rem; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.85rem; font-weight: 600; color: #fff; background: rgba(255,255,255,0.08); border: 1px solid rgba(168,85,247,0.35); border-radius: var(--radius-md); cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg width='12' height='12' viewBox='0 0 12 12' fill='none' stroke='%23999' stroke-width='2' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolyline points='2 4 6 8 10 4'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 0.65rem center; }
@@ -405,7 +405,7 @@
     .pcg-condensed { display: none; margin-top: 1rem; }
     .pcg-condensed.visible { display: block; }
     .pcg-condensed-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 0.65rem; }
-    .pcg-condensed-carrier { background: #0a0612; border: 1px solid rgba(168,85,247,0.22); border-radius: var(--radius-md); padding: 0.85rem 1rem; }
+    .pcg-condensed-carrier { background: #141220; border: 1px solid rgba(168,85,247,0.3); border-radius: var(--radius-md); padding: 0.85rem 1rem; }
     .pcg-condensed-carrier-name { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.78rem; font-weight: 800; color: #fff; margin-bottom: 0.4rem; display: flex; align-items: center; gap: 0.35rem; }
     .pcg-condensed-carrier-name .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
     .pcg-condensed-row { display: flex; justify-content: space-between; padding: 0.2rem 0; font-size: 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.06); }
@@ -416,13 +416,13 @@
 
     /* ─── Carrier Directory Panel ─── */
     .sh-carriers-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1rem; }
-    .sh-carrier-card { display: block; background: #0a0612; border: 1px solid rgba(168,85,247,0.22); border-radius: 14px; padding: 1.25rem 1.5rem; transition: all 0.2s ease; text-decoration: none; position: relative; cursor: pointer; }
+    .sh-carrier-card { display: block; background: #141220; border: 1px solid rgba(168,85,247,0.3); border-radius: 14px; padding: 1.25rem 1.5rem; transition: all 0.2s ease; text-decoration: none; position: relative; cursor: pointer; }
     .sh-carrier-card:hover { border-color: rgba(168,85,247,0.5); transform: translateY(-2px); box-shadow: 0 6px 24px rgba(168,85,247,0.15); }
     .sh-carrier-card .name { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.05rem; font-weight: 700; color: #fff; margin-bottom: 0.25rem; }
     .sh-carrier-card .phone { font-size: 0.78rem; color: rgba(255,255,255,0.7); }
     .sh-carrier-detail { display: none; max-width: 500px; margin: 0 auto; }
     .sh-carrier-detail.active { display: block; animation: ssFadeIn 0.3s ease; }
-    .sh-carrier-detail-card { background: #0a0612; border: 1px solid rgba(168,85,247,0.28); border-radius: 18px; padding: 2rem; text-align: center; box-shadow: 0 8px 40px rgba(0,0,0,0.5), 0 0 50px rgba(88,28,135,0.2); }
+    .sh-carrier-detail-card { background: #141220; border: 1px solid rgba(168,85,247,0.35); border-radius: 18px; padding: 2rem; text-align: center; box-shadow: 0 8px 40px rgba(0,0,0,0.5), 0 0 50px rgba(88,28,135,0.2); }
     .sh-carrier-detail-name { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.6rem; font-weight: 900; color: #fff; margin-bottom: 0.25rem; }
     .sh-carrier-detail-divider { width: 60px; height: 3px; background: linear-gradient(90deg, #7c3aed, #a855f7); margin: 1rem auto; border-radius: 2px; }
     .sh-carrier-detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; text-align: left; }
@@ -437,7 +437,7 @@
 
     /* ─── Lead Vendors Panel ─── */
     .sh-vendors-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 1rem; }
-    .sh-vendor-card { display: block; background: #0a0612; border: 1px solid rgba(168,85,247,0.22); border-radius: 14px; padding: 1.5rem; transition: all 0.2s ease; text-decoration: none; }
+    .sh-vendor-card { display: block; background: #141220; border: 1px solid rgba(168,85,247,0.3); border-radius: 14px; padding: 1.5rem; transition: all 0.2s ease; text-decoration: none; }
     .sh-vendor-card:hover { border-color: rgba(168,85,247,0.5); transform: translateY(-2px); box-shadow: 0 6px 24px rgba(168,85,247,0.15); }
     .sh-vendor-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 0.75rem; }
     .sh-vendor-name { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.1rem; font-weight: 700; color: #fff; }
@@ -450,7 +450,7 @@
     .sh-resources-cat-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(255,255,255,0.65); margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.4rem; }
     .sh-resources-cat-title svg { width: 14px; height: 14px; }
     .sh-resources-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 0.85rem; }
-    .sh-resource-card { display: flex; align-items: flex-start; gap: 0.85rem; background: #0a0612; border: 1px solid rgba(168,85,247,0.22); border-radius: 14px; padding: 1.15rem 1.25rem; text-decoration: none; transition: all 0.2s ease; }
+    .sh-resource-card { display: flex; align-items: flex-start; gap: 0.85rem; background: #141220; border: 1px solid rgba(168,85,247,0.3); border-radius: 14px; padding: 1.15rem 1.25rem; text-decoration: none; transition: all 0.2s ease; }
     .sh-resource-card:hover { border-color: rgba(168,85,247,0.5); transform: translateY(-2px); box-shadow: 0 6px 24px rgba(168,85,247,0.15); }
     .sh-resource-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; background: rgba(168,85,247,0.12); color: #c084fc; flex-shrink: 0; }
     .sh-resource-icon svg { width: 18px; height: 18px; }
@@ -2899,8 +2899,8 @@
           </div>
         </div>
 
-        <!-- 2. Producer Bonus -->
-        <div class="comp-bonus-row" style="margin-top: 2.5rem;">
+        <!-- 2. Bonuses — 3-column grid (Producer left, Carrier center, Manager right) -->
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:1.5rem; margin-top:2.5rem; align-items:start;">
           <div class="comp-bonus" style="background: #0a0612;">
             <div class="comp-bonus-header">
               <div class="comp-bonus-header-icon">
@@ -2925,8 +2925,6 @@
               </tbody>
             </table>
           </div>
-
-          <!-- 3. Carrier Bonuses -->
           <div class="comp-mgr-bonus" style="background: #0a0612;">
             <div class="comp-mgr-bonus-header" style="background: linear-gradient(135deg, #2a1f0a 0%, #1a1505 100%);">
               <div class="comp-mgr-bonus-header-icon" style="background: rgba(220, 190, 100, 0.25); color: #e0c870;">
@@ -2953,10 +2951,6 @@
               <p class="mgr-desc">Check your carrier portals for the current incentives they are running.</p>
             </div>
           </div>
-        </div>
-
-        <!-- 4. Manager Bonus -->
-        <div style="margin-top: 2.5rem; max-width: 520px; margin-left: auto; margin-right: auto;">
           <div class="comp-mgr-bonus" style="background: #0a0612;">
             <div class="comp-mgr-bonus-header">
               <div class="comp-mgr-bonus-header-icon">
