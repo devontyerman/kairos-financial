@@ -1744,6 +1744,9 @@
     .ss-calc-roi .ss-calc-steps { grid-template-columns: minmax(220px, 340px); justify-content: start; }
     .ss-calc-steps.ss-calc-steps-4 { grid-template-columns: repeat(4, 1fr); }
     .ss-calc-results + .ss-calc-roi-result { margin-top: 1rem; }
+    @media (max-width: 960px) {
+      .comp-bonus-grid { grid-template-columns: 1fr !important; }
+    }
     @media (max-width: 860px) {
       .ss-calc-steps.ss-calc-steps-4 { grid-template-columns: 1fr 1fr; }
     }
@@ -2167,6 +2170,7 @@
       .ss-input[type="date"] { width: 100%; min-width: 0; max-width: 100%; -webkit-appearance: none; appearance: none; font-size: 0.85rem; }
       .perf-agent-kpis { grid-template-columns: 1fr 1fr; }
       .comp-columns { grid-template-columns: 1fr; }
+      .comp-bonus-grid { grid-template-columns: 1fr !important; }
       .comp-table thead th, .comp-table tbody td { padding: 0.65rem 1.25rem; font-size: 0.82rem; }
       .comp-card-header .comp-top-level { font-size: 1.4rem; }
 
@@ -2850,7 +2854,7 @@
         </div>
 
         <!-- 2. Bonuses — 3-column grid (Producer left, Carrier center, Manager right) -->
-        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:1.5rem; margin-top:2.5rem; align-items:start;">
+        <div class="comp-bonus-grid" style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:1.5rem; margin-top:2.5rem; align-items:start;">
           <div class="comp-bonus" style="background: #ffffff;">
             <div class="comp-bonus-header">
               <div class="comp-bonus-header-icon">
@@ -6360,7 +6364,7 @@
             '</div>' +
             '<div class="ss-calc-roi-row">' +
               '<span class="lbl">Backend at 9 months (25%)</span>' +
-              '<span class="val" style="color:#86efac;">' + fmt(backend) + '</span>' +
+              '<span class="val" style="color:#22c55e;">' + fmt(backend) + '</span>' +
             '</div>' +
           '</div>' +
           '<div class="ss-calc-roi-breakdown" style="margin-top:1rem;">' +
