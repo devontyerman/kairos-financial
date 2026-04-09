@@ -2033,7 +2033,7 @@
       letter-spacing: -0.02em;
     }
     .ss-calc-longterm-proj-value.year2 {
-      color: #1a1a1a;
+      color: #16a34a;
       text-shadow: none;
     }
     .ss-calc-longterm-proj-detail {
@@ -2731,7 +2731,7 @@
               <div class="ss-calc-step">
                 <span class="ss-calc-step-num">STEP 1</span>
                 <label class="ss-calc-step-label">How much do you want to NET this month (after lead costs)?</label>
-                <input class="ss-calc-input" type="text" id="cc_incomeGoal" inputmode="numeric" placeholder="$20,000" value="8,000" />
+                <input class="ss-calc-input" type="text" id="cc_incomeGoal" inputmode="numeric" placeholder="$20,000" />
               </div>
               <div class="ss-calc-step">
                 <span class="ss-calc-step-num">STEP 2</span>
@@ -6250,12 +6250,24 @@
         // Backend at 9 months = AP × comp × pers × 0.25 = upfront / 3
         const backend = upfront / 3;
 
+        if (netGoal <= 0) {
+          reqEl.textContent = '—';
+          upEl.textContent = '—';
+          backEl.textContent = '—';
+          roiOut.innerHTML = '<div class="msg placeholder">Enter your net income goal above to see your results.</div>';
+          longTermOut.classList.remove('visible');
+          longTermOut.innerHTML = '';
+          bonusOut.classList.remove('visible');
+          bonusOut.innerHTML = '';
+          return;
+        }
+
         reqEl.textContent = fmt(requiredAP);
         upEl.textContent = fmt(upfront);
         backEl.textContent = fmt(backend);
 
-        if (netGoal <= 0 || roiPct <= 0) {
-          roiOut.innerHTML = '<div class="msg placeholder">Enter your net income goal above to see your recommended lead budget.</div>';
+        if (roiPct <= 0) {
+          roiOut.innerHTML = '<div class="msg placeholder">Select your expected ROI to see your lead budget.</div>';
           longTermOut.classList.remove('visible');
           longTermOut.innerHTML = '';
           bonusOut.classList.remove('visible');
