@@ -4100,9 +4100,9 @@
             var today = new Date(); today.setHours(0,0,0,0);
             var effDate = new Date(data.effective_date + 'T00:00:00'); effDate.setHours(0,0,0,0);
             if (effDate.getTime() === today.getTime()) {
-              effectiveLine = '🔥 **Effective Immediately**';
+              effectiveLine = '📅 **Effective Immediately** 🔥';
             } else {
-              effectiveLine = '⏳ **Effective Date:** ' + data.effective_date;
+              effectiveLine = '📅 **Effective Date:** ' + data.effective_date + ' ⏳';
             }
           }
           const discordMsg = [
