@@ -4095,7 +4095,16 @@
           const statusEmoji = data.status === 'Approved' ? '✅' : data.status === 'Underwriting' ? '🔄' : '';
           const apFormatted = '$' + Number(data.annual_premium).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-          const effectiveLine = data.effective_date ? '\n📅 **Effective Date:** ' + data.effective_date : '';
+          var effectiveLine = '';
+          if (data.effective_date) {
+            var today = new Date(); today.setHours(0,0,0,0);
+            var effDate = new Date(data.effective_date + 'T00:00:00'); effDate.setHours(0,0,0,0);
+            if (effDate.getTime() === today.getTime()) {
+              effectiveLine = '\n🔥 **Effective Immediately**';
+            } else {
+              effectiveLine = '\n⏳ **Effective Date:** ' + data.effective_date;
+            }
+          }
           const discordMsg = [
             '💰 **NEW POLICY SIGNED** 💰',
             '',
