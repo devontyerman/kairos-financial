@@ -350,7 +350,7 @@
     .pcg-table tbody tr:hover { background: rgba(168,85,247,0.06); }
     .pcg-table tbody td { font-size: 0.8rem; padding: 0.55rem 0.85rem; text-align: center; border-bottom: 1px solid #eaeaef; color: #333333; white-space: nowrap; }
     .pcg-table tbody td:first-child { text-align: left; padding-left: 1.1rem; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; color: #4a4a5a; position: sticky; left: 0; background: #ffffff; z-index: 1; }
-    .pcg-table tbody tr:hover td:first-child { background: #1a1630; }
+    .pcg-table tbody tr:hover td:first-child { background: #f0f0f5; }
     .pcg-table tbody tr:last-child td { border-bottom: none; }
     .pcg-level-selector { background: #ffffff; border: 1px solid #ddd; border-radius: 12px; padding: 1.25rem; margin-bottom: 1.5rem; }
     .pcg-level-top { display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap; }
@@ -378,7 +378,7 @@
     .sh-carrier-card .phone { font-size: 0.78rem; color: #555555; }
     .sh-carrier-detail { display: none; max-width: 500px; margin: 0 auto; }
     .sh-carrier-detail.active { display: block; animation: ssFadeIn 0.3s ease; }
-    .sh-carrier-detail-card { background: #ffffff; border: 1px solid #ddd; border-radius: 18px; padding: 2rem; text-align: center; box-shadow: 0 8px 40px rgba(0,0,0,0.5), 0 0 50px rgba(88,28,135,0.2); }
+    .sh-carrier-detail-card { background: #ffffff; border: 1px solid #ddd; border-radius: 18px; padding: 2rem; text-align: center; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
     .sh-carrier-detail-name { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.6rem; font-weight: 900; color: #1a1a1a; margin-bottom: 0.25rem; }
     .sh-carrier-detail-divider { width: 60px; height: 3px; background: linear-gradient(90deg, #7c3aed, #a855f7); margin: 1rem auto; border-radius: 2px; }
     .sh-carrier-detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; text-align: left; }
@@ -432,7 +432,7 @@
     .perf-agent-bar-fill.green { background: linear-gradient(90deg, #22c55e, #4ade80); }
     .perf-agent-bar-fill.amber { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
     .perf-agent-bar-fill.red { background: linear-gradient(90deg, #ef4444, #f87171); }
-    .perf-agent-bar-val { position: absolute; left: 8px; top: 50%; transform: translateY(-50%); font-size: 0.65rem; font-weight: 800; color: #1a1a1a; white-space: nowrap; z-index: 1; text-shadow: 0 1px 4px rgba(0,0,0,0.8); }
+    .perf-agent-bar-val { position: absolute; left: 8px; top: 50%; transform: translateY(-50%); font-size: 0.65rem; font-weight: 800; color: #1a1a1a; white-space: nowrap; z-index: 1; text-shadow: 0 1px 2px rgba(0,0,0,0.4); }
     .perf-agent-status-row { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem; }
     .perf-agent-status-label { font-size: 0.78rem; font-weight: 600; color: #555555; width: 100px; }
     .perf-agent-status-bar { flex: 1; height: 10px; background: #ececf0; border-radius: 5px; overflow: hidden; }
@@ -547,7 +547,7 @@
       border: 1px solid #ddd;
       border-radius: 100px; cursor: pointer; transition: all 0.25s ease;
     }
-    .ss-lb-filter:hover { border-color: #b0b0b8; color: #1a1a1a; background: #140a22; box-shadow: 0 0 18px rgba(168,85,247,0.25); }
+    .ss-lb-filter:hover { border-color: #b0b0b8; color: #1a1a1a; background: #f0f0f5; box-shadow: 0 2px 6px rgba(0,0,0,0.06); }
     .ss-lb-filter.active {
       background: linear-gradient(135deg, #7c3aed, #a855f7);
       color: #ffffff; border-color: #4a4a5a; font-weight: 700;
@@ -562,13 +562,13 @@
       gap: 1rem;
       padding: 1rem 1.25rem;
       background: #ffffff;
-      border: 1px solid rgba(168,85,247,0.2);
+      border: 1px solid #ddd;
       border-radius: 14px;
       transition: all 0.3s ease;
       box-shadow: 0 2px 8px rgba(0,0,0,0.06);
     }
     .ss-lb-card:nth-child(even) { background: #f8f8fa; }
-    .ss-lb-card:hover { background: #f0ecf9; border-color: rgba(192,132,252,0.45); transform: translateX(6px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+    .ss-lb-card:hover { background: #f0ecf9; border-color: #c0c0c8; transform: translateX(6px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
 
     .ss-lb-card.rank-1 {
       background: linear-gradient(135deg, rgba(201,168,76,0.08) 0%, rgba(255,255,255,0.03) 100%);
@@ -771,7 +771,7 @@
       cursor: pointer;
       transition: all 0.2s ease;
     }
-    .ss-auth-prompt-btn.login { background: linear-gradient(135deg, #2563eb, #3b82f6); color: #1a1a1a; }
+    .ss-auth-prompt-btn.login { background: linear-gradient(135deg, #2563eb, #3b82f6); color: #ffffff; }
     .ss-auth-prompt-btn.login:hover { box-shadow: 0 4px 12px rgba(37,99,235,0.3); }
     .ss-auth-prompt-btn.signup { background: #f0f0f3; color: #333333; border: 1px solid #dcdce0; }
     .ss-auth-prompt-btn.signup:hover { color: #1a1a1a; border-color: #d0d0d5; }
@@ -988,16 +988,16 @@
     /* Alert popup */
     .ss-alert-overlay {
       display: none; position: fixed; inset: 0; z-index: 9997;
-      background: rgba(0,0,0,0.65); backdrop-filter: blur(8px);
+      background: rgba(0,0,0,0.3); backdrop-filter: blur(8px);
       align-items: center; justify-content: center;
     }
     .ss-alert-overlay.open { display: flex; }
     .ss-alert-box {
-      background: #1a1f2e; border-radius: 16px; padding: 2rem;
-      max-width: 500px; width: 92%; border: 1px solid rgba(56,120,255,0.15);
+      background: #ffffff; border-radius: 16px; padding: 2rem;
+      max-width: 500px; width: 92%; border: 1px solid #ddd;
       animation: ssModalPop 0.3s ease;
     }
-    .ss-alert-box.warning { border-color: rgba(234,179,8,0.3); }
+    .ss-alert-box.warning { border-color: #e0e0e5; }
     .ss-alert-box.danger { border-color: rgba(239,68,68,0.3); }
     .ss-alert-icon { width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; font-size: 1.6rem; }
     .ss-alert-box.warning .ss-alert-icon { background: rgba(234,179,8,0.12); border: 2px solid rgba(234,179,8,0.25); }
@@ -1191,7 +1191,7 @@
       cursor: pointer;
       transition: all 0.2s ease;
     }
-    .mp-export-btn:hover { background: #140a22; border-color: rgba(168,85,247,0.55); box-shadow: 0 0 16px rgba(168,85,247,0.3); }
+    .mp-export-btn:hover { background: #f0f0f5; border-color: #c0c0c8; box-shadow: 0 2px 6px rgba(0,0,0,0.06); }
     .mp-export-btn svg { color: #4a4a5a; }
     .mp-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.3rem; font-weight: 900; color: #1a1a1a; }
     .mp-count { font-size: 0.78rem; color: #222222; }
@@ -1202,7 +1202,7 @@
       color: #444444; background: #ffffff; border: 1px solid #ddd;
       border-radius: 100px; cursor: pointer; transition: all 0.2s ease;
     }
-    .mp-filter:hover { border-color: #b0b0b8; color: #1a1a1a; background: #140a22; box-shadow: 0 0 16px rgba(168,85,247,0.25); }
+    .mp-filter:hover { border-color: #b0b0b8; color: #1a1a1a; background: #f0f0f5; box-shadow: 0 2px 6px rgba(0,0,0,0.06); }
     .mp-filter.active { background: linear-gradient(135deg, #7c3aed, #a855f7); color: #1a1a1a; border-color: #4a4a5a; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
     /* Status filter buttons match their status color when active */
     .mp-sf-uw.active { background: linear-gradient(135deg, #ea580c, #f97316); border-color: #c2410c; box-shadow: 0 4px 18px rgba(249,115,22,0.5); }
@@ -1224,7 +1224,7 @@
       background-repeat: no-repeat;
       background-position: right 0.7rem center;
     }
-    .mp-range-dropdown:hover { border-color: #b0b0b8; box-shadow: 0 0 16px rgba(168,85,247,0.25); }
+    .mp-range-dropdown:hover { border-color: #b0b0b8; box-shadow: 0 2px 6px rgba(0,0,0,0.06); }
     .mp-range-dropdown:focus { outline: none; border-color: #4a4a5a; box-shadow: 0 0 0 3px rgba(37,99,235,0.15); }
     .mp-range-dropdown option { background: #ffffff; color: #1a1a1a; }
 
@@ -1296,7 +1296,7 @@
       cursor: pointer;
       transition: all 0.2s ease;
     }
-    .mp-page-btn:hover:not(:disabled) { background: #140a22; border-color: #b0b0b8; box-shadow: 0 0 16px rgba(168,85,247,0.25); }
+    .mp-page-btn:hover:not(:disabled) { background: #f0f0f5; border-color: #b0b0b8; box-shadow: 0 2px 6px rgba(0,0,0,0.06); }
     .mp-page-btn:disabled { opacity: 0.35; cursor: not-allowed; }
     .mp-page-info {
       font-size: 0.78rem;
@@ -1544,7 +1544,7 @@
     .ss-milestone-box.tier-week5k .ss-milestone-tier { background: rgba(59,130,246,0.18); border-color: rgba(59,130,246,0.4); color: #93c5fd; }
 
     .ss-milestone-box.tier-week10k {
-      border-color: rgba(168,85,247,0.55);
+      border-color: #c0c0c8;
       box-shadow: 0 30px 80px rgba(0,0,0,0.6), 0 0 70px rgba(168,85,247,0.35);
     }
     .ss-milestone-box.tier-week10k .ss-milestone-glow { background: radial-gradient(ellipse at center, rgba(168,85,247,0.3) 0%, transparent 60%); }
@@ -1677,7 +1677,7 @@
       font-family: 'Inter', sans-serif;
       color: #1a1a1a;
       background: rgba(168,85,247,0.05);
-      border: 1px solid rgba(168,85,247,0.2);
+      border: 1px solid #ddd;
       border-radius: var(--radius-md);
       transition: all 0.2s ease;
       box-sizing: border-box;
@@ -2089,13 +2089,13 @@
       font-size: 1.1rem; font-weight: 900;
       color: #555555;
       background: #ffffff;
-      border: 1px solid rgba(168,85,247,0.2);
+      border: 1px solid #ddd;
       border-radius: 8px;
       cursor: pointer;
       transition: all 0.2s ease;
       letter-spacing: 2px;
     }
-    .mp-more-btn:hover { color: #1a1a1a; border-color: #b0b0b8; background: #140a22; }
+    .mp-more-btn:hover { color: #1a1a1a; border-color: #b0b0b8; background: #f0f0f5; }
     .mp-more-menu {
       display: none;
       position: absolute;
@@ -2137,7 +2137,7 @@
     }
     .mp-edit-overlay.open { display: flex; }
     .mp-edit-modal {
-      background: #1a1f2e; border: 1px solid rgba(56,120,255,0.15); border-radius: 16px;
+      background: #ffffff; border: 1px solid #ddd; border-radius: 16px;
       padding: 2rem; max-width: 480px; width: 92%; animation: ssModalPop 0.3s ease;
     }
     .mp-edit-modal h3 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.1rem; font-weight: 800; color: #1a1a1a; margin-bottom: 1.25rem; }
@@ -2148,7 +2148,7 @@
       background: #f0f0f3; border: 1px solid #dcdce0; border-radius: 6px;
     }
     .mp-edit-field input:focus, .mp-edit-field select:focus { outline: none; border-color: #1d4ed8; }
-    .mp-edit-field select option { background: #1a1f2e; }
+    .mp-edit-field select option { background: #ffffff; }
     .mp-edit-btns { display: flex; gap: 0.75rem; margin-top: 1.25rem; grid-column: 1 / -1; }
     .mp-edit-btns button {
       flex: 1; padding: 0.6rem; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.85rem;
@@ -6076,9 +6076,9 @@
 
       // Legend
       let legend = '<div style="display:flex;gap:1.2rem;justify-content:center;margin-bottom:0.75rem;font-size:0.68rem;">';
-      legend += '<span style="display:flex;align-items:center;gap:0.3rem;color:rgba(255,255,255,0.6);"><span style="width:14px;height:3px;border-radius:2px;background:' + lineColor + ';display:inline-block;"></span> Your Production</span>';
-      legend += '<span style="display:flex;align-items:center;gap:0.3rem;color:rgba(255,255,255,0.4);"><span style="width:14px;height:2px;border-radius:2px;background:' + lineColor + ';opacity:0.4;display:inline-block;border-top:1px dashed ' + lineColor + ';"></span> Projected Pace</span>';
-      if (goal > 0) legend += '<span style="display:flex;align-items:center;gap:0.3rem;color:rgba(255,255,255,0.6);"><span style="width:14px;height:3px;border-radius:2px;background:#fbbf24;display:inline-block;"></span> Goal</span>';
+      legend += '<span style="display:flex;align-items:center;gap:0.3rem;color:#666;"><span style="width:14px;height:3px;border-radius:2px;background:' + lineColor + ';display:inline-block;"></span> Your Production</span>';
+      legend += '<span style="display:flex;align-items:center;gap:0.3rem;color:#999;"><span style="width:14px;height:2px;border-radius:2px;background:' + lineColor + ';opacity:0.4;display:inline-block;border-top:1px dashed ' + lineColor + ';"></span> Projected Pace</span>';
+      if (goal > 0) legend += '<span style="display:flex;align-items:center;gap:0.3rem;color:#666;"><span style="width:14px;height:3px;border-radius:2px;background:#fbbf24;display:inline-block;"></span> Goal</span>';
       legend += '</div>';
 
       chartArea.innerHTML = svg + legend + kpis + monthly;
