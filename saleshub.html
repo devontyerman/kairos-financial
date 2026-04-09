@@ -49,7 +49,7 @@
 
     /* Hide the top nav entirely on the Sales Hub page */
     .nav, .nav.scrolled { display: none !important; }
-    .nav-mobile { top: 0 !important; z-index: 999; }
+    .nav-mobile { top: 0 !important; z-index: 1001; }
 
     /* Footer: transparent so the background shows through seamlessly */
     .footer { background: transparent !important; border-top: none !important; }
@@ -3863,7 +3863,10 @@
             ssSidebar.style.top = '0';
             ssSidebar.style.left = '0';
             ssSidebar.style.right = '0';
-            mobileNavEl.style.top = ssSidebar.offsetHeight + 'px';
+            // Wait for reflow before measuring height
+            requestAnimationFrame(() => {
+              mobileNavEl.style.top = ssSidebar.offsetHeight + 'px';
+            });
           }
           mobileNavEl.classList.add('open');
           document.body.style.overflow = 'hidden';
