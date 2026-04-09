@@ -462,10 +462,7 @@
       border-radius: 18px;
       padding: 2rem;
       grid-column: 1 / -1;
-      box-shadow:
-        0 8px 40px rgba(0,0,0,0.5),
-        0 0 0 1px rgba(168,85,247,0.12),
-        0 0 60px rgba(88,28,135,0.25);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
       position: relative;
       overflow: hidden;
     }
@@ -2593,8 +2590,8 @@
 
         <!-- DAILY KPI FORM (above sale form) -->
         <div class="ss-form-wrap" id="kpiFormWrap" style="display:none;margin-bottom:2.5rem;">
-          <div class="ss-form-card" style="padding:1.5rem;background:#ffffff;border:1px solid #ddd;box-shadow:0 2px 8px rgba(0,0,0,0.06);">
-            <div class="ss-form-title" style="margin-bottom:1rem;color:#2563eb;">
+          <div class="ss-form-card">
+            <div class="ss-form-title" style="color:#2563eb;">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
               Daily KPIs
             </div>
@@ -2642,7 +2639,7 @@
         <!-- Sale form -->
         <div class="ss-form-wrap">
         <form class="ss-form-card" id="saleForm">
-          <div class="ss-form-title">
+          <div class="ss-form-title" style="color:#15803d;">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
             New Sale
           </div>
