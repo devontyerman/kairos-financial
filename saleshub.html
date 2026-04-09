@@ -422,7 +422,7 @@
     .perf-agent-kpi-sub { font-size: 0.7rem; color: #666666; margin-top: 0.2rem; }
     .perf-agent-kpi.up .perf-agent-kpi-value { color: #1a1a1a; }
     .perf-agent-kpi.down .perf-agent-kpi-value { color: #dc2626; }
-    .perf-agent-section { background: #fafafa; border: 1px solid #e5e5ea; border-radius: 14px; padding: 1.25rem; margin-bottom: 1rem; }
+    .perf-agent-section { background: #ffffff; border: 1px solid #e5e5ea; border-radius: 14px; padding: 1.25rem; margin-bottom: 1rem; }
     .perf-agent-section-title { font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: #777; margin-bottom: 0.85rem; }
     .perf-agent-bar-row { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.45rem; }
     .perf-agent-bar-label { width: 80px; font-size: 0.72rem; font-weight: 700; color: #444444; text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -2188,7 +2188,7 @@
       .ss-sidebar-logo .logo-sales,
       .ss-sidebar-logo .logo-hub {
         font-size: 1.3rem;
-        text-shadow: 0 0 12px rgba(255,255,255,0.25), 0 0 30px rgba(168,85,247,0.15);
+        text-shadow: none;
       }
       .ss-sidebar-header { position: relative; }
       .ss-sidebar-hamburger { display: flex; }
@@ -4484,7 +4484,7 @@
         statusRow('Underwriting', uwCount, uwPct, 'uw') +
         statusRow('Approved', appCount, appPct, 'app') +
         statusRow('Issue Paid', paidCount, paidPct, 'paid') +
-        '<div style="margin-top:0.6rem;font-size:0.72rem;color:rgba(255,255,255,0.4);">' + paidCount + ' of ' + ytd.length + ' policies issued — ' + paidPct + '% placement rate</div>';
+        '<div style="margin-top:0.6rem;font-size:0.72rem;color:#888;">' + paidCount + ' of ' + ytd.length + ' policies issued — ' + paidPct + '% placement rate</div>';
 
       // ── Monthly Trend ──
       const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
@@ -4618,7 +4618,7 @@
         return '<div class="perf-agent-status-row"><div class="perf-agent-status-label">' + label + '</div><div class="perf-agent-status-bar"><div class="perf-agent-status-fill ' + cls + '" style="width:' + pctVal + '%"></div></div><div class="perf-agent-status-pct">' + pctVal + '%</div></div>';
       }
 
-      let html = '<div style="margin-bottom:0.5rem;font-size:0.7rem;color:rgba(255,255,255,0.4);">' + days + ' calendar day' + (days !== 1 ? 's' : '') + ' · ' + filtered.length + ' reported' + excludeLabel + '</div>';
+      let html = '<div style="margin-bottom:0.5rem;font-size:0.7rem;color:#888;">' + days + ' calendar day' + (days !== 1 ? 's' : '') + ' · ' + filtered.length + ' reported' + excludeLabel + '</div>';
       html += '<div class="perf-agent-kpis" style="margin-bottom:1rem;">';
       html += agentKpi('Avg Dials/Day', Math.round(totalDials / days), totalDials + ' total');
       html += agentKpi('Avg Answers/Day', Math.round(totalAnswers / days), totalAnswers + ' total');
@@ -4635,7 +4635,7 @@
       html += statusRow('Answers → Appts', totalAppts, pctFn(totalAppts, totalAnswers).replace('%',''), 'app');
       html += statusRow('Appts → Presentations', totalPres, pctFn(totalPres, totalAppts).replace('%',''), 'paid');
       html += statusRow('Presentations → Deals', totalDeals, pctFn(totalDeals, totalPres).replace('%',''), 'app');
-      html += '<div style="margin-top:0.6rem;font-size:0.72rem;color:rgba(255,255,255,0.4);">Overall: ' + pctFn(totalDeals, totalDials) + ' of dials convert to deals</div>';
+      html += '<div style="margin-top:0.6rem;font-size:0.72rem;color:#888;">Overall: ' + pctFn(totalDeals, totalDials) + ' of dials convert to deals</div>';
 
       // ── Daily Breakdown (only for short ranges) ──
       if (['wtd','mtd','lastweek','lastmonth'].includes(range)) {
@@ -4678,7 +4678,7 @@
             weekLabel.setDate(weekLabel.getDate() + mondayOffset);
             const wkLabel = 'Week of ' + (weekLabel.getMonth() + 1) + '/' + weekLabel.getDate();
             tableRows += '<tr><td colspan="10" style="padding:0.75rem 0.4rem 0.35rem;font-size:0.7rem;font-weight:800;color:rgba(59,130,246,0.7);text-transform:uppercase;letter-spacing:0.08em;border-top:2px solid rgba(59,130,246,0.15);">' + wkLabel + '</td></tr>';
-            tableRows += '<tr style="border-bottom:1px solid rgba(255,255,255,0.1);"><th style="' + thStyle + '">Day</th><th style="' + thStyle + '">Date</th><th style="' + thStyle + '">Dials</th><th style="' + thStyle + '">Ans</th><th style="' + thStyle + '">Appts</th><th style="' + thStyle + '">Pres</th><th style="' + thStyle + '">Deals</th><th style="' + thStyle + '">Spend</th><th style="' + thStyle + '">Dep</th><th style="' + thStyle + '">ROI</th></tr>';
+            tableRows += '<tr style="border-bottom:1px solid #e5e5ea;"><th style="' + thStyle + '">Day</th><th style="' + thStyle + '">Date</th><th style="' + thStyle + '">Dials</th><th style="' + thStyle + '">Ans</th><th style="' + thStyle + '">Appts</th><th style="' + thStyle + '">Pres</th><th style="' + thStyle + '">Deals</th><th style="' + thStyle + '">Spend</th><th style="' + thStyle + '">Dep</th><th style="' + thStyle + '">ROI</th></tr>';
           }
           lastWeekNum = weekNum;
 
@@ -4689,7 +4689,7 @@
           if (row) {
             const dSpend = parseFloat(row.lead_spend || 0);
             const dDep = parseFloat(row.deposits || 0);
-            tableRows += '<tr><td style="' + tdStyle + 'font-weight:700;">' + dayLabel + '</td><td style="' + tdStyle + 'color:rgba(255,255,255,0.45);">' + dateLabel + '</td><td style="' + tdStyle + '">' + (row.dials || 0) + '</td><td style="' + tdStyle + '">' + (row.answers || 0) + '</td><td style="' + tdStyle + '">' + (row.appointments || 0) + '</td><td style="' + tdStyle + '">' + (row.presentations || 0) + '</td><td style="' + tdStyle + '">' + (row.deals || 0) + '</td><td style="' + tdStyle + '">$' + Math.round(dSpend) + '</td><td style="' + tdStyle + '">$' + Math.round(dDep) + '</td><td style="' + tdStyle + '"></td></tr>';
+            tableRows += '<tr><td style="' + tdStyle + 'font-weight:700;">' + dayLabel + '</td><td style="' + tdStyle + 'color:#888;">' + dateLabel + '</td><td style="' + tdStyle + '">' + (row.dials || 0) + '</td><td style="' + tdStyle + '">' + (row.answers || 0) + '</td><td style="' + tdStyle + '">' + (row.appointments || 0) + '</td><td style="' + tdStyle + '">' + (row.presentations || 0) + '</td><td style="' + tdStyle + '">' + (row.deals || 0) + '</td><td style="' + tdStyle + '">$' + Math.round(dSpend) + '</td><td style="' + tdStyle + '">$' + Math.round(dDep) + '</td><td style="' + tdStyle + '"></td></tr>';
             weekTotals.dials += (row.dials || 0);
             weekTotals.answers += (row.answers || 0);
             weekTotals.appts += (row.appointments || 0);
@@ -4699,7 +4699,7 @@
             weekTotals.dep += dDep;
             weekHasData = true;
           } else {
-            tableRows += '<tr style="opacity:0.3;"><td style="' + tdStyle + 'font-weight:700;">' + dayLabel + '</td><td style="' + tdStyle + 'color:rgba(255,255,255,0.45);">' + dateLabel + '</td><td style="' + tdStyle + '">—</td><td style="' + tdStyle + '">—</td><td style="' + tdStyle + '">—</td><td style="' + tdStyle + '">—</td><td style="' + tdStyle + '">—</td><td style="' + tdStyle + '">—</td><td style="' + tdStyle + '">—</td><td style="' + tdStyle + '"></td></tr>';
+            tableRows += '<tr style="opacity:0.3;"><td style="' + tdStyle + 'font-weight:700;">' + dayLabel + '</td><td style="' + tdStyle + 'color:#888;">' + dateLabel + '</td><td style="' + tdStyle + '">—</td><td style="' + tdStyle + '">—</td><td style="' + tdStyle + '">—</td><td style="' + tdStyle + '">—</td><td style="' + tdStyle + '">—</td><td style="' + tdStyle + '">—</td><td style="' + tdStyle + '">—</td><td style="' + tdStyle + '"></td></tr>';
           }
           walkDate.setDate(walkDate.getDate() + 1);
         }
@@ -4711,8 +4711,8 @@
         const gtStyle = 'padding:0.6rem 0.4rem;font-weight:900;border-top:3px solid rgba(168,85,247,0.4);background:rgba(168,85,247,0.08);';
         tableRows += '<tr style="color:#4a4a5a;"><td style="' + gtStyle + '">TOTAL</td><td style="' + gtStyle + '"></td><td style="' + gtStyle + '">' + totalDials + '</td><td style="' + gtStyle + '">' + totalAnswers + '</td><td style="' + gtStyle + '">' + totalAppts + '</td><td style="' + gtStyle + '">' + totalPres + '</td><td style="' + gtStyle + '">' + totalDeals + '</td><td style="' + gtStyle + '">$' + Math.round(totalSpend) + '</td><td style="' + gtStyle + '">$' + Math.round(totalDeposits) + '</td><td style="' + gtStyle + '">' + grandRoi + '</td></tr>';
 
-        html += '<div style="margin-top:1.5rem;overflow-x:auto;background:rgba(10,14,28,0.7);border:1px solid rgba(59,130,246,0.1);border-radius:12px;padding:1rem;"><div style="margin-bottom:0.6rem;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:rgba(255,255,255,0.45);">Daily Breakdown</div>';
-        html += '<table style="width:100%;border-collapse:collapse;font-size:0.82rem;min-width:650px;color:#fff;"><thead><tr style="border-bottom:1px solid rgba(255,255,255,0.1);">';
+        html += '<div style="margin-top:1.5rem;overflow-x:auto;background:#f8f8fa;border:1px solid #ddd;border-radius:12px;padding:1rem;"><div style="margin-bottom:0.6rem;font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#888;">Daily Breakdown</div>';
+        html += '<table style="width:100%;border-collapse:collapse;font-size:0.82rem;min-width:650px;color:#1a1a1a;"><thead><tr style="border-bottom:1px solid #e5e5ea;">';
         html += '<th style="' + thStyle + '">Day</th>';
         html += '<th style="' + thStyle + '">Date</th>';
         html += '<th style="' + thStyle + '">Dials</th>';
@@ -5421,7 +5421,7 @@
         if (phone) {
           html += '<td data-label="Phone"><a href="tel:' + phoneDigitsOnly + '" class="mp-phone-link">' + esc(phone) + '</a></td>';
         } else {
-          html += '<td data-label="Phone" style="color:rgba(255,255,255,0.4);">No number</td>';
+          html += '<td data-label="Phone" style="color:#888;">No number</td>';
         }
         html += '<td class="mp-ap" data-label="AP">$' + ap.toLocaleString('en-US', { minimumFractionDigits: 0 }) + '</td>';
         html += '<td data-label="Carrier">' + esc(row.carrier) + '</td>';
@@ -6445,9 +6445,9 @@
           '<div style="margin-top:1.25rem; padding:1.15rem; background:linear-gradient(135deg,rgba(74,222,128,0.1),rgba(34,197,94,0.04)); border:1px solid rgba(74,222,128,0.3); border-radius:12px; text-align:center;">' +
             '<div style="font-family:\'Plus Jakarta Sans\',sans-serif; font-size:0.66rem; font-weight:800; letter-spacing:0.14em; text-transform:uppercase; color:#86efac; margin-bottom:0.5rem;">Combined Annual Income</div>' +
             '<div style="font-family:\'Plus Jakarta Sans\',sans-serif; font-size:2.2rem; font-weight:900; color:#4ade80; text-shadow:0 0 24px rgba(74,222,128,0.55); letter-spacing:-0.02em;">' + fmt(personalAnnualIncome + annualTotalWithBonus) + '</div>' +
-            '<div style="font-size:0.75rem; color:rgba(255,255,255,0.65); margin-top:0.35rem;">Personal earnings + Leadership overrides' + (teamBonusQualified ? ' + Team bonus' : '') + '</div>' +
+            '<div style="font-size:0.75rem; color:#555; margin-top:0.35rem;">Personal earnings + Leadership overrides' + (teamBonusQualified ? ' + Team bonus' : '') + '</div>' +
           '</div>' +
-          '<p style="font-size:0.68rem; color:rgba(255,255,255,0.45); margin-top:0.75rem; line-height:1.5; text-align:center;">These numbers are based on agency averages analyzed from thousands of agent data points. Your own results may vary, but this is a good estimate of what to expect.</p>';
+          '<p style="font-size:0.68rem; color:#888; margin-top:0.75rem; line-height:1.5; text-align:center;">These numbers are based on agency averages analyzed from thousands of agent data points. Your own results may vary, but this is a good estimate of what to expect.</p>';
       }
 
       computeCommission();
