@@ -4134,15 +4134,16 @@
           function check() {
             if (allModalsClosed()) {
               setTimeout(async () => {
-                await loadGoalTracker(true);
-                // Clone the goal tracker into the popup overlay
                 const gt = document.getElementById('goalTracker');
                 const popupContent = document.getElementById('goalPopupContent');
                 if (gt && popupContent) {
-                  popupContent.innerHTML = gt.outerHTML;
-                  // Make the cloned tracker visible
-                  const cloned = popupContent.querySelector('.ss-goal-tracker');
-                  if (cloned) { cloned.classList.add('visible'); cloned.style.margin = '0'; }
+                  // Move the actual goal tracker into the overlay
+                  gt._originalParent = gt.parentNode;
+                  popupContent.appendChild(gt);
+                  gt.classList.add('visible');
+                  gt.style.margin = '0';
+                  // Now load fresh data with animation
+                  await loadGoalTracker(true);
                   document.getElementById('goalOverlay').classList.add('open');
                 }
               }, 400);
@@ -4902,12 +4903,19 @@
       if (e.target.id === 'milestoneOverlay') e.target.classList.remove('open');
     });
 
-    // Goal tracker popup close
-    document.getElementById('goalOverlayClose').addEventListener('click', () => {
+    // Goal tracker popup close — move tracker back to its panel
+    function closeGoalOverlay() {
       document.getElementById('goalOverlay').classList.remove('open');
-    });
+      const gt = document.getElementById('goalTracker');
+      if (gt && gt._originalParent) {
+        gt._originalParent.appendChild(gt);
+        gt.style.margin = '';
+        delete gt._originalParent;
+      }
+    }
+    document.getElementById('goalOverlayClose').addEventListener('click', closeGoalOverlay);
     document.getElementById('goalOverlay').addEventListener('click', (e) => {
-      if (e.target.id === 'goalOverlay') e.target.classList.remove('open');
+      if (e.target.id === 'goalOverlay') closeGoalOverlay();
     });
 
     function fireConfetti() {
