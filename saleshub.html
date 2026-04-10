@@ -5838,10 +5838,28 @@
             updateAuthUI();
             e.target.reset();
             btn.disabled = false;
+            // Show welcome success modal
+            modalIcon.className = 'ss-modal-icon success';
+            modalIcon.innerHTML = '<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+            modalTitle.textContent = 'Welcome to Sales Hub!';
+            modalAP.style.display = 'none';
+            modalSub.textContent = "Your account has been created and you're signed in. You're all set to start submitting deals and tracking your KPIs.";
+            modalBtns.innerHTML = '<button class="ss-modal-btn primary" id="signupWelcomeClose">Let\'s Go</button>';
+            modal.classList.add('open');
+            document.getElementById('signupWelcomeClose').addEventListener('click', () => { modal.classList.remove('open'); });
             return;
           }
-          showSignupMsg('Account created! Check your email to confirm, then log in to start submitting deals.', 'success');
+          // Email confirmation required — close signup overlay and show a visible success modal
           e.target.reset();
+          signupOverlay.classList.remove('open');
+          modalIcon.className = 'ss-modal-icon success';
+          modalIcon.innerHTML = '<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>';
+          modalTitle.textContent = 'Check Your Email!';
+          modalAP.style.display = 'none';
+          modalSub.innerHTML = 'Your account was created successfully. We just sent a confirmation link to <strong>' + email.replace(/</g,'&lt;') + '</strong>. Click the link in that email, then come back and log in to start submitting deals.';
+          modalBtns.innerHTML = '<button class="ss-modal-btn primary" id="signupSuccessClose">Got It</button>';
+          modal.classList.add('open');
+          document.getElementById('signupSuccessClose').addEventListener('click', () => { modal.classList.remove('open'); });
         } else {
           const errMsg = result.error_description || result.msg || result.error || ('Signup failed (HTTP ' + res.status + '). Please try again.');
           console.error('Signup failed:', res.status, result);
