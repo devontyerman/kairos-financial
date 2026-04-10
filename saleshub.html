@@ -1590,6 +1590,59 @@
     }
 
     /* ── Calculator Sections ── */
+    /* ─── Commission Pipeline ─── */
+    .ss-pipeline-card {
+      max-width: 900px;
+      margin: 0 auto 2rem;
+      background: #ffffff;
+      border: 1px solid #ddd;
+      border-radius: 18px;
+      padding: 1.75rem 2rem;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    }
+    .ss-pipeline-title {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1.1rem; font-weight: 800; color: #1a1a1a;
+      margin-bottom: 1.25rem;
+      display: flex; align-items: center; gap: 0.55rem;
+    }
+    .ss-pipeline-title svg { color: #16a34a; }
+    .ss-pipeline-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+    }
+    .ss-pipeline-stat {
+      background: #f5f5f8;
+      border: 1px solid #e0e0e5;
+      border-radius: 12px;
+      padding: 1.25rem 1.4rem;
+    }
+    .ss-pipeline-stat-label {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.72rem; font-weight: 800;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: #555;
+      margin-bottom: 0.4rem;
+    }
+    .ss-pipeline-stat-value {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1.8rem; font-weight: 900;
+      color: #1a1a1a;
+      letter-spacing: -0.02em;
+      line-height: 1;
+    }
+    .ss-pipeline-stat-value.green { color: #16a34a; }
+    .ss-pipeline-stat-sub {
+      font-size: 0.72rem; color: #777; margin-top: 0.4rem;
+    }
+    .ss-pipeline-empty {
+      text-align: center; padding: 0.5rem; color: #777; font-size: 0.85rem;
+    }
+    @media (max-width: 600px) {
+      .ss-pipeline-grid { grid-template-columns: 1fr; }
+    }
+
     .ss-calc-wrap {
       max-width: 900px;
       margin: 2.5rem auto 0;
@@ -2753,6 +2806,28 @@
     <!-- ═══ COMMISSION CALCULATOR PANEL ═══ -->
     <div class="ss-panel" id="panel-calculator">
       <div style="padding: 2.5rem 1.5rem;">
+
+        <!-- ═══ COMMISSION PIPELINE ═══ -->
+        <div class="ss-pipeline-card" id="commissionPipeline">
+          <div class="ss-pipeline-title">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+            Commission Pipeline
+          </div>
+          <div class="ss-pipeline-grid">
+            <div class="ss-pipeline-stat">
+              <div class="ss-pipeline-stat-label">Total Paid</div>
+              <div class="ss-pipeline-stat-value green" id="pipelinePaid">—</div>
+              <div class="ss-pipeline-stat-sub" id="pipelinePaidSub">Sum of deposits entered</div>
+            </div>
+            <div class="ss-pipeline-stat">
+              <div class="ss-pipeline-stat-label">Total Pending</div>
+              <div class="ss-pipeline-stat-value" id="pipelinePending">—</div>
+              <div class="ss-pipeline-stat-sub" id="pipelinePendingSub">Unpaid commission owed</div>
+            </div>
+          </div>
+          <div class="ss-pipeline-empty" id="pipelineEmpty" style="display:none;">Sign in to view your commission pipeline.</div>
+        </div>
+
         <div class="ss-calc-wrap">
           <div class="ss-calc-card" id="commissionCalc">
             <div class="ss-calc-title">
@@ -3164,50 +3239,38 @@
         <div class="pcg-pills" id="pcgPills">
           <button class="pcg-pill active" data-target="americo"><span class="pcg-pill-dot" style="background:#c0392b"></span>Americo</button>
           <button class="pcg-pill" data-target="aetna"><span class="pcg-pill-dot" style="background:#7b2d8e"></span>Aetna</button>
-          <button class="pcg-pill" data-target="aflac"><span class="pcg-pill-dot" style="background:#009cde"></span>Aflac</button>
           <button class="pcg-pill" data-target="american-amicable"><span class="pcg-pill-dot" style="background:#2e5090"></span>American Amicable</button>
           <button class="pcg-pill" data-target="chubb"><span class="pcg-pill-dot" style="background:#8e3a6d"></span>Chubb</button>
           <button class="pcg-pill" data-target="corebridge"><span class="pcg-pill-dot" style="background:#5b6abf"></span>Corebridge</button>
           <button class="pcg-pill" data-target="ethos"><span class="pcg-pill-dot" style="background:#2d8c4e"></span>Ethos</button>
           <button class="pcg-pill" data-target="foresters"><span class="pcg-pill-dot" style="background:#e8a020"></span>Foresters</button>
           <button class="pcg-pill" data-target="instabrain"><span class="pcg-pill-dot" style="background:#e05a2b"></span>InstaBrain</button>
-          <button class="pcg-pill" data-target="ladder-life"><span class="pcg-pill-dot" style="background:#e74c3c"></span>Ladder Life</button>
-          <button class="pcg-pill" data-target="liberty-bankers"><span class="pcg-pill-dot" style="background:#b8860b"></span>Liberty Bankers</button>
           <button class="pcg-pill" data-target="mutual-of-omaha"><span class="pcg-pill-dot" style="background:#004b8d"></span>Mutual of Omaha</button>
           <button class="pcg-pill" data-target="nlg"><span class="pcg-pill-dot" style="background:#1a6b3c"></span>NLG</button>
           <button class="pcg-pill" data-target="royal-neighbors"><span class="pcg-pill-dot" style="background:#2e7d32"></span>Royal Neighbors</button>
           <button class="pcg-pill" data-target="transamerica"><span class="pcg-pill-dot" style="background:#8b1a1a"></span>Transamerica</button>
-          <button class="pcg-pill" data-target="united-home-life"><span class="pcg-pill-dot" style="background:#3c6478"></span>United Home Life</button>
         </div>
 
         <!-- AETNA -->
         <div class="pcg-carrier" data-pcg="aetna">
           <div class="pcg-carrier-header"><div class="pcg-carrier-dot" style="background:#7b2d8e"></div><div class="pcg-carrier-name">Aetna</div></div>
-          <div class="pcg-table-wrap"><div class="pcg-table-scroll"><table class="pcg-table"><thead><tr><th>Level</th><th>Whole Life</th><th>Final EX</th></tr></thead><tbody>
-            <tr><td>145</td><td>-</td><td>-</td></tr><tr><td>140</td><td>144%</td><td>123%</td></tr><tr><td>135</td><td>137%</td><td>118%</td></tr><tr><td>130</td><td>130%</td><td>113%</td></tr><tr><td>125</td><td>125%</td><td>108%</td></tr><tr><td>120</td><td>120%</td><td>100%</td></tr><tr><td>115</td><td>115%</td><td>93%</td></tr><tr><td>110</td><td>107.5%</td><td>85%</td></tr><tr><td>105</td><td>100%</td><td>78%</td></tr><tr><td>100</td><td>92.5%</td><td>70%</td></tr><tr><td>95</td><td>85%</td><td>70%</td></tr><tr><td>90</td><td>77.5%</td><td>70%</td></tr><tr><td>85</td><td>70%</td><td>63%</td></tr><tr><td>80</td><td>70%</td><td>63%</td></tr><tr><td>75</td><td>70%</td><td>63%</td></tr><tr><td>70</td><td>70%</td><td>63%</td></tr><tr><td>65</td><td>70%</td><td>63%</td></tr>
-          </tbody></table></div></div>
-        </div>
-
-        <!-- AFLAC -->
-        <div class="pcg-carrier" data-pcg="aflac">
-          <div class="pcg-carrier-header"><div class="pcg-carrier-dot" style="background:#009cde"></div><div class="pcg-carrier-name">Aflac</div></div>
-          <div class="pcg-table-wrap"><div class="pcg-table-scroll"><table class="pcg-table"><thead><tr><th>Level</th><th>Senior/Family Choice</th></tr></thead><tbody>
-            <tr><td>145</td><td>125%</td></tr><tr><td>140</td><td>125%</td></tr><tr><td>135</td><td>120%</td></tr><tr><td>130</td><td>115%</td></tr><tr><td>125</td><td>110%</td></tr><tr><td>120</td><td>105%</td></tr><tr><td>115</td><td>100%</td></tr><tr><td>110</td><td>95%</td></tr><tr><td>105</td><td>90%</td></tr><tr><td>100</td><td>85%</td></tr><tr><td>95</td><td>80%</td></tr><tr><td>90</td><td>75%</td></tr><tr><td>85</td><td>65%</td></tr><tr><td>80</td><td>65%</td></tr><tr><td>75</td><td>60%</td></tr><tr><td>70</td><td>55%</td></tr><tr><td>65</td><td>50%</td></tr>
+          <div class="pcg-table-wrap"><div class="pcg-table-scroll"><table class="pcg-table"><thead><tr><th>Level</th><th>Whole Life</th></tr></thead><tbody>
+            <tr><td>145</td><td>-</td></tr><tr><td>140</td><td>144%</td></tr><tr><td>135</td><td>137%</td></tr><tr><td>130</td><td>130%</td></tr><tr><td>125</td><td>125%</td></tr><tr><td>120</td><td>120%</td></tr><tr><td>115</td><td>115%</td></tr><tr><td>110</td><td>107.5%</td></tr><tr><td>105</td><td>100%</td></tr><tr><td>100</td><td>92.5%</td></tr><tr><td>95</td><td>85%</td></tr><tr><td>90</td><td>77.5%</td></tr><tr><td>85</td><td>70%</td></tr><tr><td>80</td><td>70%</td></tr><tr><td>75</td><td>70%</td></tr><tr><td>70</td><td>70%</td></tr><tr><td>65</td><td>70%</td></tr>
           </tbody></table></div></div>
         </div>
 
         <!-- AMERICAN AMICABLE -->
         <div class="pcg-carrier" data-pcg="american-amicable">
           <div class="pcg-carrier-header"><div class="pcg-carrier-dot" style="background:#2e5090"></div><div class="pcg-carrier-name">American Amicable</div></div>
-          <div class="pcg-table-wrap"><div class="pcg-table-scroll"><table class="pcg-table"><thead><tr><th>Level</th><th>EZ Term</th><th>Secure Life</th><th>Home Protector</th><th>OBA</th><th>Term Made Simple</th><th>Family Protector</th><th>XUL</th></tr></thead><tbody>
-            <tr><td>145</td><td>100%</td><td>140%</td><td>145%</td><td>100%</td><td>130%</td><td>130%</td><td>105%</td></tr><tr><td>140</td><td>100%</td><td>140%</td><td>140%</td><td>100%</td><td>130%</td><td>130%</td><td>105%</td></tr><tr><td>135</td><td>95%</td><td>135%</td><td>135%</td><td>95%</td><td>125%</td><td>125%</td><td>100%</td></tr><tr><td>130</td><td>90%</td><td>130%</td><td>130%</td><td>90%</td><td>120%</td><td>120%</td><td>95%</td></tr><tr><td>125</td><td>85%</td><td>125%</td><td>125%</td><td>85%</td><td>115%</td><td>115%</td><td>90%</td></tr><tr><td>120</td><td>80%</td><td>120%</td><td>120%</td><td>80%</td><td>110%</td><td>110%</td><td>85%</td></tr><tr><td>115</td><td>75%</td><td>115%</td><td>115%</td><td>75%</td><td>105%</td><td>105%</td><td>80%</td></tr><tr><td>110</td><td>70%</td><td>110%</td><td>110%</td><td>70%</td><td>100%</td><td>100%</td><td>75%</td></tr><tr><td>105</td><td>65%</td><td>105%</td><td>105%</td><td>65%</td><td>95%</td><td>95%</td><td>65%</td></tr><tr><td>100</td><td>60%</td><td>100%</td><td>100%</td><td>60%</td><td>90%</td><td>90%</td><td>65%</td></tr><tr><td>95</td><td>55%</td><td>90%</td><td>90%</td><td>55%</td><td>85%</td><td>80%</td><td>55%</td></tr><tr><td>90</td><td>50%</td><td>90%</td><td>85%</td><td>50%</td><td>80%</td><td>80%</td><td>55%</td></tr><tr><td>85</td><td>45%</td><td>85%</td><td>85%</td><td>45%</td><td>75%</td><td>75%</td><td>45%</td></tr><tr><td>80</td><td>40%</td><td>80%</td><td>80%</td><td>40%</td><td>70%</td><td>70%</td><td>45%</td></tr><tr><td>75</td><td>35%</td><td>75%</td><td>70%</td><td>35%</td><td>65%</td><td>65%</td><td>45%</td></tr><tr><td>70</td><td>30%</td><td>70%</td><td>70%</td><td>30%</td><td>60%</td><td>60%</td><td>45%</td></tr><tr><td>65</td><td>25%</td><td>65%</td><td>65%</td><td>30%</td><td>55%</td><td>55%</td><td>45%</td></tr>
+          <div class="pcg-table-wrap"><div class="pcg-table-scroll"><table class="pcg-table"><thead><tr><th>Level</th><th>Whole Life</th><th>Term (Term Made Simple)</th></tr></thead><tbody>
+            <tr><td>145</td><td>125%</td><td>130%</td></tr><tr><td>140</td><td>125%</td><td>130%</td></tr><tr><td>135</td><td>120%</td><td>125%</td></tr><tr><td>130</td><td>115%</td><td>120%</td></tr><tr><td>125</td><td>110%</td><td>115%</td></tr><tr><td>120</td><td>105%</td><td>110%</td></tr><tr><td>115</td><td>100%</td><td>105%</td></tr><tr><td>110</td><td>95%</td><td>100%</td></tr><tr><td>105</td><td>90%</td><td>95%</td></tr><tr><td>100</td><td>85%</td><td>90%</td></tr><tr><td>95</td><td>80%</td><td>85%</td></tr><tr><td>90</td><td>75%</td><td>80%</td></tr><tr><td>85</td><td>65%</td><td>75%</td></tr><tr><td>80</td><td>65%</td><td>70%</td></tr><tr><td>75</td><td>60%</td><td>65%</td></tr><tr><td>70</td><td>55%</td><td>60%</td></tr><tr><td>65</td><td>50%</td><td>55%</td></tr>
           </tbody></table></div></div>
         </div>
 
         <!-- AMERICO -->
         <div class="pcg-carrier active" data-pcg="americo">
           <div class="pcg-carrier-header"><div class="pcg-carrier-dot" style="background:#c0392b"></div><div class="pcg-carrier-name">Americo</div></div>
-          <div class="pcg-table-wrap"><div class="pcg-table-scroll"><table class="pcg-table"><thead><tr><th>Level</th><th>HMS 125</th><th>Eagle Premier</th></tr></thead><tbody>
+          <div class="pcg-table-wrap"><div class="pcg-table-scroll"><table class="pcg-table"><thead><tr><th>Level</th><th>Term</th><th>Whole Life</th></tr></thead><tbody>
             <tr><td>145</td><td>145%</td><td>135%</td></tr><tr><td>140</td><td>140%</td><td>135%</td></tr><tr><td>135</td><td>135%</td><td>130%</td></tr><tr><td>130</td><td>130%</td><td>125%</td></tr><tr><td>125</td><td>125%</td><td>120%</td></tr><tr><td>120</td><td>120%</td><td>115%</td></tr><tr><td>115</td><td>115%</td><td>110%</td></tr><tr><td>110</td><td>110%</td><td>105%</td></tr><tr><td>105</td><td>105%</td><td>100%</td></tr><tr><td>100</td><td>100%</td><td>95%</td></tr><tr><td>95</td><td>95%</td><td>90%</td></tr><tr><td>90</td><td>90%</td><td>85%</td></tr><tr><td>85</td><td>85%</td><td>80%</td></tr><tr><td>80</td><td>80%</td><td>75%</td></tr><tr><td>75</td><td>75%</td><td>70%</td></tr><tr><td>70</td><td>70%</td><td>65%</td></tr><tr><td>65</td><td>65%</td><td>60%</td></tr>
           </tbody></table></div></div>
         </div>
@@ -3223,7 +3286,7 @@
         <!-- COREBRIDGE -->
         <div class="pcg-carrier" data-pcg="corebridge">
           <div class="pcg-carrier-header"><div class="pcg-carrier-dot" style="background:#5b6abf"></div><div class="pcg-carrier-name">Corebridge</div></div>
-          <div class="pcg-table-wrap"><div class="pcg-table-scroll"><table class="pcg-table"><thead><tr><th>Level</th><th>GIWL</th><th>SIWL</th></tr></thead><tbody>
+          <div class="pcg-table-wrap"><div class="pcg-table-scroll"><table class="pcg-table"><thead><tr><th>Level</th><th>GIWL</th><th>Whole Life</th></tr></thead><tbody>
             <tr><td>145</td><td>-</td><td>-</td></tr><tr><td>140</td><td>80.0%</td><td>132%</td></tr><tr><td>135</td><td>77.5%</td><td>127%</td></tr><tr><td>130</td><td>75.0%</td><td>122%</td></tr><tr><td>125</td><td>72.5%</td><td>117%</td></tr><tr><td>120</td><td>70.0%</td><td>112%</td></tr><tr><td>115</td><td>67.5%</td><td>107%</td></tr><tr><td>110</td><td>65.0%</td><td>102%</td></tr><tr><td>105</td><td>62.5%</td><td>97%</td></tr><tr><td>100</td><td>60.0%</td><td>92%</td></tr><tr><td>95</td><td>57.5%</td><td>87%</td></tr><tr><td>90</td><td>57.5%</td><td>82%</td></tr><tr><td>85</td><td>55.0%</td><td>77%</td></tr><tr><td>80</td><td>55.0%</td><td>72%</td></tr><tr><td>75</td><td>55.0%</td><td>67%</td></tr><tr><td>70</td><td>55.0%</td><td>62%</td></tr><tr><td>65</td><td>55.0%</td><td>57%</td></tr>
           </tbody></table></div></div>
         </div>
@@ -3231,7 +3294,7 @@
         <!-- ETHOS -->
         <div class="pcg-carrier" data-pcg="ethos">
           <div class="pcg-carrier-header"><div class="pcg-carrier-dot" style="background:#2d8c4e"></div><div class="pcg-carrier-name">Ethos</div></div>
-          <div class="pcg-table-wrap"><div class="pcg-table-scroll"><table class="pcg-table"><thead><tr><th>Level</th><th>LGA Prime</th><th>TruStage TAWL</th><th>TruStage SITL</th><th>TruStage GAWL</th><th>Ameritas IUL</th><th>Ameritas SI Term</th><th>JH ROP</th></tr></thead><tbody>
+          <div class="pcg-table-wrap"><div class="pcg-table-scroll"><table class="pcg-table"><thead><tr><th>Level</th><th>LGA Prime (Term)</th><th>Whole Life (TruStage TAWL)</th><th>TruStage SITL</th><th>GIWL (TruStage GAWL)</th><th>IUL (Ameritas)</th><th>Ameritas SI Term</th><th>JH ROP</th></tr></thead><tbody>
             <tr><td>145</td><td>120.0%</td><td>120.0%</td><td>55.0%</td><td>30%</td><td>125.0%</td><td>120.0%</td><td>145.0%</td></tr><tr><td>140</td><td>117.5%</td><td>120.0%</td><td>52.5%</td><td>27.5%</td><td>120.0%</td><td>117.5%</td><td>145.0%</td></tr><tr><td>135</td><td>115.0%</td><td>117.5%</td><td>50.0%</td><td>25.0%</td><td>115.0%</td><td>115.0%</td><td>135.0%</td></tr><tr><td>130</td><td>112.5%</td><td>115.0%</td><td>47.5%</td><td>22.5%</td><td>110.0%</td><td>112.5%</td><td>130.0%</td></tr><tr><td>125</td><td>110.0%</td><td>110.0%</td><td>45.0%</td><td>20.0%</td><td>105.0%</td><td>110.0%</td><td>125.0%</td></tr><tr><td>120</td><td>107.5%</td><td>105.0%</td><td>42.5%</td><td>17.5%</td><td>100.0%</td><td>107.5%</td><td>115.0%</td></tr><tr><td>115</td><td>105.0%</td><td>100.0%</td><td>40.0%</td><td>15.0%</td><td>95.0%</td><td>105.0%</td><td>105.0%</td></tr><tr><td>110</td><td>102.5%</td><td>95.0%</td><td>37.5%</td><td>12.5%</td><td>90.0%</td><td>102.5%</td><td>100.0%</td></tr><tr><td>105</td><td>100.0%</td><td>90.0%</td><td>35.0%</td><td>10.0%</td><td>85.0%</td><td>100.0%</td><td>95.0%</td></tr><tr><td>100</td><td>97.5%</td><td>87.5%</td><td>32.5%</td><td>7.5%</td><td>80.0%</td><td>97.5%</td><td>90.0%</td></tr><tr><td>95</td><td>95.0%</td><td>85.0%</td><td>30.0%</td><td>5.0%</td><td>75.0%</td><td>95.0%</td><td>85.0%</td></tr><tr><td>90</td><td>92.5%</td><td>82.5%</td><td>27.5%</td><td>2.5%</td><td>70.0%</td><td>92.5%</td><td>80.0%</td></tr><tr><td>85</td><td>90.0%</td><td>80.0%</td><td>25.0%</td><td>2.5%</td><td>65.0%</td><td>90.0%</td><td>75.0%</td></tr><tr><td>80</td><td>87.5%</td><td>77.5%</td><td>22.5%</td><td>2.5%</td><td>60.0%</td><td>87.5%</td><td>70.0%</td></tr><tr><td>75</td><td>85.0%</td><td>70.0%</td><td>20.0%</td><td>2.5%</td><td>55.0%</td><td>85.0%</td><td>65.0%</td></tr><tr><td>70</td><td>82.5%</td><td>65.0%</td><td>17.5%</td><td>2.5%</td><td>50.0%</td><td>82.5%</td><td>60.0%</td></tr><tr><td>65</td><td>80.0%</td><td>60.0%</td><td>15.0%</td><td>2.5%</td><td>50.0%</td><td>80.0%</td><td>55.0%</td></tr>
           </tbody></table></div></div>
         </div>
@@ -3239,7 +3302,7 @@
         <!-- FORESTERS -->
         <div class="pcg-carrier" data-pcg="foresters">
           <div class="pcg-carrier-header"><div class="pcg-carrier-dot" style="background:#e8a020"></div><div class="pcg-carrier-name">Foresters</div></div>
-          <div class="pcg-table-wrap"><div class="pcg-table-scroll"><table class="pcg-table"><thead><tr><th>Level</th><th>Strong Foundation</th><th>Planright</th></tr></thead><tbody>
+          <div class="pcg-table-wrap"><div class="pcg-table-scroll"><table class="pcg-table"><thead><tr><th>Level</th><th>Term (Strong Foundation)</th><th>Whole Life (PlanRight)</th></tr></thead><tbody>
             <tr><td>145</td><td>-</td><td>-</td></tr><tr><td>140</td><td>120%</td><td>120%</td></tr><tr><td>135</td><td>115%</td><td>115%</td></tr><tr><td>130</td><td>110%</td><td>110%</td></tr><tr><td>125</td><td>105%</td><td>105%</td></tr><tr><td>120</td><td>100%</td><td>100%</td></tr><tr><td>115</td><td>95%</td><td>95%</td></tr><tr><td>110</td><td>90%</td><td>90%</td></tr><tr><td>105</td><td>85%</td><td>85%</td></tr><tr><td>100</td><td>80%</td><td>80%</td></tr><tr><td>95</td><td>75%</td><td>75%</td></tr><tr><td>90</td><td>70%</td><td>70%</td></tr><tr><td>85</td><td>65%</td><td>65%</td></tr><tr><td>80</td><td>60%</td><td>60%</td></tr><tr><td>75</td><td>55%</td><td>60%</td></tr><tr><td>70</td><td>50%</td><td>60%</td></tr><tr><td>65</td><td>45%</td><td>60%</td></tr>
           </tbody></table></div></div>
         </div>
@@ -3247,31 +3310,15 @@
         <!-- INSTABRAIN -->
         <div class="pcg-carrier" data-pcg="instabrain">
           <div class="pcg-carrier-header"><div class="pcg-carrier-dot" style="background:#e05a2b"></div><div class="pcg-carrier-name">InstaBrain</div></div>
-          <div class="pcg-table-wrap"><div class="pcg-table-scroll"><table class="pcg-table"><thead><tr><th>Level</th><th>Life Term</th><th>Senior Life Term/WL</th><th>Final Expense WL</th><th>Guaranteed Issue WL</th><th>Accidental</th></tr></thead><tbody>
+          <div class="pcg-table-wrap"><div class="pcg-table-scroll"><table class="pcg-table"><thead><tr><th>Level</th><th>Term (Life Term)</th><th>Senior Life Term/WL</th><th>Final Expense WL</th><th>Guaranteed Issue WL</th><th>Accidental</th></tr></thead><tbody>
             <tr><td>145</td><td>130%</td><td>90%</td><td>128%</td><td>73%</td><td>90%</td></tr><tr><td>140</td><td>125%</td><td>85%</td><td>125%</td><td>70%</td><td>85%</td></tr><tr><td>135</td><td>120%</td><td>80%</td><td>123%</td><td>68%</td><td>80%</td></tr><tr><td>130</td><td>115%</td><td>75%</td><td>120%</td><td>65%</td><td>75%</td></tr><tr><td>125</td><td>110%</td><td>70%</td><td>118%</td><td>63%</td><td>70%</td></tr><tr><td>120</td><td>105%</td><td>65%</td><td>115%</td><td>60%</td><td>65%</td></tr><tr><td>115</td><td>100%</td><td>60%</td><td>113%</td><td>58%</td><td>60%</td></tr><tr><td>110</td><td>95%</td><td>55%</td><td>110%</td><td>55%</td><td>55%</td></tr><tr><td>105</td><td>90%</td><td>50%</td><td>108%</td><td>53%</td><td>50%</td></tr><tr><td>100</td><td>85%</td><td>45%</td><td>103%</td><td>50%</td><td>45%</td></tr><tr><td>95</td><td>80%</td><td>40%</td><td>100%</td><td>48%</td><td>40%</td></tr><tr><td>90</td><td>75%</td><td>35%</td><td>100%</td><td>45%</td><td>35%</td></tr><tr><td>85</td><td>70%</td><td>30%</td><td>98%</td><td>43%</td><td>30%</td></tr><tr><td>80</td><td>65%</td><td>25%</td><td>95%</td><td>40%</td><td>25%</td></tr><tr><td>75</td><td>60%</td><td>20%</td><td>93%</td><td>38%</td><td>20%</td></tr><tr><td>70</td><td>55%</td><td>15%</td><td>90%</td><td>35%</td><td>15%</td></tr><tr><td>65</td><td>55%</td><td>15%</td><td>90%</td><td>35%</td><td>15%</td></tr>
-          </tbody></table></div></div>
-        </div>
-
-        <!-- LADDER LIFE -->
-        <div class="pcg-carrier" data-pcg="ladder-life">
-          <div class="pcg-carrier-header"><div class="pcg-carrier-dot" style="background:#e74c3c"></div><div class="pcg-carrier-name">Ladder Life</div></div>
-          <div class="pcg-table-wrap"><div class="pcg-table-scroll"><table class="pcg-table"><thead><tr><th>Level</th><th>FX</th></tr></thead><tbody>
-            <tr><td>145</td><td>-</td></tr><tr><td>140</td><td>120%</td></tr><tr><td>135</td><td>115%</td></tr><tr><td>130</td><td>110%</td></tr><tr><td>125</td><td>105%</td></tr><tr><td>120</td><td>100%</td></tr><tr><td>115</td><td>95%</td></tr><tr><td>110</td><td>90%</td></tr><tr><td>105</td><td>85%</td></tr><tr><td>100</td><td>75%</td></tr><tr><td>95</td><td>70%</td></tr><tr><td>90</td><td>60%</td></tr><tr><td>85</td><td>55%</td></tr><tr><td>80</td><td>50%</td></tr><tr><td>75</td><td>50%</td></tr><tr><td>70</td><td>50%</td></tr><tr><td>65</td><td>50%</td></tr>
-          </tbody></table></div></div>
-        </div>
-
-        <!-- LIBERTY BANKERS -->
-        <div class="pcg-carrier" data-pcg="liberty-bankers">
-          <div class="pcg-carrier-header"><div class="pcg-carrier-dot" style="background:#b8860b"></div><div class="pcg-carrier-name">Liberty Bankers</div></div>
-          <div class="pcg-table-wrap"><div class="pcg-table-scroll"><table class="pcg-table"><thead><tr><th>Level</th><th>FX</th></tr></thead><tbody>
-            <tr><td>145</td><td>-</td></tr><tr><td>140</td><td>125%</td></tr><tr><td>135</td><td>120%</td></tr><tr><td>130</td><td>115%</td></tr><tr><td>125</td><td>110%</td></tr><tr><td>120</td><td>105%</td></tr><tr><td>115</td><td>100%</td></tr><tr><td>110</td><td>98%</td></tr><tr><td>105</td><td>90%</td></tr><tr><td>100</td><td>80%</td></tr><tr><td>95</td><td>75%</td></tr><tr><td>90</td><td>70%</td></tr><tr><td>85</td><td>65%</td></tr><tr><td>80</td><td>60%</td></tr><tr><td>75</td><td>55%</td></tr><tr><td>70</td><td>50%</td></tr><tr><td>65</td><td>50%</td></tr>
           </tbody></table></div></div>
         </div>
 
         <!-- MUTUAL OF OMAHA -->
         <div class="pcg-carrier" data-pcg="mutual-of-omaha">
           <div class="pcg-carrier-header"><div class="pcg-carrier-dot" style="background:#004b8d"></div><div class="pcg-carrier-name">Mutual of Omaha</div></div>
-          <div class="pcg-table-wrap"><div class="pcg-table-scroll"><table class="pcg-table"><thead><tr><th>Level</th><th>Term Life Express</th><th>Final Expense</th><th>IUL</th><th>Children's WL</th><th>IULE</th><th>Term Life Answers</th><th>Accidental Death</th></tr></thead><tbody>
+          <div class="pcg-table-wrap"><div class="pcg-table-scroll"><table class="pcg-table"><thead><tr><th>Level</th><th>Term (Term Life Express)</th><th>Whole Life</th><th>IUL</th><th>Children's WL</th><th>IULE</th><th>Term Life Answers</th><th>Accidental Death</th></tr></thead><tbody>
             <tr><td>145</td><td>145%</td><td>125%</td><td>125%</td><td>100%</td><td>130%</td><td>110%</td><td>130%</td></tr><tr><td>140</td><td>140%</td><td>125%</td><td>125%</td><td>100%</td><td>130%</td><td>110%</td><td>130%</td></tr><tr><td>135</td><td>135%</td><td>120%</td><td>120%</td><td>97%</td><td>125%</td><td>105%</td><td>125%</td></tr><tr><td>130</td><td>130%</td><td>115%</td><td>115%</td><td>95%</td><td>120%</td><td>100%</td><td>120%</td></tr><tr><td>125</td><td>125%</td><td>110%</td><td>110%</td><td>92%</td><td>115%</td><td>95%</td><td>115%</td></tr><tr><td>120</td><td>120%</td><td>105%</td><td>105%</td><td>90%</td><td>110%</td><td>90%</td><td>110%</td></tr><tr><td>115</td><td>115%</td><td>100%</td><td>100%</td><td>85%</td><td>105%</td><td>85%</td><td>105%</td></tr><tr><td>110</td><td>110%</td><td>95%</td><td>95%</td><td>80%</td><td>100%</td><td>80%</td><td>100%</td></tr><tr><td>105</td><td>105%</td><td>90%</td><td>90%</td><td>75%</td><td>95%</td><td>75%</td><td>95%</td></tr><tr><td>100</td><td>100%</td><td>86%</td><td>85%</td><td>70%</td><td>90%</td><td>70%</td><td>90%</td></tr><tr><td>95</td><td>95%</td><td>82%</td><td>80%</td><td>65%</td><td>85%</td><td>65%</td><td>85%</td></tr><tr><td>90</td><td>90%</td><td>78%</td><td>75%</td><td>60%</td><td>80%</td><td>60%</td><td>80%</td></tr><tr><td>85</td><td>85%</td><td>74%</td><td>70%</td><td>55%</td><td>75%</td><td>55%</td><td>75%</td></tr><tr><td>80</td><td>80%</td><td>70%</td><td>65%</td><td>50%</td><td>70%</td><td>50%</td><td>70%</td></tr><tr><td>75</td><td>75%</td><td>65%</td><td>60%</td><td>45%</td><td>65%</td><td>45%</td><td>65%</td></tr><tr><td>70</td><td>75%</td><td>61%</td><td>55%</td><td>40%</td><td>60%</td><td>40%</td><td>60%</td></tr><tr><td>65</td><td>65%</td><td>57%</td><td>50%</td><td>35%</td><td>55%</td><td>35%</td><td>55%</td></tr>
           </tbody></table></div></div>
         </div>
@@ -3279,7 +3326,7 @@
         <!-- NLG -->
         <div class="pcg-carrier" data-pcg="nlg">
           <div class="pcg-carrier-header"><div class="pcg-carrier-dot" style="background:#1a6b3c"></div><div class="pcg-carrier-name">NLG (National Life Group)</div></div>
-          <div class="pcg-table-wrap"><div class="pcg-table-scroll"><table class="pcg-table"><thead><tr><th>Level</th><th>Universal Life</th></tr></thead><tbody>
+          <div class="pcg-table-wrap"><div class="pcg-table-scroll"><table class="pcg-table"><thead><tr><th>Level</th><th>IUL (Universal Life)</th></tr></thead><tbody>
             <tr><td>145</td><td>-</td></tr><tr><td>140</td><td>110%</td></tr><tr><td>135</td><td>105%</td></tr><tr><td>130</td><td>100%</td></tr><tr><td>125</td><td>95%</td></tr><tr><td>120</td><td>90%</td></tr><tr><td>115</td><td>85%</td></tr><tr><td>110</td><td>80%</td></tr><tr><td>105</td><td>75%</td></tr><tr><td>100</td><td>70%</td></tr><tr><td>95</td><td>65%</td></tr><tr><td>90</td><td>60%</td></tr><tr><td>85</td><td>55%</td></tr><tr><td>80</td><td>50%</td></tr><tr><td>75</td><td>45%</td></tr><tr><td>70</td><td>40%</td></tr><tr><td>65</td><td>40%</td></tr>
           </tbody></table></div></div>
         </div>
@@ -3287,7 +3334,7 @@
         <!-- ROYAL NEIGHBORS -->
         <div class="pcg-carrier" data-pcg="royal-neighbors">
           <div class="pcg-carrier-header"><div class="pcg-carrier-dot" style="background:#2e7d32"></div><div class="pcg-carrier-name">Royal Neighbors</div></div>
-          <div class="pcg-table-wrap"><div class="pcg-table-scroll"><table class="pcg-table"><thead><tr><th>Level</th><th>Term</th><th>Royal Legacy SPWL</th><th>Secure Life IUL</th><th>SI Whole Life</th></tr></thead><tbody>
+          <div class="pcg-table-wrap"><div class="pcg-table-scroll"><table class="pcg-table"><thead><tr><th>Level</th><th>Term</th><th>Royal Legacy SPWL</th><th>Secure Life IUL</th><th>Whole Life</th></tr></thead><tbody>
             <tr><td>145</td><td>-</td><td>-</td><td>-</td><td>-</td></tr><tr><td>140</td><td>-</td><td>-</td><td>-</td><td>-</td></tr><tr><td>135</td><td>120%</td><td>16%</td><td>125%</td><td>125%</td></tr><tr><td>130</td><td>115%</td><td>15%</td><td>120%</td><td>120%</td></tr><tr><td>125</td><td>110%</td><td>14%</td><td>112%</td><td>110%</td></tr><tr><td>120</td><td>100%</td><td>13%</td><td>105%</td><td>100%</td></tr><tr><td>115</td><td>95%</td><td>13%</td><td>105%</td><td>100%</td></tr><tr><td>110</td><td>95%</td><td>13%</td><td>100%</td><td>95%</td></tr><tr><td>105</td><td>90%</td><td>12%</td><td>98%</td><td>95%</td></tr><tr><td>100</td><td>85%</td><td>11%</td><td>90%</td><td>85%</td></tr><tr><td>95</td><td>80%</td><td>10%</td><td>80%</td><td>75%</td></tr><tr><td>90</td><td>75%</td><td>9%</td><td>80%</td><td>75%</td></tr><tr><td>85</td><td>70%</td><td>7%</td><td>70%</td><td>45%</td></tr><tr><td>80</td><td>50%</td><td>7%</td><td>40%</td><td>45%</td></tr><tr><td>75</td><td>50%</td><td>7%</td><td>40%</td><td>45%</td></tr><tr><td>70</td><td>50%</td><td>7%</td><td>40%</td><td>45%</td></tr><tr><td>65</td><td>50%</td><td>7%</td><td>40%</td><td>45%</td></tr>
           </tbody></table></div></div>
         </div>
@@ -3295,16 +3342,8 @@
         <!-- TRANSAMERICA -->
         <div class="pcg-carrier" data-pcg="transamerica">
           <div class="pcg-carrier-header"><div class="pcg-carrier-dot" style="background:#8b1a1a"></div><div class="pcg-carrier-name">Transamerica</div></div>
-          <div class="pcg-table-wrap"><div class="pcg-table-scroll"><table class="pcg-table"><thead><tr><th>Level</th><th>FE</th><th>UL</th></tr></thead><tbody>
+          <div class="pcg-table-wrap"><div class="pcg-table-scroll"><table class="pcg-table"><thead><tr><th>Level</th><th>Whole Life</th><th>IUL</th></tr></thead><tbody>
             <tr><td>145</td><td>140%</td><td>120%</td></tr><tr><td>140</td><td>140%</td><td>120%</td></tr><tr><td>135</td><td>135%</td><td>115%</td></tr><tr><td>130</td><td>130%</td><td>110%</td></tr><tr><td>125</td><td>125%</td><td>105%</td></tr><tr><td>120</td><td>120%</td><td>100%</td></tr><tr><td>115</td><td>115%</td><td>95%</td></tr><tr><td>110</td><td>110%</td><td>90%</td></tr><tr><td>105</td><td>105%</td><td>80%</td></tr><tr><td>100</td><td>100%</td><td>75%</td></tr><tr><td>95</td><td>95%</td><td>70%</td></tr><tr><td>90</td><td>90%</td><td>60%</td></tr><tr><td>85</td><td>85%</td><td>55%</td></tr><tr><td>80</td><td>80%</td><td>50%</td></tr><tr><td>75</td><td>75%</td><td>45%</td></tr><tr><td>70</td><td>70%</td><td>40%</td></tr><tr><td>65</td><td>70%</td><td>40%</td></tr>
-          </tbody></table></div></div>
-        </div>
-
-        <!-- UNITED HOME LIFE -->
-        <div class="pcg-carrier" data-pcg="united-home-life">
-          <div class="pcg-carrier-header"><div class="pcg-carrier-dot" style="background:#3c6478"></div><div class="pcg-carrier-name">United Home Life</div></div>
-          <div class="pcg-table-wrap"><div class="pcg-table-scroll"><table class="pcg-table"><thead><tr><th>Level</th><th>FX</th><th>GIWL</th><th>Whole Life</th><th>Accidental</th><th>Term</th></tr></thead><tbody>
-            <tr><td>145</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr><tr><td>140</td><td>110%</td><td>70%</td><td>120%</td><td>100%</td><td>110%</td></tr><tr><td>135</td><td>105%</td><td>65%</td><td>115%</td><td>95%</td><td>105%</td></tr><tr><td>130</td><td>100%</td><td>60%</td><td>110%</td><td>90%</td><td>100%</td></tr><tr><td>125</td><td>95%</td><td>55%</td><td>105%</td><td>85%</td><td>95%</td></tr><tr><td>120</td><td>90%</td><td>50%</td><td>100%</td><td>80%</td><td>90%</td></tr><tr><td>115</td><td>85%</td><td>45%</td><td>95%</td><td>75%</td><td>85%</td></tr><tr><td>110</td><td>80%</td><td>40%</td><td>90%</td><td>70%</td><td>80%</td></tr><tr><td>105</td><td>75%</td><td>35%</td><td>85%</td><td>65%</td><td>75%</td></tr><tr><td>100</td><td>70%</td><td>30%</td><td>80%</td><td>60%</td><td>70%</td></tr><tr><td>95</td><td>65%</td><td>25%</td><td>75%</td><td>55%</td><td>65%</td></tr><tr><td>90</td><td>60%</td><td>25%</td><td>70%</td><td>50%</td><td>60%</td></tr><tr><td>85</td><td>55%</td><td>25%</td><td>65%</td><td>50%</td><td>55%</td></tr><tr><td>80</td><td>50%</td><td>25%</td><td>60%</td><td>50%</td><td>50%</td></tr><tr><td>75</td><td>45%</td><td>25%</td><td>55%</td><td>45%</td><td>45%</td></tr><tr><td>70</td><td>45%</td><td>25%</td><td>55%</td><td>45%</td><td>45%</td></tr><tr><td>65</td><td>45%</td><td>25%</td><td>55%</td><td>45%</td><td>45%</td></tr>
           </tbody></table></div></div>
         </div>
 
@@ -3667,8 +3706,85 @@
     // ─── CONFIG (easy to update) ───
     const SUPABASE_URL = 'https://mrjlbpyqvfvmegjyovzq.supabase.co';
     const SUPABASE_KEY = 'sb_publishable_V4kzfIHC-GRTtdoJwJRZMA__2j-DUh-';
-    const CARRIERS = ['Mutual of Omaha', 'Americo', 'Transamerica', 'AmAm', 'Corebridge', 'Chubb', 'Ethos', 'Aetna', 'InstaBrain', 'Banner', 'AHL', 'F&G', 'KCL', 'Royal Neighbors', 'Cica', 'Baltimore Life', 'Foresters', 'Liberty Bankers', 'UHL'];
-    const PRODUCT_TYPES = ['Whole Life', 'Term', 'IUL', 'Health/Accidental'];
+    const CARRIERS = ['Mutual of Omaha', 'Americo', 'Transamerica', 'American Amicable', 'Corebridge', 'Chubb', 'Ethos', 'Aetna', 'InstaBrain', 'NLG', 'Royal Neighbors', 'Foresters'];
+    const PRODUCT_TYPES = ['Whole Life', 'Term', 'IUL', 'GIWL', 'Health/Accidental'];
+
+    // Map form carrier names → comp grid pcg-ids
+    const CARRIER_TO_PCG = {
+      'Mutual of Omaha': 'mutual-of-omaha',
+      'Americo': 'americo',
+      'Transamerica': 'transamerica',
+      'American Amicable': 'american-amicable',
+      'Corebridge': 'corebridge',
+      'Chubb': 'chubb',
+      'Ethos': 'ethos',
+      'Aetna': 'aetna',
+      'InstaBrain': 'instabrain',
+      'NLG': 'nlg',
+      'Royal Neighbors': 'royal-neighbors',
+      'Foresters': 'foresters'
+    };
+
+    // Map (carrier pcg-id, product type) → column name in the comp grid table
+    // Returns null if the combo isn't in the grid (triggers profile comp fallback)
+    const CARRIER_PRODUCT_COLUMN = {
+      'aetna':            { 'Whole Life': 'Whole Life' },
+      'american-amicable':{ 'Whole Life': 'Whole Life', 'Term': 'Term (Term Made Simple)' },
+      'americo':          { 'Whole Life': 'Whole Life', 'Term': 'Term' },
+      'chubb':            { 'Whole Life': 'Generational Life' },
+      'corebridge':       { 'Whole Life': 'Whole Life', 'GIWL': 'GIWL' },
+      'ethos':            { 'Whole Life': 'Whole Life (TruStage TAWL)', 'GIWL': 'GIWL (TruStage GAWL)', 'IUL': 'IUL (Ameritas)', 'Term': 'LGA Prime (Term)' },
+      'foresters':        { 'Whole Life': 'Whole Life (PlanRight)', 'Term': 'Term (Strong Foundation)' },
+      'instabrain':       { 'Term': 'Term (Life Term)' },
+      'mutual-of-omaha':  { 'Whole Life': 'Whole Life', 'Term': 'Term (Term Life Express)', 'IUL': 'IUL' },
+      'nlg':              { 'IUL': 'IUL (Universal Life)' },
+      'royal-neighbors':  { 'Whole Life': 'Whole Life', 'Term': 'Term', 'IUL': 'Secure Life IUL' },
+      'transamerica':     { 'Whole Life': 'Whole Life', 'IUL': 'IUL' }
+    };
+
+    // Look up adjusted comp from the grid based on carrier/product + agent comp level
+    // Returns a percentage (e.g. 90 means 90%). Fallback rules:
+    //   - Health/Accidental → profile comp - 10
+    //   - No column/carrier match → profile comp
+    //   - No rate at that level → walk down the ladder
+    //   - Royal Neighbors is a special case: profile comp - 10 (grid is wrong, will be fixed later)
+    function lookupDealComp(carrierName, productType, profileComp) {
+      if (!profileComp || profileComp <= 0) return 0;
+      if (productType === 'Health/Accidental') return Math.max(profileComp - 10, 0);
+      const pcgId = CARRIER_TO_PCG[carrierName];
+      if (!pcgId) return profileComp;
+      if (pcgId === 'royal-neighbors') return Math.max(profileComp - 10, 0);
+      const productMap = CARRIER_PRODUCT_COLUMN[pcgId];
+      if (!productMap) return profileComp;
+      const columnName = productMap[productType];
+      if (!columnName) return profileComp;
+      // Read the rate from the rendered comp grid table
+      const carrierEl = document.querySelector('.pcg-carrier[data-pcg="' + pcgId + '"]');
+      if (!carrierEl) return profileComp;
+      const headers = Array.from(carrierEl.querySelectorAll('thead th')).map(th => th.textContent.trim());
+      const colIdx = headers.indexOf(columnName);
+      if (colIdx === -1) return profileComp;
+      // Find the row for this level (walk down if current level has no rate)
+      const levels = ['145','140','135','130','125','120','115','110','105','100','95','90','85','80','75','70','65'];
+      const startIdx = levels.indexOf(String(profileComp));
+      if (startIdx === -1) return profileComp;
+      const rows = carrierEl.querySelectorAll('tbody tr');
+      for (let li = startIdx; li < levels.length; li++) {
+        for (const row of rows) {
+          const cells = row.querySelectorAll('td');
+          if (cells.length < 2) continue;
+          if (cells[0].textContent.trim() === levels[li]) {
+            const val = cells[colIdx] ? cells[colIdx].textContent.trim() : '';
+            if (val && val !== '-') {
+              const num = parseFloat(val.replace('%', ''));
+              if (!isNaN(num)) return num;
+            }
+            break;
+          }
+        }
+      }
+      return profileComp;
+    }
 
     // ─── AUTH STATE ───
     let currentUser = null;
@@ -3965,6 +4081,7 @@
       if (panelName === 'performance') loadAgentPerformance();
       if (panelName === 'goals' && currentUser) loadGoalTracker();
       if (panelName === 'profile') loadProfilePanel();
+      if (panelName === 'calculator' && currentUser) loadCommissionPipeline();
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
     document.querySelectorAll('.ss-sidebar-btn').forEach(btn => {
@@ -4151,17 +4268,22 @@
 
       const repName = currentUser.user_metadata?.name || currentUser.email;
       const effectiveDateValue = document.getElementById('effectiveDate').value || null;
+      const carrierVal = document.getElementById('carrier').value;
+      const productVal = document.getElementById('productType').value;
+      // Snapshot the agent's effective comp for this deal (hidden from form)
+      const dealCompSnapshot = lookupDealComp(carrierVal, productVal, userCompLevel || 0);
       const data = {
         user_id: currentUser.id,
         sales_rep: repName,
         client_name: document.getElementById('clientName').value,
         phone: formattedPhone,
         annual_premium: apValue,
-        carrier: document.getElementById('carrier').value,
-        product_type: document.getElementById('productType').value,
+        carrier: carrierVal,
+        product_type: productVal,
         policy_number: policyNumberValue,
         policy_date: policyDateValue,
         effective_date: effectiveDateValue,
+        deal_comp: dealCompSnapshot || null,
         status: document.getElementById('policyStatus').value
       };
 
@@ -6311,6 +6433,90 @@
     // ─── COMMISSION + LEADS ROI CALCULATORS ───
     // ─── USER COMP LEVEL (loaded from agent_profiles) ───
     let userCompLevel = null;
+    // ─── COMMISSION PIPELINE ───
+    async function loadCommissionPipeline() {
+      const paidEl = document.getElementById('pipelinePaid');
+      const pendingEl = document.getElementById('pipelinePending');
+      const paidSub = document.getElementById('pipelinePaidSub');
+      const pendingSub = document.getElementById('pipelinePendingSub');
+      const emptyEl = document.getElementById('pipelineEmpty');
+      if (!currentUser) {
+        paidEl.textContent = '—';
+        pendingEl.textContent = '—';
+        if (emptyEl) emptyEl.style.display = 'block';
+        return;
+      }
+      if (emptyEl) emptyEl.style.display = 'none';
+      paidEl.textContent = 'Loading...';
+      pendingEl.textContent = 'Loading...';
+      const token = accessToken || SUPABASE_KEY;
+      const hdrs = { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + token };
+      try {
+        // 1. PAID: Sum of deposits from daily_kpis for this user
+        const kpiRes = await fetch(SUPABASE_URL + '/rest/v1/daily_kpis?user_id=eq.' + currentUser.id + '&select=deposits', { headers: hdrs });
+        const kpiRows = await kpiRes.json();
+        const totalPaid = (kpiRows || []).reduce((s, r) => s + parseFloat(r.deposits || 0), 0);
+
+        // 2. PENDING: Load all policies for this user
+        const polRes = await fetch(SUPABASE_URL + '/rest/v1/policies?user_id=eq.' + currentUser.id + '&select=*', { headers: hdrs });
+        const policies = await polRes.json();
+
+        let totalPending = 0;
+        const now = new Date(); now.setHours(0,0,0,0);
+        const MS_DAY = 24 * 60 * 60 * 1000;
+
+        (policies || []).forEach(p => {
+          const ap = parseFloat(p.annual_premium || 0);
+          if (ap <= 0) return;
+
+          // Resolve deal comp: stored deal_comp if present, otherwise compute from current
+          // profile comp + current grid (on-the-fly fallback for historical rows)
+          let dealComp = parseFloat(p.deal_comp || 0);
+          if (!dealComp && userCompLevel) {
+            dealComp = lookupDealComp(p.carrier, p.product_type, userCompLevel);
+          }
+          if (!dealComp) return;
+
+          // Base pending = AP × deal_comp
+          let pending = ap * (dealComp / 100);
+
+          // Status adjustment
+          if (p.status === 'Issue Paid') {
+            // 75% advance removed, 25% remaining
+            pending = pending * 0.25;
+
+            // 9-month payout schedule: after effective_date + 9 months, the 25% pays out in thirds
+            const effStr = p.effective_date || p.policy_date;
+            if (effStr) {
+              const effDate = new Date(effStr + 'T00:00:00'); effDate.setHours(0,0,0,0);
+              const month10 = new Date(effDate); month10.setMonth(month10.getMonth() + 10);
+              const month11 = new Date(effDate); month11.setMonth(month11.getMonth() + 11);
+              const month12 = new Date(effDate); month12.setMonth(month12.getMonth() + 12);
+              const fullBackend = pending; // the remaining 25%
+              const third = fullBackend / 3;
+              if (now >= month12) pending = 0;
+              else if (now >= month11) pending = third;
+              else if (now >= month10) pending = third * 2;
+              // else: full backend still pending
+            }
+          }
+          // Underwriting and Approved: full pending (no adjustment)
+
+          totalPending += pending;
+        });
+
+        const fmt = n => '$' + Math.round(n).toLocaleString('en-US');
+        paidEl.textContent = fmt(totalPaid);
+        pendingEl.textContent = fmt(totalPending);
+        paidSub.textContent = (kpiRows || []).length + ' daily KPI entries';
+        pendingSub.textContent = (policies || []).length + ' policies in pipeline';
+      } catch (e) {
+        console.error('Pipeline load failed:', e);
+        paidEl.textContent = '—';
+        pendingEl.textContent = '—';
+      }
+    }
+
     async function loadUserCompLevel() {
       if (!currentUser) return;
       try {
