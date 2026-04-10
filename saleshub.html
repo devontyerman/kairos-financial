@@ -1668,6 +1668,33 @@
       display: flex; align-items: center; gap: 0.55rem;
     }
     .ss-pipeline-title svg { color: #16a34a; }
+    .ss-pipeline-range {
+      display: flex;
+      gap: 0.4rem;
+      justify-content: center;
+      margin-bottom: 1.25rem;
+      flex-wrap: wrap;
+    }
+    .ss-pipeline-range-btn {
+      padding: 0.4rem 1rem;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      color: #555;
+      background: #f5f5f8;
+      border: 1px solid #e0e0e5;
+      border-radius: 100px;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+    .ss-pipeline-range-btn:hover { color: #1a1a1a; background: #ececf0; }
+    .ss-pipeline-range-btn.active {
+      color: #ffffff;
+      background: #2d2d35;
+      border-color: #2d2d35;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    }
     .ss-pipeline-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -2913,8 +2940,8 @@
       <div style="padding: 2.5rem 1.5rem;">
 
         <div class="ss-panel-head">
-          <h2>Submit a Sale</h2>
-          <p class="ss-panel-sub">Log a new policy and update your daily KPIs.</p>
+          <h2>Submit a Sale &amp; KPIs</h2>
+          <p class="ss-panel-sub">Log a new policy and track your daily KPIs in one place.</p>
         </div>
 
         <!-- Auth bar (shown when logged in) -->
@@ -3090,6 +3117,11 @@
           <div class="ss-pipeline-title">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
             Commission Pipeline
+          </div>
+          <div class="ss-pipeline-range" id="pipelineRangeBtns">
+            <button class="ss-pipeline-range-btn" data-pipeline-range="mtd">MTD</button>
+            <button class="ss-pipeline-range-btn" data-pipeline-range="lastmonth">Last Month</button>
+            <button class="ss-pipeline-range-btn active" data-pipeline-range="ytd">YTD</button>
           </div>
           <div class="ss-pipeline-grid">
             <div class="ss-pipeline-stat">
@@ -6952,12 +6984,59 @@
     let pipelineAllPolicies = [];
     let pipelineAllDeposits = [];
     let pdRange = 'mtd';
+    let pipelineRange = 'ytd';
 
-    async function loadCommissionPipeline() {
+    function getPipelineDateRange() {
+      const now = new Date();
+      if (pipelineRange === 'mtd') {
+        return { start: new Date(now.getFullYear(), now.getMonth(), 1), end: now };
+      }
+      if (pipelineRange === 'lastmonth') {
+        return {
+          start: new Date(now.getFullYear(), now.getMonth() - 1, 1),
+          end: new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59),
+        };
+      }
+      // ytd default
+      return { start: new Date(now.getFullYear(), 0, 1), end: now };
+    }
+
+    function renderCommissionPipeline() {
       const paidEl = document.getElementById('pipelinePaid');
       const pendingEl = document.getElementById('pipelinePending');
       const paidSub = document.getElementById('pipelinePaidSub');
       const pendingSub = document.getElementById('pipelinePendingSub');
+      if (!paidEl) return;
+
+      const { start, end } = getPipelineDateRange();
+
+      // Paid: filter deposits by kpi_date in range
+      const depositsInRange = pipelineAllDeposits.filter(r => {
+        if (!r.kpi_date) return false;
+        const d = new Date(r.kpi_date + 'T00:00:00');
+        return d >= start && d <= end;
+      });
+      const totalPaid = depositsInRange.reduce((s, r) => s + parseFloat(r.deposits || 0), 0);
+
+      // Pending: filter policies by sold date (policy_date) in range
+      const policiesInRange = pipelineAllPolicies.filter(p => {
+        if (!p.policy_date) return false;
+        const d = new Date(p.policy_date + 'T00:00:00');
+        return d >= start && d <= end;
+      });
+      const totalPending = policiesInRange.reduce((s, p) => s + computePolicyPending(p), 0);
+
+      const fmt = n => '$' + Math.round(n).toLocaleString('en-US');
+      const rangeLabel = pipelineRange === 'mtd' ? 'this month' : pipelineRange === 'lastmonth' ? 'last month' : 'year to date';
+      paidEl.textContent = fmt(totalPaid);
+      pendingEl.textContent = fmt(totalPending);
+      paidSub.textContent = depositsInRange.length + ' daily KPI entries (' + rangeLabel + ')';
+      pendingSub.textContent = policiesInRange.length + ' policies (' + rangeLabel + ')';
+    }
+
+    async function loadCommissionPipeline() {
+      const paidEl = document.getElementById('pipelinePaid');
+      const pendingEl = document.getElementById('pipelinePending');
       const emptyEl = document.getElementById('pipelineEmpty');
       if (!currentUser) {
         paidEl.textContent = '—';
@@ -6975,24 +7054,27 @@
         const allKpis = await kpiRes.json() || [];
         // Exclude the 15 most recent daily KPI entries from the Total Paid
         pipelineAllDeposits = allKpis.slice(15);
-        const totalPaid = pipelineAllDeposits.reduce((s, r) => s + parseFloat(r.deposits || 0), 0);
 
         const polRes = await fetch(SUPABASE_URL + '/rest/v1/policies?user_id=eq.' + currentUser.id + '&select=*', { headers: hdrs });
         pipelineAllPolicies = await polRes.json() || [];
 
-        const totalPending = pipelineAllPolicies.reduce((s, p) => s + computePolicyPending(p), 0);
-
-        const fmt = n => '$' + Math.round(n).toLocaleString('en-US');
-        paidEl.textContent = fmt(totalPaid);
-        pendingEl.textContent = fmt(totalPending);
-        paidSub.textContent = pipelineAllDeposits.length + ' daily KPI entries';
-        pendingSub.textContent = pipelineAllPolicies.length + ' policies in pipeline';
+        renderCommissionPipeline();
       } catch (e) {
         console.error('Pipeline load failed:', e);
         paidEl.textContent = '—';
         pendingEl.textContent = '—';
       }
     }
+
+    // Wire up pipeline range buttons
+    document.querySelectorAll('#pipelineRangeBtns .ss-pipeline-range-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('#pipelineRangeBtns .ss-pipeline-range-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        pipelineRange = btn.dataset.pipelineRange;
+        renderCommissionPipeline();
+      });
+    });
 
     // ─── PIPELINE DETAILS ───
     function getPdDateRange() {
@@ -7169,12 +7251,8 @@
         setTimeout(() => {
           document.getElementById('pdEditOverlay').classList.remove('open');
           renderPipelineDetails();
-          // Also refresh the summary card
-          const totalPaid = pipelineAllDeposits.reduce((s, r) => s + parseFloat(r.deposits || 0), 0);
-          const totalPending = pipelineAllPolicies.reduce((s, p) => s + computePolicyPending(p), 0);
-          const fmt = n => '$' + Math.round(n).toLocaleString('en-US');
-          document.getElementById('pipelinePaid').textContent = fmt(totalPaid);
-          document.getElementById('pipelinePending').textContent = fmt(totalPending);
+          // Also refresh the summary card with current range
+          renderCommissionPipeline();
         }, 600);
       } catch (e) {
         msgEl.textContent = 'Error: ' + e.message;
