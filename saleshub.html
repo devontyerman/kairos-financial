@@ -1643,6 +1643,157 @@
       .ss-pipeline-grid { grid-template-columns: 1fr; }
     }
 
+    .ss-pipeline-btn {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      padding: 0.6rem 1.4rem;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.85rem; font-weight: 700;
+      color: #ffffff; background: #16a34a;
+      border: none; border-radius: 10px; cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    }
+    .ss-pipeline-btn:hover { background: #15803d; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+    .ss-pipeline-btn.secondary { background: #f0f0f3; color: #333; border: 1px solid #ddd; box-shadow: none; }
+    .ss-pipeline-btn.secondary:hover { background: #e5e5ea; }
+
+    /* Pipeline Details */
+    .ss-pipeline-details {
+      max-width: 900px;
+      margin: 0 auto;
+      background: #ffffff;
+      border: 1px solid #ddd;
+      border-radius: 18px;
+      padding: 1.75rem 2rem;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    }
+    .ss-pd-filters {
+      display: flex; flex-wrap: wrap; gap: 0.4rem;
+      margin-bottom: 1rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid #e5e5ea;
+    }
+    .ss-pd-filter {
+      padding: 0.45rem 1rem;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.78rem; font-weight: 700;
+      color: #555; background: #f5f5f8;
+      border: 1px solid #e0e0e5;
+      border-radius: 100px; cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .ss-pd-filter:hover { border-color: #b0b0b8; color: #1a1a1a; }
+    .ss-pd-filter.active { background: #1a1a1a; color: #ffffff; border-color: #1a1a1a; }
+    .ss-pd-summary {
+      display: grid; grid-template-columns: 1fr 1fr 1fr;
+      gap: 0.75rem; margin-bottom: 1.5rem;
+    }
+    .ss-pd-summary-item {
+      background: #f5f5f8; border: 1px solid #e0e0e5;
+      border-radius: 10px; padding: 0.9rem 1rem;
+    }
+    .ss-pd-summary-label {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.62rem; font-weight: 800;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: #666; margin-bottom: 0.3rem;
+    }
+    .ss-pd-summary-value {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1.3rem; font-weight: 900;
+      color: #1a1a1a; letter-spacing: -0.02em;
+    }
+    .ss-pd-summary-value.green { color: #16a34a; }
+    .ss-pd-list {
+      display: flex; flex-direction: column; gap: 0.75rem;
+    }
+    .ss-pd-policy {
+      background: #fafafa; border: 1px solid #e5e5ea;
+      border-radius: 12px; padding: 1rem 1.2rem;
+    }
+    .ss-pd-policy-top {
+      display: flex; justify-content: space-between; align-items: baseline;
+      gap: 0.75rem; margin-bottom: 0.35rem; flex-wrap: wrap;
+    }
+    .ss-pd-policy-name {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.98rem; font-weight: 800; color: #1a1a1a;
+    }
+    .ss-pd-policy-pending {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1.05rem; font-weight: 900; color: #16a34a;
+    }
+    .ss-pd-policy-meta {
+      display: flex; flex-wrap: wrap; gap: 0.5rem 1rem;
+      font-size: 0.78rem; color: #555; margin-bottom: 0.5rem;
+    }
+    .ss-pd-policy-meta strong { color: #1a1a1a; font-weight: 700; }
+    .ss-pd-policy-status {
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 0.75rem; padding-top: 0.5rem; border-top: 1px solid #e5e5ea;
+      flex-wrap: wrap;
+    }
+    .ss-pd-policy-payout {
+      font-size: 0.75rem; color: #666;
+    }
+    .ss-pd-policy-payout strong { color: #1a1a1a; font-weight: 700; }
+    .ss-pd-edit-btn {
+      padding: 0.35rem 0.85rem;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.72rem; font-weight: 700;
+      color: #fff; background: #2563eb;
+      border: none; border-radius: 6px; cursor: pointer;
+    }
+    .ss-pd-edit-btn:hover { background: #1d4ed8; }
+    .ss-pd-empty { text-align: center; padding: 2rem; color: #888; font-size: 0.88rem; }
+
+    /* Edit modal */
+    .ss-pd-edit-overlay {
+      display: none; position: fixed; inset: 0; z-index: 10000;
+      background: rgba(0,0,0,0.3); backdrop-filter: blur(8px);
+      align-items: center; justify-content: center;
+    }
+    .ss-pd-edit-overlay.open { display: flex; }
+    .ss-pd-edit-modal {
+      background: #ffffff; border: 1px solid #ddd; border-radius: 18px;
+      padding: 2rem; max-width: 560px; width: 92%;
+      max-height: 90vh; overflow-y: auto;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      animation: ssModalPop 0.3s ease;
+    }
+    .ss-pd-edit-modal h3 {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1.15rem; font-weight: 900; color: #1a1a1a;
+      margin-bottom: 1.25rem;
+    }
+    .ss-pd-edit-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;
+    }
+    .ss-pd-edit-field label {
+      display: block; font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.68rem; font-weight: 700;
+      color: #555; text-transform: uppercase; letter-spacing: 0.06em;
+      margin-bottom: 0.25rem;
+    }
+    .ss-pd-edit-field input,
+    .ss-pd-edit-field select {
+      width: 100%; padding: 0.55rem 0.75rem;
+      font-size: 0.85rem; font-family: 'Inter', sans-serif;
+      color: #1a1a1a; background: #ffffff;
+      border: 1px solid #ddd; border-radius: 8px;
+      box-sizing: border-box;
+    }
+    .ss-pd-edit-field input:focus,
+    .ss-pd-edit-field select:focus { outline: none; border-color: #2563eb; }
+    .ss-pd-edit-btns {
+      display: flex; gap: 0.75rem; margin-top: 1.5rem;
+      justify-content: flex-end;
+    }
+    @media (max-width: 600px) {
+      .ss-pd-summary { grid-template-columns: 1fr; }
+      .ss-pd-edit-grid { grid-template-columns: 1fr; }
+    }
+
     .ss-calc-wrap {
       max-width: 900px;
       margin: 2.5rem auto 0;
@@ -2825,7 +2976,85 @@
               <div class="ss-pipeline-stat-sub" id="pipelinePendingSub">Unpaid commission owed</div>
             </div>
           </div>
+          <div style="text-align:center;margin-top:1.25rem;">
+            <button id="pipelineDetailsBtn" class="ss-pipeline-btn">See Details</button>
+          </div>
           <div class="ss-pipeline-empty" id="pipelineEmpty" style="display:none;">Sign in to view your commission pipeline.</div>
+        </div>
+
+        <!-- ═══ COMMISSION PIPELINE DETAILS (replaces calculator when open) ═══ -->
+        <div class="ss-pipeline-details" id="pipelineDetails" style="display:none;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:0.75rem;">
+            <div style="display:flex;align-items:center;gap:0.75rem;">
+              <button id="pipelineBackBtn" class="ss-pipeline-btn secondary">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                Back
+              </button>
+              <h2 style="font-family:'Plus Jakarta Sans',sans-serif;font-size:1.2rem;font-weight:900;color:#1a1a1a;margin:0;">Pipeline Details</h2>
+            </div>
+          </div>
+
+          <!-- Range filter -->
+          <div class="ss-pd-filters">
+            <button class="ss-pd-filter active" data-pd-range="mtd">MTD</button>
+            <button class="ss-pd-filter" data-pd-range="lastmonth">Last Month</button>
+            <button class="ss-pd-filter" data-pd-range="ytd">YTD</button>
+            <button class="ss-pd-filter" data-pd-range="all">All Time</button>
+            <button class="ss-pd-filter" data-pd-range="custom">Custom</button>
+          </div>
+          <div id="pdCustomRange" style="display:none;gap:0.5rem;align-items:center;margin-bottom:1rem;flex-wrap:wrap;">
+            <input type="date" id="pdDateFrom" style="padding:0.4rem 0.7rem;font-size:0.82rem;background:#fff;border:1px solid #ddd;border-radius:8px;color:#1a1a1a;" />
+            <span style="color:#555;font-size:0.82rem;">to</span>
+            <input type="date" id="pdDateTo" style="padding:0.4rem 0.7rem;font-size:0.82rem;background:#fff;border:1px solid #ddd;border-radius:8px;color:#1a1a1a;" />
+            <button id="pdCustomApply" class="ss-pipeline-btn" style="padding:0.45rem 1.1rem;font-size:0.8rem;">Apply</button>
+          </div>
+
+          <!-- Summary row -->
+          <div class="ss-pd-summary">
+            <div class="ss-pd-summary-item">
+              <div class="ss-pd-summary-label">Sold AP</div>
+              <div class="ss-pd-summary-value" id="pdSoldAP">—</div>
+            </div>
+            <div class="ss-pd-summary-item">
+              <div class="ss-pd-summary-label">Paid (Deposits)</div>
+              <div class="ss-pd-summary-value green" id="pdPaid">—</div>
+            </div>
+            <div class="ss-pd-summary-item">
+              <div class="ss-pd-summary-label">Pending</div>
+              <div class="ss-pd-summary-value" id="pdPending">—</div>
+            </div>
+          </div>
+
+          <!-- Policy list -->
+          <div id="pdPolicyList" class="ss-pd-list"></div>
+        </div>
+
+        <!-- EDIT POLICY MODAL -->
+        <div class="ss-pd-edit-overlay" id="pdEditOverlay">
+          <div class="ss-pd-edit-modal">
+            <h3>Edit Policy</h3>
+            <div class="ss-pd-edit-grid">
+              <div class="ss-pd-edit-field"><label>Client Name</label><input type="text" id="pdEditClient" /></div>
+              <div class="ss-pd-edit-field"><label>Phone</label><input type="tel" id="pdEditPhone" /></div>
+              <div class="ss-pd-edit-field"><label>Carrier</label><select id="pdEditCarrier"></select></div>
+              <div class="ss-pd-edit-field"><label>Product Type</label><select id="pdEditProduct"></select></div>
+              <div class="ss-pd-edit-field"><label>Annual Premium</label><input type="number" id="pdEditAP" step="0.01" /></div>
+              <div class="ss-pd-edit-field"><label>Policy Number</label><input type="text" id="pdEditPolicyNum" /></div>
+              <div class="ss-pd-edit-field"><label>Sold Date</label><input type="date" id="pdEditSoldDate" /></div>
+              <div class="ss-pd-edit-field"><label>Effective Date</label><input type="date" id="pdEditEffDate" /></div>
+              <div class="ss-pd-edit-field"><label>Status</label><select id="pdEditStatus"><option>Underwriting</option><option>Approved</option><option>Issue Paid</option></select></div>
+              <div class="ss-pd-edit-field"><label>Deal Comp %</label><input type="number" id="pdEditDealComp" step="0.1" /></div>
+              <div class="ss-pd-edit-field" style="grid-column:1/-1;">
+                <label>Pending Override ($) <span style="color:#888;font-weight:500;font-size:0.7rem;">— leave blank to use calculated value</span></label>
+                <input type="number" id="pdEditPendingOverride" step="0.01" />
+              </div>
+            </div>
+            <div class="ss-pd-edit-btns">
+              <button type="button" class="ss-pipeline-btn secondary" id="pdEditCancel">Cancel</button>
+              <button type="button" class="ss-pipeline-btn" id="pdEditSave">Save Changes</button>
+            </div>
+            <div id="pdEditMsg" style="margin-top:0.75rem;font-size:0.8rem;text-align:center;display:none;"></div>
+          </div>
         </div>
 
         <div class="ss-calc-wrap">
@@ -6434,6 +6663,75 @@
     // ─── USER COMP LEVEL (loaded from agent_profiles) ───
     let userCompLevel = null;
     // ─── COMMISSION PIPELINE ───
+    // Shared compute function: takes a policy + current profile comp, returns pending $
+    function computePolicyPending(p) {
+      // Manual override takes precedence
+      const override = parseFloat(p.pending_override);
+      if (!isNaN(override) && p.pending_override !== null && p.pending_override !== undefined && p.pending_override !== '') {
+        return override;
+      }
+
+      const ap = parseFloat(p.annual_premium || 0);
+      if (ap <= 0) return 0;
+
+      let dealComp = parseFloat(p.deal_comp || 0);
+      if (!dealComp && userCompLevel) {
+        dealComp = lookupDealComp(p.carrier, p.product_type, userCompLevel);
+      }
+      if (!dealComp) return 0;
+
+      let pending = ap * (dealComp / 100);
+
+      if (p.status === 'Issue Paid') {
+        pending = pending * 0.25; // 75% advance removed
+        const effStr = p.effective_date || p.policy_date;
+        if (effStr) {
+          const effDate = new Date(effStr + 'T00:00:00'); effDate.setHours(0,0,0,0);
+          const now = new Date(); now.setHours(0,0,0,0);
+          const month10 = new Date(effDate); month10.setMonth(month10.getMonth() + 10);
+          const month11 = new Date(effDate); month11.setMonth(month11.getMonth() + 11);
+          const month12 = new Date(effDate); month12.setMonth(month12.getMonth() + 12);
+          const full = pending;
+          const third = full / 3;
+          if (now >= month12) pending = 0;
+          else if (now >= month11) pending = third;
+          else if (now >= month10) pending = third * 2;
+        }
+      }
+      return pending;
+    }
+
+    // Returns a descriptive string about when this policy starts/continues paying out
+    function payoutScheduleLabel(p) {
+      if (p.status === 'Underwriting') return 'Pending issue';
+      if (p.status === 'Approved') return 'Awaiting issue paid';
+      if (p.status !== 'Issue Paid') return '';
+      const effStr = p.effective_date || p.policy_date;
+      if (!effStr) return '—';
+      const effDate = new Date(effStr + 'T00:00:00'); effDate.setHours(0,0,0,0);
+      const now = new Date(); now.setHours(0,0,0,0);
+      const month10 = new Date(effDate); month10.setMonth(month10.getMonth() + 10);
+      const month11 = new Date(effDate); month11.setMonth(month11.getMonth() + 11);
+      const month12 = new Date(effDate); month12.setMonth(month12.getMonth() + 12);
+      const daysToMonth = (d) => Math.ceil((d - now) / (24 * 60 * 60 * 1000));
+      const monthsToDate = (d) => {
+        const days = daysToMonth(d);
+        if (days <= 0) return null;
+        const m = Math.round(days / 30);
+        if (m === 0) return 'this month';
+        return m === 1 ? 'in 1 month' : 'in ' + m + ' months';
+      };
+      if (now >= month12) return 'Fully paid out';
+      if (now >= month11) return 'Final payout ' + (monthsToDate(month12) || 'this month');
+      if (now >= month10) return '2nd payout ' + (monthsToDate(month11) || 'this month');
+      const m = monthsToDate(month10);
+      return m ? 'Starts ' + m : 'Starts soon';
+    }
+
+    let pipelineAllPolicies = [];
+    let pipelineAllDeposits = [];
+    let pdRange = 'mtd';
+
     async function loadCommissionPipeline() {
       const paidEl = document.getElementById('pipelinePaid');
       const pendingEl = document.getElementById('pipelinePending');
@@ -6452,70 +6750,255 @@
       const token = accessToken || SUPABASE_KEY;
       const hdrs = { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + token };
       try {
-        // 1. PAID: Sum of deposits from daily_kpis for this user
-        const kpiRes = await fetch(SUPABASE_URL + '/rest/v1/daily_kpis?user_id=eq.' + currentUser.id + '&select=deposits', { headers: hdrs });
-        const kpiRows = await kpiRes.json();
-        const totalPaid = (kpiRows || []).reduce((s, r) => s + parseFloat(r.deposits || 0), 0);
+        const kpiRes = await fetch(SUPABASE_URL + '/rest/v1/daily_kpis?user_id=eq.' + currentUser.id + '&select=kpi_date,deposits', { headers: hdrs });
+        pipelineAllDeposits = await kpiRes.json() || [];
+        const totalPaid = pipelineAllDeposits.reduce((s, r) => s + parseFloat(r.deposits || 0), 0);
 
-        // 2. PENDING: Load all policies for this user
         const polRes = await fetch(SUPABASE_URL + '/rest/v1/policies?user_id=eq.' + currentUser.id + '&select=*', { headers: hdrs });
-        const policies = await polRes.json();
+        pipelineAllPolicies = await polRes.json() || [];
 
-        let totalPending = 0;
-        const now = new Date(); now.setHours(0,0,0,0);
-        const MS_DAY = 24 * 60 * 60 * 1000;
-
-        (policies || []).forEach(p => {
-          const ap = parseFloat(p.annual_premium || 0);
-          if (ap <= 0) return;
-
-          // Resolve deal comp: stored deal_comp if present, otherwise compute from current
-          // profile comp + current grid (on-the-fly fallback for historical rows)
-          let dealComp = parseFloat(p.deal_comp || 0);
-          if (!dealComp && userCompLevel) {
-            dealComp = lookupDealComp(p.carrier, p.product_type, userCompLevel);
-          }
-          if (!dealComp) return;
-
-          // Base pending = AP × deal_comp
-          let pending = ap * (dealComp / 100);
-
-          // Status adjustment
-          if (p.status === 'Issue Paid') {
-            // 75% advance removed, 25% remaining
-            pending = pending * 0.25;
-
-            // 9-month payout schedule: after effective_date + 9 months, the 25% pays out in thirds
-            const effStr = p.effective_date || p.policy_date;
-            if (effStr) {
-              const effDate = new Date(effStr + 'T00:00:00'); effDate.setHours(0,0,0,0);
-              const month10 = new Date(effDate); month10.setMonth(month10.getMonth() + 10);
-              const month11 = new Date(effDate); month11.setMonth(month11.getMonth() + 11);
-              const month12 = new Date(effDate); month12.setMonth(month12.getMonth() + 12);
-              const fullBackend = pending; // the remaining 25%
-              const third = fullBackend / 3;
-              if (now >= month12) pending = 0;
-              else if (now >= month11) pending = third;
-              else if (now >= month10) pending = third * 2;
-              // else: full backend still pending
-            }
-          }
-          // Underwriting and Approved: full pending (no adjustment)
-
-          totalPending += pending;
-        });
+        const totalPending = pipelineAllPolicies.reduce((s, p) => s + computePolicyPending(p), 0);
 
         const fmt = n => '$' + Math.round(n).toLocaleString('en-US');
         paidEl.textContent = fmt(totalPaid);
         pendingEl.textContent = fmt(totalPending);
-        paidSub.textContent = (kpiRows || []).length + ' daily KPI entries';
-        pendingSub.textContent = (policies || []).length + ' policies in pipeline';
+        paidSub.textContent = pipelineAllDeposits.length + ' daily KPI entries';
+        pendingSub.textContent = pipelineAllPolicies.length + ' policies in pipeline';
       } catch (e) {
         console.error('Pipeline load failed:', e);
         paidEl.textContent = '—';
         pendingEl.textContent = '—';
       }
     }
+
+    // ─── PIPELINE DETAILS ───
+    function getPdDateRange() {
+      const now = new Date();
+      if (pdRange === 'mtd') {
+        const start = new Date(now.getFullYear(), now.getMonth(), 1);
+        return { start, end: now };
+      }
+      if (pdRange === 'lastmonth') {
+        const start = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+        const end = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59);
+        return { start, end };
+      }
+      if (pdRange === 'ytd') {
+        return { start: new Date(now.getFullYear(), 0, 1), end: now };
+      }
+      if (pdRange === 'all') {
+        return { start: new Date(2000, 0, 1), end: now };
+      }
+      if (pdRange === 'custom') {
+        const from = document.getElementById('pdDateFrom').value;
+        const to = document.getElementById('pdDateTo').value;
+        if (from && to) {
+          const start = new Date(from + 'T00:00:00');
+          const end = new Date(to + 'T23:59:59');
+          return { start, end };
+        }
+        return { start: new Date(now.getFullYear(), 0, 1), end: now };
+      }
+      return { start: new Date(now.getFullYear(), now.getMonth(), 1), end: now };
+    }
+
+    function renderPipelineDetails() {
+      const { start, end } = getPdDateRange();
+
+      // Filter policies by sold date (policy_date)
+      const filtered = pipelineAllPolicies.filter(p => {
+        if (!p.policy_date) return false;
+        const d = new Date(p.policy_date + 'T00:00:00');
+        return d >= start && d <= end;
+      });
+
+      // Summary
+      const soldAP = filtered.reduce((s, p) => s + parseFloat(p.annual_premium || 0), 0);
+      const pending = filtered.reduce((s, p) => s + computePolicyPending(p), 0);
+      const paidInRange = pipelineAllDeposits.filter(r => {
+        if (!r.kpi_date) return false;
+        const d = new Date(r.kpi_date + 'T00:00:00');
+        return d >= start && d <= end;
+      }).reduce((s, r) => s + parseFloat(r.deposits || 0), 0);
+
+      const fmt = n => '$' + Math.round(n).toLocaleString('en-US');
+      document.getElementById('pdSoldAP').textContent = fmt(soldAP);
+      document.getElementById('pdPaid').textContent = fmt(paidInRange);
+      document.getElementById('pdPending').textContent = fmt(pending);
+
+      // Policy list — only those with pending > 0
+      const withPending = filtered
+        .map(p => ({ p, pending: computePolicyPending(p) }))
+        .filter(x => x.pending > 0)
+        .sort((a, b) => new Date(b.p.policy_date) - new Date(a.p.policy_date));
+
+      const listEl = document.getElementById('pdPolicyList');
+      if (!withPending.length) {
+        listEl.innerHTML = '<div class="ss-pd-empty">No policies with pending payouts in this range.</div>';
+        return;
+      }
+
+      const esc = (s) => (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+      let html = '';
+      withPending.forEach(({ p, pending }) => {
+        const ap = parseFloat(p.annual_premium || 0);
+        const dealComp = parseFloat(p.deal_comp || 0) || (userCompLevel ? lookupDealComp(p.carrier, p.product_type, userCompLevel) : 0);
+        const soldDate = p.policy_date ? (function(d){var dt=new Date(d+'T00:00:00');return (dt.getMonth()+1)+'/'+dt.getDate()+'/'+dt.getFullYear();})(p.policy_date) : '—';
+        const payoutInfo = payoutScheduleLabel(p);
+        html += '<div class="ss-pd-policy">';
+        html += '<div class="ss-pd-policy-top">';
+        html += '<div class="ss-pd-policy-name">' + esc(p.client_name || 'Unknown') + '</div>';
+        html += '<div class="ss-pd-policy-pending">' + fmt(pending) + '</div>';
+        html += '</div>';
+        html += '<div class="ss-pd-policy-meta">';
+        html += '<span><strong>' + esc(p.carrier || '—') + '</strong> · ' + esc(p.product_type || '—') + '</span>';
+        html += '<span>AP: <strong>' + fmt(ap) + '</strong></span>';
+        html += '<span>Comp: <strong>' + (dealComp || '—') + '%</strong></span>';
+        html += '<span>Status: <strong>' + esc(p.status || 'Underwriting') + '</strong></span>';
+        html += '<span>Sold: <strong>' + soldDate + '</strong></span>';
+        html += '</div>';
+        html += '<div class="ss-pd-policy-status">';
+        html += '<div class="ss-pd-policy-payout">' + payoutInfo + '</div>';
+        html += '<button class="ss-pd-edit-btn" data-pd-edit-id="' + p.id + '">Edit</button>';
+        html += '</div>';
+        html += '</div>';
+      });
+      listEl.innerHTML = html;
+
+      // Wire up edit buttons
+      listEl.querySelectorAll('[data-pd-edit-id]').forEach(btn => {
+        btn.addEventListener('click', () => openPdEdit(btn.dataset.pdEditId));
+      });
+    }
+
+    function populatePdEditDropdowns() {
+      const carrierSel = document.getElementById('pdEditCarrier');
+      const productSel = document.getElementById('pdEditProduct');
+      if (carrierSel.options.length === 0) {
+        CARRIERS.forEach(c => {
+          const o = document.createElement('option'); o.value = c; o.textContent = c;
+          carrierSel.appendChild(o);
+        });
+      }
+      if (productSel.options.length === 0) {
+        PRODUCT_TYPES.forEach(pt => {
+          const o = document.createElement('option'); o.value = pt; o.textContent = pt;
+          productSel.appendChild(o);
+        });
+      }
+    }
+
+    let pdEditId = null;
+    function openPdEdit(id) {
+      const p = pipelineAllPolicies.find(x => String(x.id) === String(id));
+      if (!p) return;
+      pdEditId = id;
+      populatePdEditDropdowns();
+      document.getElementById('pdEditClient').value = p.client_name || '';
+      document.getElementById('pdEditPhone').value = p.phone || '';
+      document.getElementById('pdEditCarrier').value = p.carrier || '';
+      document.getElementById('pdEditProduct').value = p.product_type || '';
+      document.getElementById('pdEditAP').value = p.annual_premium || '';
+      document.getElementById('pdEditPolicyNum').value = p.policy_number || '';
+      document.getElementById('pdEditSoldDate').value = p.policy_date ? p.policy_date.split('T')[0] : '';
+      document.getElementById('pdEditEffDate').value = p.effective_date ? p.effective_date.split('T')[0] : '';
+      document.getElementById('pdEditStatus').value = p.status || 'Underwriting';
+      document.getElementById('pdEditDealComp').value = p.deal_comp || '';
+      document.getElementById('pdEditPendingOverride').value = p.pending_override || '';
+      document.getElementById('pdEditMsg').style.display = 'none';
+      document.getElementById('pdEditOverlay').classList.add('open');
+    }
+
+    async function savePdEdit() {
+      if (!pdEditId || !currentUser) return;
+      const msgEl = document.getElementById('pdEditMsg');
+      const token = accessToken || SUPABASE_KEY;
+      const patchBody = {
+        client_name: document.getElementById('pdEditClient').value,
+        phone: document.getElementById('pdEditPhone').value || null,
+        carrier: document.getElementById('pdEditCarrier').value,
+        product_type: document.getElementById('pdEditProduct').value,
+        annual_premium: parseFloat(document.getElementById('pdEditAP').value) || 0,
+        policy_number: document.getElementById('pdEditPolicyNum').value,
+        policy_date: document.getElementById('pdEditSoldDate').value || null,
+        effective_date: document.getElementById('pdEditEffDate').value || null,
+        status: document.getElementById('pdEditStatus').value,
+        deal_comp: document.getElementById('pdEditDealComp').value ? parseFloat(document.getElementById('pdEditDealComp').value) : null,
+        pending_override: document.getElementById('pdEditPendingOverride').value !== '' ? parseFloat(document.getElementById('pdEditPendingOverride').value) : null
+      };
+      try {
+        const res = await fetch(SUPABASE_URL + '/rest/v1/policies?id=eq.' + pdEditId, {
+          method: 'PATCH',
+          headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+          body: JSON.stringify(patchBody)
+        });
+        if (!res.ok) throw new Error(await res.text());
+        msgEl.textContent = '✓ Saved';
+        msgEl.style.color = '#16a34a';
+        msgEl.style.display = 'block';
+        // Update the in-memory cache and rerender
+        const idx = pipelineAllPolicies.findIndex(x => String(x.id) === String(pdEditId));
+        if (idx !== -1) pipelineAllPolicies[idx] = Object.assign({}, pipelineAllPolicies[idx], patchBody);
+        setTimeout(() => {
+          document.getElementById('pdEditOverlay').classList.remove('open');
+          renderPipelineDetails();
+          // Also refresh the summary card
+          const totalPaid = pipelineAllDeposits.reduce((s, r) => s + parseFloat(r.deposits || 0), 0);
+          const totalPending = pipelineAllPolicies.reduce((s, p) => s + computePolicyPending(p), 0);
+          const fmt = n => '$' + Math.round(n).toLocaleString('en-US');
+          document.getElementById('pipelinePaid').textContent = fmt(totalPaid);
+          document.getElementById('pipelinePending').textContent = fmt(totalPending);
+        }, 600);
+      } catch (e) {
+        msgEl.textContent = 'Error: ' + e.message;
+        msgEl.style.color = '#dc2626';
+        msgEl.style.display = 'block';
+      }
+    }
+
+    // Wire up details toggle & filter buttons
+    (function initPipelineDetails() {
+      const detailsBtn = document.getElementById('pipelineDetailsBtn');
+      const backBtn = document.getElementById('pipelineBackBtn');
+      const pipelineCard = document.getElementById('commissionPipeline');
+      const detailsPanel = document.getElementById('pipelineDetails');
+      const calcWrap = document.querySelector('#panel-calculator .ss-calc-wrap');
+
+      if (detailsBtn) {
+        detailsBtn.addEventListener('click', () => {
+          pipelineCard.style.display = 'none';
+          if (calcWrap) calcWrap.style.display = 'none';
+          detailsPanel.style.display = 'block';
+          renderPipelineDetails();
+        });
+      }
+      if (backBtn) {
+        backBtn.addEventListener('click', () => {
+          detailsPanel.style.display = 'none';
+          pipelineCard.style.display = 'block';
+          if (calcWrap) calcWrap.style.display = 'flex';
+        });
+      }
+
+      // Filter buttons
+      document.querySelectorAll('.ss-pd-filter').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.ss-pd-filter').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          pdRange = btn.dataset.pdRange;
+          document.getElementById('pdCustomRange').style.display = pdRange === 'custom' ? 'flex' : 'none';
+          if (pdRange !== 'custom') renderPipelineDetails();
+        });
+      });
+      const pdApply = document.getElementById('pdCustomApply');
+      if (pdApply) pdApply.addEventListener('click', renderPipelineDetails);
+
+      // Edit modal
+      const pdEditOverlay = document.getElementById('pdEditOverlay');
+      document.getElementById('pdEditCancel').addEventListener('click', () => pdEditOverlay.classList.remove('open'));
+      pdEditOverlay.addEventListener('click', (e) => { if (e.target === pdEditOverlay) pdEditOverlay.classList.remove('open'); });
+      document.getElementById('pdEditSave').addEventListener('click', savePdEdit);
+    })();
 
     async function loadUserCompLevel() {
       if (!currentUser) return;
