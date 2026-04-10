@@ -791,6 +791,41 @@
       font-size: 0.82rem;
       color: #222222;
     }
+
+    /* Discord post toggle — bottom right of sale form */
+    .ss-discord-toggle-wrap {
+      display: flex; align-items: center; gap: 0.5rem;
+      justify-content: flex-end;
+      margin-top: 1rem;
+      font-size: 0.72rem;
+      color: #666;
+      user-select: none;
+    }
+    .ss-discord-toggle-label {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 700;
+    }
+    .ss-discord-toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 36px; height: 20px;
+    }
+    .ss-discord-toggle-switch input { opacity: 0; width: 0; height: 0; }
+    .ss-discord-toggle-slider {
+      position: absolute; cursor: pointer; inset: 0;
+      background: #ccc; border-radius: 20px;
+      transition: 0.2s;
+    }
+    .ss-discord-toggle-slider:before {
+      position: absolute; content: '';
+      height: 14px; width: 14px;
+      left: 3px; bottom: 3px;
+      background: #fff; border-radius: 50%;
+      transition: 0.2s;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+    .ss-discord-toggle-switch input:checked + .ss-discord-toggle-slider { background: #16a34a; }
+    .ss-discord-toggle-switch input:checked + .ss-discord-toggle-slider:before { transform: translateX(16px); }
     .ss-signup-link a {
       color: #1d4ed8;
       font-weight: 600;
@@ -2923,6 +2958,15 @@
           <div class="ss-signup-link">
             First deal? <a id="openSignup">Sign up here.</a>
           </div>
+
+          <!-- Discord notify toggle (lower right, default ON) -->
+          <div class="ss-discord-toggle-wrap" title="When off, this sale won't post to Discord. Resets to ON after submit.">
+            <span class="ss-discord-toggle-label">Post to Discord</span>
+            <label class="ss-discord-toggle-switch">
+              <input type="checkbox" id="discordNotifyToggle" checked />
+              <span class="ss-discord-toggle-slider"></span>
+            </label>
+          </div>
         </form>
         </div>
 
@@ -3126,7 +3170,7 @@
         </div>
 
         <!-- ═══ COMPENSATION SECTION (merged into Pay panel) ═══ -->
-        <div style="margin-top: 3rem;">
+        <div style="margin-top: 3rem;" id="payCalcCompSection">
 
         <!-- 1. Producer & Builder Pay Scale -->
         <div class="comp-columns">
@@ -4531,8 +4575,12 @@
         result = { ok: false, error: err.message };
       }
       if (result.ok) {
+        // Check Discord toggle — if off, skip the webhook entirely
+        const discordToggle = document.getElementById('discordNotifyToggle');
+        const shouldPost = discordToggle ? discordToggle.checked : true;
         // ─── DISCORD WEBHOOK ───
         try {
+          if (!shouldPost) throw new Error('Discord notify disabled for this submission');
           const DISCORD_WEBHOOK = 'https://discord.com/api/webhooks/1450235046618333358/W7iLux4QLMESxwVX_so6uBJWRVog_Dc6eJT6jp3BpIKD4TIEodEWT8_epWWX6aRjyD4d';
           // Fetch agent's discord_id from agent_profiles
           let agentTag = data.sales_rep;
@@ -4581,6 +4629,8 @@
         e.target.reset();
         // Re-default the policy date to today after reset
         if (policyDateInput) policyDateInput.value = todayYMD();
+        // Reset Discord toggle back to ON after every submission
+        if (discordToggle) discordToggle.checked = true;
         // Check milestones (celebration modal for big milestones)
         await checkAndShowMilestone();
         // Wait for any milestone modal to close, then show goal tracker popup
@@ -6958,10 +7008,12 @@
       const detailsPanel = document.getElementById('pipelineDetails');
       const calcWrap = document.querySelector('#panel-calculator .ss-calc-wrap');
 
+      const compSection = document.getElementById('payCalcCompSection');
       if (detailsBtn) {
         detailsBtn.addEventListener('click', () => {
           pipelineCard.style.display = 'none';
           if (calcWrap) calcWrap.style.display = 'none';
+          if (compSection) compSection.style.display = 'none';
           detailsPanel.style.display = 'block';
           renderPipelineDetails();
         });
@@ -6971,6 +7023,7 @@
           detailsPanel.style.display = 'none';
           pipelineCard.style.display = 'block';
           if (calcWrap) calcWrap.style.display = 'flex';
+          if (compSection) compSection.style.display = 'block';
         });
       }
 
