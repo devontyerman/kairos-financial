@@ -2239,7 +2239,10 @@
       .ss-main {
         margin-left: 0 !important;
         margin-top: 0;
-        padding: 0.5rem 0.75rem 3rem;
+        padding: 0.75rem 0.75rem 3rem;
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow-x: hidden !important;
       }
 
       /* Performance: prevent horizontal scroll */
@@ -2253,14 +2256,29 @@
       .pcg-pills { gap: 0.3rem; }
       .pcg-pill { font-size: 0.68rem; padding: 0.35rem 0.65rem; }
 
-      /* Make all panels full width */
+      /* Make all panels full width on mobile */
       .ss-form-wrap { max-width: 100%; }
       .ss-auth-bar, .ss-auth-prompt { max-width: 100%; }
-      .ss-lb-inner { padding: 1.25rem 0.25rem; }
-      .mp-inner { padding: 1rem 0.25rem; }
+      .ss-lb-inner { max-width: 100%; padding: 1.25rem 0.5rem; }
+      .mp-inner { max-width: 100%; padding: 1rem 0.5rem; }
       .ss-calc-wrap { max-width: 100%; }
       .comp-bonus-row { max-width: 100%; }
       .comp-columns { grid-template-columns: 1fr; }
+      .sh-carriers-grid { grid-template-columns: 1fr !important; }
+      .sh-vendors-grid { grid-template-columns: 1fr !important; }
+      .sh-resources-grid { grid-template-columns: 1fr !important; }
+      .pcg-condensed-grid { grid-template-columns: 1fr !important; }
+      .ss-panel > div { padding-left: 0.5rem !important; padding-right: 0.5rem !important; }
+      .perf-agent-bar-val-left { width: 70px; font-size: 0.58rem; }
+      .perf-agent-bar-label { width: 50px; font-size: 0.58rem; }
+      .ss-calc-steps { grid-template-columns: 1fr !important; }
+      .ss-calc-result-main { flex-direction: column; gap: 0.35rem; }
+      .ss-calc-result-main .val { font-size: 1.2rem !important; }
+      .ss-calc-roi-hero-value { font-size: 1.8rem !important; }
+      .ss-calc-longterm-projections { grid-template-columns: 1fr !important; }
+      .ss-calc-leadership-grid { grid-template-columns: 1fr !important; }
+      .sh-carrier-detail-grid { grid-template-columns: 1fr; }
+      .mp-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 
       /* Goal tracker: stack title above input row */
       .ss-goal-tracker { padding: 1.15rem 1rem; }
@@ -2307,7 +2325,7 @@
         border-radius: 12px;
         box-shadow: 0 2px 8px rgba(0,0,0,0.06);
       }
-      .mp-table tbody tr:hover { background: rgba(56,120,255,0.08) !important; transform: none; }
+      .mp-table tbody tr:hover { background: #f8f8fa !important; transform: none; }
       .mp-table tbody td {
         padding: 0.25rem 0;
         border-bottom: none;
@@ -2351,8 +2369,8 @@
         display: flex;
         justify-content: space-between;
         padding: 1rem 1rem;
-        background: rgba(59,130,246,0.12);
-        border: 1px solid rgba(59,130,246,0.3);
+        background: #f0f0f3;
+        border: 1px solid #ddd;
         border-radius: 12px;
       }
       .mp-table tfoot .mp-total-row td { display: none; padding: 0; }
