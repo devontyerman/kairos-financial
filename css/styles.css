@@ -744,8 +744,8 @@ h1, h2, h3, h4, h5 {
 .page-header {
   padding: calc(var(--nav-height) + 4rem) 0 4rem;
   text-align: center;
-  background: #2d2d35;
-  border-bottom: 1px solid #1a1a1a;
+  background: #ffffff;
+  border-bottom: 1px solid var(--border);
 }
 
 .page-header-eyebrow {
@@ -754,22 +754,22 @@ h1, h2, h3, h4, h5 {
   font-weight: 700;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: #a1a1aa;
+  color: var(--text-muted);
   margin-bottom: 0.6rem;
 }
 
 .page-header-title {
   font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: clamp(2rem, 5vw, 3.2rem);
-  font-weight: 800;
-  color: #ffffff;
+  font-size: clamp(2.4rem, 5.5vw, 3.4rem);
+  font-weight: 900;
+  color: #2d2d35;
   letter-spacing: -0.025em;
   margin-bottom: 0.85rem;
 }
 
 .page-header-desc {
   font-size: 1.18rem;
-  color: #d4d4d8;
+  color: var(--text-secondary);
   max-width: 580px;
   margin: 0 auto;
   line-height: 1.65;
