@@ -1740,39 +1740,78 @@
     }
     .ss-pd-summary-value.green { color: #16a34a; }
     .ss-pd-list {
-      display: flex; flex-direction: column; gap: 0.35rem;
+      display: flex; flex-direction: column; gap: 0.25rem;
+      overflow-x: auto;
+    }
+    .ss-pd-row {
+      display: grid;
+      grid-template-columns:
+        minmax(130px, 1.3fr)   /* Client */
+        minmax(110px, 1fr)     /* Carrier */
+        minmax(85px, 0.8fr)    /* Product */
+        minmax(85px, 0.8fr)    /* AP */
+        minmax(55px, 0.5fr)    /* Comp */
+        minmax(100px, 0.9fr)   /* Status */
+        minmax(150px, 1.3fr)   /* Payout schedule */
+        minmax(100px, 0.9fr)   /* Pending $ */
+        minmax(60px, 0.5fr);   /* Edit */
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.6rem 0.85rem;
+      font-size: 0.78rem;
+      min-width: 950px;
+    }
+    .ss-pd-header {
+      background: #f0f0f3;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      color: #555;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-size: 0.65rem;
     }
     .ss-pd-policy {
-      background: #fafafa; border: 1px solid #e5e5ea;
-      border-radius: 8px; padding: 0.55rem 0.85rem;
-      display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;
+      background: #fafafa;
+      border: 1px solid #e5e5ea;
+      border-radius: 8px;
     }
-    .ss-pd-policy-name {
+    .ss-pd-policy .pd-client {
       font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: 0.85rem; font-weight: 800; color: #1a1a1a;
-      min-width: 110px;
+      font-weight: 800; color: #1a1a1a;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
-    .ss-pd-policy-meta {
-      display: flex; flex-wrap: wrap; gap: 0.25rem 0.8rem;
-      font-size: 0.72rem; color: #555;
-      flex: 1; min-width: 0;
+    .ss-pd-policy .pd-carrier,
+    .ss-pd-policy .pd-product,
+    .ss-pd-policy .pd-status {
+      color: #333;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
-    .ss-pd-policy-meta strong { color: #1a1a1a; font-weight: 700; }
-    .ss-pd-policy-pending {
+    .ss-pd-policy .pd-ap,
+    .ss-pd-policy .pd-comp {
       font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: 0.95rem; font-weight: 900; color: #16a34a;
-      min-width: 80px; text-align: right;
+      font-weight: 700; color: #1a1a1a;
+      white-space: nowrap;
     }
-    .ss-pd-policy-payout {
-      font-size: 0.7rem; color: #666; min-width: 140px; text-align: right;
+    .ss-pd-policy .pd-payout {
+      color: #555;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
-    .ss-pd-policy-payout strong { color: #1a1a1a; font-weight: 700; }
+    .ss-pd-policy .pd-pending {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 900;
+      font-size: 0.9rem;
+      color: #16a34a;
+      text-align: left;
+      white-space: nowrap;
+    }
     .ss-pd-edit-btn {
       padding: 0.3rem 0.7rem;
       font-family: 'Plus Jakarta Sans', sans-serif;
       font-size: 0.68rem; font-weight: 700;
       color: #fff; background: #2563eb;
       border: none; border-radius: 6px; cursor: pointer;
+      justify-self: start;
     }
     .ss-pd-edit-btn:hover { background: #1d4ed8; }
     .ss-pd-empty { text-align: center; padding: 2rem; color: #888; font-size: 0.88rem; }
@@ -6889,21 +6928,31 @@
       }
 
       const esc = (s) => (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-      let html = '';
+      // Header row
+      let html = '<div class="ss-pd-row ss-pd-header">';
+      html += '<div>Client</div>';
+      html += '<div>Carrier</div>';
+      html += '<div>Product</div>';
+      html += '<div>AP</div>';
+      html += '<div>Comp</div>';
+      html += '<div>Status</div>';
+      html += '<div>Payout Schedule</div>';
+      html += '<div>Pending</div>';
+      html += '<div></div>';
+      html += '</div>';
       withPending.forEach(({ p, pending }) => {
         const ap = parseFloat(p.annual_premium || 0);
         const dealComp = parseFloat(p.deal_comp || 0) || (userCompLevel ? lookupDealComp(p.carrier, p.product_type, userCompLevel) : 0);
         const payoutInfo = payoutScheduleLabel(p);
-        html += '<div class="ss-pd-policy">';
-        html += '<div class="ss-pd-policy-name">' + esc(p.client_name || 'Unknown') + '</div>';
-        html += '<div class="ss-pd-policy-meta">';
-        html += '<span><strong>' + esc(p.carrier || '—') + '</strong> · ' + esc(p.product_type || '—') + '</span>';
-        html += '<span>AP: <strong>' + fmt(ap) + '</strong></span>';
-        html += '<span>Comp: <strong>' + (dealComp || '—') + '%</strong></span>';
-        html += '<span>' + esc(p.status || 'Underwriting') + '</span>';
-        html += '</div>';
-        html += '<div class="ss-pd-policy-payout">' + payoutInfo + '</div>';
-        html += '<div class="ss-pd-policy-pending">' + fmt(pending) + '</div>';
+        html += '<div class="ss-pd-row ss-pd-policy">';
+        html += '<div class="pd-client">' + esc(p.client_name || 'Unknown') + '</div>';
+        html += '<div class="pd-carrier">' + esc(p.carrier || '—') + '</div>';
+        html += '<div class="pd-product">' + esc(p.product_type || '—') + '</div>';
+        html += '<div class="pd-ap">' + fmt(ap) + '</div>';
+        html += '<div class="pd-comp">' + (dealComp ? dealComp + '%' : '—') + '</div>';
+        html += '<div class="pd-status">' + esc(p.status || 'Underwriting') + '</div>';
+        html += '<div class="pd-payout">' + payoutInfo + '</div>';
+        html += '<div class="pd-pending">' + fmt(pending) + '</div>';
         html += '<button class="ss-pd-edit-btn" data-pd-edit-id="' + p.id + '">Edit</button>';
         html += '</div>';
       });
