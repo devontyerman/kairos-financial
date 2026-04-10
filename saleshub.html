@@ -523,6 +523,31 @@
       padding: 2.5rem 1.5rem;
     }
 
+    /* Shared big page title for sales hub panels */
+    .ss-panel-head {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .ss-panel-head h2,
+    .ss-panel-head .ss-panel-title {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: clamp(2.4rem, 5.5vw, 3.4rem);
+      font-weight: 900;
+      color: #2d2d35;
+      letter-spacing: -0.025em;
+      margin: 0 0 0.6rem 0;
+    }
+    .ss-panel-head .ss-panel-sub {
+      font-size: 0.95rem;
+      color: #555;
+      margin: 0;
+    }
+    @media (max-width: 720px) {
+      .ss-panel-head h2,
+      .ss-panel-head .ss-panel-title { font-size: 2rem; }
+      .ss-panel-head .ss-panel-sub { font-size: 0.85rem; }
+    }
+
     .ss-lb-header {
       text-align: center;
       margin-bottom: 2rem;
@@ -2887,6 +2912,11 @@
     <div class="ss-panel active" id="panel-submit">
       <div style="padding: 2.5rem 1.5rem;">
 
+        <div class="ss-panel-head">
+          <h2>Submit a Sale</h2>
+          <p class="ss-panel-sub">Log a new policy and update your daily KPIs.</p>
+        </div>
+
         <!-- Auth bar (shown when logged in) -->
         <div class="ss-auth-bar" id="authBar" style="display:none;">
           <div class="ss-auth-user">Submitting as <span id="authName"></span></div>
@@ -3025,6 +3055,10 @@
     <!-- ═══ GOAL TRACKER PANEL ═══ -->
     <div class="ss-panel" id="panel-goals">
       <div style="padding: 2.5rem 1.5rem;">
+        <div class="ss-panel-head">
+          <h2>Goals</h2>
+          <p class="ss-panel-sub">Set your annual production target and track your pace.</p>
+        </div>
         <div class="ss-goal-tracker visible" id="goalTracker">
           <div class="ss-goal-header">
             <div class="ss-goal-title">
@@ -3045,6 +3079,11 @@
     <!-- ═══ COMMISSION CALCULATOR PANEL ═══ -->
     <div class="ss-panel" id="panel-calculator">
       <div style="padding: 2.5rem 1.5rem;">
+
+        <div class="ss-panel-head">
+          <h2>Commission</h2>
+          <p class="ss-panel-sub">Track your paid and pending commission across every policy.</p>
+        </div>
 
         <!-- ═══ COMMISSION PIPELINE ═══ -->
         <div class="ss-pipeline-card" id="commissionPipeline">
@@ -3389,9 +3428,9 @@
       <div class="ss-lb-inner">
         <div id="lbNotAuth" class="mp-not-auth" style="display:none;">Sign in to view the leaderboard.</div>
         <div id="lbAuthWrap">
-        <div class="ss-lb-header">
+        <div class="ss-panel-head">
           <h2>Leaderboard</h2>
-          <p>Who's closing the most business?</p>
+          <p class="ss-panel-sub">Who's closing the most business?</p>
         </div>
         <div class="ss-lb-filter-rows">
           <div class="ss-lb-filter-row">
@@ -3421,6 +3460,10 @@
     <!-- MY POLICIES -->
     <div class="ss-panel" id="panel-policies">
       <div class="mp-inner">
+        <div class="ss-panel-head">
+          <h2>Book of Business</h2>
+          <p class="ss-panel-sub">All your submitted policies in one place.</p>
+        </div>
         <div id="mpNotAuth" class="mp-not-auth" style="display:none;">
           Sign in to view and manage your policies.
         </div>
@@ -3428,7 +3471,6 @@
         <div id="mpContent" style="display:none;">
           <div class="mp-header">
             <div>
-              <div class="mp-title">Book of Business</div>
               <div class="mp-count" id="mpCount"></div>
             </div>
             <button class="mp-export-btn" id="mpExportCsv">
@@ -3471,11 +3513,14 @@
     <!-- ═══ PERFORMANCE TAB ═══ -->
     <div class="ss-panel" id="panel-performance">
       <div class="mp-inner">
+        <div class="ss-panel-head">
+          <h2>My Performance</h2>
+          <p class="ss-panel-sub">Your KPIs, conversion rates, and trends at a glance.</p>
+        </div>
         <div id="perfNotAuth" class="mp-not-auth" style="display:none;">Sign in to view your performance.</div>
         <div id="perfContent" style="display:none;">
           <div class="mp-header" style="margin-bottom:1.25rem;">
             <div>
-              <div class="mp-title">My Performance</div>
               <div class="mp-count" id="perfSummary" style="color:#888;font-size:0.78rem;"></div>
             </div>
           </div>
@@ -3526,6 +3571,11 @@
     <!-- ═══ COMP GRID PANEL ═══ -->
     <div class="ss-panel" id="panel-compgrid">
       <div style="padding: 2.5rem 1.5rem;">
+
+        <div class="ss-panel-head">
+          <h2>Comp Grid</h2>
+          <p class="ss-panel-sub">Carrier and product compensation by your level.</p>
+        </div>
 
         <!-- Level selector -->
         <div class="pcg-level-selector">
@@ -3677,9 +3727,9 @@
     <!-- ═══ CARRIER DIRECTORY PANEL ═══ -->
     <div class="ss-panel" id="panel-carriers">
       <div style="padding: 2.5rem 1.5rem;">
-        <div style="text-align:center;margin-bottom:2rem;">
-          <h2 style="font-family:'Plus Jakarta Sans',sans-serif;font-size:clamp(2.4rem,5.5vw,3.4rem);font-weight:900;color:#2d2d35;letter-spacing:-0.025em;margin-bottom:0.6rem;">Carrier Directory</h2>
-          <p style="font-size:0.95rem;color:#555;">Tap a carrier to view details.</p>
+        <div class="ss-panel-head">
+          <h2>Carrier Directory</h2>
+          <p class="ss-panel-sub">Tap a carrier to view details.</p>
         </div>
 
         <!-- Carrier grid (visible by default) -->
@@ -3728,9 +3778,9 @@
     <!-- ═══ LEAD VENDORS PANEL ═══ -->
     <div class="ss-panel" id="panel-leadvendors">
       <div style="padding: 2.5rem 1.5rem;">
-        <div style="text-align:center;margin-bottom:2rem;">
-          <h2 style="font-family:'Plus Jakarta Sans',sans-serif;font-size:clamp(2.4rem,5.5vw,3.4rem);font-weight:900;color:#2d2d35;letter-spacing:-0.025em;margin-bottom:0.6rem;">Lead Vendors</h2>
-          <p style="font-size:0.95rem;color:#555;">Approved lead sources to build your pipeline.</p>
+        <div class="ss-panel-head">
+          <h2>Lead Vendors</h2>
+          <p class="ss-panel-sub">Approved lead sources to build your pipeline.</p>
         </div>
         <div class="sh-vendors-grid">
           <a href="https://goatleads.com/" target="_blank" rel="noopener noreferrer" class="sh-vendor-card">
@@ -3760,9 +3810,9 @@
     <!-- ═══ AGENT RESOURCES PANEL ═══ -->
     <div class="ss-panel" id="panel-resources">
       <div style="padding: 2.5rem 1.5rem;">
-        <div style="text-align:center;margin-bottom:2rem;">
-          <h2 style="font-family:'Plus Jakarta Sans',sans-serif;font-size:clamp(2.4rem,5.5vw,3.4rem);font-weight:900;color:#2d2d35;letter-spacing:-0.025em;margin-bottom:0.6rem;">Agent Resources</h2>
-          <p style="font-size:0.95rem;color:#555;">Scripts, guides, and tools to help you sell.</p>
+        <div class="ss-panel-head">
+          <h2>Agent Resources</h2>
+          <p class="ss-panel-sub">Scripts, guides, and tools to help you sell.</p>
         </div>
 
         <div class="sh-resources-cat">
@@ -3820,9 +3870,9 @@
     <!-- ═══ PROFILE PANEL ═══ -->
     <div class="ss-panel" id="panel-profile">
       <div style="padding: 2.5rem 1.5rem; max-width: 600px; margin: 0 auto;">
-        <div style="text-align:center;margin-bottom:2rem;">
-          <h2 style="font-family:'Plus Jakarta Sans',sans-serif;font-size:1.4rem;font-weight:900;color:#1a1a1a;margin-bottom:0.3rem;">Profile</h2>
-          <p style="font-size:0.85rem;color:#666;">Update your account info and compensation level.</p>
+        <div class="ss-panel-head">
+          <h2>Profile</h2>
+          <p class="ss-panel-sub">Update your account info and compensation level.</p>
         </div>
 
         <!-- Admin Dashboard (admin only) -->
