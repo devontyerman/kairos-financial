@@ -1705,42 +1705,37 @@
     }
     .ss-pd-summary-value.green { color: #16a34a; }
     .ss-pd-list {
-      display: flex; flex-direction: column; gap: 0.75rem;
+      display: flex; flex-direction: column; gap: 0.35rem;
     }
     .ss-pd-policy {
       background: #fafafa; border: 1px solid #e5e5ea;
-      border-radius: 12px; padding: 1rem 1.2rem;
-    }
-    .ss-pd-policy-top {
-      display: flex; justify-content: space-between; align-items: baseline;
-      gap: 0.75rem; margin-bottom: 0.35rem; flex-wrap: wrap;
+      border-radius: 8px; padding: 0.55rem 0.85rem;
+      display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;
     }
     .ss-pd-policy-name {
       font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: 0.98rem; font-weight: 800; color: #1a1a1a;
-    }
-    .ss-pd-policy-pending {
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: 1.05rem; font-weight: 900; color: #16a34a;
+      font-size: 0.85rem; font-weight: 800; color: #1a1a1a;
+      min-width: 110px;
     }
     .ss-pd-policy-meta {
-      display: flex; flex-wrap: wrap; gap: 0.5rem 1rem;
-      font-size: 0.78rem; color: #555; margin-bottom: 0.5rem;
+      display: flex; flex-wrap: wrap; gap: 0.25rem 0.8rem;
+      font-size: 0.72rem; color: #555;
+      flex: 1; min-width: 0;
     }
     .ss-pd-policy-meta strong { color: #1a1a1a; font-weight: 700; }
-    .ss-pd-policy-status {
-      display: flex; justify-content: space-between; align-items: center;
-      gap: 0.75rem; padding-top: 0.5rem; border-top: 1px solid #e5e5ea;
-      flex-wrap: wrap;
+    .ss-pd-policy-pending {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.95rem; font-weight: 900; color: #16a34a;
+      min-width: 80px; text-align: right;
     }
     .ss-pd-policy-payout {
-      font-size: 0.75rem; color: #666;
+      font-size: 0.7rem; color: #666; min-width: 140px; text-align: right;
     }
     .ss-pd-policy-payout strong { color: #1a1a1a; font-weight: 700; }
     .ss-pd-edit-btn {
-      padding: 0.35rem 0.85rem;
+      padding: 0.3rem 0.7rem;
       font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: 0.72rem; font-weight: 700;
+      font-size: 0.68rem; font-weight: 700;
       color: #fff; background: #2563eb;
       border: none; border-radius: 6px; cursor: pointer;
     }
@@ -2971,7 +2966,7 @@
               <div class="ss-pipeline-stat-sub" id="pipelinePaidSub">Sum of deposits entered</div>
             </div>
             <div class="ss-pipeline-stat">
-              <div class="ss-pipeline-stat-label">Total Pending</div>
+              <div class="ss-pipeline-stat-label">Pending Commission</div>
               <div class="ss-pipeline-stat-value" id="pipelinePending">—</div>
               <div class="ss-pipeline-stat-sub" id="pipelinePendingSub">Unpaid commission owed</div>
             </div>
@@ -3020,7 +3015,7 @@
               <div class="ss-pd-summary-value green" id="pdPaid">—</div>
             </div>
             <div class="ss-pd-summary-item">
-              <div class="ss-pd-summary-label">Pending</div>
+              <div class="ss-pd-summary-label">Pending Commission</div>
               <div class="ss-pd-summary-value" id="pdPending">—</div>
             </div>
           </div>
@@ -3045,8 +3040,11 @@
               <div class="ss-pd-edit-field"><label>Status</label><select id="pdEditStatus"><option>Underwriting</option><option>Approved</option><option>Issue Paid</option></select></div>
               <div class="ss-pd-edit-field"><label>Deal Comp %</label><input type="number" id="pdEditDealComp" step="0.1" /></div>
               <div class="ss-pd-edit-field" style="grid-column:1/-1;">
-                <label>Pending Override ($) <span style="color:#888;font-weight:500;font-size:0.7rem;">— leave blank to use calculated value</span></label>
-                <input type="number" id="pdEditPendingOverride" step="0.01" />
+                <label>Pending Override ($)</label>
+                <input type="number" id="pdEditPendingOverride" step="0.01" placeholder="Leave blank to use the calculated amount" />
+                <div style="margin-top:0.4rem;padding:0.65rem 0.8rem;background:#f0f7ff;border:1px solid #cfe0ff;border-radius:8px;font-size:0.72rem;color:#1e3a8a;line-height:1.5;">
+                  <strong>What is this?</strong> Enter a dollar amount to manually override the pending commission for this policy. Use this if a chargeback, split, or other adjustment means the calculated amount is wrong. Leave blank to let the system calculate it automatically from AP × comp level and the payout schedule.
+                </div>
               </div>
             </div>
             <div class="ss-pd-edit-btns">
@@ -6750,8 +6748,10 @@
       const token = accessToken || SUPABASE_KEY;
       const hdrs = { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + token };
       try {
-        const kpiRes = await fetch(SUPABASE_URL + '/rest/v1/daily_kpis?user_id=eq.' + currentUser.id + '&select=kpi_date,deposits', { headers: hdrs });
-        pipelineAllDeposits = await kpiRes.json() || [];
+        const kpiRes = await fetch(SUPABASE_URL + '/rest/v1/daily_kpis?user_id=eq.' + currentUser.id + '&select=kpi_date,deposits&order=kpi_date.desc', { headers: hdrs });
+        const allKpis = await kpiRes.json() || [];
+        // Exclude the 15 most recent daily KPI entries from the Total Paid
+        pipelineAllDeposits = allKpis.slice(15);
         const totalPaid = pipelineAllDeposits.reduce((s, r) => s + parseFloat(r.deposits || 0), 0);
 
         const polRes = await fetch(SUPABASE_URL + '/rest/v1/policies?user_id=eq.' + currentUser.id + '&select=*', { headers: hdrs });
@@ -6843,24 +6843,18 @@
       withPending.forEach(({ p, pending }) => {
         const ap = parseFloat(p.annual_premium || 0);
         const dealComp = parseFloat(p.deal_comp || 0) || (userCompLevel ? lookupDealComp(p.carrier, p.product_type, userCompLevel) : 0);
-        const soldDate = p.policy_date ? (function(d){var dt=new Date(d+'T00:00:00');return (dt.getMonth()+1)+'/'+dt.getDate()+'/'+dt.getFullYear();})(p.policy_date) : '—';
         const payoutInfo = payoutScheduleLabel(p);
         html += '<div class="ss-pd-policy">';
-        html += '<div class="ss-pd-policy-top">';
         html += '<div class="ss-pd-policy-name">' + esc(p.client_name || 'Unknown') + '</div>';
-        html += '<div class="ss-pd-policy-pending">' + fmt(pending) + '</div>';
-        html += '</div>';
         html += '<div class="ss-pd-policy-meta">';
         html += '<span><strong>' + esc(p.carrier || '—') + '</strong> · ' + esc(p.product_type || '—') + '</span>';
         html += '<span>AP: <strong>' + fmt(ap) + '</strong></span>';
         html += '<span>Comp: <strong>' + (dealComp || '—') + '%</strong></span>';
-        html += '<span>Status: <strong>' + esc(p.status || 'Underwriting') + '</strong></span>';
-        html += '<span>Sold: <strong>' + soldDate + '</strong></span>';
+        html += '<span>' + esc(p.status || 'Underwriting') + '</span>';
         html += '</div>';
-        html += '<div class="ss-pd-policy-status">';
         html += '<div class="ss-pd-policy-payout">' + payoutInfo + '</div>';
+        html += '<div class="ss-pd-policy-pending">' + fmt(pending) + '</div>';
         html += '<button class="ss-pd-edit-btn" data-pd-edit-id="' + p.id + '">Edit</button>';
-        html += '</div>';
         html += '</div>';
       });
       listEl.innerHTML = html;
