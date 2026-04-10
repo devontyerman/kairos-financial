@@ -5718,14 +5718,28 @@
     discordHelpOverlay.addEventListener('click', (e) => { if (e.target === discordHelpOverlay) discordHelpOverlay.style.display = 'none'; });
 
     // ─── LOGIN ───
+    function showLoginMsg(text, type) {
+      loginMsg.textContent = text;
+      loginMsg.className = 'ss-signup-msg ' + (type || 'error');
+      loginMsg.style.display = 'block';
+    }
+
     document.getElementById('loginForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const btn = document.getElementById('loginBtn');
       btn.disabled = true;
-      loginMsg.className = 'ss-signup-msg'; loginMsg.style.display = 'none';
+      loginMsg.className = 'ss-signup-msg';
+      loginMsg.style.display = 'none';
+      loginMsg.textContent = '';
 
-      const email = document.getElementById('loginEmail').value.trim();
-      const password = document.getElementById('loginPassword').value;
+      const email = (document.getElementById('loginEmail').value || '').trim();
+      const password = document.getElementById('loginPassword').value || '';
+
+      if (!email || !password) {
+        showLoginMsg('Please enter both email and password.', 'error');
+        btn.disabled = false;
+        return;
+      }
 
       try {
         const res = await fetch(SUPABASE_URL + '/auth/v1/token?grant_type=password', {
@@ -5733,7 +5747,8 @@
           headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, password })
         });
-        const result = await res.json();
+        let result = {};
+        try { result = await res.json(); } catch (parseErr) { result = {}; }
 
         if (res.ok && result.access_token) {
           accessToken = result.access_token;
@@ -5742,31 +5757,51 @@
           localStorage.setItem('sb_refresh_token', result.refresh_token);
           signupOverlay.classList.remove('open');
           updateAuthUI();
+          btn.disabled = false;
         } else {
-          loginMsg.textContent = result.error_description || result.msg || 'Invalid email or password.';
-          loginMsg.className = 'ss-signup-msg error';
+          const errMsg = result.error_description || result.msg || result.error || ('Invalid email or password (HTTP ' + res.status + ').');
+          console.error('Login failed:', res.status, result);
+          showLoginMsg(errMsg, 'error');
         }
       } catch (err) {
-        loginMsg.textContent = 'Connection error. Please try again.';
-        loginMsg.className = 'ss-signup-msg error';
+        console.error('Login request error:', err);
+        showLoginMsg('Connection error: ' + (err && err.message ? err.message : 'Please try again.'), 'error');
       }
       btn.disabled = false;
     });
+
+    function showSignupMsg(text, type) {
+      signupMsg.textContent = text;
+      signupMsg.className = 'ss-signup-msg ' + (type || 'error');
+      signupMsg.style.display = 'block';
+    }
 
     document.getElementById('signupForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const btn = document.getElementById('signupBtn');
       btn.disabled = true;
-      signupMsg.className = 'ss-signup-msg'; signupMsg.style.display = 'none';
+      // Clear previous message
+      signupMsg.className = 'ss-signup-msg';
+      signupMsg.style.display = 'none';
+      signupMsg.textContent = '';
 
-      const name = document.getElementById('signupName').value.trim();
-      const email = document.getElementById('signupEmail').value.trim();
-      const password = document.getElementById('signupPassword').value;
-      const discordId = document.getElementById('signupDiscordId').value.trim();
+      const name = (document.getElementById('signupName').value || '').trim();
+      const email = (document.getElementById('signupEmail').value || '').trim();
+      const password = document.getElementById('signupPassword').value || '';
+      const discordId = (document.getElementById('signupDiscordId').value || '').trim();
 
       if (!name || !email || !password || !discordId) {
-        signupMsg.textContent = 'Please fill out all fields, including your Discord User ID.';
-        signupMsg.className = 'ss-signup-msg error';
+        showSignupMsg('Please fill out all fields, including your Discord User ID.', 'error');
+        btn.disabled = false;
+        return;
+      }
+      if (password.length < 6) {
+        showSignupMsg('Password must be at least 6 characters.', 'error');
+        btn.disabled = false;
+        return;
+      }
+      if (!/^\S+@\S+\.\S+$/.test(email)) {
+        showSignupMsg('Please enter a valid email address.', 'error');
         btn.disabled = false;
         return;
       }
@@ -5777,11 +5812,12 @@
           headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, password, data: { name } })
         });
-        const result = await res.json();
+        let result = {};
+        try { result = await res.json(); } catch (parseErr) { result = {}; }
 
-        if (res.ok && !result.error) {
+        if (res.ok && !result.error && !result.error_description && !result.msg) {
           // Create agent_profiles row on signup so admin can add discord_id later
-          const newUserId = result.user?.id;
+          const newUserId = result.user?.id || result.id;
           if (newUserId) {
             try {
               await fetch(SUPABASE_URL + '/rest/v1/agent_profiles', {
@@ -5789,7 +5825,7 @@
                 headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
                 body: JSON.stringify({ user_id: newUserId, agent_name: name, discord_id: discordId || null })
               });
-            } catch (e) { /* profile creation is best-effort */ }
+            } catch (profileErr) { console.warn('Profile creation failed:', profileErr); }
           }
 
           // If Supabase returns a session (email confirm disabled), auto-login
@@ -5801,18 +5837,19 @@
             signupOverlay.classList.remove('open');
             updateAuthUI();
             e.target.reset();
+            btn.disabled = false;
             return;
           }
-          signupMsg.textContent = 'Account created! Check your email to confirm, then log in to start submitting deals.';
-          signupMsg.className = 'ss-signup-msg success';
+          showSignupMsg('Account created! Check your email to confirm, then log in to start submitting deals.', 'success');
           e.target.reset();
         } else {
-          signupMsg.textContent = result.error_description || result.msg || result.error || 'Signup failed. Please try again.';
-          signupMsg.className = 'ss-signup-msg error';
+          const errMsg = result.error_description || result.msg || result.error || ('Signup failed (HTTP ' + res.status + '). Please try again.');
+          console.error('Signup failed:', res.status, result);
+          showSignupMsg(errMsg, 'error');
         }
       } catch (err) {
-        signupMsg.textContent = 'Connection error. Please try again.';
-        signupMsg.className = 'ss-signup-msg error';
+        console.error('Signup request error:', err);
+        showSignupMsg('Connection error: ' + (err && err.message ? err.message : 'Please check your internet and try again.'), 'error');
       }
       btn.disabled = false;
     });
