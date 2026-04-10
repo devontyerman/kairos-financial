@@ -5810,22 +5810,25 @@
         const res = await fetch(SUPABASE_URL + '/auth/v1/signup', {
           method: 'POST',
           headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, password, data: { name } })
+          body: JSON.stringify({ email, password, data: { name, discord_id: discordId } })
         });
         let result = {};
         try { result = await res.json(); } catch (parseErr) { result = {}; }
 
         if (res.ok && !result.error && !result.error_description && !result.msg) {
-          // Create agent_profiles row on signup so admin can add discord_id later
+          // agent_profiles row is created automatically by the handle_new_user() trigger
+          // on auth.users insert. As a best-effort fallback for cases where the trigger
+          // hasn't been installed or fails, try the direct insert too (will silently fail
+          // if RLS blocks it, which is fine — trigger is the source of truth).
           const newUserId = result.user?.id || result.id;
-          if (newUserId) {
+          if (newUserId && result.access_token) {
             try {
               await fetch(SUPABASE_URL + '/rest/v1/agent_profiles', {
                 method: 'POST',
-                headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+                headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + result.access_token, 'Content-Type': 'application/json', 'Prefer': 'return=minimal,resolution=ignore-duplicates' },
                 body: JSON.stringify({ user_id: newUserId, agent_name: name, discord_id: discordId || null })
               });
-            } catch (profileErr) { console.warn('Profile creation failed:', profileErr); }
+            } catch (profileErr) { console.warn('Profile fallback insert failed:', profileErr); }
           }
 
           // If Supabase returns a session (email confirm disabled), auto-login
