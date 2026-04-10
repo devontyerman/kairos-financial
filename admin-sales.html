@@ -22,7 +22,7 @@
     .admin-gate-card .err { color: #dc2626; font-size: 0.78rem; margin-top: 0.5rem; display: none; }
 
     /* Page */
-    .admin-page { display: none; padding: calc(var(--nav-height) + 2rem) 1.5rem 4rem; max-width: 1700px; margin: 0 auto; }
+    .admin-page { display: none; padding: 2rem 1.5rem 4rem; max-width: 1700px; margin: 0 auto; }
     .admin-page.visible { display: block; }
 
     .admin-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem; }
@@ -170,10 +170,10 @@
       transition: all 0.2s ease;
     }
     .perf-range-btn:hover { color: #1a1a1a; background: #f5f5f8; }
-    .perf-range-btn.active { color: #ffffff; background: #2d2d35;
+    .perf-range-btn.active {
       background: #2d2d35;
-      color: #1a1a1a;
-      box-shadow: 0 4px 14px rgba(37,99,235,0.35);
+      color: #ffffff;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.15);
     }
     .perf-rep-select { padding: 0.45rem 2rem 0.45rem 0.8rem; font-size: 0.8rem; font-family: 'Inter', sans-serif; color: #1a1a1a; background: #f5f5f8; border: 1px solid #ddd; border-radius: 8px; appearance: none; background-image: url("data:image/svg+xml,%3Csvg width='12' height='12' viewBox='0 0 12 12' fill='none' stroke='%23666' stroke-width='2' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolyline points='2 4 6 8 10 4'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 0.6rem center; }
     .perf-rep-select option { background: #ffffff; }
@@ -227,10 +227,12 @@
     .perf-bar-label { font-size: 0.72rem; color: #333; width: 65px; flex-shrink: 0; text-align: right; font-weight: 600; }
     .perf-bar-track { flex: 1; height: 24px; background: #f8f8fa; border-radius: 6px; overflow: hidden; position: relative; }
     .perf-bar-fill { height: 100%; border-radius: 6px; transition: width 0.6s ease; display: flex; align-items: center; padding-left: 0.6rem; min-width: 0; }
-    .perf-bar-fill.blue { background: #2563eb; }
-    .perf-bar-fill.green { background: #16a34a; }
-    .perf-bar-fill.gold { background: #d97706; }
-    .perf-bar-fill.team { background: #2d2d35; }
+    .perf-bar-fill.blue { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
+    .perf-bar-fill.green { background: linear-gradient(90deg, #16a34a, #4ade80); }
+    .perf-bar-fill.gold { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+    .perf-bar-fill.team { background: linear-gradient(90deg, #14b8a6, #2dd4bf); }
+    .perf-bar-fill.purple { background: linear-gradient(90deg, #8b5cf6, #a78bfa); }
+    .perf-bar-fill.pink { background: linear-gradient(90deg, #ec4899, #f472b6); }
     .perf-bar-row.perf-bar-team { padding-bottom: 0.5rem; margin-bottom: 0.4rem; border-bottom: 1px solid #e0e0e5; }
     .perf-bar-row.perf-bar-team .perf-bar-track { height: 30px; }
     .perf-bar-val { font-size: 0.7rem; font-weight: 800; color: #ffffff; white-space: nowrap; text-shadow: 0 1px 2px rgba(0,0,0,0.25); }
@@ -412,16 +414,6 @@
 </head>
 <body>
 
-  <nav class="nav scrolled" id="mainNav">
-    <div class="nav-inner">
-      <a href="index.html" class="nav-logo" style="display:none;">
-        <div class="nav-logo-mark"><img src="assets/kf-logo.png" alt="Kairos Financial" /></div>
-        <span class="nav-logo-text">KAIROS</span>
-      </a>
-      <ul class="nav-links"></ul>
-    </div>
-  </nav>
-
   <!-- LOGIN GATE -->
   <div class="admin-gate" id="adminGate">
     <div class="admin-gate-card">
@@ -512,10 +504,10 @@
         </div>
       </div>
       <div id="perfCustomRange" style="display:none;gap:0.5rem;align-items:center;margin-bottom:1rem;flex-wrap:wrap;">
-        <input type="date" id="perfDateFrom" style="padding:0.4rem 0.7rem;font-size:0.8rem;background:#ffffff;border:1px solid #ddd;border-radius:8px;color:#1a1a1a;" />
+        <input type="date" id="perfDateFrom" style="padding:0.4rem 0.7rem;font-size:0.8rem;background:#ffffff;border:1px solid #ddd;border-radius:8px;color:#1a1a1a;color-scheme:light;" />
         <span style="color:#555;font-size:0.8rem;">to</span>
-        <input type="date" id="perfDateTo" style="padding:0.4rem 0.7rem;font-size:0.8rem;background:#ffffff;border:1px solid #ddd;border-radius:8px;color:#1a1a1a;" />
-        <button id="perfCustomApply" style="padding:0.4rem 1rem;font-size:0.78rem;font-weight:700;background:#1a1a1a;color:#1a1a1afff;border:none;border-radius:100px;cursor:pointer;">Apply</button>
+        <input type="date" id="perfDateTo" style="padding:0.4rem 0.7rem;font-size:0.8rem;background:#ffffff;border:1px solid #ddd;border-radius:8px;color:#1a1a1a;color-scheme:light;" />
+        <button id="perfCustomApply" style="padding:0.4rem 1rem;font-size:0.78rem;font-weight:700;background:#2d2d35;color:#ffffff;border:none;border-radius:100px;cursor:pointer;">Apply</button>
       </div>
       <div id="perfKpis"></div>
       <div id="perfExtraCharts" class="perf-charts"></div>
@@ -1110,9 +1102,10 @@
         if (sorted.length === 0) {
           repBars += '<div style="text-align:center;padding:1.25rem;color:#888;font-size:0.8rem;">No sales recorded for this timeframe yet.</div>';
         } else {
+          const repColors = ['gold', 'blue', 'green', 'team', 'purple', 'pink'];
           sorted.forEach(([name, ap], i) => {
             const pct = (ap / maxRepAP * 100).toFixed(1);
-            const color = i === 0 ? 'gold' : 'blue';
+            const color = repColors[i % repColors.length];
             repBars += '<div class="perf-bar-row"><div class="perf-bar-label" style="width:90px;">' + name.split(' ')[0] + '</div><div class="perf-bar-track"><div class="perf-bar-fill ' + color + '" style="width:' + pct + '%"><span class="perf-bar-val">$' + fmtAP(ap) + '</span></div></div></div>';
           });
         }

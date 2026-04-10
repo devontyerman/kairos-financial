@@ -2778,7 +2778,7 @@
     </button>
     <button class="ss-sidebar-btn" data-panel="calculator">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
-      <span>Pay Calculator</span>
+      <span>Commission</span>
     </button>
     <button class="ss-sidebar-btn" data-panel="compgrid">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
@@ -3387,8 +3387,8 @@
         <div class="ss-lb-filter-rows">
           <div class="ss-lb-filter-row">
             <button class="ss-lb-filter" data-range="daily">Today</button>
-            <button class="ss-lb-filter active" data-range="weekly">This Week</button>
-            <button class="ss-lb-filter" data-range="monthly">This Month</button>
+            <button class="ss-lb-filter" data-range="weekly">This Week</button>
+            <button class="ss-lb-filter active" data-range="monthly">This Month</button>
             <button class="ss-lb-filter" data-range="yearly">This Year</button>
           </div>
           <div class="ss-lb-filter-row">
@@ -3814,6 +3814,19 @@
         <div style="text-align:center;margin-bottom:2rem;">
           <h2 style="font-family:'Plus Jakarta Sans',sans-serif;font-size:1.4rem;font-weight:900;color:#1a1a1a;margin-bottom:0.3rem;">Profile</h2>
           <p style="font-size:0.85rem;color:#666;">Update your account info and compensation level.</p>
+        </div>
+
+        <!-- Admin Dashboard (admin only) -->
+        <div class="ss-form-card" id="profileAdminCard" style="margin-bottom:1.25rem;display:none;">
+          <div class="ss-form-title" style="color:#2d2d35;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z"/></svg>
+            Admin Access
+          </div>
+          <p style="font-size:0.82rem;color:#666;margin-bottom:0.9rem;">Open the admin sales dashboard to view, edit, and manage all agent policies.</p>
+          <a href="admin-sales.html" class="ss-submit" style="background:#2d2d35;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:0.5rem;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+            Open Admin Dashboard
+          </a>
         </div>
 
         <!-- Comp Level -->
@@ -5511,7 +5524,7 @@
     }
 
     // ─── LEADERBOARD ───
-    let currentRange = 'weekly';
+    let currentRange = 'monthly';
 
     document.querySelectorAll('.ss-lb-filter').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -7194,6 +7207,12 @@
       if (userCompLevel) sel.value = userCompLevel;
       // Set current email
       document.getElementById('profileEmail').value = currentUser.email || '';
+      // Show admin dashboard link only for the admin email
+      const adminCard = document.getElementById('profileAdminCard');
+      if (adminCard) {
+        const isAdmin = (currentUser.email || '').toLowerCase() === 'dev@kairos-financial.com';
+        adminCard.style.display = isAdmin ? '' : 'none';
+      }
     }
 
     // Save comp level
