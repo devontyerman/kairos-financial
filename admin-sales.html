@@ -1145,8 +1145,72 @@
       // ── AGENT GOALS SECTION ──
       renderGoals(ytd);
 
+      // ── AGENT COMP LEVELS SECTION ──
+      renderCompLevels();
+
       // ── KPI SECTION ──
       renderKpiSection();
+    }
+
+    async function renderCompLevels() {
+      const goalsEl = document.getElementById('perfGoals');
+      try {
+        const res = await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?select=user_id,comp_level', {
+          headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
+        });
+        const profiles = await res.json();
+        // Build user_id → name map
+        const repMap = {};
+        allData.forEach(r => { if (r.user_id && r.sales_rep) repMap[r.user_id] = r.sales_rep; });
+        // All known reps from policies (some may not have profile rows yet)
+        const knownIds = Object.keys(repMap);
+        const profileMap = {};
+        profiles.forEach(p => { profileMap[p.user_id] = p.comp_level; });
+
+        let html = '<div class="perf-goals-card" style="margin-top:1rem;"><div class="perf-goals-title">💵 Agent Comp Levels</div><div class="perf-goals-grid">';
+        knownIds.sort((a, b) => (repMap[a] || '').localeCompare(repMap[b] || ''));
+        knownIds.forEach(uid => {
+          const name = repMap[uid];
+          const current = profileMap[uid] || '';
+          let opts = '<option value="">Not set</option>';
+          for (let v = 65; v <= 145; v += 5) {
+            opts += '<option value="' + v + '"' + (current == v ? ' selected' : '') + '>' + v + '%</option>';
+          }
+          html += '<div class="perf-goal-row" style="gap:1rem;">';
+          html += '<div class="perf-goal-name">' + esc(name.split(' ')[0]) + '</div>';
+          html += '<select class="admin-rep-select" data-comp-uid="' + uid + '" style="flex:1;max-width:160px;">' + opts + '</select>';
+          html += '<span class="comp-save-msg" data-msg-uid="' + uid + '" style="font-size:0.72rem;color:#16a34a;display:none;">✓ Saved</span>';
+          html += '</div>';
+        });
+        html += '</div></div>';
+        goalsEl.insertAdjacentHTML('beforeend', html);
+
+        // Wire up change handlers
+        document.querySelectorAll('[data-comp-uid]').forEach(sel => {
+          sel.addEventListener('change', async () => {
+            const uid = sel.dataset.compUid;
+            const val = sel.value ? parseInt(sel.value) : null;
+            // Try update
+            const upd = await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?user_id=eq.' + uid, {
+              method: 'PATCH', headers: hdrs,
+              body: JSON.stringify({ comp_level: val })
+            });
+            const updRows = await upd.json().catch(() => []);
+            if (!Array.isArray(updRows) || updRows.length === 0) {
+              // Insert if no row existed
+              await fetch(SUPABASE_URL + '/rest/v1/agent_profiles', {
+                method: 'POST', headers: hdrs,
+                body: JSON.stringify({ user_id: uid, comp_level: val })
+              });
+            }
+            const msgEl = document.querySelector('[data-msg-uid="' + uid + '"]');
+            if (msgEl) {
+              msgEl.style.display = 'inline';
+              setTimeout(() => { msgEl.style.display = 'none'; }, 2000);
+            }
+          });
+        });
+      } catch (e) { console.error('Comp levels render failed:', e); }
     }
 
     async function renderKpiSection() {
