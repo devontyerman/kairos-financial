@@ -1121,7 +1121,7 @@
       // Rep comparison (only show if viewing team) — filtered by selected timeframe
       let repBars = '';
       const rangeLabelMap = { wtd: 'Week to Date', mtd: 'Month to Date', ytd: 'Year to Date', lastweek: 'Last Week', lastmonth: 'Last Month', custom: 'Custom Range' };
-      const rangeLabel = rangeLabelMap[perfRange] || 'Year to Date';
+      const repRangeLabel = rangeLabelMap[perfRange] || 'Year to Date';
       if (perfRep === 'all') {
         const rangeMap = { wtd: wtd, mtd: mtd, ytd: ytd, lastweek: lastWeek, lastmonth: lastMonth, custom: customRange };
         const rangeRows = rangeMap[perfRange] || ytd;
@@ -1152,7 +1152,7 @@
 
       document.getElementById('perfCharts').innerHTML =
         '<div class="perf-chart-card"><div class="perf-chart-title">Monthly AP Breakdown (YTD)</div><div class="perf-bars">' + monthBars + '</div></div>' +
-        (perfRep === 'all' && repBars ? '<div class="perf-chart-card"><div class="perf-chart-title">Rep Comparison (' + rangeLabel + ')</div><div class="perf-bars">' + repBars + '</div></div>' : '<div class="perf-chart-card"><div class="perf-chart-title">Weekly Trend</div><div class="perf-bars">' + buildWeeklyBars(data) + '</div></div>');
+        (perfRep === 'all' && repBars ? '<div class="perf-chart-card"><div class="perf-chart-title">Rep Comparison (' + repRangeLabel + ')</div><div class="perf-bars">' + repBars + '</div></div>' : '<div class="perf-chart-card"><div class="perf-chart-title">Weekly Trend</div><div class="perf-bars">' + buildWeeklyBars(data) + '</div></div>');
 
       // Status breakdown (only for individual rep)
       const statusEl = document.getElementById('perfStatus');
