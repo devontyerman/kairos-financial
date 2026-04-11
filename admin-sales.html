@@ -1024,56 +1024,71 @@
       }
 
       const sumAP = arr => arr.reduce((s, r) => s + parseFloat(r.annual_premium || 0), 0);
-      const wtdAP = sumAP(wtd), mtdAP = sumAP(mtd), ytdAP = sumAP(ytd), lmAP = sumAP(lastMonth);
+      const ytdAP = sumAP(ytd);
 
-      // Month over month change
-      const momChange = lmAP > 0 ? ((mtdAP - lmAP) / lmAP * 100) : (mtdAP > 0 ? 100 : 0);
-      const momClass = momChange > 0 ? 'up' : momChange < 0 ? 'down' : 'neutral';
-      const momSign = momChange > 0 ? '+' : '';
-
-      // Yearly pace: (ytdAP / days elapsed) * 365
+      // Yearly pace: (ytdAP / days elapsed) * 365 — always shown
       const dayOfYear = Math.floor((now - yearStart) / (1000*60*60*24)) + 1;
       const yearlyPace = dayOfYear > 0 ? (ytdAP / dayOfYear) * 365 : 0;
       const monthlyPace = dayOfYear > 0 ? (ytdAP / dayOfYear) * 30.44 : 0;
 
-      // Avg per policy
-      const avgPerPolicy = ytd.length > 0 ? ytdAP / ytd.length : 0;
-
-      // Direction indicators: compare current month pace vs last month
-      // If MTD is already projected to exceed last month, color green.
-      const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
-      const dayOfMonth = now.getDate();
-      const mtdProjection = dayOfMonth > 0 ? (mtdAP / dayOfMonth) * daysInMonth : 0;
-      const mtdTrendClass = mtdProjection >= lmAP && lmAP > 0 ? 'up' : mtdProjection < lmAP ? 'down' : 'neutral';
-      const mtdProjNote = lmAP > 0
-        ? '$' + fmtAP(mtdAP) + ' · pace ' + (mtdProjection >= lmAP ? '↑' : '↓') + ' $' + fmtAP(mtdProjection)
-        : '$' + fmtAP(mtdAP);
-
-      // Week-to-date direction vs prior week
+      // Build the active-range slice + a "prior period" of equal scope to compare against
       const priorWeekStart = new Date(weekStart); priorWeekStart.setDate(priorWeekStart.getDate() - 7);
-      const priorWeek = data.filter(r => { const d = new Date(r.created_at); return d >= priorWeekStart && d < weekStart; });
-      const priorWeekAP = sumAP(priorWeek);
-      const wtdTrendClass = wtdAP >= priorWeekAP && priorWeekAP > 0 ? 'up' : wtdAP < priorWeekAP ? 'down' : 'neutral';
-      const wtdNote = priorWeekAP > 0
-        ? '$' + fmtAP(wtdAP) + ' · last wk $' + fmtAP(priorWeekAP)
-        : '$' + fmtAP(wtdAP);
+      const priorMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+      const priorMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59);
+      const priorYearStart = new Date(now.getFullYear() - 1, 0, 1);
+      const priorYearEndSameDay = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate(), 23, 59, 59);
+      const twoWeeksAgoStart = new Date(lastWeekStart); twoWeeksAgoStart.setDate(twoWeeksAgoStart.getDate() - 7);
+      const twoMonthsAgoStart = new Date(now.getFullYear(), now.getMonth() - 2, 1);
+      const twoMonthsAgoEnd = new Date(now.getFullYear(), now.getMonth() - 1, 0, 23, 59, 59);
 
-      // ── KPIs: organized into logical groups ──
-      // Row 1: Current production snapshot (WTD + MTD + MoM trend)
-      // Row 2: Big picture (YTD + Yearly Pace + Avg Per Policy)
+      const priorWeek = data.filter(r => { const d = new Date(r.created_at); return d >= priorWeekStart && d < weekStart; });
+      const priorYear = data.filter(r => { const d = new Date(r.created_at); return d >= priorYearStart && d <= priorYearEndSameDay; });
+      const twoWeeksAgo = data.filter(r => { const d = new Date(r.created_at); return d >= twoWeeksAgoStart && d < lastWeekStart; });
+      const twoMonthsAgo = data.filter(r => { const d = new Date(r.created_at); return d >= twoMonthsAgoStart && d <= twoMonthsAgoEnd; });
+
+      // Resolve current and prior period for the selected range
+      let curRows, priorRows, rangeLabel, priorLabel;
+      if (perfRange === 'wtd') {
+        curRows = wtd; priorRows = priorWeek; rangeLabel = 'Week to Date'; priorLabel = 'vs Last Week';
+      } else if (perfRange === 'mtd') {
+        curRows = mtd; priorRows = lastMonth; rangeLabel = 'Month to Date'; priorLabel = 'vs Last Month';
+      } else if (perfRange === 'lastweek') {
+        curRows = data.filter(r => { const d = new Date(r.created_at); return d >= lastWeekStart && d < weekStart; });
+        priorRows = twoWeeksAgo; rangeLabel = 'Last Week'; priorLabel = 'vs Week Before';
+      } else if (perfRange === 'lastmonth') {
+        curRows = lastMonth; priorRows = twoMonthsAgo; rangeLabel = 'Last Month'; priorLabel = 'vs Month Before';
+      } else if (perfRange === 'custom') {
+        curRows = customRange;
+        // Build a prior window of the same length immediately before the custom start
+        const from = document.getElementById('perfDateFrom').value;
+        const to = document.getElementById('perfDateTo').value;
+        if (from && to) {
+          const fromDate = new Date(from); fromDate.setHours(0,0,0,0);
+          const toDate = new Date(to); toDate.setHours(23,59,59,999);
+          const ms = toDate - fromDate;
+          const priorTo = new Date(fromDate.getTime() - 1);
+          const priorFrom = new Date(priorTo.getTime() - ms);
+          priorRows = data.filter(r => { const d = new Date(r.created_at); return d >= priorFrom && d <= priorTo; });
+        } else { priorRows = []; }
+        rangeLabel = 'Custom Range'; priorLabel = 'vs Prior Period';
+      } else {
+        curRows = ytd; priorRows = priorYear; rangeLabel = 'Year to Date'; priorLabel = 'vs Last Year';
+      }
+
+      const curAP = sumAP(curRows);
+      const priorAP = sumAP(priorRows);
+      const change = priorAP > 0 ? ((curAP - priorAP) / priorAP * 100) : (curAP > 0 ? 100 : 0);
+      const changeClass = change > 0 ? 'up' : change < 0 ? 'down' : 'neutral';
+      const changeSign = change > 0 ? '+' : '';
+      const avgPerPolicy = curRows.length > 0 ? curAP / curRows.length : 0;
+
+      // Single row of 4 KPI cards: Production · vs Prior · Avg Per Policy · Yearly Pace
       document.getElementById('perfKpis').innerHTML =
-        '<div style="margin-bottom:0.5rem;font-size:0.62rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#888;">Current Period</div>' +
-        '<div class="perf-kpis" style="margin-bottom:1.5rem;">' +
-          kpi('Week to Date', '$' + fmtAP(wtdAP), wtd.length + ' policies · ' + (priorWeekAP > 0 ? 'last wk $' + fmtAP(priorWeekAP) : ''), wtdTrendClass) +
-          kpi('Month to Date', '$' + fmtAP(mtdAP), mtd.length + ' policies · pace $' + fmtAP(mtdProjection), mtdTrendClass) +
-          '<div class="perf-kpi ' + momClass + '"><div class="perf-kpi-label">Month vs Last</div><div class="perf-kpi-value" style="font-size:1.3rem;">' + momSign + momChange.toFixed(1) + '%</div><div class="perf-kpi-change ' + momClass + '">' + (momChange > 0 ? '↑ Trending up' : momChange < 0 ? '↓ Trending down' : '— Flat') + '</div></div>' +
-        '</div>' +
-        '<div style="margin-bottom:0.5rem;font-size:0.62rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#888;">Big Picture</div>' +
         '<div class="perf-kpis">' +
-          kpi('Year to Date', '$' + fmtAP(ytdAP), ytd.length + ' policies', '') +
-          kpi('Yearly Pace', '$' + fmtAP(yearlyPace), '$' + fmtAP(monthlyPace) + '/mo avg', mtdTrendClass) +
-          kpi('Avg Per Policy', '$' + fmtAP(avgPerPolicy), ytd.length + ' policies YTD', '') +
-          kpi('Last Month Total', '$' + fmtAP(lmAP), lastMonth.length + ' policies', '') +
+          kpi(rangeLabel, '$' + fmtAP(curAP), curRows.length + ' policies', '') +
+          '<div class="perf-kpi ' + changeClass + '"><div class="perf-kpi-label">' + priorLabel + '</div><div class="perf-kpi-value" style="font-size:1.3rem;">' + changeSign + change.toFixed(1) + '%</div><div class="perf-kpi-change ' + changeClass + '">' + (priorAP > 0 ? 'prior $' + fmtAP(priorAP) : 'no prior data') + '</div></div>' +
+          kpi('Avg Per Policy', '$' + fmtAP(avgPerPolicy), curRows.length + ' policies', '') +
+          kpi('Yearly Pace', '$' + fmtAP(yearlyPace), '$' + fmtAP(monthlyPace) + '/mo avg', '') +
         '</div>';
 
       // Month-vs-last-month comparison chart
