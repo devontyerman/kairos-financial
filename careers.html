@@ -110,12 +110,13 @@
 
     .video-notice-flash {
       display: block;
-      font-size: 1.8rem !important;
+      font-size: clamp(2rem, 4vw, 3.2rem) !important;
       font-weight: 900 !important;
       color: #ffffff !important;
-      max-width: 800px;
+      max-width: 900px;
       width: 100%;
       text-align: center;
+      letter-spacing: -0.01em;
       text-shadow: 0 2px 12px rgba(0,0,0,0.6);
       animation: noticeFlash 2s ease-in-out infinite;
     }
@@ -147,12 +148,12 @@
     .careers-cta {
       display: inline-flex;
       align-items: center;
-      gap: 0.5rem;
-      padding: 0.9rem 2.4rem;
+      gap: 1rem;
+      padding: 1.8rem 4.8rem;
       background: var(--cta-red);
       color: #ffffff;
       font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: 1rem;
+      font-size: 2rem;
       font-weight: 700;
       border: none;
       border-radius: var(--radius-md);
@@ -160,6 +161,7 @@
       cursor: pointer;
       transition: var(--transition);
     }
+    .careers-cta svg { width: 32px; height: 32px; }
 
     .careers-cta:hover {
       background: var(--cta-hover);
@@ -871,10 +873,11 @@
 
       <!-- Agency overview video -->
       <p class="video-notice-flash" style="margin-bottom: 1.5rem; color: #ffffff !important;">Watch this video before applying</p>
-      <div id="overviewVideo" style="position: relative; width: 100%; max-width: 800px; margin: 0 auto 2rem; padding-bottom: 56.25%; height: 0; border-radius: var(--radius-lg); overflow: hidden; background: #000;">
+      <div id="overviewVideo" style="position: relative; width: min(1400px, 92vw); margin-left: 50%; transform: translateX(-50%); margin-bottom: 2rem; padding-bottom: min(787.5px, 51.75vw); height: 0; border-radius: var(--radius-lg); overflow: hidden; background: #000;">
         <iframe style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;"
-          src="https://www.youtube-nocookie.com/embed/95Px-JYD0o8?rel=0&modestbranding=1&controls=1&disablekb=1&fs=0&iv_load_policy=3"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope"></iframe>
+          src="https://www.youtube-nocookie.com/embed/95Px-JYD0o8?rel=0&modestbranding=1&controls=1&disablekb=1&fs=1&iv_load_policy=3"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; fullscreen"
+          allowfullscreen></iframe>
         <div style="position: absolute; top: 0; left: 0; width: 60px; height: 50px; z-index: 10; background: transparent; cursor: default;"></div>
         <div style="position: absolute; top: 0; right: 0; width: 140px; height: 50px; z-index: 10; background: transparent; cursor: default;"></div>
       </div>
@@ -1128,7 +1131,7 @@
     </div>
 
     <div style="max-width: 600px; margin: 0 auto; text-align: center;">
-      <button class="careers-cta careers-apply-btn" style="font-size: 1.1rem; padding: 1rem 3rem;">
+      <button class="careers-cta careers-apply-btn">
         Apply Now — It Takes 5 Minutes
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
       </button>
