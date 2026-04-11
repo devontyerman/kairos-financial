@@ -149,9 +149,25 @@
     .admin-panel.active { display: block; animation: aePop 0.3s ease; }
 
     /* Performance Dashboard */
-    .perf-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem; }
-    .perf-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.2rem; font-weight: 900; color: #1a1a1a; }
-    .perf-header-controls { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    /* Performance panel layout */
+    #atab-performance { max-width: 1400px; margin: 0 auto; }
+    .perf-header { display: flex; flex-direction: column; gap: 1rem; margin-bottom: 1.75rem; }
+    .perf-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.5rem; font-weight: 900; color: #1a1a1a; }
+    .perf-header-controls {
+      display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;
+      padding: 0.85rem 1rem;
+      background: #ffffff;
+      border: 1px solid #e5e5ea;
+      border-radius: 12px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    }
+    .perf-header-controls .perf-divider {
+      width: 1px; height: 24px; background: #e5e5ea; margin: 0 0.25rem;
+    }
+    .perf-header-controls .perf-checks { display: flex; gap: 0.85rem; margin-left: auto; }
+    @media (max-width: 900px) {
+      .perf-header-controls .perf-checks { margin-left: 0; }
+    }
     .perf-range-toggle {
       display: inline-flex; padding: 0.25rem;
       background: #f8f8fa;
@@ -178,7 +194,7 @@
     .perf-rep-select { padding: 0.45rem 2rem 0.45rem 0.8rem; font-size: 0.8rem; font-family: 'Inter', sans-serif; color: #1a1a1a; background: #f5f5f8; border: 1px solid #ddd; border-radius: 8px; appearance: none; background-image: url("data:image/svg+xml,%3Csvg width='12' height='12' viewBox='0 0 12 12' fill='none' stroke='%23666' stroke-width='2' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolyline points='2 4 6 8 10 4'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 0.6rem center; }
     .perf-rep-select option { background: #ffffff; }
 
-    .perf-kpis { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 0.75rem; margin-bottom: 2rem; }
+    .perf-kpis { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 0.85rem; margin-bottom: 1.5rem; }
     .perf-kpi { background: #ffffff; border: 1px solid #e5e5ea; border-radius: 12px; padding: 1.25rem; position: relative; overflow: hidden; }
     .perf-kpi::before {
       content: ''; position: absolute; inset: 0 auto 0 0; width: 3px;
@@ -219,12 +235,12 @@
     .perf-chart-summary.down .perf-chart-summary-value { color: #dc2626; }
 
     /* Bar Charts */
-    .perf-charts { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem; }
-    .perf-chart-card { background: #ffffff; border: 1px solid #e5e5ea; border-radius: 12px; padding: 1.5rem; }
-    /* Month-vs-last-month is a single chart — cap and center it */
-    #perfExtraCharts { display: block; max-width: 640px; margin: 0 auto 2rem; }
-    #perfExtraCharts .perf-chart-card { padding: 1.25rem 1.5rem; }
-    #perfExtraCharts .perf-svg-chart { max-height: 260px; }
+    .perf-charts { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
+    .perf-chart-card { background: #ffffff; border: 1px solid #e5e5ea; border-radius: 12px; padding: 1.5rem; min-width: 0; }
+    /* Month-vs-last-month is a single chart — center it inside a half-width column */
+    #perfExtraCharts { display: block; margin: 0 auto 1.5rem; }
+    #perfExtraCharts .perf-chart-card { max-width: 680px; margin: 0 auto; padding: 1.25rem 1.5rem; }
+    #perfExtraCharts .perf-svg-chart { max-height: 240px; }
     .perf-chart-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.85rem; font-weight: 800; color: #1a1a1a; margin-bottom: 1rem; }
     .perf-bars { display: flex; flex-direction: column; gap: 0.5rem; }
     .perf-bar-row { display: flex; align-items: center; gap: 0.6rem; }
@@ -497,15 +513,18 @@
             <button class="perf-range-btn" data-perf-range="lastmonth">Last Month</button>
             <button class="perf-range-btn" data-perf-range="custom">Custom</button>
           </div>
+          <div class="perf-divider"></div>
           <select class="perf-rep-select" id="perfRepSelect">
             <option value="all">All Reps (Team)</option>
           </select>
-          <label style="display:flex;align-items:center;gap:0.3rem;font-size:0.72rem;color:#666;cursor:pointer;">
-            <input type="checkbox" id="perfExcludeSat" style="accent-color:#2563eb;" /> Exclude Sat
-          </label>
-          <label style="display:flex;align-items:center;gap:0.3rem;font-size:0.72rem;color:#666;cursor:pointer;">
-            <input type="checkbox" id="perfExcludeSun" style="accent-color:#2563eb;" /> Exclude Sun
-          </label>
+          <div class="perf-checks">
+            <label style="display:flex;align-items:center;gap:0.35rem;font-size:0.72rem;color:#555;cursor:pointer;font-weight:600;">
+              <input type="checkbox" id="perfExcludeSat" style="accent-color:#2563eb;" /> Exclude Sat
+            </label>
+            <label style="display:flex;align-items:center;gap:0.35rem;font-size:0.72rem;color:#555;cursor:pointer;font-weight:600;">
+              <input type="checkbox" id="perfExcludeSun" style="accent-color:#2563eb;" /> Exclude Sun
+            </label>
+          </div>
         </div>
       </div>
       <div id="perfCustomRange" style="display:none;gap:0.5rem;align-items:center;margin-bottom:1rem;flex-wrap:wrap;">
