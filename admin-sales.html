@@ -221,12 +221,17 @@
     /* Bar Charts */
     .perf-charts { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem; }
     .perf-chart-card { background: #ffffff; border: 1px solid #e5e5ea; border-radius: 12px; padding: 1.5rem; }
+    /* Month-vs-last-month is a single chart — cap and center it */
+    #perfExtraCharts { display: block; max-width: 640px; margin: 0 auto 2rem; }
+    #perfExtraCharts .perf-chart-card { padding: 1.25rem 1.5rem; }
+    #perfExtraCharts .perf-svg-chart { max-height: 260px; }
     .perf-chart-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.85rem; font-weight: 800; color: #1a1a1a; margin-bottom: 1rem; }
     .perf-bars { display: flex; flex-direction: column; gap: 0.5rem; }
-    .perf-bar-row { display: flex; align-items: center; gap: 0.5rem; }
+    .perf-bar-row { display: flex; align-items: center; gap: 0.6rem; }
     .perf-bar-label { font-size: 0.72rem; color: #333; width: 65px; flex-shrink: 0; text-align: right; font-weight: 600; }
+    .perf-bar-amount { font-size: 0.72rem; font-weight: 800; color: #1a1a1a; width: 78px; flex-shrink: 0; text-align: right; font-family: 'Plus Jakarta Sans', sans-serif; }
     .perf-bar-track { flex: 1; height: 24px; background: #f8f8fa; border-radius: 6px; overflow: hidden; position: relative; }
-    .perf-bar-fill { height: 100%; border-radius: 6px; transition: width 0.6s ease; display: flex; align-items: center; padding-left: 0.6rem; min-width: 0; }
+    .perf-bar-fill { height: 100%; border-radius: 6px; transition: width 0.6s ease; min-width: 0; }
     .perf-bar-fill.blue { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
     .perf-bar-fill.green { background: linear-gradient(90deg, #16a34a, #4ade80); }
     .perf-bar-fill.gold { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
@@ -1076,7 +1081,7 @@
       activeMonths.forEach(m => {
         const val = months[m]?.ap || 0;
         const pct = (val / maxMonthAP * 100).toFixed(1);
-        monthBars += '<div class="perf-bar-row"><div class="perf-bar-label">' + m + '</div><div class="perf-bar-track"><div class="perf-bar-fill blue" style="width:' + pct + '%"><span class="perf-bar-val">$' + fmtAP(val) + '</span></div></div></div>';
+        monthBars += '<div class="perf-bar-row"><div class="perf-bar-label">' + m + '</div><div class="perf-bar-amount">$' + fmtAP(val) + '</div><div class="perf-bar-track"><div class="perf-bar-fill blue" style="width:' + pct + '%"></div></div></div>';
       });
 
       // Rep comparison (only show if viewing team) — filtered by selected timeframe
@@ -1097,7 +1102,7 @@
 
         // Team total row first
         const teamPct = (teamTotal / maxRepAP * 100).toFixed(1);
-        repBars += '<div class="perf-bar-row perf-bar-team"><div class="perf-bar-label" style="width:90px;color:#1a1a1a;font-weight:800;">Team</div><div class="perf-bar-track"><div class="perf-bar-fill team" style="width:' + teamPct + '%"><span class="perf-bar-val">$' + fmtAP(teamTotal) + '</span></div></div></div>';
+        repBars += '<div class="perf-bar-row perf-bar-team"><div class="perf-bar-label" style="width:90px;color:#1a1a1a;font-weight:800;">Team</div><div class="perf-bar-amount">$' + fmtAP(teamTotal) + '</div><div class="perf-bar-track"><div class="perf-bar-fill team" style="width:' + teamPct + '%"></div></div></div>';
 
         if (sorted.length === 0) {
           repBars += '<div style="text-align:center;padding:1.25rem;color:#888;font-size:0.8rem;">No sales recorded for this timeframe yet.</div>';
@@ -1106,7 +1111,7 @@
           sorted.forEach(([name, ap], i) => {
             const pct = (ap / maxRepAP * 100).toFixed(1);
             const color = repColors[i % repColors.length];
-            repBars += '<div class="perf-bar-row"><div class="perf-bar-label" style="width:90px;">' + name.split(' ')[0] + '</div><div class="perf-bar-track"><div class="perf-bar-fill ' + color + '" style="width:' + pct + '%"><span class="perf-bar-val">$' + fmtAP(ap) + '</span></div></div></div>';
+            repBars += '<div class="perf-bar-row"><div class="perf-bar-label" style="width:90px;">' + name.split(' ')[0] + '</div><div class="perf-bar-amount">$' + fmtAP(ap) + '</div><div class="perf-bar-track"><div class="perf-bar-fill ' + color + '" style="width:' + pct + '%"></div></div></div>';
           });
         }
       }
@@ -1597,7 +1602,7 @@
       const max = Math.max(...weeks.map(w => w.ap), 1);
       return weeks.map(w => {
         const pct = (w.ap / max * 100).toFixed(1);
-        return '<div class="perf-bar-row"><div class="perf-bar-label">' + w.label + '</div><div class="perf-bar-track"><div class="perf-bar-fill green" style="width:' + pct + '%"><span class="perf-bar-val">$' + fmtAP(w.ap) + '</span></div></div></div>';
+        return '<div class="perf-bar-row"><div class="perf-bar-label">' + w.label + '</div><div class="perf-bar-amount">$' + fmtAP(w.ap) + '</div><div class="perf-bar-track"><div class="perf-bar-fill green" style="width:' + pct + '%"></div></div></div>';
       }).join('');
     }
   </script>
