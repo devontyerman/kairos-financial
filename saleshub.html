@@ -8344,11 +8344,12 @@
           icon.classList.add('completed');
           icon.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
           previousDone = true;
-        } else if (previousDone) {
-          // This is the next available (unlocked) video
+        } else if (trainingComplete || previousDone) {
+          // Training complete agents can access all videos freely
+          // Otherwise this is the next available (unlocked) video
           icon.classList.add('current');
           icon.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>';
-          previousDone = false;
+          if (!trainingComplete) previousDone = false;
         } else {
           // Locked
           item.classList.add('locked');
@@ -8432,7 +8433,7 @@
     }
 
     function updateMarkCompleteBtn() {
-      if (!currentVideoId || completedVideoIds.has(currentVideoId)) {
+      if (!currentVideoId || completedVideoIds.has(currentVideoId) || trainingComplete) {
         tvMarkCompleteBtn.style.display = 'none';
         return;
       }
