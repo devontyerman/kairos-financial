@@ -265,6 +265,157 @@
     .ss-nav-links a:hover { color: #1a1a1a; background: #f0f0f5; }
     .ss-nav-links a svg { width: 14px; height: 14px; flex-shrink: 0; opacity: 0.7; }
 
+    /* ─── TRAINING PANEL ─── */
+    #panel-training { padding: 0 !important; }
+    #panel-training > .ss-training-layout {
+      display: flex;
+      height: calc(100vh - 1.5rem);
+    }
+    .ss-tv-sidebar {
+      width: 300px; min-width: 300px;
+      background: #ffffff;
+      border-right: 1px solid #e5e5ea;
+      overflow-y: auto;
+      padding: 0 0 1.5rem;
+    }
+    .ss-tv-sidebar::-webkit-scrollbar { width: 4px; }
+    .ss-tv-sidebar::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
+    .ss-tv-progress {
+      position: sticky; top: 0; z-index: 5;
+      background: #ffffff;
+      padding: 1.25rem 1.25rem 1rem;
+      border-bottom: 1px solid #e5e5ea;
+    }
+    .ss-tv-progress-title {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1rem; font-weight: 800; color: #1a1a1a;
+      margin-bottom: 0.6rem;
+    }
+    .ss-tv-progress-bar-wrap {
+      background: #f0f0f3; border-radius: 100px; height: 10px; overflow: hidden;
+    }
+    .ss-tv-progress-bar {
+      height: 100%; border-radius: 100px; background: linear-gradient(90deg, #7c3aed, #a855f7);
+      transition: width 0.5s ease;
+    }
+    .ss-tv-progress-text {
+      font-size: 0.78rem; font-weight: 600; color: #888; margin-top: 0.4rem;
+    }
+    .ss-tv-cat-label {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.72rem; font-weight: 800; letter-spacing: 0.08em;
+      text-transform: uppercase; color: #1a1a1a;
+      padding: 0.65rem 1.25rem; margin-top: 0.1rem;
+      background: #f8f8fa; border-bottom: 1px solid #e5e5ea;
+    }
+    .ss-tv-item {
+      display: flex; align-items: center; gap: 0.6rem;
+      padding: 0.6rem 1.25rem 0.6rem 1rem;
+      font-size: 0.84rem; font-weight: 500; color: #555;
+      cursor: pointer; transition: background 0.15s, color 0.15s;
+      border-left: 3px solid transparent;
+    }
+    .ss-tv-item:hover:not(.locked) { background: #f5f3ff; color: #1a1a1a; }
+    .ss-tv-item.active { background: #f5f3ff; color: #1a1a1a; font-weight: 600; border-left-color: #7c3aed; }
+    .ss-tv-item.locked { opacity: 0.45; cursor: not-allowed; }
+    .ss-tv-item .tv-status-icon {
+      flex-shrink: 0; width: 20px; height: 20px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.65rem;
+    }
+    .ss-tv-item .tv-status-icon.completed {
+      background: #22c55e; color: #fff;
+    }
+    .ss-tv-item .tv-status-icon.current {
+      background: #7c3aed; color: #fff;
+    }
+    .ss-tv-item .tv-status-icon.locked-icon {
+      background: #e0e0e0; color: #999;
+    }
+    .ss-tv-item-label { flex: 1; }
+    .ss-tv-main {
+      flex: 1; overflow-y: auto; padding: 2rem 2.5rem 3rem; background: #f5f5f7;
+    }
+    .ss-tv-main::-webkit-scrollbar { width: 4px; }
+    .ss-tv-main::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
+    .ss-tv-video-wrap {
+      position: relative; padding-bottom: 56.25%; height: 0;
+      background: #000; border-radius: 14px; overflow: hidden; max-width: 960px;
+    }
+    .ss-tv-video-wrap iframe {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;
+    }
+    .ss-tv-video-wrap::after {
+      content: ''; position: absolute; bottom: 0; left: 0; right: 0;
+      height: 54px; z-index: 10; background: transparent; cursor: default;
+    }
+    .ss-tv-video-title {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1.15rem; font-weight: 700; color: #1a1a1a;
+      margin-top: 1.25rem; max-width: 960px;
+    }
+    .ss-tv-resource-btns {
+      display: none; gap: 0.75rem; margin-top: 1rem; max-width: 960px; flex-wrap: wrap;
+    }
+    .ss-tv-resource-btns.visible { display: flex; }
+    .ss-tv-resource-btn {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.6rem 1.1rem; font-size: 0.82rem; font-weight: 600;
+      font-family: 'Inter', sans-serif; color: #fff; background: #2d2d35;
+      border: none; border-radius: 8px; text-decoration: none; cursor: pointer;
+      transition: background 0.15s, transform 0.15s;
+    }
+    .ss-tv-resource-btn:hover { background: #444; transform: translateY(-1px); }
+    .ss-tv-resource-btn.discord { background: #5865F2; }
+    .ss-tv-resource-btn.discord:hover { background: #4752c4; }
+    .ss-tv-email-list {
+      display: none; max-width: 960px; margin-top: 1.25rem;
+    }
+    .ss-tv-email-list.visible { display: block; }
+    .ss-tv-email-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 0.6rem;
+    }
+    .ss-tv-email-card {
+      background: #ffffff; border: 1px solid #e5e5ea; border-radius: 10px; padding: 0.75rem 1rem;
+    }
+    .ss-tv-email-carrier { font-weight: 700; font-size: 0.82rem; color: #1a1a1a; margin-bottom: 0.3rem; }
+    .ss-tv-email-card a { font-size: 0.78rem; color: #7c3aed; text-decoration: none; }
+    .ss-tv-email-card a:hover { text-decoration: underline; }
+
+    /* Training gate overlay */
+    .ss-training-gate {
+      display: none; position: absolute; inset: 0; z-index: 55;
+      background: rgba(245,245,247,0.97); backdrop-filter: blur(6px);
+      align-items: flex-start; justify-content: center; padding-top: 6rem;
+    }
+    .ss-training-gate.active { display: flex; }
+    .ss-training-gate-box {
+      text-align: center; padding: 2.5rem 2rem;
+      background: #ffffff; border: 1px solid rgba(124,58,237,0.25);
+      border-radius: 18px; box-shadow: 0 8px 40px rgba(0,0,0,0.08); max-width: 440px; width: 90%;
+    }
+    .ss-sidebar-btn.training-locked {
+      opacity: 0.35; pointer-events: none; position: relative;
+    }
+
+    /* Training panel responsive */
+    @media (max-width: 768px) {
+      #panel-training > .ss-training-layout { flex-direction: column; height: auto; }
+      .ss-tv-sidebar { width: 100%; min-width: 100%; max-height: none; border-right: none; border-bottom: 1px solid #e5e5ea; display: none; }
+      .ss-tv-sidebar.mobile-open { display: block; }
+      .ss-tv-main { padding: 1.5rem 1rem 5rem; }
+      .ss-tv-mobile-toggle {
+        display: flex; position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 500;
+        width: 52px; height: 52px; background: rgba(30,30,30,0.95);
+        border: 1px solid rgba(255,255,255,0.15); border-radius: 50%;
+        color: #fff; font-size: 1.3rem; cursor: pointer;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.4); align-items: center; justify-content: center;
+      }
+    }
+    @media (min-width: 769px) {
+      .ss-tv-mobile-toggle { display: none; }
+    }
+
     .ss-main {
       max-width: none;
       width: calc(100vw - 210px);
@@ -2783,7 +2934,7 @@
         <span class="nav-logo-text">SALES HUB</span>
       </a>
       <ul class="nav-links">
-        <li><a href="course.html" class="nav-link">Training Videos</a></li>
+        <li><a href="#" class="nav-link" onclick="activatePanel('training');return false;">Training Videos</a></li>
         <li>
           <a class="nav-link" href="#" onclick="return false;">Carriers <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 4 6 8 10 4"/></svg></a>
           <div class="nav-dropdown">
@@ -2810,7 +2961,7 @@
 
   <div class="nav-mobile" id="mobileNav">
     <a href="index.html">Home</a>
-    <a href="course.html">Training Videos</a>
+    <a href="#" onclick="activatePanel('training');return false;">Training Videos</a>
     <a href="https://ai.kairos-financial.com/" target="_blank" rel="noopener noreferrer">AI Training</a>
     <a href="https://app.kairos-financial.com/" target="_blank" rel="noopener noreferrer">CRM</a>
     <a href="https://app.insurancetoolkits.com/fex/quoter" target="_blank" rel="noopener noreferrer">Toolkit</a>
@@ -2879,7 +3030,7 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
         Home
       </a>
-      <a href="course.html">
+      <a href="#" data-panel="training" class="ss-nav-panel-link">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
         Training Videos
       </a>
@@ -2907,7 +3058,7 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
         Home
       </a>
-      <a href="course.html">
+      <a href="#" data-panel="training" class="ss-nav-panel-link">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
         Training Videos
       </a>
@@ -3910,6 +4061,201 @@
             </a>
           </div>
         </div>
+      </div>
+    </div>
+
+    <!-- ═══ TRAINING PANEL ═══ -->
+    <div class="ss-panel" id="panel-training">
+      <div class="ss-training-layout">
+
+        <!-- Video sidebar index -->
+        <aside class="ss-tv-sidebar" id="ssTvSidebar">
+          <div class="ss-tv-progress">
+            <div class="ss-tv-progress-title">Training Progress</div>
+            <div class="ss-tv-progress-bar-wrap"><div class="ss-tv-progress-bar" id="ssTvProgressBar" style="width:0%"></div></div>
+            <div class="ss-tv-progress-text" id="ssTvProgressText">0 of 0 complete</div>
+          </div>
+
+          <div class="ss-tv-cat-label">New Agent Steps</div>
+          <div class="ss-tv-item" data-video-id="watch-first-new-agents" data-src="https://www.loom.com/embed/a30581bfa9ce43239b8292d32cb8e802">
+            <span class="tv-status-icon"></span><span class="ss-tv-item-label">Watch First New Agents</span>
+          </div>
+          <div class="ss-tv-item" data-video-id="discord-walkthrough" data-src="https://www.loom.com/embed/2655d8ef38ea49338d1f37c8231faf90" data-res="discord">
+            <span class="tv-status-icon"></span><span class="ss-tv-item-label">Discord Walk Through</span>
+          </div>
+          <div class="ss-tv-item" data-video-id="update-discord-leaderboard" data-src="https://www.loom.com/embed/1dce58e1623847dabcad03668ac14854">
+            <span class="tv-status-icon"></span><span class="ss-tv-item-label">How to Update Discord Leaderboard</span>
+          </div>
+          <div class="ss-tv-item" data-video-id="submit-new-sale" data-src="https://www.loom.com/embed/bb4bec1445d94890a3a56a81152cfdc4">
+            <span class="tv-status-icon"></span><span class="ss-tv-item-label">How to Submit a New Sale</span>
+          </div>
+          <div class="ss-tv-item" data-video-id="ai-training-bot" data-src="https://www.loom.com/embed/5504b88cb4474dbc9b0d3f1d0fa5e914">
+            <span class="tv-status-icon"></span><span class="ss-tv-item-label">AI Training Bot</span>
+          </div>
+          <div class="ss-tv-item" data-video-id="script-sales-presentation" data-src="https://www.loom.com/embed/f693b1b3369c4655963fce11856f8a56" data-res="script">
+            <span class="tv-status-icon"></span><span class="ss-tv-item-label">Script and Sales Presentation</span>
+          </div>
+
+          <div class="ss-tv-cat-label">Licensing</div>
+          <div class="ss-tv-item" data-video-id="buy-state-licenses" data-src="https://www.loom.com/embed/badf77aa57d0430e817936e469eb6b56" data-res="nipr">
+            <span class="tv-status-icon"></span><span class="ss-tv-item-label">How To Buy Additional State Licenses</span>
+          </div>
+          <div class="ss-tv-item" data-video-id="next-steps-licenses" data-src="https://www.loom.com/embed/96cc1263b9a446e583b9f8d356a2c90a" data-res="licensing">
+            <span class="tv-status-icon"></span><span class="ss-tv-item-label">Next Steps After Buying Licenses</span>
+          </div>
+
+          <div class="ss-tv-cat-label">CRM Guide</div>
+          <div class="ss-tv-item" data-video-id="access-crm" data-src="https://www.loom.com/embed/9ab847bb22af4c8ab2f5063d5b0981fe">
+            <span class="tv-status-icon"></span><span class="ss-tv-item-label">How to Access CRM</span>
+          </div>
+          <div class="ss-tv-item" data-video-id="setup-phone-numbers" data-src="https://www.loom.com/embed/a2008c417a7e488ba749428d1d72191c">
+            <span class="tv-status-icon"></span><span class="ss-tv-item-label">Setting Up Your Phone Numbers</span>
+          </div>
+          <div class="ss-tv-item" data-video-id="a2p-texting" data-src="https://www.loom.com/embed/0a94c4d2e15e40dcaaa0817631b51dfe" data-res="a2p">
+            <span class="tv-status-icon"></span><span class="ss-tv-item-label">A2P Texting Verification</span>
+          </div>
+          <div class="ss-tv-item" data-video-id="setting-up-wavv" data-src="https://www.loom.com/embed/e04fb59f584c467c8231fd614123f244" data-res="wavv">
+            <span class="tv-status-icon"></span><span class="ss-tv-item-label">Setting Up Wavv</span>
+          </div>
+          <div class="ss-tv-item" data-video-id="uploading-leads" data-src="https://www.loom.com/embed/f6ebb4995f2a4d2a921658e022aa4067">
+            <span class="tv-status-icon"></span><span class="ss-tv-item-label">Uploading Leads</span>
+          </div>
+          <div class="ss-tv-item" data-video-id="calendar-booking" data-src="https://www.loom.com/embed/ce38f87fb64046e3b669e1d4da4c616a">
+            <span class="tv-status-icon"></span><span class="ss-tv-item-label">Calendar and Booking Appointments</span>
+          </div>
+          <div class="ss-tv-item" data-video-id="building-automations" data-src="https://www.loom.com/embed/10dfa99d2d48470681b52f5ac7c16b4e">
+            <span class="tv-status-icon"></span><span class="ss-tv-item-label">Using &amp; Building Automations</span>
+          </div>
+
+          <div class="ss-tv-cat-label">Products &amp; Underwriting</div>
+          <div class="ss-tv-item" data-video-id="product-selection" data-src="https://www.loom.com/embed/2c156fff8cc8472e8281f6faef0e2dcb">
+            <span class="tv-status-icon"></span><span class="ss-tv-item-label">Product Selection</span>
+          </div>
+          <div class="ss-tv-item" data-video-id="insurance-toolkits-underwriting" data-src="https://www.loom.com/embed/d7c56c9e50574348a2dec7292274d5a4" data-res="underwriting">
+            <span class="tv-status-icon"></span><span class="ss-tv-item-label">Insurance Toolkits and Underwriting</span>
+          </div>
+          <div class="ss-tv-item" data-video-id="americo-walkthrough" data-src="https://www.loom.com/embed/bcd4adb557dc4446958b4999226c9abe">
+            <span class="tv-status-icon"></span><span class="ss-tv-item-label">Americo Application Walkthrough</span>
+          </div>
+          <div class="ss-tv-item" data-video-id="transamerica-walkthrough" data-src="https://www.loom.com/embed/e91098314c6b4641a049921959902aff">
+            <span class="tv-status-icon"></span><span class="ss-tv-item-label">Transamerica Application Walkthrough</span>
+          </div>
+          <div class="ss-tv-item" data-video-id="mutual-omaha-walkthrough" data-src="https://www.loom.com/embed/dd390290b98542218101fbbcacaf9fed">
+            <span class="tv-status-icon"></span><span class="ss-tv-item-label">Mutual Of Omaha Application Walkthrough</span>
+          </div>
+
+          <div class="ss-tv-cat-label">Leads</div>
+          <div class="ss-tv-item" data-video-id="watch-before-buying-leads" data-src="https://www.loom.com/embed/8a10f1b0e3e5492aa6fd5a09474d5962">
+            <span class="tv-status-icon"></span><span class="ss-tv-item-label">Watch Before Buying Leads</span>
+          </div>
+          <div class="ss-tv-item" data-video-id="ethos-leads" data-src="https://www.loom.com/embed/83d778600ded478282e1dd8ae4c2cf43">
+            <span class="tv-status-icon"></span><span class="ss-tv-item-label">Ethos Leads</span>
+          </div>
+          <div class="ss-tv-item" data-video-id="goat-leads" data-src="https://www.loom.com/embed/66189350089e4517826b1d2d975f894a">
+            <span class="tv-status-icon"></span><span class="ss-tv-item-label">Goat Leads</span>
+          </div>
+          <div class="ss-tv-item" data-video-id="freedom-life-leads" data-src="https://www.loom.com/embed/84e1a440093b4799a5c70af16ee92130">
+            <span class="tv-status-icon"></span><span class="ss-tv-item-label">Freedom Life Leads</span>
+          </div>
+        </aside>
+
+        <!-- Video player area -->
+        <main class="ss-tv-main" id="ssTvMain">
+          <div class="ss-tv-video-wrap">
+            <iframe id="ssTvPlayer" src="" allowfullscreen></iframe>
+          </div>
+          <div class="ss-tv-video-title" id="ssTvTitle"></div>
+
+          <!-- Discord buttons -->
+          <div class="ss-tv-resource-btns" id="ssTvDiscord">
+            <a href="https://discord.gg/7jRu7r3FnC" target="_blank" rel="noopener noreferrer" class="ss-tv-resource-btn discord">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 00-4.885-1.515.074.074 0 00-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 00-5.487 0 12.64 12.64 0 00-.617-1.25.077.077 0 00-.079-.037A19.736 19.736 0 003.677 4.37a.07.07 0 00-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 00.031.057 19.9 19.9 0 005.993 3.03.078.078 0 00.084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 00-.041-.106 13.107 13.107 0 01-1.872-.892.077.077 0 01-.008-.128 10.2 10.2 0 00.372-.292.074.074 0 01.077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 01.078.01c.12.098.246.198.373.292a.077.077 0 01-.006.127 12.299 12.299 0 01-1.873.892.077.077 0 00-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 00.084.028 19.839 19.839 0 006.002-3.03.077.077 0 00.032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 00-.031-.03z"/></svg>
+              Disruption Group Discord
+            </a>
+            <a href="https://discord.gg/HDAvgbD4cJ" target="_blank" rel="noopener noreferrer" class="ss-tv-resource-btn discord">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 00-4.885-1.515.074.074 0 00-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 00-5.487 0 12.64 12.64 0 00-.617-1.25.077.077 0 00-.079-.037A19.736 19.736 0 003.677 4.37a.07.07 0 00-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 00.031.057 19.9 19.9 0 005.993 3.03.078.078 0 00.084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 00-.041-.106 13.107 13.107 0 01-1.872-.892.077.077 0 01-.008-.128 10.2 10.2 0 00.372-.292.074.074 0 01.077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 01.078.01c.12.098.246.198.373.292a.077.077 0 01-.006.127 12.299 12.299 0 01-1.873.892.077.077 0 00-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 00.084.028 19.839 19.839 0 006.002-3.03.077.077 0 00.032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 00-.031-.03z"/></svg>
+              Kairos Discord
+            </a>
+          </div>
+
+          <!-- Wavv sign-up -->
+          <div class="ss-tv-resource-btns" id="ssTvWavv">
+            <div style="display:flex;flex-direction:column;gap:0.6rem;">
+              <a href="https://refer.wavv.com/?fpr=1094dk" target="_blank" rel="noopener noreferrer" class="ss-tv-resource-btn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                <strong>Click Here to Sign Up for Wavv</strong>
+              </a>
+              <p style="font-size:0.85rem;color:#888;margin:0;">After signing up, use code <strong style="color:#7c3aed;">SPAMPROOF</strong> to get spam monitoring for free.</p>
+            </div>
+          </div>
+
+          <!-- NIPR -->
+          <div class="ss-tv-resource-btns" id="ssTvNipr">
+            <a href="https://nipr.com/" target="_blank" rel="noopener noreferrer" class="ss-tv-resource-btn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              NIPR
+            </a>
+          </div>
+
+          <!-- A2P doc -->
+          <div class="ss-tv-resource-btns" id="ssTvA2p">
+            <a href="https://docs.google.com/document/d/1o4-9vPWHMClHOBrhdKtnH-z_ANJCSORHKgcPD4SEgTo/edit?usp=sharing" target="_blank" rel="noopener noreferrer" class="ss-tv-resource-btn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              A2P Verification Guide
+            </a>
+          </div>
+
+          <!-- Underwriting -->
+          <div class="ss-tv-resource-btns" id="ssTvUnderwriting">
+            <a href="https://landing.insurancetoolkits.com" target="_blank" rel="noopener noreferrer" class="ss-tv-resource-btn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
+              Insurance Toolkits
+            </a>
+            <a href="https://docs.google.com/spreadsheets/d/1KvCN5Izk8fHCAFhO1p-EIUpt55Io8YSl/edit?usp=sharing&ouid=117071041967508429739&rtpof=true&sd=true" target="_blank" rel="noopener noreferrer" class="ss-tv-resource-btn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              Underwriting Cheat Sheet
+            </a>
+          </div>
+
+          <!-- Script -->
+          <div class="ss-tv-resource-btns" id="ssTvScript">
+            <a href="https://docs.google.com/document/d/1Q4EL7aJAeZmBuJWzg09pMmjT_AA21Wg6aZADOBTqDEg/edit?usp=sharing" target="_blank" rel="noopener noreferrer" class="ss-tv-resource-btn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              View Script
+            </a>
+          </div>
+
+          <!-- Carrier contracting emails -->
+          <div class="ss-tv-email-list" id="ssTvLicensing">
+            <h3 style="font-weight:700;font-size:0.95rem;color:#1a1a1a;margin-bottom:0.75rem;">Carrier Contracting Emails</h3>
+            <div class="ss-tv-email-grid">
+              <div class="ss-tv-email-card"><div class="ss-tv-email-carrier">Americo</div><a href="mailto:agent.services@americo.com">agent.services@americo.com</a></div>
+              <div class="ss-tv-email-card"><div class="ss-tv-email-carrier">American Amicable</div><a href="mailto:agentprocessing@aatx.com">agentprocessing@aatx.com</a></div>
+              <div class="ss-tv-email-card"><div class="ss-tv-email-carrier">Corebridge</div><a href="mailto:giwlcontracting@corebridgefinancial.com">giwlcontracting@corebridgefinancial.com</a></div>
+              <div class="ss-tv-email-card"><div class="ss-tv-email-carrier">Ethos (Banner, Trustage, &amp; Ameritas)</div><a href="mailto:agents@getethos.com">agents@getethos.com</a></div>
+              <div class="ss-tv-email-card"><div class="ss-tv-email-carrier">Mutual of Omaha</div><a href="mailto:contractsandappointments@mutualofomaha.com">contractsandappointments@mutualofomaha.com</a></div>
+              <div class="ss-tv-email-card"><div class="ss-tv-email-carrier">TransAmerica</div><a href="mailto:tlp-crcontractadmin@transamerica.com">tlp-crcontractadmin@transamerica.com</a></div>
+              <div class="ss-tv-email-card"><div class="ss-tv-email-carrier">Aetna</div><a href="mailto:aetssiinformation@aetna.com">aetssiinformation@aetna.com</a></div>
+            </div>
+          </div>
+        </main>
+
+        <!-- Mobile sidebar toggle -->
+        <button class="ss-tv-mobile-toggle" id="ssTvMobileToggle">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Training Gate Overlay (shown when training_complete=false) -->
+    <div class="ss-training-gate" id="trainingGate">
+      <div class="ss-training-gate-box">
+        <div style="width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;background:rgba(124,58,237,0.12);border:2px solid rgba(124,58,237,0.25);">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+        </div>
+        <h3 style="font-family:'Plus Jakarta Sans',sans-serif;font-size:1.2rem;font-weight:900;color:#1a1a1a;margin-bottom:0.4rem;">Complete Your Training</h3>
+        <p style="font-size:0.85rem;color:#666;margin-bottom:1.5rem;">Watch all training videos before accessing the Sales Hub. Your progress is saved automatically.</p>
+        <button onclick="activatePanel('training')" style="padding:0.7rem 2rem;font-family:'Plus Jakarta Sans',sans-serif;font-size:0.88rem;font-weight:700;color:#fff;background:linear-gradient(135deg,#7c3aed,#a855f7);border:none;border-radius:100px;cursor:pointer;">Go to Training Videos</button>
       </div>
     </div>
 
@@ -7913,6 +8259,287 @@
       link.click();
       URL.revokeObjectURL(link.href);
     });
+
+    // ═══════════════════════════════════════════════════════════════
+    //  TRAINING VIDEO SYSTEM
+    // ═══════════════════════════════════════════════════════════════
+
+    let trainingComplete = true; // default true so nothing breaks before fetch
+    let completedVideoIds = new Set();
+    const LOOM_PARAMS = '?hide_owner=true&hide_title=true&hide_share=true&hideEmbedTopBar=true';
+
+    const tvItems = document.querySelectorAll('.ss-tv-item');
+    const tvPlayer = document.getElementById('ssTvPlayer');
+    const tvTitle = document.getElementById('ssTvTitle');
+    const tvProgressBar = document.getElementById('ssTvProgressBar');
+    const tvProgressText = document.getElementById('ssTvProgressText');
+    const tvSidebar = document.getElementById('ssTvSidebar');
+    const tvMobileToggle = document.getElementById('ssTvMobileToggle');
+    const trainingGate = document.getElementById('trainingGate');
+
+    // Resource panel refs
+    const tvResources = {
+      discord: document.getElementById('ssTvDiscord'),
+      wavv: document.getElementById('ssTvWavv'),
+      nipr: document.getElementById('ssTvNipr'),
+      a2p: document.getElementById('ssTvA2p'),
+      underwriting: document.getElementById('ssTvUnderwriting'),
+      script: document.getElementById('ssTvScript'),
+      licensing: document.getElementById('ssTvLicensing')
+    };
+
+    // Currently playing video id
+    let currentVideoId = null;
+
+    function getAllVideoIds() {
+      return Array.from(tvItems).map(i => i.dataset.videoId);
+    }
+
+    function updateTrainingProgress() {
+      const total = tvItems.length;
+      const done = completedVideoIds.size;
+      const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+      tvProgressBar.style.width = pct + '%';
+      tvProgressText.textContent = done + ' of ' + total + ' complete';
+    }
+
+    function updateVideoStates() {
+      let previousDone = true; // first video is always unlocked
+      tvItems.forEach((item, idx) => {
+        const vid = item.dataset.videoId;
+        const icon = item.querySelector('.tv-status-icon');
+        const isDone = completedVideoIds.has(vid);
+
+        item.classList.remove('locked', 'active');
+        icon.className = 'tv-status-icon';
+
+        if (isDone) {
+          icon.classList.add('completed');
+          icon.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+          previousDone = true;
+        } else if (previousDone) {
+          // This is the next available (unlocked) video
+          icon.classList.add('current');
+          icon.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>';
+          previousDone = false;
+        } else {
+          // Locked
+          item.classList.add('locked');
+          icon.classList.add('locked-icon');
+          icon.innerHTML = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>';
+        }
+
+        if (vid === currentVideoId && !item.classList.contains('locked')) {
+          item.classList.add('active');
+        }
+      });
+      updateTrainingProgress();
+    }
+
+    function selectVideo(item) {
+      if (item.classList.contains('locked')) return;
+      const vid = item.dataset.videoId;
+      currentVideoId = vid;
+      tvPlayer.src = item.dataset.src + LOOM_PARAMS;
+      tvTitle.textContent = item.querySelector('.ss-tv-item-label').textContent;
+
+      // Toggle resource panels
+      const res = item.dataset.res || '';
+      Object.keys(tvResources).forEach(key => {
+        if (tvResources[key]) tvResources[key].classList.toggle('visible', res === key);
+      });
+
+      updateVideoStates();
+
+      // Close mobile sidebar
+      if (window.innerWidth <= 768) tvSidebar.classList.remove('mobile-open');
+    }
+
+    // Click handlers on video items
+    tvItems.forEach(item => {
+      item.addEventListener('click', () => selectVideo(item));
+    });
+
+    // Mobile toggle
+    if (tvMobileToggle) {
+      tvMobileToggle.addEventListener('click', () => tvSidebar.classList.toggle('mobile-open'));
+    }
+
+    // Auto-select first available video
+    function autoSelectFirstAvailable() {
+      for (const item of tvItems) {
+        if (!item.classList.contains('locked')) {
+          selectVideo(item);
+          return;
+        }
+      }
+    }
+
+    // ── LOOM postMessage LISTENER ──
+    // Loom fires postMessage events; we listen for video completion
+    window.addEventListener('message', async (e) => {
+      // Loom sends { event: 'video.ended' } or similar from its embed
+      if (!e.data) return;
+      let data = e.data;
+      if (typeof data === 'string') {
+        try { data = JSON.parse(data); } catch (_) { return; }
+      }
+
+      // Loom embed API: event name varies by version
+      const isEnded = (
+        data.event === 'video.ended' ||
+        data.event === 'ended' ||
+        data.type === 'ended' ||
+        (data.data && data.data.method === 'paused' && data.data.value >= 0.97)
+      );
+
+      if (isEnded && currentVideoId && !completedVideoIds.has(currentVideoId)) {
+        await markVideoComplete(currentVideoId);
+      }
+    });
+
+    async function markVideoComplete(videoId) {
+      if (!currentUser || !accessToken) return;
+      completedVideoIds.add(videoId);
+      updateVideoStates();
+
+      // Write to Supabase
+      try {
+        await fetch(SUPABASE_URL + '/rest/v1/video_progress', {
+          method: 'POST',
+          headers: {
+            'apikey': SUPABASE_KEY,
+            'Authorization': 'Bearer ' + accessToken,
+            'Content-Type': 'application/json',
+            'Prefer': 'return=minimal,resolution=ignore-duplicates'
+          },
+          body: JSON.stringify({ user_id: currentUser.id, video_id: videoId })
+        });
+      } catch (err) { console.error('Failed to save video progress:', err); }
+
+      // Check if all done
+      const allIds = getAllVideoIds();
+      const allDone = allIds.every(id => completedVideoIds.has(id));
+      if (allDone && !trainingComplete) {
+        trainingComplete = true;
+        applyTrainingGate();
+        // Update agent_profiles
+        try {
+          await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?user_id=eq.' + currentUser.id, {
+            method: 'PATCH',
+            headers: {
+              'apikey': SUPABASE_KEY,
+              'Authorization': 'Bearer ' + accessToken,
+              'Content-Type': 'application/json',
+              'Prefer': 'return=minimal'
+            },
+            body: JSON.stringify({ training_complete: true })
+          });
+        } catch (err) { console.error('Failed to update training_complete:', err); }
+      }
+
+      // Auto-advance to next video
+      const items = Array.from(tvItems);
+      const idx = items.findIndex(i => i.dataset.videoId === videoId);
+      if (idx >= 0 && idx < items.length - 1) {
+        const next = items[idx + 1];
+        if (!next.classList.contains('locked')) {
+          selectVideo(next);
+        }
+      }
+    }
+
+    // ── TRAINING GATE ──
+    function applyTrainingGate() {
+      const sidebarBtns = document.querySelectorAll('.ss-sidebar-btn[data-panel]');
+      if (trainingComplete) {
+        // Unlock everything
+        trainingGate.classList.remove('active');
+        sidebarBtns.forEach(b => b.classList.remove('training-locked'));
+      } else {
+        // Lock all panels except training
+        sidebarBtns.forEach(b => {
+          if (b.dataset.panel !== 'training') {
+            b.classList.add('training-locked');
+          }
+        });
+        // Show gate overlay (only on non-training panels)
+        const activePanel = document.querySelector('.ss-panel.active');
+        if (activePanel && activePanel.id !== 'panel-training') {
+          trainingGate.classList.add('active');
+        } else {
+          trainingGate.classList.remove('active');
+        }
+      }
+    }
+
+    // ── LOAD TRAINING STATE FROM SUPABASE ──
+    async function loadTrainingState() {
+      if (!currentUser || !accessToken) return;
+      try {
+        // Fetch agent profile for training_complete flag
+        const profRes = await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?user_id=eq.' + currentUser.id + '&select=training_complete', {
+          headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + accessToken }
+        });
+        if (profRes.ok) {
+          const profData = await profRes.json();
+          if (profData.length > 0) {
+            trainingComplete = profData[0].training_complete !== false;
+          }
+        }
+
+        // Fetch completed videos
+        const vpRes = await fetch(SUPABASE_URL + '/rest/v1/video_progress?user_id=eq.' + currentUser.id + '&select=video_id', {
+          headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + accessToken }
+        });
+        if (vpRes.ok) {
+          const vpData = await vpRes.json();
+          vpData.forEach(row => completedVideoIds.add(row.video_id));
+        }
+      } catch (err) { console.error('Failed to load training state:', err); }
+
+      updateVideoStates();
+      autoSelectFirstAvailable();
+      applyTrainingGate();
+
+      // If not training complete, force to training panel
+      if (!trainingComplete) {
+        activatePanel('training');
+      }
+    }
+
+    // Hook into activatePanel to re-check gate
+    const _originalActivatePanel = activatePanel;
+    activatePanel = function(panelName) {
+      if (!trainingComplete && panelName !== 'training' && currentUser) {
+        // Block navigation to other panels
+        _originalActivatePanel('training');
+        trainingGate.classList.add('active');
+        return;
+      }
+      _originalActivatePanel(panelName);
+      if (panelName === 'training') {
+        trainingGate.classList.remove('active');
+        updateVideoStates();
+        if (!currentVideoId) autoSelectFirstAvailable();
+      }
+    };
+
+    // Patch updateAuthUI to load training state after login
+    const _origUpdateAuthUI = updateAuthUI;
+    updateAuthUI = function() {
+      _origUpdateAuthUI();
+      if (currentUser) {
+        loadTrainingState();
+      } else {
+        trainingComplete = true;
+        completedVideoIds.clear();
+        applyTrainingGate();
+      }
+    };
+
+    // Initial load if already logged in
+    if (currentUser) loadTrainingState();
   </script>
 </body>
 </html>

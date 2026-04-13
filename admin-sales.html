@@ -452,6 +452,7 @@
     <div class="admin-tabs">
       <button class="admin-tab active" data-atab="policies">Policies</button>
       <button class="admin-tab" data-atab="performance">Performance Dashboard</button>
+      <button class="admin-tab" data-atab="agents">Agent Profiles</button>
     </div>
 
     <!-- ═══ POLICIES TAB ═══ -->
@@ -539,6 +540,19 @@
       <div id="perfStatus"></div>
       <div id="perfGoals"></div>
       <div id="perfKpiSection"></div>
+    </div>
+
+    <!-- ═══ AGENT PROFILES TAB ═══ -->
+    <div class="admin-panel" id="atab-agents">
+      <div class="admin-header">
+        <div>
+          <div class="admin-title">Agent Profiles</div>
+          <div class="admin-subtitle">Manage agent info, comp levels, and training access</div>
+        </div>
+      </div>
+      <div class="admin-table-wrap">
+        <div id="agentProfilesContent"><div class="admin-loading">Loading...</div></div>
+      </div>
     </div>
 
   </div><!-- end admin-page -->
@@ -964,6 +978,7 @@
         tab.classList.add('active');
         document.getElementById('atab-' + tab.dataset.atab).classList.add('active');
         if (tab.dataset.atab === 'performance') renderPerformance();
+        if (tab.dataset.atab === 'agents') loadAgentProfiles();
       });
     });
 
@@ -1621,6 +1636,143 @@
 
     function statusBar(label, pct, cls) {
       return '<div class="perf-status-item"><div class="perf-status-item-label"><span>' + label + '</span><span>' + pct + '%</span></div><div class="perf-status-item-bar"><div class="perf-status-item-fill ' + cls + '" style="width:' + pct + '%"></div></div></div>';
+    }
+
+    // ═══ AGENT PROFILES TAB ═══
+    const TOTAL_TRAINING_VIDEOS = 24;
+
+    async function loadAgentProfiles() {
+      const container = document.getElementById('agentProfilesContent');
+      container.innerHTML = '<div class="admin-loading">Loading...</div>';
+      try {
+        // Fetch all agent profiles
+        const profRes = await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?select=user_id,agent_name,comp_level,training_complete&order=agent_name.asc', {
+          headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
+        });
+        const profiles = profRes.ok ? await profRes.json() : [];
+
+        // Fetch all video progress (grouped counts)
+        const vpRes = await fetch(SUPABASE_URL + '/rest/v1/video_progress?select=user_id,video_id', {
+          headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
+        });
+        const vpData = vpRes.ok ? await vpRes.json() : [];
+
+        // Build per-user video count
+        const videoCounts = {};
+        vpData.forEach(row => {
+          videoCounts[row.user_id] = (videoCounts[row.user_id] || 0) + 1;
+        });
+
+        // Fetch emails from auth (via user_list or profiles join)
+        // We'll show agent_name and user_id; email requires auth admin which we may not have
+        // Let's try fetching from auth.users via a workaround — use the profiles data we have
+
+        if (profiles.length === 0) {
+          container.innerHTML = '<p style="color:#888;text-align:center;padding:2rem;">No agent profiles found.</p>';
+          return;
+        }
+
+        let html = '<table class="admin-table" style="width:100%;border-collapse:collapse;">';
+        html += '<thead><tr style="background:#f8f8fa;border-bottom:2px solid #e5e5ea;">';
+        html += '<th style="padding:0.7rem 1rem;text-align:left;font-size:0.78rem;font-weight:700;color:#555;">Agent Name</th>';
+        html += '<th style="padding:0.7rem 1rem;text-align:left;font-size:0.78rem;font-weight:700;color:#555;">Comp Level</th>';
+        html += '<th style="padding:0.7rem 1rem;text-align:left;font-size:0.78rem;font-weight:700;color:#555;">Training Progress</th>';
+        html += '<th style="padding:0.7rem 1rem;text-align:left;font-size:0.78rem;font-weight:700;color:#555;">Status</th>';
+        html += '<th style="padding:0.7rem 1rem;text-align:center;font-size:0.78rem;font-weight:700;color:#555;">Actions</th>';
+        html += '</tr></thead><tbody>';
+
+        profiles.forEach(p => {
+          const vCount = videoCounts[p.user_id] || 0;
+          const pct = Math.round((vCount / TOTAL_TRAINING_VIDEOS) * 100);
+          const isComplete = p.training_complete === true;
+          const name = p.agent_name || 'Unknown';
+          const compLevel = p.comp_level || '—';
+
+          html += '<tr style="border-bottom:1px solid #eee;" data-uid="' + p.user_id + '">';
+          html += '<td style="padding:0.7rem 1rem;">';
+          html += '<input type="text" value="' + name.replace(/"/g, '&quot;') + '" class="ap-name-input" data-uid="' + p.user_id + '" style="border:1px solid #ddd;border-radius:6px;padding:0.35rem 0.6rem;font-size:0.85rem;width:160px;" />';
+          html += '</td>';
+          html += '<td style="padding:0.7rem 1rem;">';
+          html += '<select class="ap-comp-select" data-uid="' + p.user_id + '" style="border:1px solid #ddd;border-radius:6px;padding:0.35rem 0.6rem;font-size:0.85rem;">';
+          html += '<option value="">—</option>';
+          for (let v = 65; v <= 145; v += 5) {
+            html += '<option value="' + v + '"' + (parseInt(compLevel) === v ? ' selected' : '') + '>' + v + '%</option>';
+          }
+          html += '</select>';
+          html += '</td>';
+          html += '<td style="padding:0.7rem 1rem;">';
+          html += '<div style="display:flex;align-items:center;gap:0.5rem;">';
+          html += '<div style="flex:1;background:#f0f0f3;border-radius:100px;height:8px;overflow:hidden;max-width:120px;"><div style="height:100%;border-radius:100px;background:' + (pct >= 100 ? '#22c55e' : 'linear-gradient(90deg,#7c3aed,#a855f7)') + ';width:' + pct + '%;"></div></div>';
+          html += '<span style="font-size:0.78rem;font-weight:600;color:#888;">' + vCount + '/' + TOTAL_TRAINING_VIDEOS + '</span>';
+          html += '</div>';
+          html += '</td>';
+          html += '<td style="padding:0.7rem 1rem;">';
+          if (isComplete) {
+            html += '<span style="display:inline-flex;align-items:center;gap:0.3rem;padding:0.25rem 0.7rem;border-radius:100px;background:#dcfce7;color:#16a34a;font-size:0.75rem;font-weight:700;">Active</span>';
+          } else {
+            html += '<span style="display:inline-flex;align-items:center;gap:0.3rem;padding:0.25rem 0.7rem;border-radius:100px;background:#fef3c7;color:#d97706;font-size:0.75rem;font-weight:700;">In Training</span>';
+          }
+          html += '</td>';
+          html += '<td style="padding:0.7rem 1rem;text-align:center;">';
+          html += '<div style="display:flex;gap:0.4rem;justify-content:center;flex-wrap:wrap;">';
+          html += '<button class="ap-save-btn" data-uid="' + p.user_id + '" style="padding:0.3rem 0.8rem;font-size:0.75rem;font-weight:700;background:#2563eb;color:#fff;border:none;border-radius:6px;cursor:pointer;">Save</button>';
+          if (!isComplete) {
+            html += '<button class="ap-grant-btn" data-uid="' + p.user_id + '" style="padding:0.3rem 0.8rem;font-size:0.75rem;font-weight:700;background:#16a34a;color:#fff;border:none;border-radius:6px;cursor:pointer;">Grant Access</button>';
+          }
+          html += '</div>';
+          html += '</td>';
+          html += '</tr>';
+        });
+
+        html += '</tbody></table>';
+        container.innerHTML = html;
+
+        // Save button handlers
+        container.querySelectorAll('.ap-save-btn').forEach(btn => {
+          btn.addEventListener('click', async () => {
+            const uid = btn.dataset.uid;
+            const row = btn.closest('tr');
+            const name = row.querySelector('.ap-name-input').value.trim();
+            const comp = row.querySelector('.ap-comp-select').value;
+            const body = { agent_name: name };
+            if (comp) body.comp_level = parseInt(comp);
+            try {
+              await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?user_id=eq.' + uid, {
+                method: 'PATCH',
+                headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+                body: JSON.stringify(body)
+              });
+              btn.textContent = 'Saved!';
+              btn.style.background = '#16a34a';
+              setTimeout(() => { btn.textContent = 'Save'; btn.style.background = '#2563eb'; }, 1500);
+            } catch (err) { console.error(err); btn.textContent = 'Error'; }
+          });
+        });
+
+        // Grant Access button handlers
+        container.querySelectorAll('.ap-grant-btn').forEach(btn => {
+          btn.addEventListener('click', async () => {
+            const uid = btn.dataset.uid;
+            try {
+              await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?user_id=eq.' + uid, {
+                method: 'PATCH',
+                headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+                body: JSON.stringify({ training_complete: true })
+              });
+              btn.textContent = 'Granted!';
+              btn.style.background = '#888';
+              btn.disabled = true;
+              // Update status badge in the same row
+              const statusCell = btn.closest('tr').querySelectorAll('td')[3];
+              statusCell.innerHTML = '<span style="display:inline-flex;align-items:center;gap:0.3rem;padding:0.25rem 0.7rem;border-radius:100px;background:#dcfce7;color:#16a34a;font-size:0.75rem;font-weight:700;">Active</span>';
+            } catch (err) { console.error(err); btn.textContent = 'Error'; }
+          });
+        });
+
+      } catch (err) {
+        console.error('Failed to load agent profiles:', err);
+        container.innerHTML = '<p style="color:#c0392b;text-align:center;padding:2rem;">Failed to load agent profiles.</p>';
+      }
     }
 
     function buildWeeklyBars(data) {
