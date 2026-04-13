@@ -395,7 +395,7 @@
       border-radius: 18px; box-shadow: 0 8px 40px rgba(0,0,0,0.08); max-width: 440px; width: 90%;
     }
     .ss-sidebar-btn.training-locked {
-      opacity: 0.35; pointer-events: none; position: relative;
+      opacity: 0.35; position: relative; cursor: not-allowed;
     }
 
     /* Training panel responsive */
@@ -8346,6 +8346,8 @@
     let videoTimer = null;
     let videoTimerRemaining = 0;
     let videoTimerReady = false;
+    let videoTimerStarted = false;
+    let currentVideoDuration = 0;
 
     function selectVideo(item) {
       if (item.classList.contains('locked')) return;
@@ -8360,25 +8362,15 @@
         if (tvResources[key]) tvResources[key].classList.toggle('visible', res === key);
       });
 
-      // Start watch timer (90% of video duration)
-      if (videoTimer) clearInterval(videoTimer);
+      // Reset timer — don't start until video plays
+      if (videoTimer) { clearInterval(videoTimer); videoTimer = null; }
       videoTimerReady = false;
-      const duration = parseInt(item.dataset.duration) || 120;
-      const threshold = Math.round(duration * 0.9);
+      videoTimerStarted = false;
+      currentVideoDuration = parseInt(item.dataset.duration) || 120;
+      videoTimerRemaining = Math.round(currentVideoDuration * 0.9);
 
       if (completedVideoIds.has(vid)) {
         videoTimerReady = true;
-      } else {
-        videoTimerRemaining = threshold;
-        videoTimer = setInterval(() => {
-          videoTimerRemaining--;
-          if (videoTimerRemaining <= 0) {
-            clearInterval(videoTimer);
-            videoTimer = null;
-            videoTimerReady = true;
-          }
-          updateMarkCompleteBtn();
-        }, 1000);
       }
 
       updateVideoStates();
@@ -8386,6 +8378,31 @@
 
       // Close mobile sidebar
       if (window.innerWidth <= 768) tvSidebar.classList.remove('mobile-open');
+    }
+
+    // Detect when user clicks the Loom iframe (to play the video)
+    // When an iframe gets focus, the parent window blurs
+    window.addEventListener('blur', () => {
+      setTimeout(() => {
+        if (document.activeElement === tvPlayer || document.activeElement?.closest?.('.ss-tv-video-wrap')) {
+          startVideoTimer();
+        }
+      }, 100);
+    });
+
+    function startVideoTimer() {
+      if (videoTimerStarted || videoTimerReady || !currentVideoId || completedVideoIds.has(currentVideoId)) return;
+      videoTimerStarted = true;
+      videoTimer = setInterval(() => {
+        videoTimerRemaining--;
+        if (videoTimerRemaining <= 0) {
+          clearInterval(videoTimer);
+          videoTimer = null;
+          videoTimerReady = true;
+        }
+        updateMarkCompleteBtn();
+      }, 1000);
+      updateMarkCompleteBtn();
     }
 
     function formatTimer(secs) {
@@ -8400,12 +8417,20 @@
         return;
       }
       tvMarkCompleteBtn.style.display = 'inline-flex';
-      if (!videoTimerReady) {
+      if (!videoTimerStarted) {
+        // Haven't clicked play yet
+        tvMarkCompleteBtn.disabled = true;
+        tvMarkCompleteBtn.style.opacity = '0.5';
+        tvMarkCompleteBtn.style.cursor = 'not-allowed';
+        tvMarkCompleteBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:0.4rem;"><polygon points="5 3 19 12 5 21 5 3"/></svg> Play the video to start';
+      } else if (!videoTimerReady) {
+        // Timer running
         tvMarkCompleteBtn.disabled = true;
         tvMarkCompleteBtn.style.opacity = '0.5';
         tvMarkCompleteBtn.style.cursor = 'not-allowed';
         tvMarkCompleteBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:0.4rem;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Watch video to unlock (' + formatTimer(videoTimerRemaining) + ')';
       } else {
+        // Ready to mark complete
         tvMarkCompleteBtn.disabled = false;
         tvMarkCompleteBtn.style.opacity = '1';
         tvMarkCompleteBtn.style.cursor = 'pointer';
@@ -8580,9 +8605,22 @@
     const _originalActivatePanel = activatePanel;
     activatePanel = function(panelName) {
       if (!trainingComplete && panelName !== 'training' && currentUser) {
-        // Block navigation to other panels
-        _originalActivatePanel('training');
-        trainingGate.classList.add('active');
+        // Show message and redirect to training
+        const done = completedVideoIds.size;
+        const total = tvItems.length;
+        showConfirmModal({
+          title: 'Complete Your Training',
+          message: 'You need to finish all training videos before accessing the Sales Hub. You\'ve completed ' + done + ' of ' + total + ' videos so far.',
+          confirmText: 'Go to Training',
+          cancelText: '',
+          variant: 'info',
+          icon: '🎓'
+        }).then(() => {
+          _originalActivatePanel('training');
+          trainingGate.classList.remove('active');
+          updateVideoStates();
+          if (!currentVideoId) autoSelectFirstAvailable();
+        });
         return;
       }
       _originalActivatePanel(panelName);
