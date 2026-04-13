@@ -6275,6 +6275,19 @@
         btn.disabled = false;
         return;
       }
+      if (/[a-zA-Z]/.test(discordId) || !/^\d{17,}$/.test(discordId)) {
+        signupMsg.innerHTML = '<strong>That\'s a Discord username, not a User ID.</strong><br>Your User ID is a long number (17+ digits).<br><br>' +
+          '<strong>How to find it:</strong><br>' +
+          '1. Open Discord &rarr; Settings (gear icon)<br>' +
+          '2. Go to <strong>Advanced</strong> &rarr; turn on <strong>Developer Mode</strong><br>' +
+          '3. Go back, right-click your own name<br>' +
+          '4. Click <strong>"Copy User ID"</strong><br><br>' +
+          'It will look like: <code style="background:#f3f4f6;padding:2px 6px;border-radius:4px;">123456789012345678</code>';
+        signupMsg.className = 'ss-signup-msg error';
+        signupMsg.style.display = 'block';
+        btn.disabled = false;
+        return;
+      }
 
       try {
         const res = await fetch(SUPABASE_URL + '/auth/v1/signup', {
