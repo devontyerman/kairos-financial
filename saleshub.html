@@ -4074,6 +4074,10 @@
             <div class="ss-tv-progress-title">Training Progress</div>
             <div class="ss-tv-progress-bar-wrap"><div class="ss-tv-progress-bar" id="ssTvProgressBar" style="width:0%"></div></div>
             <div class="ss-tv-progress-text" id="ssTvProgressText">0 of 0 complete</div>
+            <div style="display:flex;gap:0.5rem;margin-top:0.75rem;">
+              <button id="tvProfileBtn" onclick="activatePanel('profile')" style="flex:1;padding:0.45rem 0;font-family:'Inter',sans-serif;font-size:0.75rem;font-weight:600;color:#555;background:#f0f0f3;border:1px solid #e0e0e0;border-radius:6px;cursor:pointer;">Profile</button>
+              <button id="tvSignOutBtn" style="flex:1;padding:0.45rem 0;font-family:'Inter',sans-serif;font-size:0.75rem;font-weight:600;color:#ef4444;background:#fff;border:1px solid #fecaca;border-radius:6px;cursor:pointer;">Sign Out</button>
+            </div>
           </div>
 
           <div class="ss-tv-cat-label">New Agent Steps</div>
@@ -4834,13 +4838,16 @@
     checkSession();
 
     // Logout
-    document.getElementById('authLogout').addEventListener('click', () => {
+    function doLogout() {
       currentUser = null;
       accessToken = null;
       localStorage.removeItem('sb_access_token');
       localStorage.removeItem('sb_refresh_token');
       updateAuthUI();
-    });
+      activatePanel('submit');
+    }
+    document.getElementById('authLogout').addEventListener('click', doLogout);
+    document.getElementById('tvSignOutBtn').addEventListener('click', doLogout);
 
     // Prompt buttons
     document.getElementById('promptLogin').addEventListener('click', () => {
@@ -8565,7 +8572,7 @@
       } else {
         // Lock all panels except training
         sidebarBtns.forEach(b => {
-          if (b.dataset.panel !== 'training') {
+          if (b.dataset.panel !== 'training' && b.dataset.panel !== 'profile') {
             b.classList.add('training-locked');
           }
         });
@@ -8617,7 +8624,7 @@
     // Hook into activatePanel to re-check gate
     const _originalActivatePanel = activatePanel;
     activatePanel = function(panelName) {
-      if (!trainingComplete && panelName !== 'training' && currentUser) {
+      if (!trainingComplete && panelName !== 'training' && panelName !== 'profile' && currentUser) {
         // Show message and redirect to training
         const done = completedVideoIds.size;
         const total = tvItems.length;
