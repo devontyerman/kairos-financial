@@ -4166,6 +4166,12 @@
           </div>
           <div class="ss-tv-video-title" id="ssTvTitle"></div>
 
+          <!-- Mark Complete button -->
+          <button id="ssTvMarkComplete" style="display:none; margin-top:1rem; padding:0.7rem 2rem; font-family:'Plus Jakarta Sans',sans-serif; font-size:0.9rem; font-weight:700; color:#fff; background:linear-gradient(135deg,#7c3aed,#a855f7); border:none; border-radius:100px; cursor:pointer; transition:background 0.15s,transform 0.15s;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:0.4rem;"><polyline points="20 6 9 17 4 12"/></svg>
+            Mark as Complete
+          </button>
+
           <!-- Discord buttons -->
           <div class="ss-tv-resource-btns" id="ssTvDiscord">
             <a href="https://discord.gg/7jRu7r3FnC" target="_blank" rel="noopener noreferrer" class="ss-tv-resource-btn discord">
@@ -8275,6 +8281,7 @@
     const tvProgressText = document.getElementById('ssTvProgressText');
     const tvSidebar = document.getElementById('ssTvSidebar');
     const tvMobileToggle = document.getElementById('ssTvMobileToggle');
+    const tvMarkCompleteBtn = document.getElementById('ssTvMarkComplete');
     const trainingGate = document.getElementById('trainingGate');
 
     // Resource panel refs
@@ -8350,10 +8357,30 @@
       });
 
       updateVideoStates();
+      updateMarkCompleteBtn();
 
       // Close mobile sidebar
       if (window.innerWidth <= 768) tvSidebar.classList.remove('mobile-open');
     }
+
+    function updateMarkCompleteBtn() {
+      if (currentVideoId && !completedVideoIds.has(currentVideoId)) {
+        tvMarkCompleteBtn.style.display = 'inline-flex';
+      } else {
+        tvMarkCompleteBtn.style.display = 'none';
+      }
+    }
+
+    tvMarkCompleteBtn.addEventListener('click', async () => {
+      if (currentVideoId && !completedVideoIds.has(currentVideoId)) {
+        tvMarkCompleteBtn.disabled = true;
+        tvMarkCompleteBtn.textContent = 'Saving...';
+        await markVideoComplete(currentVideoId);
+        tvMarkCompleteBtn.disabled = false;
+        tvMarkCompleteBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:0.4rem;"><polyline points="20 6 9 17 4 12"/></svg> Mark as Complete';
+        updateMarkCompleteBtn();
+      }
+    });
 
     // Click handlers on video items
     tvItems.forEach(item => {
