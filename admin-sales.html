@@ -1716,8 +1716,10 @@
           html += '<td style="padding:0.7rem 1rem;text-align:center;">';
           html += '<div style="display:flex;gap:0.4rem;justify-content:center;flex-wrap:wrap;">';
           html += '<button class="ap-save-btn" data-uid="' + p.user_id + '" style="padding:0.3rem 0.8rem;font-size:0.75rem;font-weight:700;background:#2563eb;color:#fff;border:none;border-radius:6px;cursor:pointer;">Save</button>';
-          if (!isComplete) {
-            html += '<button class="ap-grant-btn" data-uid="' + p.user_id + '" style="padding:0.3rem 0.8rem;font-size:0.75rem;font-weight:700;background:#16a34a;color:#fff;border:none;border-radius:6px;cursor:pointer;">Grant Access</button>';
+          if (isComplete) {
+            html += '<button class="ap-grant-btn" data-uid="' + p.user_id + '" data-current="true" style="padding:0.3rem 0.8rem;font-size:0.75rem;font-weight:700;background:#c0392b;color:#fff;border:none;border-radius:6px;cursor:pointer;">Revoke Access</button>';
+          } else {
+            html += '<button class="ap-grant-btn" data-uid="' + p.user_id + '" data-current="false" style="padding:0.3rem 0.8rem;font-size:0.75rem;font-weight:700;background:#16a34a;color:#fff;border:none;border-radius:6px;cursor:pointer;">Grant Access</button>';
           }
           html += '</div>';
           html += '</td>';
@@ -1749,23 +1751,33 @@
           });
         });
 
-        // Grant Access button handlers
+        // Grant / Revoke Access button handlers
         container.querySelectorAll('.ap-grant-btn').forEach(btn => {
           btn.addEventListener('click', async () => {
             const uid = btn.dataset.uid;
+            const isCurrentlyActive = btn.dataset.current === 'true';
+            const newValue = !isCurrentlyActive;
+            btn.disabled = true;
+            btn.textContent = 'Saving...';
             try {
               await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?user_id=eq.' + uid, {
                 method: 'PATCH',
                 headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
-                body: JSON.stringify({ training_complete: true })
+                body: JSON.stringify({ training_complete: newValue })
               });
-              btn.textContent = 'Granted!';
-              btn.style.background = '#888';
-              btn.disabled = true;
-              // Update status badge in the same row
+              btn.dataset.current = String(newValue);
               const statusCell = btn.closest('tr').querySelectorAll('td')[3];
-              statusCell.innerHTML = '<span style="display:inline-flex;align-items:center;gap:0.3rem;padding:0.25rem 0.7rem;border-radius:100px;background:#dcfce7;color:#16a34a;font-size:0.75rem;font-weight:700;">Active</span>';
-            } catch (err) { console.error(err); btn.textContent = 'Error'; }
+              if (newValue) {
+                btn.textContent = 'Revoke Access';
+                btn.style.background = '#c0392b';
+                statusCell.innerHTML = '<span style="display:inline-flex;align-items:center;gap:0.3rem;padding:0.25rem 0.7rem;border-radius:100px;background:#dcfce7;color:#16a34a;font-size:0.75rem;font-weight:700;">Active</span>';
+              } else {
+                btn.textContent = 'Grant Access';
+                btn.style.background = '#16a34a';
+                statusCell.innerHTML = '<span style="display:inline-flex;align-items:center;gap:0.3rem;padding:0.25rem 0.7rem;border-radius:100px;background:#fef3c7;color:#d97706;font-size:0.75rem;font-weight:700;">In Training</span>';
+              }
+              btn.disabled = false;
+            } catch (err) { console.error(err); btn.textContent = 'Error'; btn.disabled = false; }
           });
         });
 
