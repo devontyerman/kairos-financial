@@ -581,11 +581,11 @@
     .sh-resource-tag { display: inline-block; font-size: 0.58rem; font-weight: 600; padding: 0.12rem 0.4rem; border-radius: 4px; background: #f8f8fa; border: 1px solid #e0e0e5; color: #666666; margin-top: 0.4rem; }
 
     /* ─── Agent Performance Tab ─── */
-    .perf-agent-kpis { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 0.6rem; margin-bottom: 1.5rem; }
-    .perf-agent-kpi { background: #f8f8fa; border: 1px solid #e0e0e5; border-radius: 12px; padding: 1rem 1.1rem; }
-    .perf-agent-kpi-label { font-size: 0.65rem; font-weight: 700; color: #555555; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.3rem; }
-    .perf-agent-kpi-value { font-size: 1.35rem; font-weight: 900; color: #1a1a1a; }
-    .perf-agent-kpi-sub { font-size: 0.7rem; color: #666666; margin-top: 0.2rem; }
+    .perf-agent-kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.6rem; margin-bottom: 1.5rem; }
+    .perf-agent-kpi { background: #f8f8fa; border: 1px solid #e0e0e5; border-radius: 12px; padding: 1rem 1.1rem; display: flex; flex-direction: column; min-height: 90px; }
+    .perf-agent-kpi-label { font-size: 0.65rem; font-weight: 700; color: #555555; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: auto; }
+    .perf-agent-kpi-value { font-size: 1.35rem; font-weight: 900; color: #1a1a1a; line-height: 1.2; }
+    .perf-agent-kpi-sub { font-size: 0.7rem; color: #666666; margin-top: 0.15rem; min-height: 1.1em; }
     .perf-agent-kpi.up .perf-agent-kpi-value { color: #16a34a; }
     .perf-agent-kpi.down .perf-agent-kpi-value { color: #dc2626; }
     .perf-agent-section { background: #ffffff; border: 1px solid #e5e5ea; border-radius: 14px; padding: 1.25rem; margin-bottom: 1rem; }
@@ -595,17 +595,18 @@
     .perf-agent-bar-val-left { width: 90px; font-size: 0.65rem; font-weight: 800; color: #1a1a1a; white-space: nowrap; text-align: right; flex-shrink: 0; }
     .perf-agent-bar-track { flex: 1; height: 20px; background: #f0f0f3; border-radius: 6px; position: relative; overflow: hidden; }
     .perf-agent-bar-fill { height: 100%; border-radius: 6px; transition: width 0.5s ease; }
-    .perf-agent-bar-fill.blue { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
+    .perf-agent-bar-fill.blue { background: linear-gradient(90deg, #7c3aed, #a78bfa); }
+    .perf-agent-bar-fill.cyan { background: linear-gradient(90deg, #06b6d4, #67e8f9); }
     .perf-agent-bar-fill.green { background: linear-gradient(90deg, #22c55e, #4ade80); }
-    .perf-agent-bar-fill.amber { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+    .perf-agent-bar-fill.amber { background: linear-gradient(90deg, #eab308, #fde047); }
     .perf-agent-bar-fill.red { background: linear-gradient(90deg, #ef4444, #f87171); }
     .perf-agent-bar-val { display: none; }
     .perf-agent-status-row { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem; }
     .perf-agent-status-label { font-size: 0.78rem; font-weight: 600; color: #555555; width: 100px; }
     .perf-agent-status-bar { flex: 1; height: 10px; background: #ececf0; border-radius: 5px; overflow: hidden; }
     .perf-agent-status-fill { height: 100%; border-radius: 5px; transition: width 0.5s ease; }
-    .perf-agent-status-fill.uw { background: #f59e0b; }
-    .perf-agent-status-fill.app { background: #3b82f6; }
+    .perf-agent-status-fill.uw { background: #eab308; }
+    .perf-agent-status-fill.app { background: #7c3aed; }
     .perf-agent-status-fill.paid { background: #22c55e; }
     .perf-agent-status-pct { font-size: 0.72rem; font-weight: 700; color: #666; width: 40px; text-align: right; }
     .perf-agent-trend-arrow { font-size: 0.7rem; font-weight: 700; margin-left: 0.25rem; }
