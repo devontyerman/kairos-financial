@@ -2982,13 +2982,13 @@
       <button class="ss-sidebar-hamburger" id="ssHamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
     </div>
     <div class="ss-sidebar-grid">
-    <button class="ss-sidebar-btn active" data-panel="submit">
+    <button class="ss-sidebar-btn active" data-panel="goals">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+      <span>Tracker</span>
+    </button>
+    <button class="ss-sidebar-btn" data-panel="submit">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
       <span>Submit</span>
-    </button>
-    <button class="ss-sidebar-btn" data-panel="goals">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
-      <span>Goals</span>
     </button>
     <button class="ss-sidebar-btn" data-panel="leaderboard">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h12v6a6 6 0 01-12 0V2z"/><path d="M6 4H4a2 2 0 00-2 2v1a4 4 0 004 4"/><path d="M18 4h2a2 2 0 012 2v1a4 4 0 01-4 4"/><path d="M12 14v4"/><path d="M8 22h8"/><path d="M8 22a2 2 0 01-2-2h12a2 2 0 01-2 2"/></svg>
@@ -3105,7 +3105,7 @@
     </div>
 
     <!-- SUBMIT FORM -->
-    <div class="ss-panel active" id="panel-submit">
+    <div class="ss-panel" id="panel-submit">
       <div style="padding: 2.5rem 1.5rem;">
 
         <div class="ss-panel-head">
@@ -3248,11 +3248,11 @@
     </div>
 
     <!-- ═══ GOAL TRACKER PANEL ═══ -->
-    <div class="ss-panel" id="panel-goals">
+    <div class="ss-panel active" id="panel-goals">
       <div style="padding: 2.5rem 1.5rem;">
         <div class="ss-panel-head">
-          <h2>Goals</h2>
-          <p class="ss-panel-sub">Set your annual production target and track your pace.</p>
+          <h2>Tracker</h2>
+          <p class="ss-panel-sub">Your annual goal, KPIs, conversion rates, and trends at a glance.</p>
         </div>
         <div class="ss-goal-tracker visible" id="goalTracker">
           <div class="ss-goal-header">
@@ -3267,6 +3267,56 @@
             </div>
           </div>
           <div id="goalChartArea"></div>
+        </div>
+
+        <!-- Performance (moved from Track page) -->
+        <div id="perfNotAuth" class="mp-not-auth" style="display:none;">Sign in to view your performance.</div>
+        <div id="perfContent" style="display:none;">
+          <div class="mp-header" style="margin-bottom:1.25rem;">
+            <div>
+              <div class="mp-count" id="perfSummary" style="color:#888;font-size:0.78rem;"></div>
+            </div>
+          </div>
+
+          <!-- KPI Cards -->
+          <div class="perf-agent-kpis" id="agentKpis"></div>
+
+          <!-- Carrier Breakdown -->
+          <div class="perf-agent-section" id="agentCarriers"></div>
+
+          <!-- Status Conversion -->
+          <div class="perf-agent-section" id="agentStatus"></div>
+
+          <!-- Monthly Trend -->
+          <div class="perf-agent-section" id="agentTrend"></div>
+
+          <!-- KPI Stats -->
+          <div class="perf-agent-section" id="agentKpiStats" style="background:#ffffff;border:1px solid #ddd;">
+            <div class="perf-agent-section-title">Daily KPIs</div>
+            <div style="display:flex;flex-wrap:wrap;gap:0.4rem;align-items:center;margin-bottom:0.75rem;">
+              <button class="mp-filter active" data-kpi-range="mtd">MTD</button>
+              <button class="mp-filter" data-kpi-range="wtd">WTD</button>
+              <button class="mp-filter" data-kpi-range="ytd">YTD</button>
+              <button class="mp-filter" data-kpi-range="lastweek">Last Week</button>
+              <button class="mp-filter" data-kpi-range="lastmonth">Last Month</button>
+              <button class="mp-filter" data-kpi-range="custom">Custom</button>
+              <div style="margin-left:auto;display:flex;gap:0.75rem;">
+                <label style="display:flex;align-items:center;gap:0.3rem;font-size:0.7rem;color:#777;cursor:pointer;">
+                  <input type="checkbox" id="kpiExcludeSat" style="accent-color:#088395;" /> Exclude Sat
+                </label>
+                <label style="display:flex;align-items:center;gap:0.3rem;font-size:0.7rem;color:#777;cursor:pointer;">
+                  <input type="checkbox" id="kpiExcludeSun" style="accent-color:#088395;" /> Exclude Sun
+                </label>
+              </div>
+            </div>
+            <div id="kpiCustomRange" style="display:none;gap:0.5rem;align-items:center;margin-bottom:0.75rem;flex-wrap:wrap;">
+              <input type="date" id="kpiDateFrom" style="padding:0.35rem 0.6rem;font-size:0.78rem;background:#ffffff;border:1px solid #ddd;border-radius:8px;color:#1a1a1a;" />
+              <span style="color:#555;font-size:0.78rem;">to</span>
+              <input type="date" id="kpiDateTo" style="padding:0.35rem 0.6rem;font-size:0.78rem;background:#ffffff;border:1px solid #ddd;border-radius:8px;color:#1a1a1a;" />
+              <button id="kpiCustomApply" style="padding:0.35rem 0.9rem;font-size:0.72rem;font-weight:700;background:#1a1a1a;color:#fff;border:none;border-radius:100px;cursor:pointer;">Apply</button>
+            </div>
+            <div id="kpiStatsContent"></div>
+          </div>
         </div>
       </div>
     </div>
@@ -3712,60 +3762,7 @@
 
     <!-- ═══ PERFORMANCE TAB ═══ -->
     <div class="ss-panel" id="panel-performance">
-      <div class="mp-inner">
-        <div class="ss-panel-head">
-          <h2>My Performance</h2>
-          <p class="ss-panel-sub">Your KPIs, conversion rates, and trends at a glance.</p>
-        </div>
-        <div id="perfNotAuth" class="mp-not-auth" style="display:none;">Sign in to view your performance.</div>
-        <div id="perfContent" style="display:none;">
-          <div class="mp-header" style="margin-bottom:1.25rem;">
-            <div>
-              <div class="mp-count" id="perfSummary" style="color:#888;font-size:0.78rem;"></div>
-            </div>
-          </div>
-
-          <!-- KPI Cards -->
-          <div class="perf-agent-kpis" id="agentKpis"></div>
-
-          <!-- Carrier Breakdown -->
-          <div class="perf-agent-section" id="agentCarriers"></div>
-
-          <!-- Status Conversion -->
-          <div class="perf-agent-section" id="agentStatus"></div>
-
-          <!-- Monthly Trend -->
-          <div class="perf-agent-section" id="agentTrend"></div>
-
-          <!-- KPI Stats -->
-          <div class="perf-agent-section" id="agentKpiStats" style="background:#ffffff;border:1px solid #ddd;">
-            <div class="perf-agent-section-title">Daily KPIs</div>
-            <div style="display:flex;flex-wrap:wrap;gap:0.4rem;align-items:center;margin-bottom:0.75rem;">
-              <button class="mp-filter active" data-kpi-range="mtd">MTD</button>
-              <button class="mp-filter" data-kpi-range="wtd">WTD</button>
-              <button class="mp-filter" data-kpi-range="ytd">YTD</button>
-              <button class="mp-filter" data-kpi-range="lastweek">Last Week</button>
-              <button class="mp-filter" data-kpi-range="lastmonth">Last Month</button>
-              <button class="mp-filter" data-kpi-range="custom">Custom</button>
-              <div style="margin-left:auto;display:flex;gap:0.75rem;">
-                <label style="display:flex;align-items:center;gap:0.3rem;font-size:0.7rem;color:#777;cursor:pointer;">
-                  <input type="checkbox" id="kpiExcludeSat" style="accent-color:#2563eb;" /> Exclude Sat
-                </label>
-                <label style="display:flex;align-items:center;gap:0.3rem;font-size:0.7rem;color:#777;cursor:pointer;">
-                  <input type="checkbox" id="kpiExcludeSun" style="accent-color:#2563eb;" /> Exclude Sun
-                </label>
-              </div>
-            </div>
-            <div id="kpiCustomRange" style="display:none;gap:0.5rem;align-items:center;margin-bottom:0.75rem;flex-wrap:wrap;">
-              <input type="date" id="kpiDateFrom" style="padding:0.35rem 0.6rem;font-size:0.78rem;background:#ffffff;border:1px solid #ddd;border-radius:8px;color:#1a1a1a;" />
-              <span style="color:#555;font-size:0.78rem;">to</span>
-              <input type="date" id="kpiDateTo" style="padding:0.35rem 0.6rem;font-size:0.78rem;background:#ffffff;border:1px solid #ddd;border-radius:8px;color:#1a1a1a;" />
-              <button id="kpiCustomApply" style="padding:0.35rem 0.9rem;font-size:0.72rem;font-weight:700;background:#1a1a1a;color:#fff;border:none;border-radius:100px;cursor:pointer;">Apply</button>
-            </div>
-            <div id="kpiStatsContent"></div>
-          </div>
-        </div>
-      </div>
+      <!-- Content moved to Tracker panel -->
     </div>
 
     <!-- ═══ COMP GRID PANEL ═══ -->
@@ -4870,7 +4867,7 @@
       if (panelName === 'leaderboard') loadLeaderboard();
       if (panelName === 'policies') loadPolicies();
       if (panelName === 'performance') loadAgentPerformance();
-      if (panelName === 'goals' && currentUser) loadGoalTracker();
+      if (panelName === 'goals' && currentUser) { loadGoalTracker(); loadAgentPerformance(); }
       if (panelName === 'profile') loadProfilePanel();
       if (panelName === 'calculator' && currentUser) loadCommissionPipeline();
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -7018,6 +7015,7 @@
       if (currentUser) {
         setTimeout(checkUnderwritingReminders, 1500);
         loadGoalTracker();
+        loadAgentPerformance();
       }
     };
 
