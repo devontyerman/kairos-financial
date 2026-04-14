@@ -5473,6 +5473,14 @@
         document.getElementById('agentCarriers').innerHTML = '';
         document.getElementById('agentStatus').innerHTML = '';
         document.getElementById('agentTrend').innerHTML = '';
+        // Still load KPI stats even without policies
+        try {
+          const kpiRes2 = await fetch(SUPABASE_URL + '/rest/v1/daily_kpis?user_id=eq.' + viewUserId + '&order=kpi_date.desc', {
+            headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + token }
+          });
+          agentKpiAllRows = await kpiRes2.json();
+        } catch (e) { agentKpiAllRows = []; }
+        renderAgentKpiStats();
         return;
       }
 
