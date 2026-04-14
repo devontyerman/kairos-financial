@@ -5571,7 +5571,12 @@
         const val = monthData[m]?.ap || 0;
         const prev = i > 0 ? (monthData[activeMonths[i - 1]]?.ap || 0) : 0;
         const pct = (val / maxMonthAP * 100).toFixed(1);
-        const color = val >= 10000 ? 'green' : 'red';
+        // Current month: use pacing to project, past months: use actual total
+        var compareVal = val;
+        if (i === activeMonths.length - 1 && dayOfMonth > 0) {
+          compareVal = (val / dayOfMonth) * daysInMonth;
+        }
+        const color = compareVal >= 10000 ? 'green' : 'red';
         trendBars += '<div class="perf-agent-bar-row"><div class="perf-agent-bar-label">' + m + '</div><div class="perf-agent-bar-val-left">' + fmt(val) + '</div><div class="perf-agent-bar-track"><div class="perf-agent-bar-fill ' + color + '" style="width:' + pct + '%"></div></div></div>';
       }
       document.getElementById('agentTrend').innerHTML = '<div class="perf-agent-section-title">Monthly Trend (YTD)</div>' + trendBars;
