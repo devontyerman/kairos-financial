@@ -5487,8 +5487,16 @@
       const ytd = rows.filter(r => new Date(r.policy_date || r.created_at) >= yearStart);
 
       const mtdAP = sumAP(mtd), lmAP = sumAP(lastMonth), ytdAP = sumAP(ytd), totalAP = sumAP(rows);
-      const momChange = lmAP > 0 ? ((mtdAP - lmAP) / lmAP * 100) : (mtdAP > 0 ? 100 : 0);
-      const momClass = momChange > 0 ? 'up' : momChange < 0 ? 'down' : '';
+      // Compare pace: what did we have by this same day last month?
+      const dayOfMonth = now.getDate();
+      const lastMonthSameDay = new Date(now.getFullYear(), now.getMonth() - 1, dayOfMonth, 23, 59, 59);
+      const lmAtThisPoint = rows.filter(function(r) { var d = new Date(r.policy_date || r.created_at); return d >= lastMonthStart && d <= lastMonthSameDay; });
+      const lmAtThisPointAP = sumAP(lmAtThisPoint);
+      // Project current month based on pace
+      const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+      const projectedAP = dayOfMonth > 0 ? (mtdAP / dayOfMonth) * daysInMonth : 0;
+      const momChange = lmAP > 0 ? ((projectedAP - lmAP) / lmAP * 100) : (mtdAP > 0 ? 100 : 0);
+      const momClass = momChange >= 0 ? 'up' : momChange < -20 ? 'down' : '';
       const avgAP = ytd.length > 0 ? ytdAP / ytd.length : 0;
       const dayOfYear = Math.floor((now - yearStart) / (1000*60*60*24)) + 1;
       const yearlyPace = dayOfYear > 0 ? (ytdAP / dayOfYear) * 365 : 0;
@@ -5505,7 +5513,7 @@
         agentKpi('Month to Date', fmt(mtdAP), mtd.length + ' policies', mtdCls) +
         agentKpi('YTD Total', fmt(ytdAP), ytd.length + ' policies', ytdAP > 0 ? 'up' : '') +
         agentKpi('Last Month', fmt(lmAP), lastMonth.length + ' policies') +
-        agentKpi('Month vs Last', (momChange > 0 ? '+' : '') + momChange.toFixed(1) + '%', momChange > 0 ? '↑ Trending up' : momChange < 0 ? '↓ Trending down' : '— Flat', momClass) +
+        agentKpi('Month vs Last', (momChange > 0 ? '+' : '') + momChange.toFixed(1) + '%', 'Pacing ' + fmt(projectedAP) + ' vs ' + fmt(lmAP), momClass) +
         agentKpi('Avg Per Policy', fmt(avgAP), 'based on YTD') +
         agentKpi('Yearly Pace', fmt(yearlyPace), fmt(Math.round(yearlyPace / 12)) + '/mo avg', paceCls);
 
