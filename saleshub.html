@@ -6263,16 +6263,26 @@
       signupMsg.style.display = 'none';
       signupMsg.textContent = '';
 
-      const name = (document.getElementById('signupName').value || '').trim();
+      var rawName = (document.getElementById('signupName').value || '').trim();
       const email = (document.getElementById('signupEmail').value || '').trim();
       const password = document.getElementById('signupPassword').value || '';
       const discordId = (document.getElementById('signupDiscordId').value || '').trim();
 
-      if (!name || !email || !password || !discordId) {
+      if (!rawName || !email || !password || !discordId) {
         showSignupMsg('Please fill out all fields, including your Discord User ID.', 'error');
         btn.disabled = false;
         return;
       }
+      // Require first and last name
+      var nameParts = rawName.split(/\s+/).filter(Boolean);
+      if (nameParts.length < 2) {
+        showSignupMsg('Please enter your first and last name.', 'error');
+        btn.disabled = false;
+        return;
+      }
+      // Auto-capitalize each part
+      var name = nameParts.map(function(p) { return p.charAt(0).toUpperCase() + p.slice(1).toLowerCase(); }).join(' ');
+      document.getElementById('signupName').value = name;
       if (password.length < 6) {
         showSignupMsg('Password must be at least 6 characters.', 'error');
         btn.disabled = false;
