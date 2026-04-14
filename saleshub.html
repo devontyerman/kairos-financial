@@ -591,7 +591,7 @@
     .perf-agent-section { background: #ffffff; border: 1px solid #e5e5ea; border-radius: 14px; padding: 1.25rem; margin-bottom: 1rem; }
     .perf-agent-section-title { font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: #777; margin-bottom: 0.85rem; }
     .perf-agent-bar-row { display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.45rem; }
-    .perf-agent-bar-label { width: 70px; font-size: 0.72rem; font-weight: 700; color: #444444; text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex-shrink: 0; }
+    .perf-agent-bar-label { width: 70px; font-size: 0.72rem; font-weight: 700; color: #444444; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex-shrink: 0; }
     .perf-agent-bar-val-left { width: 90px; font-size: 0.65rem; font-weight: 800; color: #1a1a1a; white-space: nowrap; text-align: right; flex-shrink: 0; }
     .perf-agent-bar-track { flex: 1; height: 10px; background: #f0f0f3; border-radius: 999px; position: relative; overflow: hidden; }
     .perf-agent-bar-fill { height: 100%; border-radius: 999px; transition: width 0.5s ease; }
@@ -5563,13 +5563,8 @@
         const val = monthData[m]?.ap || 0;
         const prev = i > 0 ? (monthData[activeMonths[i - 1]]?.ap || 0) : 0;
         const pct = (val / maxMonthAP * 100).toFixed(1);
-        let arrow = '';
-        if (i > 0) {
-          if (val > prev) arrow = '<span class="perf-agent-trend-arrow up">↑</span>';
-          else if (val < prev) arrow = '<span class="perf-agent-trend-arrow down">↓</span>';
-        }
         const color = val >= 10000 ? 'green' : 'red';
-        trendBars += '<div class="perf-agent-bar-row"><div class="perf-agent-bar-label">' + m + arrow + '</div><div class="perf-agent-bar-val-left">' + fmt(val) + '</div><div class="perf-agent-bar-track"><div class="perf-agent-bar-fill ' + color + '" style="width:' + pct + '%"></div></div></div>';
+        trendBars += '<div class="perf-agent-bar-row"><div class="perf-agent-bar-label">' + m + '</div><div class="perf-agent-bar-val-left">' + fmt(val) + '</div><div class="perf-agent-bar-track"><div class="perf-agent-bar-fill ' + color + '" style="width:' + pct + '%"></div></div></div>';
       }
       document.getElementById('agentTrend').innerHTML = '<div class="perf-agent-section-title">Monthly Trend (YTD)</div>' + trendBars;
 
