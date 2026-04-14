@@ -5709,12 +5709,13 @@
         // Include ALL kpi rows for the visual breakdown (not just filtered)
         agentKpiAllRows.forEach(r => { dataMap[r.kpi_date] = r; });
 
-        // Extend walk range to full weeks (Sunday start, Saturday end)
+        // Extend walk range to full weeks
         const walkDate = new Date(rangeStart); walkDate.setHours(0,0,0,0);
-        walkDate.setDate(walkDate.getDate() - walkDate.getDay()); // back to Sunday
+        const weekStartDay = excludeSun ? 1 : 0; // Monday if excluding Sun, else Sunday
+        while (walkDate.getDay() !== weekStartDay) walkDate.setDate(walkDate.getDate() - 1);
         const walkEnd = new Date(rangeEnd); walkEnd.setHours(0,0,0,0);
-        const daysUntilSat = 6 - walkEnd.getDay();
-        if (daysUntilSat > 0) walkEnd.setDate(walkEnd.getDate() + daysUntilSat); // forward to Saturday
+        const weekEndDay = excludeSat ? 5 : 6; // Friday if excluding Sat, else Saturday
+        while (walkEnd.getDay() !== weekEndDay) walkEnd.setDate(walkEnd.getDate() + 1);
         let tableRows = '';
         let lastWeekNum = -1;
         const thStyle = 'text-align:left;padding:0.5rem 0.4rem;color:#888;font-size:0.78rem;';
@@ -5744,11 +5745,14 @@
 
           const isInRange = walkDate >= statsStart && walkDate <= statsEnd;
 
-          // New week starts on Sunday (dow === 0)
-          if (dow === 0 && weekCount > 0) {
+          // New week boundary: Sunday normally, Monday if Sunday excluded
+          const weekBoundary = excludeSun ? (dow === 1) : (dow === 0);
+          if (weekBoundary && weekCount > 0) {
             tableRows += insertWeekTotal();
-            const wkLabel = 'Week of ' + (walkDate.getMonth() + 1) + '/' + walkDate.getDate();
-            tableRows += '<tr><td colspan="10" style="padding:0.75rem 0.4rem 0.35rem;font-size:0.7rem;font-weight:800;color:#2563eb;text-transform:uppercase;letter-spacing:0.08em;border-top:2px solid #e0e0e5;">' + wkLabel + '</td></tr>';
+            var wkStart = new Date(walkDate);
+            if (excludeSun) { wkStart.setDate(wkStart.getDate()); } else { wkStart = new Date(walkDate); }
+            const wkLabel = 'Week of ' + (wkStart.getMonth() + 1) + '/' + wkStart.getDate();
+            tableRows += '<tr><td colspan="10" style="padding:0.75rem 0.4rem 0.35rem;font-size:0.7rem;font-weight:800;color:#088395;text-transform:uppercase;letter-spacing:0.08em;border-top:2px solid #e0e0e5;">' + wkLabel + '</td></tr>';
             tableRows += '<tr style="border-bottom:1px solid #e5e5ea;"><th style="' + thStyle + '">Day</th><th style="' + thStyle + '">Date</th><th style="' + thStyle + '">Dials</th><th style="' + thStyle + '">Ans</th><th style="' + thStyle + '">Appts</th><th style="' + thStyle + '">Pres</th><th style="' + thStyle + '">Deals</th><th style="' + thStyle + '">Spend</th><th style="' + thStyle + '">Dep</th><th style="' + thStyle + '">ROI</th></tr>';
           }
           weekCount++;
