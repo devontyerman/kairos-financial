@@ -6813,7 +6813,7 @@
           const pdate = p.policy_date ? parsePolicyDate(p.policy_date) : null;
           const age = pdate ? (now - pdate) : 0;
           const dayCount = pdate ? Math.floor(age / (24 * 60 * 60 * 1000)) : 0;
-          const timeLabel = !pdate ? '—' : dayCount + ' day' + (dayCount !== 1 ? 's' : '') + ' in underwriting';
+          const timeLabel = !pdate ? '—' : (dayCount >= 7 ? '<span style="color:#FF3737;font-weight:700;">' : '') + dayCount + ' day' + (dayCount !== 1 ? 's' : '') + ' in underwriting' + (dayCount >= 7 ? '</span>' : '');
           const ap = parseFloat(p.annual_premium || 0);
           html += '<div class="mp-attention-item" data-id="' + p.id + '">';
           var phoneLink = '';
