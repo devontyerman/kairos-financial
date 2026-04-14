@@ -3253,6 +3253,11 @@
         <div class="ss-panel-head">
           <h2>Tracker</h2>
           <p class="ss-panel-sub">Your annual goal, KPIs, conversion rates, and trends at a glance.</p>
+          <div id="adminAgentSelect" style="display:none;margin-top:1rem;">
+            <select id="adminAgentDropdown" style="padding:0.5rem 1rem;font-family:'Inter',sans-serif;font-size:0.85rem;font-weight:600;color:#454040;background:#f8f8fa;border:1px solid #ddd;border-radius:10px;cursor:pointer;min-width:220px;">
+              <option value="">My Tracker</option>
+            </select>
+          </div>
         </div>
         <div class="ss-goal-tracker visible" id="goalTracker">
           <div class="ss-goal-header">
@@ -5445,16 +5450,19 @@
     })();
 
     // ─── AGENT PERFORMANCE TAB ───
+    var adminViewUserId = ''; // empty = own data
+
     async function loadAgentPerformance() {
       const notAuth = document.getElementById('perfNotAuth');
       const content = document.getElementById('perfContent');
       if (!currentUser) { notAuth.style.display = 'block'; content.style.display = 'none'; return; }
       notAuth.style.display = 'none'; content.style.display = 'block';
 
+      const viewUserId = adminViewUserId || currentUser.id;
       const token = accessToken || SUPABASE_KEY;
       let rows = [];
       try {
-        const res = await fetch(SUPABASE_URL + '/rest/v1/policies?user_id=eq.' + currentUser.id + '&order=created_at.desc', {
+        const res = await fetch(SUPABASE_URL + '/rest/v1/policies?user_id=eq.' + viewUserId + '&order=created_at.desc', {
           headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + token }
         });
         rows = await res.json();
@@ -5581,7 +5589,7 @@
 
       // ── KPI Stats ── fetch once, render via filter
       try {
-        const kpiRes = await fetch(SUPABASE_URL + '/rest/v1/daily_kpis?user_id=eq.' + currentUser.id + '&order=kpi_date.desc', {
+        const kpiRes = await fetch(SUPABASE_URL + '/rest/v1/daily_kpis?user_id=eq.' + viewUserId + '&order=kpi_date.desc', {
           headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + (accessToken || SUPABASE_KEY) }
         });
         agentKpiAllRows = await kpiRes.json();
@@ -7021,8 +7029,41 @@
         setTimeout(checkUnderwritingReminders, 1500);
         loadGoalTracker();
         loadAgentPerformance();
+        // Admin agent selector
+        var isAdmin = (currentUser.email || '').toLowerCase() === 'dev@kairos-financial.com';
+        var selectWrap = document.getElementById('adminAgentSelect');
+        if (isAdmin && selectWrap) {
+          selectWrap.style.display = '';
+          var dd = document.getElementById('adminAgentDropdown');
+          if (dd.options.length <= 1) {
+            fetch(SUPABASE_URL + '/rest/v1/agent_profiles?select=user_id,agent_name&order=agent_name.asc', {
+              headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + (accessToken || SUPABASE_KEY) }
+            }).then(function(r) { return r.json(); }).then(function(agents) {
+              agents.forEach(function(a) {
+                if (!a.agent_name || a.agent_name.trim() === '') return;
+                var opt = document.createElement('option');
+                opt.value = a.user_id;
+                opt.textContent = a.agent_name.trim();
+                dd.appendChild(opt);
+              });
+            });
+          }
+        }
       }
     };
+
+    // Admin dropdown change handler
+    document.getElementById('adminAgentDropdown').addEventListener('change', function() {
+      adminViewUserId = this.value;
+      var goalSection = document.getElementById('goalTracker');
+      if (adminViewUserId) {
+        goalSection.style.display = 'none';
+      } else {
+        goalSection.style.display = '';
+        loadGoalTracker();
+      }
+      loadAgentPerformance();
+    });
 
     // ─── GOAL TRACKER ───
     const goalTracker = document.getElementById('goalTracker');
