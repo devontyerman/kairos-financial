@@ -7055,13 +7055,7 @@
     // Admin dropdown change handler
     document.getElementById('adminAgentDropdown').addEventListener('change', function() {
       adminViewUserId = this.value;
-      var goalSection = document.getElementById('goalTracker');
-      if (adminViewUserId) {
-        goalSection.style.display = 'none';
-      } else {
-        goalSection.style.display = '';
-        loadGoalTracker();
-      }
+      loadGoalTracker();
       loadAgentPerformance();
     });
 
@@ -7118,33 +7112,39 @@
       if (!currentUser) { goalTracker.classList.remove('visible'); return; }
       goalTracker.classList.add('visible');
 
-      // Load goal from Supabase (authoritative), fall back to localStorage
-      const goalToken = accessToken || SUPABASE_KEY;
+      var viewingOther = !!adminViewUserId;
+      var viewId = adminViewUserId || currentUser.id;
+      var goalToken = viewingOther ? SUPABASE_KEY : (accessToken || SUPABASE_KEY);
+
+      // Hide goal input when viewing other agents (read-only)
+      var goalInputRow = document.querySelector('.ss-goal-input-row');
+      if (goalInputRow) goalInputRow.style.display = viewingOther ? 'none' : '';
+
+      // Load goal from Supabase
       let goal = 0;
       try {
-        const res = await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?user_id=eq.' + currentUser.id + '&select=annual_goal', {
+        const res = await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?user_id=eq.' + viewId + '&select=annual_goal', {
           headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + goalToken }
         });
         const rows = await res.json();
         if (rows && rows.length > 0 && rows[0].annual_goal) {
           goal = parseFloat(rows[0].annual_goal);
-          localStorage.setItem('kairos_goal_' + currentUser.id, goal);
+          if (!viewingOther) localStorage.setItem('kairos_goal_' + currentUser.id, goal);
         }
       } catch (e) {
-        // Fallback to localStorage if Supabase fetch fails
-        const cached = localStorage.getItem('kairos_goal_' + currentUser.id);
-        if (cached) goal = parseFloat(cached) || 0;
+        if (!viewingOther) {
+          const cached = localStorage.getItem('kairos_goal_' + currentUser.id);
+          if (cached) goal = parseFloat(cached) || 0;
+        }
       }
       if (goal > 0) goalInput.value = formatWithCommas(Math.round(goal));
+      else if (viewingOther) goalInput.value = '';
 
-      // Fetch YTD AP for this user (by policy_date)
-      const repName = currentUser.user_metadata?.name || currentUser.email;
+      // Fetch YTD AP for viewed user
       const yearStartYmd = new Date().getFullYear() + '-01-01';
-      const token = accessToken || SUPABASE_KEY;
-      // Fetch YTD policies with policy_date for monthly bucketing
       let policies = [];
       try {
-        const res = await fetch(SUPABASE_URL + '/rest/v1/policies?select=annual_premium,policy_date&sales_rep=eq.' + encodeURIComponent(repName) + '&policy_date=gte.' + yearStartYmd, {
+        const res = await fetch(SUPABASE_URL + '/rest/v1/policies?select=annual_premium,policy_date&user_id=eq.' + viewId + '&policy_date=gte.' + yearStartYmd, {
           headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + goalToken }
         });
         policies = await res.json();
