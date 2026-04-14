@@ -1438,6 +1438,27 @@ h1, h2, h3, h4, h5 {
   .carrier-info-grid { grid-template-columns: 1fr; }
 }
 
+@media (min-width: 1440px) {
+  html { font-size: 17.5px; }
+  .container { max-width: 1360px; }
+  .nav-inner { max-width: 1440px; }
+  :root { --nav-height: 76px; --sidebar-width: 320px; }
+}
+
+@media (min-width: 1920px) {
+  html { font-size: 19px; }
+  .container { max-width: 1540px; }
+  .nav-inner { max-width: 1600px; }
+  :root { --nav-height: 80px; --sidebar-width: 340px; }
+}
+
+@media (min-width: 2560px) {
+  html { font-size: 21px; }
+  .container { max-width: 1800px; }
+  .nav-inner { max-width: 1860px; }
+  :root { --nav-height: 86px; --sidebar-width: 370px; }
+}
+
 @media (max-width: 600px) {
   :root { --nav-height: 62px; }
   .nav { padding: 0 1.25rem; }
