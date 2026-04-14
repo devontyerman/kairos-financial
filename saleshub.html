@@ -584,7 +584,7 @@
     .perf-agent-kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.6rem; margin-bottom: 1.5rem; }
     .perf-agent-kpi { background: #f8f8fa; border: 1px solid #e0e0e5; border-radius: 12px; padding: 1rem 1.1rem; display: flex; flex-direction: column; min-height: 90px; }
     .perf-agent-kpi-label { font-size: 0.65rem; font-weight: 700; color: #555555; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: auto; }
-    .perf-agent-kpi-value { font-size: 1.35rem; font-weight: 900; color: #1a1a1a; line-height: 1.2; }
+    .perf-agent-kpi-value { font-size: 1.35rem; font-weight: 900; color: #454040; line-height: 1.2; }
     .perf-agent-kpi-sub { font-size: 0.7rem; color: #666666; margin-top: 0.15rem; min-height: 1.1em; }
     .perf-agent-kpi.up .perf-agent-kpi-value { color: #D8D365; }
     .perf-agent-kpi.down .perf-agent-kpi-value { color: #FF3737; }
@@ -5501,11 +5501,15 @@
       function agentKpi(label, value, sub, cls) {
         return '<div class="perf-agent-kpi ' + (cls || '') + '"><div class="perf-agent-kpi-label">' + label + '</div><div class="perf-agent-kpi-value">' + value + '</div><div class="perf-agent-kpi-sub">' + sub + '</div></div>';
       }
-      const mtdCls = mtdAP > lmAP ? 'up' : mtdAP < lmAP ? 'down' : '';
-      const paceCls = yearlyPace > ytdAP ? 'up' : '';
+      const monthlyPaceCls = projectedAP < 10000 ? 'down' : projectedAP >= 15000 ? 'up' : '';
+      // Yearly pace: check against goal if set, otherwise use 120k as baseline
+      const goalEl = document.getElementById('goalInput');
+      const annualGoal = goalEl ? parseFloat((goalEl.value || '0').replace(/,/g, '')) : 0;
+      const paceTarget = annualGoal > 0 ? annualGoal : 120000;
+      const paceCls = yearlyPace >= paceTarget ? 'up' : 'down';
       document.getElementById('agentKpis').innerHTML =
-        agentKpi('Month to Date', fmt(mtdAP), mtd.length + ' policies', mtdCls) +
-        agentKpi('YTD Total', fmt(ytdAP), ytd.length + ' policies', ytdAP > 0 ? 'up' : '') +
+        agentKpi('Monthly Pace', fmt(projectedAP), mtd.length + ' policies · ' + fmt(mtdAP) + ' so far', monthlyPaceCls) +
+        agentKpi('YTD Total', fmt(ytdAP), ytd.length + ' policies') +
         agentKpi('Last Month', fmt(lmAP), lastMonth.length + ' policies') +
         agentKpi('Month vs Last', (momChange > 0 ? '+' : '') + momChange.toFixed(1) + '%', 'Pacing ' + fmt(projectedAP) + ' vs ' + fmt(lmAP), momClass) +
         agentKpi('Avg Per Policy', fmt(avgAP), 'based on YTD') +
