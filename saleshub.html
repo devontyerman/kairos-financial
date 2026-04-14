@@ -1288,7 +1288,7 @@
     .ss-goal-overlay-close:hover { background: #d0d0d5; }
 
     .ss-goal-tracker {
-      max-width: 1000px;
+      max-width: none;
       margin: 0 auto 2.5rem;
       padding: 2.5rem 3rem;
       background: #ffffff;
@@ -1368,7 +1368,7 @@
     }
     .ss-goal-kpi-value.purple { color: #4a4a5a; text-shadow: none; }
     .ss-goal-kpi-value.green { color: #1a1a1a; }
-    .ss-goal-kpi-value.red { color: #dc2626; }
+    .ss-goal-kpi-value.red { color: #FF3737; }
     .ss-goal-kpi-value.gold { color: #b45309; }
     .ss-goal-monthly {
       padding-top: 0.6rem; border-top: 1px solid #e0e0e5;
@@ -2998,10 +2998,6 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
       <span>Book of Biz</span>
     </button>
-    <button class="ss-sidebar-btn" data-panel="performance">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
-      <span>Track</span>
-    </button>
     <button class="ss-sidebar-btn" data-panel="calculator">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
       <span>Pay</span>
@@ -3017,6 +3013,10 @@
     <button class="ss-sidebar-btn" data-panel="leadvendors">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
       <span>Leads</span>
+    </button>
+    <button class="ss-sidebar-btn" data-panel="training">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+      <span>Training</span>
     </button>
     <button class="ss-sidebar-btn" data-panel="resources">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
@@ -3305,7 +3305,7 @@
                   <input type="checkbox" id="kpiExcludeSat" style="accent-color:#088395;" /> Exclude Sat
                 </label>
                 <label style="display:flex;align-items:center;gap:0.3rem;font-size:0.7rem;color:#777;cursor:pointer;">
-                  <input type="checkbox" id="kpiExcludeSun" style="accent-color:#088395;" /> Exclude Sun
+                  <input type="checkbox" id="kpiExcludeSun" checked style="accent-color:#088395;" /> Exclude Sun
                 </label>
               </div>
             </div>
@@ -3761,9 +3761,6 @@
     </div>
 
     <!-- ═══ PERFORMANCE TAB ═══ -->
-    <div class="ss-panel" id="panel-performance">
-      <!-- Content moved to Tracker panel -->
-    </div>
 
     <!-- ═══ COMP GRID PANEL ═══ -->
     <div class="ss-panel" id="panel-compgrid">
@@ -7177,9 +7174,9 @@
 
       // Last point dot
       const lastIdx = cumActual.length - 1;
-      const dotColor = ahead ? '#4ade80' : '#f87171';
-      const lineColor = ahead ? '#4ade80' : '#f87171';
-      const fillColor = ahead ? 'rgba(74,222,128,0.12)' : 'rgba(248,113,113,0.12)';
+      const dotColor = ahead ? '#D8D365' : '#FF3737';
+      const lineColor = ahead ? '#D8D365' : '#FF3737';
+      const fillColor = ahead ? 'rgba(216,211,101,0.12)' : 'rgba(255,55,55,0.12)';
 
       // Projection line: extend from current month to Dec at current pace
       const projectedDec = yearlyPace;
@@ -7205,7 +7202,7 @@
 
       let svg = '<svg class="ss-goal-chart" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="xMidYMid meet">' +
         grid + ticks +
-        (goal > 0 ? '<path d="' + goalLine + '" stroke="#fbbf24" stroke-width="2" stroke-dasharray="5 4" fill="none" opacity="0.7"/>' : '') +
+        (goal > 0 ? '<path d="' + goalLine + '" stroke="#454040" stroke-width="2" stroke-dasharray="5 4" fill="none" opacity="0.7"/>' : '') +
         '<path d="' + areaPath + '" fill="' + fillColor + '"' + areaAnim + '/>' +
         '<path d="' + actualLine + '" stroke="' + lineColor + '" stroke-width="2.5" fill="none" stroke-linejoin="round" stroke-linecap="round"' + lineAnim + '/>' +
         (projLine ? '<path d="' + projLine + '" stroke="' + lineColor + '" stroke-width="2.5" stroke-dasharray="8 5" fill="none" opacity="0.5"' + projAnim + '/>' : '') +
@@ -7235,14 +7232,14 @@
       if (goal > 0 && remaining > 0) {
         monthly = '<div class="ss-goal-monthly">You need to sell <strong>' + fmtG(perMonthNeeded) + '/month</strong> for the remaining <strong>' + monthsRemaining + ' month' + (monthsRemaining > 1 ? 's' : '') + '</strong> to hit your goal of <strong>' + fmtG(goal) + '</strong>.</div>';
       } else if (goal > 0) {
-        monthly = '<div class="ss-goal-monthly"><strong style="color:#4ade80;">Goal reached! Keep stacking.</strong></div>';
+        monthly = '<div class="ss-goal-monthly"><strong style="color:#D8D365;">Goal reached! Keep stacking.</strong></div>';
       }
 
       // Legend
       let legend = '<div style="display:flex;gap:1.2rem;justify-content:center;margin-bottom:0.75rem;font-size:0.68rem;">';
       legend += '<span style="display:flex;align-items:center;gap:0.3rem;color:#666;"><span style="width:14px;height:3px;border-radius:2px;background:' + lineColor + ';display:inline-block;"></span> Your Production</span>';
       legend += '<span style="display:flex;align-items:center;gap:0.3rem;color:#999;"><span style="width:14px;height:2px;border-radius:2px;background:' + lineColor + ';opacity:0.4;display:inline-block;border-top:1px dashed ' + lineColor + ';"></span> Projected Pace</span>';
-      if (goal > 0) legend += '<span style="display:flex;align-items:center;gap:0.3rem;color:#666;"><span style="width:14px;height:3px;border-radius:2px;background:#fbbf24;display:inline-block;"></span> Goal</span>';
+      if (goal > 0) legend += '<span style="display:flex;align-items:center;gap:0.3rem;color:#666;"><span style="width:14px;height:3px;border-radius:2px;background:#454040;display:inline-block;"></span> Goal</span>';
       legend += '</div>';
 
       chartArea.innerHTML = svg + legend + kpis + monthly;
