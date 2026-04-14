@@ -4372,6 +4372,17 @@
     </div>
   </div>
 
+  <!-- Effective Date Reminder -->
+  <div class="ss-alert-overlay" id="effectiveDateAlert">
+    <div class="ss-alert-box warning" style="max-width: 550px;">
+      <div class="ss-alert-icon">📅</div>
+      <h3>Policies Going Into Effect Tomorrow</h3>
+      <p>Remind these clients their policy is going into effect tomorrow.</p>
+      <div class="ss-uw-list" id="effectiveDateList"></div>
+      <button class="ss-alert-close" id="effectiveDateClose">Got It</button>
+    </div>
+  </div>
+
   <!-- Edit Policy Modal -->
   <div class="mp-edit-overlay" id="mpEditOverlay">
     <div class="mp-edit-modal">
@@ -6494,6 +6505,7 @@
     }
 
     let mpUwData = []; // persistent underwriting policies
+    let mpEffOverdue = []; // approved policies past effective date not yet Issue Paid
 
     async function loadPolicies() {
       if (!currentUser) {
@@ -6521,15 +6533,19 @@
 
       // Fetch ALL underwriting policies (no date filter) for attention section
       const uwEndpoint = 'policies?select=*&user_id=eq.' + currentUser.id + '&status=eq.Underwriting&order=policy_date.asc';
+      // Fetch Approved policies with effective_date for overdue check
+      const effEndpoint = 'policies?select=*&user_id=eq.' + currentUser.id + '&status=eq.Approved&effective_date=not.is.null&order=effective_date.asc';
 
       try {
-        const [mainRes, uwRes] = await Promise.all([
+        const [mainRes, uwRes, effRes] = await Promise.all([
           fetch(SUPABASE_URL + '/rest/v1/' + endpoint, { headers: hdrs }),
-          fetch(SUPABASE_URL + '/rest/v1/' + uwEndpoint, { headers: hdrs })
+          fetch(SUPABASE_URL + '/rest/v1/' + uwEndpoint, { headers: hdrs }),
+          fetch(SUPABASE_URL + '/rest/v1/' + effEndpoint, { headers: hdrs })
         ]);
         mpAllData = await mainRes.json();
         mpUwData = await uwRes.json();
-      } catch (e) { mpAllData = []; mpUwData = []; }
+        mpEffOverdue = await effRes.json();
+      } catch (e) { mpAllData = []; mpUwData = []; mpEffOverdue = []; }
 
       // Custom sort for status column: Underwriting → Approved → Issue Paid
       if (mpSortCol === 'status') {
@@ -6774,35 +6790,69 @@
     // ─── NEEDS ATTENTION SECTION ───
     function renderAttentionSection() {
       const el = document.getElementById('mpAttention');
-      if (!mpUwData.length) { el.innerHTML = ''; return; }
-
       const now = new Date();
+      now.setHours(0, 0, 0, 0);
       const oneWeekMs = 7 * 24 * 60 * 60 * 1000;
-      let html = '<div class="mp-attention"><div class="mp-attention-title">⚠️ Needs Attention — Underwriting</div><div class="mp-attention-list">';
+      const fiveDaysMs = 5 * 24 * 60 * 60 * 1000;
 
-      mpUwData.forEach(p => {
-        const pdate = p.policy_date ? parsePolicyDate(p.policy_date) : null;
-        const age = pdate ? (now - pdate) : 0;
-        const weeks = Math.floor(age / oneWeekMs);
-        const dayCount = pdate ? Math.floor(age / (24 * 60 * 60 * 1000)) : 0;
-        const timeLabel = !pdate ? '—' : dayCount + ' day' + (dayCount !== 1 ? 's' : '') + ' in underwriting';
-        const ap = parseFloat(p.annual_premium || 0);
-
-        html += '<div class="mp-attention-item" data-id="' + p.id + '">';
-        var phoneLink = '';
-        if (p.phone) {
-          var digits = p.phone.replace(/\D/g, '');
-          phoneLink = ' · <a href="tel:' + digits + '" style="color:#2563eb;text-decoration:none;font-weight:600;">' + esc(p.phone) + '</a>';
-        }
-        html += '<div class="mp-attention-info"><div class="mp-attention-name">' + esc(p.client_name) + '</div>';
-        html += '<div class="mp-attention-meta">' + esc(p.carrier) + ' · $' + ap.toLocaleString() + phoneLink + ' · ' + timeLabel + '</div></div>';
-        html += '<div class="mp-attention-actions">';
-        html += '<button class="mp-action-btn mp-action-approve att-approve" data-id="' + p.id + '">Approve Policy</button>';
-        html += '<div class="mp-more-wrap"><button class="mp-more-btn att-more" data-id="' + p.id + '">&#8943;</button><div class="mp-more-menu"><button class="att-del" data-id="' + p.id + '">Delete Policy</button></div></div>';
-        html += '</div></div>';
+      // Filter effective date overdue: effective_date was 5+ days ago, still Approved (not Issue Paid)
+      var effOverdueItems = (mpEffOverdue || []).filter(function(p) {
+        if (!p.effective_date) return false;
+        var eff = new Date(p.effective_date + 'T00:00:00');
+        return (now - eff) >= fiveDaysMs;
       });
 
-      html += '</div></div>';
+      if (!mpUwData.length && !effOverdueItems.length) { el.innerHTML = ''; return; }
+
+      let html = '';
+
+      // Underwriting attention
+      if (mpUwData.length) {
+        html += '<div class="mp-attention"><div class="mp-attention-title">⚠️ Needs Attention — Underwriting</div><div class="mp-attention-list">';
+        mpUwData.forEach(p => {
+          const pdate = p.policy_date ? parsePolicyDate(p.policy_date) : null;
+          const age = pdate ? (now - pdate) : 0;
+          const dayCount = pdate ? Math.floor(age / (24 * 60 * 60 * 1000)) : 0;
+          const timeLabel = !pdate ? '—' : dayCount + ' day' + (dayCount !== 1 ? 's' : '') + ' in underwriting';
+          const ap = parseFloat(p.annual_premium || 0);
+          html += '<div class="mp-attention-item" data-id="' + p.id + '">';
+          var phoneLink = '';
+          if (p.phone) {
+            var digits = p.phone.replace(/\D/g, '');
+            phoneLink = ' · <a href="tel:' + digits + '" style="color:#088395;text-decoration:none;font-weight:600;">' + esc(p.phone) + '</a>';
+          }
+          html += '<div class="mp-attention-info"><div class="mp-attention-name">' + esc(p.client_name) + '</div>';
+          html += '<div class="mp-attention-meta">' + esc(p.carrier) + ' · $' + ap.toLocaleString() + phoneLink + ' · ' + timeLabel + '</div></div>';
+          html += '<div class="mp-attention-actions">';
+          html += '<button class="mp-action-btn mp-action-approve att-approve" data-id="' + p.id + '">Approve Policy</button>';
+          html += '<div class="mp-more-wrap"><button class="mp-more-btn att-more" data-id="' + p.id + '">&#8943;</button><div class="mp-more-menu"><button class="att-del" data-id="' + p.id + '">Delete Policy</button></div></div>';
+          html += '</div></div>';
+        });
+        html += '</div></div>';
+      }
+
+      // Effective date overdue attention
+      if (effOverdueItems.length) {
+        html += '<div class="mp-attention" style="margin-top:1rem;"><div class="mp-attention-title">📅 Needs Attention — Not Yet Issue Paid</div><div class="mp-attention-list">';
+        effOverdueItems.forEach(function(p) {
+          var eff = new Date(p.effective_date + 'T00:00:00');
+          var daysAgo = Math.floor((now - eff) / (24 * 60 * 60 * 1000));
+          var ap = parseFloat(p.annual_premium || 0);
+          var phoneLink = '';
+          if (p.phone) {
+            var digits = p.phone.replace(/\D/g, '');
+            phoneLink = ' · <a href="tel:' + digits + '" style="color:#088395;text-decoration:none;font-weight:600;">' + esc(p.phone) + '</a>';
+          }
+          html += '<div class="mp-attention-item" data-id="' + p.id + '">';
+          html += '<div class="mp-attention-info"><div class="mp-attention-name">' + esc(p.client_name) + '</div>';
+          html += '<div class="mp-attention-meta">' + esc(p.carrier) + ' · $' + ap.toLocaleString() + phoneLink + ' · <span style="color:#FF3737;font-weight:700;">Effective ' + daysAgo + ' day' + (daysAgo !== 1 ? 's' : '') + ' ago</span></div></div>';
+          html += '<div class="mp-attention-actions">';
+          html += '<button class="mp-action-btn mp-action-approve att-issuepaid" data-id="' + p.id + '">Mark Issue Paid</button>';
+          html += '</div></div>';
+        });
+        html += '</div></div>';
+      }
+
       el.innerHTML = html;
 
       // Attention 3-dot menu toggle
@@ -6862,6 +6912,30 @@
             headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' }
           });
           loadPolicies();
+        });
+      });
+
+      // Issue Paid handlers for effective date overdue items
+      el.querySelectorAll('.att-issuepaid').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const id = btn.dataset.id;
+          const token = accessToken || SUPABASE_KEY;
+          const ok = await showConfirmModal({
+            title: 'Mark as Issue Paid?',
+            message: 'This will move the policy to Issue Paid status.',
+            confirmText: 'Yes, Issue Paid',
+            cancelText: 'Cancel',
+            variant: 'info',
+            icon: '💰'
+          });
+          if (!ok) return;
+          fireFireworks(btn);
+          await fetch(SUPABASE_URL + '/rest/v1/policies?id=eq.' + id, {
+            method: 'PATCH',
+            headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+            body: JSON.stringify({ status: 'Issue Paid' })
+          });
+          setTimeout(() => loadPolicies(), 800);
         });
       });
     }
@@ -6996,6 +7070,52 @@
       } catch (e) { console.error('UW reminder check failed:', e); }
     }
 
+    // ── Effective Date Reminder ──
+    async function checkEffectiveDateReminders() {
+      if (!currentUser) return;
+      const token = accessToken || SUPABASE_KEY;
+      // Get tomorrow's date
+      var now = new Date();
+      var tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+      var tomorrowYmd = tomorrow.getFullYear() + '-' + String(tomorrow.getMonth() + 1).padStart(2, '0') + '-' + String(tomorrow.getDate()).padStart(2, '0');
+      try {
+        var res = await fetch(SUPABASE_URL + '/rest/v1/policies?select=*&user_id=eq.' + currentUser.id + '&effective_date=eq.' + tomorrowYmd, {
+          headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + token }
+        });
+        var data = await res.json();
+        // Only include policies where effective_date was 3+ days after policy_date (sold date)
+        var eligible = data.filter(function(p) {
+          if (!p.policy_date || !p.effective_date) return false;
+          var sold = new Date(p.policy_date + 'T00:00:00');
+          var eff = new Date(p.effective_date + 'T00:00:00');
+          return (eff - sold) >= 3 * 24 * 60 * 60 * 1000;
+        });
+        if (!eligible.length) return;
+        // Only show once per day
+        var lastShown = localStorage.getItem('eff_reminder_date');
+        var todayStr = now.toISOString().split('T')[0];
+        if (lastShown === todayStr) return;
+        localStorage.setItem('eff_reminder_date', todayStr);
+        var listEl = document.getElementById('effectiveDateList');
+        var html = '';
+        eligible.forEach(function(p) {
+          var phone = '';
+          if (p.phone) {
+            var digits = p.phone.replace(/\D/g, '');
+            phone = ' · <a href="tel:' + digits + '" style="color:#088395;text-decoration:none;font-weight:600;">' + esc(p.phone) + '</a>';
+          }
+          html += '<div class="ss-uw-item">';
+          html += '<div class="ss-uw-item-info"><div class="ss-uw-item-name">' + esc(p.client_name) + '</div>';
+          html += '<div class="ss-uw-item-meta">' + esc(p.carrier) + ' · $' + parseFloat(p.annual_premium).toLocaleString() + phone + '</div></div>';
+          html += '</div>';
+        });
+        listEl.innerHTML = html;
+        document.getElementById('effectiveDateAlert').classList.add('open');
+      } catch (e) { console.error('Effective date reminder check failed:', e); }
+    }
+    document.getElementById('effectiveDateClose').addEventListener('click', function() { document.getElementById('effectiveDateAlert').classList.remove('open'); });
+    document.getElementById('effectiveDateAlert').addEventListener('click', function(e) { if (e.target.id === 'effectiveDateAlert') e.target.classList.remove('open'); });
+
     document.getElementById('uwReminderClose').addEventListener('click', () => document.getElementById('uwReminderAlert').classList.remove('open'));
     document.getElementById('uwReminderAlert').addEventListener('click', (e) => { if (e.target.id === 'uwReminderAlert') e.target.classList.remove('open'); });
 
@@ -7035,6 +7155,7 @@
       origUpdateAuthUI();
       if (currentUser) {
         setTimeout(checkUnderwritingReminders, 1500);
+        setTimeout(checkEffectiveDateReminders, 2500);
         loadGoalTracker();
         loadAgentPerformance();
         // Admin agent selector
