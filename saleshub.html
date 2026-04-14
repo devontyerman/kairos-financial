@@ -6469,13 +6469,12 @@
       const tableEl = document.getElementById('mpTable');
       tableEl.innerHTML = '<div class="mp-loading">Loading...</div>';
 
-      const repName = encodeURIComponent(currentUser.user_metadata?.name || currentUser.email);
       const token = accessToken || SUPABASE_KEY;
       const hdrs = { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + token };
 
       // Fetch filtered policies for the table (by policy_date)
       const range = getMpDateRange();
-      let endpoint = 'policies?select=*&sales_rep=eq.' + repName;
+      let endpoint = 'policies?select=*&user_id=eq.' + currentUser.id;
       if (range.from) endpoint += '&policy_date=gte.' + range.from;
       if (range.to) endpoint += '&policy_date=lte.' + range.to;
       if (mpStatusFilter !== 'all') endpoint += '&status=eq.' + encodeURIComponent(mpStatusFilter);
@@ -6483,7 +6482,7 @@
       endpoint += '&order=' + mpSortCol + '.' + mpSortDir + ',created_at.desc';
 
       // Fetch ALL underwriting policies (no date filter) for attention section
-      const uwEndpoint = 'policies?select=*&sales_rep=eq.' + repName + '&status=eq.Underwriting&order=policy_date.asc';
+      const uwEndpoint = 'policies?select=*&user_id=eq.' + currentUser.id + '&status=eq.Underwriting&order=policy_date.asc';
 
       try {
         const [mainRes, uwRes] = await Promise.all([
