@@ -3733,8 +3733,12 @@
               Export CSV
             </button>
           </div>
+          <div style="margin-bottom:0.6rem;">
+            <input type="text" id="mpSearchBar" placeholder="Search clients..." style="width:100%;padding:0.5rem 0.85rem;font-family:'Inter',sans-serif;font-size:0.85rem;color:#1a1a1a;background:#f0f0f3;border:1px solid #ddd;border-radius:10px;box-sizing:border-box;" />
+          </div>
           <div class="mp-filters" id="mpFilters">
-            <button class="mp-filter active" data-mp-range="month">This Month</button>
+            <button class="mp-filter" data-mp-range="month">This Month</button>
+            <button class="mp-filter active" data-mp-range="ytd">YTD</button>
             <select class="mp-range-dropdown" id="mpRangeDropdown">
               <option value="" disabled selected>More...</option>
               <option value="week">This Week</option>
@@ -6415,7 +6419,8 @@
     });
 
     // ─── MANAGE POLICIES ───
-    let mpCurrentRange = 'month';
+    let mpCurrentRange = 'ytd';
+    let mpSearchTerm = '';
     let mpStatusFilter = 'all';
     let mpSortCol = 'policy_date';
     let mpSortDir = 'desc';
@@ -6430,35 +6435,38 @@
     CARRIERS.forEach(c => { const o = document.createElement('option'); o.value = c; o.textContent = c; mpEditCarrier.appendChild(o); });
     PRODUCT_TYPES.forEach(p => { const o = document.createElement('option'); o.value = p; o.textContent = p; mpEditProduct.appendChild(o); });
 
-    // Date filter: "This Month" button + dropdown for everything else
-    const mpThisMonthBtn = document.querySelector('#mpFilters .mp-filter[data-mp-range="month"]');
+    // Date filter: "This Month" + "YTD" buttons + dropdown for everything else
+    const mpFilterBtns = document.querySelectorAll('#mpFilters .mp-filter[data-mp-range]');
     const mpRangeDropdown = document.getElementById('mpRangeDropdown');
 
-    if (mpThisMonthBtn) {
-      mpThisMonthBtn.addEventListener('click', () => {
-        mpThisMonthBtn.classList.add('active');
+    mpFilterBtns.forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        mpFilterBtns.forEach(function(b) { b.classList.remove('active'); });
+        btn.classList.add('active');
         mpRangeDropdown.value = '';
-        mpCurrentRange = 'month';
+        mpCurrentRange = btn.dataset.mpRange;
         mpPage = 0;
         document.getElementById('mpCustomRange').classList.remove('visible');
         loadPolicies();
       });
-    }
+    });
 
     if (mpRangeDropdown) {
       mpRangeDropdown.addEventListener('change', () => {
         mpCurrentRange = mpRangeDropdown.value;
         mpPage = 0;
-        // De-highlight "This Month" button when another option is picked
-        if (mpCurrentRange !== 'month') {
-          mpThisMonthBtn.classList.remove('active');
-        } else {
-          mpThisMonthBtn.classList.add('active');
-        }
+        mpFilterBtns.forEach(function(b) { b.classList.remove('active'); });
         document.getElementById('mpCustomRange').classList.toggle('visible', mpCurrentRange === 'custom');
         if (mpCurrentRange !== 'custom') loadPolicies();
       });
     }
+
+    // Search bar
+    document.getElementById('mpSearchBar').addEventListener('input', function() {
+      mpSearchTerm = this.value.trim().toLowerCase();
+      mpPage = 0;
+      renderPoliciesTable();
+    });
 
     // Status filter buttons
     document.querySelectorAll('#mpStatusFilters .mp-filter').forEach(btn => {
@@ -6563,12 +6571,26 @@
     function renderPoliciesTable() {
       const tableEl = document.getElementById('mpTable');
       const countEl = document.getElementById('mpCount');
-      const totalAP = mpAllData.reduce((s, r) => s + parseFloat(r.annual_premium || 0), 0);
-      countEl.textContent = mpAllData.length + ' policies · $' + totalAP.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }) + ' total AP';
 
-      if (!mpAllData.length) {
+      // Filter by search term
+      var displayData = mpAllData;
+      if (mpSearchTerm) {
+        displayData = mpAllData.filter(function(r) {
+          return (r.client_name || '').toLowerCase().indexOf(mpSearchTerm) !== -1 ||
+                 (r.carrier || '').toLowerCase().indexOf(mpSearchTerm) !== -1 ||
+                 (r.policy_number || '').toLowerCase().indexOf(mpSearchTerm) !== -1 ||
+                 (r.phone || '').toLowerCase().indexOf(mpSearchTerm) !== -1;
+        });
+      }
+
+      const totalAP = displayData.reduce((s, r) => s + parseFloat(r.annual_premium || 0), 0);
+      countEl.textContent = displayData.length + ' policies · $' + totalAP.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }) + ' total AP';
+
+      if (!displayData.length) {
         mpPage = 0;
-        const emptyMsg = mpCurrentRange === 'week'
+        const emptyMsg = mpSearchTerm
+          ? 'No policies match your search.'
+          : mpCurrentRange === 'week'
           ? 'No deals so far this week, time to get to work.'
           : mpCurrentRange === 'month'
           ? 'No deals this month yet. Let\u2019s change that.'
@@ -6578,11 +6600,11 @@
       }
 
       // Pagination
-      const totalPages = Math.ceil(mpAllData.length / MP_PER_PAGE);
+      const totalPages = Math.ceil(displayData.length / MP_PER_PAGE);
       if (mpPage >= totalPages) mpPage = totalPages - 1;
       if (mpPage < 0) mpPage = 0;
       const startIdx = mpPage * MP_PER_PAGE;
-      const pageData = mpAllData.slice(startIdx, startIdx + MP_PER_PAGE);
+      const pageData = displayData.slice(startIdx, startIdx + MP_PER_PAGE);
 
       const cols = [
         { key: 'client_name', label: 'Client' },
