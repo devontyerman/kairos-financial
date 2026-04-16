@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/png" href="/KF Transparent.png" />
   <meta name="robots" content="noindex, nofollow" />
   <title>Sales Hub — Kairos Financial</title>
   <link rel="preconnect" href="https://esm.sh" crossorigin />
@@ -415,6 +416,114 @@
     }
     @media (min-width: 769px) {
       .ss-tv-mobile-toggle { display: none; }
+    }
+
+    /* ─── Training admin edit mode ─── */
+    .ss-tv-progress-top {
+      display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;
+      margin-bottom: 0.6rem;
+    }
+    .ss-tv-edit-toggle {
+      display: none;           /* revealed only when viewer is the admin */
+      align-items: center; gap: 0.3rem;
+      padding: 0.3rem 0.65rem;
+      font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.68rem; font-weight: 700;
+      color: #1a1a1a; background: #fff; border: 1px solid #ddd;
+      border-radius: 100px; cursor: pointer; transition: all 0.15s;
+    }
+    .ss-tv-edit-toggle.visible { display: inline-flex; }
+    .ss-tv-edit-toggle:hover { background: #f3f3f6; }
+    .ss-tv-edit-toggle.active { background: #7c3aed; color: #fff; border-color: #7c3aed; }
+
+    .ss-tv-row-actions { display: none; gap: 0.15rem; align-items: center; }
+    body.ss-tv-edit-mode .ss-tv-row-actions { display: inline-flex; }
+    body.ss-tv-edit-mode .ss-tv-item { cursor: default; }
+    body.ss-tv-edit-mode .ss-tv-item.locked { opacity: 1; cursor: default; }
+
+    .ss-tv-ico-btn {
+      width: 22px; height: 22px; padding: 0;
+      display: inline-flex; align-items: center; justify-content: center;
+      background: transparent; border: 1px solid transparent; border-radius: 5px;
+      color: #777; cursor: pointer; transition: all 0.15s;
+    }
+    .ss-tv-ico-btn:hover { background: #f0f0f5; color: #1a1a1a; border-color: #ddd; }
+    .ss-tv-ico-btn.danger:hover { color: #dc2626; border-color: rgba(220,38,38,0.3); }
+    .ss-tv-ico-btn svg { width: 13px; height: 13px; }
+
+    .ss-tv-add-btn {
+      display: none;
+      width: calc(100% - 2.5rem);
+      margin: 0.5rem 1.25rem 1rem;
+      padding: 0.5rem;
+      font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.72rem; font-weight: 700;
+      color: #555; background: transparent; border: 1px dashed #bbb;
+      border-radius: 8px; cursor: pointer; transition: all 0.15s;
+    }
+    body.ss-tv-edit-mode .ss-tv-add-btn { display: block; }
+    .ss-tv-add-btn:hover { background: #f5f3ff; border-color: #7c3aed; color: #7c3aed; }
+    .ss-tv-add-btn.ss-tv-add-video {
+      margin: 0.25rem 1rem 0.75rem 1.5rem; font-size: 0.68rem; padding: 0.35rem;
+    }
+
+    .ss-tv-cat-label { display: flex; align-items: center; gap: 0.3rem; }
+    .ss-tv-cat-label-text { flex: 1; }
+
+    /* Admin modal (shared for section + video forms) */
+    .ss-tv-modal-backdrop {
+      display: none;
+      position: fixed; inset: 0; z-index: 2000;
+      background: rgba(0,0,0,0.55);
+      align-items: center; justify-content: center; padding: 1rem;
+    }
+    .ss-tv-modal-backdrop.visible { display: flex; }
+    .ss-tv-modal {
+      background: #fff; border-radius: 14px; padding: 1.75rem;
+      max-width: 440px; width: 100%;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    .ss-tv-modal h3 {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1.05rem; font-weight: 800; color: #1a1a1a; margin-bottom: 1rem;
+    }
+    .ss-tv-modal-field { margin-bottom: 0.85rem; }
+    .ss-tv-modal-field label {
+      display: block; font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.7rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.06em;
+      color: #888; margin-bottom: 0.3rem;
+    }
+    .ss-tv-modal-field input,
+    .ss-tv-modal-field select {
+      width: 100%; box-sizing: border-box;
+      padding: 0.55rem 0.75rem;
+      font-family: 'Inter', sans-serif; font-size: 0.85rem; color: #1a1a1a;
+      background: #f5f5f8; border: 1px solid #ddd; border-radius: 8px;
+    }
+    .ss-tv-modal-field input:focus,
+    .ss-tv-modal-field select:focus { outline: none; border-color: #7c3aed; }
+    .ss-tv-modal-field .ss-tv-modal-hint {
+      font-size: 0.7rem; color: #999; margin-top: 0.25rem; line-height: 1.4;
+    }
+    .ss-tv-modal-err {
+      display: none; font-size: 0.75rem; color: #dc2626; margin-top: 0.25rem;
+    }
+    .ss-tv-modal-err.visible { display: block; }
+    .ss-tv-modal-btns {
+      display: flex; gap: 0.6rem; margin-top: 1rem; justify-content: flex-end;
+    }
+    .ss-tv-modal-btn {
+      padding: 0.55rem 1.1rem;
+      font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.8rem; font-weight: 700;
+      border-radius: 8px; border: none; cursor: pointer; transition: all 0.15s;
+    }
+    .ss-tv-modal-btn.primary { background: #2d2d35; color: #fff; }
+    .ss-tv-modal-btn.primary:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+    .ss-tv-modal-btn.secondary { background: #eee; color: #333; }
+    .ss-tv-modal-btn.secondary:hover { background: #e0e0e0; }
+
+    .ss-tv-empty {
+      padding: 2rem 1.25rem; text-align: center;
+      color: #888; font-size: 0.85rem;
     }
 
     .ss-main {
@@ -4077,92 +4186,19 @@
         <!-- Video sidebar index -->
         <aside class="ss-tv-sidebar" id="ssTvSidebar">
           <div class="ss-tv-progress">
-            <div class="ss-tv-progress-title">Training Progress</div>
+            <div class="ss-tv-progress-top">
+              <div class="ss-tv-progress-title">Training Progress</div>
+              <button class="ss-tv-edit-toggle" id="ssTvEditToggle" type="button">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 113 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>
+                <span id="ssTvEditToggleLabel">Edit</span>
+              </button>
+            </div>
             <div class="ss-tv-progress-bar-wrap"><div class="ss-tv-progress-bar" id="ssTvProgressBar" style="width:0%"></div></div>
             <div class="ss-tv-progress-text" id="ssTvProgressText">0 of 0 complete</div>
           </div>
 
-          <div class="ss-tv-cat-label">New Agent Steps</div>
-          <div class="ss-tv-item" data-video-id="watch-first-new-agents" data-src="https://www.loom.com/embed/a30581bfa9ce43239b8292d32cb8e802" data-duration="711">
-            <span class="tv-status-icon"></span><span class="ss-tv-item-label">Watch First New Agents</span>
-          </div>
-          <div class="ss-tv-item" data-video-id="discord-walkthrough" data-src="https://www.loom.com/embed/2655d8ef38ea49338d1f37c8231faf90" data-res="discord" data-duration="280">
-            <span class="tv-status-icon"></span><span class="ss-tv-item-label">Discord Walk Through</span>
-          </div>
-          <div class="ss-tv-item" data-video-id="update-discord-leaderboard" data-src="https://www.loom.com/embed/1dce58e1623847dabcad03668ac14854" data-duration="40">
-            <span class="tv-status-icon"></span><span class="ss-tv-item-label">How to Update Discord Leaderboard</span>
-          </div>
-          <div class="ss-tv-item" data-video-id="submit-new-sale" data-src="https://www.loom.com/embed/bb4bec1445d94890a3a56a81152cfdc4" data-duration="69">
-            <span class="tv-status-icon"></span><span class="ss-tv-item-label">How to Submit a New Sale</span>
-          </div>
-          <div class="ss-tv-item" data-video-id="ai-training-bot" data-src="https://www.loom.com/embed/5504b88cb4474dbc9b0d3f1d0fa5e914" data-duration="198">
-            <span class="tv-status-icon"></span><span class="ss-tv-item-label">AI Training Bot</span>
-          </div>
-          <div class="ss-tv-item" data-video-id="script-sales-presentation" data-src="https://www.loom.com/embed/f693b1b3369c4655963fce11856f8a56" data-res="script" data-duration="1202">
-            <span class="tv-status-icon"></span><span class="ss-tv-item-label">Script and Sales Presentation</span>
-          </div>
-
-          <div class="ss-tv-cat-label">Licensing</div>
-          <div class="ss-tv-item" data-video-id="buy-state-licenses" data-src="https://www.loom.com/embed/badf77aa57d0430e817936e469eb6b56" data-res="nipr" data-duration="260">
-            <span class="tv-status-icon"></span><span class="ss-tv-item-label">How To Buy Additional State Licenses</span>
-          </div>
-          <div class="ss-tv-item" data-video-id="next-steps-licenses" data-src="https://www.loom.com/embed/96cc1263b9a446e583b9f8d356a2c90a" data-res="licensing" data-duration="292">
-            <span class="tv-status-icon"></span><span class="ss-tv-item-label">Next Steps After Buying Licenses</span>
-          </div>
-
-          <div class="ss-tv-cat-label">CRM Guide</div>
-          <div class="ss-tv-item" data-video-id="access-crm" data-src="https://www.loom.com/embed/9ab847bb22af4c8ab2f5063d5b0981fe" data-duration="45">
-            <span class="tv-status-icon"></span><span class="ss-tv-item-label">How to Access CRM</span>
-          </div>
-          <div class="ss-tv-item" data-video-id="setup-phone-numbers" data-src="https://www.loom.com/embed/a2008c417a7e488ba749428d1d72191c" data-duration="108">
-            <span class="tv-status-icon"></span><span class="ss-tv-item-label">Setting Up Your Phone Numbers</span>
-          </div>
-          <div class="ss-tv-item" data-video-id="a2p-texting" data-src="https://www.loom.com/embed/0a94c4d2e15e40dcaaa0817631b51dfe" data-res="a2p" data-duration="153">
-            <span class="tv-status-icon"></span><span class="ss-tv-item-label">A2P Texting Verification</span>
-          </div>
-          <div class="ss-tv-item" data-video-id="setting-up-wavv" data-src="https://www.loom.com/embed/e04fb59f584c467c8231fd614123f244" data-res="wavv" data-duration="366">
-            <span class="tv-status-icon"></span><span class="ss-tv-item-label">Setting Up Wavv</span>
-          </div>
-          <div class="ss-tv-item" data-video-id="uploading-leads" data-src="https://www.loom.com/embed/f6ebb4995f2a4d2a921658e022aa4067" data-duration="2038">
-            <span class="tv-status-icon"></span><span class="ss-tv-item-label">Uploading Leads</span>
-          </div>
-          <div class="ss-tv-item" data-video-id="calendar-booking" data-src="https://www.loom.com/embed/ce38f87fb64046e3b669e1d4da4c616a" data-duration="314">
-            <span class="tv-status-icon"></span><span class="ss-tv-item-label">Calendar and Booking Appointments</span>
-          </div>
-          <div class="ss-tv-item" data-video-id="building-automations" data-src="https://www.loom.com/embed/10dfa99d2d48470681b52f5ac7c16b4e" data-duration="1435">
-            <span class="tv-status-icon"></span><span class="ss-tv-item-label">Using &amp; Building Automations</span>
-          </div>
-
-          <div class="ss-tv-cat-label">Products &amp; Underwriting</div>
-          <div class="ss-tv-item" data-video-id="product-selection" data-src="https://www.loom.com/embed/2c156fff8cc8472e8281f6faef0e2dcb" data-duration="812">
-            <span class="tv-status-icon"></span><span class="ss-tv-item-label">Product Selection</span>
-          </div>
-          <div class="ss-tv-item" data-video-id="insurance-toolkits-underwriting" data-src="https://www.loom.com/embed/d7c56c9e50574348a2dec7292274d5a4" data-res="underwriting" data-duration="215">
-            <span class="tv-status-icon"></span><span class="ss-tv-item-label">Insurance Toolkits and Underwriting</span>
-          </div>
-          <div class="ss-tv-item" data-video-id="americo-walkthrough" data-src="https://www.loom.com/embed/bcd4adb557dc4446958b4999226c9abe" data-duration="812">
-            <span class="tv-status-icon"></span><span class="ss-tv-item-label">Americo Application Walkthrough</span>
-          </div>
-          <div class="ss-tv-item" data-video-id="transamerica-walkthrough" data-src="https://www.loom.com/embed/e91098314c6b4641a049921959902aff" data-duration="671">
-            <span class="tv-status-icon"></span><span class="ss-tv-item-label">Transamerica Application Walkthrough</span>
-          </div>
-          <div class="ss-tv-item" data-video-id="mutual-omaha-walkthrough" data-src="https://www.loom.com/embed/dd390290b98542218101fbbcacaf9fed" data-duration="1182">
-            <span class="tv-status-icon"></span><span class="ss-tv-item-label">Mutual Of Omaha Application Walkthrough</span>
-          </div>
-
-          <div class="ss-tv-cat-label">Leads</div>
-          <div class="ss-tv-item" data-video-id="watch-before-buying-leads" data-src="https://www.loom.com/embed/8a10f1b0e3e5492aa6fd5a09474d5962" data-duration="54">
-            <span class="tv-status-icon"></span><span class="ss-tv-item-label">Watch Before Buying Leads</span>
-          </div>
-          <div class="ss-tv-item" data-video-id="ethos-leads" data-src="https://www.loom.com/embed/83d778600ded478282e1dd8ae4c2cf43" data-duration="375">
-            <span class="tv-status-icon"></span><span class="ss-tv-item-label">Ethos Leads</span>
-          </div>
-          <div class="ss-tv-item" data-video-id="goat-leads" data-src="https://www.loom.com/embed/66189350089e4517826b1d2d975f894a" data-duration="83">
-            <span class="tv-status-icon"></span><span class="ss-tv-item-label">Goat Leads</span>
-          </div>
-          <div class="ss-tv-item" data-video-id="freedom-life-leads" data-src="https://www.loom.com/embed/84e1a440093b4799a5c70af16ee92130" data-duration="149">
-            <span class="tv-status-icon"></span><span class="ss-tv-item-label">Freedom Life Leads</span>
-          </div>
+          <div id="ssTvSidebarBody"></div>
+          <button class="ss-tv-add-btn" id="ssTvAddSectionBtn" type="button">+ Add Section</button>
         </aside>
 
         <!-- Video player area -->
@@ -4268,6 +4304,35 @@
         <h3 style="font-family:'Plus Jakarta Sans',sans-serif;font-size:1.2rem;font-weight:900;color:#1a1a1a;margin-bottom:0.4rem;">Complete Your Training</h3>
         <p style="font-size:0.85rem;color:#666;margin-bottom:1.5rem;">Watch all training videos before accessing the Sales Hub. Your progress is saved automatically.</p>
         <button onclick="activatePanel('training')" style="padding:0.7rem 2rem;font-family:'Plus Jakarta Sans',sans-serif;font-size:0.88rem;font-weight:700;color:#fff;background:linear-gradient(135deg,#7c3aed,#a855f7);border:none;border-radius:100px;cursor:pointer;">Go to Training Videos</button>
+      </div>
+    </div>
+
+    <!-- Training admin modal (Add/Rename section, Add/Edit video) -->
+    <div class="ss-tv-modal-backdrop" id="ssTvModal">
+      <div class="ss-tv-modal">
+        <h3 id="ssTvModalTitle">Add Video</h3>
+        <div class="ss-tv-modal-field">
+          <label>Title</label>
+          <input type="text" id="ssTvModalName" placeholder="Video title" />
+        </div>
+        <div class="ss-tv-modal-field" id="ssTvModalUrlField">
+          <label>Loom URL</label>
+          <input type="text" id="ssTvModalUrl" placeholder="https://www.loom.com/share/… or /embed/…" />
+        </div>
+        <div class="ss-tv-modal-field" id="ssTvModalDurationField">
+          <label>Video Length (in seconds)</label>
+          <input type="number" id="ssTvModalDuration" min="10" placeholder="e.g. 180" />
+          <div class="ss-tv-modal-hint">Used for the "watch to unlock" timer. Agents must watch ~90% of this before marking complete. Tip: a 3-minute video = 180 seconds.</div>
+        </div>
+        <div class="ss-tv-modal-field" id="ssTvModalSectionField">
+          <label>Section</label>
+          <select id="ssTvModalSection"></select>
+        </div>
+        <div class="ss-tv-modal-err" id="ssTvModalErr"></div>
+        <div class="ss-tv-modal-btns">
+          <button class="ss-tv-modal-btn secondary" id="ssTvModalCancel" type="button">Cancel</button>
+          <button class="ss-tv-modal-btn primary" id="ssTvModalSave" type="button">Save</button>
+        </div>
       </div>
     </div>
 
@@ -4899,6 +4964,14 @@
         activatePanel(link.dataset.panel);
       });
     });
+
+    // Auto-open panel from URL hash (e.g. saleshub.html#training)
+    (function openPanelFromHash() {
+      const hash = (window.location.hash || '').replace('#', '');
+      if (!hash) return;
+      const validPanels = ['submit', 'training', 'performance', 'leaderboard', 'goals', 'policies', 'calculator', 'profile'];
+      if (validPanels.includes(hash)) activatePanel(hash);
+    })();
 
     // ─── SIDEBAR HAMBURGER (toggles in-sidebar mobile menu) ───
     const ssHamburger = document.getElementById('ssHamburger');
@@ -8501,43 +8574,244 @@
     });
 
     // ═══════════════════════════════════════════════════════════════
-    //  TRAINING VIDEO SYSTEM
+    //  TRAINING VIDEO SYSTEM  (dynamic — loads from Supabase)
     // ═══════════════════════════════════════════════════════════════
 
-    let trainingComplete = true; // default true so nothing breaks before fetch
-    let completedVideoIds = new Set();
+    const TRAINING_ADMIN_USER_ID = 'be364ef5-8426-4587-b8b8-9328b02055a7';
     const LOOM_PARAMS = '?hide_owner=true&hide_title=true&hide_share=true&hideEmbedTopBar=true';
 
-    const tvItems = document.querySelectorAll('.ss-tv-item');
+    // Content state (sections + videos loaded from DB)
+    let tvSections = [];   // [{ id, title, sort_order }]
+    let tvVideos = [];     // [{ id, section_id, slug, title, loom_url, duration_seconds, sort_order }]
+
+    // User state
+    let trainingComplete = true;        // default true so nothing breaks before fetch
+    let completedVideoIds = new Set();  // keyed by slug (text)
+
+    // Admin state
+    let tvAdminToken = null;
+    let tvEditMode = false;
+
+    // DOM refs
     const tvPlayer = document.getElementById('ssTvPlayer');
     const tvTitle = document.getElementById('ssTvTitle');
     const tvProgressBar = document.getElementById('ssTvProgressBar');
     const tvProgressText = document.getElementById('ssTvProgressText');
     const tvSidebar = document.getElementById('ssTvSidebar');
+    const tvSidebarBody = document.getElementById('ssTvSidebarBody');
     const tvMobileToggle = document.getElementById('ssTvMobileToggle');
     const tvMarkCompleteBtn = document.getElementById('ssTvMarkComplete');
     const trainingGate = document.getElementById('trainingGate');
+    const tvEditToggle = document.getElementById('ssTvEditToggle');
+    const tvEditToggleLabel = document.getElementById('ssTvEditToggleLabel');
+    const tvAddSectionBtn = document.getElementById('ssTvAddSectionBtn');
 
-    // Resource panel refs
+    // Resource panel refs (extras wired to original seeded videos by slug)
     const tvResources = {
-      discord: document.getElementById('ssTvDiscord'),
-      wavv: document.getElementById('ssTvWavv'),
-      nipr: document.getElementById('ssTvNipr'),
-      a2p: document.getElementById('ssTvA2p'),
+      discord:      document.getElementById('ssTvDiscord'),
+      wavv:         document.getElementById('ssTvWavv'),
+      nipr:         document.getElementById('ssTvNipr'),
+      a2p:          document.getElementById('ssTvA2p'),
       underwriting: document.getElementById('ssTvUnderwriting'),
-      script: document.getElementById('ssTvScript'),
-      licensing: document.getElementById('ssTvLicensing')
+      script:       document.getElementById('ssTvScript'),
+      licensing:    document.getElementById('ssTvLicensing')
+    };
+    const SLUG_EXTRAS = {
+      'discord-walkthrough': 'discord',
+      'script-sales-presentation': 'script',
+      'buy-state-licenses': 'nipr',
+      'next-steps-licenses': 'licensing',
+      'a2p-texting': 'a2p',
+      'setting-up-wavv': 'wavv',
+      'insurance-toolkits-underwriting': 'underwriting'
     };
 
-    // Currently playing video id
-    let currentVideoId = null;
+    // Modal refs
+    const tvModal = document.getElementById('ssTvModal');
+    const tvModalTitle = document.getElementById('ssTvModalTitle');
+    const tvModalName = document.getElementById('ssTvModalName');
+    const tvModalUrl = document.getElementById('ssTvModalUrl');
+    const tvModalUrlField = document.getElementById('ssTvModalUrlField');
+    const tvModalDuration = document.getElementById('ssTvModalDuration');
+    const tvModalDurationField = document.getElementById('ssTvModalDurationField');
+    const tvModalSection = document.getElementById('ssTvModalSection');
+    const tvModalSectionField = document.getElementById('ssTvModalSectionField');
+    const tvModalErr = document.getElementById('ssTvModalErr');
+    const tvModalSave = document.getElementById('ssTvModalSave');
+    const tvModalCancel = document.getElementById('ssTvModalCancel');
 
-    function getAllVideoIds() {
-      return Array.from(tvItems).map(i => i.dataset.videoId);
+    let currentVideoSlug = null;
+
+    // Flat sequential order of videos across all sections (for lock/unlock logic + auto-advance)
+    function tvFlatOrder() {
+      const secs = tvSections.slice().sort((a, b) => a.sort_order - b.sort_order);
+      return secs.flatMap(s =>
+        tvVideos.filter(v => v.section_id === s.id).sort((a, b) => a.sort_order - b.sort_order)
+      );
+    }
+
+    function getAllVideoSlugs() {
+      return tvFlatOrder().map(v => v.slug);
+    }
+
+    // ─── SUPABASE HELPERS ───
+    function anonHeaders(extra) {
+      return Object.assign({
+        'apikey': SUPABASE_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_KEY,
+        'Content-Type': 'application/json'
+      }, extra || {});
+    }
+    function adminHeaders(extra) {
+      return Object.assign({
+        'apikey': SUPABASE_KEY,
+        'Authorization': 'Bearer ' + tvAdminToken,
+        'Content-Type': 'application/json'
+      }, extra || {});
+    }
+    async function tvSupaGet(path) {
+      const res = await fetch(SUPABASE_URL + '/rest/v1/' + path, { headers: anonHeaders() });
+      if (!res.ok) throw new Error('GET ' + path + ' → ' + res.status);
+      return res.json();
+    }
+    async function tvSupaInsert(table, payload) {
+      const res = await fetch(SUPABASE_URL + '/rest/v1/' + table, {
+        method: 'POST',
+        headers: adminHeaders({ 'Prefer': 'return=representation' }),
+        body: JSON.stringify(payload)
+      });
+      if (!res.ok) throw new Error((await res.text()) || ('POST ' + table));
+      return res.json();
+    }
+    async function tvSupaPatch(table, id, payload) {
+      const res = await fetch(SUPABASE_URL + '/rest/v1/' + table + '?id=eq.' + id, {
+        method: 'PATCH',
+        headers: adminHeaders({ 'Prefer': 'return=minimal' }),
+        body: JSON.stringify(payload)
+      });
+      if (!res.ok) throw new Error((await res.text()) || ('PATCH ' + table));
+    }
+    async function tvSupaDelete(table, id) {
+      const res = await fetch(SUPABASE_URL + '/rest/v1/' + table + '?id=eq.' + id, {
+        method: 'DELETE',
+        headers: adminHeaders({ 'Prefer': 'return=minimal' })
+      });
+      if (!res.ok) throw new Error((await res.text()) || ('DELETE ' + table));
+    }
+    function tvNormalizeLoom(input) {
+      if (!input) return null;
+      const m = String(input).trim().match(/([a-f0-9]{20,})/i);
+      return m ? 'https://www.loom.com/embed/' + m[1].toLowerCase() : null;
+    }
+
+    // ─── RENDER ───
+    const ICO_UP     = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>';
+    const ICO_DOWN   = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>';
+    const ICO_EDIT   = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 113 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>';
+    const ICO_DELETE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a2 2 0 012-2h2a2 2 0 012 2v2"/></svg>';
+
+    function tvBuildRowActions(opts) {
+      const wrap = document.createElement('span');
+      wrap.className = 'ss-tv-row-actions';
+      const mk = (svg, label, handler, danger) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'ss-tv-ico-btn' + (danger ? ' danger' : '');
+        btn.title = label;
+        btn.innerHTML = svg;
+        if (handler) {
+          btn.addEventListener('click', (e) => { e.stopPropagation(); handler(); });
+        } else {
+          btn.disabled = true;
+          btn.style.opacity = '0.25';
+          btn.style.cursor = 'default';
+        }
+        return btn;
+      };
+      wrap.appendChild(mk(ICO_UP,     'Move up',   opts.onUp));
+      wrap.appendChild(mk(ICO_DOWN,   'Move down', opts.onDown));
+      wrap.appendChild(mk(ICO_EDIT,   opts.editLabel || 'Rename', opts.onRename));
+      wrap.appendChild(mk(ICO_DELETE, 'Delete',    opts.onDelete, true));
+      return wrap;
+    }
+
+    function renderSidebar() {
+      tvSidebarBody.innerHTML = '';
+
+      if (tvSections.length === 0) {
+        const empty = document.createElement('div');
+        empty.className = 'ss-tv-empty';
+        empty.textContent = tvEditMode
+          ? 'No sections yet. Click "+ Add Section" below.'
+          : 'No training videos yet.';
+        tvSidebarBody.appendChild(empty);
+        updateTrainingProgress();
+        return;
+      }
+
+      const secs = tvSections.slice().sort((a, b) => a.sort_order - b.sort_order);
+      secs.forEach((sec, secIdx) => {
+        const label = document.createElement('div');
+        label.className = 'ss-tv-cat-label';
+        const labelText = document.createElement('span');
+        labelText.className = 'ss-tv-cat-label-text';
+        labelText.textContent = sec.title;
+        label.appendChild(labelText);
+        label.appendChild(tvBuildRowActions({
+          onUp:     secIdx > 0            ? () => tvMoveSection(sec.id, -1) : null,
+          onDown:   secIdx < secs.length-1 ? () => tvMoveSection(sec.id, +1) : null,
+          onRename: () => tvOpenSectionModal(sec),
+          onDelete: () => tvDeleteSection(sec),
+          editLabel: 'Rename section'
+        }));
+        tvSidebarBody.appendChild(label);
+
+        const inSection = tvVideos
+          .filter(v => v.section_id === sec.id)
+          .sort((a, b) => a.sort_order - b.sort_order);
+
+        inSection.forEach((vid, vIdx) => {
+          const item = document.createElement('div');
+          item.className = 'ss-tv-item';
+          item.dataset.slug = vid.slug;
+          item.dataset.src = vid.loom_url;
+          item.dataset.duration = String(vid.duration_seconds);
+          item.dataset.videoId = vid.id;
+          item.innerHTML =
+            '<span class="tv-status-icon"></span>' +
+            '<span class="ss-tv-item-label"></span>';
+          item.querySelector('.ss-tv-item-label').textContent = vid.title;
+
+          item.appendChild(tvBuildRowActions({
+            onUp:     vIdx > 0                    ? () => tvMoveVideo(vid.id, -1) : null,
+            onDown:   vIdx < inSection.length - 1 ? () => tvMoveVideo(vid.id, +1) : null,
+            onRename: () => tvOpenVideoModal(vid),
+            onDelete: () => tvDeleteVideo(vid),
+            editLabel: 'Edit video'
+          }));
+
+          item.addEventListener('click', (e) => {
+            if (tvEditMode) return;
+            if (e.target.closest('.ss-tv-row-actions')) return;
+            selectVideo(item);
+          });
+
+          tvSidebarBody.appendChild(item);
+        });
+
+        const addVid = document.createElement('button');
+        addVid.type = 'button';
+        addVid.className = 'ss-tv-add-btn ss-tv-add-video';
+        addVid.textContent = '+ Add Video';
+        addVid.addEventListener('click', () => tvOpenVideoModal(null, sec.id));
+        tvSidebarBody.appendChild(addVid);
+      });
+
+      updateVideoStates();
     }
 
     function updateTrainingProgress() {
-      const total = tvItems.length;
+      const total = tvVideos.length;
       const done = completedVideoIds.size;
       const pct = total > 0 ? Math.round((done / total) * 100) : 0;
       tvProgressBar.style.width = pct + '%';
@@ -8545,11 +8819,16 @@
     }
 
     function updateVideoStates() {
+      const items = tvSidebarBody.querySelectorAll('.ss-tv-item');
+      const flatSlugs = getAllVideoSlugs();
       let previousDone = true; // first video is always unlocked
-      tvItems.forEach((item, idx) => {
-        const vid = item.dataset.videoId;
+
+      // Walk in the flat (sequential) order so "next unlocked" logic is correct
+      flatSlugs.forEach(slug => {
+        const item = Array.from(items).find(i => i.dataset.slug === slug);
+        if (!item) return;
         const icon = item.querySelector('.tv-status-icon');
-        const isDone = completedVideoIds.has(vid);
+        const isDone = completedVideoIds.has(slug);
 
         item.classList.remove('locked', 'active');
         icon.className = 'tv-status-icon';
@@ -8559,25 +8838,23 @@
           icon.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
           previousDone = true;
         } else if (trainingComplete || previousDone) {
-          // Training complete agents can access all videos freely
-          // Otherwise this is the next available (unlocked) video
           icon.classList.add('current');
           icon.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>';
           if (!trainingComplete) previousDone = false;
         } else {
-          // Locked
           item.classList.add('locked');
           icon.classList.add('locked-icon');
           icon.innerHTML = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>';
         }
 
-        if (vid === currentVideoId && !item.classList.contains('locked')) {
+        if (slug === currentVideoSlug && !item.classList.contains('locked')) {
           item.classList.add('active');
         }
       });
       updateTrainingProgress();
     }
 
+    // ─── PLAYBACK + TIMER ───
     let videoTimer = null;
     let videoTimerRemaining = 0;
     let videoTimerReady = false;
@@ -8586,37 +8863,32 @@
 
     function selectVideo(item) {
       if (item.classList.contains('locked')) return;
-      const vid = item.dataset.videoId;
-      currentVideoId = vid;
+      const slug = item.dataset.slug;
+      currentVideoSlug = slug;
       tvPlayer.src = item.dataset.src + LOOM_PARAMS;
       tvTitle.textContent = item.querySelector('.ss-tv-item-label').textContent;
 
-      // Toggle resource panels
-      const res = item.dataset.res || '';
+      // Toggle resource panels by slug
+      const res = SLUG_EXTRAS[slug] || '';
       Object.keys(tvResources).forEach(key => {
         if (tvResources[key]) tvResources[key].classList.toggle('visible', res === key);
       });
 
-      // Reset timer — don't start until video plays
+      // Reset timer
       if (videoTimer) { clearInterval(videoTimer); videoTimer = null; }
       videoTimerReady = false;
       videoTimerStarted = false;
       currentVideoDuration = parseInt(item.dataset.duration) || 120;
       videoTimerRemaining = Math.round(currentVideoDuration * 0.9);
 
-      if (completedVideoIds.has(vid)) {
-        videoTimerReady = true;
-      }
+      if (completedVideoIds.has(slug)) videoTimerReady = true;
 
       updateVideoStates();
       updateMarkCompleteBtn();
 
-      // Close mobile sidebar
       if (window.innerWidth <= 768) tvSidebar.classList.remove('mobile-open');
     }
 
-    // Detect when user clicks the Loom iframe (to play the video)
-    // When an iframe gets focus, the parent window blurs
     window.addEventListener('blur', () => {
       setTimeout(() => {
         if (document.activeElement === tvPlayer || document.activeElement?.closest?.('.ss-tv-video-wrap')) {
@@ -8626,7 +8898,7 @@
     });
 
     function startVideoTimer() {
-      if (videoTimerStarted || videoTimerReady || !currentVideoId || completedVideoIds.has(currentVideoId)) return;
+      if (videoTimerStarted || videoTimerReady || !currentVideoSlug || completedVideoIds.has(currentVideoSlug)) return;
       videoTimerStarted = true;
       videoTimer = setInterval(() => {
         videoTimerRemaining--;
@@ -8647,25 +8919,22 @@
     }
 
     function updateMarkCompleteBtn() {
-      if (!currentVideoId || completedVideoIds.has(currentVideoId) || trainingComplete) {
+      if (!currentVideoSlug || completedVideoIds.has(currentVideoSlug) || trainingComplete) {
         tvMarkCompleteBtn.style.display = 'none';
         return;
       }
       tvMarkCompleteBtn.style.display = 'inline-flex';
       if (!videoTimerStarted) {
-        // Haven't clicked play yet
         tvMarkCompleteBtn.disabled = true;
         tvMarkCompleteBtn.style.opacity = '0.5';
         tvMarkCompleteBtn.style.cursor = 'not-allowed';
         tvMarkCompleteBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:0.4rem;"><polygon points="5 3 19 12 5 21 5 3"/></svg> Play the video to start';
       } else if (!videoTimerReady) {
-        // Timer running
         tvMarkCompleteBtn.disabled = true;
         tvMarkCompleteBtn.style.opacity = '0.5';
         tvMarkCompleteBtn.style.cursor = 'not-allowed';
         tvMarkCompleteBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:0.4rem;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Watch video to unlock (' + formatTimer(videoTimerRemaining) + ')';
       } else {
-        // Ready to mark complete
         tvMarkCompleteBtn.disabled = false;
         tvMarkCompleteBtn.style.opacity = '1';
         tvMarkCompleteBtn.style.cursor = 'pointer';
@@ -8674,28 +8943,22 @@
     }
 
     tvMarkCompleteBtn.addEventListener('click', async () => {
-      if (currentVideoId && !completedVideoIds.has(currentVideoId) && videoTimerReady) {
+      if (currentVideoSlug && !completedVideoIds.has(currentVideoSlug) && videoTimerReady) {
         tvMarkCompleteBtn.disabled = true;
         tvMarkCompleteBtn.textContent = 'Saving...';
-        await markVideoComplete(currentVideoId);
+        await markVideoComplete(currentVideoSlug);
         tvMarkCompleteBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:0.4rem;"><polyline points="20 6 9 17 4 12"/></svg> Mark as Complete';
         updateMarkCompleteBtn();
       }
     });
 
-    // Click handlers on video items
-    tvItems.forEach(item => {
-      item.addEventListener('click', () => selectVideo(item));
-    });
-
-    // Mobile toggle
     if (tvMobileToggle) {
       tvMobileToggle.addEventListener('click', () => tvSidebar.classList.toggle('mobile-open'));
     }
 
-    // Auto-select first available video
     function autoSelectFirstAvailable() {
-      for (const item of tvItems) {
+      const items = tvSidebarBody.querySelectorAll('.ss-tv-item');
+      for (const item of items) {
         if (!item.classList.contains('locked')) {
           selectVideo(item);
           return;
@@ -8703,35 +8966,29 @@
       }
     }
 
-    // ── LOOM postMessage LISTENER ──
-    // Loom fires postMessage events; we listen for video completion
+    // Loom postMessage listener
     window.addEventListener('message', async (e) => {
-      // Loom sends { event: 'video.ended' } or similar from its embed
       if (!e.data) return;
       let data = e.data;
       if (typeof data === 'string') {
         try { data = JSON.parse(data); } catch (_) { return; }
       }
-
-      // Loom embed API: event name varies by version
       const isEnded = (
         data.event === 'video.ended' ||
         data.event === 'ended' ||
         data.type === 'ended' ||
         (data.data && data.data.method === 'paused' && data.data.value >= 0.97)
       );
-
-      if (isEnded && currentVideoId && !completedVideoIds.has(currentVideoId)) {
-        await markVideoComplete(currentVideoId);
+      if (isEnded && currentVideoSlug && !completedVideoIds.has(currentVideoSlug)) {
+        await markVideoComplete(currentVideoSlug);
       }
     });
 
-    async function markVideoComplete(videoId) {
+    async function markVideoComplete(slug) {
       if (!currentUser || !accessToken) return;
-      completedVideoIds.add(videoId);
+      completedVideoIds.add(slug);
       updateVideoStates();
 
-      // Write to Supabase
       try {
         await fetch(SUPABASE_URL + '/rest/v1/video_progress', {
           method: 'POST',
@@ -8741,17 +8998,16 @@
             'Content-Type': 'application/json',
             'Prefer': 'return=minimal,resolution=ignore-duplicates'
           },
-          body: JSON.stringify({ user_id: currentUser.id, video_id: videoId })
+          body: JSON.stringify({ user_id: currentUser.id, video_id: slug })
         });
       } catch (err) { console.error('Failed to save video progress:', err); }
 
-      // Check if all done
-      const allIds = getAllVideoIds();
-      const allDone = allIds.every(id => completedVideoIds.has(id));
+      // Mark overall training complete once every current video is done
+      const allSlugs = getAllVideoSlugs();
+      const allDone = allSlugs.length > 0 && allSlugs.every(s => completedVideoIds.has(s));
       if (allDone && !trainingComplete) {
         trainingComplete = true;
         applyTrainingGate();
-        // Update agent_profiles
         try {
           await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?user_id=eq.' + currentUser.id, {
             method: 'PATCH',
@@ -8766,32 +9022,26 @@
         } catch (err) { console.error('Failed to update training_complete:', err); }
       }
 
-      // Auto-advance to next video
-      const items = Array.from(tvItems);
-      const idx = items.findIndex(i => i.dataset.videoId === videoId);
+      // Auto-advance to next unlocked video
+      const items = Array.from(tvSidebarBody.querySelectorAll('.ss-tv-item'));
+      const idx = items.findIndex(i => i.dataset.slug === slug);
       if (idx >= 0 && idx < items.length - 1) {
         const next = items[idx + 1];
-        if (!next.classList.contains('locked')) {
-          selectVideo(next);
-        }
+        if (next && !next.classList.contains('locked')) selectVideo(next);
       }
     }
 
-    // ── TRAINING GATE ──
     function applyTrainingGate() {
       const sidebarBtns = document.querySelectorAll('.ss-sidebar-btn[data-panel]');
       if (trainingComplete) {
-        // Unlock everything
         trainingGate.classList.remove('active');
         sidebarBtns.forEach(b => b.classList.remove('training-locked'));
       } else {
-        // Lock all panels except training
         sidebarBtns.forEach(b => {
           if (b.dataset.panel !== 'training' && b.dataset.panel !== 'profile') {
             b.classList.add('training-locked');
           }
         });
-        // Show gate overlay (only on non-training panels)
         const activePanel = document.querySelector('.ss-panel.active');
         if (activePanel && activePanel.id !== 'panel-training') {
           trainingGate.classList.add('active');
@@ -8801,11 +9051,26 @@
       }
     }
 
-    // ── LOAD TRAINING STATE FROM SUPABASE ──
+    // ─── LOAD CONTENT (anon — works even when signed out) ───
+    async function loadTrainingContent() {
+      try {
+        const [secs, vids] = await Promise.all([
+          tvSupaGet('training_sections?select=*&order=sort_order.asc'),
+          tvSupaGet('training_videos?select=*&order=sort_order.asc')
+        ]);
+        tvSections = secs;
+        tvVideos = vids;
+      } catch (e) {
+        console.error('Failed to load training content:', e);
+        tvSections = []; tvVideos = [];
+      }
+      renderSidebar();
+    }
+
+    // ─── LOAD PER-USER STATE (requires login) ───
     async function loadTrainingState() {
       if (!currentUser || !accessToken) return;
       try {
-        // Fetch agent profile for training_complete flag
         const profRes = await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?user_id=eq.' + currentUser.id + '&select=training_complete', {
           headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + accessToken }
         });
@@ -8815,24 +9080,27 @@
             trainingComplete = profData[0].training_complete !== false;
           }
         }
-
-        // Fetch completed videos
         const vpRes = await fetch(SUPABASE_URL + '/rest/v1/video_progress?user_id=eq.' + currentUser.id + '&select=video_id', {
           headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + accessToken }
         });
         if (vpRes.ok) {
           const vpData = await vpRes.json();
-          vpData.forEach(row => completedVideoIds.add(row.video_id));
+          completedVideoIds = new Set(vpData.map(r => r.video_id));
         }
       } catch (err) { console.error('Failed to load training state:', err); }
 
       updateVideoStates();
       autoSelectFirstAvailable();
       applyTrainingGate();
+      if (!trainingComplete) activatePanel('training');
 
-      // If not training complete, force to training panel
-      if (!trainingComplete) {
-        activatePanel('training');
+      // Admin detection keyed by user ID
+      if (currentUser.id === TRAINING_ADMIN_USER_ID) {
+        tvAdminToken = accessToken;
+        tvEditToggle.classList.add('visible');
+      } else {
+        tvAdminToken = null;
+        tvEditToggle.classList.remove('visible');
       }
     }
 
@@ -8840,9 +9108,8 @@
     const _originalActivatePanel = activatePanel;
     activatePanel = function(panelName) {
       if (!trainingComplete && panelName !== 'training' && panelName !== 'profile' && currentUser) {
-        // Show message and redirect to training
         const done = completedVideoIds.size;
-        const total = tvItems.length;
+        const total = tvVideos.length;
         showConfirmModal({
           title: 'Complete Your Training',
           message: 'You need to finish all training videos before accessing the Sales Hub. You\'ve completed ' + done + ' of ' + total + ' videos so far.',
@@ -8854,7 +9121,7 @@
           _originalActivatePanel('training');
           trainingGate.classList.remove('active');
           updateVideoStates();
-          if (!currentVideoId) autoSelectFirstAvailable();
+          if (!currentVideoSlug) autoSelectFirstAvailable();
         });
         return;
       }
@@ -8862,7 +9129,7 @@
       if (panelName === 'training') {
         trainingGate.classList.remove('active');
         updateVideoStates();
-        if (!currentVideoId) autoSelectFirstAvailable();
+        if (!currentVideoSlug) autoSelectFirstAvailable();
       }
     };
 
@@ -8875,12 +9142,231 @@
       } else {
         trainingComplete = true;
         completedVideoIds.clear();
+        tvAdminToken = null;
+        tvEditToggle.classList.remove('visible');
         applyTrainingGate();
+        updateVideoStates();
       }
     };
 
-    // Initial load if already logged in
-    if (currentUser) loadTrainingState();
+    // ─── ADMIN EDIT MODE ───
+    tvEditToggle.addEventListener('click', () => {
+      if (!tvAdminToken) return;
+      tvEditMode = !tvEditMode;
+      document.body.classList.toggle('ss-tv-edit-mode', tvEditMode);
+      tvEditToggle.classList.toggle('active', tvEditMode);
+      tvEditToggleLabel.textContent = tvEditMode ? 'Done' : 'Edit';
+    });
+
+    // ─── ADMIN MODAL ───
+    let tvModalMode = null;   // 'add-section' | 'edit-section' | 'add-video' | 'edit-video'
+    let tvModalTarget = null;
+
+    function tvOpenSectionModal(sec) {
+      tvModalMode = sec ? 'edit-section' : 'add-section';
+      tvModalTarget = sec || null;
+      tvModalTitle.textContent = sec ? 'Rename Section' : 'Add Section';
+      tvModalName.value = sec ? sec.title : '';
+      tvModalName.placeholder = 'Section name';
+      tvModalUrlField.style.display = 'none';
+      tvModalDurationField.style.display = 'none';
+      tvModalSectionField.style.display = 'none';
+      tvModalErr.classList.remove('visible');
+      tvModal.classList.add('visible');
+      setTimeout(() => tvModalName.focus(), 50);
+    }
+    function tvOpenVideoModal(vid, defaultSectionId) {
+      tvModalMode = vid ? 'edit-video' : 'add-video';
+      tvModalTarget = vid || null;
+      tvModalTitle.textContent = vid ? 'Edit Video' : 'Add Video';
+      tvModalName.value = vid ? vid.title : '';
+      tvModalName.placeholder = 'Video title';
+      tvModalUrl.value = vid ? vid.loom_url : '';
+      tvModalDuration.value = vid ? vid.duration_seconds : '';
+      tvModalUrlField.style.display = '';
+      tvModalDurationField.style.display = '';
+      tvModalSectionField.style.display = '';
+      tvModalSection.innerHTML = '';
+      tvSections.slice().sort((a, b) => a.sort_order - b.sort_order).forEach(s => {
+        const opt = document.createElement('option');
+        opt.value = s.id;
+        opt.textContent = s.title;
+        tvModalSection.appendChild(opt);
+      });
+      tvModalSection.value = vid ? vid.section_id : (defaultSectionId || (tvSections[0] && tvSections[0].id) || '');
+      tvModalErr.classList.remove('visible');
+      tvModal.classList.add('visible');
+      setTimeout(() => tvModalName.focus(), 50);
+    }
+    function tvCloseModal() {
+      tvModal.classList.remove('visible');
+      tvModalMode = null;
+      tvModalTarget = null;
+    }
+    tvModalCancel.addEventListener('click', tvCloseModal);
+    tvModal.addEventListener('click', (e) => { if (e.target === tvModal) tvCloseModal(); });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && tvModal.classList.contains('visible')) tvCloseModal();
+    });
+
+    tvModalSave.addEventListener('click', async () => {
+      tvModalErr.classList.remove('visible');
+      const name = tvModalName.value.trim();
+      if (!name) { tvModalErr.textContent = 'Please enter a name.'; tvModalErr.classList.add('visible'); return; }
+
+      try {
+        if (tvModalMode === 'add-section') {
+          const maxOrder = tvSections.reduce((m, s) => Math.max(m, s.sort_order || 0), 0);
+          const row = (await tvSupaInsert('training_sections', { title: name, sort_order: maxOrder + 10 }))[0];
+          tvSections.push(row);
+          renderSidebar();
+          tvCloseModal();
+        }
+        else if (tvModalMode === 'edit-section') {
+          await tvSupaPatch('training_sections', tvModalTarget.id, { title: name });
+          tvModalTarget.title = name;
+          renderSidebar();
+          tvCloseModal();
+        }
+        else if (tvModalMode === 'add-video' || tvModalMode === 'edit-video') {
+          const url = tvNormalizeLoom(tvModalUrl.value);
+          if (!url) {
+            tvModalErr.textContent = 'Please paste a valid Loom URL (share or embed link).';
+            tvModalErr.classList.add('visible'); return;
+          }
+          const duration = parseInt(tvModalDuration.value, 10);
+          if (!duration || duration < 10) {
+            tvModalErr.textContent = 'Please enter a video length in seconds (at least 10).';
+            tvModalErr.classList.add('visible'); return;
+          }
+          const sectionId = tvModalSection.value;
+          if (!sectionId) {
+            tvModalErr.textContent = 'Please choose a section.';
+            tvModalErr.classList.add('visible'); return;
+          }
+
+          if (tvModalMode === 'add-video') {
+            const inSection = tvVideos.filter(v => v.section_id === sectionId);
+            const maxOrder = inSection.reduce((m, v) => Math.max(m, v.sort_order || 0), 0);
+            // Slug is generated server-side by the migration for existing rows; for new rows
+            // we need a unique slug. Use a short random UUID-style suffix.
+            const slug = 'v-' + Math.random().toString(36).slice(2, 10);
+            const row = (await tvSupaInsert('training_videos', {
+              section_id: sectionId,
+              title: name,
+              loom_url: url,
+              slug: slug,
+              duration_seconds: duration,
+              sort_order: maxOrder + 10
+            }))[0];
+            tvVideos.push(row);
+          } else {
+            await tvSupaPatch('training_videos', tvModalTarget.id, {
+              title: name,
+              loom_url: url,
+              duration_seconds: duration,
+              section_id: sectionId
+            });
+            tvModalTarget.title = name;
+            tvModalTarget.loom_url = url;
+            tvModalTarget.duration_seconds = duration;
+            tvModalTarget.section_id = sectionId;
+            if (currentVideoSlug === tvModalTarget.slug) {
+              // Re-select the same video so player/title update
+              renderSidebar();
+              const items = tvSidebarBody.querySelectorAll('.ss-tv-item');
+              const el = Array.from(items).find(i => i.dataset.slug === tvModalTarget.slug);
+              if (el) selectVideo(el);
+              tvCloseModal();
+              return;
+            }
+          }
+          renderSidebar();
+          tvCloseModal();
+        }
+      } catch (e) {
+        console.error(e);
+        tvModalErr.textContent = 'Save failed. Check your internet and try again.';
+        tvModalErr.classList.add('visible');
+      }
+    });
+
+    tvAddSectionBtn.addEventListener('click', () => tvOpenSectionModal(null));
+
+    async function tvDeleteSection(sec) {
+      const count = tvVideos.filter(v => v.section_id === sec.id).length;
+      const msg = count > 0
+        ? 'Delete section "' + sec.title + '" and all ' + count + ' video(s) inside it?'
+        : 'Delete section "' + sec.title + '"?';
+      if (!confirm(msg)) return;
+      try {
+        await tvSupaDelete('training_sections', sec.id);
+        tvSections = tvSections.filter(s => s.id !== sec.id);
+        tvVideos = tvVideos.filter(v => v.section_id !== sec.id);
+        if (currentVideoSlug && !tvVideos.find(v => v.slug === currentVideoSlug)) {
+          currentVideoSlug = null;
+          tvPlayer.src = '';
+          tvTitle.textContent = '';
+          Object.values(tvResources).forEach(el => el && el.classList.remove('visible'));
+        }
+        renderSidebar();
+      } catch (e) { alert('Delete failed: ' + e.message); }
+    }
+    async function tvDeleteVideo(vid) {
+      if (!confirm('Delete video "' + vid.title + '"?')) return;
+      try {
+        await tvSupaDelete('training_videos', vid.id);
+        tvVideos = tvVideos.filter(v => v.id !== vid.id);
+        if (currentVideoSlug === vid.slug) {
+          currentVideoSlug = null;
+          tvPlayer.src = '';
+          tvTitle.textContent = '';
+          Object.values(tvResources).forEach(el => el && el.classList.remove('visible'));
+        }
+        renderSidebar();
+      } catch (e) { alert('Delete failed: ' + e.message); }
+    }
+
+    async function tvMoveSection(id, dir) {
+      const sorted = tvSections.slice().sort((a, b) => a.sort_order - b.sort_order);
+      const idx = sorted.findIndex(s => s.id === id);
+      const swapIdx = idx + dir;
+      if (idx < 0 || swapIdx < 0 || swapIdx >= sorted.length) return;
+      const a = sorted[idx], b = sorted[swapIdx];
+      const aOrder = a.sort_order, bOrder = b.sort_order;
+      try {
+        await Promise.all([
+          tvSupaPatch('training_sections', a.id, { sort_order: bOrder }),
+          tvSupaPatch('training_sections', b.id, { sort_order: aOrder })
+        ]);
+        a.sort_order = bOrder; b.sort_order = aOrder;
+        renderSidebar();
+      } catch (e) { alert('Reorder failed: ' + e.message); }
+    }
+    async function tvMoveVideo(id, dir) {
+      const vid = tvVideos.find(v => v.id === id);
+      if (!vid) return;
+      const sorted = tvVideos.filter(v => v.section_id === vid.section_id)
+                             .sort((a, b) => a.sort_order - b.sort_order);
+      const idx = sorted.findIndex(v => v.id === id);
+      const swapIdx = idx + dir;
+      if (swapIdx < 0 || swapIdx >= sorted.length) return;
+      const a = sorted[idx], b = sorted[swapIdx];
+      const aOrder = a.sort_order, bOrder = b.sort_order;
+      try {
+        await Promise.all([
+          tvSupaPatch('training_videos', a.id, { sort_order: bOrder }),
+          tvSupaPatch('training_videos', b.id, { sort_order: aOrder })
+        ]);
+        a.sort_order = bOrder; b.sort_order = aOrder;
+        renderSidebar();
+      } catch (e) { alert('Reorder failed: ' + e.message); }
+    }
+
+    // ─── BOOT ───
+    loadTrainingContent().then(() => {
+      if (currentUser) loadTrainingState();
+    });
   </script>
 </body>
 </html>
