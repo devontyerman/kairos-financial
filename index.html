@@ -15,81 +15,6 @@
       z-index: 1;
     }
 
-    .home-intro {
-      text-align: center;
-      max-width: 640px;
-      margin: 0 auto;
-      padding: 0 1.5rem 5rem;
-    }
-
-    .home-intro-divider {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      margin-bottom: 3rem;
-    }
-
-    .home-intro-divider::before,
-    .home-intro-divider::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, var(--border-strong));
-    }
-
-    .home-intro-divider::after {
-      background: linear-gradient(90deg, var(--border-strong), transparent);
-    }
-
-    .section-nav-grid {
-      padding: 0 0 6rem;
-    }
-
-    .section-carriers {
-      background: var(--bg-surface);
-      padding: 5rem 0;
-      border-top: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-    }
-
-    .carriers-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 1rem;
-    }
-
-    .carrier-pill {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 1rem 1.25rem;
-      background: var(--bg-elevated);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: var(--text-secondary);
-      text-decoration: none;
-      transition: var(--transition);
-      letter-spacing: 0.02em;
-    }
-
-    .carrier-pill:hover {
-      background: var(--bg-hover);
-      border-color: var(--gold-border);
-      color: var(--gold);
-    }
-
-    .carrier-pill-arrow {
-      color: var(--gold-dim);
-      font-size: 0.9rem;
-      transition: transform 0.2s ease;
-    }
-
-    .carrier-pill:hover .carrier-pill-arrow {
-      transform: translateX(3px);
-    }
-
     /* Password gate — hero-style layout */
     .gate-video-wrapper {
       position: absolute;
@@ -219,28 +144,6 @@
       </a>
 
       <ul class="nav-links">
-        <li><a href="saleshub.html#training" class="nav-link">Training Videos</a></li>
-
-        <li>
-          <a class="nav-link" href="#" onclick="return false;">
-            Carriers
-            <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="2 4 6 8 10 4"/>
-            </svg>
-          </a>
-          <div class="nav-dropdown">
-            <a href="carriers/aetna.html">Aetna</a>
-            <a href="carriers/american-amicable.html">American Amicable</a>
-            <a href="carriers/americo.html">Americo</a>
-            <a href="carriers/corebridge.html">Corebridge</a>
-            <a href="carriers/ethos.html">Ethos</a>
-            <a href="carriers/foresters.html">Foresters</a>
-            <a href="carriers/instabrain.html">Instabrain</a>
-            <a href="carriers/mutual-of-omaha.html">Mutual of Omaha</a>
-            <a href="carriers/transamerica.html">Transamerica</a>
-          </div>
-        </li>
-
         <li><a href="https://app.insurancetoolkits.com/" class="nav-link" target="_blank" rel="noopener noreferrer">Insurance Toolkits</a></li>
         <li><a href="https://ai.kairos-financial.com/" class="nav-link" target="_blank" rel="noopener noreferrer">AI Training</a></li>
       </ul>
@@ -253,22 +156,6 @@
 
   <!-- Mobile nav -->
   <div class="nav-mobile" id="mobileNav">
-    <a href="saleshub.html#training">Training Videos</a>
-    <button class="nav-mobile-carriers-toggle" id="mobileCarriersToggle">
-      Carriers
-      <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 4 6 8 10 4"/></svg>
-    </button>
-    <div class="nav-mobile-carriers-list" id="mobileCarriersList">
-      <a href="carriers/aetna.html">Aetna</a>
-      <a href="carriers/american-amicable.html">American Amicable</a>
-      <a href="carriers/americo.html">Americo</a>
-      <a href="carriers/corebridge.html">Corebridge</a>
-      <a href="carriers/ethos.html">Ethos</a>
-      <a href="carriers/foresters.html">Foresters</a>
-      <a href="carriers/instabrain.html">Instabrain</a>
-      <a href="carriers/mutual-of-omaha.html">Mutual of Omaha</a>
-      <a href="carriers/transamerica.html">Transamerica</a>
-    </div>
     <a href="https://app.insurancetoolkits.com/" target="_blank" rel="noopener noreferrer">Insurance Toolkits</a>
     <a href="https://ai.kairos-financial.com/" target="_blank" rel="noopener noreferrer">AI Training</a>
   </div>
@@ -318,124 +205,6 @@
   <!-- ============================================================
        MAIN CONTENT
   ============================================================= -->
-  <div class="home-sections" id="resources">
-
-    <!-- Quick Nav Cards -->
-    <section class="section section-nav-grid dark-section">
-      <div class="container">
-        <div class="section-header fade-in">
-          <span class="section-eyebrow">Agent Resources</span>
-          <h2 class="section-title">Everything You Need</h2>
-          <p class="section-desc">Your complete hub for training, carrier contacts, and sales tools.</p>
-        </div>
-
-        <div class="feature-grid">
-          <a href="saleshub.html#training" class="feature-card fade-in">
-            <div class="feature-icon">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polygon points="5 3 19 12 5 21 5 3"/>
-              </svg>
-            </div>
-            <div class="feature-title">Training Videos</div>
-            <p class="feature-desc">Step through the complete onboarding video course. Everything you need to get started selling.</p>
-            <span class="feature-arrow">→</span>
-          </a>
-
-          <a href="insurance-toolkits.html" class="feature-card fade-in">
-            <div class="feature-icon">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/>
-              </svg>
-            </div>
-            <div class="feature-title">Insurance Toolkits</div>
-            <p class="feature-desc">Access quoting tools, comparison engines, and sales resources to close more business.</p>
-            <span class="feature-arrow">→</span>
-          </a>
-
-          <a href="agent-resources.html" class="feature-card fade-in">
-            <div class="feature-icon">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/>
-                <path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/>
-              </svg>
-            </div>
-            <div class="feature-title">Agent Resources</div>
-            <p class="feature-desc">Curated links to forms, portals, and external resources to support your day-to-day work.</p>
-            <span class="feature-arrow">→</span>
-          </a>
-
-          <a href="lead-vendors.html" class="feature-card fade-in">
-            <div class="feature-icon">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
-                <circle cx="9" cy="7" r="4"/>
-                <path d="M23 21v-2a4 4 0 00-3-3.87"/>
-                <path d="M16 3.13a4 4 0 010 7.75"/>
-              </svg>
-            </div>
-            <div class="feature-title">Lead Vendors</div>
-            <p class="feature-desc">Find and connect with approved lead vendors to keep your pipeline full and growing.</p>
-            <span class="feature-arrow">→</span>
-          </a>
-
-          <a href="agent-compensation.html" class="feature-card fade-in">
-            <div class="feature-icon">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="12" y1="1" x2="12" y2="23"/>
-                <path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>
-              </svg>
-            </div>
-            <div class="feature-title">Agent Compensation</div>
-            <p class="feature-desc">View producer and builder commission levels, bonuses, and product compensation rates.</p>
-            <span class="feature-arrow">→</span>
-          </a>
-
-          <a href="https://ai.kairos-financial.com/" target="_blank" rel="noopener noreferrer" class="feature-card fade-in">
-            <div class="feature-icon">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M12 2a4 4 0 014 4v1a1 1 0 001 1h1a4 4 0 010 8h-1a1 1 0 00-1 1v1a4 4 0 01-8 0v-1a1 1 0 00-1-1H6a4 4 0 010-8h1a1 1 0 001-1V6a4 4 0 014-4z"/>
-              </svg>
-            </div>
-            <div class="feature-title">AI Training Bot</div>
-            <p class="feature-desc">Get instant answers to insurance questions with our AI-powered assistant.</p>
-            <span class="feature-arrow">→</span>
-          </a>
-
-          <a href="carriers/index.html" class="feature-card fade-in">
-            <div class="feature-icon">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
-                <path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/>
-              </svg>
-            </div>
-            <div class="feature-title">Carrier Directory</div>
-            <p class="feature-desc">Phone numbers and contact info for every carrier in the Kairos network.</p>
-            <span class="feature-arrow">→</span>
-          </a>
-
-          <a href="https://app.kairos-financial.com/" target="_blank" rel="noopener noreferrer" class="feature-card fade-in">
-            <div class="feature-icon">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4"/>
-                <polyline points="10 17 15 12 10 7"/>
-                <line x1="15" y1="12" x2="3" y2="12"/>
-              </svg>
-            </div>
-            <div class="feature-title">Log Into CRM</div>
-            <p class="feature-desc">Access your Kairos Financial CRM dashboard to manage leads and your pipeline.</p>
-            <span class="feature-arrow">→</span>
-          </a>
-        </div>
-      </div>
-    </section>
-
-
-  </div>
-
-  <!-- Footer -->
-  <footer class="footer">
-    <p>&copy; 2026 <span>Kairos Financial</span>. Agent Portal — Internal Use Only.</p>
-  </footer>
 
   </div><!-- /siteContent -->
 
