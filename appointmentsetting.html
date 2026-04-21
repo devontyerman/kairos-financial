@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Appointment Setting · Kairos Financial</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { min-height: 100vh; }
+    body {
+      font-family: 'Inter', sans-serif;
+      color: #1a1a1a;
+      background: #f5f6f8;
+      background-image: radial-gradient(1200px 800px at 10% -10%, rgba(189,247,54,0.18), transparent 55%),
+                        radial-gradient(900px 700px at 90% 110%, rgba(37,99,235,0.10), transparent 55%);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+    h1, h2, h3, h4 { font-family: 'Plus Jakarta Sans', sans-serif; }
+
+    /* ── Login view ── */
+    .as-login {
+      display: flex; align-items: center; justify-content: center;
+      min-height: 100vh; padding: 2rem 1rem;
+    }
+    .as-login-card {
+      width: 100%; max-width: 420px;
+      background: #ffffff;
+      border: 1px solid #e5e5ea;
+      border-radius: 20px;
+      padding: 2.25rem 2rem;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.08);
+    }
+    .as-brand {
+      display: flex; align-items: center; gap: 0.55rem;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 900;
+      font-size: 1rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 1.25rem;
+    }
+    .as-brand-dot { width: 10px; height: 10px; border-radius: 50%; background: #BDF736; box-shadow: 0 0 12px rgba(189,247,54,0.55); }
+    .as-login-card h1 { font-size: 1.5rem; font-weight: 900; margin-bottom: 0.35rem; }
+    .as-login-card p.sub { font-size: 0.85rem; color: #666; margin-bottom: 1.5rem; }
+
+    .as-tabs { display: flex; gap: 0.35rem; margin-bottom: 1.25rem; padding: 0.25rem; background: #f3f4f6; border-radius: 100px; }
+    .as-tab {
+      flex: 1;
+      padding: 0.55rem 0.8rem;
+      font-family: inherit; font-size: 0.8rem; font-weight: 700;
+      color: #666; background: transparent;
+      border: none; border-radius: 100px; cursor: pointer;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+    .as-tab:hover { color: #1a1a1a; }
+    .as-tab.active { background: #ffffff; color: #1a1a1a; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+
+    .as-field { display: flex; flex-direction: column; gap: 0.35rem; margin-bottom: 0.9rem; }
+    .as-label { font-size: 0.72rem; font-weight: 700; color: #555; text-transform: uppercase; letter-spacing: 0.08em; }
+    .as-input {
+      padding: 0.7rem 0.9rem;
+      font-family: inherit; font-size: 0.92rem;
+      background: #ffffff;
+      color: #1a1a1a;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+    .as-input:focus {
+      outline: none;
+      border-color: #BDF736;
+      box-shadow: 0 0 0 3px rgba(189,247,54,0.25);
+    }
+    .as-btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      gap: 0.5rem;
+      padding: 0.8rem 1.4rem;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.9rem; font-weight: 800;
+      background: #1a1a1a; color: #ffffff;
+      border: none; border-radius: 100px;
+      cursor: pointer;
+      transition: background 0.15s ease, transform 0.12s ease, box-shadow 0.15s ease;
+    }
+    .as-btn:hover { background: #333; transform: translateY(-1px); }
+    .as-btn:active { transform: translateY(0); }
+    .as-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .as-btn.primary {
+      background: #15803d;
+      box-shadow: 0 2px 10px rgba(21,128,61,0.25);
+    }
+    .as-btn.primary:hover { background: #166534; box-shadow: 0 4px 14px rgba(21,128,61,0.35); }
+    .as-btn.full { width: 100%; }
+
+    .as-msg { margin-top: 0.75rem; font-size: 0.82rem; text-align: center; display: none; }
+    .as-msg.error { color: #dc2626; display: block; }
+    .as-msg.success { color: #16a34a; display: block; }
+
+    /* ── App view ── */
+    .as-app { display: none; max-width: 960px; margin: 0 auto; padding: 1.5rem 1.25rem 4rem; }
+    .as-app.visible { display: block; }
+
+    .as-topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 0.75rem;
+      padding: 1.1rem 1.35rem;
+      background: #ffffff;
+      border: 1px solid #e5e5ea;
+      border-radius: 16px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+      margin-bottom: 1.25rem;
+    }
+    .as-topbar h1 {
+      font-size: 1.05rem; font-weight: 900;
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    .as-topbar-right { display: flex; align-items: center; gap: 0.85rem; font-size: 0.82rem; color: #555; }
+    .as-logout {
+      font-family: inherit;
+      font-size: 0.75rem; font-weight: 700;
+      color: #dc2626; background: transparent; border: none; cursor: pointer;
+      padding: 0.35rem 0.7rem; border-radius: 8px;
+    }
+    .as-logout:hover { background: #fef2f2; }
+
+    .as-card {
+      background: #ffffff;
+      border: 1px solid #e5e5ea;
+      border-radius: 16px;
+      padding: 1.5rem 1.75rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+      margin-bottom: 1.25rem;
+    }
+    .as-card-title {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.95rem; font-weight: 800;
+      margin-bottom: 1rem;
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    .as-card-title svg { color: #4a4a5a; }
+
+    /* KPI form */
+    .as-kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 0.85rem;
+      margin-bottom: 1rem;
+    }
+
+    /* Stats */
+    .as-filters { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 1rem; }
+    .as-filter {
+      padding: 0.4rem 0.9rem;
+      font-family: inherit; font-size: 0.75rem; font-weight: 700;
+      background: #f3f4f6; color: #555;
+      border: 1px solid #e5e5ea; border-radius: 100px;
+      cursor: pointer;
+      transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+    }
+    .as-filter:hover { background: #e9ecef; }
+    .as-filter.active { background: #1a1a1a; color: #ffffff; border-color: #1a1a1a; }
+
+    .as-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+    }
+    .as-stat {
+      background: #fafafa;
+      border: 1px solid #e5e5ea;
+      border-radius: 12px;
+      padding: 0.9rem 1rem;
+    }
+    .as-stat-label { font-size: 0.68rem; font-weight: 700; color: #888; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.35rem; }
+    .as-stat-value { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.6rem; font-weight: 900; color: #1a1a1a; line-height: 1; margin-bottom: 0.3rem; }
+    .as-stat-sub { font-size: 0.7rem; color: #888; }
+
+    /* Conversion bars — always green */
+    .as-conv-row { display: grid; grid-template-columns: 180px 1fr 70px; gap: 0.75rem; align-items: center; margin-bottom: 0.55rem; }
+    .as-conv-label { font-size: 0.78rem; font-weight: 600; color: #444; }
+    .as-conv-track {
+      height: 10px; background: #eef2ee; border-radius: 100px; overflow: hidden;
+    }
+    .as-conv-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #A2F10E, #15803d);
+      border-radius: 100px;
+      transition: width 0.4s ease;
+    }
+    .as-conv-pct { font-size: 0.78rem; font-weight: 800; color: #15803d; text-align: right; }
+    @media (max-width: 560px) {
+      .as-conv-row { grid-template-columns: 1fr 60px; grid-template-rows: auto auto; }
+      .as-conv-label { grid-column: 1 / -1; }
+      .as-conv-track { grid-column: 1 / 2; }
+      .as-conv-pct { grid-column: 2 / 3; }
+    }
+
+    /* Daily table */
+    .as-table-wrap { overflow-x: auto; }
+    table.as-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    table.as-table th {
+      text-align: left;
+      font-size: 0.68rem; font-weight: 800; color: #888;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      padding: 0.55rem 0.75rem; border-bottom: 1px solid #e5e5ea;
+    }
+    table.as-table td {
+      padding: 0.65rem 0.75rem; border-bottom: 1px solid #f0f0f2;
+      color: #1a1a1a;
+    }
+    table.as-table tr:last-child td { border-bottom: none; }
+    table.as-table tr:hover td { background: #fafafa; }
+    td.num { font-variant-numeric: tabular-nums; font-weight: 600; }
+
+    .as-empty { padding: 1.5rem 0; text-align: center; color: #888; font-size: 0.85rem; }
+
+    @media (max-width: 600px) {
+      .as-card { padding: 1.15rem 1rem; }
+      .as-topbar { padding: 0.9rem 1rem; }
+      .as-login-card { padding: 1.75rem 1.25rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ═══ LOGIN VIEW ═══ -->
+  <div class="as-login" id="loginView">
+    <div class="as-login-card">
+      <div class="as-brand">
+        <span class="as-brand-dot"></span>
+        <span>Kairos · Setter</span>
+      </div>
+      <h1>Appointment Setting</h1>
+      <p class="sub" id="authSub">Log in to submit your daily KPIs.</p>
+
+      <div class="as-tabs" role="tablist">
+        <button type="button" class="as-tab active" data-tab="login" role="tab">Log In</button>
+        <button type="button" class="as-tab" data-tab="signup" role="tab">Sign Up</button>
+      </div>
+
+      <form id="loginForm" autocomplete="on">
+        <div class="as-field">
+          <label class="as-label" for="loginEmail">Email</label>
+          <input class="as-input" id="loginEmail" type="email" autocomplete="username" required />
+        </div>
+        <div class="as-field">
+          <label class="as-label" for="loginPassword">Password</label>
+          <input class="as-input" id="loginPassword" type="password" autocomplete="current-password" required />
+        </div>
+        <button type="submit" class="as-btn full" id="loginBtn">Log In</button>
+        <div class="as-msg" id="loginMsg"></div>
+      </form>
+
+      <form id="signupForm" autocomplete="on" style="display:none;">
+        <div class="as-field">
+          <label class="as-label" for="signupName">Full Name</label>
+          <input class="as-input" id="signupName" type="text" autocomplete="name" placeholder="First Last" required />
+        </div>
+        <div class="as-field">
+          <label class="as-label" for="signupEmail">Email</label>
+          <input class="as-input" id="signupEmail" type="email" autocomplete="email" required />
+        </div>
+        <div class="as-field">
+          <label class="as-label" for="signupPassword">Password</label>
+          <input class="as-input" id="signupPassword" type="password" autocomplete="new-password" placeholder="At least 6 characters" required />
+        </div>
+        <button type="submit" class="as-btn primary full" id="signupBtn">Create Account</button>
+        <div class="as-msg" id="signupMsg"></div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ═══ APP VIEW ═══ -->
+  <div class="as-app" id="appView">
+    <div class="as-topbar">
+      <h1><span class="as-brand-dot"></span> Appointment Setting</h1>
+      <div class="as-topbar-right">
+        <span id="whoami"></span>
+        <button type="button" class="as-logout" id="logoutBtn">Log Out</button>
+      </div>
+    </div>
+
+    <!-- KPI FORM -->
+    <div class="as-card">
+      <div class="as-card-title">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        Submit Daily KPIs
+      </div>
+      <form id="kpiForm">
+        <div class="as-kpi-grid">
+          <div class="as-field">
+            <label class="as-label" for="kpiDate">Date</label>
+            <input class="as-input" id="kpiDate" type="date" required />
+          </div>
+          <div class="as-field">
+            <label class="as-label" for="kpiDials">Dials</label>
+            <input class="as-input" id="kpiDials" type="number" min="0" placeholder="0" />
+          </div>
+          <div class="as-field">
+            <label class="as-label" for="kpiAnswers">Answers</label>
+            <input class="as-input" id="kpiAnswers" type="number" min="0" placeholder="0" />
+          </div>
+          <div class="as-field">
+            <label class="as-label" for="kpiAppointments">Appointments</label>
+            <input class="as-input" id="kpiAppointments" type="number" min="0" placeholder="0" />
+          </div>
+          <div class="as-field">
+            <label class="as-label" for="kpiDeals">Deals</label>
+            <input class="as-input" id="kpiDeals" type="number" min="0" placeholder="0" />
+          </div>
+        </div>
+        <button type="submit" class="as-btn primary" id="kpiSubmitBtn">Submit KPIs</button>
+        <div class="as-msg" id="kpiMsg"></div>
+      </form>
+    </div>
+
+    <!-- STATS + CONVERSIONS -->
+    <div class="as-card">
+      <div class="as-card-title">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        My Stats
+      </div>
+      <div class="as-filters" id="rangeFilters">
+        <button type="button" class="as-filter active" data-range="wtd">WTD</button>
+        <button type="button" class="as-filter" data-range="mtd">MTD</button>
+        <button type="button" class="as-filter" data-range="last7">Last 7 Days</button>
+        <button type="button" class="as-filter" data-range="last30">Last 30 Days</button>
+      </div>
+
+      <div class="as-stats" id="statCards"></div>
+
+      <div style="margin-top:0.25rem;margin-bottom:0.5rem;font-size:0.72rem;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;color:#666;">Conversion Rates</div>
+      <div id="convRows"></div>
+    </div>
+
+    <!-- DAILY BREAKDOWN -->
+    <div class="as-card">
+      <div class="as-card-title">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        Daily Breakdown
+      </div>
+      <div class="as-table-wrap">
+        <table class="as-table" id="dailyTable">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Day</th>
+              <th style="text-align:right;">Dials</th>
+              <th style="text-align:right;">Answers</th>
+              <th style="text-align:right;">Appointments</th>
+            </tr>
+          </thead>
+          <tbody id="dailyBody"></tbody>
+        </table>
+      </div>
+      <div class="as-empty" id="dailyEmpty" style="display:none;">No KPI entries yet. Submit your first day above.</div>
+    </div>
+  </div>
+
+  <script>
+    const SUPABASE_URL = 'https://mrjlbpyqvfvmegjyovzq.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_V4kzfIHC-GRTtdoJwJRZMA__2j-DUh-';
+    const TOKEN_KEY = 'setter_access_token';
+    const REFRESH_KEY = 'setter_refresh_token';
+
+    let currentUser = null;
+    let accessToken = null;
+    let allKpiRows = [];
+    let currentRange = 'wtd';
+
+    // ── Helpers
+    const $ = (id) => document.getElementById(id);
+    const pad = (n) => String(n).padStart(2, '0');
+    const todayYMD = () => {
+      const d = new Date();
+      return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+    };
+    function setMsg(el, text, type) {
+      el.textContent = text;
+      el.className = 'as-msg ' + (type || 'error');
+    }
+    function clearMsg(el) {
+      el.textContent = '';
+      el.className = 'as-msg';
+    }
+
+    // ── Views
+    function showLogin() {
+      $('loginView').style.display = 'flex';
+      $('appView').classList.remove('visible');
+    }
+    function showApp() {
+      $('loginView').style.display = 'none';
+      $('appView').classList.add('visible');
+      const name = (currentUser && (currentUser.user_metadata?.name || currentUser.email)) || '';
+      $('whoami').textContent = name;
+    }
+
+    // ── Session
+    async function checkSession() {
+      const token = localStorage.getItem(TOKEN_KEY);
+      const refresh = localStorage.getItem(REFRESH_KEY);
+      if (!token) { showLogin(); return; }
+      try {
+        const res = await fetch(SUPABASE_URL + '/auth/v1/user', {
+          headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + token }
+        });
+        if (res.ok) {
+          currentUser = await res.json();
+          accessToken = token;
+          onAuthed();
+          return;
+        }
+        // Try refresh
+        if (refresh) {
+          const rr = await fetch(SUPABASE_URL + '/auth/v1/token?grant_type=refresh_token', {
+            method: 'POST',
+            headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ refresh_token: refresh })
+          });
+          if (rr.ok) {
+            const rj = await rr.json();
+            if (rj.access_token) {
+              localStorage.setItem(TOKEN_KEY, rj.access_token);
+              localStorage.setItem(REFRESH_KEY, rj.refresh_token);
+              accessToken = rj.access_token;
+              currentUser = rj.user;
+              onAuthed();
+              return;
+            }
+          }
+        }
+      } catch (e) { /* fall through to login */ }
+      localStorage.removeItem(TOKEN_KEY);
+      localStorage.removeItem(REFRESH_KEY);
+      showLogin();
+    }
+
+    function onAuthed() {
+      showApp();
+      $('kpiDate').value = todayYMD();
+      $('kpiDate').max = todayYMD();
+      loadKpis();
+    }
+
+    // ── Tab switching (Log In / Sign Up)
+    document.querySelectorAll('.as-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        const mode = tab.dataset.tab;
+        document.querySelectorAll('.as-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        $('loginForm').style.display = mode === 'login' ? 'block' : 'none';
+        $('signupForm').style.display = mode === 'signup' ? 'block' : 'none';
+        $('authSub').textContent = mode === 'signup'
+          ? 'Create a setter account to start logging KPIs.'
+          : 'Log in to submit your daily KPIs.';
+        clearMsg($('loginMsg'));
+        clearMsg($('signupMsg'));
+      });
+    });
+
+    // ── Sign up
+    $('signupForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = $('signupBtn');
+      const msgEl = $('signupMsg');
+      clearMsg(msgEl);
+
+      const rawName = ($('signupName').value || '').trim();
+      const email = ($('signupEmail').value || '').trim();
+      const password = $('signupPassword').value || '';
+
+      if (!rawName || !email || !password) {
+        setMsg(msgEl, 'Please fill out all fields.', 'error');
+        return;
+      }
+      const nameParts = rawName.split(/\s+/).filter(Boolean);
+      if (nameParts.length < 2) {
+        setMsg(msgEl, 'Please enter your first and last name.', 'error');
+        return;
+      }
+      const name = nameParts.map(p => p.charAt(0).toUpperCase() + p.slice(1).toLowerCase()).join(' ');
+      $('signupName').value = name;
+      if (password.length < 6) {
+        setMsg(msgEl, 'Password must be at least 6 characters.', 'error');
+        return;
+      }
+      if (!/^\S+@\S+\.\S+$/.test(email)) {
+        setMsg(msgEl, 'Please enter a valid email address.', 'error');
+        return;
+      }
+
+      btn.disabled = true;
+      try {
+        const res = await fetch(SUPABASE_URL + '/auth/v1/signup', {
+          method: 'POST',
+          headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password, data: { name } })
+        });
+        let result = {};
+        try { result = await res.json(); } catch (_) {}
+
+        if (res.ok && !result.error && !result.error_description && !result.msg) {
+          const newUserId = (result.user && result.user.id) || result.id;
+          // Fallback insert into agent_profiles so the admin dropdown picks them up.
+          // The DB trigger handle_new_user() should do this, but the fallback is
+          // a no-op if a row already exists (ignore-duplicates).
+          if (newUserId && result.access_token) {
+            try {
+              await fetch(SUPABASE_URL + '/rest/v1/agent_profiles', {
+                method: 'POST',
+                headers: {
+                  'apikey': SUPABASE_KEY,
+                  'Authorization': 'Bearer ' + result.access_token,
+                  'Content-Type': 'application/json',
+                  'Prefer': 'return=minimal,resolution=ignore-duplicates'
+                },
+                body: JSON.stringify({ user_id: newUserId, agent_name: name })
+              });
+            } catch (_) { /* trigger is source of truth */ }
+          }
+
+          if (result.access_token) {
+            accessToken = result.access_token;
+            currentUser = result.user;
+            localStorage.setItem(TOKEN_KEY, result.access_token);
+            localStorage.setItem(REFRESH_KEY, result.refresh_token);
+            e.target.reset();
+            onAuthed();
+          } else {
+            setMsg(msgEl, 'Account created. Check your email to confirm, then log in.', 'success');
+          }
+        } else {
+          const m = result.error_description || result.msg || result.error || ('Sign-up failed (HTTP ' + res.status + ').');
+          setMsg(msgEl, m, 'error');
+        }
+      } catch (err) {
+        setMsg(msgEl, 'Connection error. Please try again.', 'error');
+      }
+      btn.disabled = false;
+    });
+
+    // ── Login
+    $('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = $('loginBtn');
+      const msgEl = $('loginMsg');
+      clearMsg(msgEl);
+      btn.disabled = true;
+      const email = $('loginEmail').value.trim();
+      const password = $('loginPassword').value;
+      try {
+        const res = await fetch(SUPABASE_URL + '/auth/v1/token?grant_type=password', {
+          method: 'POST',
+          headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        let result = {};
+        try { result = await res.json(); } catch (_) {}
+        if (res.ok && result.access_token) {
+          accessToken = result.access_token;
+          currentUser = result.user;
+          localStorage.setItem(TOKEN_KEY, result.access_token);
+          localStorage.setItem(REFRESH_KEY, result.refresh_token);
+          onAuthed();
+        } else {
+          const m = result.error_description || result.msg || result.error || ('Invalid email or password (HTTP ' + res.status + ').');
+          setMsg(msgEl, m, 'error');
+        }
+      } catch (err) {
+        setMsg(msgEl, 'Connection error. Please try again.', 'error');
+      }
+      btn.disabled = false;
+    });
+
+    // ── Logout
+    $('logoutBtn').addEventListener('click', () => {
+      localStorage.removeItem(TOKEN_KEY);
+      localStorage.removeItem(REFRESH_KEY);
+      currentUser = null;
+      accessToken = null;
+      allKpiRows = [];
+      $('loginEmail').value = '';
+      $('loginPassword').value = '';
+      showLogin();
+    });
+
+    // ── KPI submit
+    $('kpiForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = $('kpiSubmitBtn');
+      const msgEl = $('kpiMsg');
+      clearMsg(msgEl);
+      if (!currentUser) { setMsg(msgEl, 'You must be signed in.', 'error'); return; }
+      btn.disabled = true;
+
+      const dateVal = $('kpiDate').value;
+      const payload = {
+        user_id: currentUser.id,
+        sales_rep: (currentUser.user_metadata && currentUser.user_metadata.name) || currentUser.email,
+        kpi_date: dateVal,
+        dials: parseInt($('kpiDials').value) || 0,
+        answers: parseInt($('kpiAnswers').value) || 0,
+        appointments: parseInt($('kpiAppointments').value) || 0,
+        deals: parseInt($('kpiDeals').value) || 0,
+        updated_at: new Date().toISOString()
+      };
+
+      const hdrs = {
+        'apikey': SUPABASE_KEY,
+        'Authorization': 'Bearer ' + (accessToken || SUPABASE_KEY),
+        'Content-Type': 'application/json'
+      };
+
+      try {
+        // Try PATCH (update existing row for this user + date)
+        const patchRes = await fetch(SUPABASE_URL + '/rest/v1/daily_kpis?user_id=eq.' + currentUser.id + '&kpi_date=eq.' + dateVal, {
+          method: 'PATCH',
+          headers: { ...hdrs, 'Prefer': 'return=representation' },
+          body: JSON.stringify(payload)
+        });
+        const patchResult = await patchRes.json();
+        if (!patchResult || patchResult.length === 0) {
+          // Insert if no row existed
+          const insRes = await fetch(SUPABASE_URL + '/rest/v1/daily_kpis', {
+            method: 'POST',
+            headers: { ...hdrs, 'Prefer': 'return=minimal' },
+            body: JSON.stringify(payload)
+          });
+          if (!insRes.ok) throw new Error(await insRes.text());
+        }
+
+        // Reset numeric inputs but keep date
+        ['kpiDials','kpiAnswers','kpiAppointments','kpiDeals'].forEach(id => $(id).value = '');
+        setMsg(msgEl, 'KPIs saved for ' + dateVal + '.', 'success');
+        await loadKpis();
+      } catch (err) {
+        setMsg(msgEl, 'Error saving: ' + (err.message || 'unknown'), 'error');
+      }
+      btn.disabled = false;
+    });
+
+    // ── Load KPIs
+    async function loadKpis() {
+      try {
+        const res = await fetch(SUPABASE_URL + '/rest/v1/daily_kpis?user_id=eq.' + currentUser.id + '&order=kpi_date.desc&select=kpi_date,dials,answers,appointments,deals', {
+          headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + (accessToken || SUPABASE_KEY) }
+        });
+        allKpiRows = await res.json();
+      } catch (e) {
+        allKpiRows = [];
+      }
+      renderStats();
+      renderDaily();
+    }
+
+    // ── Range filter
+    document.querySelectorAll('[data-range]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('[data-range]').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentRange = btn.dataset.range;
+        renderStats();
+      });
+    });
+
+    function rangeBounds() {
+      const now = new Date();
+      now.setHours(23, 59, 59, 999);
+      const startOfWeek = new Date(now);
+      startOfWeek.setDate(now.getDate() - now.getDay());
+      startOfWeek.setHours(0, 0, 0, 0);
+      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+      const last7 = new Date(now); last7.setDate(now.getDate() - 6); last7.setHours(0, 0, 0, 0);
+      const last30 = new Date(now); last30.setDate(now.getDate() - 29); last30.setHours(0, 0, 0, 0);
+      if (currentRange === 'mtd') return { start: startOfMonth, end: now, label: 'Month to date' };
+      if (currentRange === 'last7') return { start: last7, end: now, label: 'Last 7 days' };
+      if (currentRange === 'last30') return { start: last30, end: now, label: 'Last 30 days' };
+      return { start: startOfWeek, end: now, label: 'Week to date' };
+    }
+
+    function renderStats() {
+      const { start, end, label } = rangeBounds();
+      const rows = allKpiRows.filter(r => {
+        const d = new Date(r.kpi_date + 'T12:00:00');
+        return d >= start && d <= end;
+      });
+      const totalDials = rows.reduce((s, r) => s + (r.dials || 0), 0);
+      const totalAnswers = rows.reduce((s, r) => s + (r.answers || 0), 0);
+      const totalAppts = rows.reduce((s, r) => s + (r.appointments || 0), 0);
+      const totalDeals = rows.reduce((s, r) => s + (r.deals || 0), 0);
+      const days = rows.length || 1;
+
+      function statCard(lbl, val, sub) {
+        return '<div class="as-stat"><div class="as-stat-label">' + lbl + '</div><div class="as-stat-value">' + val + '</div><div class="as-stat-sub">' + sub + '</div></div>';
+      }
+      $('statCards').innerHTML =
+        statCard('Dials', totalDials.toLocaleString(), label)
+        + statCard('Answers', totalAnswers.toLocaleString(), Math.round(totalAnswers / days) + ' / day')
+        + statCard('Appointments', totalAppts.toLocaleString(), Math.round(totalAppts / days * 10) / 10 + ' / day');
+
+      // Conversion rates
+      const d2a = totalDials > 0 ? (totalAnswers / totalDials * 100) : 0;
+      const a2p = totalAnswers > 0 ? (totalAppts / totalAnswers * 100) : 0;
+      const p2d = totalAppts > 0 ? (totalDeals / totalAppts * 100) : 0;
+
+      function convRow(lbl, pct) {
+        const clamped = Math.min(100, Math.max(0, pct));
+        return '<div class="as-conv-row">'
+          + '<div class="as-conv-label">' + lbl + '</div>'
+          + '<div class="as-conv-track"><div class="as-conv-fill" style="width:' + clamped.toFixed(1) + '%"></div></div>'
+          + '<div class="as-conv-pct">' + pct.toFixed(1) + '%</div>'
+          + '</div>';
+      }
+      $('convRows').innerHTML =
+        convRow('Dials → Answers', d2a)
+        + convRow('Answers → Appointments', a2p)
+        + convRow('Appointments → Deals', p2d);
+    }
+
+    function renderDaily() {
+      const body = $('dailyBody');
+      const empty = $('dailyEmpty');
+      if (!allKpiRows.length) {
+        body.innerHTML = '';
+        empty.style.display = 'block';
+        return;
+      }
+      empty.style.display = 'none';
+      const dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+      const rowsHtml = allKpiRows.slice(0, 30).map(r => {
+        const d = new Date(r.kpi_date + 'T12:00:00');
+        const pretty = (d.getMonth() + 1) + '/' + d.getDate() + '/' + String(d.getFullYear()).slice(-2);
+        return '<tr>'
+          + '<td>' + pretty + '</td>'
+          + '<td>' + dayNames[d.getDay()] + '</td>'
+          + '<td class="num" style="text-align:right;">' + (r.dials || 0) + '</td>'
+          + '<td class="num" style="text-align:right;">' + (r.answers || 0) + '</td>'
+          + '<td class="num" style="text-align:right;">' + (r.appointments || 0) + '</td>'
+          + '</tr>';
+      }).join('');
+      body.innerHTML = rowsHtml;
+    }
+
+    checkSession();
+  </script>
+</body>
+</html>
