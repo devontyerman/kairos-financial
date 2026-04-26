@@ -8,6 +8,8 @@
   <title>Sales Hub — Kairos Financial</title>
   <link rel="preconnect" href="https://esm.sh" crossorigin />
   <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/styles.css" />
   <style>
     html { font-size: 20px !important; }
@@ -405,6 +407,265 @@
       .dt-count-input { width: 64px; min-width: 64px; font-size: 1.4rem; }
       .dt-btn { width: 32px; height: 32px; font-size: 1.05rem; }
     }
+
+    /* ═══ Carrier Products field guide (scoped to #cp-root) ═══ */
+    #cp-root {
+      --cp-ink:#0a0a0a; --cp-ink-2:#1a1a1a; --cp-paper:#ffffff;
+      --cp-muted:#5b5b66; --cp-hair:#e7e5ea; --cp-hair-strong:#d6d3dc;
+      --cp-navy:#1E104E; --cp-plum:#452E5A; --cp-coral:#FF653F;
+      --cp-amber:#FFC85C; --cp-amber-soft:#FFF1D1; --cp-coral-soft:#FFE2D7; --cp-navy-soft:#EAE6F2;
+      background:var(--cp-paper); color:var(--cp-ink);
+      font-family:'Geist',ui-sans-serif,system-ui,-apple-system,sans-serif;
+      font-feature-settings:"ss01","cv11"; -webkit-font-smoothing:antialiased;
+      font-size: 16px;
+    }
+    #cp-root * { box-sizing: border-box; }
+    #cp-root a { color:var(--cp-coral); text-decoration:none; }
+    #cp-root a:hover { text-decoration:underline; text-decoration-thickness:1.5px; text-underline-offset:3px; }
+    #cp-root .cp-mono { font-family:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace; font-feature-settings:"ss01"; }
+    #cp-root .cp-serif { font-family:'Fraunces',Georgia,serif; font-optical-sizing:auto; }
+
+    #cp-root .cp-mast {
+      border-bottom:1px solid var(--cp-hair); background:var(--cp-paper);
+      position:sticky; top:0; z-index:30;
+    }
+    #cp-root .cp-mast-inner {
+      max-width:1320px; margin:0 auto; padding:18px 28px 14px;
+      display:grid; grid-template-columns:auto 1fr auto; gap:24px; align-items:center;
+    }
+    #cp-root .cp-brand { display:flex; align-items:center; gap:12px; }
+    #cp-root .cp-brand-mark {
+      width:36px; height:36px; border-radius:9px;
+      background: radial-gradient(circle at 30% 30%, var(--cp-amber) 0 22%, transparent 23%),
+                  linear-gradient(135deg, var(--cp-navy) 0%, var(--cp-plum) 100%);
+      position:relative;
+    }
+    #cp-root .cp-brand-mark::after {
+      content:""; position:absolute; inset:auto 6px 6px auto;
+      width:10px; height:10px; border-radius:50%; background:var(--cp-coral);
+    }
+    #cp-root .cp-brand-text { line-height:1.05; }
+    #cp-root .cp-brand-text .t1 { font-size:13px; letter-spacing:.16em; text-transform:uppercase; color:var(--cp-navy); font-weight:600; }
+    #cp-root .cp-brand-text .t2 { font-size:12px; color:var(--cp-muted); margin-top:2px; }
+
+    #cp-root .cp-pills { display:flex; gap:6px; justify-content:center; flex-wrap:wrap; }
+    #cp-root .cp-pill {
+      font-size:12px; letter-spacing:.04em; padding:8px 14px; border-radius:999px;
+      border:1px solid var(--cp-hair-strong); background:var(--cp-paper); color:var(--cp-ink);
+      cursor:pointer; display:inline-flex; align-items:center; gap:8px;
+      font-family:inherit; transition:all .15s ease;
+    }
+    #cp-root .cp-pill:hover { border-color:var(--cp-navy); color:var(--cp-navy); }
+    #cp-root .cp-pill .dot { width:8px; height:8px; border-radius:50%; background:var(--cp-hair-strong); }
+    #cp-root .cp-pill[data-active="true"] { background:var(--cp-navy); border-color:var(--cp-navy); color:#fff; }
+    #cp-root .cp-pill[data-active="true"] .dot { background:var(--cp-amber); }
+    #cp-root .cp-pill .count {
+      font-family:'JetBrains Mono',ui-monospace,monospace; font-size:10.5px;
+      background:transparent; color:inherit; opacity:.7;
+    }
+
+    #cp-root .cp-search {
+      display:flex; align-items:center; gap:8px;
+      border:1px solid var(--cp-hair-strong); border-radius:999px;
+      padding:8px 14px; font-size:13px; min-width:240px; background:var(--cp-paper);
+    }
+    #cp-root .cp-search:focus-within { border-color:var(--cp-navy); }
+    #cp-root .cp-search input {
+      border:0; outline:0; background:transparent; width:100%;
+      font-family:inherit; font-size:13px; color:var(--cp-ink);
+    }
+    #cp-root .cp-search .kbd {
+      font-family:'JetBrains Mono',monospace; font-size:10px; padding:2px 6px;
+      border:1px solid var(--cp-hair); border-radius:4px; color:var(--cp-muted);
+    }
+
+    #cp-root .cp-hero {
+      max-width:1320px; margin:0 auto; padding:36px 28px 12px;
+      display:grid; grid-template-columns:1.2fr .8fr; gap:48px; align-items:end;
+    }
+    #cp-root .cp-hero h1 {
+      font-family:'Fraunces',serif; font-weight:400;
+      font-size:clamp(40px,5.4vw,72px); line-height:.98; letter-spacing:-.02em;
+      margin:0; color:var(--cp-ink);
+    }
+    #cp-root .cp-hero h1 em { font-style:italic; color:var(--cp-plum); }
+    #cp-root .cp-hero h1 .accent { color:var(--cp-coral); font-style:italic; }
+    #cp-root .cp-hero-meta { display:flex; flex-direction:column; gap:14px; padding-bottom:8px; }
+    #cp-root .cp-hero-meta .row { display:flex; align-items:baseline; gap:10px; font-size:13px; color:var(--cp-muted); }
+    #cp-root .cp-hero-meta .row .num {
+      font-family:'JetBrains Mono',monospace; color:var(--cp-navy);
+      font-size:13px; font-weight:600; min-width:30px;
+    }
+    #cp-root .cp-hero-meta .row .lbl { flex:1; }
+
+    #cp-root .cp-legend {
+      max-width:1320px; margin:32px auto 0; padding:14px 28px;
+      display:flex; gap:18px; flex-wrap:wrap; align-items:center;
+      border-top:1px solid var(--cp-hair); border-bottom:1px solid var(--cp-hair);
+    }
+    #cp-root .cp-legend .l-title { font-size:11px; letter-spacing:.18em; text-transform:uppercase; color:var(--cp-muted); font-weight:600; margin-right:6px; }
+    #cp-root .cp-legend .item { display:inline-flex; align-items:center; gap:8px; font-size:12px; color:var(--cp-ink-2); }
+    #cp-root .cp-legend .swatch { width:14px; height:14px; border-radius:4px; border:1px solid rgba(0,0,0,.06); }
+
+    #cp-root .cp-section-head {
+      max-width:1320px; margin:48px auto 16px; padding:0 28px;
+      display:grid; grid-template-columns:auto 1fr auto; gap:20px; align-items:end;
+    }
+    #cp-root .cp-section-head .lead { display:flex; align-items:baseline; gap:18px; }
+    #cp-root .cp-section-head .num {
+      font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--cp-coral);
+      font-weight:600; letter-spacing:.04em;
+    }
+    #cp-root .cp-section-head h2 {
+      font-family:'Fraunces',serif; font-weight:400; font-size:42px;
+      letter-spacing:-.02em; margin:0; line-height:1;
+    }
+    #cp-root .cp-section-head .sub { font-size:13px; color:var(--cp-muted); max-width:46ch; text-align:right; }
+
+    #cp-root .cp-grid {
+      max-width:1320px; margin:0 auto; padding:8px 28px 24px;
+      display:grid; grid-template-columns:repeat(12,1fr); gap:18px;
+    }
+    #cp-root .cp-card {
+      grid-column:span 6; border:1px solid var(--cp-hair); border-radius:14px;
+      background:var(--cp-paper); padding:22px 24px 20px;
+      display:flex; flex-direction:column; gap:14px;
+      position:relative; overflow:hidden;
+      transition:border-color .15s ease, transform .15s ease;
+    }
+    #cp-root .cp-card:hover { border-color:var(--cp-hair-strong); }
+    #cp-root .cp-card[data-feat="true"] { grid-column:span 12; background:linear-gradient(180deg,#fff 0%, #fff4d6 100%); border-color:var(--cp-amber); }
+    #cp-root .cp-card[data-tone="pro"] { background:linear-gradient(180deg,#fff 0%, #ffe9e1 100%); border-color:var(--cp-coral); }
+    #cp-root .cp-card[data-tone="pro"][data-feat="true"] { background:linear-gradient(180deg,#fff8ee 0%, #fff0db 60%, #ffe9e1 100%); border-color:var(--cp-coral); }
+    #cp-root .cp-card[data-tone="skip"] { background:linear-gradient(180deg,#fff 0%, #ffe9e1 100%); border-color:var(--cp-coral); }
+    #cp-root .cp-card .spine { position:absolute; left:0; top:0; bottom:0; width:4px; background:var(--cp-navy); }
+    #cp-root .cp-card[data-cat="iul"] .spine { background:var(--cp-plum); }
+    #cp-root .cp-card[data-cat="term"] .spine { background:var(--cp-coral); }
+    #cp-root .cp-card[data-cat="wl"] .spine { background:var(--cp-navy); }
+
+    #cp-root .cp-card-top { display:flex; justify-content:space-between; align-items:flex-start; gap:16px; }
+    #cp-root .cp-card .carrier {
+      font-family:'JetBrains Mono',monospace; font-size:14px;
+      letter-spacing:.16em; text-transform:uppercase; color:var(--cp-navy); font-weight:700;
+    }
+    #cp-root .cp-card h3 {
+      font-family:'Fraunces',serif; font-weight:500; font-size:26px;
+      letter-spacing:-.01em; margin:4px 0 0; line-height:1.1;
+    }
+    #cp-root .cp-card[data-feat="true"] h3 { font-size:32px; }
+
+    #cp-root .ribbon {
+      display:inline-flex; align-items:center; gap:6px;
+      font-size:10.5px; letter-spacing:.12em; text-transform:uppercase;
+      padding:5px 9px; border-radius:999px; font-weight:600;
+      font-family:'JetBrains Mono',monospace; white-space:nowrap;
+    }
+    #cp-root .ribbon.r-rec { background:var(--cp-amber); color:var(--cp-navy); }
+    #cp-root .ribbon.r-skip { background:#f3f1f5; color:var(--cp-muted); }
+    #cp-root .ribbon.r-niche { background:var(--cp-navy-soft); color:var(--cp-navy); }
+    #cp-root .ribbon.r-pro { background:var(--cp-coral-soft); color:var(--cp-coral); }
+
+    #cp-root .cp-badges { display:flex; flex-wrap:wrap; gap:6px; }
+    #cp-root .cp-badge {
+      font-size:11px; padding:4px 9px; border-radius:6px;
+      border:1px solid var(--cp-hair-strong); color:var(--cp-ink-2); background:#fafafa;
+      display:inline-flex; align-items:center; gap:6px;
+    }
+    #cp-root .cp-badge .b-dot { width:6px; height:6px; border-radius:50%; background:var(--cp-navy); }
+
+    #cp-root .cp-note { font-size:14px; line-height:1.6; color:var(--cp-ink-2); }
+    #cp-root .cp-note p { margin:0 0 10px; }
+    #cp-root .cp-note p:last-child { margin-bottom:0; }
+
+    #cp-root .meta-row {
+      display:grid; grid-template-columns:1fr 1fr; gap:14px;
+      border-top:1px dashed var(--cp-hair); padding-top:14px;
+    }
+    #cp-root .meta-cell .k { font-size:10px; letter-spacing:.18em; text-transform:uppercase; color:var(--cp-muted); font-weight:600; }
+    #cp-root .meta-cell .v { font-size:13px; color:var(--cp-ink-2); margin-top:4px; font-family:'JetBrains Mono',monospace; }
+
+    #cp-root .cp-links { display:flex; flex-wrap:wrap; gap:8px; }
+    #cp-root .lnk {
+      display:inline-flex; align-items:center; gap:8px;
+      padding:8px 12px; border-radius:8px;
+      border:1px solid var(--cp-hair-strong); font-size:12px; color:var(--cp-ink);
+      transition:all .15s ease; font-family:'JetBrains Mono',monospace; letter-spacing:.02em;
+    }
+    #cp-root .lnk:hover { border-color:var(--cp-coral); color:var(--cp-coral); text-decoration:none; background:#fff8f5; }
+    #cp-root .lnk .ic {
+      width:16px; height:16px; border-radius:4px; background:var(--cp-navy); color:#fff;
+      display:grid; place-items:center; font-size:9px; font-weight:700;
+    }
+    #cp-root .lnk[data-kind="uw"] .ic { background:var(--cp-navy); }
+    #cp-root .lnk[data-kind="pg"] .ic { background:var(--cp-plum); }
+    #cp-root .lnk[data-kind="kc"] .ic { background:var(--cp-coral); }
+    #cp-root .lnk[data-kind="vid"] .ic { background:var(--cp-amber); color:var(--cp-navy); }
+
+    #cp-root .pull {
+      border-left:3px solid var(--cp-amber); background:var(--cp-amber-soft);
+      padding:10px 14px; border-radius:0 8px 8px 0;
+      font-size:13.5px; color:var(--cp-ink);
+    }
+    #cp-root .pull.p-warn { border-left-color:var(--cp-coral); background:var(--cp-coral-soft); }
+    #cp-root .pull.p-info { border-left-color:var(--cp-navy); background:var(--cp-navy-soft); }
+
+    #cp-root .cp-band { max-width:1320px; margin:48px auto 0; padding:0 28px; }
+    #cp-root .cp-band-inner {
+      border-radius:18px; padding:36px;
+      color:#fff; display:grid; grid-template-columns:auto 1fr; gap:36px; align-items:center;
+    }
+    #cp-root .cp-band-wl { background:linear-gradient(120deg,var(--cp-navy) 0%, var(--cp-plum) 100%); }
+    #cp-root .cp-band-iul { background:linear-gradient(120deg,var(--cp-plum) 0%, #2a1a3d 100%); }
+    #cp-root .cp-band-term { background:linear-gradient(120deg,var(--cp-coral) 0%, #e54a23 100%); }
+    #cp-root .cp-band .big {
+      font-family:'Fraunces',serif; font-size:96px; line-height:.85;
+      font-weight:300; letter-spacing:-.04em;
+    }
+    #cp-root .cp-band .big em { font-style:italic; color:var(--cp-amber); }
+    #cp-root .cp-band-term .big em { color:#fff; }
+    #cp-root .cp-band .desc { font-size:14px; line-height:1.55; max-width:60ch; opacity:.85; }
+    #cp-root .cp-band .stats { display:flex; gap:36px; margin-top:14px; flex-wrap:wrap; }
+    #cp-root .cp-band .stats .s { display:flex; flex-direction:column; }
+    #cp-root .cp-band .stats .s .num { font-family:'JetBrains Mono',monospace; font-size:22px; font-weight:600; }
+    #cp-root .cp-band .stats .s .lbl { font-size:10.5px; letter-spacing:.16em; text-transform:uppercase; opacity:.7; margin-top:2px; }
+    #cp-root .cp-band .tag {
+      display:inline-block; font-family:'JetBrains Mono',monospace;
+      font-size:11px; letter-spacing:.16em; padding:5px 10px; border-radius:999px;
+      background:rgba(255,255,255,.14); margin-bottom:10px;
+    }
+
+    #cp-root .cp-footer {
+      max-width:1320px; margin:64px auto 0; padding:32px 28px 56px;
+      border-top:1px solid var(--cp-hair);
+      display:grid; grid-template-columns:1fr auto; gap:24px; align-items:center;
+      color:var(--cp-muted); font-size:12px;
+    }
+    #cp-root .cp-footer .legal { display:flex; gap:18px; flex-wrap:wrap; }
+    #cp-root .cp-footer .stamp {
+      font-family:'JetBrains Mono',monospace; font-size:11px;
+      color:var(--cp-ink); letter-spacing:.05em;
+    }
+
+    #cp-root .cp-empty {
+      grid-column:1/-1; border:1px dashed var(--cp-hair-strong); border-radius:12px;
+      padding:48px; text-align:center; color:var(--cp-muted); font-size:14px;
+    }
+
+    @media (max-width:980px) {
+      #cp-root .cp-hero { grid-template-columns:1fr; gap:24px; }
+      #cp-root .cp-card { grid-column:span 12; }
+      #cp-root .cp-card[data-feat="true"] { grid-column:span 12; }
+      #cp-root .cp-mast-inner { grid-template-columns:auto auto; gap:14px; }
+      #cp-root .cp-pills { order:3; grid-column:1/-1; justify-content:flex-start; }
+      #cp-root .cp-search { min-width:0; width:100%; }
+      #cp-root .cp-section-head { grid-template-columns:1fr; }
+      #cp-root .cp-section-head .sub { text-align:left; }
+      #cp-root .cp-band-inner { grid-template-columns:1fr; }
+      #cp-root .cp-band .big { font-size:64px; }
+    }
+
+    /* Sales Hub panel reset for products: remove default panel padding */
+    #panel-products { padding: 0 !important; }
 
     /* Page links below sidebar grid */
     .ss-nav-links {
@@ -1606,7 +1867,7 @@
     .ss-goal-overlay-close:hover { background: #d0d0d5; }
 
     .ss-goal-tracker {
-      max-width: 960px;
+      max-width: 1250px;
       margin: 0 auto 2.5rem;
       padding: 2.5rem 3rem;
       background: #ffffff;
@@ -1738,7 +1999,7 @@
 
     /* Answers Heatmap Calendar */
     .ss-answers-heatmap {
-      max-width: 960px;
+      max-width: 1250px;
       margin: 0 auto 2.5rem;
       padding: 1.75rem 2rem;
       background: #ffffff;
@@ -3550,6 +3811,10 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
       <span>Pay</span>
     </button>
+    <button class="ss-sidebar-btn" data-panel="products">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      <span>Products</span>
+    </button>
     <button class="ss-sidebar-btn" data-panel="compgrid">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
       <span>Comp Grid</span>
@@ -3931,6 +4196,11 @@
           <div id="dtMsg" class="dt-submit-msg"></div>
         </div>
       </div>
+    </div>
+
+    <!-- ═══ CARRIER PRODUCTS PANEL ═══ -->
+    <div class="ss-panel" id="panel-products">
+      <div id="cp-root"></div>
     </div>
 
     <!-- ═══ COMMISSION CALCULATOR PANEL ═══ -->
@@ -5478,6 +5748,7 @@
       if (panelName === 'profile') loadProfilePanel();
       if (panelName === 'calculator' && currentUser) loadCommissionPipeline();
       if (panelName === 'dialtracker' && typeof renderDialTracker === 'function') renderDialTracker();
+      if (panelName === 'products' && typeof renderCarrierProducts === 'function') renderCarrierProducts();
       try { history.replaceState(null, '', '#' + panelName); } catch (e) { /* ignore */ }
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -5491,6 +5762,435 @@
         activatePanel(link.dataset.panel);
       });
     });
+    // ─── CARRIER PRODUCTS (field guide) ───
+    const CP_PRODUCTS = [
+      { id:"americo-eagle-1-2", cat:"wl", carrier:"Americo", name:"Eagle Select 1 & 2", rec:"rec", feat:true,
+        badges:["Cheapest","Instant 6-digit code","Quit-smoking advantage"],
+        note:[
+          "Cheapest option in the whole life lineup. Quick approval check via 6-digit text code.",
+          "Not flexible on health conditions — best for new agents writing simple, fast e-apps.",
+          { type:"info", text:"Unique edge: smokers can still get non-smoker rates via the quit-smoking advantage plan. If they don't quit, the death benefit drops but the premium stays the same." }
+        ],
+        bestFor:"New agents · easy clients", risk:"Limited health flexibility",
+        links:[{ kind:"uw", label:"Underwriting Guide", href:"https://drive.google.com/file/d/1BAzcHtMZNh_G8dlIEw9VX_G5WCi-ljuW/view?usp=sharing" }] },
+      { id:"transamerica-fe", cat:"wl", carrier:"Transamerica", name:"FE Express", rec:"rec", feat:true,
+        badges:["Near-true comp","Instant answer","6-digit text code","Accepts CHF"],
+        note:[
+          "One of the best whole life products. Pays nearly true comp, instant answer, easy app via 6-digit code. Accepts CHF.",
+          "Direct payments work from Social Security Direct Express, credit card, or debit card.",
+          { type:"warn", text:"Avoid card payments where possible — chargeback risk on lapses is significantly higher." }
+        ],
+        bestFor:"Most clients", risk:"Low",
+        links:[{ kind:"uw", label:"Underwriting Guide", href:"https://drive.google.com/file/d/1Jsy8VLMKONVCHzUJMGrJIIyqVfYN6VeY/view?usp=sharing" }] },
+      { id:"moo-living-promise", cat:"wl", carrier:"Mutual of Omaha", name:"Living Promise", rec:"rec", feat:true,
+        badges:["Friendly w/ anxiety & depression","6-digit text code"],
+        note:[
+          "Underwriting similar to Americo, but more friendly to clients with anxiety and depression.",
+          "Strong fallback when someone was declined for a mental-health condition specifically and is too price-sensitive for Transamerica."
+        ],
+        bestFor:"Mental-health declines", risk:"Low",
+        links:[{ kind:"uw", label:"Underwriting Guide", href:"https://drive.google.com/file/d/1KjXSTyJlmvtk6Jl2475b0xL17xal7vfB/view?usp=sharing" }] },
+      { id:"ethos-trustage-siwl", cat:"wl", carrier:"Ethos / TruStage", name:"TruStage SIWL", rec:"rec", feat:true,
+        badges:["6-digit text code","Reduced comp <60 / >80","Watch GI flag"],
+        note:[
+          "Only ever sell the regular whole life product.",
+          { type:"warn", text:"If approval comes back tagged Guaranteed Issue, that product pays only 2.5% commission. Pivot to Corebridge GI if no other option works." },
+          "Clients under 60 and over 80 pay a significantly reduced commission."
+        ],
+        bestFor:"Mid-age, healthy", risk:"Comp cliff <60 / >80",
+        links:[{ kind:"uw", label:"Underwriting Guide", href:"https://online.flippingbook.com/view/881422400/2/" }] },
+      { id:"amam-family-senior", cat:"wl", carrier:"American Amicable", name:"Family Choice / Senior Choice", rec:"niche",
+        badges:["Voice signature","0–49 / 50–85","ROP graded"],
+        note:[
+          { type:"info", text:"Unique: the client can sign by voice — call in on a recorded line and read the script. Perfect when there's no cell phone, no email, or DocuSign keeps failing." },
+          "Family = ages 0–49. Senior = ages 50–85. ROP is the graded policy.",
+          "Never lose a deal to DocuSign issues with this product in your pocket."
+        ],
+        bestFor:"No-tech clients", risk:"Low",
+        links:[
+          { kind:"uw", label:"Family Choice UW", href:"https://drive.google.com/file/d/1Eq5x8PT_f4cDcHVPAYodGdzIU5ObjSF_/view?usp=sharing" },
+          { kind:"uw", label:"Senior Choice UW", href:"https://drive.google.com/file/d/1yLwOA9Pc4rP2TOfzfh7G8CFvi0E4kAWE/view?usp=sharing" }
+        ] },
+      { id:"rn-ensured-legacy", cat:"wl", carrier:"Royal Neighbors", name:"Ensured Legacy SIWL", rec:"niche",
+        badges:["Diabetic friendly","No height/weight chart"],
+        note:[
+          "Very diabetic friendly with no height/weight chart.",
+          "Strong option for clients with diabetes-related issues and/or who are significantly overweight."
+        ],
+        bestFor:"Diabetic / heavier clients", risk:"Low",
+        links:[{ kind:"uw", label:"Underwriting Guide", href:"https://drive.google.com/file/d/1Tjj3SL9f2MQbtJ-8i_GxDhy3N7uC-vCi/view?usp=sharing" }] },
+      { id:"americo-eagle-3", cat:"wl", carrier:"Americo", name:"Eagle Select 3", rec:"skip",
+        badges:["Graded death benefit","Last resort"],
+        note:[
+          { type:"warn", text:"If you get this approval, you're better off with Corebridge Guaranteed Issue. Should never be sold unless Corebridge is unavailable." },
+          "Try other carriers first to see if you can get day-1 coverage.",
+          "Death benefit (Years 1–2): sum of premiums paid plus interest at a rate equal to the number of months since issue. (Month 7 → 7%; month 20 → 20%.) Accidental injury pays full face amount in lieu of graded benefit."
+        ],
+        bestFor:"Fallback only", risk:"Graded years 1–2", links:[] },
+      { id:"rn-jet-wl", cat:"wl", carrier:"Royal Neighbors", name:"Jet Whole Life", rec:"pro",
+        badges:["Up to $5M","Fully underwritten","Strict"],
+        note:[
+          "Fully underwritten depending on age and coverage. Very strict.",
+          "Great fit for very healthy clients who want a large face amount — coverage goes up to <b>$5,000,000</b>."
+        ],
+        bestFor:"Healthy, high-face", risk:"Strict UW",
+        links:[{ kind:"uw", label:"Underwriting Guide", href:"https://drive.google.com/file/d/1q8uJHkihUh2jfdBXat7rMg1x0fWc0FiP/view?usp=sharing" }] },
+      { id:"foresters-livewell", cat:"wl", carrier:"Foresters", name:"Live Well Plus", rec:"pro",
+        badges:["Instant up to $2M","Pays dividends","Spouse rider"],
+        note:[
+          "High amounts for instant approval on healthy clients — up to <b>$2,000,000</b> instant-approval whole life.",
+          { type:"info", text:"Foresters is non-profit and pays dividends back to the client. Optional rider covers a spouse up to $2,000,000." }
+        ],
+        bestFor:"Healthy, large face", risk:"Strict — healthy clients only",
+        links:[{ kind:"uw", label:"Underwriting Guide", href:"https://drive.google.com/file/d/1Sf74q6Pp8JADN4wO-cRKjf_TTmddLsDn/view?usp=sharing" }] },
+
+      { id:"americo-iul", cat:"iul", carrier:"Americo", name:"IUL Instant Decision", rec:"rec", feat:true,
+        badges:["Most lenient","Instant decision","Toolkit-friendly"],
+        note:[
+          "Probably the next-best easy option for IUL.",
+          { type:"info", text:"Plug all of the client's medications into Insurance Toolkits to pre-check qualification. Quick, easy answer — and the most lenient option in the category." },
+          { type:"warn", text:"<b>Not best for cash value.</b> If the client is focused on cash value or wants to see an illustration, FFIUL2 Express is the better fit." }
+        ],
+        bestFor:"Most IUL clients", risk:"Low",
+        links:[
+          { kind:"uw", label:"Underwriting Guide", href:"https://drive.google.com/file/d/1zgNzjmNwO1Z06ykw1oLhfZDzeRKth3_n/view?usp=sharing" },
+          { kind:"pg", label:"Product Guide", href:"https://drive.google.com/file/d/1IVqx_xS3lxTVy-1gqaECpv8x5cUCQNup/view?usp=sharing" }
+        ] },
+      { id:"ethos-iul", cat:"iul", carrier:"Ethos", name:"Ethos IUL", rec:"rec", feat:true,
+        badges:["No medical exam","90% instant","Higher young limits"],
+        note:[
+          "No medical exams. ~90% get an instant answer.",
+          "A little stricter than the other options, but has higher limits for younger clients."
+        ],
+        bestFor:"Younger / higher face", risk:"Stricter",
+        links:[
+          { kind:"pg", label:"Product Guide", href:"https://online.flippingbook.com/view/319418901/4" },
+          { kind:"kc", label:"Knockout Conditions", href:"https://online.flippingbook.com/view/318795893/" },
+          { kind:"vid", label:"IUL Training Video", href:"https://vimeo.com/914854733/b8671a27a3" }
+        ] },
+      { id:"transamerica-ffiul2", cat:"iul", carrier:"Transamerica", name:"FFIUL2 Express", rec:"rec", feat:true,
+        badges:["Illustration-friendly","Instant decision","Cash value focused"],
+        note:[
+          { type:"warn", text:"<b>Heads up:</b> This is more for clients who want to see an illustration and are looking for cash value. Keep in mind it's one of the stricter options on the wall — clients must be very healthy." },
+          "Always provides instant decision."
+        ],
+        bestFor:"Cash-value focused, very healthy", risk:"Strict — health required",
+        links:[{ kind:"uw", label:"Underwriting Guide", href:"https://drive.google.com/file/d/1JIaY2uMC5RpYv9nwmrhtZWGbDqy_YlEb/view?usp=sharing" }] },
+      { id:"amam-intelligent-choice", cat:"iul", carrier:"American Amicable", name:"Intelligent Choice", rec:"niche",
+        badges:["No medical exam","Not instant"],
+        note:[
+          "Can be more lenient than MOO or Americo IUL.",
+          "No medical exams — but not instant approval, so plan for some wait time."
+        ],
+        bestFor:"Edge-case approvals", risk:"Slower",
+        links:[
+          { kind:"uw", label:"Underwriting Guide", href:"https://drive.google.com/file/d/1qA9AmxUYpDG_XBUcHeoHXLG2XmsZ-C7m/view?usp=sharing" },
+          { kind:"pg", label:"Product Guide", href:"https://drive.google.com/file/d/1xmlbiE76N-cSjR216tBLs4BMX0xTb2O7/view?usp=sharing" }
+        ] },
+      { id:"moo-iul-express", cat:"iul", carrier:"Mutual of Omaha", name:"Indexed Universal Life Express", rec:"niche",
+        badges:["Simplified issue","No medical exam"],
+        note:[
+          "Nothing too special — simplified issue, no medical exams.",
+          "If the client's primarily focused on the insurance side of an IUL, there are quicker options."
+        ],
+        bestFor:"Brand-comfort clients", risk:"Low",
+        links:[
+          { kind:"uw", label:"Underwriting Guide", href:"https://drive.google.com/file/d/1KjXSTyJlmvtk6Jl2475b0xL17xal7vfB/view?usp=drive_link" },
+          { kind:"pg", label:"Product Guide", href:"https://drive.google.com/file/d/1zAVI9Hv-ExPqzovS0pOpW1MuHjZrX27g/view?usp=drive_link" }
+        ] },
+      { id:"foresters-smart-ul", cat:"iul", carrier:"Foresters", name:"Smart UL", rec:"niche",
+        badges:["Non-med up to $400k","Manually UW","Flexible premium"],
+        note:[
+          "Non-medical up to <b>$400,000</b>. Flexible premium options that can usually go lower than most carriers.",
+          { type:"warn", text:"Be very detailed in your application comments to avoid additional questionnaires. Manual underwriting — pending requirements happen. Not a first choice, but flexible when you can't get approval elsewhere." }
+        ],
+        bestFor:"Edge-case manual UW", risk:"Pending reqs", links:[] },
+
+      { id:"instabrain-term", cat:"term", carrier:"InstaBrain", name:"Term — Living Benefits & Pure Term", rec:"rec", feat:true,
+        badges:["Instant decision","Easy application","Young & healthy"],
+        note:[
+          "Best for young, healthy clients. Instant decision and an easy application — two products under one roof.",
+          { type:"info", text:"<b>InstaBrain Term With Living Benefits</b> · $50,000–$1,000,000 · Ages 18–60 · Includes Chronic Illness & Terminal Illness Riders." },
+          { type:"info", text:"<b>InstaBrain Pure Term</b> · $50,000–$1,000,000 · Ages 18–60 · Whole Life Conversion Option." }
+        ],
+        bestFor:"Young, healthy clients", risk:"Low", links:[] },
+      { id:"ethos-term", cat:"term", carrier:"Ethos", name:"Term Life", rec:"rec", feat:true,
+        badges:["No medical exam","90% instant"],
+        note:["No medical exams. ~90% of applications return an instant answer."],
+        bestFor:"General term", risk:"Low",
+        links:[{ kind:"kc", label:"Knockout Conditions", href:"https://online.flippingbook.com/view/266827897/2" }] },
+      { id:"amam-term-made-simple", cat:"term", carrier:"American Amicable", name:"Term Made Simple", rec:"rec", feat:true,
+        badges:["Competitive 60+","Healthy clients"],
+        note:["Solid option with competitive rates — especially for clients over 60 who want term and are healthy."],
+        bestFor:"Healthy clients 60+", risk:"Low",
+        links:[
+          { kind:"pg", label:"Product Guide", href:"https://drive.google.com/file/d/1jWDkKrY1U4KyI3zeVAVLsqLQp2bajs6-/view?usp=sharing" },
+          { kind:"uw", label:"Underwriting Guide", href:"https://drive.google.com/file/d/1cAjRUy1NunwFFhl6mq67NA7Nh5iHg0B1/view?usp=sharing" }
+        ] },
+      { id:"americo-term-100", cat:"term", carrier:"Americo", name:"Term 100", rec:"rec", feat:true,
+        badges:["Instant decision","No medical exam"],
+        note:["Instant decision at time of application. No medical exams."],
+        bestFor:"Quick term issue", risk:"Low",
+        links:[{ kind:"uw", label:"Underwriting Guide", href:"https://drive.google.com/file/d/1CCexqYXKGlHlzTXy8smaLnEtCfpywueJ/view?usp=sharing" }] },
+      { id:"kcl-signature", cat:"term", carrier:"KCL", name:"Signature Term Express & ROP", rec:"niche",
+        badges:["Return of premium","Simplified issue"],
+        note:[
+          { type:"info", text:"Solid return-of-premium option — client receives all of their money back at the end of the term." },
+          "No medical underwriting. Simplified issue."
+        ],
+        bestFor:"ROP-curious clients", risk:"Low",
+        links:[{ kind:"uw", label:"Underwriting Guide", href:"https://drive.google.com/file/d/1YQmBtDeK2WAIap0ReW71ycMH_RfhIChb/view?usp=sharing" }] },
+      { id:"foresters-strong-foundation", cat:"term", carrier:"Foresters", name:"Strong Foundation", rec:"niche",
+        badges:["Non-tobacco friendly","No medical exam"],
+        note:[
+          { type:"info", text:"Cigars, pipes, chewing tobacco, nicotine patches, vape pens, and marijuana all fall under non-tobacco." },
+          "No medical exams. Be detailed in your comments to avoid additional questionnaires.",
+          "Coverage: 18–55 up to $500,000 · 56–80 up to $250,000."
+        ],
+        bestFor:"Cigar / vape / MJ users", risk:"Low",
+        links:[{ kind:"uw", label:"Underwriting Guide", href:"https://drive.google.com/file/d/1QY_-LqpDTkXCZc54gD3LP1jDVDOVzP4X/view?usp=sharing" }] },
+      { id:"moo-term-express", cat:"term", carrier:"Mutual of Omaha", name:"Term Life Express", rec:"niche",
+        badges:["Name recognition","More lenient"],
+        note:[
+          "Middle-of-the-road simplified issue term product. The standout is name recognition — which can drive higher persistency.",
+          "Better options exist for healthy clients, but this can be slightly more lenient if your client is on the edge of approval elsewhere."
+        ],
+        bestFor:"Edge approvals", risk:"Low",
+        links:[
+          { kind:"uw", label:"Underwriting Guide", href:"https://drive.google.com/file/d/1KjXSTyJlmvtk6Jl2475b0xL17xal7vfB/view?usp=sharing" },
+          { kind:"pg", label:"Product Guide", href:"https://drive.google.com/file/d/1zAVI9Hv-ExPqzovS0pOpW1MuHjZrX27g/view?usp=sharing" }
+        ] },
+      { id:"ethos-trustage-term", cat:"term", carrier:"Ethos / TruStage", name:"TruStage Term Life", rec:"skip",
+        badges:["No medical exam","Increasing every 5 yrs"],
+        note:[
+          "Kind of a last resort if the client really wants term.",
+          "Increasing term every 5 years.",
+          "No medical exams. ~90% instant answer."
+        ],
+        bestFor:"Last-resort term", risk:"Increasing premium",
+        links:[{ kind:"uw", label:"Underwriting Guide", href:"https://online.flippingbook.com/view/881422400/6" }] },
+      { id:"transamerica-trendsetter", cat:"term", carrier:"Transamerica", name:"Trendsetter & Trendsetter LB", rec:"pro",
+        badges:["Cheapest term","Strictest UW","Case-by-case face"],
+        note:[
+          "Cheapest term option out there — and the most strict on underwriting.",
+          { type:"warn", text:"High likelihood of full medical exams and a full doctor's statement, which increases denial risk and delays both client coverage and your commission. Only use if you have to come in cheaper, AND you're confident in the client's medical history cross-referenced against the UW guide." },
+          "Coverage amount has no fixed limit — case by case."
+        ],
+        bestFor:"Price-sensitive, very healthy", risk:"Full med exam likely",
+        links:[
+          { kind:"uw", label:"Underwriting Guide", href:"https://drive.google.com/file/d/1ZZlmjmCHesffbOS6lOHP4wtDFku-1CEA/view?usp=sharing" },
+          { kind:"kc", label:"Common Conditions", href:"https://drive.google.com/file/d/1P0VOmPN-eT6wpLDYd4DhkFNCPhl1Z-9E/view?usp=sharing" }
+        ] }
+    ];
+    const CP_CATEGORIES = [
+      { id:"wl",   name:"Whole Life", short:"WL",  desc:"Permanent coverage that never expires as long as premiums are paid. Builds cash value." },
+      { id:"iul",  name:"Indexed UL", short:"IUL", desc:"Permanent coverage with cash value tied to a market index — flexible premiums, upside with floors." },
+      { id:"term", name:"Term Life",  short:"TERM",desc:"Pure protection for a fixed period. Lowest premiums, no cash value, expires." }
+    ];
+    const CP_RIBBONS = {
+      rec:   { cls:"r-rec",   label:"Recommended" },
+      pro:   { cls:"r-pro",   label:"Pro / strict" },
+      niche: { cls:"r-niche", label:"Situational" },
+      skip:  { cls:"r-skip",  label:"Last resort" }
+    };
+    const CP_LINK_LABEL = { uw:"UW", pg:"PG", kc:"KC", vid:"▶" };
+    const cpState = { filter:"all", q:"" };
+    let cpRendered = false;
+
+    function cpEsc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+    function cpNoteHtml(items) {
+      return items.map(it => {
+        if (typeof it === "string") return '<p>' + it + '</p>';
+        const cls = it.type === "warn" ? "p-warn" : it.type === "info" ? "p-info" : "";
+        return '<div class="pull ' + cls + '">' + it.text + '</div>';
+      }).join('');
+    }
+
+    function cpProductCardHtml(p) {
+      const ribbon = CP_RIBBONS[p.rec];
+      const tone = p.rec === "pro" ? "pro" : (p.rec === "skip" ? "skip" : "");
+      const featAttr = p.feat ? "true" : "false";
+      const badgesHtml = p.badges.map(b => '<span class="cp-badge"><span class="b-dot"></span>' + cpEsc(b) + '</span>').join('');
+      const meta = (p.bestFor || p.risk) ? (
+        '<div class="meta-row">' +
+          (p.bestFor ? '<div class="meta-cell"><div class="k">Best for</div><div class="v">' + cpEsc(p.bestFor) + '</div></div>' : '') +
+          (p.risk ? '<div class="meta-cell"><div class="k">Watch out</div><div class="v">' + cpEsc(p.risk) + '</div></div>' : '') +
+        '</div>'
+      ) : '';
+      const linksHtml = p.links.length ? (
+        '<div class="cp-links">' +
+          p.links.map(l =>
+            '<a class="lnk" data-kind="' + cpEsc(l.kind) + '" href="' + cpEsc(l.href) + '" target="_blank" rel="noopener noreferrer">' +
+              '<span class="ic">' + (CP_LINK_LABEL[l.kind] || '') + '</span>' +
+              cpEsc(l.label) +
+              '<span style="opacity:.4;font-size:11px;">↗</span>' +
+            '</a>'
+          ).join('') +
+        '</div>'
+      ) : '';
+      return ''
+        + '<article class="cp-card" data-cat="' + p.cat + '" data-feat="' + featAttr + '" data-tone="' + tone + '" id="' + cpEsc(p.id) + '">'
+        +   '<div class="spine"></div>'
+        +   '<div class="cp-card-top">'
+        +     '<div><div class="carrier">' + cpEsc(p.carrier) + '</div><h3>' + cpEsc(p.name) + '</h3></div>'
+        +     (ribbon ? '<span class="ribbon ' + ribbon.cls + '">' + ribbon.label + '</span>' : '')
+        +   '</div>'
+        +   '<div class="cp-badges">' + badgesHtml + '</div>'
+        +   '<div class="cp-note">' + cpNoteHtml(p.note) + '</div>'
+        +   meta
+        +   linksHtml
+        + '</article>';
+    }
+
+    function cpSectionBandHtml(cat, count) {
+      const cls = cat.id === "wl" ? "cp-band-wl" : cat.id === "iul" ? "cp-band-iul" : "cp-band-term";
+      const label = cat.id === "wl" ? "01" : cat.id === "iul" ? "02" : "03";
+      const big = cat.id === "wl"
+        ? 'Whole<br><em>Life.</em>'
+        : cat.id === "iul"
+        ? 'Indexed<br><em>UL.</em>'
+        : 'Term<br><em>Life.</em>';
+      const stats = cat.id === "wl"
+        ? [["Up to","$5M face"],["Instant","6-digit code"],["Cash","Builds value"]]
+        : cat.id === "iul"
+        ? [["Non-med","Up to $400k"],["Floor","Index-linked"],["Premium","Flexible"]]
+        : [["Period","10–30 yrs"],["No","Cash value"],["Cost","Lowest"]];
+      const statsHtml = stats.map(([n,l]) => '<div class="s"><div class="num">' + n + '</div><div class="lbl">' + l + '</div></div>').join('');
+      return ''
+        + '<div class="cp-band" id="cp-band-' + cat.id + '">'
+        +   '<div class="cp-band-inner ' + cls + '">'
+        +     '<div><div class="tag">' + label + ' · ' + count + ' products</div><div class="big">' + big + '</div></div>'
+        +     '<div><div class="desc">' + cpEsc(cat.desc) + '</div><div class="stats">' + statsHtml + '</div></div>'
+        +   '</div>'
+        + '</div>';
+    }
+
+    function cpFilteredProducts() {
+      const ql = cpState.q.trim().toLowerCase();
+      return CP_PRODUCTS.filter(p => {
+        if (cpState.filter !== "all" && p.cat !== cpState.filter) return false;
+        if (!ql) return true;
+        const blob = (p.name + " " + p.carrier + " " + p.badges.join(" ") + " " + (p.bestFor || "") + " " +
+          p.note.map(n => typeof n === "string" ? n : n.text).join(" ")).toLowerCase();
+        return blob.includes(ql);
+      });
+    }
+
+    function cpRenderBody() {
+      const body = document.getElementById('cp-body');
+      if (!body) return;
+      const filtered = cpFilteredProducts();
+      const byCat = {};
+      CP_CATEGORIES.forEach(c => byCat[c.id] = []);
+      filtered.forEach(p => byCat[p.cat].push(p));
+      let html = '';
+      if (filtered.length === 0) {
+        html += '<div class="cp-grid"><div class="cp-empty">No products match "' + cpEsc(cpState.q) + '". Try a different keyword.</div></div>';
+      } else {
+        CP_CATEGORIES.forEach((cat, idx) => {
+          const items = byCat[cat.id];
+          if (!items || items.length === 0) return;
+          html += cpSectionBandHtml(cat, items.length);
+          html += '<div class="cp-section-head">'
+            + '<div class="lead"><span class="num">0' + (idx+1) + ' / ' + String(items.length).padStart(2,'0') + '</span><h2>' + cpEsc(cat.name) + '</h2></div>'
+            + '<span></span>'
+            + '<div class="sub">' + cpEsc(cat.desc) + '</div>'
+            + '</div>';
+          html += '<div class="cp-grid">' + items.map(cpProductCardHtml).join('') + '</div>';
+        });
+      }
+      body.innerHTML = html;
+    }
+
+    function cpRenderShell() {
+      const root = document.getElementById('cp-root');
+      if (!root) return;
+      const counts = { all: CP_PRODUCTS.length };
+      CP_CATEGORIES.forEach(c => { counts[c.id] = CP_PRODUCTS.filter(p => p.cat === c.id).length; });
+      const totalLinks = CP_PRODUCTS.reduce((s,p) => s + p.links.length, 0);
+      const pillsHtml = '<button class="cp-pill" data-cp-filter="all"><span class="dot"></span> All <span class="count">' + counts.all + '</span></button>'
+        + CP_CATEGORIES.map(cat => '<button class="cp-pill" data-cp-filter="' + cat.id + '"><span class="dot"></span> ' + cpEsc(cat.name) + ' <span class="count">' + counts[cat.id] + '</span></button>').join('');
+      root.innerHTML = ''
+        + '<header class="cp-mast"><div class="cp-mast-inner">'
+        +   '<div class="cp-brand"><div class="cp-brand-mark" aria-hidden="true"></div>'
+        +     '<div class="cp-brand-text"><div class="t1">Carrier Products</div><div class="t2">Field Guide · v2026.04</div></div>'
+        +   '</div>'
+        +   '<div class="cp-pills" id="cp-pills">' + pillsHtml + '</div>'
+        +   '<label class="cp-search">'
+        +     '<span style="color:var(--cp-muted);font-size:14px;">⌕</span>'
+        +     '<input id="cp-searchbox" placeholder="Search carrier, product, condition…" />'
+        +     '<span class="kbd">⌘K</span>'
+        +   '</label>'
+        + '</div></header>'
+        + '<section class="cp-hero">'
+        +   '<h1>Pick the <em>right</em> carrier.<br>Close the <span class="accent">deal.</span></h1>'
+        +   '<div class="cp-hero-meta">'
+        +     '<div class="row"><span class="num">' + CP_PRODUCTS.length + '</span><span class="lbl">products across whole life, IUL, and term</span></div>'
+        +     '<div class="row"><span class="num">' + totalLinks + '</span><span class="lbl">underwriting & product guide links — all clickable</span></div>'
+        +     '<div class="row"><span class="num">3</span><span class="lbl">categories, sortable below</span></div>'
+        +   '</div>'
+        + '</section>'
+        + '<div class="cp-legend">'
+        +   '<span class="l-title">Recommendation key</span>'
+        +   '<span class="item"><span class="swatch" style="background:#FFC85C"></span> Recommended</span>'
+        +   '<span class="item"><span class="swatch" style="background:#FFE2D7"></span> Pro / strict</span>'
+        +   '<span class="item"><span class="swatch" style="background:#EAE6F2"></span> Situational</span>'
+        +   '<span class="item"><span class="swatch" style="background:#f3f1f5"></span> Last resort</span>'
+        +   '<span style="flex:1"></span>'
+        +   '<span class="l-title">Spine</span>'
+        +   '<span class="item"><span class="swatch" style="background:#1E104E"></span> WL</span>'
+        +   '<span class="item"><span class="swatch" style="background:#452E5A"></span> IUL</span>'
+        +   '<span class="item"><span class="swatch" style="background:#FF653F"></span> Term</span>'
+        + '</div>'
+        + '<div id="cp-body"></div>'
+        + '<footer class="cp-footer">'
+        +   '<div class="legal"><span>Internal field reference. Not for client distribution.</span><span>·</span><span>All carrier names property of their respective owners.</span></div>'
+        +   '<div class="stamp">CP-FIELD / 26-04-26 / v2026.04</div>'
+        + '</footer>';
+
+      // Sync UI state and wire events
+      const setActivePill = () => {
+        document.querySelectorAll('#cp-pills .cp-pill').forEach(b => {
+          b.dataset.active = (b.dataset.cpFilter === cpState.filter) ? "true" : "false";
+        });
+      };
+      setActivePill();
+      document.querySelectorAll('#cp-pills .cp-pill').forEach(b => {
+        b.addEventListener('click', () => {
+          cpState.filter = b.dataset.cpFilter;
+          setActivePill();
+          cpRenderBody();
+        });
+      });
+      const search = document.getElementById('cp-searchbox');
+      search.value = cpState.q;
+      search.addEventListener('input', (e) => {
+        cpState.q = e.target.value;
+        cpRenderBody();
+      });
+
+      cpRenderBody();
+    }
+
+    function renderCarrierProducts() {
+      if (!cpRendered) {
+        cpRenderShell();
+        cpRendered = true;
+      }
+    }
+
+    // ⌘K / Ctrl+K → focus search when products panel is active
+    document.addEventListener('keydown', (e) => {
+      if ((e.metaKey || e.ctrlKey) && (e.key || '').toLowerCase() === 'k') {
+        const panel = document.getElementById('panel-products');
+        if (!panel || !panel.classList.contains('active')) return;
+        e.preventDefault();
+        const box = document.getElementById('cp-searchbox');
+        if (box) box.focus();
+      }
+    });
+
     // ─── DIAL TRACKER ───
     const DT_KEY = 'dialTrackerData';
     const DT_CATEGORIES = [
@@ -5667,7 +6367,7 @@
     (function openPanelFromHash() {
       const hash = (window.location.hash || '').replace('#', '');
       if (!hash) return;
-      const validPanels = ['submit', 'training', 'performance', 'leaderboard', 'goals', 'policies', 'calculator', 'profile', 'dialtracker'];
+      const validPanels = ['submit', 'training', 'performance', 'leaderboard', 'goals', 'policies', 'calculator', 'profile', 'dialtracker', 'products'];
       if (validPanels.includes(hash)) activatePanel(hash);
     })();
 
