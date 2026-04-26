@@ -11439,7 +11439,9 @@
             if (advisor) metaParts.push(`Advisor: ${advisor}`);
             if (metaParts.length) {
               pdf.text(metaParts.join('   ·   '), marginX, y);
-              y += 14;
+              y += 16;
+            } else {
+              y += 4;
             }
             pdf.setDrawColor(...RULE);
             pdf.setLineWidth(0.6);
@@ -11470,11 +11472,11 @@
             pdf.text(text.toUpperCase(), x, yPos);
           }
           function fieldValue(text, x, yPos, maxW) {
+            if (!text) return 1;
             pdf.setFont('helvetica', 'normal');
             pdf.setFontSize(10);
             pdf.setTextColor(...TEXT);
-            const display = text || '—';
-            const lines = pdf.splitTextToSize(display, maxW);
+            const lines = pdf.splitTextToSize(text, maxW);
             pdf.text(lines, x, yPos);
             return lines.length;
           }
@@ -11482,8 +11484,8 @@
             fieldLabel(label, x, y);
             const lines = fieldValue(value, x, y + 13, width);
             pdf.setDrawColor(...RULE);
-            pdf.setLineWidth(0.4);
-            pdf.line(x, y + 16 + (lines - 1) * 12, x + width, y + 16 + (lines - 1) * 12);
+            pdf.setLineWidth(0.5);
+            pdf.line(x, y + 17 + (lines - 1) * 12, x + width, y + 17 + (lines - 1) * 12);
             return 22 + (lines - 1) * 12;
           }
           function twoColRow(items) {
@@ -11503,18 +11505,28 @@
           }
           function fullWidthMultiline(label, value, minLines = 2) {
             fieldLabel(label, marginX, y);
-            const lines = pdf.splitTextToSize(value || '—', contentW - 12);
+            const lines = value ? pdf.splitTextToSize(value, contentW - 16) : [];
             const renderLines = Math.max(lines.length, minLines);
-            const blockH = 16 + renderLines * 12 + 6;
+            const boxH = renderLines * 14 + 10;
+            const blockH = 14 + boxH + 6;
             ensureSpace(blockH);
             pdf.setFillColor(...BOX);
             pdf.setDrawColor(...RULE);
-            pdf.setLineWidth(0.4);
-            pdf.roundedRect(marginX, y + 4, contentW, renderLines * 12 + 10, 4, 4, 'FD');
-            pdf.setFont('helvetica', 'normal');
-            pdf.setFontSize(10);
-            pdf.setTextColor(...TEXT);
-            pdf.text(lines, marginX + 8, y + 17);
+            pdf.setLineWidth(0.5);
+            pdf.roundedRect(marginX, y + 4, contentW, boxH, 4, 4, 'FD');
+            if (lines.length) {
+              pdf.setFont('helvetica', 'normal');
+              pdf.setFontSize(10);
+              pdf.setTextColor(...TEXT);
+              pdf.text(lines, marginX + 10, y + 18);
+            } else {
+              pdf.setDrawColor(225, 228, 236);
+              pdf.setLineWidth(0.3);
+              for (let i = 1; i < renderLines; i++) {
+                const ly = y + 4 + i * 14;
+                pdf.line(marginX + 10, ly, marginX + contentW - 10, ly);
+              }
+            }
             y += blockH;
           }
           function checkboxList(label, options, selected) {
@@ -11570,46 +11582,47 @@
               pdf.text(h.toUpperCase(), marginX + i * colW + 6, y + 13);
             });
             y += 20;
-            const dataRows = rows.length ? rows : [['—', '—', '—', '—', '—']];
+            const dataRows = rows.length ? rows : [['', '', '', '', ''], ['', '', '', '', ''], ['', '', '', '', '']];
             dataRows.forEach((r, idx) => {
-              ensureSpace(22);
+              ensureSpace(24);
               if (idx % 2 === 0) {
                 pdf.setFillColor(250, 251, 254);
-                pdf.rect(marginX, y, contentW, 22, 'F');
+                pdf.rect(marginX, y, contentW, 24, 'F');
               }
               pdf.setDrawColor(...RULE);
               pdf.setLineWidth(0.3);
-              pdf.line(marginX, y + 22, marginX + contentW, y + 22);
+              pdf.line(marginX, y + 24, marginX + contentW, y + 24);
               pdf.setFont('helvetica', 'normal');
               pdf.setFontSize(9.5);
               pdf.setTextColor(...TEXT);
               r.forEach((cell, i) => {
-                const lines = pdf.splitTextToSize(cell || '—', colW - 12);
-                pdf.text(lines[0] || '—', marginX + i * colW + 6, y + 14);
+                if (cell && cell.trim()) {
+                  const lines = pdf.splitTextToSize(cell, colW - 12);
+                  pdf.text(lines[0], marginX + i * colW + 6, y + 15);
+                }
               });
-              y += 22;
+              y += 24;
             });
             y += 8;
           }
           function vitalsRow() {
             ensureSpace(40);
             const colW = contentW / 4;
-            const smoker = getRadioVal('smoker');
             const items = [
-              { label: 'Smoker', value: smoker || '—' },
-              { label: 'Age', value: getVal('age') || '—' },
-              { label: 'Height', value: getVal('height') || '—' },
-              { label: 'Weight', value: getVal('weight') || '—' },
+              { label: 'Smoker', value: getRadioVal('smoker') },
+              { label: 'Age', value: getVal('age') },
+              { label: 'Height', value: getVal('height') },
+              { label: 'Weight', value: getVal('weight') },
             ];
             items.forEach((it, i) => {
               const x = marginX + i * colW;
               fieldLabel(it.label, x, y);
-              fieldValue(it.value, x, y + 13, colW - 8);
+              fieldValue(it.value, x, y + 13, colW - 12);
               pdf.setDrawColor(...RULE);
-              pdf.setLineWidth(0.4);
-              pdf.line(x, y + 17, x + colW - 8, y + 17);
+              pdf.setLineWidth(0.5);
+              pdf.line(x, y + 17, x + colW - 12, y + 17);
             });
-            y += 26;
+            y += 28;
           }
           function expensesRow() {
             ensureSpace(36);
@@ -11622,12 +11635,12 @@
             items.forEach((it, i) => {
               const x = marginX + i * (colW + 8);
               fieldLabel(it.label, x, y);
-              fieldValue(it.value || '—', x, y + 13, colW);
+              fieldValue(it.value, x, y + 13, colW);
               pdf.setDrawColor(...RULE);
-              pdf.setLineWidth(0.4);
+              pdf.setLineWidth(0.5);
               pdf.line(x, y + 17, x + colW, y + 17);
             });
-            y += 26;
+            y += 28;
           }
 
           // === Render the document ===
