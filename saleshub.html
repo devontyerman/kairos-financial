@@ -11340,7 +11340,7 @@
       }
       clearBtn.addEventListener('click', resetForm);
 
-      // Lazy-load jsPDF + html2canvas
+      // Lazy-load jsPDF
       let libsPromise = null;
       function loadScript(src) {
         return new Promise((resolve, reject) => {
@@ -11351,11 +11351,32 @@
       }
       function ensureLibs() {
         if (libsPromise) return libsPromise;
-        libsPromise = Promise.all([
-          window.jspdf ? Promise.resolve() : loadScript('https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js'),
-          window.html2canvas ? Promise.resolve() : loadScript('https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js')
-        ]);
+        libsPromise = window.jspdf
+          ? Promise.resolve()
+          : loadScript('https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js');
         return libsPromise;
+      }
+
+      function getVal(name) {
+        const el = form.querySelector(`[name="${name}"]`);
+        return el ? (el.value || '').trim() : '';
+      }
+      function getAllVals(name) {
+        return Array.from(form.querySelectorAll(`[name="${name}"]`)).map(el => (el.value || '').trim());
+      }
+      function getCheckedVals(name) {
+        return Array.from(form.querySelectorAll(`input[name="${name}"]:checked`)).map(el => el.value);
+      }
+      function getRadioVal(name) {
+        const el = form.querySelector(`input[name="${name}"]:checked`);
+        return el ? el.value : '';
+      }
+      function formatDate(iso) {
+        if (!iso) return '';
+        const m = iso.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+        if (!m) return iso;
+        const d = new Date(+m[1], +m[2] - 1, +m[3]);
+        return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
       }
 
       async function exportPdf() {
@@ -11364,57 +11385,311 @@
         exportBtn.textContent = 'Exporting…';
         try {
           await ensureLibs();
-          // Mirror current input values into attributes so they render in the cloned canvas
-          form.querySelectorAll('input, textarea, select').forEach(el => {
-            if (el.type === 'checkbox' || el.type === 'radio') {
-              if (el.checked) el.setAttribute('checked', 'checked'); else el.removeAttribute('checked');
-            } else if (el.tagName === 'TEXTAREA') {
-              el.textContent = el.value;
-            } else {
-              el.setAttribute('value', el.value);
-            }
-          });
-          const card = form;
-          const canvas = await window.html2canvas(card, {
-            scale: 2,
-            backgroundColor: '#ffffff',
-            useCORS: true,
-            windowWidth: card.scrollWidth
-          });
-          const imgData = canvas.toDataURL('image/png');
           const { jsPDF } = window.jspdf;
           const pdf = new jsPDF({ orientation: 'portrait', unit: 'pt', format: 'letter' });
           const pageW = pdf.internal.pageSize.getWidth();
           const pageH = pdf.internal.pageSize.getHeight();
-          const margin = 24;
-          const imgW = pageW - margin * 2;
-          const imgH = (canvas.height * imgW) / canvas.width;
+          const marginX = 54;
+          const marginTop = 54;
+          const marginBottom = 54;
+          const contentW = pageW - marginX * 2;
+          let y = marginTop;
+          let pageNum = 1;
 
-          if (imgH <= pageH - margin * 2) {
-            pdf.addImage(imgData, 'PNG', margin, margin, imgW, imgH);
-          } else {
-            // Slice the canvas across multiple pages
-            const pxPerPt = canvas.width / imgW;
-            const pageHpx = (pageH - margin * 2) * pxPerPt;
-            let yPx = 0;
-            const pageCanvas = document.createElement('canvas');
-            const ctx = pageCanvas.getContext('2d');
-            pageCanvas.width = canvas.width;
-            while (yPx < canvas.height) {
-              const sliceH = Math.min(pageHpx, canvas.height - yPx);
-              pageCanvas.height = sliceH;
-              ctx.fillStyle = '#ffffff';
-              ctx.fillRect(0, 0, pageCanvas.width, pageCanvas.height);
-              ctx.drawImage(canvas, 0, yPx, canvas.width, sliceH, 0, 0, canvas.width, sliceH);
-              const sliceData = pageCanvas.toDataURL('image/png');
-              if (yPx > 0) pdf.addPage();
-              const sliceImgH = (sliceH / pxPerPt);
-              pdf.addImage(sliceData, 'PNG', margin, margin, imgW, sliceImgH);
-              yPx += sliceH;
+          const NAVY = [26, 38, 76];
+          const ACCENT = [58, 84, 153];
+          const TEXT = [30, 32, 44];
+          const MUTED = [110, 116, 132];
+          const RULE = [220, 224, 232];
+          const BOX = [245, 247, 252];
+
+          function ensureSpace(needed) {
+            if (y + needed > pageH - marginBottom) {
+              addFooter();
+              pdf.addPage();
+              pageNum++;
+              y = marginTop;
             }
           }
+          function addFooter() {
+            pdf.setFont('helvetica', 'normal');
+            pdf.setFontSize(8);
+            pdf.setTextColor(...MUTED);
+            pdf.text('Confidential · Client Intake', marginX, pageH - 28);
+            pdf.text(`Page ${pageNum}`, pageW - marginX, pageH - 28, { align: 'right' });
+          }
+          function drawHeader() {
+            pdf.setFillColor(...NAVY);
+            pdf.rect(0, 0, pageW, 6, 'F');
+            pdf.setFont('helvetica', 'bold');
+            pdf.setFontSize(18);
+            pdf.setTextColor(...NAVY);
+            pdf.text('Client Needs Analysis', marginX, y);
+            pdf.setFont('helvetica', 'normal');
+            pdf.setFontSize(9);
+            pdf.setTextColor(...MUTED);
+            pdf.text('Confidential · Client Intake', marginX, y + 14);
+            y += 28;
+            const dateStr = formatDate(getVal('date'));
+            const advisor = getVal('advisor');
+            pdf.setFontSize(9);
+            pdf.setTextColor(...TEXT);
+            const metaParts = [];
+            if (dateStr) metaParts.push(`Date: ${dateStr}`);
+            if (advisor) metaParts.push(`Advisor: ${advisor}`);
+            if (metaParts.length) {
+              pdf.text(metaParts.join('   ·   '), marginX, y);
+              y += 14;
+            }
+            pdf.setDrawColor(...RULE);
+            pdf.setLineWidth(0.6);
+            pdf.line(marginX, y, pageW - marginX, y);
+            y += 18;
+          }
+          function sectionHeader(num, title) {
+            ensureSpace(36);
+            pdf.setFillColor(...NAVY);
+            pdf.circle(marginX + 9, y + 1, 9, 'F');
+            pdf.setFont('helvetica', 'bold');
+            pdf.setFontSize(10);
+            pdf.setTextColor(255, 255, 255);
+            pdf.text(String(num), marginX + 9, y + 4, { align: 'center' });
+            pdf.setFontSize(12);
+            pdf.setTextColor(...NAVY);
+            pdf.text(title, marginX + 26, y + 4);
+            pdf.setDrawColor(...RULE);
+            pdf.setLineWidth(0.5);
+            const titleW = pdf.getTextWidth(title);
+            pdf.line(marginX + 30 + titleW, y + 2, pageW - marginX, y + 2);
+            y += 22;
+          }
+          function fieldLabel(text, x, yPos) {
+            pdf.setFont('helvetica', 'bold');
+            pdf.setFontSize(8);
+            pdf.setTextColor(...MUTED);
+            pdf.text(text.toUpperCase(), x, yPos);
+          }
+          function fieldValue(text, x, yPos, maxW) {
+            pdf.setFont('helvetica', 'normal');
+            pdf.setFontSize(10);
+            pdf.setTextColor(...TEXT);
+            const display = text || '—';
+            const lines = pdf.splitTextToSize(display, maxW);
+            pdf.text(lines, x, yPos);
+            return lines.length;
+          }
+          function singleLineField(label, value, x, width) {
+            fieldLabel(label, x, y);
+            const lines = fieldValue(value, x, y + 13, width);
+            pdf.setDrawColor(...RULE);
+            pdf.setLineWidth(0.4);
+            pdf.line(x, y + 16 + (lines - 1) * 12, x + width, y + 16 + (lines - 1) * 12);
+            return 22 + (lines - 1) * 12;
+          }
+          function twoColRow(items) {
+            const colW = (contentW - 16) / 2;
+            const heights = items.map(it => {
+              const v = it.value || '—';
+              const lines = pdf.splitTextToSize(v, colW);
+              return 22 + (lines.length - 1) * 12;
+            });
+            const rowH = Math.max(...heights);
+            ensureSpace(rowH + 4);
+            items.forEach((it, i) => {
+              const x = marginX + i * (colW + 16);
+              singleLineField(it.label, it.value, x, colW);
+            });
+            y += rowH + 4;
+          }
+          function fullWidthMultiline(label, value, minLines = 2) {
+            fieldLabel(label, marginX, y);
+            const lines = pdf.splitTextToSize(value || '—', contentW - 12);
+            const renderLines = Math.max(lines.length, minLines);
+            const blockH = 16 + renderLines * 12 + 6;
+            ensureSpace(blockH);
+            pdf.setFillColor(...BOX);
+            pdf.setDrawColor(...RULE);
+            pdf.setLineWidth(0.4);
+            pdf.roundedRect(marginX, y + 4, contentW, renderLines * 12 + 10, 4, 4, 'FD');
+            pdf.setFont('helvetica', 'normal');
+            pdf.setFontSize(10);
+            pdf.setTextColor(...TEXT);
+            pdf.text(lines, marginX + 8, y + 17);
+            y += blockH;
+          }
+          function checkboxList(label, options, selected) {
+            fieldLabel(label, marginX, y);
+            y += 13;
+            const colW = contentW / 4;
+            const startY = y;
+            options.forEach((opt, i) => {
+              const col = i % 4;
+              const row = Math.floor(i / 4);
+              const x = marginX + col * colW;
+              const yPos = startY + row * 16;
+              if (col === 0 && row > 0) ensureSpace(16);
+              const isChecked = selected.includes(opt);
+              pdf.setDrawColor(...ACCENT);
+              pdf.setLineWidth(0.6);
+              if (isChecked) {
+                pdf.setFillColor(...ACCENT);
+                pdf.roundedRect(x, yPos - 8, 9, 9, 1.5, 1.5, 'FD');
+                pdf.setDrawColor(255, 255, 255);
+                pdf.setLineWidth(1.1);
+                pdf.line(x + 2, yPos - 4, x + 4, yPos - 1.5);
+                pdf.line(x + 4, yPos - 1.5, x + 7.5, yPos - 6);
+              } else {
+                pdf.setFillColor(255, 255, 255);
+                pdf.roundedRect(x, yPos - 8, 9, 9, 1.5, 1.5, 'FD');
+              }
+              pdf.setFont('helvetica', 'normal');
+              pdf.setFontSize(9.5);
+              pdf.setTextColor(...TEXT);
+              pdf.text(opt, x + 13, yPos - 1);
+            });
+            const rows = Math.ceil(options.length / 4);
+            y = startY + rows * 16 + 6;
+          }
+          function insuranceTable() {
+            const headers = ['Cost', 'Amount', 'Company', 'Type', 'Length In Place'];
+            const costs = getAllVals('ins_cost[]');
+            const amts = getAllVals('ins_amount[]');
+            const cos = getAllVals('ins_company[]');
+            const typs = getAllVals('ins_type[]');
+            const lens = getAllVals('ins_length[]');
+            const rows = costs.map((_, i) => [costs[i], amts[i], cos[i], typs[i], lens[i]])
+              .filter(r => r.some(v => v && v.trim()));
+            const colW = contentW / 5;
+            ensureSpace(28);
+            pdf.setFillColor(...NAVY);
+            pdf.rect(marginX, y, contentW, 20, 'F');
+            pdf.setFont('helvetica', 'bold');
+            pdf.setFontSize(8.5);
+            pdf.setTextColor(255, 255, 255);
+            headers.forEach((h, i) => {
+              pdf.text(h.toUpperCase(), marginX + i * colW + 6, y + 13);
+            });
+            y += 20;
+            const dataRows = rows.length ? rows : [['—', '—', '—', '—', '—']];
+            dataRows.forEach((r, idx) => {
+              ensureSpace(22);
+              if (idx % 2 === 0) {
+                pdf.setFillColor(250, 251, 254);
+                pdf.rect(marginX, y, contentW, 22, 'F');
+              }
+              pdf.setDrawColor(...RULE);
+              pdf.setLineWidth(0.3);
+              pdf.line(marginX, y + 22, marginX + contentW, y + 22);
+              pdf.setFont('helvetica', 'normal');
+              pdf.setFontSize(9.5);
+              pdf.setTextColor(...TEXT);
+              r.forEach((cell, i) => {
+                const lines = pdf.splitTextToSize(cell || '—', colW - 12);
+                pdf.text(lines[0] || '—', marginX + i * colW + 6, y + 14);
+              });
+              y += 22;
+            });
+            y += 8;
+          }
+          function vitalsRow() {
+            ensureSpace(40);
+            const colW = contentW / 4;
+            const smoker = getRadioVal('smoker');
+            const items = [
+              { label: 'Smoker', value: smoker || '—' },
+              { label: 'Age', value: getVal('age') || '—' },
+              { label: 'Height', value: getVal('height') || '—' },
+              { label: 'Weight', value: getVal('weight') || '—' },
+            ];
+            items.forEach((it, i) => {
+              const x = marginX + i * colW;
+              fieldLabel(it.label, x, y);
+              fieldValue(it.value, x, y + 13, colW - 8);
+              pdf.setDrawColor(...RULE);
+              pdf.setLineWidth(0.4);
+              pdf.line(x, y + 17, x + colW - 8, y + 17);
+            });
+            y += 26;
+          }
+          function expensesRow() {
+            ensureSpace(36);
+            const colW = (contentW - 16) / 3;
+            const items = [
+              { label: 'Mortgage / Rent ($/mo)', value: getVal('mortgage_rent') },
+              { label: 'Home Value', value: getVal('home_value') },
+              { label: 'Amount Owing & Length Left', value: getVal('amount_owing') },
+            ];
+            items.forEach((it, i) => {
+              const x = marginX + i * (colW + 8);
+              fieldLabel(it.label, x, y);
+              fieldValue(it.value || '—', x, y + 13, colW);
+              pdf.setDrawColor(...RULE);
+              pdf.setLineWidth(0.4);
+              pdf.line(x, y + 17, x + colW, y + 17);
+            });
+            y += 26;
+          }
 
-          const clientName = (form.querySelector('input[name="client_name"]')?.value || 'client').trim();
+          // === Render the document ===
+          drawHeader();
+
+          sectionHeader(1, 'Client Information');
+          twoColRow([
+            { label: 'Client Name', value: getVal('client_name') },
+            { label: "Spouse's Name", value: getVal('spouse_name') },
+          ]);
+          twoColRow([
+            { label: 'Email', value: getVal('email') },
+            { label: 'Phone', value: getVal('phone') },
+          ]);
+          fullWidthMultiline('Beneficiary (Name & Relationship)', getVal('beneficiary'), 2);
+          y += 6;
+
+          sectionHeader(2, 'Income');
+          fullWidthMultiline('Income Amount & Source', getVal('income'), 2);
+          y += 6;
+
+          sectionHeader(3, 'Housing & Expenses');
+          expensesRow();
+          twoColRow([
+            { label: 'Other Debts', value: getVal('other_debts') },
+            { label: 'Utilities · Groceries · Other Bills', value: getVal('utilities_other') },
+          ]);
+          y += 6;
+
+          sectionHeader(4, 'Current Life Insurance');
+          insuranceTable();
+
+          sectionHeader(5, 'Retirement & Savings');
+          checkboxList('Accounts (Check All That Apply)',
+            ['Med Sup', '401(k)', 'Annuity', 'TSP', 'CD', 'Savings', 'IRA / Roth'],
+            getCheckedVals('savings[]'));
+          fullWidthMultiline('Details (Provider, Balance, Contribution, Vesting)', getVal('savings_details'), 2);
+          y += 6;
+
+          sectionHeader(6, 'Vitals');
+          vitalsRow();
+
+          sectionHeader(7, 'Current Medications');
+          fullWidthMultiline('Medication · Dosage · Frequency · Prescribing Physician', getVal('medications'), 4);
+          y += 6;
+
+          sectionHeader(8, 'Health Conditions');
+          fullWidthMultiline('Current & Past Conditions (Include Dates & Treatment Status)', getVal('conditions'), 4);
+          y += 6;
+
+          sectionHeader(9, 'Always Ask About');
+          checkboxList('Conditions Discussed',
+            ['Heart Attack', 'Stroke', 'Cancer', 'COPD', 'Arthritis', 'Organ Failure',
+             'Asthma', 'Diabetes', 'Anxiety', 'Depression', 'Felony', 'DUI'],
+            getCheckedVals('ask[]'));
+
+          sectionHeader(10, 'Why — Motivation, Goals, Family Priorities');
+          fullWidthMultiline('Notes', getVal('why'), 5);
+
+          addFooter();
+
+          const clientName = (getVal('client_name') || 'client');
           const safe = clientName.replace(/[^a-z0-9]+/gi, '-').replace(/(^-|-$)/g, '').toLowerCase() || 'client';
           pdf.save(`client-needs-analysis-${safe}.pdf`);
           showCwfToast('PDF downloaded.');
