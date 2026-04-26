@@ -1050,6 +1050,7 @@
       align-items: center;
       gap: 1rem;
       padding: 1rem 1.25rem;
+      min-height: 92px;
       background: #ffffff;
       border: 1px solid #e5e8ea;
       border-radius: 14px;
@@ -5468,6 +5469,7 @@
       if (panelName === 'profile') loadProfilePanel();
       if (panelName === 'calculator' && currentUser) loadCommissionPipeline();
       if (panelName === 'dialtracker' && typeof renderDialTracker === 'function') renderDialTracker();
+      try { history.replaceState(null, '', '#' + panelName); } catch (e) { /* ignore */ }
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
     document.querySelectorAll('.ss-sidebar-btn').forEach(btn => {
@@ -7099,7 +7101,8 @@
         const rankClass = rank <= 3 ? ' rank-' + rank : '';
         const medalClass = rank <= 3 ? '' : ' default';
         const salesCount = counts[name];
-        const isBest = historicalBests[name] && ap >= historicalBests[name] && ap > 0;
+        const showCrown = currentRange === 'weekly' || currentRange === 'monthly';
+        const isBest = showCrown && historicalBests[name] && ap >= historicalBests[name] && ap > 0;
         const isHatTrick = (todayCounts[name] || 0) >= 3;
 
         html += '<div class="ss-lb-card' + rankClass + '">';
