@@ -1263,7 +1263,14 @@
     }
 
     /* Print-only host that holds the worksheet during window.print() */
-    #cwf-print-host { display: none; }
+    #cwf-print-host {
+      display: none;
+      --cwf-ink:#1a1d24; --cwf-ink-soft:#3a4150; --cwf-muted:#6b7384;
+      --cwf-rule:#dfe2e8; --cwf-rule-soft:#eceef2;
+      --cwf-navy:#1f2c4a; --cwf-navy-deep:#15203a;
+      --cwf-gold:#b8893b; --cwf-gold-soft:#e8d9b8;
+      --cwf-paper:#ffffff; --cwf-field-bg:#fbfbfa; --cwf-focus:#3a5499;
+    }
 
     @media print {
       @page { size: letter; margin: 0.5in; }
@@ -11416,7 +11423,8 @@
         const originalLabel = exportBtn.textContent;
         exportBtn.textContent = 'Preparing…';
 
-        const card = form.querySelector('.cwf-card');
+        // The form element itself has class "cwf-card" — it IS the card.
+        const card = form;
         const cardParent = card.parentNode;
         const cardNext = card.nextSibling;
 
