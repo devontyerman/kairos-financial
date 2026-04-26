@@ -5429,6 +5429,15 @@
         }
       } catch (e) { console.error('Session check failed:', e); }
       updateAuthUI();
+      // Re-run the active panel's loaders now that currentUser is populated
+      // (the hash IIFE may have activated a panel before auth resolved).
+      try {
+        const activeBtn = document.querySelector('.ss-sidebar-btn.active');
+        const activePanel = (activeBtn && activeBtn.dataset.panel)
+          || (window.location.hash || '').replace('#', '')
+          || 'goals';
+        if (typeof activatePanel === 'function') activatePanel(activePanel);
+      } catch (e) { /* ignore */ }
     }
     checkSession();
 
