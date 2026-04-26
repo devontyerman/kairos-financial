@@ -193,50 +193,217 @@
     .ss-sidebar-hamburger.open span:nth-child(2) { opacity: 0; }
     .ss-sidebar-hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
     .ss-sidebar-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 5px;
-      width: 100%;
-    }
-    .ss-sidebar-btn {
-      aspect-ratio: 1;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 0.2rem;
-      background: #f8f8fa;
-      border: 1px solid #e0e0e5;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      padding: 0.3rem;
-      color: #333333;
-      flex-shrink: 0;
-      overflow: hidden;
+      gap: 2px;
+      width: 100%;
+      padding: 0;
+      background: transparent;
+      border: none;
+      border-radius: 0;
     }
-    .ss-sidebar-btn svg { width: 36px; height: 36px; flex-shrink: 0; }
+    .ss-sidebar-btn {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 8px;
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      padding: 7px 9px;
+      color: #444444;
+      flex-shrink: 0;
+      width: 100%;
+      text-align: left;
+    }
+    .ss-sidebar-btn svg { width: 18px; height: 18px; flex-shrink: 0; opacity: 0.7; }
     .ss-sidebar-btn span {
       font-family: 'Inter', sans-serif;
-      font-size: 14px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.02em;
+      font-size: 16px;
+      font-weight: 600;
+      text-transform: none;
+      letter-spacing: normal;
       line-height: 1.2;
-      text-align: center;
+      text-align: left;
       white-space: nowrap;
-      max-width: 100%;
     }
     .ss-sidebar-btn:hover {
       color: #1a1a1a;
-      background: #f0ecf9;
-      border-color: #c4b0e8;
+      background: #f0f0f5;
+      border-color: transparent;
     }
     .ss-sidebar-btn.active {
-      color: #ffffff;
-      background: #1a1a1a;
-      border-color: #4a4a5a;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      color: #1a1a1a;
+      background: #ececf2;
+      border-color: transparent;
+      box-shadow: none;
+    }
+    .ss-sidebar-btn.active svg { opacity: 1; }
+
+    /* User header (name + settings cogwheel) */
+    .ss-sidebar-user {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 7px 9px;
+      margin-bottom: 2px;
+      gap: 0.5rem;
+    }
+    .ss-sidebar-user.visible { display: flex; }
+    .ss-sidebar-user-name {
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: #1a1a1a;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      flex: 1;
+      min-width: 0;
+    }
+    .ss-sidebar-settings {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+      color: #666;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      transition: all 0.15s ease;
+      flex-shrink: 0;
+    }
+    .ss-sidebar-settings:hover { background: #f0f0f5; color: #1a1a1a; }
+    .ss-sidebar-settings svg { width: 18px; height: 18px; }
+
+    /* Dial Tracker — vertical stack */
+    .dt-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+    .dt-card {
+      --dt-c: #16a34a;
+      --dt-c-soft: rgba(22,163,74,0.08);
+      position: relative;
+      background: #ffffff;
+      border: 1px solid #e5e5ea;
+      border-left: 4px solid var(--dt-c);
+      border-radius: 12px;
+      padding: 0.95rem 1.15rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+    .dt-card:hover { box-shadow: 0 2px 10px rgba(22,163,74,0.08); }
+    .dt-card-row {
+      display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+    }
+    .dt-card-info { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+    .dt-card-label {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.95rem; font-weight: 800; color: #1a1a1a;
+      text-transform: uppercase; letter-spacing: 0.06em;
+    }
+    .dt-card-meta {
+      font-size: 0.74rem; font-weight: 600; color: #888;
+    }
+    .dt-card-meta.no-goal { color: #b8b8c0; font-style: italic; }
+    .dt-card-counter {
+      display: flex; align-items: center; gap: 0.4rem;
+      flex-shrink: 0;
+    }
+    .dt-count-input {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1.6rem; font-weight: 800; color: var(--dt-c);
+      line-height: 1; text-align: center;
+      width: 78px; min-width: 78px;
+      border: 1px solid #e5e5ea; outline: none;
+      background: var(--dt-c-soft);
+      padding: 0.45rem 0.4rem; border-radius: 10px;
+      -moz-appearance: textfield;
+      transition: border-color 0.15s ease;
+    }
+    .dt-count-input::-webkit-outer-spin-button,
+    .dt-count-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+    .dt-count-input:focus { border-color: var(--dt-c); }
+    .dt-card-bar {
+      background: #f0f0f3; border-radius: 100px; height: 6px; overflow: hidden;
+    }
+    .dt-card-bar-fill {
+      height: 100%; border-radius: 100px;
+      background: var(--dt-c);
+      transition: width 0.3s ease;
+    }
+    .dt-btn {
+      width: 36px; height: 36px;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-family: 'Inter', sans-serif;
+      font-size: 1.2rem; font-weight: 700;
+      border-radius: 8px;
+      cursor: pointer; transition: all 0.15s ease;
+      border: 1px solid #e0e0e5;
+      background: #ffffff; color: #555;
+      user-select: none;
+      flex-shrink: 0;
+      line-height: 1;
+    }
+    .dt-btn:hover { border-color: var(--dt-c); color: var(--dt-c); background: var(--dt-c-soft); }
+    .dt-btn:active { transform: scale(0.94); }
+    .dt-btn.dt-plus {
+      background: var(--dt-c);
+      color: #fff; border-color: var(--dt-c);
+    }
+    .dt-btn.dt-plus:hover {
+      filter: brightness(1.08);
+      color: #fff;
+      background: var(--dt-c);
+    }
+
+    /* Submit KPIs panel — clean grid */
+    .dt-submit-card {
+      margin-top: 1.25rem;
+      background: #ffffff;
+      border: 1px solid #e5e5ea;
+      border-radius: 14px;
+      padding: 1.25rem;
+    }
+    .dt-submit-title {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.95rem; font-weight: 800; color: #1a1a1a;
+      text-transform: uppercase; letter-spacing: 0.06em;
+      margin-bottom: 1rem;
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    .dt-submit-title svg { color: #16a34a; }
+    .dt-submit-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+    .dt-submit-grid .ss-field { margin: 0; }
+    .dt-submit-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.6rem;
+    }
+    .dt-submit-actions .ss-submit { margin: 0; }
+    .dt-submit-msg {
+      margin-top: 0.75rem; font-size: 0.82rem; text-align: center; display: none;
+    }
+    @media (max-width: 600px) {
+      .dt-submit-grid { grid-template-columns: 1fr; }
+      .dt-submit-actions { grid-template-columns: 1fr; }
+      .dt-card-row { gap: 0.5rem; }
+      .dt-count-input { width: 64px; min-width: 64px; font-size: 1.4rem; }
+      .dt-btn { width: 32px; height: 32px; font-size: 1.05rem; }
     }
 
     /* Page links below sidebar grid */
@@ -245,11 +412,11 @@
       flex-direction: column;
       gap: 2px;
       width: 100%;
-      padding: 5px;
-      background: #fafafa;
-      border: 1px solid #e5e5ea;
-      border-radius: 10px;
-      margin-top: 6px;
+      padding: 0;
+      background: transparent;
+      border: none;
+      border-radius: 0;
+      margin-top: 2px;
     }
     .ss-nav-links a {
       display: flex;
@@ -842,18 +1009,38 @@
 
     .ss-lb-filters { display: flex; gap: 0.4rem; margin-bottom: 2rem; justify-content: center; flex-wrap: wrap; }
     .ss-lb-filter {
-      padding: 0.5rem 1.2rem;
-      font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.8rem; font-weight: 600;
-      color: #444444;
+      padding: 0.5rem 1.05rem;
+      font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.78rem; font-weight: 600;
+      color: #4a4a55;
       background: #ffffff;
-      border: 1px solid #ddd;
-      border-radius: 100px; cursor: pointer; transition: all 0.25s ease;
+      border: 1px solid #e5e5ea;
+      border-radius: 100px; cursor: pointer; transition: all 0.2s ease;
+      letter-spacing: 0.01em;
     }
-    .ss-lb-filter:hover { border-color: #b0b0b8; color: #1a1a1a; background: #f0f0f5; box-shadow: 0 2px 6px rgba(0,0,0,0.06); }
+    .ss-lb-filter:hover {
+      border-color: #4ade80;
+      color: #15803d;
+      background: rgba(74,222,128,0.10);
+    }
     .ss-lb-filter.active {
-      background: #1a1a1a;
-      color: #ffffff; border-color: #4a4a5a; font-weight: 700;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      background: linear-gradient(135deg, #16a34a, #22c55e);
+      color: #ffffff;
+      border-color: transparent;
+      font-weight: 700;
+      box-shadow: 0 4px 14px rgba(22,163,74,0.30);
+    }
+    .ss-lb-filter.active:hover {
+      filter: brightness(1.05);
+      color: #ffffff;
+      background: linear-gradient(135deg, #16a34a, #22c55e);
+    }
+    .ss-lb-filter[data-range="custom"] {
+      border-style: dashed;
+      border-color: #c4d8c8;
+      color: #15803d;
+    }
+    .ss-lb-filter[data-range="custom"].active {
+      border-style: solid;
     }
 
     .ss-lb-cards { display: flex; flex-direction: column; gap: 0.6rem; }
@@ -864,26 +1051,43 @@
       gap: 1rem;
       padding: 1rem 1.25rem;
       background: #ffffff;
-      border: 1px solid #ddd;
+      border: 1px solid #e5e8ea;
       border-radius: 14px;
-      transition: all 0.3s ease;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      transition: all 0.25s ease;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
     }
-    .ss-lb-card:nth-child(even) { background: #f8f8fa; }
-    .ss-lb-card:hover { background: #f0ecf9; border-color: #c0c0c8; transform: translateX(6px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+    .ss-lb-card:nth-child(even) { background: #fafafa; }
+    .ss-lb-card:hover {
+      background: rgba(74,222,128,0.08);
+      border-color: #4ade80;
+      transform: translateX(4px);
+      box-shadow: 0 6px 18px rgba(22,163,74,0.12);
+    }
 
     .ss-lb-card.rank-1 {
-      background: linear-gradient(135deg, rgba(201,168,76,0.08) 0%, rgba(255,255,255,0.03) 100%);
-      border-color: rgba(201,168,76,0.25);
-      box-shadow: 0 4px 24px rgba(201,168,76,0.1);
+      background: linear-gradient(135deg, rgba(250,204,21,0.18) 0%, rgba(253,224,71,0.08) 100%);
+      border-color: rgba(234,179,8,0.45);
+      box-shadow: 0 6px 24px rgba(234,179,8,0.20);
+    }
+    .ss-lb-card.rank-1:hover {
+      background: linear-gradient(135deg, rgba(250,204,21,0.26) 0%, rgba(253,224,71,0.12) 100%);
+      border-color: rgba(234,179,8,0.65);
     }
     .ss-lb-card.rank-2 {
-      background: linear-gradient(135deg, rgba(148,163,184,0.06) 0%, rgba(255,255,255,0.02) 100%);
-      border-color: rgba(148,163,184,0.15);
+      background: linear-gradient(135deg, rgba(148,163,184,0.18) 0%, rgba(203,213,225,0.08) 100%);
+      border-color: rgba(100,116,139,0.35);
+      box-shadow: 0 4px 16px rgba(100,116,139,0.12);
+    }
+    .ss-lb-card.rank-2:hover {
+      background: linear-gradient(135deg, rgba(148,163,184,0.26) 0%, rgba(203,213,225,0.12) 100%);
     }
     .ss-lb-card.rank-3 {
-      background: linear-gradient(135deg, rgba(205,127,50,0.06) 0%, rgba(255,255,255,0.02) 100%);
-      border-color: rgba(205,127,50,0.15);
+      background: linear-gradient(135deg, rgba(251,146,60,0.18) 0%, rgba(253,186,116,0.08) 100%);
+      border-color: rgba(234,88,12,0.40);
+      box-shadow: 0 4px 16px rgba(234,88,12,0.15);
+    }
+    .ss-lb-card.rank-3:hover {
+      background: linear-gradient(135deg, rgba(251,146,60,0.26) 0%, rgba(253,186,116,0.12) 100%);
     }
 
     .ss-lb-medal {
@@ -894,10 +1098,10 @@
       font-size: 1rem; font-weight: 900;
       flex-shrink: 0;
     }
-    .rank-1 .ss-lb-medal { background: linear-gradient(135deg, #c9a84c, #f0d878); color: #111; box-shadow: 0 4px 16px rgba(201,168,76,0.4); }
-    .rank-2 .ss-lb-medal { background: linear-gradient(135deg, #64748b, #94a3b8); color: #1a1a1a; }
-    .rank-3 .ss-lb-medal { background: linear-gradient(135deg, #cd7f32, #e8a860); color: #1a1a1a; }
-    .ss-lb-medal.default { background: #f0f0f3; border: 1px solid #dcdce0; color: #222222; }
+    .rank-1 .ss-lb-medal { background: linear-gradient(135deg, #eab308, #fde047); color: #5a3d00; box-shadow: 0 4px 18px rgba(234,179,8,0.55); }
+    .rank-2 .ss-lb-medal { background: linear-gradient(135deg, #94a3b8, #cbd5e1); color: #1f2937; box-shadow: 0 3px 12px rgba(100,116,139,0.35); }
+    .rank-3 .ss-lb-medal { background: linear-gradient(135deg, #f97316, #fb923c); color: #fff; box-shadow: 0 3px 12px rgba(234,88,12,0.45); }
+    .ss-lb-medal.default { background: #f4f6f4; border: 1px solid #dcdce0; color: #4a5a4d; }
 
     .ss-lb-info { flex: 1; }
     .ss-lb-name { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.95rem; font-weight: 700; color: #1a1a1a; }
@@ -1879,30 +2083,47 @@
       text-shadow: none;
     }
 
-    /* Leaderboard filter rows */
-    .ss-lb-filter-rows { display: flex; flex-direction: column; gap: 0.5rem; align-items: center; margin-bottom: 1.25rem; }
-    .ss-lb-filter-row { display: flex; gap: 0.4rem; flex-wrap: wrap; justify-content: center; }
+    /* Leaderboard filter rows — single flexible row */
+    .ss-lb-filter-rows {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      justify-content: center;
+      margin-bottom: 1.25rem;
+      padding: 0.5rem;
+      background: #f8faf8;
+      border: 1px solid #eaeef0;
+      border-radius: 100px;
+      max-width: 100%;
+    }
+    .ss-lb-filter-row { display: contents; }
     .ss-lb-custom-range {
       display: none; gap: 0.5rem; align-items: center; justify-content: center;
-      margin-bottom: 2rem; flex-wrap: wrap;
+      margin: 0 auto 1.5rem;
+      max-width: 520px;
+      padding: 0.75rem 1rem;
+      background: rgba(74,222,128,0.06);
+      border: 1px solid rgba(34,197,94,0.18);
+      border-radius: 14px;
+      flex-wrap: wrap;
       animation: ssFadeIn 0.25s ease;
     }
     .ss-lb-custom-range.visible { display: flex; }
     .ss-lb-custom-range input[type="date"] {
       padding: 0.45rem 0.7rem; font-size: 0.8rem; font-family: 'Inter', sans-serif;
-      color: #1a1a1a; background: #ffffff; border: 1px solid #ddd;
-      border-radius: 8px; color-scheme: dark;
+      color: #1a1a1a; background: #ffffff; border: 1px solid #d6e4d8;
+      border-radius: 8px;
     }
-    .ss-lb-custom-range input[type="date"]:focus { outline: none; border-color: #4a4a5a; box-shadow: 0 0 0 3px rgba(37,99,235,0.15); }
+    .ss-lb-custom-range input[type="date"]:focus { outline: none; border-color: #22c55e; box-shadow: 0 0 0 3px rgba(34,197,94,0.18); }
     .ss-lb-custom-range button {
       padding: 0.5rem 1.2rem; font-family: 'Plus Jakarta Sans', sans-serif;
       font-size: 0.78rem; font-weight: 700; color: #ffffff;
-      background: #1a1a1a; border: none;
+      background: linear-gradient(135deg, #16a34a, #22c55e); border: none;
       border-radius: 100px; cursor: pointer; transition: all 0.2s ease;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 8px rgba(22,163,74,0.25);
     }
-    .ss-lb-custom-range button:hover { box-shadow: 0 6px 20px rgba(168,85,247,0.55); transform: translateY(-1px); }
-    .ss-lb-custom-range span { color: #222222; font-size: 0.78rem; }
+    .ss-lb-custom-range button:hover { box-shadow: 0 6px 16px rgba(22,163,74,0.40); transform: translateY(-1px); }
+    .ss-lb-custom-range span { color: #4a5a4d; font-size: 0.78rem; font-weight: 600; }
 
     /* Reusable confirm modal */
     .ss-confirm-overlay {
@@ -3026,7 +3247,11 @@
         -webkit-overflow-scrolling: touch;
         padding: 0 0.75rem 0.6rem;
         scrollbar-width: none;
+        background: transparent;
+        border: none;
+        border-radius: 0;
       }
+      .ss-sidebar-user { display: none !important; }
       .ss-sidebar-grid::-webkit-scrollbar { display: none; }
       .ss-sidebar-btn {
         aspect-ratio: auto;
@@ -3297,10 +3522,20 @@
       </div>
       <button class="ss-sidebar-hamburger" id="ssHamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
     </div>
+    <div class="ss-sidebar-user" id="sidebarUser">
+      <span class="ss-sidebar-user-name" id="sidebarUserName"></span>
+      <button class="ss-sidebar-settings" id="sidebarSettingsBtn" type="button" aria-label="Profile settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+      </button>
+    </div>
     <div class="ss-sidebar-grid">
     <button class="ss-sidebar-btn active" data-panel="goals">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
       <span>Tracker</span>
+    </button>
+    <button class="ss-sidebar-btn" data-panel="dialtracker">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.13.96.37 1.9.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.91.33 1.85.57 2.81.7A2 2 0 0122 16.92z"/></svg>
+      <span>Dial Tracker</span>
     </button>
     <button class="ss-sidebar-btn" data-panel="leaderboard">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h12v6a6 6 0 01-12 0V2z"/><path d="M6 4H4a2 2 0 00-2 2v1a4 4 0 004 4"/><path d="M18 4h2a2 2 0 012 2v1a4 4 0 01-4 4"/><path d="M12 14v4"/><path d="M8 22h8"/><path d="M8 22a2 2 0 01-2-2h12a2 2 0 01-2 2"/></svg>
@@ -3334,10 +3569,6 @@
 
     <!-- Mobile dropdown menu (inside sidebar, no z-index issues) -->
     <div class="ss-mobile-menu" id="ssMobileMenu">
-      <a href="index.html">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-        Home
-      </a>
       <a href="#" data-panel="training" class="ss-nav-panel-link">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
         Training Videos
@@ -3353,19 +3584,11 @@
       <a href="https://app.insurancetoolkits.com/fex/quoter" target="_blank" rel="noopener noreferrer">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
         Toolkit
-      </a>
-      <a href="#" data-panel="profile" class="ss-nav-panel-link">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-        Profile
       </a>
     </div>
 
     <!-- Page links (always visible below grid) -->
-    <div class="ss-nav-links open" style="margin-top: 0.5rem;">
-      <a href="index.html">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-        Home
-      </a>
+    <div class="ss-nav-links open">
       <a href="#" data-panel="training" class="ss-nav-panel-link">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
         Training Videos
@@ -3381,14 +3604,6 @@
       <a href="https://app.insurancetoolkits.com/fex/quoter" target="_blank" rel="noopener noreferrer">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
         Toolkit
-      </a>
-      <a href="#" data-panel="profile" class="ss-nav-panel-link">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-        Profile
-      </a>
-      <a href="#" id="sidebarSignOut" style="display:none; color:#ef4444;">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-        Sign Out
       </a>
     </div>
   </nav>
@@ -3675,6 +3890,44 @@
             </div>
             <div id="kpiStatsContent"></div>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ DIAL TRACKER PANEL ═══ -->
+    <div class="ss-panel" id="panel-dialtracker">
+      <div style="padding: 2.5rem 1.5rem; max-width: 720px; margin: 0 auto;">
+        <div class="ss-panel-head">
+          <h2>Dial Tracker</h2>
+          <p class="ss-panel-sub">Tally your activity throughout the day. Counts auto-save in this browser.</p>
+        </div>
+
+        <div class="dt-grid" id="dtGrid"></div>
+
+        <div class="dt-submit-card">
+          <div class="dt-submit-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            Submit to KPIs
+          </div>
+          <div class="dt-submit-grid">
+            <div class="ss-field">
+              <label class="ss-label">Date</label>
+              <input type="date" class="ss-input" id="dtDate" onclick="try{this.showPicker()}catch(e){}" style="cursor:pointer;" />
+            </div>
+            <div class="ss-field">
+              <label class="ss-label">Lead Spend ($)</label>
+              <input type="number" class="ss-input" id="dtLeadSpend" min="0" step="0.01" placeholder="0.00" />
+            </div>
+            <div class="ss-field">
+              <label class="ss-label">Deposits ($)</label>
+              <input type="number" class="ss-input" id="dtDeposits" min="0" step="0.01" placeholder="0.00" />
+            </div>
+          </div>
+          <div class="dt-submit-actions">
+            <button type="button" class="ss-submit" id="dtSubmitBtn" style="background:#16a34a;">Submit KPIs</button>
+            <button type="button" class="ss-submit" id="dtResetBtn" style="background:#ffffff;color:#ef4444;border:1px solid #ef4444;">Reset Day</button>
+          </div>
+          <div id="dtMsg" class="dt-submit-msg"></div>
         </div>
       </div>
     </div>
@@ -4657,6 +4910,19 @@
           </button>
           <div id="profilePasswordMsg" style="margin-top:0.6rem;font-size:0.8rem;text-align:center;display:none;"></div>
         </div>
+
+        <!-- Sign Out -->
+        <div class="ss-form-card" style="margin-top:1.25rem;">
+          <div class="ss-form-title" style="color:#ef4444;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            Sign Out
+          </div>
+          <p style="font-size:0.82rem;color:#666;margin-bottom:0.9rem;">End your session on this device.</p>
+          <button class="ss-submit" type="button" id="profileSignOut" style="background:#ef4444;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            Sign Out
+          </button>
+        </div>
       </div>
     </div>
 
@@ -5096,9 +5362,13 @@
     function updateAuthUI() {
       const signupLink = document.querySelector('.ss-signup-link');
       const globalGate = document.getElementById('globalAuthGate');
+      const sidebarUser = document.getElementById('sidebarUser');
+      const sidebarUserName = document.getElementById('sidebarUserName');
       if (currentUser) {
         const name = currentUser.user_metadata?.name || currentUser.email;
         authName.textContent = name;
+        if (sidebarUserName) sidebarUserName.textContent = name;
+        if (sidebarUser) sidebarUser.classList.add('visible');
         authBar.style.display = 'flex';
         authPrompt.style.display = 'none';
         saleForm.style.opacity = '1';
@@ -5108,10 +5378,11 @@
         document.getElementById('lbAuthWrap').style.display = 'block';
         if (signupLink) signupLink.style.display = 'none';
         if (globalGate) globalGate.style.display = 'none';
-        document.getElementById('sidebarSignOut').style.display = '';
         // Load user's saved comp level and apply to calculator
         if (typeof loadUserCompLevel === 'function') loadUserCompLevel();
       } else {
+        if (sidebarUser) sidebarUser.classList.remove('visible');
+        if (sidebarUserName) sidebarUserName.textContent = '';
         authBar.style.display = 'none';
         authPrompt.style.display = 'none';
         saleForm.style.opacity = '0.35';
@@ -5121,7 +5392,6 @@
         document.getElementById('lbAuthWrap').style.display = 'none';
         if (signupLink) signupLink.style.display = 'block';
         if (globalGate) globalGate.style.display = 'flex';
-        document.getElementById('sidebarSignOut').style.display = 'none';
       }
     }
 
@@ -5170,7 +5440,8 @@
       updateAuthUI();
       activatePanel('goals');
     }
-    document.getElementById('sidebarSignOut').addEventListener('click', (e) => { e.preventDefault(); doLogout(); });
+    const profileSignOutBtn = document.getElementById('profileSignOut');
+    if (profileSignOutBtn) profileSignOutBtn.addEventListener('click', (e) => { e.preventDefault(); doLogout(); });
 
     // Prompt buttons
     document.getElementById('promptLogin').addEventListener('click', () => {
@@ -5196,6 +5467,7 @@
       if (panelName === 'goals' && currentUser) { loadGoalTracker(); loadAgentPerformance(); }
       if (panelName === 'profile') loadProfilePanel();
       if (panelName === 'calculator' && currentUser) loadCommissionPipeline();
+      if (panelName === 'dialtracker' && typeof renderDialTracker === 'function') renderDialTracker();
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
     document.querySelectorAll('.ss-sidebar-btn').forEach(btn => {
@@ -5208,12 +5480,183 @@
         activatePanel(link.dataset.panel);
       });
     });
+    // ─── DIAL TRACKER ───
+    const DT_KEY = 'dialTrackerData';
+    const DT_CATEGORIES = [
+      { key: 'dials',         label: 'Dials',                goal: 300, target: 'kpiDials',         c: '#166534', cs: 'rgba(22,101,52,0.10)' },
+      { key: 'answers',       label: 'Answers',              goal: 30,  target: 'kpiAnswers',       c: '#15803d', cs: 'rgba(21,128,61,0.12)' },
+      { key: 'appointments',  label: 'Appointments Booked',  goal: 0,   target: 'kpiAppointments',  c: '#16a34a', cs: 'rgba(22,163,74,0.12)' },
+      { key: 'presentations', label: 'Presentations',        goal: 3,   target: 'kpiPresentations', c: '#22c55e', cs: 'rgba(34,197,94,0.14)' },
+      { key: 'closes',        label: 'Closes',               goal: 0,   target: 'kpiDeals',         c: '#4ade80', cs: 'rgba(74,222,128,0.18)' }
+    ];
+    function dtDefaults() {
+      const o = {};
+      DT_CATEGORIES.forEach(c => { o[c.key] = 0; });
+      return o;
+    }
+    function dtLoad() {
+      try {
+        const raw = localStorage.getItem(DT_KEY);
+        if (!raw) return dtDefaults();
+        const parsed = JSON.parse(raw);
+        const out = dtDefaults();
+        DT_CATEGORIES.forEach(c => {
+          const v = parseInt(parsed[c.key]);
+          if (!isNaN(v) && v >= 0) out[c.key] = v;
+        });
+        return out;
+      } catch (e) { return dtDefaults(); }
+    }
+    function dtSave(state) { localStorage.setItem(DT_KEY, JSON.stringify(state)); }
+    let dtState = dtLoad();
+
+    function renderDialTracker() {
+      const grid = document.getElementById('dtGrid');
+      if (!grid) return;
+      grid.innerHTML = DT_CATEGORIES.map(c => {
+        const count = dtState[c.key] || 0;
+        const pct = c.goal > 0 ? Math.min(100, Math.round((count / c.goal) * 100)) : 0;
+        const metaHtml = c.goal > 0
+          ? '<span class="dt-card-meta">Goal ' + c.goal + ' · ' + pct + '%</span>'
+          : '';
+        const bar = c.goal > 0
+          ? '<div class="dt-card-bar"><div class="dt-card-bar-fill" style="width:' + pct + '%"></div></div>'
+          : '';
+        const styleVars = '--dt-c:' + c.c + ';--dt-c-soft:' + c.cs + ';';
+        return ''
+          + '<div class="dt-card" data-cat="' + c.key + '" style="' + styleVars + '">'
+          +   '<div class="dt-card-row">'
+          +     '<div class="dt-card-info">'
+          +       '<span class="dt-card-label">' + c.label + '</span>'
+          +       metaHtml
+          +     '</div>'
+          +     '<div class="dt-card-counter">'
+          +       '<button type="button" class="dt-btn dt-minus" data-cat="' + c.key + '" data-step="-1" aria-label="Decrement">−</button>'
+          +       '<input type="number" class="dt-count-input" id="dtCount-' + c.key + '" data-cat="' + c.key + '" min="0" inputmode="numeric" value="' + count + '" />'
+          +       '<button type="button" class="dt-btn dt-plus" data-cat="' + c.key + '" data-step="1" aria-label="Increment">+</button>'
+          +     '</div>'
+          +   '</div>'
+          +   bar
+          + '</div>';
+      }).join('');
+      // Default date to today if empty
+      const dtDate = document.getElementById('dtDate');
+      if (dtDate && !dtDate.value) dtDate.value = new Date().toISOString().slice(0, 10);
+    }
+
+    function dtUpdateCard(cat) {
+      const countEl = document.getElementById('dtCount-' + cat);
+      if (countEl && document.activeElement !== countEl) countEl.value = dtState[cat];
+      const cfg = DT_CATEGORIES.find(c => c.key === cat);
+      if (cfg && cfg.goal > 0) {
+        const pct = Math.min(100, Math.round((dtState[cat] / cfg.goal) * 100));
+        const card = countEl && countEl.closest('.dt-card');
+        const fill = card && card.querySelector('.dt-card-bar-fill');
+        if (fill) fill.style.width = pct + '%';
+        const metaEl = card && card.querySelector('.dt-card-meta');
+        if (metaEl) metaEl.textContent = 'Goal ' + cfg.goal + ' · ' + pct + '%';
+      }
+    }
+
+    // Delegated click handler for +/- buttons
+    document.addEventListener('click', (e) => {
+      const btn = e.target.closest('.dt-btn');
+      if (!btn) return;
+      const cat = btn.dataset.cat;
+      const step = parseInt(btn.dataset.step) || 0;
+      if (!cat || !(cat in dtState)) return;
+      dtState[cat] = Math.max(0, (dtState[cat] || 0) + step);
+      dtSave(dtState);
+      dtUpdateCard(cat);
+    });
+
+    // Manual entry handler — typing into the count input
+    document.addEventListener('input', (e) => {
+      const inp = e.target.closest('.dt-count-input');
+      if (!inp) return;
+      const cat = inp.dataset.cat;
+      if (!cat || !(cat in dtState)) return;
+      const v = parseInt(inp.value);
+      dtState[cat] = (!isNaN(v) && v >= 0) ? v : 0;
+      dtSave(dtState);
+      const cfg = DT_CATEGORIES.find(c => c.key === cat);
+      if (cfg && cfg.goal > 0) {
+        const pct = Math.min(100, Math.round((dtState[cat] / cfg.goal) * 100));
+        const card = inp.closest('.dt-card');
+        const fill = card && card.querySelector('.dt-card-bar-fill');
+        if (fill) fill.style.width = pct + '%';
+        const metaEl = card && card.querySelector('.dt-card-meta');
+        if (metaEl) metaEl.textContent = 'Goal ' + cfg.goal + ' · ' + pct + '%';
+      }
+    });
+
+    // Clamp/normalize input on blur (e.g., empty → 0, negative → 0)
+    document.addEventListener('blur', (e) => {
+      const inp = e.target.closest && e.target.closest('.dt-count-input');
+      if (!inp) return;
+      const cat = inp.dataset.cat;
+      if (!cat || !(cat in dtState)) return;
+      inp.value = dtState[cat];
+    }, true);
+
+    // Reset day
+    const dtResetBtn = document.getElementById('dtResetBtn');
+    if (dtResetBtn) {
+      dtResetBtn.addEventListener('click', async () => {
+        const ok = await showConfirmModal({
+          title: 'Reset Day?',
+          message: 'This clears all tally counts back to zero. This cannot be undone.',
+          confirmText: 'Reset',
+          cancelText: 'Cancel',
+          variant: 'warning',
+          icon: '↺'
+        });
+        if (!ok) return;
+        dtState = dtDefaults();
+        dtSave(dtState);
+        renderDialTracker();
+      });
+    }
+
+    // Submit — populate the existing #kpiForm fields and dispatch its submit
+    const dtSubmitBtn = document.getElementById('dtSubmitBtn');
+    if (dtSubmitBtn) {
+      dtSubmitBtn.addEventListener('click', () => {
+        const msg = document.getElementById('dtMsg');
+        if (!currentUser) {
+          msg.textContent = 'You must be signed in to submit KPIs.';
+          msg.style.color = '#f87171'; msg.style.display = 'block';
+          return;
+        }
+        msg.style.display = 'none';
+        const dateVal = document.getElementById('dtDate').value || new Date().toISOString().slice(0, 10);
+        document.getElementById('kpiDate').value = dateVal;
+        DT_CATEGORIES.forEach(c => {
+          document.getElementById(c.target).value = dtState[c.key] || 0;
+        });
+        document.getElementById('kpiLeadSpend').value = document.getElementById('dtLeadSpend').value || 0;
+        document.getElementById('kpiDeposits').value = document.getElementById('dtDeposits').value || 0;
+        // Reuse existing KPI submit handler
+        document.getElementById('kpiForm').dispatchEvent(new Event('submit', { cancelable: true }));
+        msg.textContent = 'Submitting…';
+        msg.style.color = '#16a34a'; msg.style.display = 'block';
+      });
+    }
+
+    // Cogwheel in sidebar user header → profile panel
+    const sidebarSettingsBtn = document.getElementById('sidebarSettingsBtn');
+    if (sidebarSettingsBtn) {
+      sidebarSettingsBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        activatePanel('profile');
+      });
+    }
 
     // Auto-open panel from URL hash (e.g. saleshub.html#training)
     (function openPanelFromHash() {
       const hash = (window.location.hash || '').replace('#', '');
       if (!hash) return;
-      const validPanels = ['submit', 'training', 'performance', 'leaderboard', 'goals', 'policies', 'calculator', 'profile'];
+      const validPanels = ['submit', 'training', 'performance', 'leaderboard', 'goals', 'policies', 'calculator', 'profile', 'dialtracker'];
       if (validPanels.includes(hash)) activatePanel(hash);
     })();
 
