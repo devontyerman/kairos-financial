@@ -1273,13 +1273,40 @@
     }
 
     @media print {
-      @page { size: letter; margin: 0.5in; }
+      @page { size: letter; margin: 0.35in; }
       html, body { background: #fff !important; height: auto !important; overflow: visible !important; }
       body.cwf-printing > *:not(#cwf-print-host) { display: none !important; }
-      body.cwf-printing #cwf-print-host { display: block !important; position: static !important; padding: 0; margin: 0; }
+      body.cwf-printing #cwf-print-host { display: block !important; position: static !important; padding: 0; margin: 0; font-size: 10px; }
       body.cwf-printing .cwf-wrap { max-width: none !important; margin: 0 !important; padding: 0 !important; }
       body.cwf-printing .cwf-card { box-shadow: none !important; border-radius: 0 !important; overflow: visible !important; }
-      body.cwf-printing .cwf-card-pad { padding: 14px 8px 8px !important; }
+      body.cwf-printing .cwf-card-pad { padding: 10px 4px 4px !important; }
+      /* Compact spacing to fit on 2 pages */
+      body.cwf-printing .cwf-section { margin-bottom: 8px !important; }
+      body.cwf-printing .cwf-sec-head { margin-bottom: 4px !important; }
+      body.cwf-printing .cwf-sec-num { width: 18px !important; height: 18px !important; font-size: 10px !important; }
+      body.cwf-printing .cwf-sec-title { font-size: 11px !important; letter-spacing: .14em !important; }
+      body.cwf-printing .cwf-sec-sub { font-size: 9px !important; }
+      body.cwf-printing .cwf-head { padding-bottom: 8px !important; margin-bottom: 10px !important; }
+      body.cwf-printing .cwf-brand-text h1 { font-size: 20px !important; }
+      body.cwf-printing .cwf-brand-text p { font-size: 10px !important; margin-top: 2px !important; }
+      body.cwf-printing .cwf-brand-text .cwf-eyebrow { font-size: 8.5px !important; }
+      body.cwf-printing .cwf-mark { width: 36px !important; height: 36px !important; flex: 0 0 36px !important; }
+      body.cwf-printing .cwf-mark::before { width: 14px !important; height: 14px !important; }
+      body.cwf-printing .cwf-grid { gap: 6px 14px !important; }
+      body.cwf-printing .cwf-field { gap: 2px !important; }
+      body.cwf-printing .cwf-field .cwf-label,
+      body.cwf-printing .cwf-row-boxed .cwf-cell .cwf-lbl,
+      body.cwf-printing .cwf-yn-row .cwf-lbl,
+      body.cwf-printing .cwf-checks-label { font-size: 8px !important; letter-spacing: .14em !important; }
+      body.cwf-printing .cwf-field .cwf-hint { font-size: 8px !important; }
+      body.cwf-printing .cwf-row-boxed .cwf-cell { padding: 6px 8px !important; gap: 3px !important; }
+      body.cwf-printing .cwf-checks { padding: 6px 8px !important; gap: 4px 10px !important; }
+      body.cwf-printing .cwf-conditions { padding: 6px 8px !important; gap: 4px 10px !important; grid-template-columns: repeat(6, 1fr) !important; }
+      body.cwf-printing .cwf-opt { font-size: 9px !important; gap: 5px !important; }
+      body.cwf-printing .cwf-opt .cwf-box { width: 11px !important; height: 11px !important; flex: 0 0 11px !important; }
+      body.cwf-printing .cwf-ins-row.cwf-head-row .cwf-cell { font-size: 8px !important; padding: 5px 6px !important; }
+      body.cwf-printing .cwf-ins-row.body input { padding: 4px 6px !important; font-size: 9.5px !important; }
+      body.cwf-printing .cwf-yn-row { padding: 5px 8px !important; gap: 12px !important; }
       body.cwf-printing .cwf-top-band,
       body.cwf-printing .cwf-top-band::after,
       body.cwf-printing .cwf-ins-row.cwf-head-row,
@@ -1301,7 +1328,8 @@
         border: none !important;
         border-bottom: 1px solid #c4c8d2 !important;
         border-radius: 0 !important;
-        padding: 4px 2px !important;
+        padding: 2px 2px !important;
+        font-size: 10px !important;
         box-shadow: none !important;
         -webkit-appearance: none !important;
         appearance: none !important;
@@ -1311,7 +1339,9 @@
         background: #fafbfd !important;
         border: 1px solid #d8dce4 !important;
         border-radius: 3px !important;
-        padding: 8px 10px !important;
+        padding: 5px 8px !important;
+        font-size: 10px !important;
+        line-height: 1.35 !important;
         min-height: 0 !important;
         height: auto !important;
         overflow: visible !important;
