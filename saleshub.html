@@ -1121,6 +1121,23 @@
     .sh-resource-desc { font-size: 0.72rem; color: #666666; line-height: 1.4; }
     .sh-resource-tag { display: inline-block; font-size: 0.58rem; font-weight: 600; padding: 0.12rem 0.4rem; border-radius: 4px; background: #f8f8fa; border: 1px solid #e0e0e5; color: #666666; margin-top: 0.4rem; }
 
+    /* ─── PDF Viewer Modal ─── */
+    .sh-pdf-modal { position: fixed; inset: 0; background: rgba(15, 15, 20, 0.72); display: none; align-items: center; justify-content: center; z-index: 10000; padding: 1.5rem; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+    .sh-pdf-modal.open { display: flex; }
+    .sh-pdf-modal-box { background: #ffffff; width: 100%; max-width: 1080px; height: 100%; max-height: 92vh; border-radius: 18px; box-shadow: 0 24px 60px rgba(0,0,0,0.35); display: flex; flex-direction: column; overflow: hidden; }
+    .sh-pdf-modal-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1rem 1.25rem; border-bottom: 1px solid #ececf0; background: #fafafc; flex-shrink: 0; }
+    .sh-pdf-modal-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1rem; font-weight: 800; color: #1a1a1a; margin: 0; letter-spacing: -0.01em; }
+    .sh-pdf-modal-actions { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+    .sh-pdf-modal-btn { display: inline-flex; align-items: center; gap: 0.4rem; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.78rem; font-weight: 700; padding: 0.55rem 0.95rem; border-radius: 100px; border: 1px solid #d8d8e0; background: #ffffff; color: #1a1a1a; text-decoration: none; cursor: pointer; transition: all 0.15s ease; }
+    .sh-pdf-modal-btn:hover { border-color: #b0b0b8; background: #f5f5f8; }
+    .sh-pdf-modal-btn svg { width: 14px; height: 14px; }
+    .sh-pdf-modal-btn.primary { background: linear-gradient(135deg, #7c3aed, #a855f7); border-color: transparent; color: #ffffff; }
+    .sh-pdf-modal-btn.primary:hover { box-shadow: 0 4px 12px rgba(124, 58, 237, 0.35); background: linear-gradient(135deg, #7c3aed, #a855f7); }
+    .sh-pdf-modal-close { width: 36px; height: 36px; border-radius: 50%; padding: 0; justify-content: center; }
+    .sh-pdf-modal-close svg { width: 16px; height: 16px; }
+    .sh-pdf-modal-body { flex: 1; background: #2a2a30; position: relative; overflow: hidden; }
+    .sh-pdf-modal-body iframe { width: 100%; height: 100%; border: 0; display: block; }
+
     /* ─── Agent Performance Tab ─── */
     .perf-agent-kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.6rem; margin-bottom: 1.5rem; }
     .perf-agent-kpi { background: #f8f8fa; border: 1px solid #e0e0e5; border-radius: 12px; padding: 1rem 1.1rem; display: flex; flex-direction: column; min-height: 90px; }
@@ -4901,21 +4918,21 @@
             Main Resources
           </div>
           <div class="sh-resources-grid">
-            <a href="https://docs.google.com/document/d/15d-ckzIhq1KSIM2lvVfAMYTdzGSM0Epe/edit?usp=sharing&ouid=117071041967508429739&rtpof=true&sd=true" target="_blank" rel="noopener noreferrer" class="sh-resource-card">
-              <div class="sh-resource-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div>
-              <div><div class="sh-resource-title">Objection Responses</div><div class="sh-resource-desc">Common objections and proven responses to keep the conversation moving forward.</div><span class="sh-resource-tag">Google Doc</span></div>
-            </a>
-            <a href="https://docs.google.com/document/d/1Q4EL7aJAeZmBuJWzg09pMmjT_AA21Wg6aZADOBTqDEg/edit?usp=sharing" target="_blank" rel="noopener noreferrer" class="sh-resource-card">
+            <a href="assets/Documents/Sales%20Call%20Script.pdf" target="_blank" rel="noopener noreferrer" class="sh-resource-card" data-pdf-viewer data-pdf-title="Sales Call Script" data-pdf-filename="Sales Call Script.pdf">
               <div class="sh-resource-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
-              <div><div class="sh-resource-title">Script</div><div class="sh-resource-desc">Step-by-step sales script for product presentations.</div><span class="sh-resource-tag">Google Doc</span></div>
+              <div><div class="sh-resource-title">Script</div><div class="sh-resource-desc">Step-by-step sales script for product presentations.</div><span class="sh-resource-tag">PDF</span></div>
+            </a>
+            <a href="assets/Documents/Objection%20Responses.pdf" target="_blank" rel="noopener noreferrer" class="sh-resource-card" data-pdf-viewer data-pdf-title="Objection Responses" data-pdf-filename="Objection Responses.pdf">
+              <div class="sh-resource-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div>
+              <div><div class="sh-resource-title">Objection Responses</div><div class="sh-resource-desc">Common objections and proven responses to keep the conversation moving forward.</div><span class="sh-resource-tag">PDF</span></div>
             </a>
             <a href="https://docs.google.com/document/d/1_NuyIXnoXjtl55u8zbn7mzbFNdQATS0jpNEJHcWNI_U/edit?usp=sharing" target="_blank" rel="noopener noreferrer" class="sh-resource-card">
               <div class="sh-resource-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg></div>
               <div><div class="sh-resource-title">Product Guide</div><div class="sh-resource-desc">Comprehensive guide to our product offerings and how to position them.</div><span class="sh-resource-tag">Google Doc</span></div>
             </a>
-            <a href="https://docs.google.com/document/d/1jAPNzXJddJJhMoZGes1CauJYNXdWrLv259nzZ543fnE/edit?usp=sharing" target="_blank" rel="noopener noreferrer" class="sh-resource-card">
+            <a href="assets/Documents/Client%20Needs%20Analysis%20%E2%80%94%20Worksheet.pdf" target="_blank" rel="noopener noreferrer" class="sh-resource-card" data-pdf-viewer data-pdf-title="Client Needs Analysis — Worksheet" data-pdf-filename="Client Needs Analysis — Worksheet.pdf">
               <div class="sh-resource-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg></div>
-              <div><div class="sh-resource-title">Client Worksheet</div><div class="sh-resource-desc">Fillable worksheet for gathering client information during discovery calls.</div><span class="sh-resource-tag">Google Doc</span></div>
+              <div><div class="sh-resource-title">Client Worksheet</div><div class="sh-resource-desc">Fillable worksheet for gathering client information during discovery calls.</div><span class="sh-resource-tag">PDF</span></div>
             </a>
           </div>
         </div>
@@ -4943,6 +4960,31 @@
               <div><div class="sh-resource-title">Log In to CRM</div><div class="sh-resource-desc">Access your Kairos Financial CRM dashboard to manage your pipeline.</div><span class="sh-resource-tag">CRM</span></div>
             </a>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ PDF VIEWER MODAL ═══ -->
+    <div class="sh-pdf-modal" id="shPdfModal" role="dialog" aria-modal="true" aria-labelledby="shPdfModalTitle">
+      <div class="sh-pdf-modal-box">
+        <div class="sh-pdf-modal-head">
+          <h3 class="sh-pdf-modal-title" id="shPdfModalTitle">Document</h3>
+          <div class="sh-pdf-modal-actions">
+            <a href="#" target="_blank" rel="noopener noreferrer" class="sh-pdf-modal-btn" id="shPdfModalView">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              View in New Tab
+            </a>
+            <a href="#" download class="sh-pdf-modal-btn primary" id="shPdfModalDownload">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Download
+            </a>
+            <button type="button" class="sh-pdf-modal-btn sh-pdf-modal-close" id="shPdfModalClose" aria-label="Close">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="sh-pdf-modal-body">
+          <iframe id="shPdfModalFrame" src="" title="PDF preview"></iframe>
         </div>
       </div>
     </div>
@@ -6367,7 +6409,7 @@
     (function openPanelFromHash() {
       const hash = (window.location.hash || '').replace('#', '');
       if (!hash) return;
-      const validPanels = ['submit', 'training', 'performance', 'leaderboard', 'goals', 'policies', 'calculator', 'profile', 'dialtracker', 'products'];
+      const validPanels = ['submit', 'training', 'performance', 'leaderboard', 'goals', 'policies', 'calculator', 'profile', 'dialtracker', 'products', 'resources'];
       if (validPanels.includes(hash)) activatePanel(hash);
     })();
 
@@ -10923,6 +10965,43 @@
     loadTrainingContent().then(() => {
       if (currentUser) loadTrainingState();
     });
+
+    // ─── PDF VIEWER MODAL ───
+    (function() {
+      const modal = document.getElementById('shPdfModal');
+      if (!modal) return;
+      const frame = document.getElementById('shPdfModalFrame');
+      const titleEl = document.getElementById('shPdfModalTitle');
+      const viewBtn = document.getElementById('shPdfModalView');
+      const downloadBtn = document.getElementById('shPdfModalDownload');
+      const closeBtn = document.getElementById('shPdfModalClose');
+
+      function openPdf(url, title, filename) {
+        titleEl.textContent = title || 'Document';
+        frame.src = url;
+        viewBtn.href = url;
+        downloadBtn.href = url;
+        if (filename) downloadBtn.setAttribute('download', filename);
+        modal.classList.add('open');
+        document.body.style.overflow = 'hidden';
+      }
+      function closePdf() {
+        modal.classList.remove('open');
+        frame.src = '';
+        document.body.style.overflow = '';
+      }
+
+      document.querySelectorAll('[data-pdf-viewer]').forEach(el => {
+        el.addEventListener('click', e => {
+          e.preventDefault();
+          openPdf(el.getAttribute('href'), el.getAttribute('data-pdf-title'), el.getAttribute('data-pdf-filename'));
+        });
+      });
+
+      closeBtn.addEventListener('click', closePdf);
+      modal.addEventListener('click', e => { if (e.target === modal) closePdf(); });
+      document.addEventListener('keydown', e => { if (e.key === 'Escape' && modal.classList.contains('open')) closePdf(); });
+    })();
   </script>
 </body>
 </html>
