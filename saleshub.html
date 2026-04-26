@@ -1262,23 +1262,34 @@
       .cwf-ins-row.body .cwf-cell::before { content: attr(data-lbl); display: block; font-size: 9px; letter-spacing: .18em; text-transform: uppercase; color: var(--cwf-muted); font-weight: 600; margin-bottom: 4px; }
     }
 
+    /* Print-only host that holds the worksheet during window.print() */
+    #cwf-print-host { display: none; }
+
     @media print {
       @page { size: letter; margin: 0.5in; }
-      html, body { background: #fff !important; }
-      body * { visibility: hidden !important; }
-      #panel-worksheet, #panel-worksheet * { visibility: visible !important; }
-      #panel-worksheet { position: absolute !important; left: 0; top: 0; right: 0; width: 100%; display: block !important; padding: 0 !important; margin: 0 !important; }
-      .cwf-wrap { max-width: none !important; margin: 0 !important; padding: 0 !important; }
-      .cwf-card { box-shadow: none !important; border-radius: 0 !important; overflow: visible !important; }
-      .cwf-card-pad { padding: 18px 8px 8px !important; }
-      .cwf-top-band, .cwf-top-band::after, .cwf-ins-row.cwf-head-row, .cwf-opt input:checked + .cwf-box, .cwf-sec-rule, .cwf-mark::before, .cwf-mark::after, .cwf-mark { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
-      .cwf-actions, .cwf-toast, .cwf-add-row { display: none !important; }
-      #panel-worksheet input[type=text],
-      #panel-worksheet input[type=number],
-      #panel-worksheet input[type=email],
-      #panel-worksheet input[type=tel],
-      #panel-worksheet input[type=date],
-      #panel-worksheet select {
+      html, body { background: #fff !important; height: auto !important; overflow: visible !important; }
+      body.cwf-printing > *:not(#cwf-print-host) { display: none !important; }
+      body.cwf-printing #cwf-print-host { display: block !important; position: static !important; padding: 0; margin: 0; }
+      body.cwf-printing .cwf-wrap { max-width: none !important; margin: 0 !important; padding: 0 !important; }
+      body.cwf-printing .cwf-card { box-shadow: none !important; border-radius: 0 !important; overflow: visible !important; }
+      body.cwf-printing .cwf-card-pad { padding: 14px 8px 8px !important; }
+      body.cwf-printing .cwf-top-band,
+      body.cwf-printing .cwf-top-band::after,
+      body.cwf-printing .cwf-ins-row.cwf-head-row,
+      body.cwf-printing .cwf-opt input:checked + .cwf-box,
+      body.cwf-printing .cwf-sec-rule,
+      body.cwf-printing .cwf-mark,
+      body.cwf-printing .cwf-mark::before,
+      body.cwf-printing .cwf-mark::after { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
+      body.cwf-printing .cwf-actions,
+      body.cwf-printing .cwf-toast,
+      body.cwf-printing .cwf-add-row { display: none !important; }
+      body.cwf-printing input[type=text],
+      body.cwf-printing input[type=number],
+      body.cwf-printing input[type=email],
+      body.cwf-printing input[type=tel],
+      body.cwf-printing input[type=date],
+      body.cwf-printing select {
         background: transparent !important;
         border: none !important;
         border-bottom: 1px solid #c4c8d2 !important;
@@ -1287,10 +1298,9 @@
         box-shadow: none !important;
         -webkit-appearance: none !important;
         appearance: none !important;
-        color: var(--cwf-ink) !important;
       }
-      #panel-worksheet input[type=date]::-webkit-calendar-picker-indicator { display: none !important; }
-      #panel-worksheet textarea {
+      body.cwf-printing input[type=date]::-webkit-calendar-picker-indicator { display: none !important; }
+      body.cwf-printing textarea {
         background: #fafbfd !important;
         border: 1px solid #d8dce4 !important;
         border-radius: 3px !important;
@@ -1300,17 +1310,26 @@
         overflow: visible !important;
         resize: none !important;
         box-shadow: none !important;
-        color: var(--cwf-ink) !important;
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
       }
-      .cwf-row-boxed { background: transparent !important; }
-      .cwf-row-boxed .cwf-cell input { background: transparent !important; border: none !important; border-bottom: 1px solid #c4c8d2 !important; border-radius: 0 !important; padding: 4px 2px !important; }
-      .cwf-checks, .cwf-conditions, .cwf-yn-row, .cwf-table-wrap { background: transparent !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-      .cwf-ins-row.body input { background: transparent !important; border: none !important; border-bottom: 1px solid #e3e6ec !important; border-radius: 0 !important; }
-      .cwf-section, .cwf-sec-head, .cwf-row-boxed, .cwf-grid, .cwf-table-wrap, .cwf-checks, .cwf-conditions, .cwf-yn-row { break-inside: avoid; page-break-inside: avoid; }
-      .cwf-sec-head { break-after: avoid; page-break-after: avoid; }
-      .cwf-head { break-after: avoid; page-break-after: avoid; }
+      body.cwf-printing .cwf-row-boxed { background: transparent !important; }
+      body.cwf-printing .cwf-row-boxed .cwf-cell input { background: transparent !important; border: none !important; border-bottom: 1px solid #c4c8d2 !important; border-radius: 0 !important; padding: 4px 2px !important; }
+      body.cwf-printing .cwf-checks,
+      body.cwf-printing .cwf-conditions,
+      body.cwf-printing .cwf-yn-row,
+      body.cwf-printing .cwf-table-wrap { background: transparent !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+      body.cwf-printing .cwf-ins-row.body input { background: transparent !important; border: none !important; border-bottom: 1px solid #e3e6ec !important; border-radius: 0 !important; }
+      body.cwf-printing .cwf-section,
+      body.cwf-printing .cwf-sec-head,
+      body.cwf-printing .cwf-row-boxed,
+      body.cwf-printing .cwf-grid,
+      body.cwf-printing .cwf-table-wrap,
+      body.cwf-printing .cwf-checks,
+      body.cwf-printing .cwf-conditions,
+      body.cwf-printing .cwf-yn-row { break-inside: avoid; page-break-inside: avoid; }
+      body.cwf-printing .cwf-sec-head,
+      body.cwf-printing .cwf-head { break-after: avoid; page-break-after: avoid; }
     }
 
     /* ─── Agent Performance Tab ─── */
@@ -11397,8 +11416,17 @@
         const originalLabel = exportBtn.textContent;
         exportBtn.textContent = 'Preparing…';
 
+        const card = form.querySelector('.cwf-card');
+        const cardParent = card.parentNode;
+        const cardNext = card.nextSibling;
+
+        const host = document.createElement('div');
+        host.id = 'cwf-print-host';
+        document.body.appendChild(host);
+        host.appendChild(card);
+
         // Auto-resize textareas so all content prints (no scrollbars)
-        const textareas = form.querySelectorAll('textarea');
+        const textareas = card.querySelectorAll('textarea');
         const restoreH = [];
         textareas.forEach(t => {
           restoreH.push({ el: t, h: t.style.height });
@@ -11406,14 +11434,23 @@
           t.style.height = t.scrollHeight + 'px';
         });
 
-        const clientName = (form.querySelector('input[name="client_name"]')?.value || 'Client').trim() || 'Client';
+        const clientName = (card.querySelector('input[name="client_name"]')?.value || 'Client').trim() || 'Client';
         const originalTitle = document.title;
         document.title = `Client Needs Analysis — ${clientName}`;
+
+        document.body.classList.add('cwf-printing');
 
         let cleanedUp = false;
         function cleanup() {
           if (cleanedUp) return;
           cleanedUp = true;
+          document.body.classList.remove('cwf-printing');
+          if (cardNext && cardNext.parentNode === cardParent) {
+            cardParent.insertBefore(card, cardNext);
+          } else {
+            cardParent.appendChild(card);
+          }
+          host.remove();
           restoreH.forEach(r => { r.el.style.height = r.h; });
           document.title = originalTitle;
           exportBtn.disabled = false;
