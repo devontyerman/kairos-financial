@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://esm.sh" crossorigin />
   <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Libre+Caslon+Text:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/styles.css" />
   <style>
     html { font-size: 20px !important; }
@@ -1137,6 +1137,130 @@
     .sh-pdf-modal-close svg { width: 16px; height: 16px; }
     .sh-pdf-modal-body { flex: 1; background: #2a2a30; position: relative; overflow: hidden; }
     .sh-pdf-modal-body iframe { width: 100%; height: 100%; border: 0; display: block; }
+
+    /* ─── Digital Worksheet (Client Needs Analysis) ─── */
+    #panel-worksheet {
+      --cwf-ink:#1a1d24; --cwf-ink-soft:#3a4150; --cwf-muted:#6b7384;
+      --cwf-rule:#dfe2e8; --cwf-rule-soft:#eceef2;
+      --cwf-navy:#1f2c4a; --cwf-navy-deep:#15203a;
+      --cwf-gold:#b8893b; --cwf-gold-soft:#e8d9b8;
+      --cwf-paper:#ffffff; --cwf-field-bg:#fbfbfa; --cwf-focus:#3a5499;
+    }
+    .cwf-wrap { max-width: 880px; margin: 0 auto; padding: 24px 16px 80px; }
+    .cwf-card { background: var(--cwf-paper); border-radius: 6px; box-shadow: 0 1px 2px rgba(20,24,40,.06), 0 18px 40px -16px rgba(20,24,40,.18); overflow: hidden; position: relative; color: var(--cwf-ink); font-family: 'Inter', system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+    .cwf-top-band { height: 10px; background: var(--cwf-navy); position: relative; }
+    .cwf-top-band::after { content:""; position: absolute; left: 0; right: 0; bottom: -3px; height: 3px; background: var(--cwf-gold); }
+    .cwf-card-pad { padding: 28px 36px 32px; }
+    .cwf-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; padding-bottom: 18px; border-bottom: 1px solid var(--cwf-rule); margin-bottom: 22px; flex-wrap: wrap; }
+    .cwf-brand { display: flex; align-items: center; gap: 14px; }
+    .cwf-mark { width: 46px; height: 46px; flex: 0 0 46px; border: 1.5px solid var(--cwf-navy); border-radius: 50%; display: grid; place-items: center; position: relative; }
+    .cwf-mark::before { content:""; width: 18px; height: 18px; background: var(--cwf-navy); transform: rotate(45deg); }
+    .cwf-mark::after { content:""; position: absolute; inset: 5px; border: 1px solid var(--cwf-gold); border-radius: 50%; }
+    .cwf-brand-text .cwf-eyebrow { font-size: 9.5px; letter-spacing: .22em; text-transform: uppercase; color: var(--cwf-gold); font-weight: 600; }
+    .cwf-brand-text h1 { font-family: 'Libre Caslon Text', Georgia, serif; font-weight: 700; font-size: 26px; line-height: 1.05; margin: 2px 0 0; color: var(--cwf-navy); }
+    .cwf-brand-text p { margin: 6px 0 0; font-size: 12px; color: var(--cwf-muted); max-width: 42ch; }
+    .cwf-meta { display: flex; flex-direction: column; gap: 8px; min-width: 220px; }
+    .cwf-meta .cwf-field { flex-direction: row; align-items: center; gap: 10px; }
+    .cwf-meta .cwf-field .cwf-label { width: 64px; }
+    .cwf-meta .cwf-field input { flex: 1; }
+
+    .cwf-section { margin-bottom: 22px; }
+    .cwf-sec-head { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+    .cwf-sec-num { font-family: 'Libre Caslon Text', Georgia, serif; font-weight: 700; font-size: 11px; color: var(--cwf-gold); width: 22px; height: 22px; border: 1px solid var(--cwf-gold-soft); border-radius: 50%; display: grid; place-items: center; }
+    .cwf-sec-title { font-family: 'Libre Caslon Text', Georgia, serif; font-weight: 700; font-size: 13px; letter-spacing: .18em; text-transform: uppercase; color: var(--cwf-navy); }
+    .cwf-sec-sub { font-family: 'Inter', sans-serif; font-weight: 500; font-size: 11px; letter-spacing: .04em; text-transform: none; color: var(--cwf-muted); margin-left: 8px; }
+    .cwf-sec-rule { flex: 1; height: 1px; background: linear-gradient(to right, var(--cwf-navy) 0, var(--cwf-navy) 18px, var(--cwf-rule) 18px, var(--cwf-rule) 100%); }
+
+    .cwf-grid { display: grid; gap: 14px 18px; }
+    .cwf-cols-2 { grid-template-columns: 1fr 1fr; }
+    .cwf-cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+    .cwf-cols-4 { grid-template-columns: repeat(4, 1fr); }
+    .cwf-field { display: flex; flex-direction: column; gap: 6px; }
+    .cwf-field .cwf-label { font-size: 9px; letter-spacing: .18em; text-transform: uppercase; color: var(--cwf-ink-soft); font-weight: 600; }
+    .cwf-field .cwf-hint { font-size: 9px; color: var(--cwf-muted); font-weight: 400; text-transform: none; letter-spacing: .02em; font-style: italic; margin-left: 6px; }
+
+    #panel-worksheet input[type=text],
+    #panel-worksheet input[type=number],
+    #panel-worksheet input[type=email],
+    #panel-worksheet input[type=tel],
+    #panel-worksheet input[type=date],
+    #panel-worksheet textarea,
+    #panel-worksheet select {
+      width: 100%; background: var(--cwf-field-bg); border: 1px solid var(--cwf-rule); border-radius: 3px;
+      padding: 9px 11px; font: 400 13px/1.45 'Inter', system-ui, sans-serif; color: var(--cwf-ink);
+      transition: border-color .15s ease, box-shadow .15s ease, background .15s ease; font-family: inherit;
+    }
+    #panel-worksheet textarea { resize: vertical; min-height: 38px; }
+    #panel-worksheet input:focus,
+    #panel-worksheet textarea:focus,
+    #panel-worksheet select:focus { outline: none; border-color: var(--cwf-focus); background: #fff; box-shadow: 0 0 0 3px rgba(58,84,153,.14); }
+    #panel-worksheet input::placeholder,
+    #panel-worksheet textarea::placeholder { color: #aab0bc; }
+
+    .cwf-row-boxed { display: grid; grid-template-columns: repeat(var(--cwf-cols, 3), 1fr); gap: 0; border: 1px solid var(--cwf-rule); border-radius: 3px; background: var(--cwf-field-bg); overflow: hidden; }
+    .cwf-row-boxed .cwf-cell { padding: 10px 12px; border-right: 1px solid var(--cwf-rule); display: flex; flex-direction: column; gap: 6px; }
+    .cwf-row-boxed .cwf-cell:last-child { border-right: none; }
+    .cwf-row-boxed .cwf-cell .cwf-lbl { font-size: 8.5px; letter-spacing: .18em; text-transform: uppercase; color: var(--cwf-muted); font-weight: 600; }
+    .cwf-row-boxed .cwf-cell input { background: #fff; border: 1px solid var(--cwf-rule); }
+
+    .cwf-checks { display: flex; flex-wrap: wrap; gap: 10px 14px; padding: 12px 14px; border: 1px solid var(--cwf-rule); border-radius: 3px; background: var(--cwf-field-bg); }
+    .cwf-checks-label { font-size: 9px; letter-spacing: .18em; text-transform: uppercase; color: var(--cwf-ink-soft); font-weight: 600; margin-right: 6px; }
+    .cwf-conditions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px 14px; padding: 14px; border: 1px solid var(--cwf-rule); border-radius: 3px; background: var(--cwf-field-bg); }
+
+    .cwf-opt { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font-size: 12px; color: var(--cwf-ink-soft); user-select: none; position: relative; }
+    .cwf-opt input { position: absolute; opacity: 0; pointer-events: none; }
+    .cwf-opt .cwf-box { width: 14px; height: 14px; border: 1.4px solid #98a0b0; border-radius: 2px; display: inline-grid; place-items: center; background: #fff; flex: 0 0 14px; transition: border-color .15s, background .15s; }
+    .cwf-opt input[type=radio] + .cwf-box { border-radius: 50%; }
+    .cwf-opt input:checked + .cwf-box { background: var(--cwf-navy); border-color: var(--cwf-navy); }
+    .cwf-opt input[type=checkbox]:checked + .cwf-box::after { content:""; width: 8px; height: 5px; background: transparent; border-left: 1.8px solid #fff; border-bottom: 1.8px solid #fff; transform: rotate(-45deg) translate(1px,-1px); }
+    .cwf-opt input[type=radio]:checked + .cwf-box::after { content:""; width: 7px; height: 7px; background: #fff; border-radius: 50%; }
+    .cwf-opt input:focus + .cwf-box { box-shadow: 0 0 0 3px rgba(58,84,153,.18); }
+
+    .cwf-table-wrap { border: 1px solid var(--cwf-rule); border-radius: 3px; overflow: hidden; background: var(--cwf-field-bg); }
+    .cwf-ins-row { display: grid; grid-template-columns: 14% 16% 24% 22% 24%; border-bottom: 1px solid var(--cwf-rule); }
+    .cwf-ins-row:last-child { border-bottom: none; }
+    .cwf-ins-row.cwf-head-row { background: var(--cwf-navy); color: #fff; }
+    .cwf-ins-row.cwf-head-row .cwf-cell { font-size: 8.5px; letter-spacing: .16em; text-transform: uppercase; font-weight: 600; padding: 9px 10px; border-right: 1px solid rgba(255,255,255,.15); }
+    .cwf-ins-row.cwf-head-row .cwf-cell:last-child { border-right: none; }
+    .cwf-ins-row .cwf-cell { border-right: 1px solid var(--cwf-rule); }
+    .cwf-ins-row .cwf-cell:last-child { border-right: none; }
+    .cwf-ins-row.body input { border: none; background: transparent; border-radius: 0; padding: 9px 10px; }
+    .cwf-ins-row.body input:focus { background: #fff; box-shadow: inset 0 0 0 2px var(--cwf-focus); }
+
+    .cwf-add-row { margin-top: 8px; background: transparent; border: 1px dashed var(--cwf-rule); color: var(--cwf-ink-soft); font-size: 11px; font-weight: 600; letter-spacing: .06em; padding: 9px 12px; border-radius: 3px; cursor: pointer; width: 100%; transition: border-color .15s, color .15s, background .15s; }
+    .cwf-add-row:hover { border-color: var(--cwf-navy); color: var(--cwf-navy); background: #fafbfd; }
+
+    .cwf-actions { margin-top: 28px; padding-top: 20px; border-top: 1px solid var(--cwf-rule); display: flex; justify-content: space-between; align-items: center; gap: 14px; flex-wrap: wrap; }
+    .cwf-ribbon { display: inline-flex; align-items: center; gap: 8px; font-size: 9px; letter-spacing: .22em; text-transform: uppercase; color: var(--cwf-gold); font-weight: 600; }
+    .cwf-ribbon::before { content:""; width: 14px; height: 1px; background: var(--cwf-gold); }
+    .cwf-btn-row { display: flex; gap: 10px; }
+    .cwf-btn { font: 600 12px/1 'Inter', sans-serif; letter-spacing: .08em; text-transform: uppercase; padding: 13px 22px; border-radius: 3px; cursor: pointer; border: 1px solid var(--cwf-navy); background: var(--cwf-navy); color: #fff; transition: background .15s, transform .05s; }
+    .cwf-btn:hover { background: var(--cwf-navy-deep); }
+    .cwf-btn:active { transform: translateY(1px); }
+    .cwf-btn.ghost { background: transparent; color: var(--cwf-navy); }
+    .cwf-btn.ghost:hover { background: #f3f5fa; }
+
+    .cwf-yn-row { display: flex; gap: 18px; align-items: center; padding: 10px 12px; border: 1px solid var(--cwf-rule); border-radius: 3px; background: var(--cwf-field-bg); }
+    .cwf-yn-row .cwf-lbl { font-size: 9px; letter-spacing: .18em; text-transform: uppercase; color: var(--cwf-muted); font-weight: 600; margin-right: auto; }
+
+    .cwf-toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%) translateY(20px); background: var(--cwf-navy); color: #fff; padding: 12px 18px; border-radius: 4px; font-size: 12px; letter-spacing: .04em; box-shadow: 0 12px 32px -8px rgba(20,24,40,.4); opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s; z-index: 50; max-width: 90vw; }
+    .cwf-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    @media (max-width: 640px) {
+      .cwf-cols-2, .cwf-cols-3, .cwf-cols-4 { grid-template-columns: 1fr; }
+      .cwf-card-pad { padding: 20px 18px 24px; }
+      .cwf-meta { width: 100%; }
+      .cwf-row-boxed { grid-template-columns: 1fr; }
+      .cwf-row-boxed .cwf-cell { border-right: none; border-bottom: 1px solid var(--cwf-rule); }
+      .cwf-row-boxed .cwf-cell:last-child { border-bottom: none; }
+      .cwf-conditions { grid-template-columns: repeat(2, 1fr); }
+      .cwf-ins-row, .cwf-ins-row.cwf-head-row { grid-template-columns: 1fr; }
+      .cwf-ins-row.cwf-head-row { display: none; }
+      .cwf-ins-row.body { padding: 8px; gap: 6px; display: flex; flex-direction: column; border-bottom: 6px solid #f1f2f5; }
+      .cwf-ins-row.body .cwf-cell { border-right: none; }
+      .cwf-ins-row.body input { border: 1px solid var(--cwf-rule); border-radius: 2px; background: #fff; }
+      .cwf-ins-row.body .cwf-cell::before { content: attr(data-lbl); display: block; font-size: 9px; letter-spacing: .18em; text-transform: uppercase; color: var(--cwf-muted); font-weight: 600; margin-bottom: 4px; }
+    }
 
     /* ─── Agent Performance Tab ─── */
     .perf-agent-kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.6rem; margin-bottom: 1.5rem; }
@@ -3832,6 +3956,10 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
       <span>Products</span>
     </button>
+    <button class="ss-sidebar-btn" data-panel="worksheet">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/></svg>
+      <span>Digital Worksheet</span>
+    </button>
     <button class="ss-sidebar-btn" data-panel="compgrid">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
       <span>Comp Grid</span>
@@ -4218,6 +4346,174 @@
     <!-- ═══ CARRIER PRODUCTS PANEL ═══ -->
     <div class="ss-panel" id="panel-products">
       <div id="cp-root"></div>
+    </div>
+
+    <!-- ═══ DIGITAL WORKSHEET PANEL ═══ -->
+    <div class="ss-panel" id="panel-worksheet">
+      <div class="cwf-wrap">
+        <form id="cwf-form" class="cwf-card" novalidate>
+          <div class="cwf-top-band"></div>
+          <div class="cwf-card-pad">
+
+            <header class="cwf-head">
+              <div class="cwf-brand">
+                <div class="cwf-mark" aria-hidden="true"></div>
+                <div class="cwf-brand-text">
+                  <div class="cwf-eyebrow">Confidential · Client Intake</div>
+                  <h1>Client Needs Analysis</h1>
+                  <p>Please complete every applicable field. Information is kept confidential and used only to prepare your personalized recommendation.</p>
+                </div>
+              </div>
+              <div class="cwf-meta">
+                <div class="cwf-field">
+                  <span class="cwf-label">Date</span>
+                  <input type="date" name="date" />
+                </div>
+                <div class="cwf-field">
+                  <span class="cwf-label">Advisor</span>
+                  <input type="text" name="advisor" autocomplete="off" />
+                </div>
+              </div>
+            </header>
+
+            <section class="cwf-section">
+              <div class="cwf-sec-head"><span class="cwf-sec-num">1</span><span class="cwf-sec-title">Client Information</span><span class="cwf-sec-rule"></span></div>
+              <div class="cwf-grid cwf-cols-2">
+                <div class="cwf-field"><span class="cwf-label">Client Name</span><input type="text" name="client_name" autocomplete="name" /></div>
+                <div class="cwf-field"><span class="cwf-label">Spouse's Name</span><input type="text" name="spouse_name" /></div>
+                <div class="cwf-field"><span class="cwf-label">Email</span><input type="email" name="email" autocomplete="email" /></div>
+                <div class="cwf-field"><span class="cwf-label">Phone</span><input type="tel" name="phone" autocomplete="tel" /></div>
+                <div class="cwf-field" style="grid-column:1/-1">
+                  <span class="cwf-label">Beneficiary <span class="cwf-hint">— full name &amp; relationship · space for two</span></span>
+                  <textarea name="beneficiary" rows="3" placeholder="1.&#10;2."></textarea>
+                </div>
+              </div>
+            </section>
+
+            <section class="cwf-section">
+              <div class="cwf-sec-head"><span class="cwf-sec-num">2</span><span class="cwf-sec-title">Income</span><span class="cwf-sec-rule"></span></div>
+              <div class="cwf-field">
+                <span class="cwf-label">Income Amount &amp; Source <span class="cwf-hint">— list each source separately (employer, SSA, pension, rental…)</span></span>
+                <textarea name="income" rows="2"></textarea>
+              </div>
+            </section>
+
+            <section class="cwf-section">
+              <div class="cwf-sec-head"><span class="cwf-sec-num">3</span><span class="cwf-sec-title">Housing &amp; Expenses</span><span class="cwf-sec-rule"></span></div>
+              <div class="cwf-row-boxed" style="--cwf-cols:3; margin-bottom:14px;">
+                <div class="cwf-cell"><span class="cwf-lbl">Mortgage / Rent ($/mo)</span><input type="text" name="mortgage_rent" inputmode="decimal" /></div>
+                <div class="cwf-cell"><span class="cwf-lbl">Home Value</span><input type="text" name="home_value" inputmode="decimal" /></div>
+                <div class="cwf-cell"><span class="cwf-lbl">Amount Owing &amp; Length Left</span><input type="text" name="amount_owing" /></div>
+              </div>
+              <div class="cwf-grid cwf-cols-2">
+                <div class="cwf-field">
+                  <span class="cwf-label">Other Debts <span class="cwf-hint">— auto, credit card, student, medical</span></span>
+                  <textarea name="other_debts" rows="3"></textarea>
+                </div>
+                <div class="cwf-field">
+                  <span class="cwf-label">Utilities · Groceries · Other Bills <span class="cwf-hint">— monthly</span></span>
+                  <textarea name="utilities_other" rows="3"></textarea>
+                </div>
+              </div>
+            </section>
+
+            <section class="cwf-section">
+              <div class="cwf-sec-head"><span class="cwf-sec-num">4</span><span class="cwf-sec-title">Current Life Insurance</span><span class="cwf-sec-rule"></span></div>
+              <div class="cwf-table-wrap" id="cwf-ins-table">
+                <div class="cwf-ins-row cwf-head-row">
+                  <div class="cwf-cell">Cost</div>
+                  <div class="cwf-cell">Amount</div>
+                  <div class="cwf-cell">Company</div>
+                  <div class="cwf-cell">Type</div>
+                  <div class="cwf-cell">Length In Place</div>
+                </div>
+              </div>
+              <button type="button" class="cwf-add-row" id="cwf-add-ins">+ Add another policy</button>
+            </section>
+
+            <section class="cwf-section">
+              <div class="cwf-sec-head"><span class="cwf-sec-num">5</span><span class="cwf-sec-title">Retirement &amp; Savings</span><span class="cwf-sec-rule"></span></div>
+              <div class="cwf-checks" style="margin-bottom:12px;">
+                <span class="cwf-checks-label">Check all that apply:</span>
+                <label class="cwf-opt"><input type="checkbox" name="savings[]" value="Med Sup"><span class="cwf-box"></span>Med Sup</label>
+                <label class="cwf-opt"><input type="checkbox" name="savings[]" value="401(k)"><span class="cwf-box"></span>401(k)</label>
+                <label class="cwf-opt"><input type="checkbox" name="savings[]" value="Annuity"><span class="cwf-box"></span>Annuity</label>
+                <label class="cwf-opt"><input type="checkbox" name="savings[]" value="TSP"><span class="cwf-box"></span>TSP</label>
+                <label class="cwf-opt"><input type="checkbox" name="savings[]" value="CD"><span class="cwf-box"></span>CD</label>
+                <label class="cwf-opt"><input type="checkbox" name="savings[]" value="Savings"><span class="cwf-box"></span>Savings</label>
+                <label class="cwf-opt"><input type="checkbox" name="savings[]" value="IRA / Roth"><span class="cwf-box"></span>IRA / Roth</label>
+              </div>
+              <div class="cwf-field">
+                <span class="cwf-label">Details <span class="cwf-hint">— provider, balance, contribution, vesting</span></span>
+                <textarea name="savings_details" rows="3"></textarea>
+              </div>
+            </section>
+
+            <section class="cwf-section">
+              <div class="cwf-sec-head"><span class="cwf-sec-num">6</span><span class="cwf-sec-title">Vitals</span><span class="cwf-sec-rule"></span></div>
+              <div class="cwf-grid cwf-cols-4">
+                <div class="cwf-yn-row">
+                  <span class="cwf-lbl">Smoker</span>
+                  <label class="cwf-opt"><input type="radio" name="smoker" value="Yes"><span class="cwf-box"></span>Yes</label>
+                  <label class="cwf-opt"><input type="radio" name="smoker" value="No"><span class="cwf-box"></span>No</label>
+                </div>
+                <div class="cwf-field"><span class="cwf-label">Age</span><input type="number" name="age" min="0" max="120" /></div>
+                <div class="cwf-field"><span class="cwf-label">Height</span><input type="text" name="height" placeholder="5'10&quot;" /></div>
+                <div class="cwf-field"><span class="cwf-label">Weight</span><input type="text" name="weight" placeholder="lbs" /></div>
+              </div>
+            </section>
+
+            <section class="cwf-section">
+              <div class="cwf-sec-head"><span class="cwf-sec-num">7</span><span class="cwf-sec-title">Current Medications</span><span class="cwf-sec-rule"></span></div>
+              <div class="cwf-field">
+                <span class="cwf-label">Medication · Dosage · Frequency · Prescribing Physician</span>
+                <textarea name="medications" rows="5"></textarea>
+              </div>
+            </section>
+
+            <section class="cwf-section">
+              <div class="cwf-sec-head"><span class="cwf-sec-num">8</span><span class="cwf-sec-title">Health Conditions</span><span class="cwf-sec-rule"></span></div>
+              <div class="cwf-field">
+                <span class="cwf-label">List all current &amp; past conditions <span class="cwf-hint">— include dates &amp; treatment status</span></span>
+                <textarea name="conditions" rows="5"></textarea>
+              </div>
+            </section>
+
+            <section class="cwf-section">
+              <div class="cwf-sec-head"><span class="cwf-sec-num">9</span><span class="cwf-sec-title">Always Ask About</span><span class="cwf-sec-rule"></span></div>
+              <div class="cwf-conditions">
+                <label class="cwf-opt"><input type="checkbox" name="ask[]" value="Heart Attack"><span class="cwf-box"></span>Heart Attack</label>
+                <label class="cwf-opt"><input type="checkbox" name="ask[]" value="Stroke"><span class="cwf-box"></span>Stroke</label>
+                <label class="cwf-opt"><input type="checkbox" name="ask[]" value="Cancer"><span class="cwf-box"></span>Cancer</label>
+                <label class="cwf-opt"><input type="checkbox" name="ask[]" value="COPD"><span class="cwf-box"></span>COPD</label>
+                <label class="cwf-opt"><input type="checkbox" name="ask[]" value="Arthritis"><span class="cwf-box"></span>Arthritis</label>
+                <label class="cwf-opt"><input type="checkbox" name="ask[]" value="Organ Failure"><span class="cwf-box"></span>Organ Failure</label>
+                <label class="cwf-opt"><input type="checkbox" name="ask[]" value="Asthma"><span class="cwf-box"></span>Asthma</label>
+                <label class="cwf-opt"><input type="checkbox" name="ask[]" value="Diabetes"><span class="cwf-box"></span>Diabetes</label>
+                <label class="cwf-opt"><input type="checkbox" name="ask[]" value="Anxiety"><span class="cwf-box"></span>Anxiety</label>
+                <label class="cwf-opt"><input type="checkbox" name="ask[]" value="Depression"><span class="cwf-box"></span>Depression</label>
+                <label class="cwf-opt"><input type="checkbox" name="ask[]" value="Felony"><span class="cwf-box"></span>Felony</label>
+                <label class="cwf-opt"><input type="checkbox" name="ask[]" value="DUI"><span class="cwf-box"></span>DUI</label>
+              </div>
+            </section>
+
+            <section class="cwf-section">
+              <div class="cwf-sec-head"><span class="cwf-sec-num">10</span><span class="cwf-sec-title">Why <span class="cwf-sec-sub">— motivation for coverage / goals / family priorities</span></span><span class="cwf-sec-rule"></span></div>
+              <div class="cwf-field"><textarea name="why" rows="6"></textarea></div>
+            </section>
+
+            <div class="cwf-actions">
+              <span class="cwf-ribbon">Confidential</span>
+              <div class="cwf-btn-row">
+                <button type="button" class="cwf-btn ghost" id="cwf-clear">Clear Form</button>
+                <button type="button" class="cwf-btn" id="cwf-export">Export PDF</button>
+              </div>
+            </div>
+
+          </div>
+        </form>
+      </div>
+      <div class="cwf-toast" id="cwf-toast" role="status" aria-live="polite"></div>
     </div>
 
     <!-- ═══ COMMISSION CALCULATOR PANEL ═══ -->
@@ -6405,7 +6701,7 @@
     (function openPanelFromHash() {
       const hash = (window.location.hash || '').replace('#', '');
       if (!hash) return;
-      const validPanels = ['submit', 'training', 'performance', 'leaderboard', 'goals', 'policies', 'calculator', 'profile', 'dialtracker', 'products', 'resources'];
+      const validPanels = ['submit', 'training', 'performance', 'leaderboard', 'goals', 'policies', 'calculator', 'profile', 'dialtracker', 'products', 'resources', 'worksheet'];
       if (validPanels.includes(hash)) activatePanel(hash);
     })();
 
@@ -10997,6 +11293,140 @@
       closeBtn.addEventListener('click', closePdf);
       modal.addEventListener('click', e => { if (e.target === modal) closePdf(); });
       document.addEventListener('keydown', e => { if (e.key === 'Escape' && modal.classList.contains('open')) closePdf(); });
+    })();
+
+    // ─── DIGITAL WORKSHEET ───
+    (function() {
+      const form = document.getElementById('cwf-form');
+      if (!form) return;
+      const insTable = document.getElementById('cwf-ins-table');
+      const addBtn = document.getElementById('cwf-add-ins');
+      const clearBtn = document.getElementById('cwf-clear');
+      const exportBtn = document.getElementById('cwf-export');
+      const toast = document.getElementById('cwf-toast');
+
+      function addInsRow() {
+        const row = document.createElement('div');
+        row.className = 'cwf-ins-row body';
+        row.innerHTML = `
+          <div class="cwf-cell" data-lbl="Cost"><input type="text" name="ins_cost[]" inputmode="decimal"></div>
+          <div class="cwf-cell" data-lbl="Amount"><input type="text" name="ins_amount[]" inputmode="decimal"></div>
+          <div class="cwf-cell" data-lbl="Company"><input type="text" name="ins_company[]"></div>
+          <div class="cwf-cell" data-lbl="Type"><input type="text" name="ins_type[]"></div>
+          <div class="cwf-cell" data-lbl="Length"><input type="text" name="ins_length[]"></div>`;
+        insTable.appendChild(row);
+      }
+      addInsRow(); addInsRow(); addInsRow();
+      addBtn.addEventListener('click', addInsRow);
+
+      const dateInput = form.querySelector('input[name="date"]');
+      if (dateInput && !dateInput.value) {
+        dateInput.value = new Date().toISOString().slice(0, 10);
+      }
+
+      function showCwfToast(msg, ms = 3500) {
+        toast.textContent = msg;
+        toast.classList.add('show');
+        clearTimeout(showCwfToast._t);
+        showCwfToast._t = setTimeout(() => toast.classList.remove('show'), ms);
+      }
+
+      function resetForm() {
+        form.reset();
+        insTable.querySelectorAll('.cwf-ins-row.body').forEach(n => n.remove());
+        addInsRow(); addInsRow(); addInsRow();
+        if (dateInput) dateInput.value = new Date().toISOString().slice(0, 10);
+        showCwfToast('Form cleared.');
+      }
+      clearBtn.addEventListener('click', resetForm);
+
+      // Lazy-load jsPDF + html2canvas
+      let libsPromise = null;
+      function loadScript(src) {
+        return new Promise((resolve, reject) => {
+          const s = document.createElement('script');
+          s.src = src; s.onload = resolve; s.onerror = reject;
+          document.head.appendChild(s);
+        });
+      }
+      function ensureLibs() {
+        if (libsPromise) return libsPromise;
+        libsPromise = Promise.all([
+          window.jspdf ? Promise.resolve() : loadScript('https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js'),
+          window.html2canvas ? Promise.resolve() : loadScript('https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js')
+        ]);
+        return libsPromise;
+      }
+
+      async function exportPdf() {
+        exportBtn.disabled = true;
+        const originalLabel = exportBtn.textContent;
+        exportBtn.textContent = 'Exporting…';
+        try {
+          await ensureLibs();
+          // Mirror current input values into attributes so they render in the cloned canvas
+          form.querySelectorAll('input, textarea, select').forEach(el => {
+            if (el.type === 'checkbox' || el.type === 'radio') {
+              if (el.checked) el.setAttribute('checked', 'checked'); else el.removeAttribute('checked');
+            } else if (el.tagName === 'TEXTAREA') {
+              el.textContent = el.value;
+            } else {
+              el.setAttribute('value', el.value);
+            }
+          });
+          const card = form;
+          const canvas = await window.html2canvas(card, {
+            scale: 2,
+            backgroundColor: '#ffffff',
+            useCORS: true,
+            windowWidth: card.scrollWidth
+          });
+          const imgData = canvas.toDataURL('image/png');
+          const { jsPDF } = window.jspdf;
+          const pdf = new jsPDF({ orientation: 'portrait', unit: 'pt', format: 'letter' });
+          const pageW = pdf.internal.pageSize.getWidth();
+          const pageH = pdf.internal.pageSize.getHeight();
+          const margin = 24;
+          const imgW = pageW - margin * 2;
+          const imgH = (canvas.height * imgW) / canvas.width;
+
+          if (imgH <= pageH - margin * 2) {
+            pdf.addImage(imgData, 'PNG', margin, margin, imgW, imgH);
+          } else {
+            // Slice the canvas across multiple pages
+            const pxPerPt = canvas.width / imgW;
+            const pageHpx = (pageH - margin * 2) * pxPerPt;
+            let yPx = 0;
+            const pageCanvas = document.createElement('canvas');
+            const ctx = pageCanvas.getContext('2d');
+            pageCanvas.width = canvas.width;
+            while (yPx < canvas.height) {
+              const sliceH = Math.min(pageHpx, canvas.height - yPx);
+              pageCanvas.height = sliceH;
+              ctx.fillStyle = '#ffffff';
+              ctx.fillRect(0, 0, pageCanvas.width, pageCanvas.height);
+              ctx.drawImage(canvas, 0, yPx, canvas.width, sliceH, 0, 0, canvas.width, sliceH);
+              const sliceData = pageCanvas.toDataURL('image/png');
+              if (yPx > 0) pdf.addPage();
+              const sliceImgH = (sliceH / pxPerPt);
+              pdf.addImage(sliceData, 'PNG', margin, margin, imgW, sliceImgH);
+              yPx += sliceH;
+            }
+          }
+
+          const clientName = (form.querySelector('input[name="client_name"]')?.value || 'client').trim();
+          const safe = clientName.replace(/[^a-z0-9]+/gi, '-').replace(/(^-|-$)/g, '').toLowerCase() || 'client';
+          pdf.save(`client-needs-analysis-${safe}.pdf`);
+          showCwfToast('PDF downloaded.');
+        } catch (err) {
+          console.error(err);
+          showCwfToast('Export failed. Please try again.');
+        } finally {
+          exportBtn.disabled = false;
+          exportBtn.textContent = originalLabel;
+        }
+      }
+      exportBtn.addEventListener('click', exportPdf);
     })();
   </script>
 </body>
