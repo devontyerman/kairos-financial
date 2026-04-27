@@ -5719,6 +5719,38 @@
         </div>
         <button class="ss-signup-submit" type="submit" id="loginBtn">Log In</button>
         <div class="ss-signup-msg" id="loginMsg"></div>
+        <div style="margin-top:0.85rem;text-align:center;">
+          <a href="#" id="forgotPasswordLink" style="color:#2563eb;font-size:0.78rem;text-decoration:none;font-weight:600;">Forgot password?</a>
+        </div>
+      </form>
+
+      <!-- FORGOT PASSWORD FORM -->
+      <form id="forgotForm" class="ss-auth-form" style="display:none;">
+        <p style="font-size:0.85rem;color:#444;margin:0 0 1rem;text-align:center;">Enter your email and we'll send you a link to reset your password.</p>
+        <div class="ss-signup-field">
+          <label>Email</label>
+          <input type="email" id="forgotEmail" placeholder="you@email.com" required />
+        </div>
+        <button class="ss-signup-submit" type="submit" id="forgotBtn">Send Reset Link</button>
+        <div class="ss-signup-msg" id="forgotMsg"></div>
+        <div style="margin-top:0.85rem;text-align:center;">
+          <a href="#" id="forgotBack" style="color:#2563eb;font-size:0.78rem;text-decoration:none;font-weight:600;">← Back to sign in</a>
+        </div>
+      </form>
+
+      <!-- RESET PASSWORD FORM (shown after clicking email link) -->
+      <form id="resetForm" class="ss-auth-form" style="display:none;">
+        <p style="font-size:0.85rem;color:#444;margin:0 0 1rem;text-align:center;">Set a new password for your account.</p>
+        <div class="ss-signup-field">
+          <label>New Password</label>
+          <input type="password" id="resetPassword" placeholder="Min 6 characters" minlength="6" required />
+        </div>
+        <div class="ss-signup-field">
+          <label>Confirm New Password</label>
+          <input type="password" id="resetPasswordConfirm" placeholder="Re-enter password" minlength="6" required />
+        </div>
+        <button class="ss-signup-submit" type="submit" id="resetBtn">Update Password</button>
+        <div class="ss-signup-msg" id="resetMsg"></div>
       </form>
 
       <!-- SIGNUP FORM -->
@@ -8280,13 +8312,22 @@
     const signupMsg = document.getElementById('signupMsg');
     const loginMsg = document.getElementById('loginMsg');
 
-    // Tab switching
-    function switchAuthTab(tab) {
-      document.querySelectorAll('.ss-auth-tab').forEach(t => t.classList.toggle('active', t.dataset.authTab === tab));
-      document.getElementById('loginForm').style.display = tab === 'login' ? 'block' : 'none';
-      document.getElementById('signupForm').style.display = tab === 'signup' ? 'block' : 'none';
-      loginMsg.className = 'ss-signup-msg'; loginMsg.style.display = 'none';
-      signupMsg.className = 'ss-signup-msg'; signupMsg.style.display = 'none';
+    // Tab switching — supports login/signup/forgot/reset
+    function switchAuthTab(view) {
+      const forms = { login: 'loginForm', signup: 'signupForm', forgot: 'forgotForm', reset: 'resetForm' };
+      Object.entries(forms).forEach(([name, id]) => {
+        const el = document.getElementById(id);
+        if (el) el.style.display = name === view ? 'block' : 'none';
+      });
+      // Tabs are only relevant for login/signup
+      const tabs = document.querySelector('.ss-auth-tabs');
+      if (tabs) tabs.style.display = (view === 'login' || view === 'signup') ? '' : 'none';
+      document.querySelectorAll('.ss-auth-tab').forEach(t => t.classList.toggle('active', t.dataset.authTab === view));
+      // Clear all messages
+      ['loginMsg', 'signupMsg', 'forgotMsg', 'resetMsg'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) { el.className = 'ss-signup-msg'; el.style.display = 'none'; el.textContent = ''; }
+      });
     }
     document.querySelectorAll('.ss-auth-tab').forEach(t => {
       t.addEventListener('click', () => switchAuthTab(t.dataset.authTab));
@@ -8356,6 +8397,108 @@
       } catch (err) {
         console.error('Login request error:', err);
         showLoginMsg('Connection error: ' + (err && err.message ? err.message : 'Please try again.'), 'error');
+      }
+      btn.disabled = false;
+    });
+
+    // ─── FORGOT PASSWORD ───
+    function showAuthMsg(elId, text, type) {
+      const el = document.getElementById(elId);
+      if (!el) return;
+      el.textContent = text;
+      el.className = 'ss-signup-msg ' + (type || 'error');
+      el.style.display = 'block';
+    }
+
+    document.getElementById('forgotPasswordLink').addEventListener('click', (e) => {
+      e.preventDefault();
+      const loginEmail = document.getElementById('loginEmail').value;
+      if (loginEmail) document.getElementById('forgotEmail').value = loginEmail;
+      switchAuthTab('forgot');
+    });
+    document.getElementById('forgotBack').addEventListener('click', (e) => {
+      e.preventDefault();
+      switchAuthTab('login');
+    });
+
+    document.getElementById('forgotForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('forgotBtn');
+      const email = (document.getElementById('forgotEmail').value || '').trim();
+      if (!email) { showAuthMsg('forgotMsg', 'Please enter your email.', 'error'); return; }
+      btn.disabled = true;
+      try {
+        const redirectTo = encodeURIComponent(window.location.origin + window.location.pathname);
+        const res = await fetch(SUPABASE_URL + '/auth/v1/recover?redirect_to=' + redirectTo, {
+          method: 'POST',
+          headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email })
+        });
+        if (res.ok) {
+          showAuthMsg('forgotMsg', 'If an account exists for that email, a reset link has been sent. Check your inbox (and spam folder).', 'success');
+        } else {
+          const result = await res.json().catch(() => ({}));
+          showAuthMsg('forgotMsg', result.error_description || result.msg || ('Could not send reset email (HTTP ' + res.status + ').'), 'error');
+        }
+      } catch (err) {
+        showAuthMsg('forgotMsg', 'Connection error: ' + (err && err.message ? err.message : 'Please try again.'), 'error');
+      }
+      btn.disabled = false;
+    });
+
+    // ─── RESET PASSWORD (after clicking email recovery link) ───
+    let recoveryAccessToken = null;
+    let recoveryRefreshToken = null;
+
+    (function handleRecoveryHash() {
+      const hash = window.location.hash || '';
+      if (!hash || hash.indexOf('access_token=') === -1) return;
+      const params = new URLSearchParams(hash.replace(/^#/, ''));
+      if (params.get('type') !== 'recovery') return;
+      const at = params.get('access_token');
+      const rt = params.get('refresh_token');
+      if (!at) return;
+      recoveryAccessToken = at;
+      recoveryRefreshToken = rt;
+      // Clear hash so a refresh doesn't re-trigger
+      try { history.replaceState(null, '', window.location.pathname + window.location.search); } catch (e) {}
+      // Open auth modal in reset mode
+      signupOverlay.classList.add('open');
+      switchAuthTab('reset');
+    })();
+
+    document.getElementById('resetForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('resetBtn');
+      const pw = document.getElementById('resetPassword').value || '';
+      const pw2 = document.getElementById('resetPasswordConfirm').value || '';
+      if (pw.length < 6) { showAuthMsg('resetMsg', 'Password must be at least 6 characters.', 'error'); return; }
+      if (pw !== pw2) { showAuthMsg('resetMsg', 'Passwords do not match.', 'error'); return; }
+      if (!recoveryAccessToken) { showAuthMsg('resetMsg', 'Recovery link expired. Please request a new one.', 'error'); return; }
+      btn.disabled = true;
+      try {
+        const res = await fetch(SUPABASE_URL + '/auth/v1/user', {
+          method: 'PUT',
+          headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + recoveryAccessToken, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password: pw })
+        });
+        const result = await res.json().catch(() => ({}));
+        if (res.ok) {
+          accessToken = recoveryAccessToken;
+          currentUser = result;
+          localStorage.setItem('sb_access_token', recoveryAccessToken);
+          if (recoveryRefreshToken) localStorage.setItem('sb_refresh_token', recoveryRefreshToken);
+          showAuthMsg('resetMsg', 'Password updated! Signing you in…', 'success');
+          setTimeout(() => {
+            signupOverlay.classList.remove('open');
+            switchAuthTab('login');
+            updateAuthUI();
+          }, 1200);
+        } else {
+          showAuthMsg('resetMsg', result.error_description || result.msg || ('Failed to update password (HTTP ' + res.status + ').'), 'error');
+        }
+      } catch (err) {
+        showAuthMsg('resetMsg', 'Connection error: ' + (err && err.message ? err.message : 'Please try again.'), 'error');
       }
       btn.disabled = false;
     });
