@@ -1384,6 +1384,13 @@
     #panel-weeklytracker .wt-setup-table td { padding: 0; border-bottom: 1px solid var(--wt-gray-100); height: 48px; }
     #panel-weeklytracker .wt-setup-table tr:last-child td { border-bottom: none; }
     #panel-weeklytracker .wt-setup-table tr:hover td { background: var(--wt-blue-50); }
+    #panel-weeklytracker .wt-setup-table .wt-toggle-col { padding: 0 14px 0 22px; width: 64px; }
+    #panel-weeklytracker .wt-toggle { position: relative; display: inline-block; width: 36px; height: 20px; cursor: pointer; vertical-align: middle; }
+    #panel-weeklytracker .wt-toggle input { position: absolute; opacity: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; }
+    #panel-weeklytracker .wt-toggle .wt-toggle-track { position: absolute; inset: 0; background: var(--wt-gray-300); border-radius: 999px; transition: background 0.15s ease; }
+    #panel-weeklytracker .wt-toggle .wt-toggle-thumb { position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; background: white; border-radius: 50%; box-shadow: 0 1px 2px rgba(16,24,40,0.18); transition: transform 0.15s ease; }
+    #panel-weeklytracker .wt-toggle input:checked ~ .wt-toggle-track { background: var(--wt-green-500); }
+    #panel-weeklytracker .wt-toggle input:checked ~ .wt-toggle-track .wt-toggle-thumb { transform: translateX(16px); }
     #panel-weeklytracker .wt-setup-table .wt-name-col { padding: 0 22px; font-weight: 500; color: var(--wt-gray-900); }
     #panel-weeklytracker .wt-setup-table .wt-input-col { padding: 0 14px; text-align: right; width: 240px; font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; color: var(--wt-green-700); }
     #panel-weeklytracker .wt-setup-table .wt-goal-col { width: 200px; padding: 0 14px; }
@@ -10807,7 +10814,9 @@
       let activeSheet = null;
       let allPolicies = [];
       let allKpis = [];          // daily_kpis rows for dial actuals
-      let reps = [];
+      let reps = [];             // visible on weekly sheets (excludes hidden)
+      let allReps = [];          // every rep on the Sales Reps tab (incl. hidden)
+      let hiddenReps = new Set();
       let ytdSeed = {};
       let goals = {};            // { _default: { rep: ap }, _defaultDial: { rep: dials }, [weekKey]: { [rep]: { ap:[6], dial:[6] } }, _weeklyAp: { [weekKey]: { [rep]: ap } } }
       let loaded = false;
@@ -10846,17 +10855,21 @@
       }
 
       async function fetchGoalsFromSupabase() {
-        const [dailyRes, defaultRes, weeklyRes] = await Promise.all([
+        const [dailyRes, defaultRes, weeklyRes, hiddenRes] = await Promise.all([
           fetch(SUPABASE_URL + '/rest/v1/wt_daily_goals?select=week_start,sales_rep,day_idx,goal,dial_goal', { headers: authHdrs() }),
           fetch(SUPABASE_URL + '/rest/v1/wt_default_goals?select=sales_rep,goal,dial_goal', { headers: authHdrs() }),
-          fetch(SUPABASE_URL + '/rest/v1/wt_weekly_ap_goals?select=week_start,sales_rep,ap_goal', { headers: authHdrs() })
+          fetch(SUPABASE_URL + '/rest/v1/wt_weekly_ap_goals?select=week_start,sales_rep,ap_goal', { headers: authHdrs() }),
+          fetch(SUPABASE_URL + '/rest/v1/wt_hidden_reps?select=sales_rep', { headers: authHdrs() })
         ]);
         if (!dailyRes.ok) throw new Error('Failed to load daily goals (' + dailyRes.status + ')');
         if (!defaultRes.ok) throw new Error('Failed to load default goals (' + defaultRes.status + ')');
         if (!weeklyRes.ok) throw new Error('Failed to load weekly goals (' + weeklyRes.status + ')');
+        if (!hiddenRes.ok) throw new Error('Failed to load hidden reps (' + hiddenRes.status + ')');
         const dailyRows = await dailyRes.json();
         const defaultRows = await defaultRes.json();
         const weeklyRows = await weeklyRes.json();
+        const hiddenRows = await hiddenRes.json();
+        hiddenReps = new Set(hiddenRows.map(r => r.sales_rep).filter(Boolean));
         const next = { _default: {}, _defaultDial: {}, _weeklyAp: {} };
         dailyRows.forEach(r => {
           if (!next[r.week_start]) next[r.week_start] = {};
@@ -10936,6 +10949,27 @@
             });
           }
         } catch (e) { console.error('Save default goal failed:', e); }
+      }
+
+      function isHiddenRep(rep) { return hiddenReps.has(rep); }
+      async function setHiddenRep(rep, hidden) {
+        if (hidden) hiddenReps.add(rep);
+        else hiddenReps.delete(rep);
+        const userEmail = (currentUser && currentUser.email) || null;
+        try {
+          if (hidden) {
+            await fetch(SUPABASE_URL + '/rest/v1/wt_hidden_reps?on_conflict=sales_rep', {
+              method: 'POST',
+              headers: authHdrs({ 'Content-Type': 'application/json', Prefer: 'resolution=merge-duplicates,return=minimal' }),
+              body: JSON.stringify({ sales_rep: rep, hidden_by: userEmail })
+            });
+          } else {
+            await fetch(SUPABASE_URL + '/rest/v1/wt_hidden_reps?sales_rep=eq.' + encodeURIComponent(rep), {
+              method: 'DELETE',
+              headers: authHdrs({ Prefer: 'return=minimal' })
+            });
+          }
+        } catch (e) { console.error('Save hidden rep failed:', e); }
       }
 
       function getWeeklyApGoal(weekKey, rep) {
@@ -11031,9 +11065,10 @@
             postCutoffPolicies++;
           }
         });
-        reps = Array.from(repSet).sort((a, b) => (ytdSeed[b] || 0) - (ytdSeed[a] || 0));
+        allReps = Array.from(repSet).sort((a, b) => (ytdSeed[b] || 0) - (ytdSeed[a] || 0));
+        reps = allReps.filter(r => !isHiddenRep(r));
         const seedTotal = Object.values(ytdSeed).reduce((s, v) => s + v, 0);
-        console.log('[WT] processed:', { reps: reps.length, preCutoff: preCutoffPolicies, postCutoff: postCutoffPolicies, droppedOutOfRange, seedTotal });
+        console.log('[WT] processed:', { allReps: allReps.length, visibleReps: reps.length, preCutoff: preCutoffPolicies, postCutoff: postCutoffPolicies, droppedOutOfRange, seedTotal });
       }
 
       function getWeekActuals(weekKey) {
@@ -11168,16 +11203,24 @@
       function renderYTDSetup() {
         const totalSeedYTD = reps.reduce((s, r) => s + (ytdSeed[r] || 0), 0);
         let rowsHtml = '';
-        reps.forEach(rep => {
+        allReps.forEach(rep => {
           const dg = getDefaultGoal('ap', rep);
           const ddg = getDefaultGoal('dial', rep);
-          rowsHtml += '<tr>' +
+          const hidden = isHiddenRep(rep);
+          rowsHtml += '<tr' + (hidden ? ' style="opacity:0.55;"' : '') + '>' +
+            '<td class="wt-toggle-col">' +
+              '<label class="wt-toggle" title="' + (hidden ? 'Hidden from weekly sheets' : 'Showing on weekly sheets') + '">' +
+                '<input type="checkbox" data-wt-show-rep="' + escHtml(rep) + '"' + (hidden ? '' : ' checked') + ' />' +
+                '<span class="wt-toggle-track"><span class="wt-toggle-thumb"></span></span>' +
+              '</label>' +
+            '</td>' +
             '<td class="wt-name-col"><span class="wt-avatar">' + escHtml(initialsOf(rep)) + '</span>' + escHtml(rep) + '</td>' +
             '<td class="wt-goal-col"><input type="text" inputmode="decimal" data-wt-default-goal="ap" data-wt-rep="' + escHtml(rep) + '" value="' + (dg != null ? dg : '') + '" placeholder="$0" /></td>' +
             '<td class="wt-goal-col"><input type="text" inputmode="numeric" data-wt-default-goal="dial" data-wt-rep="' + escHtml(rep) + '" value="' + (ddg != null ? ddg : '') + '" placeholder="0" /></td>' +
             '<td class="wt-input-col">' + escHtml(fmtMoney(ytdSeed[rep] || 0)) + '</td>' +
           '</tr>';
         });
+        const hiddenCount = allReps.length - reps.length;
         return '' +
           '<div class="wt-setup-wrap">' +
             '<div class="wt-sheet-header" style="position:static;padding:0 0 16px;background:transparent;border:none;">' +
@@ -11185,16 +11228,17 @@
                 '<div class="wt-sheet-title">Sales Reps</div>' +
                 '<span class="wt-sheet-pill green">● Setup</span>' +
               '</div>' +
-              '<div class="wt-sheet-sub">YTD totals are pulled from each rep\'s submitted policies dated before Apr 27, 2026. Default daily goals feed empty cells on weekly sheets.</div>' +
+              '<div class="wt-sheet-sub">YTD totals are pulled from each rep\'s submitted policies dated before Apr 27, 2026. Toggle a rep off to remove them from every weekly sheet.</div>' +
             '</div>' +
             '<div class="wt-setup-card">' +
               '<div class="wt-setup-banner">' +
                 '<div class="wt-icon">$</div>' +
-                '<div><h3>Default daily goals · YTD source</h3>' +
-                '<p>YTD is read-only and reflects submitted business through Apr 26, 2026. Set per-rep default daily AP and dial goals — or override per-day on each weekly sheet.</p></div>' +
+                '<div><h3>Default daily goals · YTD source · weekly visibility</h3>' +
+                '<p>YTD is read-only and reflects submitted business through Apr 26, 2026. Use the toggle to hide a rep from weekly sheets without deleting their data.</p></div>' +
               '</div>' +
               '<table class="wt-setup-table">' +
                 '<thead><tr>' +
+                  '<th style="width:64px;">Show</th>' +
                   '<th>Sales Rep</th>' +
                   '<th class="right">Default Daily AP Goal</th>' +
                   '<th class="right">Default Daily Dial Goal</th>' +
@@ -11203,7 +11247,7 @@
                 '<tbody>' + rowsHtml + '</tbody>' +
               '</table>' +
               '<div class="wt-setup-footer">' +
-                '<div class="wt-total">Total YTD across team: <b>' + escHtml(fmtMoney(totalSeedYTD)) + '</b></div>' +
+                '<div class="wt-total">Total YTD across team: <b>' + escHtml(fmtMoney(totalSeedYTD)) + '</b>' + (hiddenCount > 0 ? ' · <span style="color:var(--wt-gray-500);">' + hiddenCount + ' rep' + (hiddenCount === 1 ? '' : 's') + ' hidden from weekly</span>' : '') + '</div>' +
                 '<div style="font-size:12px;color:var(--wt-gray-500);">' + WEEKS.length + ' weekly sheets · through Dec 28, 2026 · daily actuals auto-pull from policies &amp; KPIs</div>' +
               '</div>' +
             '</div>' +
@@ -11455,6 +11499,17 @@
             render();
           });
           inp.addEventListener('keydown', e => { if (e.key === 'Enter') e.target.blur(); });
+        });
+        // Rep visibility toggles (Sales Reps tab)
+        root.querySelectorAll('[data-wt-show-rep]').forEach(inp => {
+          inp.addEventListener('change', e => {
+            const rep = inp.getAttribute('data-wt-show-rep');
+            const hidden = !e.target.checked;
+            setHiddenRep(rep, hidden);
+            // Recompute the visible reps list and re-render
+            reps = allReps.filter(r => !isHiddenRep(r));
+            render();
+          });
         });
         // Default daily goal inputs (AP and Dial)
         root.querySelectorAll('[data-wt-default-goal]').forEach(inp => {
