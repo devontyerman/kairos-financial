@@ -10925,20 +10925,24 @@
       }
 
       function processData(policyRows, profileRows) {
-        // Canonical rep name: prefer agent_profiles.agent_name when matched by user_id;
-        // fall back to policies.sales_rep otherwise.
-        const userIdToName = {};
-        profileRows.forEach(p => { if (p.user_id && p.agent_name) userIdToName[p.user_id] = p.agent_name; });
+        // Aggregate by sales_rep string — same key the leaderboard uses, so WT totals
+        // match the leaderboard exactly. profileRows only used to add reps with no
+        // policies yet (so they still appear in the team table with zero numbers).
+        allPolicies = policyRows.map(p => ({ ...p, rep_key: p.sales_rep || '' }));
 
-        // Tag each policy with a unified rep_key so all aggregations match
-        allPolicies = policyRows.map(p => ({
-          ...p,
-          rep_key: (p.user_id && userIdToName[p.user_id]) || p.sales_rep || ''
-        }));
-
+        // Build distinct sales_rep set from policies (mirrors leaderboard rows)
         const repSet = new Set();
-        profileRows.forEach(p => { if (p.agent_name) repSet.add(p.agent_name); });
         allPolicies.forEach(p => { if (p.rep_key) repSet.add(p.rep_key); });
+
+        // Add profile names that aren't already a sales_rep on any policy
+        // (case-insensitive check so 'John Doe' and 'john doe' aren't doubled)
+        const lowerSet = new Set(Array.from(repSet).map(s => s.toLowerCase()));
+        profileRows.forEach(p => {
+          if (p.agent_name && !lowerSet.has(p.agent_name.toLowerCase())) {
+            repSet.add(p.agent_name);
+            lowerSet.add(p.agent_name.toLowerCase());
+          }
+        });
 
         ytdSeed = {};
         repSet.forEach(r => { ytdSeed[r] = 0; });
