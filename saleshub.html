@@ -6258,7 +6258,15 @@
         if (globalGate) globalGate.style.display = 'none';
         // Show admin-only Weekly Tracker for the owner
         const WT_ADMIN_EMAILS = ['dev@kairos-financial.com'];
-        if (wtBtn) wtBtn.style.display = WT_ADMIN_EMAILS.includes((currentUser.email || '').toLowerCase()) ? '' : 'none';
+        const isWtAdmin = WT_ADMIN_EMAILS.includes((currentUser.email || '').toLowerCase());
+        if (wtBtn) wtBtn.style.display = isWtAdmin ? '' : 'none';
+        // If WT panel is currently active and we just got auth, reload so goals fetch with the user bearer
+        if (isWtAdmin) {
+          const activePanel = document.querySelector('.ss-panel.active');
+          if (activePanel && activePanel.id === 'panel-weeklytracker' && typeof loadWeeklyTracker === 'function') {
+            loadWeeklyTracker();
+          }
+        }
         // Load user's saved comp level and apply to calculator
         if (typeof loadUserCompLevel === 'function') loadUserCompLevel();
       } else {
@@ -10895,19 +10903,25 @@
       }
 
       async function fetchAllPolicies() {
-        const res = await fetch(SUPABASE_URL + '/rest/v1/policies?select=user_id,sales_rep,annual_premium,policy_date&order=policy_date.asc', {
-          headers: anonHdrs()
+        // PostgREST default cap is 1000 rows — explicit Range header lifts it so we
+        // don't lose recent submissions when the table grows past 1k.
+        const res = await fetch(SUPABASE_URL + '/rest/v1/policies?select=user_id,sales_rep,annual_premium,policy_date&order=policy_date.desc', {
+          headers: anonHdrs({ 'Range-Unit': 'items', 'Range': '0-49999' })
         });
-        if (!res.ok) throw new Error('Failed to fetch policies (' + res.status + ')');
-        return await res.json();
+        if (!res.ok && res.status !== 206) throw new Error('Failed to fetch policies (' + res.status + ')');
+        const rows = await res.json();
+        console.log('[WT] fetched policies:', rows.length);
+        return rows;
       }
 
       async function fetchActiveReps() {
         const res = await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?select=user_id,agent_name&order=agent_name.asc', {
-          headers: anonHdrs()
+          headers: anonHdrs({ 'Range-Unit': 'items', 'Range': '0-9999' })
         });
-        if (!res.ok) throw new Error('Failed to fetch reps (' + res.status + ')');
-        return await res.json();
+        if (!res.ok && res.status !== 206) throw new Error('Failed to fetch reps (' + res.status + ')');
+        const rows = await res.json();
+        console.log('[WT] fetched profiles:', rows.length);
+        return rows;
       }
 
       function processData(policyRows, profileRows) {
@@ -10928,13 +10942,19 @@
 
         ytdSeed = {};
         repSet.forEach(r => { ytdSeed[r] = 0; });
+        let preCutoffPolicies = 0, postCutoffPolicies = 0;
         allPolicies.forEach(p => {
           if (!p.rep_key || !p.policy_date) return;
           if (p.policy_date < YTD_CUTOFF) {
             ytdSeed[p.rep_key] = (ytdSeed[p.rep_key] || 0) + parseFloat(p.annual_premium || 0);
+            preCutoffPolicies++;
+          } else {
+            postCutoffPolicies++;
           }
         });
         reps = Array.from(repSet).sort((a, b) => (ytdSeed[b] || 0) - (ytdSeed[a] || 0));
+        const seedTotal = Object.values(ytdSeed).reduce((s, v) => s + v, 0);
+        console.log('[WT] processed:', { reps: reps.length, preCutoff: preCutoffPolicies, postCutoff: postCutoffPolicies, seedTotal: seedTotal });
       }
 
       function getWeekActuals(weekKey) {
@@ -11342,6 +11362,17 @@
     })();
 
     function loadWeeklyTracker() { WT.load(); }
+
+    // If the page was loaded with #weeklytracker BEFORE this module was defined,
+    // the hash IIFE earlier in the script silently skipped the load (because
+    // typeof loadWeeklyTracker was 'undefined' at that point). Re-trigger here
+    // so a hard refresh on the panel actually loads it without manual clicking.
+    (function backfillWeeklyTrackerLoad() {
+      const active = document.querySelector('.ss-panel.active');
+      if (active && active.id === 'panel-weeklytracker') {
+        loadWeeklyTracker();
+      }
+    })();
 
   </script>
 
