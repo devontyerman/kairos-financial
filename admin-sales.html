@@ -815,10 +815,12 @@
         const ap = parseFloat(row.annual_premium || 0);
         const status = row.status || 'Underwriting';
         const statusClass = status.toLowerCase().replace(/\s+/g, '-');
+        const hidden = row.book_visible === false;
+        const hiddenBadge = hidden ? ' <span title="Hidden from rep\'s book of business — still counts on leaderboard" style="display:inline-block;margin-left:4px;padding:0.1rem 0.45rem;font-size:0.6rem;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;background:rgba(148,163,184,0.18);color:#94a3b8;border:1px solid rgba(148,163,184,0.35);border-radius:100px;">Hidden</span>' : '';
 
-        html += '<tr>';
+        html += '<tr' + (hidden ? ' style="opacity:0.7;"' : '') + '>';
         html += '<td class="td-date" data-label="Date">' + dateStr + '</td>';
-        html += '<td class="td-rep" data-label="Sales Rep">' + esc(row.sales_rep) + '</td>';
+        html += '<td class="td-rep" data-label="Sales Rep">' + esc(row.sales_rep) + hiddenBadge + '</td>';
         html += '<td data-label="Client">' + esc(row.client_name) + '</td>';
         const phone = row.phone || '';
         const phoneDigits = phone.replace(/\D/g, '');
@@ -833,7 +835,8 @@
         html += '<td class="admin-actions" data-label="Actions">';
         if (status === 'Underwriting') html += '<button class="mp-action-btn mp-action-approve" data-id="' + row.id + '" data-action="approve">Approve Policy</button>';
         if (status === 'Approved') html += '<button class="mp-action-btn mp-action-paid" data-id="' + row.id + '" data-action="paid">Mark as Paid</button>';
-        html += '<div class="mp-more-wrap"><button class="mp-more-btn" data-id="' + row.id + '">&#8943;</button><div class="mp-more-menu"><button class="mp-btn-edit" data-id="' + row.id + '">Edit Policy</button><button class="mp-btn-del" data-id="' + row.id + '">Delete Policy</button></div></div>';
+        const restoreBtn = hidden ? '<button class="mp-btn-restore" data-id="' + row.id + '">Restore to Book</button>' : '<button class="mp-btn-hide" data-id="' + row.id + '">Hide from Book</button>';
+        html += '<div class="mp-more-wrap"><button class="mp-more-btn" data-id="' + row.id + '">&#8943;</button><div class="mp-more-menu"><button class="mp-btn-edit" data-id="' + row.id + '">Edit Policy</button>' + restoreBtn + '<button class="mp-btn-del" data-id="' + row.id + '">Delete Policy</button></div></div>';
         html += '</td></tr>';
       });
       html += '</tbody></table>';
@@ -875,11 +878,37 @@
         b.addEventListener('click', () => { openEdit(b.dataset.id); b.closest('.mp-more-menu').classList.remove('open'); });
       });
 
-      // Delete
+      // Hide from rep's book of business (still counts on leaderboard)
+      container.querySelectorAll('.mp-btn-hide').forEach(b => {
+        b.addEventListener('click', async () => {
+          b.closest('.mp-more-menu').classList.remove('open');
+          await fetch(SUPABASE_URL + '/rest/v1/policies?id=eq.' + b.dataset.id, {
+            method: 'PATCH',
+            headers: { ...hdrs, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+            body: JSON.stringify({ book_visible: false })
+          });
+          loadAll();
+        });
+      });
+
+      // Restore to rep's book of business
+      container.querySelectorAll('.mp-btn-restore').forEach(b => {
+        b.addEventListener('click', async () => {
+          b.closest('.mp-more-menu').classList.remove('open');
+          await fetch(SUPABASE_URL + '/rest/v1/policies?id=eq.' + b.dataset.id, {
+            method: 'PATCH',
+            headers: { ...hdrs, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+            body: JSON.stringify({ book_visible: true })
+          });
+          loadAll();
+        });
+      });
+
+      // Delete (hard delete — also removes from leaderboard)
       container.querySelectorAll('.mp-btn-del').forEach(b => {
         b.addEventListener('click', async () => {
           b.closest('.mp-more-menu').classList.remove('open');
-          if (!confirm('Delete this policy permanently?')) return;
+          if (!confirm('Permanently delete this policy? This will also remove it from the leaderboard. To remove only from the rep\'s book of business, use "Hide from Book" instead.')) return;
           await fetch(SUPABASE_URL + '/rest/v1/policies?id=eq.' + b.dataset.id, { method: 'DELETE', headers: hdrs });
           loadAll();
         });
