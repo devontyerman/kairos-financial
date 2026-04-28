@@ -1343,7 +1343,7 @@
     #panel-weeklytracker .wt-avatar { display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: var(--wt-blue-100); color: var(--wt-blue-700); font-weight: 600; font-size: 11px; margin-right: 10px; vertical-align: middle; }
     #panel-weeklytracker .wt-wtd-cell { background: var(--wt-blue-50); text-align: right; padding: 0 14px !important; font-family: 'JetBrains Mono', monospace; font-weight: 600; color: var(--wt-blue-700); width: 110px; }
     #panel-weeklytracker .wt-ytd-cell { background: var(--wt-green-50); text-align: right; padding: 0 14px !important; font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--wt-green-700); width: 130px; border-left: 1px solid var(--wt-green-100); }
-    #panel-weeklytracker .wt-day-cell { width: 100px; padding: 0 !important; text-align: right; }
+    #panel-weeklytracker .wt-day-cell { width: 96px; min-width: 96px; max-width: 96px; padding: 0 !important; text-align: right; box-sizing: border-box; }
     #panel-weeklytracker .wt-day-cell input { width: 100%; height: 38px; border: none; background: transparent; text-align: right; padding: 0 10px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--wt-gray-700); outline: none; font-weight: 500; box-sizing: border-box; }
     #panel-weeklytracker .wt-day-cell input:focus { background: white; box-shadow: inset 0 0 0 2px var(--wt-blue-500); color: var(--wt-gray-900); }
     #panel-weeklytracker .wt-day-cell.goal { background: var(--wt-gray-25); }
@@ -11236,16 +11236,27 @@
           return { rep, actuals: a, dialActuals: da, apGoals, dialGoals, wtd, weeklyGoal, ytd: ytdSnap[rep] || 0 };
         }).sort((a, b) => b.ytd - a.ytd);
 
-        function classifyActual(actualVal, goalVal) {
-          const has = actualVal > 0;
-          if (!has) return { cls: 'empty', pct: '' };
-          if (!goalVal || goalVal <= 0) return { cls: 'met', pct: '' };
+        // AP classification: green (over) the moment goal is met or exceeded.
+        function classifyAp(actualVal, goalVal) {
+          if (!actualVal || actualVal <= 0) return { cls: 'empty', pct: '' };
+          if (!goalVal || goalVal <= 0) return { cls: 'over', pct: '' };
           const ratio = actualVal / goalVal;
           let cls;
-          if (ratio >= 1.1) cls = 'over';
-          else if (ratio >= 1) cls = 'met';
+          if (ratio >= 1) cls = 'over';
           else if (ratio >= 0.7) cls = 'under';
           else cls = 'miss';
+          return { cls, pct: '<span class="wt-pct">' + Math.round(ratio * 100) + '%</span>' };
+        }
+        // Dial classification: same as AP, but if AP goal was hit that day a
+        // missed dial goal stays grey (under) instead of red (miss).
+        function classifyDial(actualVal, goalVal, apHit) {
+          if (!actualVal || actualVal <= 0) return { cls: 'empty', pct: '' };
+          if (!goalVal || goalVal <= 0) return { cls: 'over', pct: '' };
+          const ratio = actualVal / goalVal;
+          let cls;
+          if (ratio >= 1) cls = 'over';
+          else if (ratio >= 0.7) cls = 'under';
+          else cls = apHit ? 'under' : 'miss';
           return { cls, pct: '<span class="wt-pct">' + Math.round(ratio * 100) + '%</span>' };
         }
 
@@ -11258,25 +11269,25 @@
           for (let di = 0; di < 6; di++) {
             const apGoal = row.apGoals[di];
             const apActual = row.actuals[di];
-            const apCls = classifyActual(apActual, apGoal);
-            const apGoalDisplay = (apGoal != null) ? '$' + Number(apGoal).toLocaleString() : '';
-            const apActualDisplay = apActual > 0 ? '$' + Math.round(apActual).toLocaleString() : '—';
-
             const dialGoal = row.dialGoals[di];
             const dialActual = row.dialActuals[di];
-            const dialCls = classifyActual(dialActual, dialGoal);
+            const apHit = apGoal != null && apGoal > 0 && apActual >= apGoal;
+            const apCls = classifyAp(apActual, apGoal);
+            const dialCls = classifyDial(dialActual, dialGoal, apHit);
+            const apGoalDisplay = (apGoal != null) ? '$' + Number(apGoal).toLocaleString() : '';
+            const apActualDisplay = apActual > 0 ? '$' + Math.round(apActual).toLocaleString() : '—';
             const dialGoalDisplay = (dialGoal != null) ? Number(dialGoal).toLocaleString() : '';
             const dialActualDisplay = dialActual > 0 ? Number(dialActual).toLocaleString() : '—';
 
             dayCells +=
               '<td class="wt-day-cell goal first-of-day">' +
-                '<input type="text" inputmode="decimal" data-wt-goal-kind="ap" data-wt-goal-week="' + escHtml(weekKey) + '" data-wt-goal-rep="' + escHtml(row.rep) + '" data-wt-goal-day="' + di + '" value="' + escHtml(apGoalDisplay) + '" placeholder="$0" />' +
-              '</td>' +
-              '<td class="wt-day-cell goal">' +
                 '<input type="text" inputmode="numeric" data-wt-goal-kind="dial" data-wt-goal-week="' + escHtml(weekKey) + '" data-wt-goal-rep="' + escHtml(row.rep) + '" data-wt-goal-day="' + di + '" value="' + escHtml(dialGoalDisplay) + '" placeholder="0" />' +
               '</td>' +
-              '<td class="wt-day-cell actual ' + apCls.cls + '">' + escHtml(apActualDisplay) + apCls.pct + '</td>' +
-              '<td class="wt-day-cell actual ' + dialCls.cls + '">' + escHtml(dialActualDisplay) + dialCls.pct + '</td>';
+              '<td class="wt-day-cell goal">' +
+                '<input type="text" inputmode="decimal" data-wt-goal-kind="ap" data-wt-goal-week="' + escHtml(weekKey) + '" data-wt-goal-rep="' + escHtml(row.rep) + '" data-wt-goal-day="' + di + '" value="' + escHtml(apGoalDisplay) + '" placeholder="$0" />' +
+              '</td>' +
+              '<td class="wt-day-cell actual ' + dialCls.cls + '">' + escHtml(dialActualDisplay) + dialCls.pct + '</td>' +
+              '<td class="wt-day-cell actual ' + apCls.cls + '">' + escHtml(apActualDisplay) + apCls.pct + '</td>';
           }
           const weeklyGoalDisplay = (row.weeklyGoal != null) ? '$' + Number(row.weeklyGoal).toLocaleString() : '';
           bodyHtml += '<tr>' +
@@ -11312,14 +11323,14 @@
         DAYS.forEach(d => { dayHeaderHtml += '<th colspan="4">' + d + '</th>'; });
         let subHeaderHtml = '';
         DAYS.forEach(() => {
-          subHeaderHtml += '<th>AP Goal</th><th>Dial Goal</th><th>AP Actual</th><th>Dial Actual</th>';
+          subHeaderHtml += '<th>Dial Goal</th><th>AP Goal</th><th>Dial Actual</th><th>AP Actual</th>';
         });
         let footDayHtml = '';
         dayTotals.forEach(dt => {
-          footDayHtml += '<td>' + escHtml(fmtMoney(dt.apGoal)) + '</td>' +
-                         '<td>' + Math.round(dt.dialGoal).toLocaleString() + '</td>' +
-                         '<td>' + escHtml(fmtMoney(dt.apActual)) + '</td>' +
-                         '<td>' + Math.round(dt.dialActual).toLocaleString() + '</td>';
+          footDayHtml += '<td>' + Math.round(dt.dialGoal).toLocaleString() + '</td>' +
+                         '<td>' + escHtml(fmtMoney(dt.apGoal)) + '</td>' +
+                         '<td>' + Math.round(dt.dialActual).toLocaleString() + '</td>' +
+                         '<td>' + escHtml(fmtMoney(dt.apActual)) + '</td>';
         });
 
         const colCount = 4 + (DAYS.length * 4) + 1; // rank,name,wtd,weeklyGoal + 4*days + ytd
