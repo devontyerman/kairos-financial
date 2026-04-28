@@ -10796,6 +10796,7 @@
       const PANEL_ID = 'panel-weeklytracker';
       const ACTIVE_SHEET_KEY = 'wt_active_sheet_v1'; // tab selection only — goals live in Supabase
       const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      const YTD_START = '2026-01-01';   // matches leaderboard YTD lower bound
       const YTD_CUTOFF = '2026-04-27'; // policy_date < this counts as seed YTD
 
       const MONTHS_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
@@ -10961,9 +10962,11 @@
 
         ytdSeed = {};
         repSet.forEach(r => { ytdSeed[r] = 0; });
-        let preCutoffPolicies = 0, postCutoffPolicies = 0;
+        let preCutoffPolicies = 0, postCutoffPolicies = 0, droppedOutOfRange = 0;
         allPolicies.forEach(p => {
           if (!p.rep_key || !p.policy_date) return;
+          // Only count policies inside the leaderboard's YTD window
+          if (p.policy_date < YTD_START) { droppedOutOfRange++; return; }
           if (p.policy_date < YTD_CUTOFF) {
             ytdSeed[p.rep_key] = (ytdSeed[p.rep_key] || 0) + parseFloat(p.annual_premium || 0);
             preCutoffPolicies++;
@@ -10973,7 +10976,7 @@
         });
         reps = Array.from(repSet).sort((a, b) => (ytdSeed[b] || 0) - (ytdSeed[a] || 0));
         const seedTotal = Object.values(ytdSeed).reduce((s, v) => s + v, 0);
-        console.log('[WT] processed:', { reps: reps.length, preCutoff: preCutoffPolicies, postCutoff: postCutoffPolicies, seedTotal: seedTotal });
+        console.log('[WT] processed:', { reps: reps.length, preCutoff: preCutoffPolicies, postCutoff: postCutoffPolicies, droppedOutOfRange, seedTotal });
       }
 
       function getWeekActuals(weekKey) {
@@ -10996,17 +10999,21 @@
         return result;
       }
 
-      // YTD totals as of end of given week (cutoff seed + actuals through Sat of weekKey)
+      // YTD totals as of end of given week. Capped at today so the current week's
+      // YTD matches the leaderboard exactly (leaderboard YTD = Jan 1 → today).
       function getYTDAtWeek(weekKey) {
         const weekStart = new Date(weekKey + 'T00:00:00');
         const weekEnd = new Date(weekStart);
         weekEnd.setDate(weekEnd.getDate() + 5); // Mon..Sat (inclusive)
         const weekEndKey = ymdLocal(weekEnd);
+        const todayKey = ymdLocal(new Date());
+        // Don't count future-dated policies — leaderboard YTD doesn't either
+        const upperBound = weekEndKey < todayKey ? weekEndKey : todayKey;
         const result = {};
         reps.forEach(r => { result[r] = ytdSeed[r] || 0; });
         allPolicies.forEach(p => {
           if (!p.rep_key || !p.policy_date) return;
-          if (p.policy_date >= YTD_CUTOFF && p.policy_date <= weekEndKey) {
+          if (p.policy_date >= YTD_CUTOFF && p.policy_date <= upperBound) {
             result[p.rep_key] = (result[p.rep_key] || 0) + parseFloat(p.annual_premium || 0);
           }
         });
