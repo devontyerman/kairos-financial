@@ -10897,13 +10897,25 @@
         return await res.json();
       }
 
-      function processPolicies(rows) {
-        allPolicies = rows;
+      async function fetchActiveReps() {
+        const res = await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?select=agent_name&order=agent_name.asc', {
+          headers: authHdrs()
+        });
+        if (!res.ok) throw new Error('Failed to fetch reps (' + res.status + ')');
+        const rows = await res.json();
+        return rows.map(r => r.agent_name).filter(Boolean);
+      }
+
+      function processData(policyRows, repNames) {
+        allPolicies = policyRows;
+        // Rep list is the union of agent_profiles names + any sales_rep on policies
+        // (in case some legacy policies have a name without a profile yet)
         const repSet = new Set();
-        rows.forEach(p => { if (p.sales_rep) repSet.add(p.sales_rep); });
+        repNames.forEach(n => { if (n) repSet.add(n); });
+        policyRows.forEach(p => { if (p.sales_rep) repSet.add(p.sales_rep); });
         ytdSeed = {};
         repSet.forEach(r => { ytdSeed[r] = 0; });
-        rows.forEach(p => {
+        policyRows.forEach(p => {
           if (!p.sales_rep || !p.policy_date) return;
           if (p.policy_date < YTD_CUTOFF) {
             ytdSeed[p.sales_rep] = (ytdSeed[p.sales_rep] || 0) + parseFloat(p.annual_premium || 0);
@@ -11291,11 +11303,12 @@
           if (!WEEKS.length) WEEKS = generateWeeks();
           // Restore last active sheet, fall back to current week
           const stored = (function() { try { return localStorage.getItem(ACTIVE_SHEET_KEY); } catch (e) { return null; } })();
-          const [policyRows] = await Promise.all([
+          const [policyRows, repNames] = await Promise.all([
             fetchAllPolicies(),
+            fetchActiveReps(),
             fetchGoalsFromSupabase()
           ]);
-          processPolicies(policyRows);
+          processData(policyRows, repNames);
           if (stored && (stored === 'ytd-setup' || WEEKS.some(w => w.key === stored))) {
             activeSheet = stored;
           } else {
