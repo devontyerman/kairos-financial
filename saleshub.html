@@ -10888,6 +10888,13 @@
         goals = next;
       }
 
+      async function checkSaveResponse(res, label) {
+        if (res.ok) return;
+        let detail = '';
+        try { detail = await res.text(); } catch (e) {}
+        console.error('[WT] ' + label + ' save failed (' + res.status + '):', detail);
+      }
+
       // ─── Goal accessors (AP daily, dial daily, weekly AP, default daily AP/dial)
       function getDailyGoal(kind, weekKey, rep, dayIdx) {
         const wk = goals[weekKey] && goals[weekKey][rep];
@@ -10905,18 +10912,20 @@
         try {
           // If both null, delete the row
           if (apVal == null && dlVal == null) {
-            await fetch(SUPABASE_URL + '/rest/v1/wt_daily_goals?week_start=eq.' + weekKey + '&sales_rep=eq.' + encodeURIComponent(rep) + '&day_idx=eq.' + dayIdx, {
+            const r = await fetch(SUPABASE_URL + '/rest/v1/wt_daily_goals?week_start=eq.' + weekKey + '&sales_rep=eq.' + encodeURIComponent(rep) + '&day_idx=eq.' + dayIdx, {
               method: 'DELETE',
               headers: authHdrs({ Prefer: 'return=minimal' })
             });
+            await checkSaveResponse(r, 'daily goal delete (' + kind + ', ' + rep + ')');
           } else {
-            await fetch(SUPABASE_URL + '/rest/v1/wt_daily_goals?on_conflict=week_start,sales_rep,day_idx', {
+            const r = await fetch(SUPABASE_URL + '/rest/v1/wt_daily_goals?on_conflict=week_start,sales_rep,day_idx', {
               method: 'POST',
               headers: authHdrs({ 'Content-Type': 'application/json', Prefer: 'resolution=merge-duplicates,return=minimal' }),
               body: JSON.stringify({ week_start: weekKey, sales_rep: rep, day_idx: dayIdx, goal: apVal || 0, dial_goal: dlVal || 0, updated_by: userEmail })
             });
+            await checkSaveResponse(r, 'daily goal upsert (' + kind + ', ' + rep + ')');
           }
-        } catch (e) { console.error('Save daily goal failed:', e); }
+        } catch (e) { console.error('[WT] daily goal save threw:', e); }
       }
 
       function getDefaultGoal(kind, rep) {
@@ -10937,18 +10946,20 @@
         const dlVal = goals._defaultDial ? goals._defaultDial[rep] : null;
         try {
           if (apVal == null && dlVal == null) {
-            await fetch(SUPABASE_URL + '/rest/v1/wt_default_goals?sales_rep=eq.' + encodeURIComponent(rep), {
+            const r = await fetch(SUPABASE_URL + '/rest/v1/wt_default_goals?sales_rep=eq.' + encodeURIComponent(rep), {
               method: 'DELETE',
               headers: authHdrs({ Prefer: 'return=minimal' })
             });
+            await checkSaveResponse(r, 'default goal delete (' + kind + ', ' + rep + ')');
           } else {
-            await fetch(SUPABASE_URL + '/rest/v1/wt_default_goals?on_conflict=sales_rep', {
+            const r = await fetch(SUPABASE_URL + '/rest/v1/wt_default_goals?on_conflict=sales_rep', {
               method: 'POST',
               headers: authHdrs({ 'Content-Type': 'application/json', Prefer: 'resolution=merge-duplicates,return=minimal' }),
               body: JSON.stringify({ sales_rep: rep, goal: apVal || 0, dial_goal: dlVal || 0, updated_by: userEmail })
             });
+            await checkSaveResponse(r, 'default goal upsert (' + kind + ', ' + rep + ')');
           }
-        } catch (e) { console.error('Save default goal failed:', e); }
+        } catch (e) { console.error('[WT] default goal save threw:', e); }
       }
 
       function isHiddenRep(rep) { return hiddenReps.has(rep); }
@@ -10958,18 +10969,20 @@
         const userEmail = (currentUser && currentUser.email) || null;
         try {
           if (hidden) {
-            await fetch(SUPABASE_URL + '/rest/v1/wt_hidden_reps?on_conflict=sales_rep', {
+            const r = await fetch(SUPABASE_URL + '/rest/v1/wt_hidden_reps?on_conflict=sales_rep', {
               method: 'POST',
               headers: authHdrs({ 'Content-Type': 'application/json', Prefer: 'resolution=merge-duplicates,return=minimal' }),
               body: JSON.stringify({ sales_rep: rep, hidden_by: userEmail })
             });
+            await checkSaveResponse(r, 'hide rep (' + rep + ')');
           } else {
-            await fetch(SUPABASE_URL + '/rest/v1/wt_hidden_reps?sales_rep=eq.' + encodeURIComponent(rep), {
+            const r = await fetch(SUPABASE_URL + '/rest/v1/wt_hidden_reps?sales_rep=eq.' + encodeURIComponent(rep), {
               method: 'DELETE',
               headers: authHdrs({ Prefer: 'return=minimal' })
             });
+            await checkSaveResponse(r, 'show rep (' + rep + ')');
           }
-        } catch (e) { console.error('Save hidden rep failed:', e); }
+        } catch (e) { console.error('[WT] hide/show rep save threw:', e); }
       }
 
       function getWeeklyApGoal(weekKey, rep) {
@@ -10984,18 +10997,20 @@
         const userEmail = (currentUser && currentUser.email) || null;
         try {
           if (num == null) {
-            await fetch(SUPABASE_URL + '/rest/v1/wt_weekly_ap_goals?week_start=eq.' + weekKey + '&sales_rep=eq.' + encodeURIComponent(rep), {
+            const r = await fetch(SUPABASE_URL + '/rest/v1/wt_weekly_ap_goals?week_start=eq.' + weekKey + '&sales_rep=eq.' + encodeURIComponent(rep), {
               method: 'DELETE',
               headers: authHdrs({ Prefer: 'return=minimal' })
             });
+            await checkSaveResponse(r, 'weekly AP delete (' + rep + ')');
           } else {
-            await fetch(SUPABASE_URL + '/rest/v1/wt_weekly_ap_goals?on_conflict=week_start,sales_rep', {
+            const r = await fetch(SUPABASE_URL + '/rest/v1/wt_weekly_ap_goals?on_conflict=week_start,sales_rep', {
               method: 'POST',
               headers: authHdrs({ 'Content-Type': 'application/json', Prefer: 'resolution=merge-duplicates,return=minimal' }),
               body: JSON.stringify({ week_start: weekKey, sales_rep: rep, ap_goal: num, updated_by: userEmail })
             });
+            await checkSaveResponse(r, 'weekly AP upsert (' + rep + ')');
           }
-        } catch (e) { console.error('Save weekly AP goal failed:', e); }
+        } catch (e) { console.error('[WT] weekly AP save threw:', e); }
       }
 
       async function fetchAllPolicies() {
