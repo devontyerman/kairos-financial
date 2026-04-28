@@ -44,41 +44,70 @@ CREATE TABLE IF NOT EXISTS wt_default_goals (
   updated_by  TEXT
 );
 
--- ─── 4. Row Level Security ──────────────────────────────────────────
+-- ─── 4. Permissions + Row Level Security ───────────────────────────
+GRANT SELECT, INSERT, UPDATE, DELETE ON wt_admins        TO authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON wt_daily_goals   TO authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON wt_default_goals TO authenticated;
+
 ALTER TABLE wt_admins        ENABLE ROW LEVEL SECURITY;
 ALTER TABLE wt_daily_goals   ENABLE ROW LEVEL SECURITY;
 ALTER TABLE wt_default_goals ENABLE ROW LEVEL SECURITY;
 
--- wt_admins: anyone authenticated can read (so client can self-check)
-DROP POLICY IF EXISTS "wt_admins_select" ON wt_admins;
+-- Helper function: is the current user an admin?
+-- SECURITY DEFINER bypasses RLS on wt_admins so policies don't recurse into themselves.
+CREATE OR REPLACE FUNCTION wt_is_admin() RETURNS boolean
+  LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public, pg_temp
+AS $$
+  SELECT EXISTS (
+    SELECT 1 FROM wt_admins
+    WHERE email = auth.jwt() ->> 'email'
+  );
+$$;
+GRANT EXECUTE ON FUNCTION wt_is_admin() TO authenticated;
+
+-- Drop any prior policies (handles re-runs from earlier versions of this script)
+DROP POLICY IF EXISTS "wt_admins_select"        ON wt_admins;
+DROP POLICY IF EXISTS "wt_admins_write"         ON wt_admins;
+DROP POLICY IF EXISTS "wt_admins_insert"        ON wt_admins;
+DROP POLICY IF EXISTS "wt_admins_update"        ON wt_admins;
+DROP POLICY IF EXISTS "wt_admins_delete"        ON wt_admins;
+DROP POLICY IF EXISTS "wt_daily_goals_select"   ON wt_daily_goals;
+DROP POLICY IF EXISTS "wt_daily_goals_write"    ON wt_daily_goals;
+DROP POLICY IF EXISTS "wt_daily_goals_insert"   ON wt_daily_goals;
+DROP POLICY IF EXISTS "wt_daily_goals_update"   ON wt_daily_goals;
+DROP POLICY IF EXISTS "wt_daily_goals_delete"   ON wt_daily_goals;
+DROP POLICY IF EXISTS "wt_default_goals_select" ON wt_default_goals;
+DROP POLICY IF EXISTS "wt_default_goals_write"  ON wt_default_goals;
+DROP POLICY IF EXISTS "wt_default_goals_insert" ON wt_default_goals;
+DROP POLICY IF EXISTS "wt_default_goals_update" ON wt_default_goals;
+DROP POLICY IF EXISTS "wt_default_goals_delete" ON wt_default_goals;
+
+-- wt_admins: anyone authenticated reads, only admins write
 CREATE POLICY "wt_admins_select" ON wt_admins
   FOR SELECT TO authenticated USING (true);
+CREATE POLICY "wt_admins_insert" ON wt_admins
+  FOR INSERT TO authenticated WITH CHECK (wt_is_admin());
+CREATE POLICY "wt_admins_update" ON wt_admins
+  FOR UPDATE TO authenticated USING (wt_is_admin()) WITH CHECK (wt_is_admin());
+CREATE POLICY "wt_admins_delete" ON wt_admins
+  FOR DELETE TO authenticated USING (wt_is_admin());
 
--- Only existing admins can edit the allowlist (or use the SQL editor as service role)
-DROP POLICY IF EXISTS "wt_admins_write" ON wt_admins;
-CREATE POLICY "wt_admins_write" ON wt_admins
-  FOR ALL TO authenticated
-  USING (EXISTS (SELECT 1 FROM wt_admins a WHERE a.email = auth.jwt() ->> 'email'))
-  WITH CHECK (EXISTS (SELECT 1 FROM wt_admins a WHERE a.email = auth.jwt() ->> 'email'));
-
--- Daily goals: authenticated users READ, admins WRITE
-DROP POLICY IF EXISTS "wt_daily_goals_select" ON wt_daily_goals;
+-- wt_daily_goals: anyone authenticated reads, only admins write
 CREATE POLICY "wt_daily_goals_select" ON wt_daily_goals
   FOR SELECT TO authenticated USING (true);
+CREATE POLICY "wt_daily_goals_insert" ON wt_daily_goals
+  FOR INSERT TO authenticated WITH CHECK (wt_is_admin());
+CREATE POLICY "wt_daily_goals_update" ON wt_daily_goals
+  FOR UPDATE TO authenticated USING (wt_is_admin()) WITH CHECK (wt_is_admin());
+CREATE POLICY "wt_daily_goals_delete" ON wt_daily_goals
+  FOR DELETE TO authenticated USING (wt_is_admin());
 
-DROP POLICY IF EXISTS "wt_daily_goals_write" ON wt_daily_goals;
-CREATE POLICY "wt_daily_goals_write" ON wt_daily_goals
-  FOR ALL TO authenticated
-  USING (EXISTS (SELECT 1 FROM wt_admins a WHERE a.email = auth.jwt() ->> 'email'))
-  WITH CHECK (EXISTS (SELECT 1 FROM wt_admins a WHERE a.email = auth.jwt() ->> 'email'));
-
--- Default goals: same pattern
-DROP POLICY IF EXISTS "wt_default_goals_select" ON wt_default_goals;
+-- wt_default_goals: anyone authenticated reads, only admins write
 CREATE POLICY "wt_default_goals_select" ON wt_default_goals
   FOR SELECT TO authenticated USING (true);
-
-DROP POLICY IF EXISTS "wt_default_goals_write" ON wt_default_goals;
-CREATE POLICY "wt_default_goals_write" ON wt_default_goals
-  FOR ALL TO authenticated
-  USING (EXISTS (SELECT 1 FROM wt_admins a WHERE a.email = auth.jwt() ->> 'email'))
-  WITH CHECK (EXISTS (SELECT 1 FROM wt_admins a WHERE a.email = auth.jwt() ->> 'email'));
+CREATE POLICY "wt_default_goals_insert" ON wt_default_goals
+  FOR INSERT TO authenticated WITH CHECK (wt_is_admin());
+CREATE POLICY "wt_default_goals_update" ON wt_default_goals
+  FOR UPDATE TO authenticated USING (wt_is_admin()) WITH CHECK (wt_is_admin());
+CREATE POLICY "wt_default_goals_delete" ON wt_default_goals
+  FOR DELETE TO authenticated USING (wt_is_admin());
