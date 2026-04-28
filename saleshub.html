@@ -10844,15 +10844,14 @@
         return weeks;
       }
 
-      function authHdrs(extra) {
-        // User's bearer — required for goal writes (admin check via auth.jwt()->>'email')
-        const token = accessToken || SUPABASE_KEY;
-        return Object.assign({ apikey: SUPABASE_KEY, Authorization: 'Bearer ' + token }, extra || {});
-      }
       function anonHdrs(extra) {
-        // Anon bearer — matches the leaderboard pattern so RLS lets us read team-wide data
+        // Anon bearer for everything — matches the leaderboard pattern. RLS for wt_*
+        // tables (post v5 migration) is fully open to public; the JS sidebar gate
+        // is the actual access control for the Weekly Tracker panel.
         return Object.assign({ apikey: SUPABASE_KEY, Authorization: 'Bearer ' + SUPABASE_KEY }, extra || {});
       }
+      // Alias kept so existing call sites (authHdrs) work without refactoring.
+      const authHdrs = anonHdrs;
 
       async function fetchGoalsFromSupabase() {
         const [dailyRes, defaultRes, weeklyRes, hiddenRes] = await Promise.all([
