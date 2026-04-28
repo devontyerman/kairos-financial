@@ -6257,7 +6257,7 @@
         if (signupLink) signupLink.style.display = 'none';
         if (globalGate) globalGate.style.display = 'none';
         // Show admin-only Weekly Tracker for the owner
-        const WT_ADMIN_EMAILS = ['devontyerman@gmail.com'];
+        const WT_ADMIN_EMAILS = ['dev@kairos-financial.com'];
         if (wtBtn) wtBtn.style.display = WT_ADMIN_EMAILS.includes((currentUser.email || '').toLowerCase()) ? '' : 'none';
         // Load user's saved comp level and apply to calculator
         if (typeof loadUserCompLevel === 'function') loadUserCompLevel();

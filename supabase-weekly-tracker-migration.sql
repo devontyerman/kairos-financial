@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS wt_admins (
   added_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-INSERT INTO wt_admins (email) VALUES ('devontyerman@gmail.com')
+INSERT INTO wt_admins (email) VALUES ('dev@kairos-financial.com')
   ON CONFLICT (email) DO NOTHING;
 
 -- ─── 2. Daily goal overrides ────────────────────────────────────────
