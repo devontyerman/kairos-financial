@@ -10806,9 +10806,10 @@
       let WEEKS = [];
       let activeSheet = null;
       let allPolicies = [];
+      let allKpis = [];          // daily_kpis rows for dial actuals
       let reps = [];
       let ytdSeed = {};
-      let goals = {};
+      let goals = {};            // { _default: { rep: ap }, _defaultDial: { rep: dials }, [weekKey]: { [rep]: { ap:[6], dial:[6] } }, _weeklyAp: { [weekKey]: { [rep]: ap } } }
       let loaded = false;
       let loading = false;
 
@@ -10845,38 +10846,52 @@
       }
 
       async function fetchGoalsFromSupabase() {
-        const [dailyRes, defaultRes] = await Promise.all([
-          fetch(SUPABASE_URL + '/rest/v1/wt_daily_goals?select=week_start,sales_rep,day_idx,goal', { headers: authHdrs() }),
-          fetch(SUPABASE_URL + '/rest/v1/wt_default_goals?select=sales_rep,goal', { headers: authHdrs() })
+        const [dailyRes, defaultRes, weeklyRes] = await Promise.all([
+          fetch(SUPABASE_URL + '/rest/v1/wt_daily_goals?select=week_start,sales_rep,day_idx,goal,dial_goal', { headers: authHdrs() }),
+          fetch(SUPABASE_URL + '/rest/v1/wt_default_goals?select=sales_rep,goal,dial_goal', { headers: authHdrs() }),
+          fetch(SUPABASE_URL + '/rest/v1/wt_weekly_ap_goals?select=week_start,sales_rep,ap_goal', { headers: authHdrs() })
         ]);
         if (!dailyRes.ok) throw new Error('Failed to load daily goals (' + dailyRes.status + ')');
         if (!defaultRes.ok) throw new Error('Failed to load default goals (' + defaultRes.status + ')');
+        if (!weeklyRes.ok) throw new Error('Failed to load weekly goals (' + weeklyRes.status + ')');
         const dailyRows = await dailyRes.json();
         const defaultRows = await defaultRes.json();
-        const next = { _default: {} };
+        const weeklyRows = await weeklyRes.json();
+        const next = { _default: {}, _defaultDial: {}, _weeklyAp: {} };
         dailyRows.forEach(r => {
           if (!next[r.week_start]) next[r.week_start] = {};
-          if (!next[r.week_start][r.sales_rep]) next[r.week_start][r.sales_rep] = [null, null, null, null, null, null];
-          next[r.week_start][r.sales_rep][r.day_idx] = Number(r.goal);
+          if (!next[r.week_start][r.sales_rep]) next[r.week_start][r.sales_rep] = { ap: [null,null,null,null,null,null], dial: [null,null,null,null,null,null] };
+          if (r.goal != null && r.goal !== 0) next[r.week_start][r.sales_rep].ap[r.day_idx] = Number(r.goal);
+          if (r.dial_goal != null && r.dial_goal !== 0) next[r.week_start][r.sales_rep].dial[r.day_idx] = Number(r.dial_goal);
         });
-        defaultRows.forEach(r => { next._default[r.sales_rep] = Number(r.goal); });
+        defaultRows.forEach(r => {
+          if (r.goal != null && r.goal !== 0) next._default[r.sales_rep] = Number(r.goal);
+          if (r.dial_goal != null && r.dial_goal !== 0) next._defaultDial[r.sales_rep] = Number(r.dial_goal);
+        });
+        weeklyRows.forEach(r => {
+          if (!next._weeklyAp[r.week_start]) next._weeklyAp[r.week_start] = {};
+          next._weeklyAp[r.week_start][r.sales_rep] = Number(r.ap_goal);
+        });
         goals = next;
       }
 
-      function getGoal(weekKey, rep, dayIdx) {
-        return (goals[weekKey] && goals[weekKey][rep] && goals[weekKey][rep][dayIdx] != null)
-          ? goals[weekKey][rep][dayIdx]
-          : null;
+      // ─── Goal accessors (AP daily, dial daily, weekly AP, default daily AP/dial)
+      function getDailyGoal(kind, weekKey, rep, dayIdx) {
+        const wk = goals[weekKey] && goals[weekKey][rep];
+        return (wk && wk[kind] && wk[kind][dayIdx] != null) ? wk[kind][dayIdx] : null;
       }
-      async function setGoal(weekKey, rep, dayIdx, value) {
+      async function setDailyGoal(kind, weekKey, rep, dayIdx, value) {
         const num = (value === '' || value == null || isNaN(Number(value))) ? null : Number(value);
-        // Optimistic local update so the UI reflects instantly
         if (!goals[weekKey]) goals[weekKey] = {};
-        if (!goals[weekKey][rep]) goals[weekKey][rep] = [null, null, null, null, null, null];
-        goals[weekKey][rep][dayIdx] = num;
+        if (!goals[weekKey][rep]) goals[weekKey][rep] = { ap: [null,null,null,null,null,null], dial: [null,null,null,null,null,null] };
+        goals[weekKey][rep][kind][dayIdx] = num;
         const userEmail = (currentUser && currentUser.email) || null;
+        // Compose the row: include both ap_goal and dial_goal so single-row upsert holds the full state
+        const apVal  = goals[weekKey][rep].ap[dayIdx];
+        const dlVal  = goals[weekKey][rep].dial[dayIdx];
         try {
-          if (num == null) {
+          // If both null, delete the row
+          if (apVal == null && dlVal == null) {
             await fetch(SUPABASE_URL + '/rest/v1/wt_daily_goals?week_start=eq.' + weekKey + '&sales_rep=eq.' + encodeURIComponent(rep) + '&day_idx=eq.' + dayIdx, {
               method: 'DELETE',
               headers: authHdrs({ Prefer: 'return=minimal' })
@@ -10885,23 +10900,30 @@
             await fetch(SUPABASE_URL + '/rest/v1/wt_daily_goals?on_conflict=week_start,sales_rep,day_idx', {
               method: 'POST',
               headers: authHdrs({ 'Content-Type': 'application/json', Prefer: 'resolution=merge-duplicates,return=minimal' }),
-              body: JSON.stringify({ week_start: weekKey, sales_rep: rep, day_idx: dayIdx, goal: num, updated_by: userEmail })
+              body: JSON.stringify({ week_start: weekKey, sales_rep: rep, day_idx: dayIdx, goal: apVal || 0, dial_goal: dlVal || 0, updated_by: userEmail })
             });
           }
-        } catch (e) {
-          console.error('Save goal failed:', e);
-        }
+        } catch (e) { console.error('Save daily goal failed:', e); }
       }
-      function getDefaultGoal(rep) {
-        return (goals._default && goals._default[rep] != null) ? goals._default[rep] : null;
+
+      function getDefaultGoal(kind, rep) {
+        const map = kind === 'ap' ? goals._default : goals._defaultDial;
+        return (map && map[rep] != null) ? map[rep] : null;
       }
-      async function setDefaultGoal(rep, value) {
+      async function setDefaultGoal(kind, rep, value) {
         const num = (value === '' || value == null || isNaN(Number(value))) ? null : Number(value);
-        if (!goals._default) goals._default = {};
-        goals._default[rep] = num;
+        if (kind === 'ap') {
+          if (!goals._default) goals._default = {};
+          goals._default[rep] = num;
+        } else {
+          if (!goals._defaultDial) goals._defaultDial = {};
+          goals._defaultDial[rep] = num;
+        }
         const userEmail = (currentUser && currentUser.email) || null;
+        const apVal = goals._default ? goals._default[rep] : null;
+        const dlVal = goals._defaultDial ? goals._defaultDial[rep] : null;
         try {
-          if (num == null) {
+          if (apVal == null && dlVal == null) {
             await fetch(SUPABASE_URL + '/rest/v1/wt_default_goals?sales_rep=eq.' + encodeURIComponent(rep), {
               method: 'DELETE',
               headers: authHdrs({ Prefer: 'return=minimal' })
@@ -10910,12 +10932,36 @@
             await fetch(SUPABASE_URL + '/rest/v1/wt_default_goals?on_conflict=sales_rep', {
               method: 'POST',
               headers: authHdrs({ 'Content-Type': 'application/json', Prefer: 'resolution=merge-duplicates,return=minimal' }),
-              body: JSON.stringify({ sales_rep: rep, goal: num, updated_by: userEmail })
+              body: JSON.stringify({ sales_rep: rep, goal: apVal || 0, dial_goal: dlVal || 0, updated_by: userEmail })
             });
           }
-        } catch (e) {
-          console.error('Save default goal failed:', e);
-        }
+        } catch (e) { console.error('Save default goal failed:', e); }
+      }
+
+      function getWeeklyApGoal(weekKey, rep) {
+        const wk = goals._weeklyAp && goals._weeklyAp[weekKey];
+        return (wk && wk[rep] != null) ? wk[rep] : null;
+      }
+      async function setWeeklyApGoal(weekKey, rep, value) {
+        const num = (value === '' || value == null || isNaN(Number(value))) ? null : Number(value);
+        if (!goals._weeklyAp) goals._weeklyAp = {};
+        if (!goals._weeklyAp[weekKey]) goals._weeklyAp[weekKey] = {};
+        goals._weeklyAp[weekKey][rep] = num;
+        const userEmail = (currentUser && currentUser.email) || null;
+        try {
+          if (num == null) {
+            await fetch(SUPABASE_URL + '/rest/v1/wt_weekly_ap_goals?week_start=eq.' + weekKey + '&sales_rep=eq.' + encodeURIComponent(rep), {
+              method: 'DELETE',
+              headers: authHdrs({ Prefer: 'return=minimal' })
+            });
+          } else {
+            await fetch(SUPABASE_URL + '/rest/v1/wt_weekly_ap_goals?on_conflict=week_start,sales_rep', {
+              method: 'POST',
+              headers: authHdrs({ 'Content-Type': 'application/json', Prefer: 'resolution=merge-duplicates,return=minimal' }),
+              body: JSON.stringify({ week_start: weekKey, sales_rep: rep, ap_goal: num, updated_by: userEmail })
+            });
+          }
+        } catch (e) { console.error('Save weekly AP goal failed:', e); }
       }
 
       async function fetchAllPolicies() {
@@ -10940,11 +10986,22 @@
         return rows;
       }
 
-      function processData(policyRows, profileRows) {
+      async function fetchAllKpis() {
+        const res = await fetch(SUPABASE_URL + '/rest/v1/daily_kpis?select=user_id,sales_rep,kpi_date,dials&order=kpi_date.desc', {
+          headers: anonHdrs({ 'Range-Unit': 'items', 'Range': '0-49999' })
+        });
+        if (!res.ok && res.status !== 206) throw new Error('Failed to fetch KPIs (' + res.status + ')');
+        const rows = await res.json();
+        console.log('[WT] fetched kpis:', rows.length);
+        return rows;
+      }
+
+      function processData(policyRows, profileRows, kpiRows) {
         // Aggregate by sales_rep string — same key the leaderboard uses, so WT totals
         // match the leaderboard exactly. profileRows only used to add reps with no
         // policies yet (so they still appear in the team table with zero numbers).
         allPolicies = policyRows.map(p => ({ ...p, rep_key: p.sales_rep || '' }));
+        allKpis = (kpiRows || []).map(k => ({ ...k, rep_key: k.sales_rep || '' }));
 
         // Build distinct sales_rep set from policies (mirrors leaderboard rows)
         const repSet = new Set();
@@ -10995,6 +11052,26 @@
           if (di === -1) return;
           if (!result[p.rep_key]) result[p.rep_key] = [0, 0, 0, 0, 0, 0];
           result[p.rep_key][di] += parseFloat(p.annual_premium || 0);
+        });
+        return result;
+      }
+
+      function getWeekDials(weekKey) {
+        const weekStart = new Date(weekKey + 'T00:00:00');
+        const dayKeys = [];
+        for (let i = 0; i < 6; i++) {
+          const d = new Date(weekStart);
+          d.setDate(d.getDate() + i);
+          dayKeys.push(ymdLocal(d));
+        }
+        const result = {};
+        reps.forEach(r => { result[r] = [0, 0, 0, 0, 0, 0]; });
+        allKpis.forEach(k => {
+          if (!k.rep_key || !k.kpi_date) return;
+          const di = dayKeys.indexOf(k.kpi_date);
+          if (di === -1) return;
+          if (!result[k.rep_key]) result[k.rep_key] = [0, 0, 0, 0, 0, 0];
+          result[k.rep_key][di] += parseInt(k.dials || 0, 10);
         });
         return result;
       }
@@ -11057,18 +11134,7 @@
         const teamYTD = reps.reduce((s, r) => s + (ytdLast[r] || 0), 0);
         const curKey = currentWeekKey();
         const curActuals = getWeekActuals(curKey);
-        let weekActual = 0, weekGoal = 0;
-        reps.forEach(r => {
-          weekActual += (curActuals[r] || []).reduce((s, v) => s + (v || 0), 0);
-          for (let i = 0; i < 6; i++) {
-            const g = getGoal(curKey, r, i);
-            const dg = getDefaultGoal(r);
-            const eff = (g != null) ? g : (dg != null ? dg : 0);
-            weekGoal += eff || 0;
-          }
-        });
-        const pace = weekGoal > 0 ? Math.round((weekActual / weekGoal) * 100) : 0;
-        const paceColor = pace >= 100 ? '#6ce9a6' : (pace >= 75 ? '#fff' : '#fecaca');
+        const weekActual = reps.reduce((s, r) => s + (curActuals[r] || []).reduce((a, v) => a + (v || 0), 0), 0);
         return '' +
           '<div class="wt-topbar">' +
             '<div class="wt-logo">WT</div>' +
@@ -11079,14 +11145,13 @@
             '<div class="wt-spacer"></div>' +
             '<div class="wt-stat"><div class="wt-stat-label">Team YTD</div><div class="wt-stat-value">' + escHtml(fmtMoneyShort(teamYTD)) + '</div></div>' +
             '<div class="wt-stat"><div class="wt-stat-label">This Week</div><div class="wt-stat-value">' + escHtml(fmtMoneyShort(weekActual)) + '</div></div>' +
-            '<div class="wt-stat"><div class="wt-stat-label">Pace vs Goal</div><div class="wt-stat-value" style="color:' + paceColor + ';">' + pace + '%</div></div>' +
           '</div>';
       }
 
       function renderToolbar() {
         let cellRef = '—', formula = 'Ready';
         if (activeSheet === 'ytd-setup') {
-          cellRef = 'Setup';
+          cellRef = 'Reps';
           formula = 'Default daily goals (manual) · YTD pulled from policies before Apr 27, 2026';
         } else {
           const wk = WEEKS.find(w => w.key === activeSheet);
@@ -11104,10 +11169,12 @@
         const totalSeedYTD = reps.reduce((s, r) => s + (ytdSeed[r] || 0), 0);
         let rowsHtml = '';
         reps.forEach(rep => {
-          const dg = getDefaultGoal(rep);
+          const dg = getDefaultGoal('ap', rep);
+          const ddg = getDefaultGoal('dial', rep);
           rowsHtml += '<tr>' +
             '<td class="wt-name-col"><span class="wt-avatar">' + escHtml(initialsOf(rep)) + '</span>' + escHtml(rep) + '</td>' +
-            '<td class="wt-goal-col"><input type="text" inputmode="decimal" data-wt-default-goal="' + escHtml(rep) + '" value="' + (dg != null ? dg : '') + '" placeholder="$0" /></td>' +
+            '<td class="wt-goal-col"><input type="text" inputmode="decimal" data-wt-default-goal="ap" data-wt-rep="' + escHtml(rep) + '" value="' + (dg != null ? dg : '') + '" placeholder="$0" /></td>' +
+            '<td class="wt-goal-col"><input type="text" inputmode="numeric" data-wt-default-goal="dial" data-wt-rep="' + escHtml(rep) + '" value="' + (ddg != null ? ddg : '') + '" placeholder="0" /></td>' +
             '<td class="wt-input-col">' + escHtml(fmtMoney(ytdSeed[rep] || 0)) + '</td>' +
           '</tr>';
         });
@@ -11115,28 +11182,29 @@
           '<div class="wt-setup-wrap">' +
             '<div class="wt-sheet-header" style="position:static;padding:0 0 16px;background:transparent;border:none;">' +
               '<div class="wt-sheet-title-row">' +
-                '<div class="wt-sheet-title">YTD Starting Balances</div>' +
+                '<div class="wt-sheet-title">Sales Reps</div>' +
                 '<span class="wt-sheet-pill green">● Setup</span>' +
               '</div>' +
-              '<div class="wt-sheet-sub">YTD totals are pulled from each rep\'s submitted policies dated before Apr 27, 2026. Default daily goal feeds empty cells in weekly sheets.</div>' +
+              '<div class="wt-sheet-sub">YTD totals are pulled from each rep\'s submitted policies dated before Apr 27, 2026. Default daily goals feed empty cells on weekly sheets.</div>' +
             '</div>' +
             '<div class="wt-setup-card">' +
               '<div class="wt-setup-banner">' +
                 '<div class="wt-icon">$</div>' +
-                '<div><h3>YTD source · daily goal entry</h3>' +
-                '<p>YTD column is read-only and reflects submitted business through Apr 26, 2026. Set a default daily goal per rep — or override per-day on each weekly sheet.</p></div>' +
+                '<div><h3>Default daily goals · YTD source</h3>' +
+                '<p>YTD is read-only and reflects submitted business through Apr 26, 2026. Set per-rep default daily AP and dial goals — or override per-day on each weekly sheet.</p></div>' +
               '</div>' +
               '<table class="wt-setup-table">' +
                 '<thead><tr>' +
                   '<th>Sales Rep</th>' +
-                  '<th class="right">Default Daily Goal</th>' +
+                  '<th class="right">Default Daily AP Goal</th>' +
+                  '<th class="right">Default Daily Dial Goal</th>' +
                   '<th class="right">YTD Through Apr 26, 2026</th>' +
                 '</tr></thead>' +
                 '<tbody>' + rowsHtml + '</tbody>' +
               '</table>' +
               '<div class="wt-setup-footer">' +
                 '<div class="wt-total">Total YTD across team: <b>' + escHtml(fmtMoney(totalSeedYTD)) + '</b></div>' +
-                '<div style="font-size:12px;color:var(--wt-gray-500);">' + WEEKS.length + ' weekly sheets · through Dec 28, 2026 · daily actuals auto-pull from policies</div>' +
+                '<div style="font-size:12px;color:var(--wt-gray-500);">' + WEEKS.length + ' weekly sheets · through Dec 28, 2026 · daily actuals auto-pull from policies &amp; KPIs</div>' +
               '</div>' +
             '</div>' +
           '</div>';
@@ -11147,19 +11215,39 @@
         if (!week) return '<div class="wt-loading">Week not found.</div>';
         const isCurrent = weekKey === currentWeekKey();
         const actuals = getWeekActuals(weekKey);
+        const dialActuals = getWeekDials(weekKey);
         const ytdSnap = getYTDAtWeek(weekKey);
 
         const rows = reps.map(rep => {
           const a = actuals[rep] || [0, 0, 0, 0, 0, 0];
+          const da = dialActuals[rep] || [0, 0, 0, 0, 0, 0];
           const wtd = a.reduce((s, v) => s + v, 0);
-          const dg = getDefaultGoal(rep);
-          const goalsArr = [0, 1, 2, 3, 4, 5].map(i => {
-            const g = getGoal(weekKey, rep, i);
-            return g != null ? g : (dg != null ? dg : null);
+          const dgAp = getDefaultGoal('ap', rep);
+          const dgDial = getDefaultGoal('dial', rep);
+          const apGoals = [0, 1, 2, 3, 4, 5].map(i => {
+            const g = getDailyGoal('ap', weekKey, rep, i);
+            return g != null ? g : (dgAp != null ? dgAp : null);
           });
-          const wtdGoal = goalsArr.reduce((s, v) => s + (v || 0), 0);
-          return { rep, actuals: a, goals: goalsArr, wtd, wtdGoal, ytd: ytdSnap[rep] || 0 };
+          const dialGoals = [0, 1, 2, 3, 4, 5].map(i => {
+            const g = getDailyGoal('dial', weekKey, rep, i);
+            return g != null ? g : (dgDial != null ? dgDial : null);
+          });
+          const weeklyGoal = getWeeklyApGoal(weekKey, rep);
+          return { rep, actuals: a, dialActuals: da, apGoals, dialGoals, wtd, weeklyGoal, ytd: ytdSnap[rep] || 0 };
         }).sort((a, b) => b.ytd - a.ytd);
+
+        function classifyActual(actualVal, goalVal) {
+          const has = actualVal > 0;
+          if (!has) return { cls: 'empty', pct: '' };
+          if (!goalVal || goalVal <= 0) return { cls: 'met', pct: '' };
+          const ratio = actualVal / goalVal;
+          let cls;
+          if (ratio >= 1.1) cls = 'over';
+          else if (ratio >= 1) cls = 'met';
+          else if (ratio >= 0.7) cls = 'under';
+          else cls = 'miss';
+          return { cls, pct: '<span class="wt-pct">' + Math.round(ratio * 100) + '%</span>' };
+        }
 
         let bodyHtml = '';
         rows.forEach((row, idx) => {
@@ -11168,36 +11256,36 @@
           const rankCell = medal ? '<span class="wt-medal ' + medal + '">' + rank + '</span>' : String(rank);
           let dayCells = '';
           for (let di = 0; di < 6; di++) {
-            const goal = row.goals[di];
-            const actual = row.actuals[di];
-            const hasActual = actual > 0;
-            let actualClass = 'empty';
-            let pctHtml = '';
-            if (hasActual && goal && goal > 0) {
-              const ratio = actual / goal;
-              if (ratio >= 1.1) actualClass = 'over';
-              else if (ratio >= 1) actualClass = 'met';
-              else if (ratio >= 0.7) actualClass = 'under';
-              else actualClass = 'miss';
-              pctHtml = '<span class="wt-pct">' + Math.round(ratio * 100) + '%</span>';
-            } else if (hasActual) {
-              actualClass = 'met';
-            }
-            const goalDisplay = (goal != null && goal !== '') ? '$' + Number(goal).toLocaleString() : '';
-            const actualDisplay = hasActual ? '$' + Math.round(actual).toLocaleString() : '—';
+            const apGoal = row.apGoals[di];
+            const apActual = row.actuals[di];
+            const apCls = classifyActual(apActual, apGoal);
+            const apGoalDisplay = (apGoal != null) ? '$' + Number(apGoal).toLocaleString() : '';
+            const apActualDisplay = apActual > 0 ? '$' + Math.round(apActual).toLocaleString() : '—';
+
+            const dialGoal = row.dialGoals[di];
+            const dialActual = row.dialActuals[di];
+            const dialCls = classifyActual(dialActual, dialGoal);
+            const dialGoalDisplay = (dialGoal != null) ? Number(dialGoal).toLocaleString() : '';
+            const dialActualDisplay = dialActual > 0 ? Number(dialActual).toLocaleString() : '—';
+
             dayCells +=
               '<td class="wt-day-cell goal first-of-day">' +
-                '<input type="text" inputmode="decimal" data-wt-goal-week="' + escHtml(weekKey) + '" data-wt-goal-rep="' + escHtml(row.rep) + '" data-wt-goal-day="' + di + '" value="' + escHtml(goalDisplay) + '" placeholder="$0" />' +
+                '<input type="text" inputmode="decimal" data-wt-goal-kind="ap" data-wt-goal-week="' + escHtml(weekKey) + '" data-wt-goal-rep="' + escHtml(row.rep) + '" data-wt-goal-day="' + di + '" value="' + escHtml(apGoalDisplay) + '" placeholder="$0" />' +
               '</td>' +
-              '<td class="wt-day-cell actual ' + actualClass + '">' +
-                escHtml(actualDisplay) +
-                pctHtml +
-              '</td>';
+              '<td class="wt-day-cell actual ' + apCls.cls + '">' + escHtml(apActualDisplay) + apCls.pct + '</td>' +
+              '<td class="wt-day-cell goal">' +
+                '<input type="text" inputmode="numeric" data-wt-goal-kind="dial" data-wt-goal-week="' + escHtml(weekKey) + '" data-wt-goal-rep="' + escHtml(row.rep) + '" data-wt-goal-day="' + di + '" value="' + escHtml(dialGoalDisplay) + '" placeholder="0" />' +
+              '</td>' +
+              '<td class="wt-day-cell actual ' + dialCls.cls + '">' + escHtml(dialActualDisplay) + dialCls.pct + '</td>';
           }
+          const weeklyGoalDisplay = (row.weeklyGoal != null) ? '$' + Number(row.weeklyGoal).toLocaleString() : '';
           bodyHtml += '<tr>' +
             '<td class="wt-rank-cell">' + rankCell + '</td>' +
             '<td class="wt-name-cell"><span class="wt-avatar">' + escHtml(initialsOf(row.rep)) + '</span>' + escHtml(row.rep) + '</td>' +
             '<td class="wt-wtd-cell">' + escHtml(fmtMoney(row.wtd)) + '</td>' +
+            '<td class="wt-day-cell goal" style="width:120px;">' +
+              '<input type="text" inputmode="decimal" data-wt-weekly-goal-week="' + escHtml(weekKey) + '" data-wt-weekly-goal-rep="' + escHtml(row.rep) + '" value="' + escHtml(weeklyGoalDisplay) + '" placeholder="$0" />' +
+            '</td>' +
             dayCells +
             '<td class="wt-ytd-cell">' + escHtml(fmtMoney(row.ytd)) + '</td>' +
           '</tr>';
@@ -11206,23 +11294,35 @@
         // Footer totals
         const dayTotals = [];
         for (let di = 0; di < 6; di++) {
-          let g = 0, a = 0;
-          rows.forEach(r => { g += (r.goals[di] || 0); a += (r.actuals[di] || 0); });
-          dayTotals.push({ goal: g, actual: a });
+          let apG = 0, apA = 0, dG = 0, dA = 0;
+          rows.forEach(r => {
+            apG += (r.apGoals[di] || 0);
+            apA += (r.actuals[di] || 0);
+            dG  += (r.dialGoals[di] || 0);
+            dA  += (r.dialActuals[di] || 0);
+          });
+          dayTotals.push({ apGoal: apG, apActual: apA, dialGoal: dG, dialActual: dA });
         }
         const totalWTD = rows.reduce((s, r) => s + r.wtd, 0);
-        const totalWTDGoal = rows.reduce((s, r) => s + r.wtdGoal, 0);
+        const totalWeeklyGoal = rows.reduce((s, r) => s + (r.weeklyGoal || 0), 0);
         const totalYTD = rows.reduce((s, r) => s + r.ytd, 0);
-        const wtdPace = totalWTDGoal > 0 ? Math.round((totalWTD / totalWTDGoal) * 100) : 0;
-        const repsBeating = rows.filter(r => r.wtdGoal > 0 && r.wtd >= r.wtdGoal && r.wtd > 0).length;
-        const top = rows[0];
 
+        // Header rows: each day spans 4 sub-cols (AP Goal/Actual, Dial Goal/Actual)
         let dayHeaderHtml = '';
-        DAYS.forEach(d => { dayHeaderHtml += '<th colspan="2">' + d + '</th>'; });
+        DAYS.forEach(d => { dayHeaderHtml += '<th colspan="4">' + d + '</th>'; });
         let subHeaderHtml = '';
-        DAYS.forEach(() => { subHeaderHtml += '<th>Goal</th><th>Actual</th>'; });
+        DAYS.forEach(() => {
+          subHeaderHtml += '<th>AP Goal</th><th>AP Actual</th><th>Dial Goal</th><th>Dial Actual</th>';
+        });
         let footDayHtml = '';
-        dayTotals.forEach(dt => { footDayHtml += '<td>' + escHtml(fmtMoney(dt.goal)) + '</td><td>' + escHtml(fmtMoney(dt.actual)) + '</td>'; });
+        dayTotals.forEach(dt => {
+          footDayHtml += '<td>' + escHtml(fmtMoney(dt.apGoal)) + '</td>' +
+                         '<td>' + escHtml(fmtMoney(dt.apActual)) + '</td>' +
+                         '<td>' + Math.round(dt.dialGoal).toLocaleString() + '</td>' +
+                         '<td>' + Math.round(dt.dialActual).toLocaleString() + '</td>';
+        });
+
+        const colCount = 4 + (DAYS.length * 4) + 1; // rank,name,wtd,weeklyGoal + 4*days + ytd
 
         return '' +
           '<div class="wt-sheet-header">' +
@@ -11230,13 +11330,11 @@
               '<div class="wt-sheet-title">' + escHtml(week.full) + '</div>' +
               (isCurrent ? '<span class="wt-sheet-pill">● Current Week</span>' : '') +
             '</div>' +
-            '<div class="wt-sheet-sub">Reps ranked by Year-to-Date · daily actuals pulled from submitted policies · enter daily goals to track pace</div>' +
+            '<div class="wt-sheet-sub">Reps ranked by Year-to-Date · AP actuals pull from submitted policies · dial actuals pull from daily KPIs</div>' +
           '</div>' +
-          '<div class="wt-summary-strip">' +
+          '<div class="wt-summary-strip" style="grid-template-columns: repeat(2, 1fr);">' +
             '<div class="wt-summary-card deep"><div class="wt-lbl">Team YTD</div><div class="wt-val">' + escHtml(fmtMoney(totalYTD)) + '</div><div class="wt-delta up">↑ ' + escHtml(fmtMoneyShort(totalWTD)) + ' added this week</div></div>' +
-            '<div class="wt-summary-card"><div class="wt-lbl">Week to Date</div><div class="wt-val">' + escHtml(fmtMoney(totalWTD)) + '</div><div class="wt-delta">of ' + escHtml(fmtMoney(totalWTDGoal)) + ' goal</div></div>' +
-            '<div class="wt-summary-card green"><div class="wt-lbl">Pace vs Goal</div><div class="wt-val">' + wtdPace + '%</div><div class="wt-delta ' + (wtdPace >= 100 ? 'up' : 'down') + '">' + (wtdPace >= 100 ? '↑' : '↓') + ' ' + Math.abs(wtdPace - 100) + '% vs target</div></div>' +
-            '<div class="wt-summary-card amber"><div class="wt-lbl">Reps at or Above Goal</div><div class="wt-val">' + repsBeating + ' / ' + reps.length + '</div><div class="wt-delta">' + (top ? 'Top: ' + escHtml(top.rep.split(' ')[0]) + ' · ' + escHtml(fmtMoneyShort(top.ytd)) : '—') + '</div></div>' +
+            '<div class="wt-summary-card"><div class="wt-lbl">Week to Date</div><div class="wt-val">' + escHtml(fmtMoney(totalWTD)) + '</div><div class="wt-delta">' + escHtml(fmtMoneyShort(totalWeeklyGoal)) + ' weekly goal</div></div>' +
           '</div>' +
           '<div class="wt-grid-wrap">' +
             '<table class="wt-grid-table">' +
@@ -11245,15 +11343,17 @@
                   '<th class="wt-rank-h" rowspan="2">#</th>' +
                   '<th class="wt-name-h" rowspan="2">Sales Rep</th>' +
                   '<th class="wt-wtd-h" rowspan="2">WTD Total</th>' +
+                  '<th class="wt-wtd-h" rowspan="2">Weekly Goal</th>' +
                   dayHeaderHtml +
                   '<th class="wt-ytd-h" rowspan="2">YTD Total</th>' +
                 '</tr>' +
                 '<tr class="wt-sub-row">' + subHeaderHtml + '</tr>' +
               '</thead>' +
-              '<tbody>' + (bodyHtml || '<tr><td colspan="16" class="wt-loading">No reps with submitted policies yet.</td></tr>') + '</tbody>' +
+              '<tbody>' + (bodyHtml || ('<tr><td colspan="' + colCount + '" class="wt-loading">No reps with submitted policies yet.</td></tr>')) + '</tbody>' +
               (rows.length ? ('<tfoot><tr>' +
                 '<td class="wt-foot-label" colspan="2">Team Totals</td>' +
                 '<td>' + escHtml(fmtMoney(totalWTD)) + '</td>' +
+                '<td>' + escHtml(fmtMoney(totalWeeklyGoal)) + '</td>' +
                 footDayHtml +
                 '<td class="wt-ytd-foot">' + escHtml(fmtMoney(totalYTD)) + '</td>' +
               '</tr></tfoot>') : '') +
@@ -11263,7 +11363,7 @@
 
       function renderTabs() {
         let html = '<div class="wt-tabs-bar">' +
-          '<button class="wt-tab setup' + (activeSheet === 'ytd-setup' ? ' active' : '') + '" data-wt-tab="ytd-setup"><span class="wt-tab-dot"></span>YTD Setup</button>';
+          '<button class="wt-tab setup' + (activeSheet === 'ytd-setup' ? ' active' : '') + '" data-wt-tab="ytd-setup"><span class="wt-tab-dot"></span>Sales Reps</button>';
         const curKey = currentWeekKey();
         WEEKS.forEach(w => {
           const isActive = activeSheet === w.key;
@@ -11305,6 +11405,7 @@
       }
 
       function attachHandlers(root) {
+        const sanitize = v => v.replace(/[$,\s]/g, '');
         // Tab switching
         root.querySelectorAll('[data-wt-tab]').forEach(btn => {
           btn.addEventListener('click', () => {
@@ -11313,34 +11414,46 @@
             render();
           });
         });
-        // Goal inputs (per-day)
+        // Daily goal inputs (AP and Dial — distinguished by data-wt-goal-kind)
         root.querySelectorAll('[data-wt-goal-week]').forEach(inp => {
-          const sanitize = v => v.replace(/[$,\s]/g, '');
           inp.addEventListener('focus', e => {
-            const v = sanitize(e.target.value || '');
-            e.target.value = v;
+            e.target.value = sanitize(e.target.value || '');
             e.target.select();
           });
           inp.addEventListener('blur', e => {
+            const kind = inp.getAttribute('data-wt-goal-kind') || 'ap';
             const wk = inp.getAttribute('data-wt-goal-week');
             const rep = inp.getAttribute('data-wt-goal-rep');
             const di = Number(inp.getAttribute('data-wt-goal-day'));
             const cleaned = sanitize(e.target.value);
             const num = cleaned === '' ? null : Number(cleaned);
-            setGoal(wk, rep, di, num);
+            setDailyGoal(kind, wk, rep, di, num);
             render();
           });
           inp.addEventListener('keydown', e => { if (e.key === 'Enter') e.target.blur(); });
         });
-        // Default daily goal inputs
-        root.querySelectorAll('[data-wt-default-goal]').forEach(inp => {
-          const sanitize = v => v.replace(/[$,\s]/g, '');
+        // Weekly AP goal inputs
+        root.querySelectorAll('[data-wt-weekly-goal-week]').forEach(inp => {
           inp.addEventListener('focus', e => { e.target.value = sanitize(e.target.value || ''); e.target.select(); });
           inp.addEventListener('blur', e => {
-            const rep = inp.getAttribute('data-wt-default-goal');
+            const wk = inp.getAttribute('data-wt-weekly-goal-week');
+            const rep = inp.getAttribute('data-wt-weekly-goal-rep');
             const cleaned = sanitize(e.target.value);
             const num = cleaned === '' ? null : Number(cleaned);
-            setDefaultGoal(rep, num);
+            setWeeklyApGoal(wk, rep, num);
+            render();
+          });
+          inp.addEventListener('keydown', e => { if (e.key === 'Enter') e.target.blur(); });
+        });
+        // Default daily goal inputs (AP and Dial)
+        root.querySelectorAll('[data-wt-default-goal]').forEach(inp => {
+          inp.addEventListener('focus', e => { e.target.value = sanitize(e.target.value || ''); e.target.select(); });
+          inp.addEventListener('blur', e => {
+            const kind = inp.getAttribute('data-wt-default-goal'); // 'ap' or 'dial'
+            const rep = inp.getAttribute('data-wt-rep');
+            const cleaned = sanitize(e.target.value);
+            const num = cleaned === '' ? null : Number(cleaned);
+            setDefaultGoal(kind, rep, num);
             render();
           });
           inp.addEventListener('keydown', e => { if (e.key === 'Enter') e.target.blur(); });
@@ -11362,12 +11475,13 @@
           if (!WEEKS.length) WEEKS = generateWeeks();
           // Restore last active sheet, fall back to current week
           const stored = (function() { try { return localStorage.getItem(ACTIVE_SHEET_KEY); } catch (e) { return null; } })();
-          const [policyRows, repNames] = await Promise.all([
+          const [policyRows, repNames, kpiRows] = await Promise.all([
             fetchAllPolicies(),
             fetchActiveReps(),
+            fetchAllKpis(),
             fetchGoalsFromSupabase()
           ]);
-          processData(policyRows, repNames);
+          processData(policyRows, repNames, kpiRows);
           if (stored && (stored === 'ytd-setup' || WEEKS.some(w => w.key === stored))) {
             activeSheet = stored;
           } else {
