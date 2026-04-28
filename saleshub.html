@@ -1272,6 +1272,132 @@
       --cwf-paper:#ffffff; --cwf-field-bg:#fbfbfa; --cwf-focus:#3a5499;
     }
 
+    /* ─── Weekly Tracker (admin-only spreadsheet view) ─── */
+    #panel-weeklytracker {
+      --wt-blue-50:#eef5ff; --wt-blue-100:#dbe9fe; --wt-blue-200:#bfd7fe;
+      --wt-blue-400:#5b8def; --wt-blue-500:#2f6fed; --wt-blue-600:#1e54d3;
+      --wt-blue-700:#1842a8; --wt-blue-900:#0f2966;
+      --wt-green-50:#ecfdf3; --wt-green-100:#d1fadf; --wt-green-300:#6ce9a6;
+      --wt-green-500:#12b76a; --wt-green-600:#039855; --wt-green-700:#027a48;
+      --wt-red-50:#fef3f2; --wt-red-500:#f04438; --wt-red-600:#d92d20;
+      --wt-amber-50:#fffaeb; --wt-amber-500:#f79009;
+      --wt-gray-25:#fcfcfd; --wt-gray-50:#f9fafb; --wt-gray-100:#f2f4f7;
+      --wt-gray-200:#e4e7ec; --wt-gray-300:#d0d5dd; --wt-gray-400:#98a2b3;
+      --wt-gray-500:#667085; --wt-gray-600:#475467; --wt-gray-700:#344054;
+      --wt-gray-800:#1d2939; --wt-gray-900:#101828;
+      font-family: 'Inter', system-ui, sans-serif; color: var(--wt-gray-900);
+    }
+    #panel-weeklytracker .wt-mono { font-family: 'JetBrains Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+    #panel-weeklytracker .wt-shell { background: var(--wt-gray-50); border-radius: 14px; overflow: hidden; box-shadow: 0 1px 3px rgba(16,24,40,0.06); border: 1px solid var(--wt-gray-200); display: flex; flex-direction: column; min-height: 720px; }
+    #panel-weeklytracker .wt-topbar { height: 56px; background: linear-gradient(90deg, var(--wt-blue-700), var(--wt-blue-600)); color: white; display: flex; align-items: center; padding: 0 20px; gap: 16px; flex-shrink: 0; }
+    #panel-weeklytracker .wt-topbar .wt-logo { width: 32px; height: 32px; background: white; border-radius: 8px; display: grid; place-items: center; color: var(--wt-blue-700); font-weight: 700; font-size: 14px; letter-spacing: -0.02em; }
+    #panel-weeklytracker .wt-topbar .wt-title { font-weight: 600; font-size: 16px; letter-spacing: -0.01em; }
+    #panel-weeklytracker .wt-topbar .wt-sub { font-size: 13px; opacity: 0.8; margin-left: 4px; }
+    #panel-weeklytracker .wt-topbar .wt-spacer { flex: 1; }
+    #panel-weeklytracker .wt-topbar .wt-stat { display: flex; flex-direction: column; gap: 2px; padding: 0 16px; border-left: 1px solid rgba(255,255,255,0.18); }
+    #panel-weeklytracker .wt-topbar .wt-stat-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; opacity: 0.75; font-weight: 500; }
+    #panel-weeklytracker .wt-topbar .wt-stat-value { font-size: 14px; font-weight: 600; font-family: 'JetBrains Mono', monospace; }
+    #panel-weeklytracker .wt-toolbar { height: 40px; background: white; border-bottom: 1px solid var(--wt-gray-200); display: flex; align-items: center; padding: 0 16px; gap: 12px; flex-shrink: 0; font-size: 13px; color: var(--wt-gray-600); }
+    #panel-weeklytracker .wt-cell-ref { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--wt-gray-700); background: var(--wt-gray-50); padding: 4px 10px; border-radius: 4px; border: 1px solid var(--wt-gray-200); min-width: 60px; text-align: center; }
+    #panel-weeklytracker .wt-formula { flex: 1; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--wt-gray-500); }
+    #panel-weeklytracker .wt-tbtn { border: 1px solid var(--wt-gray-200); background: white; color: var(--wt-gray-700); padding: 6px 10px; font-size: 12px; border-radius: 6px; font-weight: 500; }
+    #panel-weeklytracker .wt-sheet-area { flex: 1; overflow: auto; background: var(--wt-gray-100); position: relative; }
+    #panel-weeklytracker .wt-sheet-header { padding: 24px 32px 16px; background: white; border-bottom: 1px solid var(--wt-gray-200); position: sticky; top: 0; z-index: 5; }
+    #panel-weeklytracker .wt-sheet-title-row { display: flex; align-items: baseline; gap: 12px; margin-bottom: 4px; flex-wrap: wrap; }
+    #panel-weeklytracker .wt-sheet-title { font-size: 20px; font-weight: 600; color: var(--wt-gray-900); letter-spacing: -0.01em; }
+    #panel-weeklytracker .wt-sheet-pill { display: inline-flex; align-items: center; gap: 6px; background: var(--wt-blue-50); color: var(--wt-blue-700); padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; border: 1px solid var(--wt-blue-100); }
+    #panel-weeklytracker .wt-sheet-pill.green { background: var(--wt-green-50); color: var(--wt-green-700); border-color: var(--wt-green-100); }
+    #panel-weeklytracker .wt-sheet-sub { font-size: 13px; color: var(--wt-gray-500); }
+    #panel-weeklytracker .wt-summary-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; padding: 16px 32px; background: white; border-bottom: 1px solid var(--wt-gray-200); }
+    #panel-weeklytracker .wt-summary-card { background: var(--wt-gray-25); border: 1px solid var(--wt-gray-200); border-radius: 8px; padding: 12px 14px; display: flex; flex-direction: column; gap: 4px; position: relative; overflow: hidden; }
+    #panel-weeklytracker .wt-summary-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--wt-blue-500); }
+    #panel-weeklytracker .wt-summary-card.green::before { background: var(--wt-green-500); }
+    #panel-weeklytracker .wt-summary-card.amber::before { background: var(--wt-amber-500); }
+    #panel-weeklytracker .wt-summary-card.deep::before { background: var(--wt-blue-700); }
+    #panel-weeklytracker .wt-summary-card .wt-lbl { font-size: 11px; color: var(--wt-gray-500); text-transform: uppercase; letter-spacing: 0.06em; font-weight: 500; }
+    #panel-weeklytracker .wt-summary-card .wt-val { font-size: 20px; font-weight: 600; color: var(--wt-gray-900); font-family: 'JetBrains Mono', monospace; letter-spacing: -0.02em; }
+    #panel-weeklytracker .wt-summary-card .wt-delta { font-size: 11px; font-weight: 500; color: var(--wt-gray-500); }
+    #panel-weeklytracker .wt-summary-card .wt-delta.up { color: var(--wt-green-600); }
+    #panel-weeklytracker .wt-summary-card .wt-delta.down { color: var(--wt-red-600); }
+    #panel-weeklytracker .wt-grid-wrap { padding: 20px 32px 32px; }
+    #panel-weeklytracker .wt-grid-table { width: 100%; border-collapse: separate; border-spacing: 0; background: white; border: 1px solid var(--wt-gray-200); border-radius: 10px; overflow: hidden; box-shadow: 0 1px 2px rgba(16,24,40,0.04); font-size: 13px; }
+    #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th { background: linear-gradient(180deg, var(--wt-blue-600), var(--wt-blue-700)); color: white; font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; padding: 10px 8px; border-right: 1px solid rgba(255,255,255,0.18); text-align: center; }
+    #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th.wt-rank-h,
+    #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th.wt-name-h,
+    #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th.wt-wtd-h,
+    #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th.wt-ytd-h { background: var(--wt-blue-900); }
+    #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th:last-child { border-right: none; }
+    #panel-weeklytracker .wt-grid-table thead tr.wt-sub-row th { background: var(--wt-blue-50); color: var(--wt-blue-700); font-weight: 600; font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; padding: 6px 8px; border-bottom: 1px solid var(--wt-blue-100); border-right: 1px solid var(--wt-blue-100); text-align: center; }
+    #panel-weeklytracker .wt-grid-table thead tr.wt-sub-row th.wt-empty { background: white; border-bottom: 1px solid var(--wt-gray-200); }
+    #panel-weeklytracker .wt-grid-table tbody td { padding: 0; border-bottom: 1px solid var(--wt-gray-100); border-right: 1px solid var(--wt-gray-100); vertical-align: middle; height: 38px; }
+    #panel-weeklytracker .wt-grid-table tbody tr:last-child td { border-bottom: none; }
+    #panel-weeklytracker .wt-grid-table tbody tr:hover td { background: var(--wt-blue-50); }
+    #panel-weeklytracker .wt-grid-table tbody tr:hover td.wt-rank-cell { background: var(--wt-blue-100); }
+    #panel-weeklytracker .wt-grid-table tbody tr:hover td.wt-ytd-cell { background: var(--wt-green-50); }
+    #panel-weeklytracker .wt-rank-cell { width: 48px; text-align: center; font-weight: 700; color: var(--wt-gray-500); font-family: 'JetBrains Mono', monospace; font-size: 12px; background: var(--wt-gray-25); }
+    #panel-weeklytracker .wt-rank-cell .wt-medal { display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; font-size: 11px; font-weight: 700; }
+    #panel-weeklytracker .wt-rank-cell .wt-medal.gold { background: #fef3c7; color: #92400e; }
+    #panel-weeklytracker .wt-rank-cell .wt-medal.silver { background: #e5e7eb; color: #374151; }
+    #panel-weeklytracker .wt-rank-cell .wt-medal.bronze { background: #fed7aa; color: #9a3412; }
+    #panel-weeklytracker .wt-name-cell { padding: 0 14px !important; font-weight: 500; color: var(--wt-gray-900); min-width: 180px; background: white; border-right: 1px solid var(--wt-gray-200) !important; }
+    #panel-weeklytracker .wt-avatar { display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: var(--wt-blue-100); color: var(--wt-blue-700); font-weight: 600; font-size: 11px; margin-right: 10px; vertical-align: middle; }
+    #panel-weeklytracker .wt-wtd-cell { background: var(--wt-blue-50); text-align: right; padding: 0 14px !important; font-family: 'JetBrains Mono', monospace; font-weight: 600; color: var(--wt-blue-700); width: 110px; }
+    #panel-weeklytracker .wt-ytd-cell { background: var(--wt-green-50); text-align: right; padding: 0 14px !important; font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--wt-green-700); width: 130px; border-left: 1px solid var(--wt-green-100); }
+    #panel-weeklytracker .wt-day-cell { width: 100px; padding: 0 !important; text-align: right; }
+    #panel-weeklytracker .wt-day-cell input { width: 100%; height: 38px; border: none; background: transparent; text-align: right; padding: 0 10px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--wt-gray-700); outline: none; font-weight: 500; box-sizing: border-box; }
+    #panel-weeklytracker .wt-day-cell input:focus { background: white; box-shadow: inset 0 0 0 2px var(--wt-blue-500); color: var(--wt-gray-900); }
+    #panel-weeklytracker .wt-day-cell.goal { background: var(--wt-gray-25); }
+    #panel-weeklytracker .wt-day-cell.goal input { color: var(--wt-gray-700); }
+    #panel-weeklytracker .wt-day-cell.goal input::placeholder { color: var(--wt-gray-400); }
+    #panel-weeklytracker .wt-day-cell.actual { padding: 0 10px !important; font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 500; color: var(--wt-gray-700); text-align: right; }
+    #panel-weeklytracker .wt-day-cell.actual.over { background: var(--wt-green-50); color: var(--wt-green-700); font-weight: 700; }
+    #panel-weeklytracker .wt-day-cell.actual.met { color: var(--wt-green-700); font-weight: 600; }
+    #panel-weeklytracker .wt-day-cell.actual.miss { background: var(--wt-red-50); color: var(--wt-red-600); }
+    #panel-weeklytracker .wt-day-cell.actual.empty { color: var(--wt-gray-400); }
+    #panel-weeklytracker .wt-day-cell.first-of-day { border-left: 1px solid var(--wt-blue-100); }
+    #panel-weeklytracker .wt-day-cell .wt-pct { display: block; font-size: 9px; color: var(--wt-gray-400); text-align: right; padding-right: 0; margin-top: -2px; font-weight: 500; }
+    #panel-weeklytracker .wt-day-cell.actual.over .wt-pct { color: var(--wt-green-600); }
+    #panel-weeklytracker .wt-day-cell.actual.miss .wt-pct { color: var(--wt-red-500); }
+    #panel-weeklytracker .wt-grid-table tfoot td { background: var(--wt-blue-900); color: white; font-weight: 600; padding: 10px 14px; font-family: 'JetBrains Mono', monospace; font-size: 12px; text-align: right; border-right: 1px solid rgba(255,255,255,0.12); }
+    #panel-weeklytracker .wt-grid-table tfoot td.wt-foot-label { text-align: left; text-transform: uppercase; letter-spacing: 0.06em; font-size: 11px; font-family: 'Inter', sans-serif; }
+    #panel-weeklytracker .wt-grid-table tfoot td.wt-ytd-foot { background: var(--wt-green-700); }
+    #panel-weeklytracker .wt-tabs-bar { background: var(--wt-gray-100); border-top: 1px solid var(--wt-gray-200); display: flex; align-items: stretch; padding: 0 8px; gap: 1px; flex-shrink: 0; overflow-x: auto; min-height: 44px; }
+    #panel-weeklytracker .wt-tabs-bar::-webkit-scrollbar { height: 6px; }
+    #panel-weeklytracker .wt-tabs-bar::-webkit-scrollbar-thumb { background: var(--wt-gray-300); border-radius: 3px; }
+    #panel-weeklytracker .wt-tab { display: inline-flex; align-items: center; gap: 6px; padding: 0 14px; font-size: 12px; font-weight: 500; color: var(--wt-gray-600); background: transparent; border: none; cursor: pointer; white-space: nowrap; border-top: 2px solid transparent; margin-top: 2px; border-radius: 4px 4px 0 0; transition: background 0.1s; height: 42px; }
+    #panel-weeklytracker .wt-tab:hover { background: rgba(255,255,255,0.6); }
+    #panel-weeklytracker .wt-tab.active { background: white; color: var(--wt-blue-700); border-top-color: var(--wt-blue-500); font-weight: 600; box-shadow: 0 -1px 0 var(--wt-gray-200), -1px 0 0 var(--wt-gray-200), 1px 0 0 var(--wt-gray-200); }
+    #panel-weeklytracker .wt-tab.setup { color: var(--wt-green-700); }
+    #panel-weeklytracker .wt-tab.setup.active { color: var(--wt-green-700); border-top-color: var(--wt-green-500); }
+    #panel-weeklytracker .wt-tab .wt-tab-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--wt-blue-400); }
+    #panel-weeklytracker .wt-tab.setup .wt-tab-dot { background: var(--wt-green-500); }
+    #panel-weeklytracker .wt-tab.current::after { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--wt-green-500); box-shadow: 0 0 0 2px var(--wt-green-100); margin-left: 2px; }
+    #panel-weeklytracker .wt-setup-wrap { padding: 20px 32px 40px; }
+    #panel-weeklytracker .wt-setup-card { background: white; border: 1px solid var(--wt-gray-200); border-radius: 12px; overflow: hidden; box-shadow: 0 1px 2px rgba(16,24,40,0.04); }
+    #panel-weeklytracker .wt-setup-banner { background: linear-gradient(135deg, var(--wt-green-50), var(--wt-blue-50)); padding: 18px 22px; border-bottom: 1px solid var(--wt-gray-200); display: flex; align-items: center; gap: 14px; }
+    #panel-weeklytracker .wt-setup-banner .wt-icon { width: 40px; height: 40px; border-radius: 10px; background: white; border: 1px solid var(--wt-gray-200); display: grid; place-items: center; color: var(--wt-green-600); font-size: 18px; flex-shrink: 0; font-weight: 700; }
+    #panel-weeklytracker .wt-setup-banner h3 { margin: 0 0 2px; font-size: 15px; font-weight: 600; color: var(--wt-gray-900); }
+    #panel-weeklytracker .wt-setup-banner p { margin: 0; font-size: 13px; color: var(--wt-gray-600); }
+    #panel-weeklytracker .wt-setup-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+    #panel-weeklytracker .wt-setup-table th { background: var(--wt-gray-50); color: var(--wt-gray-600); font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; text-align: left; padding: 10px 22px; border-bottom: 1px solid var(--wt-gray-200); }
+    #panel-weeklytracker .wt-setup-table th.right { text-align: right; }
+    #panel-weeklytracker .wt-setup-table td { padding: 0; border-bottom: 1px solid var(--wt-gray-100); height: 48px; }
+    #panel-weeklytracker .wt-setup-table tr:last-child td { border-bottom: none; }
+    #panel-weeklytracker .wt-setup-table tr:hover td { background: var(--wt-blue-50); }
+    #panel-weeklytracker .wt-setup-table .wt-name-col { padding: 0 22px; font-weight: 500; color: var(--wt-gray-900); }
+    #panel-weeklytracker .wt-setup-table .wt-input-col { padding: 0 14px; text-align: right; width: 240px; font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; color: var(--wt-green-700); }
+    #panel-weeklytracker .wt-setup-table .wt-goal-col { width: 200px; padding: 0 14px; }
+    #panel-weeklytracker .wt-setup-table .wt-goal-col input { width: 100%; padding: 8px 12px; font-family: 'JetBrains Mono', monospace; font-size: 13px; text-align: right; border: 1px solid var(--wt-gray-200); border-radius: 6px; background: white; color: var(--wt-blue-700); font-weight: 600; outline: none; box-sizing: border-box; }
+    #panel-weeklytracker .wt-setup-table .wt-goal-col input:focus { border-color: var(--wt-blue-500); box-shadow: 0 0 0 3px var(--wt-blue-100); }
+    #panel-weeklytracker .wt-setup-footer { padding: 14px 22px; background: var(--wt-gray-50); border-top: 1px solid var(--wt-gray-200); display: flex; align-items: center; justify-content: space-between; font-size: 13px; gap: 12px; flex-wrap: wrap; }
+    #panel-weeklytracker .wt-setup-footer .wt-total { color: var(--wt-gray-600); }
+    #panel-weeklytracker .wt-setup-footer .wt-total b { color: var(--wt-green-700); font-family: 'JetBrains Mono', monospace; font-weight: 700; }
+    #panel-weeklytracker .wt-statusbar { height: 26px; background: var(--wt-blue-900); color: rgba(255,255,255,0.8); display: flex; align-items: center; padding: 0 16px; gap: 16px; font-size: 11px; flex-shrink: 0; font-family: 'JetBrains Mono', monospace; }
+    #panel-weeklytracker .wt-statusbar .wt-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--wt-green-300); margin-right: 4px; }
+    #panel-weeklytracker .wt-statusbar .wt-sep { color: rgba(255,255,255,0.3); }
+    #panel-weeklytracker .wt-statusbar .wt-right { margin-left: auto; }
+    #panel-weeklytracker .wt-loading { padding: 60px 32px; text-align: center; color: var(--wt-gray-500); font-size: 14px; }
+
     @media print {
       @page { size: letter; margin: 0.35in; }
       html, body { background: #fff !important; height: auto !important; overflow: visible !important; }
@@ -4083,6 +4209,10 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
       <span>Resources</span>
     </button>
+    <button class="ss-sidebar-btn" data-panel="weeklytracker" id="weeklyTrackerSidebarBtn" style="display:none;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+      <span>Weekly Tracker</span>
+    </button>
     </div>
 
     <!-- Mobile dropdown menu (inside sidebar, no z-index issues) -->
@@ -5388,6 +5518,9 @@
       </div>
     </div>
 
+    <!-- ═══ WEEKLY TRACKER PANEL (admin-only, populated by JS) ═══ -->
+    <div class="ss-panel" id="panel-weeklytracker"></div>
+
     <!-- ═══ TRAINING PANEL ═══ -->
     <div class="ss-panel" id="panel-training">
       <div class="ss-training-layout">
@@ -6108,6 +6241,7 @@
       const globalGate = document.getElementById('globalAuthGate');
       const sidebarUser = document.getElementById('sidebarUser');
       const sidebarUserName = document.getElementById('sidebarUserName');
+      const wtBtn = document.getElementById('weeklyTrackerSidebarBtn');
       if (currentUser) {
         const name = currentUser.user_metadata?.name || currentUser.email;
         authName.textContent = name;
@@ -6122,6 +6256,9 @@
         document.getElementById('lbAuthWrap').style.display = 'block';
         if (signupLink) signupLink.style.display = 'none';
         if (globalGate) globalGate.style.display = 'none';
+        // Show admin-only Weekly Tracker for the owner
+        const WT_ADMIN_EMAILS = ['devontyerman@gmail.com'];
+        if (wtBtn) wtBtn.style.display = WT_ADMIN_EMAILS.includes((currentUser.email || '').toLowerCase()) ? '' : 'none';
         // Load user's saved comp level and apply to calculator
         if (typeof loadUserCompLevel === 'function') loadUserCompLevel();
       } else {
@@ -6136,6 +6273,7 @@
         document.getElementById('lbAuthWrap').style.display = 'none';
         if (signupLink) signupLink.style.display = 'block';
         if (globalGate) globalGate.style.display = 'flex';
+        if (wtBtn) wtBtn.style.display = 'none';
       }
     }
 
@@ -6222,6 +6360,7 @@
       if (panelName === 'calculator' && currentUser) loadCommissionPipeline();
       if (panelName === 'dialtracker' && typeof renderDialTracker === 'function') renderDialTracker();
       if (panelName === 'products' && typeof renderCarrierProducts === 'function') renderCarrierProducts();
+      if (panelName === 'weeklytracker' && typeof loadWeeklyTracker === 'function') loadWeeklyTracker();
       try { history.replaceState(null, '', '#' + panelName); } catch (e) { /* ignore */ }
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -6840,7 +6979,7 @@
     (function openPanelFromHash() {
       const hash = (window.location.hash || '').replace('#', '');
       if (!hash) return;
-      const validPanels = ['submit', 'training', 'performance', 'leaderboard', 'goals', 'policies', 'calculator', 'profile', 'dialtracker', 'products', 'resources', 'worksheet'];
+      const validPanels = ['submit', 'training', 'performance', 'leaderboard', 'goals', 'policies', 'calculator', 'profile', 'dialtracker', 'products', 'resources', 'worksheet', 'weeklytracker'];
       if (validPanels.includes(hash)) activatePanel(hash);
     })();
 
@@ -10628,6 +10767,555 @@
       } catch (e) {}
       loadPolicies();
     }
+
+    // ─── WEEKLY TRACKER (admin-only spreadsheet view) ───
+    const WT = (function() {
+      const PANEL_ID = 'panel-weeklytracker';
+      const ACTIVE_SHEET_KEY = 'wt_active_sheet_v1'; // tab selection only — goals live in Supabase
+      const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      const YTD_CUTOFF = '2026-04-27'; // policy_date < this counts as seed YTD
+
+      const MONTHS_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      const MONTHS_FULL = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+      const DAY_NAMES = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+
+      let WEEKS = [];
+      let activeSheet = null;
+      let allPolicies = [];
+      let reps = [];
+      let ytdSeed = {};
+      let goals = {};
+      let loaded = false;
+      let loading = false;
+
+      function ymdLocal(d) {
+        return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+      }
+
+      function generateWeeks() {
+        const weeks = [];
+        const start = new Date(2026, 3, 27); // April 27, 2026 (Monday)
+        const end = new Date(2026, 11, 31);
+        const cur = new Date(start);
+        while (cur <= end) {
+          const key = ymdLocal(cur);
+          weeks.push({
+            key,
+            label: MONTHS_SHORT[cur.getMonth()] + ' ' + cur.getDate(),
+            full: 'Week of ' + DAY_NAMES[cur.getDay()] + ', ' + MONTHS_FULL[cur.getMonth()] + ' ' + cur.getDate() + ', ' + cur.getFullYear(),
+            date: new Date(cur)
+          });
+          cur.setDate(cur.getDate() + 7);
+        }
+        return weeks;
+      }
+
+      function authHdrs(extra) {
+        const token = accessToken || SUPABASE_KEY;
+        return Object.assign({ apikey: SUPABASE_KEY, Authorization: 'Bearer ' + token }, extra || {});
+      }
+
+      async function fetchGoalsFromSupabase() {
+        const [dailyRes, defaultRes] = await Promise.all([
+          fetch(SUPABASE_URL + '/rest/v1/wt_daily_goals?select=week_start,sales_rep,day_idx,goal', { headers: authHdrs() }),
+          fetch(SUPABASE_URL + '/rest/v1/wt_default_goals?select=sales_rep,goal', { headers: authHdrs() })
+        ]);
+        if (!dailyRes.ok) throw new Error('Failed to load daily goals (' + dailyRes.status + ')');
+        if (!defaultRes.ok) throw new Error('Failed to load default goals (' + defaultRes.status + ')');
+        const dailyRows = await dailyRes.json();
+        const defaultRows = await defaultRes.json();
+        const next = { _default: {} };
+        dailyRows.forEach(r => {
+          if (!next[r.week_start]) next[r.week_start] = {};
+          if (!next[r.week_start][r.sales_rep]) next[r.week_start][r.sales_rep] = [null, null, null, null, null, null];
+          next[r.week_start][r.sales_rep][r.day_idx] = Number(r.goal);
+        });
+        defaultRows.forEach(r => { next._default[r.sales_rep] = Number(r.goal); });
+        goals = next;
+      }
+
+      function getGoal(weekKey, rep, dayIdx) {
+        return (goals[weekKey] && goals[weekKey][rep] && goals[weekKey][rep][dayIdx] != null)
+          ? goals[weekKey][rep][dayIdx]
+          : null;
+      }
+      async function setGoal(weekKey, rep, dayIdx, value) {
+        const num = (value === '' || value == null || isNaN(Number(value))) ? null : Number(value);
+        // Optimistic local update so the UI reflects instantly
+        if (!goals[weekKey]) goals[weekKey] = {};
+        if (!goals[weekKey][rep]) goals[weekKey][rep] = [null, null, null, null, null, null];
+        goals[weekKey][rep][dayIdx] = num;
+        const userEmail = (currentUser && currentUser.email) || null;
+        try {
+          if (num == null) {
+            await fetch(SUPABASE_URL + '/rest/v1/wt_daily_goals?week_start=eq.' + weekKey + '&sales_rep=eq.' + encodeURIComponent(rep) + '&day_idx=eq.' + dayIdx, {
+              method: 'DELETE',
+              headers: authHdrs({ Prefer: 'return=minimal' })
+            });
+          } else {
+            await fetch(SUPABASE_URL + '/rest/v1/wt_daily_goals?on_conflict=week_start,sales_rep,day_idx', {
+              method: 'POST',
+              headers: authHdrs({ 'Content-Type': 'application/json', Prefer: 'resolution=merge-duplicates,return=minimal' }),
+              body: JSON.stringify({ week_start: weekKey, sales_rep: rep, day_idx: dayIdx, goal: num, updated_by: userEmail })
+            });
+          }
+        } catch (e) {
+          console.error('Save goal failed:', e);
+        }
+      }
+      function getDefaultGoal(rep) {
+        return (goals._default && goals._default[rep] != null) ? goals._default[rep] : null;
+      }
+      async function setDefaultGoal(rep, value) {
+        const num = (value === '' || value == null || isNaN(Number(value))) ? null : Number(value);
+        if (!goals._default) goals._default = {};
+        goals._default[rep] = num;
+        const userEmail = (currentUser && currentUser.email) || null;
+        try {
+          if (num == null) {
+            await fetch(SUPABASE_URL + '/rest/v1/wt_default_goals?sales_rep=eq.' + encodeURIComponent(rep), {
+              method: 'DELETE',
+              headers: authHdrs({ Prefer: 'return=minimal' })
+            });
+          } else {
+            await fetch(SUPABASE_URL + '/rest/v1/wt_default_goals?on_conflict=sales_rep', {
+              method: 'POST',
+              headers: authHdrs({ 'Content-Type': 'application/json', Prefer: 'resolution=merge-duplicates,return=minimal' }),
+              body: JSON.stringify({ sales_rep: rep, goal: num, updated_by: userEmail })
+            });
+          }
+        } catch (e) {
+          console.error('Save default goal failed:', e);
+        }
+      }
+
+      async function fetchAllPolicies() {
+        const res = await fetch(SUPABASE_URL + '/rest/v1/policies?select=sales_rep,annual_premium,policy_date&order=policy_date.asc', {
+          headers: authHdrs()
+        });
+        if (!res.ok) throw new Error('Failed to fetch policies (' + res.status + ')');
+        return await res.json();
+      }
+
+      function processPolicies(rows) {
+        allPolicies = rows;
+        const repSet = new Set();
+        rows.forEach(p => { if (p.sales_rep) repSet.add(p.sales_rep); });
+        ytdSeed = {};
+        repSet.forEach(r => { ytdSeed[r] = 0; });
+        rows.forEach(p => {
+          if (!p.sales_rep || !p.policy_date) return;
+          if (p.policy_date < YTD_CUTOFF) {
+            ytdSeed[p.sales_rep] = (ytdSeed[p.sales_rep] || 0) + parseFloat(p.annual_premium || 0);
+          }
+        });
+        reps = Array.from(repSet).sort((a, b) => (ytdSeed[b] || 0) - (ytdSeed[a] || 0));
+      }
+
+      function getWeekActuals(weekKey) {
+        const weekStart = new Date(weekKey + 'T00:00:00');
+        const dayKeys = [];
+        for (let i = 0; i < 6; i++) {
+          const d = new Date(weekStart);
+          d.setDate(d.getDate() + i);
+          dayKeys.push(ymdLocal(d));
+        }
+        const result = {};
+        reps.forEach(r => { result[r] = [0, 0, 0, 0, 0, 0]; });
+        allPolicies.forEach(p => {
+          if (!p.sales_rep || !p.policy_date) return;
+          const di = dayKeys.indexOf(p.policy_date);
+          if (di === -1) return;
+          if (!result[p.sales_rep]) result[p.sales_rep] = [0, 0, 0, 0, 0, 0];
+          result[p.sales_rep][di] += parseFloat(p.annual_premium || 0);
+        });
+        return result;
+      }
+
+      // YTD totals as of end of given week (cutoff seed + actuals through Sat of weekKey)
+      function getYTDAtWeek(weekKey) {
+        const weekStart = new Date(weekKey + 'T00:00:00');
+        const weekEnd = new Date(weekStart);
+        weekEnd.setDate(weekEnd.getDate() + 5); // Mon..Sat (inclusive)
+        const weekEndKey = ymdLocal(weekEnd);
+        const result = {};
+        reps.forEach(r => { result[r] = ytdSeed[r] || 0; });
+        allPolicies.forEach(p => {
+          if (!p.sales_rep || !p.policy_date) return;
+          if (p.policy_date >= YTD_CUTOFF && p.policy_date <= weekEndKey) {
+            result[p.sales_rep] = (result[p.sales_rep] || 0) + parseFloat(p.annual_premium || 0);
+          }
+        });
+        return result;
+      }
+
+      function fmtMoney(n) {
+        if (!n || isNaN(n)) return '$0';
+        return '$' + Math.round(n).toLocaleString();
+      }
+      function fmtMoneyShort(n) {
+        if (!n || isNaN(n)) return '$0';
+        const abs = Math.abs(n);
+        if (abs >= 1000000) return '$' + (n / 1000000).toFixed(2) + 'M';
+        if (abs >= 1000) return '$' + (n / 1000).toFixed(1) + 'K';
+        return '$' + Math.round(n);
+      }
+      function initialsOf(name) {
+        return name.split(' ').filter(Boolean).map(p => p[0]).slice(0, 2).join('').toUpperCase();
+      }
+      function escHtml(s) {
+        return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' })[c]);
+      }
+
+      function currentWeekKey() {
+        const now = new Date();
+        const day = now.getDay();
+        // Monday = 1; shift back to Monday of this week
+        const diffToMon = (day === 0 ? -6 : 1 - day);
+        const mon = new Date(now); mon.setHours(0, 0, 0, 0); mon.setDate(mon.getDate() + diffToMon);
+        const key = ymdLocal(mon);
+        // If current Monday is before the first generated week, use the first week
+        if (WEEKS.length && key < WEEKS[0].key) return WEEKS[0].key;
+        if (WEEKS.length && key > WEEKS[WEEKS.length - 1].key) return WEEKS[WEEKS.length - 1].key;
+        return key;
+      }
+
+      function renderTopbar() {
+        const lastKey = WEEKS[WEEKS.length - 1].key;
+        const ytdLast = getYTDAtWeek(lastKey);
+        const teamYTD = reps.reduce((s, r) => s + (ytdLast[r] || 0), 0);
+        const curKey = currentWeekKey();
+        const curActuals = getWeekActuals(curKey);
+        let weekActual = 0, weekGoal = 0;
+        reps.forEach(r => {
+          weekActual += (curActuals[r] || []).reduce((s, v) => s + (v || 0), 0);
+          for (let i = 0; i < 6; i++) {
+            const g = getGoal(curKey, r, i);
+            const dg = getDefaultGoal(r);
+            const eff = (g != null) ? g : (dg != null ? dg : 0);
+            weekGoal += eff || 0;
+          }
+        });
+        const pace = weekGoal > 0 ? Math.round((weekActual / weekGoal) * 100) : 0;
+        const paceColor = pace >= 100 ? '#6ce9a6' : (pace >= 75 ? '#fff' : '#fecaca');
+        return '' +
+          '<div class="wt-topbar">' +
+            '<div class="wt-logo">WT</div>' +
+            '<div>' +
+              '<div class="wt-title">Team Weekly Numbers</div>' +
+              '<div class="wt-sub">2026 Sales Tracker · ' + reps.length + ' rep' + (reps.length === 1 ? '' : 's') + '</div>' +
+            '</div>' +
+            '<div class="wt-spacer"></div>' +
+            '<div class="wt-stat"><div class="wt-stat-label">Team YTD</div><div class="wt-stat-value">' + escHtml(fmtMoneyShort(teamYTD)) + '</div></div>' +
+            '<div class="wt-stat"><div class="wt-stat-label">This Week</div><div class="wt-stat-value">' + escHtml(fmtMoneyShort(weekActual)) + '</div></div>' +
+            '<div class="wt-stat"><div class="wt-stat-label">Pace vs Goal</div><div class="wt-stat-value" style="color:' + paceColor + ';">' + pace + '%</div></div>' +
+          '</div>';
+      }
+
+      function renderToolbar() {
+        let cellRef = '—', formula = 'Ready';
+        if (activeSheet === 'ytd-setup') {
+          cellRef = 'Setup';
+          formula = 'Default daily goals (manual) · YTD pulled from policies before Apr 27, 2026';
+        } else {
+          const wk = WEEKS.find(w => w.key === activeSheet);
+          if (wk) { cellRef = wk.label; formula = '= SUM(Mon:Sat actuals) per rep · ranked by YTD descending · actuals from policies'; }
+        }
+        return '' +
+          '<div class="wt-toolbar">' +
+            '<div class="wt-cell-ref">' + escHtml(cellRef) + '</div>' +
+            '<div class="wt-formula">' + escHtml(formula) + '</div>' +
+            '<div><span class="wt-tbtn">↻ Auto-saved</span></div>' +
+          '</div>';
+      }
+
+      function renderYTDSetup() {
+        const totalSeedYTD = reps.reduce((s, r) => s + (ytdSeed[r] || 0), 0);
+        let rowsHtml = '';
+        reps.forEach(rep => {
+          const dg = getDefaultGoal(rep);
+          rowsHtml += '<tr>' +
+            '<td class="wt-name-col"><span class="wt-avatar">' + escHtml(initialsOf(rep)) + '</span>' + escHtml(rep) + '</td>' +
+            '<td class="wt-goal-col"><input type="text" inputmode="decimal" data-wt-default-goal="' + escHtml(rep) + '" value="' + (dg != null ? dg : '') + '" placeholder="$0" /></td>' +
+            '<td class="wt-input-col">' + escHtml(fmtMoney(ytdSeed[rep] || 0)) + '</td>' +
+          '</tr>';
+        });
+        return '' +
+          '<div class="wt-setup-wrap">' +
+            '<div class="wt-sheet-header" style="position:static;padding:0 0 16px;background:transparent;border:none;">' +
+              '<div class="wt-sheet-title-row">' +
+                '<div class="wt-sheet-title">YTD Starting Balances</div>' +
+                '<span class="wt-sheet-pill green">● Setup</span>' +
+              '</div>' +
+              '<div class="wt-sheet-sub">YTD totals are pulled from each rep\'s submitted policies dated before Apr 27, 2026. Default daily goal feeds empty cells in weekly sheets.</div>' +
+            '</div>' +
+            '<div class="wt-setup-card">' +
+              '<div class="wt-setup-banner">' +
+                '<div class="wt-icon">$</div>' +
+                '<div><h3>YTD source · daily goal entry</h3>' +
+                '<p>YTD column is read-only and reflects submitted business through Apr 26, 2026. Set a default daily goal per rep — or override per-day on each weekly sheet.</p></div>' +
+              '</div>' +
+              '<table class="wt-setup-table">' +
+                '<thead><tr>' +
+                  '<th>Sales Rep</th>' +
+                  '<th class="right">Default Daily Goal</th>' +
+                  '<th class="right">YTD Through Apr 26, 2026</th>' +
+                '</tr></thead>' +
+                '<tbody>' + rowsHtml + '</tbody>' +
+              '</table>' +
+              '<div class="wt-setup-footer">' +
+                '<div class="wt-total">Total YTD across team: <b>' + escHtml(fmtMoney(totalSeedYTD)) + '</b></div>' +
+                '<div style="font-size:12px;color:var(--wt-gray-500);">' + WEEKS.length + ' weekly sheets · through Dec 28, 2026 · daily actuals auto-pull from policies</div>' +
+              '</div>' +
+            '</div>' +
+          '</div>';
+      }
+
+      function renderWeekSheet(weekKey) {
+        const week = WEEKS.find(w => w.key === weekKey);
+        if (!week) return '<div class="wt-loading">Week not found.</div>';
+        const isCurrent = weekKey === currentWeekKey();
+        const actuals = getWeekActuals(weekKey);
+        const ytdSnap = getYTDAtWeek(weekKey);
+
+        const rows = reps.map(rep => {
+          const a = actuals[rep] || [0, 0, 0, 0, 0, 0];
+          const wtd = a.reduce((s, v) => s + v, 0);
+          const dg = getDefaultGoal(rep);
+          const goalsArr = [0, 1, 2, 3, 4, 5].map(i => {
+            const g = getGoal(weekKey, rep, i);
+            return g != null ? g : (dg != null ? dg : null);
+          });
+          const wtdGoal = goalsArr.reduce((s, v) => s + (v || 0), 0);
+          return { rep, actuals: a, goals: goalsArr, wtd, wtdGoal, ytd: ytdSnap[rep] || 0 };
+        }).sort((a, b) => b.ytd - a.ytd);
+
+        let bodyHtml = '';
+        rows.forEach((row, idx) => {
+          const rank = idx + 1;
+          const medal = rank === 1 ? 'gold' : rank === 2 ? 'silver' : rank === 3 ? 'bronze' : null;
+          const rankCell = medal ? '<span class="wt-medal ' + medal + '">' + rank + '</span>' : String(rank);
+          let dayCells = '';
+          for (let di = 0; di < 6; di++) {
+            const goal = row.goals[di];
+            const actual = row.actuals[di];
+            const hasActual = actual > 0;
+            let actualClass = 'empty';
+            let pctHtml = '';
+            if (hasActual && goal && goal > 0) {
+              const ratio = actual / goal;
+              if (ratio >= 1.1) actualClass = 'over';
+              else if (ratio >= 1) actualClass = 'met';
+              else if (ratio >= 0.7) actualClass = 'under';
+              else actualClass = 'miss';
+              pctHtml = '<span class="wt-pct">' + Math.round(ratio * 100) + '%</span>';
+            } else if (hasActual) {
+              actualClass = 'met';
+            }
+            const goalDisplay = (goal != null && goal !== '') ? '$' + Number(goal).toLocaleString() : '';
+            const actualDisplay = hasActual ? '$' + Math.round(actual).toLocaleString() : '—';
+            dayCells +=
+              '<td class="wt-day-cell goal first-of-day">' +
+                '<input type="text" inputmode="decimal" data-wt-goal-week="' + escHtml(weekKey) + '" data-wt-goal-rep="' + escHtml(row.rep) + '" data-wt-goal-day="' + di + '" value="' + escHtml(goalDisplay) + '" placeholder="$0" />' +
+              '</td>' +
+              '<td class="wt-day-cell actual ' + actualClass + '">' +
+                escHtml(actualDisplay) +
+                pctHtml +
+              '</td>';
+          }
+          bodyHtml += '<tr>' +
+            '<td class="wt-rank-cell">' + rankCell + '</td>' +
+            '<td class="wt-name-cell"><span class="wt-avatar">' + escHtml(initialsOf(row.rep)) + '</span>' + escHtml(row.rep) + '</td>' +
+            '<td class="wt-wtd-cell">' + escHtml(fmtMoney(row.wtd)) + '</td>' +
+            dayCells +
+            '<td class="wt-ytd-cell">' + escHtml(fmtMoney(row.ytd)) + '</td>' +
+          '</tr>';
+        });
+
+        // Footer totals
+        const dayTotals = [];
+        for (let di = 0; di < 6; di++) {
+          let g = 0, a = 0;
+          rows.forEach(r => { g += (r.goals[di] || 0); a += (r.actuals[di] || 0); });
+          dayTotals.push({ goal: g, actual: a });
+        }
+        const totalWTD = rows.reduce((s, r) => s + r.wtd, 0);
+        const totalWTDGoal = rows.reduce((s, r) => s + r.wtdGoal, 0);
+        const totalYTD = rows.reduce((s, r) => s + r.ytd, 0);
+        const wtdPace = totalWTDGoal > 0 ? Math.round((totalWTD / totalWTDGoal) * 100) : 0;
+        const repsBeating = rows.filter(r => r.wtdGoal > 0 && r.wtd >= r.wtdGoal && r.wtd > 0).length;
+        const top = rows[0];
+
+        let dayHeaderHtml = '';
+        DAYS.forEach(d => { dayHeaderHtml += '<th colspan="2">' + d + '</th>'; });
+        let subHeaderHtml = '';
+        DAYS.forEach(() => { subHeaderHtml += '<th>Goal</th><th>Actual</th>'; });
+        let footDayHtml = '';
+        dayTotals.forEach(dt => { footDayHtml += '<td>' + escHtml(fmtMoney(dt.goal)) + '</td><td>' + escHtml(fmtMoney(dt.actual)) + '</td>'; });
+
+        return '' +
+          '<div class="wt-sheet-header">' +
+            '<div class="wt-sheet-title-row">' +
+              '<div class="wt-sheet-title">' + escHtml(week.full) + '</div>' +
+              (isCurrent ? '<span class="wt-sheet-pill">● Current Week</span>' : '') +
+            '</div>' +
+            '<div class="wt-sheet-sub">Reps ranked by Year-to-Date · daily actuals pulled from submitted policies · enter daily goals to track pace</div>' +
+          '</div>' +
+          '<div class="wt-summary-strip">' +
+            '<div class="wt-summary-card deep"><div class="wt-lbl">Team YTD</div><div class="wt-val">' + escHtml(fmtMoney(totalYTD)) + '</div><div class="wt-delta up">↑ ' + escHtml(fmtMoneyShort(totalWTD)) + ' added this week</div></div>' +
+            '<div class="wt-summary-card"><div class="wt-lbl">Week to Date</div><div class="wt-val">' + escHtml(fmtMoney(totalWTD)) + '</div><div class="wt-delta">of ' + escHtml(fmtMoney(totalWTDGoal)) + ' goal</div></div>' +
+            '<div class="wt-summary-card green"><div class="wt-lbl">Pace vs Goal</div><div class="wt-val">' + wtdPace + '%</div><div class="wt-delta ' + (wtdPace >= 100 ? 'up' : 'down') + '">' + (wtdPace >= 100 ? '↑' : '↓') + ' ' + Math.abs(wtdPace - 100) + '% vs target</div></div>' +
+            '<div class="wt-summary-card amber"><div class="wt-lbl">Reps at or Above Goal</div><div class="wt-val">' + repsBeating + ' / ' + reps.length + '</div><div class="wt-delta">' + (top ? 'Top: ' + escHtml(top.rep.split(' ')[0]) + ' · ' + escHtml(fmtMoneyShort(top.ytd)) : '—') + '</div></div>' +
+          '</div>' +
+          '<div class="wt-grid-wrap">' +
+            '<table class="wt-grid-table">' +
+              '<thead>' +
+                '<tr class="wt-day-row">' +
+                  '<th class="wt-rank-h" rowspan="2">#</th>' +
+                  '<th class="wt-name-h" rowspan="2">Sales Rep</th>' +
+                  '<th class="wt-wtd-h" rowspan="2">WTD Total</th>' +
+                  dayHeaderHtml +
+                  '<th class="wt-ytd-h" rowspan="2">YTD Total</th>' +
+                '</tr>' +
+                '<tr class="wt-sub-row">' + subHeaderHtml + '</tr>' +
+              '</thead>' +
+              '<tbody>' + (bodyHtml || '<tr><td colspan="16" class="wt-loading">No reps with submitted policies yet.</td></tr>') + '</tbody>' +
+              (rows.length ? ('<tfoot><tr>' +
+                '<td class="wt-foot-label" colspan="2">Team Totals</td>' +
+                '<td>' + escHtml(fmtMoney(totalWTD)) + '</td>' +
+                footDayHtml +
+                '<td class="wt-ytd-foot">' + escHtml(fmtMoney(totalYTD)) + '</td>' +
+              '</tr></tfoot>') : '') +
+            '</table>' +
+          '</div>';
+      }
+
+      function renderTabs() {
+        let html = '<div class="wt-tabs-bar">' +
+          '<button class="wt-tab setup' + (activeSheet === 'ytd-setup' ? ' active' : '') + '" data-wt-tab="ytd-setup"><span class="wt-tab-dot"></span>YTD Setup</button>';
+        const curKey = currentWeekKey();
+        WEEKS.forEach(w => {
+          const isActive = activeSheet === w.key;
+          const isCurrent = w.key === curKey;
+          html += '<button class="wt-tab' + (isActive ? ' active' : '') + (isCurrent ? ' current' : '') + '" data-wt-tab="' + escHtml(w.key) + '" title="' + escHtml(w.full) + '">' +
+            '<span class="wt-tab-dot"></span>' + escHtml(w.label) +
+          '</button>';
+        });
+        html += '</div>';
+        return html;
+      }
+
+      function renderStatusBar() {
+        const sheetCount = WEEKS.length + 1;
+        return '<div class="wt-statusbar">' +
+          '<span class="wt-dot"></span><span>Live · pulled from policies</span>' +
+          '<span class="wt-sep">·</span><span>' + sheetCount + ' sheets</span>' +
+          '<span class="wt-sep">·</span><span>' + reps.length + ' reps</span>' +
+          '<span class="wt-sep">·</span><span>2026</span>' +
+          '<span class="wt-right">SUM · AVG · COUNT</span>' +
+        '</div>';
+      }
+
+      function render() {
+        const panel = document.getElementById(PANEL_ID);
+        if (!panel) return;
+        if (loading) { panel.innerHTML = '<div class="wt-loading">Loading weekly tracker…</div>'; return; }
+        if (!loaded) { panel.innerHTML = '<div class="wt-loading">Loading weekly tracker…</div>'; return; }
+        const sheetHtml = activeSheet === 'ytd-setup' ? renderYTDSetup() : renderWeekSheet(activeSheet);
+        panel.innerHTML =
+          '<div class="wt-shell">' +
+            renderTopbar() +
+            renderToolbar() +
+            '<div class="wt-sheet-area">' + sheetHtml + '</div>' +
+            renderTabs() +
+            renderStatusBar() +
+          '</div>';
+        attachHandlers(panel);
+      }
+
+      function attachHandlers(root) {
+        // Tab switching
+        root.querySelectorAll('[data-wt-tab]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            activeSheet = btn.getAttribute('data-wt-tab');
+            try { localStorage.setItem(ACTIVE_SHEET_KEY, activeSheet); } catch (e) {}
+            render();
+          });
+        });
+        // Goal inputs (per-day)
+        root.querySelectorAll('[data-wt-goal-week]').forEach(inp => {
+          const sanitize = v => v.replace(/[$,\s]/g, '');
+          inp.addEventListener('focus', e => {
+            const v = sanitize(e.target.value || '');
+            e.target.value = v;
+            e.target.select();
+          });
+          inp.addEventListener('blur', e => {
+            const wk = inp.getAttribute('data-wt-goal-week');
+            const rep = inp.getAttribute('data-wt-goal-rep');
+            const di = Number(inp.getAttribute('data-wt-goal-day'));
+            const cleaned = sanitize(e.target.value);
+            const num = cleaned === '' ? null : Number(cleaned);
+            setGoal(wk, rep, di, num);
+            render();
+          });
+          inp.addEventListener('keydown', e => { if (e.key === 'Enter') e.target.blur(); });
+        });
+        // Default daily goal inputs
+        root.querySelectorAll('[data-wt-default-goal]').forEach(inp => {
+          const sanitize = v => v.replace(/[$,\s]/g, '');
+          inp.addEventListener('focus', e => { e.target.value = sanitize(e.target.value || ''); e.target.select(); });
+          inp.addEventListener('blur', e => {
+            const rep = inp.getAttribute('data-wt-default-goal');
+            const cleaned = sanitize(e.target.value);
+            const num = cleaned === '' ? null : Number(cleaned);
+            setDefaultGoal(rep, num);
+            render();
+          });
+          inp.addEventListener('keydown', e => { if (e.key === 'Enter') e.target.blur(); });
+        });
+        // Auto-scroll active tab into view
+        const activeTab = root.querySelector('.wt-tab.active');
+        if (activeTab) {
+          try { activeTab.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' }); } catch (e) {}
+        }
+      }
+
+      async function load() {
+        if (loading) return;
+        const panel = document.getElementById(PANEL_ID);
+        if (!panel) return;
+        loading = true;
+        panel.innerHTML = '<div class="wt-loading">Loading weekly tracker…</div>';
+        try {
+          if (!WEEKS.length) WEEKS = generateWeeks();
+          // Restore last active sheet, fall back to current week
+          const stored = (function() { try { return localStorage.getItem(ACTIVE_SHEET_KEY); } catch (e) { return null; } })();
+          const [policyRows] = await Promise.all([
+            fetchAllPolicies(),
+            fetchGoalsFromSupabase()
+          ]);
+          processPolicies(policyRows);
+          if (stored && (stored === 'ytd-setup' || WEEKS.some(w => w.key === stored))) {
+            activeSheet = stored;
+          } else {
+            activeSheet = currentWeekKey();
+          }
+          loaded = true;
+        } catch (e) {
+          console.error('Weekly tracker load failed:', e);
+          panel.innerHTML = '<div class="wt-loading">Failed to load weekly tracker: ' + escHtml(e.message || 'unknown error') + '</div>';
+          loading = false;
+          return;
+        }
+        loading = false;
+        render();
+      }
+
+      return { load };
+    })();
+
+    function loadWeeklyTracker() { WT.load(); }
 
   </script>
 
