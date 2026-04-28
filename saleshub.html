@@ -11272,10 +11272,10 @@
               '<td class="wt-day-cell goal first-of-day">' +
                 '<input type="text" inputmode="decimal" data-wt-goal-kind="ap" data-wt-goal-week="' + escHtml(weekKey) + '" data-wt-goal-rep="' + escHtml(row.rep) + '" data-wt-goal-day="' + di + '" value="' + escHtml(apGoalDisplay) + '" placeholder="$0" />' +
               '</td>' +
-              '<td class="wt-day-cell actual ' + apCls.cls + '">' + escHtml(apActualDisplay) + apCls.pct + '</td>' +
               '<td class="wt-day-cell goal">' +
                 '<input type="text" inputmode="numeric" data-wt-goal-kind="dial" data-wt-goal-week="' + escHtml(weekKey) + '" data-wt-goal-rep="' + escHtml(row.rep) + '" data-wt-goal-day="' + di + '" value="' + escHtml(dialGoalDisplay) + '" placeholder="0" />' +
               '</td>' +
+              '<td class="wt-day-cell actual ' + apCls.cls + '">' + escHtml(apActualDisplay) + apCls.pct + '</td>' +
               '<td class="wt-day-cell actual ' + dialCls.cls + '">' + escHtml(dialActualDisplay) + dialCls.pct + '</td>';
           }
           const weeklyGoalDisplay = (row.weeklyGoal != null) ? '$' + Number(row.weeklyGoal).toLocaleString() : '';
@@ -11312,13 +11312,13 @@
         DAYS.forEach(d => { dayHeaderHtml += '<th colspan="4">' + d + '</th>'; });
         let subHeaderHtml = '';
         DAYS.forEach(() => {
-          subHeaderHtml += '<th>AP Goal</th><th>AP Actual</th><th>Dial Goal</th><th>Dial Actual</th>';
+          subHeaderHtml += '<th>AP Goal</th><th>Dial Goal</th><th>AP Actual</th><th>Dial Actual</th>';
         });
         let footDayHtml = '';
         dayTotals.forEach(dt => {
           footDayHtml += '<td>' + escHtml(fmtMoney(dt.apGoal)) + '</td>' +
-                         '<td>' + escHtml(fmtMoney(dt.apActual)) + '</td>' +
                          '<td>' + Math.round(dt.dialGoal).toLocaleString() + '</td>' +
+                         '<td>' + escHtml(fmtMoney(dt.apActual)) + '</td>' +
                          '<td>' + Math.round(dt.dialActual).toLocaleString() + '</td>';
         });
 
