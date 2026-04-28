@@ -10890,7 +10890,7 @@
       }
 
       async function fetchAllPolicies() {
-        const res = await fetch(SUPABASE_URL + '/rest/v1/policies?select=sales_rep,annual_premium,policy_date&order=policy_date.asc', {
+        const res = await fetch(SUPABASE_URL + '/rest/v1/policies?select=user_id,sales_rep,annual_premium,policy_date&order=policy_date.asc', {
           headers: authHdrs()
         });
         if (!res.ok) throw new Error('Failed to fetch policies (' + res.status + ')');
@@ -10898,27 +10898,35 @@
       }
 
       async function fetchActiveReps() {
-        const res = await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?select=agent_name&order=agent_name.asc', {
+        const res = await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?select=user_id,agent_name&order=agent_name.asc', {
           headers: authHdrs()
         });
         if (!res.ok) throw new Error('Failed to fetch reps (' + res.status + ')');
-        const rows = await res.json();
-        return rows.map(r => r.agent_name).filter(Boolean);
+        return await res.json();
       }
 
-      function processData(policyRows, repNames) {
-        allPolicies = policyRows;
-        // Rep list is the union of agent_profiles names + any sales_rep on policies
-        // (in case some legacy policies have a name without a profile yet)
+      function processData(policyRows, profileRows) {
+        // Canonical rep name: prefer agent_profiles.agent_name when matched by user_id;
+        // fall back to policies.sales_rep otherwise.
+        const userIdToName = {};
+        profileRows.forEach(p => { if (p.user_id && p.agent_name) userIdToName[p.user_id] = p.agent_name; });
+
+        // Tag each policy with a unified rep_key so all aggregations match
+        allPolicies = policyRows.map(p => ({
+          ...p,
+          rep_key: (p.user_id && userIdToName[p.user_id]) || p.sales_rep || ''
+        }));
+
         const repSet = new Set();
-        repNames.forEach(n => { if (n) repSet.add(n); });
-        policyRows.forEach(p => { if (p.sales_rep) repSet.add(p.sales_rep); });
+        profileRows.forEach(p => { if (p.agent_name) repSet.add(p.agent_name); });
+        allPolicies.forEach(p => { if (p.rep_key) repSet.add(p.rep_key); });
+
         ytdSeed = {};
         repSet.forEach(r => { ytdSeed[r] = 0; });
-        policyRows.forEach(p => {
-          if (!p.sales_rep || !p.policy_date) return;
+        allPolicies.forEach(p => {
+          if (!p.rep_key || !p.policy_date) return;
           if (p.policy_date < YTD_CUTOFF) {
-            ytdSeed[p.sales_rep] = (ytdSeed[p.sales_rep] || 0) + parseFloat(p.annual_premium || 0);
+            ytdSeed[p.rep_key] = (ytdSeed[p.rep_key] || 0) + parseFloat(p.annual_premium || 0);
           }
         });
         reps = Array.from(repSet).sort((a, b) => (ytdSeed[b] || 0) - (ytdSeed[a] || 0));
@@ -10935,11 +10943,11 @@
         const result = {};
         reps.forEach(r => { result[r] = [0, 0, 0, 0, 0, 0]; });
         allPolicies.forEach(p => {
-          if (!p.sales_rep || !p.policy_date) return;
+          if (!p.rep_key || !p.policy_date) return;
           const di = dayKeys.indexOf(p.policy_date);
           if (di === -1) return;
-          if (!result[p.sales_rep]) result[p.sales_rep] = [0, 0, 0, 0, 0, 0];
-          result[p.sales_rep][di] += parseFloat(p.annual_premium || 0);
+          if (!result[p.rep_key]) result[p.rep_key] = [0, 0, 0, 0, 0, 0];
+          result[p.rep_key][di] += parseFloat(p.annual_premium || 0);
         });
         return result;
       }
@@ -10953,9 +10961,9 @@
         const result = {};
         reps.forEach(r => { result[r] = ytdSeed[r] || 0; });
         allPolicies.forEach(p => {
-          if (!p.sales_rep || !p.policy_date) return;
+          if (!p.rep_key || !p.policy_date) return;
           if (p.policy_date >= YTD_CUTOFF && p.policy_date <= weekEndKey) {
-            result[p.sales_rep] = (result[p.sales_rep] || 0) + parseFloat(p.annual_premium || 0);
+            result[p.rep_key] = (result[p.rep_key] || 0) + parseFloat(p.annual_premium || 0);
           }
         });
         return result;
