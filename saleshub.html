@@ -6372,9 +6372,22 @@
       try { history.replaceState(null, '', '#' + panelName); } catch (e) { /* ignore */ }
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-    document.querySelectorAll('.ss-sidebar-btn').forEach(btn => {
-      btn.addEventListener('click', () => activatePanel(btn.dataset.panel));
-    });
+    // Single delegated click handler on the sidebar — bulletproof against timing
+    // issues (admin-only buttons that mount hidden, dynamic re-renders, etc.).
+    const ssSidebarRoot = document.getElementById('ssSidebar');
+    if (ssSidebarRoot) {
+      ssSidebarRoot.addEventListener('click', (e) => {
+        const btn = e.target.closest('.ss-sidebar-btn[data-panel]');
+        if (!btn || !ssSidebarRoot.contains(btn)) return;
+        e.preventDefault();
+        activatePanel(btn.dataset.panel);
+      });
+    } else {
+      // Fallback if the sidebar element wasn't found for some reason
+      document.querySelectorAll('.ss-sidebar-btn').forEach(btn => {
+        btn.addEventListener('click', () => activatePanel(btn.dataset.panel));
+      });
+    }
     // Profile link in lower nav opens the panel
     document.querySelectorAll('.ss-nav-panel-link').forEach(link => {
       link.addEventListener('click', (e) => {
