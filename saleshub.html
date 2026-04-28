@@ -6368,7 +6368,9 @@
       if (panelName === 'calculator' && currentUser) loadCommissionPipeline();
       if (panelName === 'dialtracker' && typeof renderDialTracker === 'function') renderDialTracker();
       if (panelName === 'products' && typeof renderCarrierProducts === 'function') renderCarrierProducts();
-      if (panelName === 'weeklytracker' && typeof loadWeeklyTracker === 'function') loadWeeklyTracker();
+      if (panelName === 'weeklytracker' && typeof loadWeeklyTracker === 'function') {
+        try { loadWeeklyTracker(); } catch (e) { console.error('Weekly Tracker load threw:', e); }
+      }
       try { history.replaceState(null, '', '#' + panelName); } catch (e) { /* ignore */ }
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -11378,18 +11380,18 @@
       return { load };
     })();
 
-    function loadWeeklyTracker() { WT.load(); }
+    function loadWeeklyTracker() {
+      try { WT && WT.load && WT.load(); } catch (e) { console.error('Weekly Tracker load threw:', e); }
+    }
 
     // If the page was loaded with #weeklytracker BEFORE this module was defined,
     // the hash IIFE earlier in the script silently skipped the load (because
     // typeof loadWeeklyTracker was 'undefined' at that point). Re-trigger here
     // so a hard refresh on the panel actually loads it without manual clicking.
-    (function backfillWeeklyTrackerLoad() {
-      const active = document.querySelector('.ss-panel.active');
-      if (active && active.id === 'panel-weeklytracker') {
-        loadWeeklyTracker();
-      }
-    })();
+    try {
+      const _wtActive = document.querySelector('.ss-panel.active');
+      if (_wtActive && _wtActive.id === 'panel-weeklytracker') loadWeeklyTracker();
+    } catch (e) { console.error('Weekly Tracker backfill threw:', e); }
 
   </script>
 
