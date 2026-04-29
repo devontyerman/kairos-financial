@@ -1305,7 +1305,9 @@
     #panel-weeklytracker .wt-formula { flex: 1; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--wt-gray-500); }
     #panel-weeklytracker .wt-tbtn { border: 1px solid var(--wt-gray-200); background: white; color: var(--wt-gray-700); padding: 6px 10px; font-size: 12px; border-radius: 6px; font-weight: 500; }
     #panel-weeklytracker .wt-sheet-area { flex: 1; overflow: auto; background: var(--wt-gray-100); position: relative; }
-    #panel-weeklytracker .wt-sheet-header { padding: 24px 32px 16px; background: white; border-bottom: 1px solid var(--wt-gray-200); position: sticky; top: 0; z-index: 5; }
+    /* Week-sheet header sits OUTSIDE the scroll area now (so it doesn't drift
+       horizontally with the days), so position:sticky is no longer needed. */
+    #panel-weeklytracker .wt-sheet-header { padding: 18px 24px 12px; background: white; border-bottom: 1px solid var(--wt-gray-200); }
     #panel-weeklytracker .wt-sheet-title-row { display: flex; align-items: baseline; gap: 12px; margin-bottom: 4px; flex-wrap: wrap; }
     #panel-weeklytracker .wt-sheet-title { font-size: 20px; font-weight: 600; color: var(--wt-gray-900); letter-spacing: -0.01em; }
     #panel-weeklytracker .wt-sheet-pill { display: inline-flex; align-items: center; gap: 6px; background: var(--wt-blue-50); color: var(--wt-blue-700); padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; border: 1px solid var(--wt-blue-100); }
@@ -1333,15 +1335,15 @@
     #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th.wt-ytd-h { background: var(--wt-blue-900); }
     #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th:last-child { border-right: none; }
     #panel-weeklytracker .wt-grid-table thead tr.wt-sub-row th { font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; padding: 5px 2px; border-bottom: 1px solid var(--wt-blue-100); border-right: 1px solid var(--wt-blue-100); text-align: center; }
-    /* Goal sub-headers: light blue. Actual sub-headers: light gray. Easy to scan. */
-    #panel-weeklytracker .wt-grid-table thead tr.wt-sub-row th.wt-sub-goal   { background: var(--wt-blue-50);  color: var(--wt-blue-700); }
-    #panel-weeklytracker .wt-grid-table thead tr.wt-sub-row th.wt-sub-actual { background: var(--wt-gray-100); color: var(--wt-gray-700); border-right-color: var(--wt-gray-200); }
+    /* Goal sub-headers: gray. Actual sub-headers: blue (matches the body tint on actual cells). */
+    #panel-weeklytracker .wt-grid-table thead tr.wt-sub-row th.wt-sub-goal   { background: var(--wt-gray-100); color: var(--wt-gray-700); border-right-color: var(--wt-gray-200); }
+    #panel-weeklytracker .wt-grid-table thead tr.wt-sub-row th.wt-sub-actual { background: var(--wt-blue-50);  color: var(--wt-blue-700); }
     #panel-weeklytracker .wt-grid-table thead tr.wt-sub-row th.wt-empty { background: white; border-bottom: 1px solid var(--wt-gray-200); }
     #panel-weeklytracker .wt-grid-table tbody td { padding: 0; border-bottom: 1px solid var(--wt-gray-100); border-right: 1px solid var(--wt-gray-100); vertical-align: middle; height: 36px; }
     #panel-weeklytracker .wt-grid-table tbody tr:last-child td { border-bottom: none; }
-    #panel-weeklytracker .wt-grid-table tbody tr:hover td { background: var(--wt-blue-50); }
-    #panel-weeklytracker .wt-grid-table tbody tr:hover td.wt-rank-cell { background: var(--wt-blue-100); }
-    #panel-weeklytracker .wt-grid-table tbody tr:hover td.wt-ytd-cell { background: var(--wt-green-50); }
+    /* Row hover — !important needed to win against per-cell background rules
+       (sticky cell tints, day-cell over/miss states, etc.) */
+    #panel-weeklytracker .wt-grid-table tbody tr:hover > td { background-color: #e5edff !important; }
     #panel-weeklytracker .wt-rank-cell { width: 44px; min-width: 44px; max-width: 44px; text-align: center; font-weight: 700; color: var(--wt-gray-500); font-family: 'JetBrains Mono', monospace; font-size: 13px; background: var(--wt-gray-25); position: sticky; left: 0; z-index: 2; box-sizing: border-box; }
     #panel-weeklytracker .wt-rank-cell .wt-medal { display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; font-size: 12px; font-weight: 700; }
     #panel-weeklytracker .wt-rank-cell .wt-medal.gold { background: #fef3c7; color: #92400e; }
@@ -1358,7 +1360,7 @@
     #panel-weeklytracker .wt-day-cell.goal { background: var(--wt-gray-25); }
     #panel-weeklytracker .wt-day-cell.goal input { color: var(--wt-gray-700); }
     #panel-weeklytracker .wt-day-cell.goal input::placeholder { color: var(--wt-gray-400); }
-    #panel-weeklytracker .wt-day-cell.actual { padding: 0 2px !important; font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 500; color: var(--wt-gray-700); text-align: right; position: relative; }
+    #panel-weeklytracker .wt-day-cell.actual { padding: 0 2px !important; font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 500; color: var(--wt-gray-700); text-align: right; position: relative; background: var(--wt-blue-50); }
     /* Personal-best crown — pins to the top-right corner of an actuals/MTD/WTD cell */
     #panel-weeklytracker .wt-crown { position: absolute; top: -1px; right: 1px; font-size: 11px; line-height: 1; pointer-events: none; filter: drop-shadow(0 0 1px rgba(0,0,0,0.25)); }
     #panel-weeklytracker .wt-day-cell.actual.over { background: var(--wt-green-50); color: var(--wt-green-700); font-weight: 700; }
@@ -11518,19 +11520,21 @@
 
         const colCount = 5 + (DAYS.length * 4) + 1; // rank,name,mtd,wtd,weeklyGoal + 4*days + ytd
 
-        return '' +
+        const headerHtml =
           '<div class="wt-sheet-header">' +
             '<div class="wt-sheet-title-row">' +
               '<div class="wt-sheet-title">' + escHtml(week.full) + '</div>' +
               (isCurrent ? '<span class="wt-sheet-pill">● Current Week</span>' : '') +
             '</div>' +
-            '<div class="wt-sheet-sub">Reps ranked by Year-to-Date · AP actuals pull from submitted policies · dial actuals pull from daily KPIs · Rank/Name/MTD/WTD pinned while you scroll horizontally</div>' +
+            '<div class="wt-sheet-sub">Reps ranked by Month-to-Date · AP actuals pull from submitted policies · dial actuals pull from daily KPIs · Rank/Name/MTD/WTD/Weekly pinned while you scroll horizontally</div>' +
           '</div>' +
           '<div class="wt-summary-strip" style="grid-template-columns: repeat(3, 1fr);">' +
             '<div class="wt-summary-card"><div class="wt-lbl">Team WTD</div><div class="wt-val">' + escHtml(fmtMoney(totalWTD)) + '</div><div class="wt-delta">of ' + escHtml(fmtMoneyShort(totalWeeklyGoal)) + ' weekly goal</div></div>' +
             '<div class="wt-summary-card amber"><div class="wt-lbl">Team MTD</div><div class="wt-val">' + escHtml(fmtMoney(totalMTD)) + '</div><div class="wt-delta up">↑ ' + escHtml(fmtMoneyShort(totalWTD)) + ' added this week</div></div>' +
             '<div class="wt-summary-card deep"><div class="wt-lbl">Team YTD</div><div class="wt-val">' + escHtml(fmtMoney(totalYTD)) + '</div><div class="wt-delta up">↑ ' + escHtml(fmtMoneyShort(totalMTD)) + ' added this month</div></div>' +
-          '</div>' +
+          '</div>';
+
+        const gridHtml =
           '<div class="wt-grid-wrap">' +
             '<table class="wt-grid-table">' +
               '<thead>' +
@@ -11557,6 +11561,8 @@
               '</tr></tfoot>') : '') +
             '</table>' +
           '</div>';
+
+        return { head: headerHtml, grid: gridHtml };
       }
 
       function renderTabs() {
@@ -11590,12 +11596,26 @@
         if (!panel) return;
         if (loading) { panel.innerHTML = '<div class="wt-loading">Loading weekly tracker…</div>'; return; }
         if (!loaded) { panel.innerHTML = '<div class="wt-loading">Loading weekly tracker…</div>'; return; }
-        const sheetHtml = activeSheet === 'ytd-setup' ? renderYTDSetup() : renderWeekSheet(activeSheet);
+
+        // For week sheets, the title row + summary cards stay OUTSIDE the
+        // horizontal scroll area so only the day columns slide. For the YTD
+        // Setup tab everything fits, so it stays inside.
+        let outerHead = '';
+        let scrollBody = '';
+        if (activeSheet === 'ytd-setup') {
+          scrollBody = renderYTDSetup();
+        } else {
+          const wk = renderWeekSheet(activeSheet);
+          outerHead = wk.head;
+          scrollBody = wk.grid;
+        }
+
         panel.innerHTML =
           '<div class="wt-shell">' +
             renderTopbar() +
             renderToolbar() +
-            '<div class="wt-sheet-area">' + sheetHtml + '</div>' +
+            outerHead +
+            '<div class="wt-sheet-area">' + scrollBody + '</div>' +
             renderTabs() +
             renderStatusBar() +
           '</div>';
