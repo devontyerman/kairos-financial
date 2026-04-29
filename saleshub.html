@@ -1335,16 +1335,17 @@
     #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th.wt-ytd-h { background: var(--wt-blue-900); }
     #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th:last-child { border-right: none; }
     #panel-weeklytracker .wt-grid-table thead tr.wt-sub-row th { font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; padding: 5px 2px; border-bottom: 1px solid var(--wt-blue-100); border-right: 1px solid var(--wt-blue-100); text-align: center; }
-    /* Goal sub-headers: gray. Actual sub-headers: blue (matches the body tint on actual cells). */
+    /* Goal sub-headers: gray. Actual sub-headers: yellow — matches the body tint
+       so the entire actuals column reads as one continuous yellow stripe. */
     #panel-weeklytracker .wt-grid-table thead tr.wt-sub-row th.wt-sub-goal   { background: var(--wt-gray-100); color: var(--wt-gray-700); border-right-color: var(--wt-gray-200); }
-    #panel-weeklytracker .wt-grid-table thead tr.wt-sub-row th.wt-sub-actual { background: var(--wt-blue-50);  color: var(--wt-blue-700); }
+    #panel-weeklytracker .wt-grid-table thead tr.wt-sub-row th.wt-sub-actual { background: #fefce8; color: #854d0e; border-right-color: #fef08a; }
     #panel-weeklytracker .wt-grid-table thead tr.wt-sub-row th.wt-empty { background: white; border-bottom: 1px solid var(--wt-gray-200); }
     #panel-weeklytracker .wt-grid-table tbody td { padding: 0; border-bottom: 1px solid var(--wt-gray-100); border-right: 1px solid var(--wt-gray-100); vertical-align: middle; height: 36px; }
     #panel-weeklytracker .wt-grid-table tbody tr:last-child td { border-bottom: none; }
-    /* Row hover — JS toggles .wt-row-hover on the tr (mouseenter/leave) so we
-       don't have to fight CSS specificity battles with sticky cell tints and
-       day-cell state classes. */
-    #panel-weeklytracker .wt-grid-table tbody tr.wt-row-hover > td { background: #d6e4ff !important; }
+    /* Row hover — JS toggles .wt-row-hover on the tr (mouseenter/leave). Color
+       chosen to be obviously distinct from white, gray-25, blue-50, AND the
+       new yellow column tint so the highlight reads on every cell type. */
+    #panel-weeklytracker .wt-grid-table tbody tr.wt-row-hover > td { background: #bfdbfe !important; }
     #panel-weeklytracker .wt-rank-cell { width: 44px; min-width: 44px; max-width: 44px; text-align: center; font-weight: 700; color: var(--wt-gray-500); font-family: 'JetBrains Mono', monospace; font-size: 13px; background: var(--wt-gray-25); position: sticky; left: 0; z-index: 2; box-sizing: border-box; }
     #panel-weeklytracker .wt-rank-cell .wt-medal { display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; font-size: 12px; font-weight: 700; }
     #panel-weeklytracker .wt-rank-cell .wt-medal.gold { background: #fef3c7; color: #92400e; }
@@ -1362,10 +1363,10 @@
     #panel-weeklytracker .wt-day-cell.goal { background: var(--wt-gray-25); }
     #panel-weeklytracker .wt-day-cell.goal input { color: var(--wt-gray-700); }
     #panel-weeklytracker .wt-day-cell.goal input::placeholder { color: var(--wt-gray-400); }
-    /* All actual cells share a soft yellow tint so the entire actuals stripe
-       reads as a single highlighted column. State (over/met/miss) shows via
-       text color only — no per-cell box-shadow or background overrides. */
-    #panel-weeklytracker .wt-day-cell.actual { padding: 0 2px !important; font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 500; color: var(--wt-gray-700); text-align: right; position: relative; background: #fef9c3; }
+    /* All actual cells share a very soft yellow tint (matches the actual
+       sub-headers) so the entire actuals column reads as one continuous
+       highlighted stripe. State (over/met/miss) shows via text color only. */
+    #panel-weeklytracker .wt-day-cell.actual { padding: 0 2px !important; font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 500; color: var(--wt-gray-700); text-align: right; position: relative; background: #fefce8; }
     /* Personal-best crown — pins to the top-right corner of an actuals/MTD/WTD cell */
     #panel-weeklytracker .wt-crown { position: absolute; top: -1px; right: 1px; font-size: 11px; line-height: 1; pointer-events: none; filter: drop-shadow(0 0 1px rgba(0,0,0,0.25)); }
     #panel-weeklytracker .wt-day-cell.actual.over  { color: var(--wt-green-700); font-weight: 700; }
