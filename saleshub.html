@@ -1323,7 +1323,9 @@
     #panel-weeklytracker .wt-summary-card .wt-delta.up { color: var(--wt-green-600); }
     #panel-weeklytracker .wt-summary-card .wt-delta.down { color: var(--wt-red-600); }
     #panel-weeklytracker .wt-grid-wrap { padding: 14px 4px 22px; }
-    #panel-weeklytracker .wt-grid-table { width: 100%; border-collapse: separate; border-spacing: 0; background: white; border: 1px solid var(--wt-gray-200); border-radius: 10px; overflow: hidden; box-shadow: 0 1px 2px rgba(16,24,40,0.04); font-size: 14px; }
+    /* No overflow:hidden / border-radius on the table itself — those break
+       position:sticky on the rank/name/MTD/WTD cells. */
+    #panel-weeklytracker .wt-grid-table { width: 100%; border-collapse: separate; border-spacing: 0; background: white; border: 1px solid var(--wt-gray-200); box-shadow: 0 1px 2px rgba(16,24,40,0.04); font-size: 14px; }
     #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th { background: linear-gradient(180deg, var(--wt-blue-600), var(--wt-blue-700)); color: white; font-weight: 600; font-size: 13px; text-transform: uppercase; letter-spacing: 0.04em; padding: 8px 4px; border-right: 1px solid rgba(255,255,255,0.18); text-align: center; }
     #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th.wt-rank-h,
     #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th.wt-name-h,
@@ -1356,7 +1358,9 @@
     #panel-weeklytracker .wt-day-cell.goal { background: var(--wt-gray-25); }
     #panel-weeklytracker .wt-day-cell.goal input { color: var(--wt-gray-700); }
     #panel-weeklytracker .wt-day-cell.goal input::placeholder { color: var(--wt-gray-400); }
-    #panel-weeklytracker .wt-day-cell.actual { padding: 0 2px !important; font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 500; color: var(--wt-gray-700); text-align: right; }
+    #panel-weeklytracker .wt-day-cell.actual { padding: 0 2px !important; font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 500; color: var(--wt-gray-700); text-align: right; position: relative; }
+    /* Personal-best crown — pins to the top-right corner of an actuals/MTD/WTD cell */
+    #panel-weeklytracker .wt-crown { position: absolute; top: -1px; right: 1px; font-size: 11px; line-height: 1; pointer-events: none; filter: drop-shadow(0 0 1px rgba(0,0,0,0.25)); }
     #panel-weeklytracker .wt-day-cell.actual.over { background: var(--wt-green-50); color: var(--wt-green-700); font-weight: 700; }
     #panel-weeklytracker .wt-day-cell.actual.met { color: var(--wt-green-700); font-weight: 600; }
     #panel-weeklytracker .wt-day-cell.actual.miss { background: var(--wt-red-50); color: var(--wt-red-600); }
@@ -11336,6 +11340,44 @@
           '</div>';
       }
 
+      // Compute each rep's all-time best single day, calendar week (Mon-Sat), and
+      // calendar month based on submitted policies. Used to drop a 👑 on the
+      // current-day actual / WTD / MTD cell whenever a rep matches their record.
+      function computeBests() {
+        const dayMap = {}, weekMap = {}, monthMap = {};
+        allPolicies.forEach(p => {
+          if (!p.rep_key || !p.policy_date) return;
+          if (p.policy_date < YTD_START) return;
+          const ap = parseFloat(p.annual_premium || 0);
+          if (!dayMap[p.rep_key]) dayMap[p.rep_key] = {};
+          dayMap[p.rep_key][p.policy_date] = (dayMap[p.rep_key][p.policy_date] || 0) + ap;
+          // Monday of that policy_date's week
+          const d = new Date(p.policy_date + 'T00:00:00');
+          const dow = d.getDay();
+          const diffToMon = (dow === 0 ? -6 : 1 - dow);
+          const mon = new Date(d); mon.setDate(d.getDate() + diffToMon);
+          const monKey = ymdLocal(mon);
+          if (!weekMap[p.rep_key]) weekMap[p.rep_key] = {};
+          weekMap[p.rep_key][monKey] = (weekMap[p.rep_key][monKey] || 0) + ap;
+          // Calendar month
+          const monthKey = p.policy_date.slice(0, 7);
+          if (!monthMap[p.rep_key]) monthMap[p.rep_key] = {};
+          monthMap[p.rep_key][monthKey] = (monthMap[p.rep_key][monthKey] || 0) + ap;
+        });
+        const bests = {};
+        reps.forEach(r => {
+          const days = Object.values(dayMap[r] || {});
+          const weeks = Object.values(weekMap[r] || {});
+          const months = Object.values(monthMap[r] || {});
+          bests[r] = {
+            bestDay: days.length ? Math.max.apply(null, days) : 0,
+            bestWeek: weeks.length ? Math.max.apply(null, weeks) : 0,
+            bestMonth: months.length ? Math.max.apply(null, months) : 0
+          };
+        });
+        return bests;
+      }
+
       function renderWeekSheet(weekKey) {
         const week = WEEKS.find(w => w.key === weekKey);
         if (!week) return '<div class="wt-loading">Week not found.</div>';
@@ -11344,6 +11386,7 @@
         const dialActuals = getWeekDials(weekKey);
         const mtdSnap = getMTDAtWeek(weekKey);
         const ytdSnap = getYTDAtWeek(weekKey);
+        const bests = computeBests();
 
         const rows = reps.map(rep => {
           const a = actuals[rep] || [0, 0, 0, 0, 0, 0];
@@ -11394,6 +11437,7 @@
           const medal = rank === 1 ? 'gold' : rank === 2 ? 'silver' : rank === 3 ? 'bronze' : null;
           const rankCell = medal ? '<span class="wt-medal ' + medal + '">' + rank + '</span>' : String(rank);
           let dayCells = '';
+          const repBest = bests[row.rep] || { bestDay: 0, bestWeek: 0, bestMonth: 0 };
           for (let di = 0; di < 6; di++) {
             const apGoal = row.apGoals[di];
             const apActual = row.actuals[di];
@@ -11406,6 +11450,8 @@
             const apActualDisplay = apActual > 0 ? '$' + Math.round(apActual).toLocaleString() : '—';
             const dialGoalDisplay = (dialGoal != null) ? Number(dialGoal).toLocaleString() : '';
             const dialActualDisplay = dialActual > 0 ? Number(dialActual).toLocaleString() : '—';
+            const apIsBestDay = apActual > 0 && apActual === repBest.bestDay;
+            const apCrown = apIsBestDay ? '<span class="wt-crown" title="Best day">👑</span>' : '';
 
             dayCells +=
               '<td class="wt-day-cell goal first-of-day">' +
@@ -11415,14 +11461,16 @@
                 '<input type="text" inputmode="decimal" data-wt-goal-kind="ap" data-wt-goal-week="' + escHtml(weekKey) + '" data-wt-goal-rep="' + escHtml(row.rep) + '" data-wt-goal-day="' + di + '" value="' + escHtml(apGoalDisplay) + '" placeholder="$0" />' +
               '</td>' +
               '<td class="wt-day-cell actual ' + dialCls.cls + '">' + escHtml(dialActualDisplay) + dialCls.pct + '</td>' +
-              '<td class="wt-day-cell actual ' + apCls.cls + '">' + escHtml(apActualDisplay) + apCls.pct + '</td>';
+              '<td class="wt-day-cell actual ' + apCls.cls + '">' + escHtml(apActualDisplay) + apCls.pct + apCrown + '</td>';
           }
           const weeklyGoalDisplay = (row.weeklyGoal != null) ? '$' + Number(row.weeklyGoal).toLocaleString() : '';
+          const wtdCrown = (row.wtd > 0 && row.wtd === repBest.bestWeek) ? '<span class="wt-crown" title="Best week">👑</span>' : '';
+          const mtdCrown = (row.mtd > 0 && row.mtd === repBest.bestMonth) ? '<span class="wt-crown" title="Best month">👑</span>' : '';
           bodyHtml += '<tr>' +
             '<td class="wt-rank-cell">' + rankCell + '</td>' +
             '<td class="wt-name-cell"><span class="wt-avatar">' + escHtml(initialsOf(row.rep)) + '</span>' + escHtml(row.rep) + '</td>' +
-            '<td class="wt-mtd-cell">' + escHtml(fmtMoney(row.mtd)) + '</td>' +
-            '<td class="wt-wtd-cell">' + escHtml(fmtMoney(row.wtd)) + '</td>' +
+            '<td class="wt-mtd-cell">' + escHtml(fmtMoney(row.mtd)) + mtdCrown + '</td>' +
+            '<td class="wt-wtd-cell">' + escHtml(fmtMoney(row.wtd)) + wtdCrown + '</td>' +
             '<td class="wt-day-cell goal wt-weekly-cell">' +
               '<input type="text" inputmode="decimal" data-wt-weekly-goal-week="' + escHtml(weekKey) + '" data-wt-weekly-goal-rep="' + escHtml(row.rep) + '" value="' + escHtml(weeklyGoalDisplay) + '" placeholder="$0" />' +
             '</td>' +
