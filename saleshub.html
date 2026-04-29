@@ -1366,17 +1366,19 @@
     #panel-weeklytracker .wt-day-cell.actual.miss { background: var(--wt-red-50); color: var(--wt-red-600); }
     #panel-weeklytracker .wt-day-cell.actual.empty { color: var(--wt-gray-400); }
     #panel-weeklytracker .wt-day-cell.first-of-day { border-left: 1px solid var(--wt-blue-100); }
-    #panel-weeklytracker .wt-weekly-cell { width: 80px; min-width: 80px; max-width: 80px; }
-    /* Sticky header cells (rank/name/MTD/WTD pin to the left while scrolling horizontally) */
-    #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th.wt-rank-h { position: sticky; left: 0;    z-index: 6; width: 44px; min-width: 44px; max-width: 44px; }
-    #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th.wt-name-h { position: sticky; left: 44px; z-index: 6; width: 170px; min-width: 170px; max-width: 170px; }
-    #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th.wt-mtd-h  { position: sticky; left: 214px; z-index: 6; width: 76px; min-width: 76px; max-width: 76px; background: var(--wt-blue-900); }
-    #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th.wt-wtd-h  { position: sticky; left: 290px; z-index: 6; width: 76px; min-width: 76px; max-width: 76px; }
+    #panel-weeklytracker .wt-weekly-cell { width: 80px; min-width: 80px; max-width: 80px; position: sticky; left: 366px; z-index: 2; background: var(--wt-gray-25); border-right: 1px solid var(--wt-gray-200) !important; }
+    /* Sticky header cells (rank/name/MTD/WTD/Weekly pin to the left while scrolling horizontally) */
+    #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th.wt-rank-h   { position: sticky; left: 0;    z-index: 6; width: 44px; min-width: 44px; max-width: 44px; }
+    #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th.wt-name-h   { position: sticky; left: 44px; z-index: 6; width: 170px; min-width: 170px; max-width: 170px; }
+    #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th.wt-mtd-h    { position: sticky; left: 214px; z-index: 6; width: 76px; min-width: 76px; max-width: 76px; background: var(--wt-blue-900); }
+    #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th.wt-wtd-h    { position: sticky; left: 290px; z-index: 6; width: 76px; min-width: 76px; max-width: 76px; }
+    #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th.wt-weekly-h { position: sticky; left: 366px; z-index: 6; width: 80px; min-width: 80px; max-width: 80px; background: var(--wt-blue-900); }
     /* Sticky footer cells (mirror the body offsets so totals stay aligned with the data rows) */
-    #panel-weeklytracker .wt-grid-table tfoot td.wt-foot-rank { position: sticky; left: 0;    z-index: 2; width: 44px; min-width: 44px; max-width: 44px; }
-    #panel-weeklytracker .wt-grid-table tfoot td.wt-foot-name { position: sticky; left: 44px; z-index: 2; width: 170px; min-width: 170px; max-width: 170px; text-align: left; text-transform: uppercase; letter-spacing: 0.04em; font-size: 12px; font-family: 'Inter', sans-serif; }
-    #panel-weeklytracker .wt-grid-table tfoot td.wt-foot-mtd  { position: sticky; left: 214px; z-index: 2; width: 76px; min-width: 76px; max-width: 76px; }
-    #panel-weeklytracker .wt-grid-table tfoot td.wt-foot-wtd  { position: sticky; left: 290px; z-index: 2; width: 76px; min-width: 76px; max-width: 76px; }
+    #panel-weeklytracker .wt-grid-table tfoot td.wt-foot-rank   { position: sticky; left: 0;    z-index: 2; width: 44px; min-width: 44px; max-width: 44px; }
+    #panel-weeklytracker .wt-grid-table tfoot td.wt-foot-name   { position: sticky; left: 44px; z-index: 2; width: 170px; min-width: 170px; max-width: 170px; text-align: left; text-transform: uppercase; letter-spacing: 0.04em; font-size: 12px; font-family: 'Inter', sans-serif; }
+    #panel-weeklytracker .wt-grid-table tfoot td.wt-foot-mtd    { position: sticky; left: 214px; z-index: 2; width: 76px; min-width: 76px; max-width: 76px; }
+    #panel-weeklytracker .wt-grid-table tfoot td.wt-foot-wtd    { position: sticky; left: 290px; z-index: 2; width: 76px; min-width: 76px; max-width: 76px; }
+    #panel-weeklytracker .wt-grid-table tfoot td.wt-foot-weekly { position: sticky; left: 366px; z-index: 2; width: 80px; min-width: 80px; max-width: 80px; }
     #panel-weeklytracker .wt-day-cell .wt-pct { display: block; font-size: 9px; color: var(--wt-gray-400); text-align: right; padding-right: 0; margin-top: -2px; font-weight: 500; }
     #panel-weeklytracker .wt-day-cell.actual.over .wt-pct { color: var(--wt-green-600); }
     #panel-weeklytracker .wt-day-cell.actual.miss .wt-pct { color: var(--wt-red-500); }
@@ -11537,7 +11539,7 @@
                   '<th class="wt-name-h" rowspan="2">Sales Rep</th>' +
                   '<th class="wt-mtd-h" rowspan="2">MTD Total</th>' +
                   '<th class="wt-wtd-h" rowspan="2">WTD Total</th>' +
-                  '<th class="wt-wtd-h" rowspan="2">Weekly Goal</th>' +
+                  '<th class="wt-weekly-h" rowspan="2">Weekly Goal</th>' +
                   dayHeaderHtml +
                   '<th class="wt-ytd-h" rowspan="2">YTD Total</th>' +
                 '</tr>' +
@@ -11549,7 +11551,7 @@
                 '<td class="wt-foot-name">Team Totals</td>' +
                 '<td class="wt-foot-mtd">' + escHtml(fmtMoney(totalMTD)) + '</td>' +
                 '<td class="wt-foot-wtd">' + escHtml(fmtMoney(totalWTD)) + '</td>' +
-                '<td>' + escHtml(fmtMoney(totalWeeklyGoal)) + '</td>' +
+                '<td class="wt-foot-weekly">' + escHtml(fmtMoney(totalWeeklyGoal)) + '</td>' +
                 footDayHtml +
                 '<td class="wt-ytd-foot">' + escHtml(fmtMoney(totalYTD)) + '</td>' +
               '</tr></tfoot>') : '') +
