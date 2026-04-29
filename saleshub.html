@@ -1322,7 +1322,7 @@
     #panel-weeklytracker .wt-summary-card .wt-delta { font-size: 11px; font-weight: 500; color: var(--wt-gray-500); }
     #panel-weeklytracker .wt-summary-card .wt-delta.up { color: var(--wt-green-600); }
     #panel-weeklytracker .wt-summary-card .wt-delta.down { color: var(--wt-red-600); }
-    #panel-weeklytracker .wt-grid-wrap { padding: 14px 18px 22px; }
+    #panel-weeklytracker .wt-grid-wrap { padding: 14px 4px 22px; }
     #panel-weeklytracker .wt-grid-table { width: 100%; border-collapse: separate; border-spacing: 0; background: white; border: 1px solid var(--wt-gray-200); border-radius: 10px; overflow: hidden; box-shadow: 0 1px 2px rgba(16,24,40,0.04); font-size: 14px; }
     #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th { background: linear-gradient(180deg, var(--wt-blue-600), var(--wt-blue-700)); color: white; font-weight: 600; font-size: 13px; text-transform: uppercase; letter-spacing: 0.04em; padding: 8px 4px; border-right: 1px solid rgba(255,255,255,0.18); text-align: center; }
     #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th.wt-rank-h,
@@ -1337,28 +1337,39 @@
     #panel-weeklytracker .wt-grid-table tbody tr:hover td { background: var(--wt-blue-50); }
     #panel-weeklytracker .wt-grid-table tbody tr:hover td.wt-rank-cell { background: var(--wt-blue-100); }
     #panel-weeklytracker .wt-grid-table tbody tr:hover td.wt-ytd-cell { background: var(--wt-green-50); }
-    #panel-weeklytracker .wt-rank-cell { width: 32px; text-align: center; font-weight: 700; color: var(--wt-gray-500); font-family: 'JetBrains Mono', monospace; font-size: 13px; background: var(--wt-gray-25); }
-    #panel-weeklytracker .wt-rank-cell .wt-medal { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; font-size: 12px; font-weight: 700; }
+    #panel-weeklytracker .wt-rank-cell { width: 44px; min-width: 44px; max-width: 44px; text-align: center; font-weight: 700; color: var(--wt-gray-500); font-family: 'JetBrains Mono', monospace; font-size: 13px; background: var(--wt-gray-25); position: sticky; left: 0; z-index: 2; box-sizing: border-box; }
+    #panel-weeklytracker .wt-rank-cell .wt-medal { display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; font-size: 12px; font-weight: 700; }
     #panel-weeklytracker .wt-rank-cell .wt-medal.gold { background: #fef3c7; color: #92400e; }
     #panel-weeklytracker .wt-rank-cell .wt-medal.silver { background: #e5e7eb; color: #374151; }
     #panel-weeklytracker .wt-rank-cell .wt-medal.bronze { background: #fed7aa; color: #9a3412; }
-    #panel-weeklytracker .wt-name-cell { padding: 0 8px !important; font-weight: 500; color: var(--wt-gray-900); min-width: 160px; white-space: nowrap; background: white; border-right: 1px solid var(--wt-gray-200) !important; font-size: 14px; }
-    #panel-weeklytracker .wt-avatar { display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--wt-blue-100); color: var(--wt-blue-700); font-weight: 600; font-size: 11px; margin-right: 6px; vertical-align: middle; }
-    #panel-weeklytracker .wt-wtd-cell { background: var(--wt-blue-50); text-align: right; padding: 0 6px !important; font-family: 'JetBrains Mono', monospace; font-weight: 600; color: var(--wt-blue-700); width: 84px; font-size: 13px; }
-    #panel-weeklytracker .wt-ytd-cell { background: var(--wt-green-50); text-align: right; padding: 0 6px !important; font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--wt-green-700); width: 92px; border-left: 1px solid var(--wt-green-100); font-size: 13px; }
-    #panel-weeklytracker .wt-day-cell { width: 76px; min-width: 76px; max-width: 76px; padding: 0 !important; text-align: right; box-sizing: border-box; }
-    #panel-weeklytracker .wt-day-cell input { width: 100%; height: 36px; border: none; background: transparent; text-align: right; padding: 0 4px; font-family: 'JetBrains Mono', monospace; font-size: 14px; color: var(--wt-gray-700); outline: none; font-weight: 500; box-sizing: border-box; }
+    #panel-weeklytracker .wt-name-cell { padding: 0 6px !important; font-weight: 500; color: var(--wt-gray-900); width: 170px; min-width: 170px; max-width: 170px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; background: white; border-right: 1px solid var(--wt-gray-200) !important; font-size: 14px; position: sticky; left: 44px; z-index: 2; box-sizing: border-box; }
+    #panel-weeklytracker .wt-avatar { display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--wt-blue-100); color: var(--wt-blue-700); font-weight: 600; font-size: 11px; margin-right: 6px; vertical-align: middle; flex-shrink: 0; }
+    #panel-weeklytracker .wt-mtd-cell { background: #fff7ed; text-align: right; padding: 0 6px !important; font-family: 'JetBrains Mono', monospace; font-weight: 600; color: #c2410c; width: 80px; min-width: 80px; max-width: 80px; font-size: 13px; position: sticky; left: 214px; z-index: 2; box-sizing: border-box; border-right: 1px solid var(--wt-gray-200) !important; }
+    #panel-weeklytracker .wt-wtd-cell { background: var(--wt-blue-50); text-align: right; padding: 0 6px !important; font-family: 'JetBrains Mono', monospace; font-weight: 600; color: var(--wt-blue-700); width: 80px; min-width: 80px; max-width: 80px; font-size: 13px; position: sticky; left: 294px; z-index: 2; box-sizing: border-box; border-right: 1px solid var(--wt-blue-100) !important; }
+    #panel-weeklytracker .wt-ytd-cell { background: var(--wt-green-50); text-align: right; padding: 0 6px !important; font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--wt-green-700); width: 88px; min-width: 88px; max-width: 88px; border-left: 1px solid var(--wt-green-100); font-size: 13px; }
+    #panel-weeklytracker .wt-day-cell { width: 72px; min-width: 72px; max-width: 72px; padding: 0 !important; text-align: right; box-sizing: border-box; }
+    #panel-weeklytracker .wt-day-cell input { width: 100%; height: 36px; border: none; background: transparent; text-align: right; padding: 0 3px; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--wt-gray-700); outline: none; font-weight: 500; box-sizing: border-box; }
     #panel-weeklytracker .wt-day-cell input:focus { background: white; box-shadow: inset 0 0 0 2px var(--wt-blue-500); color: var(--wt-gray-900); }
     #panel-weeklytracker .wt-day-cell.goal { background: var(--wt-gray-25); }
     #panel-weeklytracker .wt-day-cell.goal input { color: var(--wt-gray-700); }
     #panel-weeklytracker .wt-day-cell.goal input::placeholder { color: var(--wt-gray-400); }
-    #panel-weeklytracker .wt-day-cell.actual { padding: 0 4px !important; font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 500; color: var(--wt-gray-700); text-align: right; }
+    #panel-weeklytracker .wt-day-cell.actual { padding: 0 3px !important; font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 500; color: var(--wt-gray-700); text-align: right; }
     #panel-weeklytracker .wt-day-cell.actual.over { background: var(--wt-green-50); color: var(--wt-green-700); font-weight: 700; }
     #panel-weeklytracker .wt-day-cell.actual.met { color: var(--wt-green-700); font-weight: 600; }
     #panel-weeklytracker .wt-day-cell.actual.miss { background: var(--wt-red-50); color: var(--wt-red-600); }
     #panel-weeklytracker .wt-day-cell.actual.empty { color: var(--wt-gray-400); }
     #panel-weeklytracker .wt-day-cell.first-of-day { border-left: 1px solid var(--wt-blue-100); }
-    #panel-weeklytracker .wt-weekly-cell { width: 92px; min-width: 92px; max-width: 92px; }
+    #panel-weeklytracker .wt-weekly-cell { width: 88px; min-width: 88px; max-width: 88px; }
+    /* Sticky header cells (rank/name/MTD/WTD pin to the left while scrolling horizontally) */
+    #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th.wt-rank-h { position: sticky; left: 0;    z-index: 6; width: 44px; min-width: 44px; max-width: 44px; }
+    #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th.wt-name-h { position: sticky; left: 44px; z-index: 6; width: 170px; min-width: 170px; max-width: 170px; }
+    #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th.wt-mtd-h  { position: sticky; left: 214px; z-index: 6; width: 80px; min-width: 80px; max-width: 80px; background: var(--wt-blue-900); }
+    #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th.wt-wtd-h  { position: sticky; left: 294px; z-index: 6; width: 80px; min-width: 80px; max-width: 80px; }
+    /* Sticky footer cells (mirror the body offsets so totals stay aligned with the data rows) */
+    #panel-weeklytracker .wt-grid-table tfoot td.wt-foot-rank { position: sticky; left: 0;    z-index: 2; width: 44px; min-width: 44px; max-width: 44px; }
+    #panel-weeklytracker .wt-grid-table tfoot td.wt-foot-name { position: sticky; left: 44px; z-index: 2; width: 170px; min-width: 170px; max-width: 170px; text-align: left; text-transform: uppercase; letter-spacing: 0.04em; font-size: 12px; font-family: 'Inter', sans-serif; }
+    #panel-weeklytracker .wt-grid-table tfoot td.wt-foot-mtd  { position: sticky; left: 214px; z-index: 2; width: 80px; min-width: 80px; max-width: 80px; }
+    #panel-weeklytracker .wt-grid-table tfoot td.wt-foot-wtd  { position: sticky; left: 294px; z-index: 2; width: 80px; min-width: 80px; max-width: 80px; }
     #panel-weeklytracker .wt-day-cell .wt-pct { display: block; font-size: 9px; color: var(--wt-gray-400); text-align: right; padding-right: 0; margin-top: -2px; font-weight: 500; }
     #panel-weeklytracker .wt-day-cell.actual.over .wt-pct { color: var(--wt-green-600); }
     #panel-weeklytracker .wt-day-cell.actual.miss .wt-pct { color: var(--wt-red-500); }
@@ -11151,6 +11162,28 @@
         return result;
       }
 
+      // MTD totals as of end of given week. Month is anchored on the week's
+      // Monday so a week that crosses months reports MTD for the start month.
+      function getMTDAtWeek(weekKey) {
+        const weekStart = new Date(weekKey + 'T00:00:00');
+        const weekEnd = new Date(weekStart);
+        weekEnd.setDate(weekEnd.getDate() + 5);
+        const weekEndKey = ymdLocal(weekEnd);
+        const todayKey = ymdLocal(new Date());
+        const upperBound = weekEndKey < todayKey ? weekEndKey : todayKey;
+        const monthStart = new Date(weekStart.getFullYear(), weekStart.getMonth(), 1);
+        const monthStartKey = ymdLocal(monthStart);
+        const result = {};
+        reps.forEach(r => { result[r] = 0; });
+        allPolicies.forEach(p => {
+          if (!p.rep_key || !p.policy_date) return;
+          if (p.policy_date >= monthStartKey && p.policy_date <= upperBound) {
+            result[p.rep_key] = (result[p.rep_key] || 0) + parseFloat(p.annual_premium || 0);
+          }
+        });
+        return result;
+      }
+
       // YTD totals as of end of given week. Capped at today so the current week's
       // YTD matches the leaderboard exactly (leaderboard YTD = Jan 1 → today).
       function getYTDAtWeek(weekKey) {
@@ -11306,6 +11339,7 @@
         const isCurrent = weekKey === currentWeekKey();
         const actuals = getWeekActuals(weekKey);
         const dialActuals = getWeekDials(weekKey);
+        const mtdSnap = getMTDAtWeek(weekKey);
         const ytdSnap = getYTDAtWeek(weekKey);
 
         const rows = reps.map(rep => {
@@ -11323,22 +11357,18 @@
             return g != null ? g : (dgDial != null ? dgDial : null);
           });
           const weeklyGoal = getWeeklyApGoal(weekKey, rep);
-          return { rep, actuals: a, dialActuals: da, apGoals, dialGoals, wtd, weeklyGoal, ytd: ytdSnap[rep] || 0 };
+          return { rep, actuals: a, dialActuals: da, apGoals, dialGoals, wtd, weeklyGoal, mtd: mtdSnap[rep] || 0, ytd: ytdSnap[rep] || 0 };
         }).sort((a, b) => b.ytd - a.ytd);
 
-        // AP classification: green (over) the moment goal is met or exceeded.
-        function classifyAp(actualVal, goalVal) {
+        // AP classification: any AP > 0 is green. AP actuals never go red — only
+        // dials trigger red when below 70% of goal.
+        function classifyAp(actualVal) {
           if (!actualVal || actualVal <= 0) return { cls: 'empty', pct: '' };
-          if (!goalVal || goalVal <= 0) return { cls: 'over', pct: '' };
-          const ratio = actualVal / goalVal;
-          let cls;
-          if (ratio >= 1) cls = 'over';
-          else if (ratio >= 0.7) cls = 'under';
-          else cls = 'miss';
-          return { cls, pct: '<span class="wt-pct">' + Math.round(ratio * 100) + '%</span>' };
+          return { cls: 'over', pct: '' };
         }
-        // Dial classification: same as AP, but if AP goal was hit that day a
-        // missed dial goal stays grey (under) instead of red (miss).
+        // Dial classification: green when goal met/exceeded, grey when partial,
+        // red when below 70% — UNLESS the rep hit AP goal that day, in which
+        // case the dial stays grey instead of red.
         function classifyDial(actualVal, goalVal, apHit) {
           if (!actualVal || actualVal <= 0) return { cls: 'empty', pct: '' };
           if (!goalVal || goalVal <= 0) return { cls: 'over', pct: '' };
@@ -11362,7 +11392,7 @@
             const dialGoal = row.dialGoals[di];
             const dialActual = row.dialActuals[di];
             const apHit = apGoal != null && apGoal > 0 && apActual >= apGoal;
-            const apCls = classifyAp(apActual, apGoal);
+            const apCls = classifyAp(apActual);
             const dialCls = classifyDial(dialActual, dialGoal, apHit);
             const apGoalDisplay = (apGoal != null) ? '$' + Number(apGoal).toLocaleString() : '';
             const apActualDisplay = apActual > 0 ? '$' + Math.round(apActual).toLocaleString() : '—';
@@ -11383,6 +11413,7 @@
           bodyHtml += '<tr>' +
             '<td class="wt-rank-cell">' + rankCell + '</td>' +
             '<td class="wt-name-cell"><span class="wt-avatar">' + escHtml(initialsOf(row.rep)) + '</span>' + escHtml(row.rep) + '</td>' +
+            '<td class="wt-mtd-cell">' + escHtml(fmtMoney(row.mtd)) + '</td>' +
             '<td class="wt-wtd-cell">' + escHtml(fmtMoney(row.wtd)) + '</td>' +
             '<td class="wt-day-cell goal wt-weekly-cell">' +
               '<input type="text" inputmode="decimal" data-wt-weekly-goal-week="' + escHtml(weekKey) + '" data-wt-weekly-goal-rep="' + escHtml(row.rep) + '" value="' + escHtml(weeklyGoalDisplay) + '" placeholder="$0" />' +
@@ -11405,6 +11436,7 @@
           dayTotals.push({ apGoal: apG, apActual: apA, dialGoal: dG, dialActual: dA });
         }
         const totalWTD = rows.reduce((s, r) => s + r.wtd, 0);
+        const totalMTD = rows.reduce((s, r) => s + r.mtd, 0);
         const totalWeeklyGoal = rows.reduce((s, r) => s + (r.weeklyGoal || 0), 0);
         const totalYTD = rows.reduce((s, r) => s + r.ytd, 0);
 
@@ -11423,7 +11455,7 @@
                          '<td>' + escHtml(fmtMoney(dt.apActual)) + '</td>';
         });
 
-        const colCount = 4 + (DAYS.length * 4) + 1; // rank,name,wtd,weeklyGoal + 4*days + ytd
+        const colCount = 5 + (DAYS.length * 4) + 1; // rank,name,mtd,wtd,weeklyGoal + 4*days + ytd
 
         return '' +
           '<div class="wt-sheet-header">' +
@@ -11431,7 +11463,7 @@
               '<div class="wt-sheet-title">' + escHtml(week.full) + '</div>' +
               (isCurrent ? '<span class="wt-sheet-pill">● Current Week</span>' : '') +
             '</div>' +
-            '<div class="wt-sheet-sub">Reps ranked by Year-to-Date · AP actuals pull from submitted policies · dial actuals pull from daily KPIs</div>' +
+            '<div class="wt-sheet-sub">Reps ranked by Year-to-Date · AP actuals pull from submitted policies · dial actuals pull from daily KPIs · Rank/Name/MTD/WTD pinned while you scroll horizontally</div>' +
           '</div>' +
           '<div class="wt-summary-strip" style="grid-template-columns: repeat(2, 1fr);">' +
             '<div class="wt-summary-card deep"><div class="wt-lbl">Team YTD</div><div class="wt-val">' + escHtml(fmtMoney(totalYTD)) + '</div><div class="wt-delta up">↑ ' + escHtml(fmtMoneyShort(totalWTD)) + ' added this week</div></div>' +
@@ -11443,6 +11475,7 @@
                 '<tr class="wt-day-row">' +
                   '<th class="wt-rank-h" rowspan="2">#</th>' +
                   '<th class="wt-name-h" rowspan="2">Sales Rep</th>' +
+                  '<th class="wt-mtd-h" rowspan="2">MTD Total</th>' +
                   '<th class="wt-wtd-h" rowspan="2">WTD Total</th>' +
                   '<th class="wt-wtd-h" rowspan="2">Weekly Goal</th>' +
                   dayHeaderHtml +
@@ -11452,8 +11485,10 @@
               '</thead>' +
               '<tbody>' + (bodyHtml || ('<tr><td colspan="' + colCount + '" class="wt-loading">No reps with submitted policies yet.</td></tr>')) + '</tbody>' +
               (rows.length ? ('<tfoot><tr>' +
-                '<td class="wt-foot-label" colspan="2">Team Totals</td>' +
-                '<td>' + escHtml(fmtMoney(totalWTD)) + '</td>' +
+                '<td class="wt-foot-rank"></td>' +
+                '<td class="wt-foot-name">Team Totals</td>' +
+                '<td class="wt-foot-mtd">' + escHtml(fmtMoney(totalMTD)) + '</td>' +
+                '<td class="wt-foot-wtd">' + escHtml(fmtMoney(totalWTD)) + '</td>' +
                 '<td>' + escHtml(fmtMoney(totalWeeklyGoal)) + '</td>' +
                 footDayHtml +
                 '<td class="wt-ytd-foot">' + escHtml(fmtMoney(totalYTD)) + '</td>' +
