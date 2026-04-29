@@ -11725,25 +11725,21 @@
           });
           inp.addEventListener('keydown', e => { if (e.key === 'Enter') e.target.blur(); });
         });
-        // Row hover — set inline style on each td so it ALWAYS wins against
-        // every CSS rule (sticky tints, state classes, !important rules).
-        // Color: same navy as the footer totals (var(--wt-blue-900) = #0f2966)
-        // at 20% opacity — dark enough to read, transparent enough to let
-        // the cell's base color/state still come through.
-        const HOVER_BG = 'rgba(15, 41, 102, 0.20)';
+        // Row hover — apply navy-tinted background on each td via inline style
+        // with !important so it beats every CSS rule (sticky tints, state
+        // classes, !important rules). Iterate tr.children directly to avoid
+        // any :scope quirks. Color matches the footer navy at ~25% opacity.
+        const HOVER_BG = 'rgba(15, 41, 102, 0.25)';
         root.querySelectorAll('.wt-grid-table tbody tr').forEach(tr => {
           tr.addEventListener('mouseenter', () => {
-            tr.querySelectorAll(':scope > td').forEach(td => {
-              td.dataset.wtPrevBg = td.style.background || '';
-              td.style.setProperty('background', HOVER_BG, 'important');
-            });
+            for (let i = 0; i < tr.children.length; i++) {
+              tr.children[i].style.setProperty('background', HOVER_BG, 'important');
+            }
           });
           tr.addEventListener('mouseleave', () => {
-            tr.querySelectorAll(':scope > td').forEach(td => {
-              if (td.dataset.wtPrevBg) td.style.background = td.dataset.wtPrevBg;
-              else td.style.removeProperty('background');
-              delete td.dataset.wtPrevBg;
-            });
+            for (let i = 0; i < tr.children.length; i++) {
+              tr.children[i].style.removeProperty('background');
+            }
           });
         });
         // Auto-scroll active tab into view
