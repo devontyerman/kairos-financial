@@ -11725,15 +11725,13 @@
           });
           inp.addEventListener('keydown', e => { if (e.key === 'Enter') e.target.blur(); });
         });
-        // Row hover — apply blue-tinted background on each td via inline style
-        // with !important so it beats every CSS rule (sticky tints, state
-        // classes, !important rules). Iterate tr.children directly to avoid
-        // any :scope quirks.
-        // Note on color: a low-opacity navy (#0f2966 at 20%) over white
-        // renders as muted grey because dark colors lose chroma when alpha
-        // drops. Using --wt-blue-500 (#2f6fed) at ~40% so the row actually
-        // reads as BLUE on white, gray, and yellow backgrounds.
-        const HOVER_BG = 'rgba(46, 111, 237, 0.40)';
+        // Row hover — apply opaque blue background on each td via inline style
+        // with !important. Must be SOLID (no rgba) so sticky cells (rank/name/
+        // MTD/WTD/Weekly) don't become see-through and let scrolling day
+        // cells show behind them. #abc5f8 is the solid equivalent of
+        // rgba(46, 111, 237, 0.40) composited over white — same visual color
+        // but fully opaque.
+        const HOVER_BG = '#abc5f8';
         root.querySelectorAll('.wt-grid-table tbody tr').forEach(tr => {
           tr.addEventListener('mouseenter', () => {
             for (let i = 0; i < tr.children.length; i++) {
