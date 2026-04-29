@@ -1368,10 +1368,16 @@
     #panel-weeklytracker .wt-day-cell.actual { padding: 0 2px !important; font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 500; color: var(--wt-gray-700); text-align: right; position: relative; background: #fef3c7; }
     /* Personal-best crown — pins to the top-right corner of an actuals/MTD/WTD cell */
     #panel-weeklytracker .wt-crown { position: absolute; top: -1px; right: 1px; font-size: 11px; line-height: 1; pointer-events: none; filter: drop-shadow(0 0 1px rgba(0,0,0,0.25)); }
-    #panel-weeklytracker .wt-day-cell.actual.over  { color: var(--wt-green-700); font-weight: 700; }
-    #panel-weeklytracker .wt-day-cell.actual.met   { color: var(--wt-green-700); font-weight: 600; }
-    #panel-weeklytracker .wt-day-cell.actual.miss  { color: var(--wt-red-600); }
-    #panel-weeklytracker .wt-day-cell.actual.empty { color: var(--wt-gray-400); }
+    /* Goal-hit / AP-sold = green bg + green text. */
+    #panel-weeklytracker .wt-day-cell.actual.over       { background: #d1fadf; color: var(--wt-green-700); font-weight: 700; }
+    #panel-weeklytracker .wt-day-cell.actual.met        { background: #d1fadf; color: var(--wt-green-700); font-weight: 600; }
+    /* Three tiers of red for a missed dial goal with NO AP that day. */
+    #panel-weeklytracker .wt-day-cell.actual.miss-light { background: #fee2e2; color: #b91c1c; font-weight: 600; }
+    #panel-weeklytracker .wt-day-cell.actual.miss-med   { background: #fca5a5; color: #7f1d1d; font-weight: 700; }
+    #panel-weeklytracker .wt-day-cell.actual.miss-dark  { background: #ef4444; color: #ffffff;  font-weight: 700; }
+    /* AP sold but dial below goal: yellow base shows, neutral text. */
+    #panel-weeklytracker .wt-day-cell.actual.under      { color: var(--wt-gray-700); }
+    #panel-weeklytracker .wt-day-cell.actual.empty      { color: var(--wt-gray-400); }
     #panel-weeklytracker .wt-day-cell.first-of-day { border-left: 1px solid var(--wt-blue-100); }
     #panel-weeklytracker .wt-weekly-cell { width: 80px; min-width: 80px; max-width: 80px; position: sticky; left: 326px; z-index: 2; background: var(--wt-gray-25); border-right: 1px solid var(--wt-gray-200) !important; }
     /* Sticky header cells (rank/name/MTD/WTD/Weekly pin to the left while scrolling horizontally) */
@@ -1387,8 +1393,11 @@
     #panel-weeklytracker .wt-grid-table tfoot td.wt-foot-wtd    { position: sticky; left: 250px; z-index: 2; width: 76px; min-width: 76px; max-width: 76px; }
     #panel-weeklytracker .wt-grid-table tfoot td.wt-foot-weekly { position: sticky; left: 326px; z-index: 2; width: 80px; min-width: 80px; max-width: 80px; }
     #panel-weeklytracker .wt-day-cell .wt-pct { display: block; font-size: 9px; color: var(--wt-gray-400); text-align: right; padding-right: 0; margin-top: -2px; font-weight: 500; }
-    #panel-weeklytracker .wt-day-cell.actual.over .wt-pct { color: var(--wt-green-600); }
-    #panel-weeklytracker .wt-day-cell.actual.miss .wt-pct { color: var(--wt-red-500); }
+    #panel-weeklytracker .wt-day-cell.actual.over .wt-pct       { color: var(--wt-green-600); }
+    #panel-weeklytracker .wt-day-cell.actual.met .wt-pct        { color: var(--wt-green-600); }
+    #panel-weeklytracker .wt-day-cell.actual.miss-light .wt-pct { color: #b91c1c; }
+    #panel-weeklytracker .wt-day-cell.actual.miss-med .wt-pct   { color: #7f1d1d; }
+    #panel-weeklytracker .wt-day-cell.actual.miss-dark .wt-pct  { color: #ffffff; }
     #panel-weeklytracker .wt-grid-table tfoot td { background: var(--wt-blue-900); color: white; font-weight: 800; padding: 8px 6px; font-family: 'JetBrains Mono', monospace; font-size: 13px; text-align: right; border-right: 1px solid rgba(255,255,255,0.12); }
     #panel-weeklytracker .wt-grid-table tfoot td.wt-foot-label { text-align: left; text-transform: uppercase; letter-spacing: 0.04em; font-size: 12px; font-family: 'Inter', sans-serif; font-weight: 700; }
     #panel-weeklytracker .wt-grid-table tfoot td.wt-foot-empty { background: var(--wt-blue-900); }
@@ -11428,23 +11437,35 @@
           return b.ytd - a.ytd;
         });
 
-        // AP classification: any AP > 0 is green. AP actuals never go red — only
-        // dials trigger red when below 70% of goal.
+        // AP classification: any AP > 0 = green (.over class adds light green bg
+        // and dark green text). AP actuals never go red.
         function classifyAp(actualVal) {
           if (!actualVal || actualVal <= 0) return { cls: 'empty', pct: '' };
           return { cls: 'over', pct: '' };
         }
-        // Dial classification: green when goal met/exceeded, grey when partial,
-        // red when below 70% — UNLESS the rep hit AP goal that day, in which
-        // case the dial stays grey instead of red.
-        function classifyDial(actualVal, goalVal, apHit) {
+        // Dial classification.
+        //   goal hit (ratio >= 1): green bg + green text
+        //   any AP that day      : neutral (yellow base shows through)
+        //   no AP and < goal     : red, tiered by how badly missed
+        //                            < 20%   → darkest red
+        //                            20-49%  → medium red
+        //                            50-99%  → light red
+        function classifyDial(actualVal, goalVal, apActual) {
           if (!actualVal || actualVal <= 0) return { cls: 'empty', pct: '' };
           if (!goalVal || goalVal <= 0) return { cls: 'over', pct: '' };
           const ratio = actualVal / goalVal;
           let cls;
-          if (ratio >= 1) cls = 'over';
-          else if (ratio >= 0.7) cls = 'under';
-          else cls = apHit ? 'under' : 'miss';
+          if (ratio >= 1) {
+            cls = 'over';
+          } else if (apActual > 0) {
+            cls = 'under'; // any sale today = no red shaming on the dial
+          } else if (ratio < 0.20) {
+            cls = 'miss-dark';
+          } else if (ratio < 0.50) {
+            cls = 'miss-med';
+          } else {
+            cls = 'miss-light';
+          }
           return { cls, pct: '<span class="wt-pct">' + Math.round(ratio * 100) + '%</span>' };
         }
 
@@ -11460,9 +11481,8 @@
             const apActual = row.actuals[di];
             const dialGoal = row.dialGoals[di];
             const dialActual = row.dialActuals[di];
-            const apHit = apGoal != null && apGoal > 0 && apActual >= apGoal;
             const apCls = classifyAp(apActual);
-            const dialCls = classifyDial(dialActual, dialGoal, apHit);
+            const dialCls = classifyDial(dialActual, dialGoal, apActual);
             const apGoalDisplay = (apGoal != null) ? '$' + Number(apGoal).toLocaleString() : '';
             const apActualDisplay = apActual > 0 ? '$' + Math.round(apActual).toLocaleString() : '—';
             const dialGoalDisplay = (dialGoal != null) ? Number(dialGoal).toLocaleString() : '';
