@@ -1341,18 +1341,10 @@
     #panel-weeklytracker .wt-grid-table thead tr.wt-sub-row th.wt-empty { background: white; border-bottom: 1px solid var(--wt-gray-200); }
     #panel-weeklytracker .wt-grid-table tbody td { padding: 0; border-bottom: 1px solid var(--wt-gray-100); border-right: 1px solid var(--wt-gray-100); vertical-align: middle; height: 36px; }
     #panel-weeklytracker .wt-grid-table tbody tr:last-child td { border-bottom: none; }
-    /* Row hover — explicit !important on every cell variant to win against
-       sticky cell tints, day-cell state classes, and any future overrides. */
-    #panel-weeklytracker .wt-grid-table tbody tr:hover > td,
-    #panel-weeklytracker .wt-grid-table tbody tr:hover > td.wt-rank-cell,
-    #panel-weeklytracker .wt-grid-table tbody tr:hover > td.wt-name-cell,
-    #panel-weeklytracker .wt-grid-table tbody tr:hover > td.wt-mtd-cell,
-    #panel-weeklytracker .wt-grid-table tbody tr:hover > td.wt-wtd-cell,
-    #panel-weeklytracker .wt-grid-table tbody tr:hover > td.wt-weekly-cell,
-    #panel-weeklytracker .wt-grid-table tbody tr:hover > td.wt-ytd-cell,
-    #panel-weeklytracker .wt-grid-table tbody tr:hover > td.wt-day-cell,
-    #panel-weeklytracker .wt-grid-table tbody tr:hover > td.wt-day-cell.actual,
-    #panel-weeklytracker .wt-grid-table tbody tr:hover > td.wt-day-cell.goal { background: #d6e4ff !important; }
+    /* Row hover — JS toggles .wt-row-hover on the tr (mouseenter/leave) so we
+       don't have to fight CSS specificity battles with sticky cell tints and
+       day-cell state classes. */
+    #panel-weeklytracker .wt-grid-table tbody tr.wt-row-hover > td { background: #d6e4ff !important; }
     #panel-weeklytracker .wt-rank-cell { width: 44px; min-width: 44px; max-width: 44px; text-align: center; font-weight: 700; color: var(--wt-gray-500); font-family: 'JetBrains Mono', monospace; font-size: 13px; background: var(--wt-gray-25); position: sticky; left: 0; z-index: 2; box-sizing: border-box; }
     #panel-weeklytracker .wt-rank-cell .wt-medal { display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; font-size: 12px; font-weight: 700; }
     #panel-weeklytracker .wt-rank-cell .wt-medal.gold { background: #fef3c7; color: #92400e; }
@@ -1370,14 +1362,15 @@
     #panel-weeklytracker .wt-day-cell.goal { background: var(--wt-gray-25); }
     #panel-weeklytracker .wt-day-cell.goal input { color: var(--wt-gray-700); }
     #panel-weeklytracker .wt-day-cell.goal input::placeholder { color: var(--wt-gray-400); }
-    #panel-weeklytracker .wt-day-cell.actual { padding: 0 2px !important; font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 500; color: var(--wt-gray-700); text-align: right; position: relative; background: var(--wt-blue-50); }
+    /* All actual cells share a soft yellow tint so the entire actuals stripe
+       reads as a single highlighted column. State (over/met/miss) shows via
+       text color only — no per-cell box-shadow or background overrides. */
+    #panel-weeklytracker .wt-day-cell.actual { padding: 0 2px !important; font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 500; color: var(--wt-gray-700); text-align: right; position: relative; background: #fef9c3; }
     /* Personal-best crown — pins to the top-right corner of an actuals/MTD/WTD cell */
     #panel-weeklytracker .wt-crown { position: absolute; top: -1px; right: 1px; font-size: 11px; line-height: 1; pointer-events: none; filter: drop-shadow(0 0 1px rgba(0,0,0,0.25)); }
-    /* State indicators on actual cells use text color + a thin colored bottom
-       bar so the column's blue base bg stays visible regardless of state. */
-    #panel-weeklytracker .wt-day-cell.actual.over  { color: var(--wt-green-700); font-weight: 700; box-shadow: inset 0 -3px 0 var(--wt-green-500); }
+    #panel-weeklytracker .wt-day-cell.actual.over  { color: var(--wt-green-700); font-weight: 700; }
     #panel-weeklytracker .wt-day-cell.actual.met   { color: var(--wt-green-700); font-weight: 600; }
-    #panel-weeklytracker .wt-day-cell.actual.miss  { color: var(--wt-red-600);   box-shadow: inset 0 -3px 0 var(--wt-red-500); }
+    #panel-weeklytracker .wt-day-cell.actual.miss  { color: var(--wt-red-600); }
     #panel-weeklytracker .wt-day-cell.actual.empty { color: var(--wt-gray-400); }
     #panel-weeklytracker .wt-day-cell.first-of-day { border-left: 1px solid var(--wt-blue-100); }
     #panel-weeklytracker .wt-weekly-cell { width: 80px; min-width: 80px; max-width: 80px; position: sticky; left: 326px; z-index: 2; background: var(--wt-gray-25); border-right: 1px solid var(--wt-gray-200) !important; }
@@ -11731,6 +11724,11 @@
             render();
           });
           inp.addEventListener('keydown', e => { if (e.key === 'Enter') e.target.blur(); });
+        });
+        // Row hover — JS-driven so it can't be defeated by CSS specificity
+        root.querySelectorAll('.wt-grid-table tbody tr').forEach(tr => {
+          tr.addEventListener('mouseenter', () => tr.classList.add('wt-row-hover'));
+          tr.addEventListener('mouseleave', () => tr.classList.remove('wt-row-hover'));
         });
         // Auto-scroll active tab into view
         const activeTab = root.querySelector('.wt-tab.active');
