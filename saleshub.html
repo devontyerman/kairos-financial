@@ -1342,10 +1342,9 @@
     #panel-weeklytracker .wt-grid-table thead tr.wt-sub-row th.wt-empty { background: white; border-bottom: 1px solid var(--wt-gray-200); }
     #panel-weeklytracker .wt-grid-table tbody td { padding: 0; border-bottom: 1px solid var(--wt-gray-100); border-right: 1px solid var(--wt-gray-100); vertical-align: middle; height: 36px; }
     #panel-weeklytracker .wt-grid-table tbody tr:last-child td { border-bottom: none; }
-    /* Row hover — JS toggles .wt-row-hover on the tr (mouseenter/leave). Color
-       chosen to be obviously distinct from white, gray-25, blue-50, AND the
-       new yellow column tint so the highlight reads on every cell type. */
-    #panel-weeklytracker .wt-grid-table tbody tr.wt-row-hover > td { background: #bfdbfe !important; }
+    /* Row hover — applied via inline style by JS (see attachHandlers). Inline
+       styles trump any CSS rule, so the hover color is guaranteed to render
+       no matter what per-cell tints exist. */
     #panel-weeklytracker .wt-rank-cell { width: 44px; min-width: 44px; max-width: 44px; text-align: center; font-weight: 700; color: var(--wt-gray-500); font-family: 'JetBrains Mono', monospace; font-size: 13px; background: var(--wt-gray-25); position: sticky; left: 0; z-index: 2; box-sizing: border-box; }
     #panel-weeklytracker .wt-rank-cell .wt-medal { display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; font-size: 12px; font-weight: 700; }
     #panel-weeklytracker .wt-rank-cell .wt-medal.gold { background: #fef3c7; color: #92400e; }
@@ -11726,10 +11725,25 @@
           });
           inp.addEventListener('keydown', e => { if (e.key === 'Enter') e.target.blur(); });
         });
-        // Row hover — JS-driven so it can't be defeated by CSS specificity
+        // Row hover — set inline style on each td so it ALWAYS wins against
+        // every CSS rule (sticky tints, state classes, !important rules).
+        // Tailwind blue-300 (#93c5fd) is solidly visible against white,
+        // gray-25, and the pale-yellow actuals stripe.
+        const HOVER_BG = '#93c5fd';
         root.querySelectorAll('.wt-grid-table tbody tr').forEach(tr => {
-          tr.addEventListener('mouseenter', () => tr.classList.add('wt-row-hover'));
-          tr.addEventListener('mouseleave', () => tr.classList.remove('wt-row-hover'));
+          tr.addEventListener('mouseenter', () => {
+            tr.querySelectorAll(':scope > td').forEach(td => {
+              td.dataset.wtPrevBg = td.style.background || '';
+              td.style.setProperty('background', HOVER_BG, 'important');
+            });
+          });
+          tr.addEventListener('mouseleave', () => {
+            tr.querySelectorAll(':scope > td').forEach(td => {
+              if (td.dataset.wtPrevBg) td.style.background = td.dataset.wtPrevBg;
+              else td.style.removeProperty('background');
+              delete td.dataset.wtPrevBg;
+            });
+          });
         });
         // Auto-scroll active tab into view
         const activeTab = root.querySelector('.wt-tab.active');
