@@ -1338,7 +1338,7 @@
     /* Goal sub-headers: gray. Actual sub-headers: yellow — matches the body tint
        so the entire actuals column reads as one continuous yellow stripe. */
     #panel-weeklytracker .wt-grid-table thead tr.wt-sub-row th.wt-sub-goal   { background: var(--wt-gray-100); color: var(--wt-gray-700); border-right-color: var(--wt-gray-200); }
-    #panel-weeklytracker .wt-grid-table thead tr.wt-sub-row th.wt-sub-actual { background: #fefce8; color: #854d0e; border-right-color: #fef08a; }
+    #panel-weeklytracker .wt-grid-table thead tr.wt-sub-row th.wt-sub-actual { background: #fef3c7; color: #854d0e; border-right-color: #fde68a; }
     #panel-weeklytracker .wt-grid-table thead tr.wt-sub-row th.wt-empty { background: white; border-bottom: 1px solid var(--wt-gray-200); }
     #panel-weeklytracker .wt-grid-table tbody td { padding: 0; border-bottom: 1px solid var(--wt-gray-100); border-right: 1px solid var(--wt-gray-100); vertical-align: middle; height: 36px; }
     #panel-weeklytracker .wt-grid-table tbody tr:last-child td { border-bottom: none; }
@@ -1365,7 +1365,7 @@
     /* All actual cells share a very soft yellow tint (matches the actual
        sub-headers) so the entire actuals column reads as one continuous
        highlighted stripe. State (over/met/miss) shows via text color only. */
-    #panel-weeklytracker .wt-day-cell.actual { padding: 0 2px !important; font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 500; color: var(--wt-gray-700); text-align: right; position: relative; background: #fefce8; }
+    #panel-weeklytracker .wt-day-cell.actual { padding: 0 2px !important; font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 500; color: var(--wt-gray-700); text-align: right; position: relative; background: #fef3c7; }
     /* Personal-best crown — pins to the top-right corner of an actuals/MTD/WTD cell */
     #panel-weeklytracker .wt-crown { position: absolute; top: -1px; right: 1px; font-size: 11px; line-height: 1; pointer-events: none; filter: drop-shadow(0 0 1px rgba(0,0,0,0.25)); }
     #panel-weeklytracker .wt-day-cell.actual.over  { color: var(--wt-green-700); font-weight: 700; }
@@ -11727,9 +11727,10 @@
         });
         // Row hover — set inline style on each td so it ALWAYS wins against
         // every CSS rule (sticky tints, state classes, !important rules).
-        // Tailwind blue-300 (#93c5fd) is solidly visible against white,
-        // gray-25, and the pale-yellow actuals stripe.
-        const HOVER_BG = '#93c5fd';
+        // Color: same navy as the footer totals (var(--wt-blue-900) = #0f2966)
+        // at 20% opacity — dark enough to read, transparent enough to let
+        // the cell's base color/state still come through.
+        const HOVER_BG = 'rgba(15, 41, 102, 0.20)';
         root.querySelectorAll('.wt-grid-table tbody tr').forEach(tr => {
           tr.addEventListener('mouseenter', () => {
             tr.querySelectorAll(':scope > td').forEach(td => {
