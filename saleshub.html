@@ -1289,9 +1289,19 @@
     }
     #panel-weeklytracker .wt-mono { font-family: 'JetBrains Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; }
     #panel-weeklytracker .wt-shell { background: var(--wt-gray-50); border-radius: 14px; overflow: hidden; box-shadow: 0 1px 3px rgba(16,24,40,0.06); border: 1px solid var(--wt-gray-200); display: flex; flex-direction: column; min-height: 720px; }
-    #panel-weeklytracker .wt-shell:fullscreen,
-    #panel-weeklytracker .wt-shell:-webkit-full-screen { width: 100vw; height: 100vh; max-height: 100vh; border-radius: 0; border: none; }
-    #panel-weeklytracker .wt-shell:fullscreen .wt-sheet-area { max-height: none; }
+    /* Expanded mode — covers the browser viewport (NOT native fullscreen) and
+       hides every chrome element so only the grid shows. */
+    #panel-weeklytracker .wt-shell.wt-fullsize { position: fixed; inset: 0; z-index: 9999; min-height: 100vh; max-height: 100vh; height: 100vh; border-radius: 0; border: none; box-shadow: 0 0 0 9999px rgba(15,23,42,0.4); }
+    #panel-weeklytracker .wt-shell.wt-fullsize > .wt-topbar,
+    #panel-weeklytracker .wt-shell.wt-fullsize > .wt-toolbar,
+    #panel-weeklytracker .wt-shell.wt-fullsize > .wt-sheet-header,
+    #panel-weeklytracker .wt-shell.wt-fullsize > .wt-summary-strip,
+    #panel-weeklytracker .wt-shell.wt-fullsize > .wt-tabs-bar,
+    #panel-weeklytracker .wt-shell.wt-fullsize > .wt-statusbar { display: none; }
+    /* Floating exit button shown only in expanded mode */
+    #panel-weeklytracker .wt-fs-close { display: none; }
+    #panel-weeklytracker .wt-shell.wt-fullsize .wt-fs-close { display: grid; place-items: center; position: absolute; top: 12px; right: 16px; z-index: 10000; width: 36px; height: 36px; border-radius: 50%; border: none; background: rgba(15, 41, 102, 0.92); color: white; font-size: 20px; line-height: 1; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.25); }
+    #panel-weeklytracker .wt-shell.wt-fullsize .wt-fs-close:hover { background: rgba(15, 41, 102, 1); transform: scale(1.05); }
     #panel-weeklytracker .wt-topbar { height: 56px; background: linear-gradient(90deg, var(--wt-blue-700), var(--wt-blue-600)); color: white; display: flex; align-items: center; padding: 0 20px; gap: 16px; flex-shrink: 0; }
     #panel-weeklytracker .wt-topbar .wt-logo { width: 32px; height: 32px; background: white; border-radius: 8px; display: grid; place-items: center; color: var(--wt-blue-700); font-weight: 700; font-size: 14px; letter-spacing: -0.02em; }
     #panel-weeklytracker .wt-topbar .wt-title { font-weight: 600; font-size: 16px; letter-spacing: -0.01em; }
@@ -11647,6 +11657,7 @@
 
         panel.innerHTML =
           '<div class="wt-shell">' +
+            '<button type="button" class="wt-fs-close" id="wtFsCloseBtn" aria-label="Exit expanded view" title="Exit expanded view">×</button>' +
             renderTopbar() +
             renderToolbar() +
             outerHead +
@@ -11661,25 +11672,30 @@
         const sanitize = v => v.replace(/[$,\s]/g, '');
         // Fullscreen toggle (uses the wt-shell as the fullscreen target so the
         // sales-hub topbar/sidebar are hidden during screen sharing)
+        // Expand mode — toggles a CSS class on the shell that pins it to fixed
+        // viewport position. NOT browser-native fullscreen (so the URL bar,
+        // other tabs, etc. stay visible). The chart fills the current browser
+        // window and all the surrounding chrome (topbar, toolbar, summary
+        // cards, tabs, status bar) is hidden so just the grid shows.
         const fsBtn = root.querySelector('#wtFullscreenBtn');
-        if (fsBtn) {
-          fsBtn.addEventListener('click', () => {
-            const shell = root.querySelector('.wt-shell');
-            if (!document.fullscreenElement) {
-              if (shell && shell.requestFullscreen) shell.requestFullscreen().catch(() => {});
-              else if (shell && shell.webkitRequestFullscreen) shell.webkitRequestFullscreen();
-            } else {
-              if (document.exitFullscreen) document.exitFullscreen();
-              else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
-            }
-          });
+        const fsCloseBtn = root.querySelector('#wtFsCloseBtn');
+        const shell = root.querySelector('.wt-shell');
+        function setExpanded(on) {
+          if (!shell) return;
+          shell.classList.toggle('wt-fullsize', on);
+          document.body.style.overflow = on ? 'hidden' : '';
         }
-        // Update button label when fullscreen state changes (Esc exit etc.)
-        if (!window._wtFullscreenHook) {
-          window._wtFullscreenHook = true;
-          document.addEventListener('fullscreenchange', () => {
-            const btn = document.getElementById('wtFullscreenBtn');
-            if (btn) btn.textContent = document.fullscreenElement ? '⤢ Exit Fullscreen' : '⛶ Fullscreen';
+        if (fsBtn) fsBtn.addEventListener('click', () => setExpanded(true));
+        if (fsCloseBtn) fsCloseBtn.addEventListener('click', () => setExpanded(false));
+        // Esc to exit expanded mode (uses a one-time global listener that
+        // checks the current shell state, so re-renders don't pile up handlers)
+        if (!window._wtEscHook) {
+          window._wtEscHook = true;
+          document.addEventListener('keydown', e => {
+            if (e.key === 'Escape') {
+              const s = document.querySelector('#panel-weeklytracker .wt-shell.wt-fullsize');
+              if (s) { s.classList.remove('wt-fullsize'); document.body.style.overflow = ''; }
+            }
           });
         }
         // Tab switching
