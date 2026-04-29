@@ -1341,18 +1341,28 @@
     #panel-weeklytracker .wt-grid-table thead tr.wt-sub-row th.wt-empty { background: white; border-bottom: 1px solid var(--wt-gray-200); }
     #panel-weeklytracker .wt-grid-table tbody td { padding: 0; border-bottom: 1px solid var(--wt-gray-100); border-right: 1px solid var(--wt-gray-100); vertical-align: middle; height: 36px; }
     #panel-weeklytracker .wt-grid-table tbody tr:last-child td { border-bottom: none; }
-    /* Row hover — !important needed to win against per-cell background rules
-       (sticky cell tints, day-cell over/miss states, etc.) */
-    #panel-weeklytracker .wt-grid-table tbody tr:hover > td { background-color: #e5edff !important; }
+    /* Row hover — explicit !important on every cell variant to win against
+       sticky cell tints, day-cell state classes, and any future overrides. */
+    #panel-weeklytracker .wt-grid-table tbody tr:hover > td,
+    #panel-weeklytracker .wt-grid-table tbody tr:hover > td.wt-rank-cell,
+    #panel-weeklytracker .wt-grid-table tbody tr:hover > td.wt-name-cell,
+    #panel-weeklytracker .wt-grid-table tbody tr:hover > td.wt-mtd-cell,
+    #panel-weeklytracker .wt-grid-table tbody tr:hover > td.wt-wtd-cell,
+    #panel-weeklytracker .wt-grid-table tbody tr:hover > td.wt-weekly-cell,
+    #panel-weeklytracker .wt-grid-table tbody tr:hover > td.wt-ytd-cell,
+    #panel-weeklytracker .wt-grid-table tbody tr:hover > td.wt-day-cell,
+    #panel-weeklytracker .wt-grid-table tbody tr:hover > td.wt-day-cell.actual,
+    #panel-weeklytracker .wt-grid-table tbody tr:hover > td.wt-day-cell.goal { background: #d6e4ff !important; }
     #panel-weeklytracker .wt-rank-cell { width: 44px; min-width: 44px; max-width: 44px; text-align: center; font-weight: 700; color: var(--wt-gray-500); font-family: 'JetBrains Mono', monospace; font-size: 13px; background: var(--wt-gray-25); position: sticky; left: 0; z-index: 2; box-sizing: border-box; }
     #panel-weeklytracker .wt-rank-cell .wt-medal { display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; font-size: 12px; font-weight: 700; }
     #panel-weeklytracker .wt-rank-cell .wt-medal.gold { background: #fef3c7; color: #92400e; }
     #panel-weeklytracker .wt-rank-cell .wt-medal.silver { background: #e5e7eb; color: #374151; }
     #panel-weeklytracker .wt-rank-cell .wt-medal.bronze { background: #fed7aa; color: #9a3412; }
-    #panel-weeklytracker .wt-name-cell { padding: 0 6px !important; font-weight: 500; color: var(--wt-gray-900); width: 170px; min-width: 170px; max-width: 170px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; background: white; border-right: 1px solid var(--wt-gray-200) !important; font-size: 14px; position: sticky; left: 44px; z-index: 2; box-sizing: border-box; }
+    #panel-weeklytracker .wt-name-cell { padding: 0 8px !important; font-weight: 500; color: var(--wt-gray-900); width: 130px; min-width: 130px; max-width: 130px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; background: white; border-right: 1px solid var(--wt-gray-200) !important; font-size: 14px; position: sticky; left: 44px; z-index: 2; box-sizing: border-box; }
+    /* (Avatar still used on Sales Reps tab; week sheet shows the name only.) */
     #panel-weeklytracker .wt-avatar { display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--wt-blue-100); color: var(--wt-blue-700); font-weight: 600; font-size: 11px; margin-right: 6px; vertical-align: middle; flex-shrink: 0; }
-    #panel-weeklytracker .wt-mtd-cell { background: #fff7ed; text-align: right; padding: 0 5px !important; font-family: 'JetBrains Mono', monospace; font-weight: 600; color: #c2410c; width: 76px; min-width: 76px; max-width: 76px; font-size: 13px; position: sticky; left: 214px; z-index: 2; box-sizing: border-box; border-right: 1px solid var(--wt-gray-200) !important; }
-    #panel-weeklytracker .wt-wtd-cell { background: var(--wt-blue-50); text-align: right; padding: 0 5px !important; font-family: 'JetBrains Mono', monospace; font-weight: 600; color: var(--wt-blue-700); width: 76px; min-width: 76px; max-width: 76px; font-size: 13px; position: sticky; left: 290px; z-index: 2; box-sizing: border-box; border-right: 1px solid var(--wt-blue-100) !important; }
+    #panel-weeklytracker .wt-mtd-cell { background: #fff7ed; text-align: right; padding: 0 5px !important; font-family: 'JetBrains Mono', monospace; font-weight: 600; color: #c2410c; width: 76px; min-width: 76px; max-width: 76px; font-size: 13px; position: sticky; left: 174px; z-index: 2; box-sizing: border-box; border-right: 1px solid var(--wt-gray-200) !important; }
+    #panel-weeklytracker .wt-wtd-cell { background: var(--wt-blue-50); text-align: right; padding: 0 5px !important; font-family: 'JetBrains Mono', monospace; font-weight: 600; color: var(--wt-blue-700); width: 76px; min-width: 76px; max-width: 76px; font-size: 13px; position: sticky; left: 250px; z-index: 2; box-sizing: border-box; border-right: 1px solid var(--wt-blue-100) !important; }
     #panel-weeklytracker .wt-ytd-cell { background: var(--wt-green-50); text-align: right; padding: 0 5px !important; font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--wt-green-700); width: 88px; min-width: 88px; max-width: 88px; border-left: 1px solid var(--wt-green-100); font-size: 13px; }
     #panel-weeklytracker .wt-day-cell { width: 66px; min-width: 66px; max-width: 66px; padding: 0 !important; text-align: right; box-sizing: border-box; }
     #panel-weeklytracker .wt-day-cell input { width: 100%; height: 36px; border: none; background: transparent; text-align: right; padding: 0 2px; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--wt-gray-700); outline: none; font-weight: 500; box-sizing: border-box; }
@@ -1363,29 +1373,32 @@
     #panel-weeklytracker .wt-day-cell.actual { padding: 0 2px !important; font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 500; color: var(--wt-gray-700); text-align: right; position: relative; background: var(--wt-blue-50); }
     /* Personal-best crown — pins to the top-right corner of an actuals/MTD/WTD cell */
     #panel-weeklytracker .wt-crown { position: absolute; top: -1px; right: 1px; font-size: 11px; line-height: 1; pointer-events: none; filter: drop-shadow(0 0 1px rgba(0,0,0,0.25)); }
-    #panel-weeklytracker .wt-day-cell.actual.over { background: var(--wt-green-50); color: var(--wt-green-700); font-weight: 700; }
-    #panel-weeklytracker .wt-day-cell.actual.met { color: var(--wt-green-700); font-weight: 600; }
-    #panel-weeklytracker .wt-day-cell.actual.miss { background: var(--wt-red-50); color: var(--wt-red-600); }
+    /* State indicators on actual cells use text color + a thin colored bottom
+       bar so the column's blue base bg stays visible regardless of state. */
+    #panel-weeklytracker .wt-day-cell.actual.over  { color: var(--wt-green-700); font-weight: 700; box-shadow: inset 0 -3px 0 var(--wt-green-500); }
+    #panel-weeklytracker .wt-day-cell.actual.met   { color: var(--wt-green-700); font-weight: 600; }
+    #panel-weeklytracker .wt-day-cell.actual.miss  { color: var(--wt-red-600);   box-shadow: inset 0 -3px 0 var(--wt-red-500); }
     #panel-weeklytracker .wt-day-cell.actual.empty { color: var(--wt-gray-400); }
     #panel-weeklytracker .wt-day-cell.first-of-day { border-left: 1px solid var(--wt-blue-100); }
-    #panel-weeklytracker .wt-weekly-cell { width: 80px; min-width: 80px; max-width: 80px; position: sticky; left: 366px; z-index: 2; background: var(--wt-gray-25); border-right: 1px solid var(--wt-gray-200) !important; }
+    #panel-weeklytracker .wt-weekly-cell { width: 80px; min-width: 80px; max-width: 80px; position: sticky; left: 326px; z-index: 2; background: var(--wt-gray-25); border-right: 1px solid var(--wt-gray-200) !important; }
     /* Sticky header cells (rank/name/MTD/WTD/Weekly pin to the left while scrolling horizontally) */
     #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th.wt-rank-h   { position: sticky; left: 0;    z-index: 6; width: 44px; min-width: 44px; max-width: 44px; }
-    #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th.wt-name-h   { position: sticky; left: 44px; z-index: 6; width: 170px; min-width: 170px; max-width: 170px; }
-    #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th.wt-mtd-h    { position: sticky; left: 214px; z-index: 6; width: 76px; min-width: 76px; max-width: 76px; background: var(--wt-blue-900); }
-    #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th.wt-wtd-h    { position: sticky; left: 290px; z-index: 6; width: 76px; min-width: 76px; max-width: 76px; }
-    #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th.wt-weekly-h { position: sticky; left: 366px; z-index: 6; width: 80px; min-width: 80px; max-width: 80px; background: var(--wt-blue-900); }
+    #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th.wt-name-h   { position: sticky; left: 44px; z-index: 6; width: 130px; min-width: 130px; max-width: 130px; }
+    #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th.wt-mtd-h    { position: sticky; left: 174px; z-index: 6; width: 76px; min-width: 76px; max-width: 76px; background: var(--wt-blue-900); }
+    #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th.wt-wtd-h    { position: sticky; left: 250px; z-index: 6; width: 76px; min-width: 76px; max-width: 76px; }
+    #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th.wt-weekly-h { position: sticky; left: 326px; z-index: 6; width: 80px; min-width: 80px; max-width: 80px; background: var(--wt-blue-900); }
     /* Sticky footer cells (mirror the body offsets so totals stay aligned with the data rows) */
     #panel-weeklytracker .wt-grid-table tfoot td.wt-foot-rank   { position: sticky; left: 0;    z-index: 2; width: 44px; min-width: 44px; max-width: 44px; }
-    #panel-weeklytracker .wt-grid-table tfoot td.wt-foot-name   { position: sticky; left: 44px; z-index: 2; width: 170px; min-width: 170px; max-width: 170px; text-align: left; text-transform: uppercase; letter-spacing: 0.04em; font-size: 12px; font-family: 'Inter', sans-serif; }
-    #panel-weeklytracker .wt-grid-table tfoot td.wt-foot-mtd    { position: sticky; left: 214px; z-index: 2; width: 76px; min-width: 76px; max-width: 76px; }
-    #panel-weeklytracker .wt-grid-table tfoot td.wt-foot-wtd    { position: sticky; left: 290px; z-index: 2; width: 76px; min-width: 76px; max-width: 76px; }
-    #panel-weeklytracker .wt-grid-table tfoot td.wt-foot-weekly { position: sticky; left: 366px; z-index: 2; width: 80px; min-width: 80px; max-width: 80px; }
+    #panel-weeklytracker .wt-grid-table tfoot td.wt-foot-name   { position: sticky; left: 44px; z-index: 2; width: 130px; min-width: 130px; max-width: 130px; text-align: left; text-transform: uppercase; letter-spacing: 0.04em; font-size: 12px; font-family: 'Inter', sans-serif; }
+    #panel-weeklytracker .wt-grid-table tfoot td.wt-foot-mtd    { position: sticky; left: 174px; z-index: 2; width: 76px; min-width: 76px; max-width: 76px; }
+    #panel-weeklytracker .wt-grid-table tfoot td.wt-foot-wtd    { position: sticky; left: 250px; z-index: 2; width: 76px; min-width: 76px; max-width: 76px; }
+    #panel-weeklytracker .wt-grid-table tfoot td.wt-foot-weekly { position: sticky; left: 326px; z-index: 2; width: 80px; min-width: 80px; max-width: 80px; }
     #panel-weeklytracker .wt-day-cell .wt-pct { display: block; font-size: 9px; color: var(--wt-gray-400); text-align: right; padding-right: 0; margin-top: -2px; font-weight: 500; }
     #panel-weeklytracker .wt-day-cell.actual.over .wt-pct { color: var(--wt-green-600); }
     #panel-weeklytracker .wt-day-cell.actual.miss .wt-pct { color: var(--wt-red-500); }
-    #panel-weeklytracker .wt-grid-table tfoot td { background: var(--wt-blue-900); color: white; font-weight: 600; padding: 8px 6px; font-family: 'JetBrains Mono', monospace; font-size: 13px; text-align: right; border-right: 1px solid rgba(255,255,255,0.12); }
-    #panel-weeklytracker .wt-grid-table tfoot td.wt-foot-label { text-align: left; text-transform: uppercase; letter-spacing: 0.04em; font-size: 12px; font-family: 'Inter', sans-serif; }
+    #panel-weeklytracker .wt-grid-table tfoot td { background: var(--wt-blue-900); color: white; font-weight: 800; padding: 8px 6px; font-family: 'JetBrains Mono', monospace; font-size: 13px; text-align: right; border-right: 1px solid rgba(255,255,255,0.12); }
+    #panel-weeklytracker .wt-grid-table tfoot td.wt-foot-label { text-align: left; text-transform: uppercase; letter-spacing: 0.04em; font-size: 12px; font-family: 'Inter', sans-serif; font-weight: 700; }
+    #panel-weeklytracker .wt-grid-table tfoot td.wt-foot-empty { background: var(--wt-blue-900); }
     #panel-weeklytracker .wt-grid-table tfoot td.wt-ytd-foot { background: var(--wt-green-700); }
     #panel-weeklytracker .wt-tabs-bar { background: var(--wt-gray-100); border-top: 1px solid var(--wt-gray-200); display: flex; align-items: stretch; padding: 0 8px; gap: 1px; flex-shrink: 0; overflow-x: auto; min-height: 44px; }
     #panel-weeklytracker .wt-tabs-bar::-webkit-scrollbar { height: 6px; }
@@ -11230,6 +11243,13 @@
       function initialsOf(name) {
         return name.split(' ').filter(Boolean).map(p => p[0]).slice(0, 2).join('').toUpperCase();
       }
+      // "First Lastname" → "First L." (compact display on week sheets)
+      function shortName(name) {
+        const parts = (name || '').trim().split(/\s+/).filter(Boolean);
+        if (parts.length === 0) return '';
+        if (parts.length === 1) return parts[0];
+        return parts[0] + ' ' + parts[parts.length - 1][0] + '.';
+      }
       function escHtml(s) {
         return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' })[c]);
       }
@@ -11472,7 +11492,7 @@
           const mtdCrown = (row.mtd > 0 && row.mtd === repBest.bestMonth) ? '<span class="wt-crown" title="Best month">👑</span>' : '';
           bodyHtml += '<tr>' +
             '<td class="wt-rank-cell">' + rankCell + '</td>' +
-            '<td class="wt-name-cell"><span class="wt-avatar">' + escHtml(initialsOf(row.rep)) + '</span>' + escHtml(row.rep) + '</td>' +
+            '<td class="wt-name-cell" title="' + escHtml(row.rep) + '">' + escHtml(shortName(row.rep)) + '</td>' +
             '<td class="wt-mtd-cell">' + escHtml(fmtMoney(row.mtd)) + mtdCrown + '</td>' +
             '<td class="wt-wtd-cell">' + escHtml(fmtMoney(row.wtd)) + wtdCrown + '</td>' +
             '<td class="wt-day-cell goal wt-weekly-cell">' +
@@ -11510,11 +11530,13 @@
                            '<th class="wt-sub-actual">Dial Actual</th>' +
                            '<th class="wt-sub-actual">AP Actual</th>';
         });
+        // Footer: only AP totals. Dial cells render empty so column alignment
+        // stays correct.
         let footDayHtml = '';
         dayTotals.forEach(dt => {
-          footDayHtml += '<td>' + Math.round(dt.dialGoal).toLocaleString() + '</td>' +
+          footDayHtml += '<td class="wt-foot-empty"></td>' +
                          '<td>' + escHtml(fmtMoney(dt.apGoal)) + '</td>' +
-                         '<td>' + Math.round(dt.dialActual).toLocaleString() + '</td>' +
+                         '<td class="wt-foot-empty"></td>' +
                          '<td>' + escHtml(fmtMoney(dt.apActual)) + '</td>';
         });
 
