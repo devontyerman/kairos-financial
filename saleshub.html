@@ -1455,6 +1455,9 @@
     #panel-weeklytracker .wt-statusbar .wt-sep { color: rgba(255,255,255,0.3); }
     #panel-weeklytracker .wt-statusbar .wt-right { margin-left: auto; }
     #panel-weeklytracker .wt-loading { padding: 60px 32px; text-align: center; color: var(--wt-gray-500); font-size: 14px; }
+    /* Hide-totals toggle is mobile-only — desktop always shows totals so the
+       button has nothing to do there. */
+    #panel-weeklytracker .wt-totals-toggle { display: none; }
 
     /* ─── Weekly Tracker — mobile (≤768px) ─── */
     @media (max-width: 768px) {
@@ -1563,6 +1566,26 @@
       /* Tabs bar: more touch-friendly */
       #panel-weeklytracker .wt-tabs-bar { min-height: 40px; padding: 0 6px; }
       #panel-weeklytracker .wt-tab { padding: 0 10px; height: 38px; font-size: 11px; }
+
+      /* Mobile-only: expose the Hide totals toggle in the toolbar */
+      #panel-weeklytracker .wt-totals-toggle { display: inline-flex; align-items: center; }
+
+      /* When totals are collapsed: hide MTD/WTD/Weekly columns (header + body
+         + footer). The MTD/WTD/Weekly header cells use rowspan="2" so a single
+         <th> covers both header rows — hiding them removes both header rows.
+         Day cells are not sticky, so the freed horizontal space is filled by
+         the table's natural layout when the user scrolls. */
+      #panel-weeklytracker .wt-shell.wt-totals-collapsed .wt-mtd-cell,
+      #panel-weeklytracker .wt-shell.wt-totals-collapsed .wt-wtd-cell,
+      #panel-weeklytracker .wt-shell.wt-totals-collapsed .wt-weekly-cell,
+      #panel-weeklytracker .wt-shell.wt-totals-collapsed .wt-grid-table thead tr.wt-day-row th.wt-mtd-h,
+      #panel-weeklytracker .wt-shell.wt-totals-collapsed .wt-grid-table thead tr.wt-day-row th.wt-wtd-h,
+      #panel-weeklytracker .wt-shell.wt-totals-collapsed .wt-grid-table thead tr.wt-day-row th.wt-weekly-h,
+      #panel-weeklytracker .wt-shell.wt-totals-collapsed .wt-grid-table tfoot td.wt-foot-mtd,
+      #panel-weeklytracker .wt-shell.wt-totals-collapsed .wt-grid-table tfoot td.wt-foot-wtd,
+      #panel-weeklytracker .wt-shell.wt-totals-collapsed .wt-grid-table tfoot td.wt-foot-weekly {
+        display: none !important;
+      }
 
       /* Status bar is too cluttered for a phone */
       #panel-weeklytracker .wt-statusbar { display: none; }
@@ -11085,6 +11108,13 @@
       let goals = {};            // { _default: { rep: ap }, _defaultDial: { rep: dials }, [weekKey]: { [rep]: { ap:[6], dial:[6] } }, _weeklyAp: { [weekKey]: { [rep]: ap } } }
       let loaded = false;
       let loading = false;
+      // Mobile-only: collapse the sticky MTD/WTD/Weekly total columns so the
+      // day-of-week columns become visible. Persisted in localStorage so the
+      // preference survives panel switches and reloads.
+      const TOTALS_COLLAPSED_KEY = 'wt_totals_collapsed_v1';
+      let totalsCollapsed = (function () {
+        try { return localStorage.getItem(TOTALS_COLLAPSED_KEY) === '1'; } catch (e) { return false; }
+      })();
 
       function ymdLocal(d) {
         return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
@@ -11500,11 +11530,16 @@
           if (wk) { cellRef = wk.label; formula = '= SUM(Mon:Sat actuals) per rep · ranked by YTD descending · actuals from policies'; }
         }
         const isFs = !!document.fullscreenElement;
+        const isYTD = (activeSheet === 'ytd-setup');
         return '' +
           '<div class="wt-toolbar">' +
             '<div class="wt-cell-ref">' + escHtml(cellRef) + '</div>' +
             '<div class="wt-formula">' + escHtml(formula) + '</div>' +
             '<div style="display:flex;gap:6px;align-items:center;">' +
+              (isYTD ? '' :
+                '<button type="button" class="wt-tbtn wt-totals-toggle" id="wtTotalsToggleBtn" title="Hide totals to see day columns">' +
+                  (totalsCollapsed ? '▸ Show totals' : '◂ Hide totals') +
+                '</button>') +
               '<button type="button" class="wt-tbtn" id="wtFullscreenBtn" title="Fullscreen (Esc to exit)">' +
                 (isFs ? '⤢ Exit Fullscreen' : '⛶ Fullscreen') +
               '</button>' +
@@ -11847,7 +11882,7 @@
         }
 
         panel.innerHTML =
-          '<div class="wt-shell">' +
+          '<div class="wt-shell' + (totalsCollapsed ? ' wt-totals-collapsed' : '') + '">' +
             '<button type="button" class="wt-fs-close" id="wtFsCloseBtn" aria-label="Exit expanded view" title="Exit expanded view">×</button>' +
             renderTopbar() +
             renderToolbar() +
@@ -11878,6 +11913,16 @@
         }
         if (fsBtn) fsBtn.addEventListener('click', () => setExpanded(true));
         if (fsCloseBtn) fsCloseBtn.addEventListener('click', () => setExpanded(false));
+        // Mobile totals collapse — hides MTD/WTD/Weekly columns to free up
+        // horizontal space for the day-of-week columns.
+        const totalsBtn = root.querySelector('#wtTotalsToggleBtn');
+        if (totalsBtn) {
+          totalsBtn.addEventListener('click', () => {
+            totalsCollapsed = !totalsCollapsed;
+            try { localStorage.setItem(TOTALS_COLLAPSED_KEY, totalsCollapsed ? '1' : '0'); } catch (e) {}
+            render();
+          });
+        }
         // Esc to exit expanded mode (uses a one-time global listener that
         // checks the current shell state, so re-renders don't pile up handlers)
         if (!window._wtEscHook) {
