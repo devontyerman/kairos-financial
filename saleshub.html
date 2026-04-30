@@ -11917,10 +11917,20 @@
         // horizontal space for the day-of-week columns.
         const totalsBtn = root.querySelector('#wtTotalsToggleBtn');
         if (totalsBtn) {
-          totalsBtn.addEventListener('click', () => {
+          totalsBtn.addEventListener('click', (e) => {
+            e.preventDefault();
             totalsCollapsed = !totalsCollapsed;
-            try { localStorage.setItem(TOTALS_COLLAPSED_KEY, totalsCollapsed ? '1' : '0'); } catch (e) {}
+            try { localStorage.setItem(TOTALS_COLLAPSED_KEY, totalsCollapsed ? '1' : '0'); } catch (e2) {}
+            // Preserve page + horizontal sheet scroll across the re-render so
+            // the user stays where they were instead of being yanked to the top.
+            const pageY = window.scrollY || window.pageYOffset || 0;
+            const sheetArea = root.querySelector('.wt-sheet-area');
+            const sheetX = sheetArea ? sheetArea.scrollLeft : 0;
+            const sheetY = sheetArea ? sheetArea.scrollTop : 0;
             render();
+            window.scrollTo(0, pageY);
+            const newSheet = document.querySelector('#panel-weeklytracker .wt-sheet-area');
+            if (newSheet) { newSheet.scrollLeft = sheetX; newSheet.scrollTop = sheetY; }
           });
         }
         // Esc to exit expanded mode (uses a one-time global listener that
