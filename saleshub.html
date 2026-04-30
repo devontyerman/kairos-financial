@@ -1456,6 +1456,140 @@
     #panel-weeklytracker .wt-statusbar .wt-right { margin-left: auto; }
     #panel-weeklytracker .wt-loading { padding: 60px 32px; text-align: center; color: var(--wt-gray-500); font-size: 14px; }
 
+    /* ─── Weekly Tracker — mobile (≤768px) ─── */
+    @media (max-width: 768px) {
+      /* Let the WT shell use full panel width — overrides global mobile rule
+         that adds 0.5rem horizontal padding to direct children of every panel. */
+      #panel-weeklytracker > div { padding-left: 0 !important; padding-right: 0 !important; }
+      #panel-weeklytracker .wt-shell { min-height: auto; border-radius: 10px; }
+      /* Topbar: shrink and let stats sit on one line below the title */
+      #panel-weeklytracker .wt-topbar {
+        height: auto; padding: 10px 12px; gap: 8px; flex-wrap: wrap;
+      }
+      #panel-weeklytracker .wt-topbar .wt-logo { width: 28px; height: 28px; font-size: 12px; }
+      #panel-weeklytracker .wt-topbar .wt-title { font-size: 14px; }
+      #panel-weeklytracker .wt-topbar .wt-sub { font-size: 11px; margin-left: 0; display: block; }
+      #panel-weeklytracker .wt-topbar .wt-spacer { display: none; }
+      #panel-weeklytracker .wt-topbar .wt-stat {
+        padding: 0 10px;
+        border-left: none;
+        border-right: 1px solid rgba(255,255,255,0.18);
+        flex: 1 1 0;
+      }
+      #panel-weeklytracker .wt-topbar .wt-stat:last-child { border-right: none; }
+      #panel-weeklytracker .wt-topbar .wt-stat-label { font-size: 9px; }
+      #panel-weeklytracker .wt-topbar .wt-stat-value { font-size: 13px; }
+
+      /* Toolbar: hide formula text, just keep cell ref + actions */
+      #panel-weeklytracker .wt-toolbar { height: 36px; padding: 0 10px; gap: 8px; }
+      #panel-weeklytracker .wt-formula { display: none; }
+      #panel-weeklytracker .wt-cell-ref { min-width: 0; font-size: 11px; padding: 3px 7px; }
+      #panel-weeklytracker .wt-tbtn { font-size: 11px; padding: 5px 8px; }
+
+      /* Sheet header */
+      #panel-weeklytracker .wt-sheet-header { padding: 12px 14px 8px; }
+      #panel-weeklytracker .wt-sheet-title { font-size: 16px; }
+      #panel-weeklytracker .wt-sheet-pill { font-size: 10px; padding: 2px 8px; }
+      #panel-weeklytracker .wt-sheet-sub { font-size: 11px; }
+
+      /* Summary strip: 4-col → 2-col (also overrides 3-col inline) */
+      #panel-weeklytracker .wt-summary-strip {
+        grid-template-columns: 1fr 1fr !important;
+        padding: 10px 14px;
+        gap: 8px;
+      }
+      #panel-weeklytracker .wt-summary-card { padding: 8px 10px; }
+      #panel-weeklytracker .wt-summary-card .wt-lbl { font-size: 9px; }
+      #panel-weeklytracker .wt-summary-card .wt-val { font-size: 16px; }
+      #panel-weeklytracker .wt-summary-card .wt-delta { font-size: 9px; }
+
+      /* Grid: tighter sticky cells so day columns are visible on a phone */
+      #panel-weeklytracker .wt-grid-wrap { padding: 8px 0 14px; }
+      #panel-weeklytracker .wt-grid-table { font-size: 12px; }
+      #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th { font-size: 11px; padding: 6px 2px; }
+      #panel-weeklytracker .wt-grid-table thead tr.wt-sub-row th { font-size: 9px; padding: 4px 2px; }
+      #panel-weeklytracker .wt-grid-table tbody td { height: 34px; }
+
+      #panel-weeklytracker .wt-rank-cell { width: 30px; min-width: 30px; max-width: 30px; font-size: 11px; }
+      #panel-weeklytracker .wt-rank-cell .wt-medal { width: 20px; height: 20px; font-size: 10px; }
+      #panel-weeklytracker .wt-name-cell {
+        width: 88px; min-width: 88px; max-width: 88px;
+        left: 30px;
+        padding: 0 6px !important;
+        font-size: 12px;
+      }
+      #panel-weeklytracker .wt-mtd-cell {
+        width: 56px; min-width: 56px; max-width: 56px;
+        left: 118px;
+        font-size: 11px;
+        padding: 0 4px !important;
+      }
+      #panel-weeklytracker .wt-wtd-cell {
+        width: 56px; min-width: 56px; max-width: 56px;
+        left: 174px;
+        font-size: 11px;
+        padding: 0 4px !important;
+      }
+      #panel-weeklytracker .wt-weekly-cell {
+        width: 60px; min-width: 60px; max-width: 60px;
+        left: 230px;
+      }
+      #panel-weeklytracker .wt-ytd-cell {
+        width: 64px; min-width: 64px; max-width: 64px;
+        font-size: 11px;
+        padding: 0 4px !important;
+      }
+      #panel-weeklytracker .wt-day-cell {
+        width: 50px; min-width: 50px; max-width: 50px;
+      }
+      #panel-weeklytracker .wt-day-cell input { font-size: 11px; }
+      #panel-weeklytracker .wt-day-cell.actual { font-size: 11px; }
+
+      /* Header sticky offsets — must mirror body */
+      #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th.wt-rank-h   { width: 30px; min-width: 30px; max-width: 30px; }
+      #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th.wt-name-h   { left: 30px; width: 88px; min-width: 88px; max-width: 88px; }
+      #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th.wt-mtd-h    { left: 118px; width: 56px; min-width: 56px; max-width: 56px; }
+      #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th.wt-wtd-h    { left: 174px; width: 56px; min-width: 56px; max-width: 56px; }
+      #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th.wt-weekly-h { left: 230px; width: 60px; min-width: 60px; max-width: 60px; }
+
+      /* Footer sticky offsets */
+      #panel-weeklytracker .wt-grid-table tfoot td { font-size: 11px; padding: 6px 4px; }
+      #panel-weeklytracker .wt-grid-table tfoot td.wt-foot-rank   { width: 30px; min-width: 30px; max-width: 30px; }
+      #panel-weeklytracker .wt-grid-table tfoot td.wt-foot-name   { left: 30px; width: 88px; min-width: 88px; max-width: 88px; font-size: 10px; padding: 6px 6px; }
+      #panel-weeklytracker .wt-grid-table tfoot td.wt-foot-mtd    { left: 118px; width: 56px; min-width: 56px; max-width: 56px; }
+      #panel-weeklytracker .wt-grid-table tfoot td.wt-foot-wtd    { left: 174px; width: 56px; min-width: 56px; max-width: 56px; }
+      #panel-weeklytracker .wt-grid-table tfoot td.wt-foot-weekly { left: 230px; width: 60px; min-width: 60px; max-width: 60px; }
+
+      /* Tabs bar: more touch-friendly */
+      #panel-weeklytracker .wt-tabs-bar { min-height: 40px; padding: 0 6px; }
+      #panel-weeklytracker .wt-tab { padding: 0 10px; height: 38px; font-size: 11px; }
+
+      /* Status bar is too cluttered for a phone */
+      #panel-weeklytracker .wt-statusbar { display: none; }
+
+      /* YTD setup card: tighter cells + horizontal scroll for the wide table */
+      #panel-weeklytracker .wt-setup-wrap { padding: 12px 12px 24px; }
+      #panel-weeklytracker .wt-setup-banner { padding: 12px 14px; gap: 10px; }
+      #panel-weeklytracker .wt-setup-banner h3 { font-size: 14px; }
+      #panel-weeklytracker .wt-setup-banner p { font-size: 12px; }
+      #panel-weeklytracker .wt-setup-card { overflow: hidden; }
+      #panel-weeklytracker .wt-setup-table {
+        display: block;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        white-space: nowrap;
+      }
+      #panel-weeklytracker .wt-setup-table thead,
+      #panel-weeklytracker .wt-setup-table tbody { display: table; width: 100%; min-width: 520px; }
+      #panel-weeklytracker .wt-setup-table th { padding: 8px 12px; font-size: 10px; }
+      #panel-weeklytracker .wt-setup-table .wt-toggle-col { padding: 0 8px 0 12px; width: 52px; }
+      #panel-weeklytracker .wt-setup-table .wt-name-col { padding: 0 12px; font-size: 13px; }
+      #panel-weeklytracker .wt-setup-table .wt-input-col { padding: 0 10px; width: auto; font-size: 12px; }
+      #panel-weeklytracker .wt-setup-table .wt-goal-col { width: 130px; padding: 0 8px; }
+      #panel-weeklytracker .wt-setup-table .wt-goal-col input { padding: 6px 8px; font-size: 12px; }
+      #panel-weeklytracker .wt-setup-footer { padding: 12px 14px; font-size: 12px; }
+    }
+
     @media print {
       @page { size: letter; margin: 0.35in; }
       html, body { background: #fff !important; height: auto !important; overflow: visible !important; }
@@ -3930,46 +4064,58 @@
       .ss-sidebar-hamburger { display: flex; }
       .ss-nav-links { display: none; }
 
-      /* Horizontal scrolling pill tabs */
+      /* Single unified dropdown menu — replaces horizontal pill bar
+         + separate hamburger dropdown. Hidden until ssSidebar gets
+         `.mobile-open` (toggled by the hamburger). */
       .ss-sidebar-grid {
-        display: flex;
-        flex-direction: row;
-        gap: 0.4rem;
+        display: none;
+        flex-direction: column;
+        gap: 0.3rem;
         width: 100%;
-        overflow-x: auto;
-        overflow-y: hidden;
-        -webkit-overflow-scrolling: touch;
-        padding: 0 0.75rem 0.6rem;
-        scrollbar-width: none;
+        padding: 0.5rem 0.75rem 0.25rem;
         background: transparent;
         border: none;
         border-radius: 0;
       }
+      .ss-sidebar.mobile-open .ss-sidebar-grid { display: flex; }
       .ss-sidebar-user { display: none !important; }
-      .ss-sidebar-grid::-webkit-scrollbar { display: none; }
       .ss-sidebar-btn {
         aspect-ratio: auto;
         flex-shrink: 0;
-        display: inline-flex;
+        display: flex;
         flex-direction: row;
         align-items: center;
-        gap: 0.35rem;
-        padding: 0.6rem 1rem;
-        border-radius: 100px;
-        background: #f5f5f8;
-        border: 1px solid #dcdce0;
+        justify-content: flex-start;
+        gap: 0.6rem;
+        padding: 0.7rem 0.85rem;
+        border-radius: 10px;
+        background: #f8f8fa;
+        border: 1px solid #e5e5ea;
         overflow: visible;
+        width: 100%;
+        text-align: left;
       }
-      .ss-sidebar-btn svg { width: 17px; height: 17px; }
+      .ss-sidebar-btn svg { width: 18px; height: 18px; }
       .ss-sidebar-btn span {
-        font-size: 0.78rem;
+        font-size: 0.9rem;
         white-space: nowrap;
         max-width: none;
         word-break: normal;
-        line-height: 1;
+        line-height: 1.2;
       }
       .ss-sidebar-btn.active {
-        border-radius: 100px;
+        background: #1a1a1a;
+        color: #ffffff;
+        border-color: #1a1a1a;
+        border-radius: 10px;
+      }
+      .ss-sidebar-btn.active svg { color: #ffffff; opacity: 1; }
+      /* Mobile dropdown links sit flush below the panel buttons */
+      .ss-sidebar.mobile-open .ss-mobile-menu {
+        border-top: 1px solid #ececf2;
+        margin-top: 0.25rem;
+        padding-top: 0.6rem;
+        padding-bottom: 0.85rem;
       }
       .ss-main {
         margin-left: 0 !important;
@@ -4144,9 +4290,9 @@
 
     @media (max-width: 520px) {
       .ss-hero-title { font-size: 2.6rem; }
-      .ss-sidebar-btn { padding: 0.5rem 0.8rem; }
-      .ss-sidebar-btn svg { width: 15px; height: 15px; }
-      .ss-sidebar-btn span { font-size: 0.72rem; }
+      .ss-sidebar-btn { padding: 0.65rem 0.75rem; }
+      .ss-sidebar-btn svg { width: 17px; height: 17px; }
+      .ss-sidebar-btn span { font-size: 0.86rem; }
       .ss-form-card { padding: 1.25rem 1rem; }
       .ss-calc-card { padding: 1.15rem 0.9rem; }
       .ss-calc-steps.ss-calc-steps-4 { grid-template-columns: 1fr; }
@@ -6477,6 +6623,10 @@
         if (!btn || !ssSidebarRoot.contains(btn)) return;
         e.preventDefault();
         activatePanel(btn.dataset.panel);
+        // Close the mobile dropdown after selecting a panel.
+        ssSidebarRoot.classList.remove('mobile-open');
+        document.getElementById('ssHamburger')?.classList.remove('open');
+        document.getElementById('ssMobileMenu')?.classList.remove('open');
       });
     } else {
       // Fallback if the sidebar element wasn't found for some reason
@@ -7100,18 +7250,21 @@
       if (validPanels.includes(hash)) activatePanel(hash);
     })();
 
-    // ─── SIDEBAR HAMBURGER (toggles in-sidebar mobile menu) ───
+    // ─── SIDEBAR HAMBURGER (toggles unified mobile dropdown) ───
     const ssHamburger = document.getElementById('ssHamburger');
     const ssMobileMenu = document.getElementById('ssMobileMenu');
+    const ssSidebarEl = document.getElementById('ssSidebar');
     if (ssHamburger && ssMobileMenu) {
       ssHamburger.addEventListener('click', () => {
-        ssHamburger.classList.toggle('open');
-        ssMobileMenu.classList.toggle('open');
+        const open = ssHamburger.classList.toggle('open');
+        ssMobileMenu.classList.toggle('open', open);
+        ssSidebarEl?.classList.toggle('mobile-open', open);
       });
       ssMobileMenu.querySelectorAll('a').forEach(link => {
         link.addEventListener('click', () => {
           ssHamburger.classList.remove('open');
           ssMobileMenu.classList.remove('open');
+          ssSidebarEl?.classList.remove('mobile-open');
         });
       });
     }
