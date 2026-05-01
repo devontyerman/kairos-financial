@@ -6869,6 +6869,10 @@
       const sidebarUserName = document.getElementById('sidebarUserName');
       const wtBtn = document.getElementById('weeklyTrackerSidebarBtn');
       const tpBtn = document.getElementById('teamPerfSidebarBtn');
+      // Mirror to window so other <script> blocks (e.g. the Team Performance
+      // IIFE) can read the current user — `let currentUser` is module-scoped
+      // and not visible across script tags.
+      window.currentUser = currentUser;
       if (currentUser) {
         const name = currentUser.user_metadata?.name || currentUser.email;
         authName.textContent = name;
@@ -13611,7 +13615,10 @@
       }
 
       function isAdmin() {
-        return !!(window.currentUser && TP_ADMIN_EMAILS.includes((window.currentUser.email || '').toLowerCase()));
+        // updateAuthUI() mirrors `currentUser` (a `let` in the outer script)
+        // onto window so this cross-script IIFE can read it.
+        const u = window.currentUser;
+        return !!(u && TP_ADMIN_EMAILS.includes((u.email || '').toLowerCase()));
       }
 
       // Public entry point — called from activatePanel('teamperf').
