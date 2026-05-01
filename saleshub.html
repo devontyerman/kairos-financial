@@ -289,8 +289,7 @@
     .ss-sidebar-collapse {
       position: absolute;
       right: 0.4rem;
-      top: 50%;
-      transform: translateY(-50%);
+      top: 0.65rem;
       width: 26px;
       height: 26px;
       display: grid; place-items: center;
@@ -319,7 +318,15 @@
     .ss-sidebar.collapsed .ss-sidebar-logo .logo-hub {
       font-size: 11px; letter-spacing: 0.16em;
     }
-    .ss-sidebar.collapsed .ss-sidebar-collapse { right: 50%; transform: translate(50%, -50%); top: auto; bottom: -32px; position: relative; }
+    /* When collapsed: pull the chevron back into normal column flow so it
+       sits between the SALES HUB logo and the settings cog instead of
+       floating down beside the cog. */
+    .ss-sidebar.collapsed .ss-sidebar-collapse {
+      position: relative;
+      right: auto; top: auto; bottom: auto;
+      transform: none;
+      margin: 0 auto 4px;
+    }
     .ss-sidebar.collapsed .ss-sidebar-header { flex-direction: column; gap: 8px; padding-bottom: 6px; }
     .ss-sidebar.collapsed .ss-sidebar-user { padding: 6px; justify-content: center; }
     .ss-sidebar.collapsed .ss-sidebar-user-name { display: none; }
@@ -6197,6 +6204,66 @@
       .perf-agent-bar-label { width: 45px; font-size: 0.58rem; }
       .perf-agent-kpis { grid-template-columns: 1fr 1fr; }
     }
+
+    /* ─── Sidebar: permanent dark mode ──────────────────────────────────
+       Always renders in the same Kairos palette as Tracker / Leaderboard /
+       Team Dashboard so the navigation visually matches the dark dashboards.
+       Light mode for the rest of the page is unchanged. */
+    .ss-sidebar {
+      background: #0d0e10 !important;
+      border-right-color: rgba(255,255,255,0.07) !important;
+    }
+    .ss-sidebar-logo .logo-sales,
+    .ss-sidebar-logo .logo-hub {
+      color: #f3f3f1 !important;
+      text-shadow: none !important;
+    }
+    .ss-sidebar-btn { color: rgba(243,243,241,0.72) !important; }
+    .ss-sidebar-btn svg { color: rgba(243,243,241,0.72); opacity: 0.85; }
+    .ss-sidebar-btn:hover {
+      color: #f3f3f1 !important;
+      background: #1c1f26 !important;
+      border-color: transparent !important;
+    }
+    .ss-sidebar-btn:hover svg { color: #f3f3f1; opacity: 1; }
+    .ss-sidebar-btn.active {
+      color: #f3f3f1 !important;
+      background: #232730 !important;
+      border-color: transparent !important;
+      box-shadow: 0 1px 0 rgba(255,255,255,0.07) inset !important;
+    }
+    .ss-sidebar-btn.active svg { color: #f3f3f1; opacity: 1; }
+    .ss-sidebar-user-name { color: #f3f3f1 !important; }
+    .ss-sidebar-settings { color: rgba(243,243,241,0.45) !important; }
+    .ss-sidebar-settings:hover {
+      background: #1c1f26 !important;
+      color: #f3f3f1 !important;
+    }
+    .ss-sidebar-collapse { color: rgba(243,243,241,0.45) !important; }
+    .ss-sidebar-collapse:hover {
+      color: #f3f3f1 !important;
+      background: #1c1f26 !important;
+      border-color: rgba(255,255,255,0.13) !important;
+    }
+    .ss-sidebar-hamburger span { background: rgba(243,243,241,0.72) !important; }
+    .ss-nav-links a { color: rgba(243,243,241,0.72) !important; }
+    .ss-nav-links a:hover {
+      color: #f3f3f1 !important;
+      background: #1c1f26 !important;
+    }
+    .ss-nav-links a svg { color: rgba(243,243,241,0.72); opacity: 0.85; }
+    /* Mobile dropdown links inside the sidebar use the dark palette too */
+    .ss-mobile-menu a {
+      background: #16181d !important;
+      border-color: rgba(255,255,255,0.07) !important;
+      color: #f3f3f1 !important;
+    }
+    .ss-mobile-menu a:hover {
+      background: #1c1f26 !important;
+      color: #f3f3f1 !important;
+      border-color: rgba(255,255,255,0.13) !important;
+    }
+    .ss-mobile-menu a svg { color: rgba(243,243,241,0.72); opacity: 0.85; }
   </style>
 
   <!-- Team Performance dashboard — Geist + JetBrains Mono fonts (loaded once,
