@@ -5998,13 +5998,13 @@
         </div>
         <div id="tpContent" style="display:none;">
           <div class="tp-admin-tabs">
-            <button class="tp-admin-tab active" data-tpatab="policies">Policies</button>
-            <button class="tp-admin-tab" data-tpatab="performance">Performance Dashboard</button>
+            <button class="tp-admin-tab active" data-tpatab="performance">Performance Dashboard</button>
+            <button class="tp-admin-tab" data-tpatab="policies">Policies</button>
             <button class="tp-admin-tab" data-tpatab="agents">Agent Profiles</button>
           </div>
 
           <!-- Policies tab -->
-          <div class="tp-admin-panel active" id="tpatab-policies">
+          <div class="tp-admin-panel" id="tpatab-policies">
             <div class="tp-admin-header">
               <div>
                 <div class="tp-admin-title">Sales Admin</div>
@@ -6042,7 +6042,7 @@
           </div>
 
           <!-- Performance tab -->
-          <div class="tp-admin-panel" id="tpatab-performance">
+          <div class="tp-admin-panel active" id="tpatab-performance">
             <div class="tp-perf-header">
               <div class="tp-perf-title">Performance Dashboard</div>
               <div class="tp-perf-header-controls">
@@ -13634,7 +13634,10 @@
         gate.style.display = 'none';
         content.style.display = 'block';
         if (!initialized) { wireUp(); initialized = true; }
-        loadAll();
+        // loadAll() fills allData (used by the performance dashboard too) and
+        // renders the policies tab; once it resolves, draw the performance
+        // tab so the default-active tab isn't blank on first open.
+        loadAll().then(() => { try { renderPerformance(); } catch (e) {} });
       };
 
       function wireUp() {
