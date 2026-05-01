@@ -1695,89 +1695,387 @@
     #panel-teamperf .tp-admin-panel.active { display: block; animation: tpPop 0.3s ease; }
     @keyframes tpPop { from { opacity: 0; transform: scale(0.9) translateY(20px); } to { opacity: 1; transform: scale(1) translateY(0); } }
 
-    /* Performance dashboard */
-    #panel-teamperf #tpatab-performance { max-width: 1400px; margin: 0 auto; }
-    #panel-teamperf .tp-perf-header { display: flex; flex-direction: column; gap: 1rem; margin-bottom: 1.75rem; }
-    #panel-teamperf .tp-perf-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.5rem; font-weight: 900; color: #1a1a1a; }
-    #panel-teamperf .tp-perf-header-controls { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; padding: 0.85rem 1rem; background: #fff; border: 1px solid #e5e5ea; border-radius: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
-    #panel-teamperf .tp-perf-header-controls .tp-perf-divider { width: 1px; height: 24px; background: #e5e5ea; margin: 0 0.25rem; }
-    #panel-teamperf .tp-perf-header-controls .tp-perf-checks { display: flex; gap: 0.85rem; margin-left: auto; }
-    #panel-teamperf .tp-perf-range-toggle { display: inline-flex; padding: 0.25rem; background: #f8f8fa; border: 1px solid #e0e0e5; border-radius: 100px; gap: 0.15rem; }
-    #panel-teamperf .tp-perf-range-btn { padding: 0.45rem 1rem; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.06em; color: #555; background: transparent; border: none; border-radius: 100px; cursor: pointer; transition: all 0.2s ease; }
-    #panel-teamperf .tp-perf-range-btn:hover { color: #1a1a1a; background: #f5f5f8; }
-    #panel-teamperf .tp-perf-range-btn.active { background: #2d2d35; color: #fff; box-shadow: 0 4px 14px rgba(0,0,0,0.15); }
-    #panel-teamperf .tp-perf-rep-select { padding: 0.45rem 2rem 0.45rem 0.8rem; font-size: 0.8rem; font-family: 'Inter', sans-serif; color: #1a1a1a; background: #f5f5f8; border: 1px solid #ddd; border-radius: 8px; appearance: none; background-image: url("data:image/svg+xml,%3Csvg width='12' height='12' viewBox='0 0 12 12' fill='none' stroke='%23666' stroke-width='2' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolyline points='2 4 6 8 10 4'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 0.6rem center; }
-    #panel-teamperf .tp-perf-rep-select option { background: #fff; }
-    #panel-teamperf .tp-perf-kpis { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 0.85rem; margin-bottom: 1.5rem; }
-    #panel-teamperf .tp-perf-kpi { background: #fff; border: 1px solid #e5e5ea; border-radius: 12px; padding: 1.25rem; position: relative; overflow: hidden; }
-    #panel-teamperf .tp-perf-kpi::before { content: ''; position: absolute; inset: 0 auto 0 0; width: 3px; background: linear-gradient(180deg, #3b82f6, #2563eb); opacity: 0.75; }
-    #panel-teamperf .tp-perf-kpi.up::before { background: linear-gradient(180deg, #4ade80, #16a34a); }
-    #panel-teamperf .tp-perf-kpi.down::before { background: linear-gradient(180deg, #f87171, #dc2626); }
-    #panel-teamperf .tp-perf-kpi.neutral::before { background: linear-gradient(180deg, #fbbf24, #d97706); }
-    #panel-teamperf .tp-perf-kpi-label { font-size: 0.68rem; font-weight: 700; color: #555; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.4rem; }
-    #panel-teamperf .tp-perf-kpi-value { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.5rem; font-weight: 900; color: #1a1a1a; }
-    #panel-teamperf .tp-perf-kpi.up .tp-perf-kpi-value { color: #16a34a; }
-    #panel-teamperf .tp-perf-kpi.down .tp-perf-kpi-value { color: #dc2626; }
-    #panel-teamperf .tp-perf-kpi.neutral .tp-perf-kpi-value { color: #fbbf24; }
-    #panel-teamperf .tp-perf-kpi-change { font-size: 0.72rem; font-weight: 700; margin-top: 0.25rem; }
-    #panel-teamperf .tp-perf-kpi-change.up { color: #16a34a; }
-    #panel-teamperf .tp-perf-kpi-change.down { color: #dc2626; }
-    #panel-teamperf .tp-perf-kpi-change.neutral { color: #777; }
-    #panel-teamperf .tp-perf-svg-chart { width: 100%; height: auto; display: block; }
-    #panel-teamperf .tp-perf-chart-summary { display: flex; align-items: baseline; gap: 0.5rem; margin-top: 1rem; padding: 0.75rem 1rem; border-radius: 8px; background: #fff; border: 1px solid #e5e5ea; }
-    #panel-teamperf .tp-perf-chart-summary.up { background: rgba(34,197,94,0.08); border-color: rgba(34,197,94,0.25); }
-    #panel-teamperf .tp-perf-chart-summary.down { background: rgba(239,68,68,0.08); border-color: rgba(239,68,68,0.25); }
-    #panel-teamperf .tp-perf-chart-summary-label { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: #666; }
-    #panel-teamperf .tp-perf-chart-summary-value { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.05rem; font-weight: 900; color: #1a1a1a; margin-left: auto; }
-    #panel-teamperf .tp-perf-chart-summary.up .tp-perf-chart-summary-value { color: #16a34a; }
-    #panel-teamperf .tp-perf-chart-summary.down .tp-perf-chart-summary-value { color: #dc2626; }
-    #panel-teamperf .tp-perf-charts { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
-    #panel-teamperf .tp-perf-chart-card { background: #fff; border: 1px solid #e5e5ea; border-radius: 12px; padding: 1.5rem; min-width: 0; }
-    #panel-teamperf #tpPerfExtraCharts { display: block; margin: 0 auto 1.5rem; }
-    #panel-teamperf #tpPerfExtraCharts .tp-perf-chart-card { max-width: 680px; margin: 0 auto; padding: 1.25rem 1.5rem; }
-    #panel-teamperf #tpPerfExtraCharts .tp-perf-svg-chart { max-height: 240px; }
-    #panel-teamperf .tp-perf-chart-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.85rem; font-weight: 800; color: #1a1a1a; margin-bottom: 1rem; }
-    #panel-teamperf .tp-perf-bars { display: flex; flex-direction: column; gap: 0.5rem; }
-    #panel-teamperf .tp-perf-bar-row { display: flex; align-items: center; gap: 0.6rem; }
-    #panel-teamperf .tp-perf-bar-label { font-size: 0.72rem; color: #333; width: 65px; flex-shrink: 0; text-align: right; font-weight: 600; }
-    #panel-teamperf .tp-perf-bar-amount { font-size: 0.72rem; font-weight: 800; color: #1a1a1a; width: 78px; flex-shrink: 0; text-align: right; font-family: 'Plus Jakarta Sans', sans-serif; }
-    #panel-teamperf .tp-perf-bar-track { flex: 1; height: 24px; background: #f8f8fa; border-radius: 6px; overflow: hidden; position: relative; }
-    #panel-teamperf .tp-perf-bar-fill { height: 100%; border-radius: 6px; transition: width 0.6s ease; min-width: 0; }
-    #panel-teamperf .tp-perf-bar-fill.blue { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
-    #panel-teamperf .tp-perf-bar-fill.green { background: linear-gradient(90deg, #16a34a, #4ade80); }
-    #panel-teamperf .tp-perf-bar-fill.gold { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
-    #panel-teamperf .tp-perf-bar-fill.team { background: linear-gradient(90deg, #14b8a6, #2dd4bf); }
-    #panel-teamperf .tp-perf-bar-fill.purple { background: linear-gradient(90deg, #8b5cf6, #a78bfa); }
-    #panel-teamperf .tp-perf-bar-fill.pink { background: linear-gradient(90deg, #ec4899, #f472b6); }
-    #panel-teamperf .tp-perf-bar-row.tp-perf-bar-team { padding-bottom: 0.5rem; margin-bottom: 0.4rem; border-bottom: 1px solid #e0e0e5; }
-    #panel-teamperf .tp-perf-bar-row.tp-perf-bar-team .tp-perf-bar-track { height: 30px; }
-    #panel-teamperf .tp-perf-status-section { background: #fff; border: 1px solid #e5e5ea; border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem; }
-    #panel-teamperf .tp-perf-status-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.85rem; font-weight: 800; color: #1a1a1a; margin-bottom: 1rem; }
-    #panel-teamperf .tp-perf-status-bars { display: flex; gap: 1.5rem; flex-wrap: wrap; }
-    #panel-teamperf .tp-perf-status-item { flex: 1; min-width: 120px; }
-    #panel-teamperf .tp-perf-status-item-label { font-size: 0.72rem; color: #333; margin-bottom: 0.3rem; display: flex; justify-content: space-between; font-weight: 600; }
-    #panel-teamperf .tp-perf-status-item-bar { height: 8px; background: #f0f0f3; border-radius: 4px; overflow: hidden; }
-    #panel-teamperf .tp-perf-status-item-fill { height: 100%; border-radius: 4px; transition: width 0.5s ease; }
-    #panel-teamperf .tp-perf-status-item-fill.uw { background: #f97316; }
-    #panel-teamperf .tp-perf-status-item-fill.app { background: #3b82f6; }
-    #panel-teamperf .tp-perf-status-item-fill.paid { background: #22c55e; }
-    #panel-teamperf .tp-perf-goals-card { background: #fff; border: 1px solid #e5e5ea; border-radius: 12px; padding: 1.5rem; margin-top: 2rem; }
-    #panel-teamperf .tp-perf-goals-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.85rem; font-weight: 800; color: #1a1a1a; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
-    #panel-teamperf .tp-perf-goals-grid { display: flex; flex-direction: column; gap: 0.65rem; }
-    #panel-teamperf .tp-perf-goal-row { display: flex; align-items: center; gap: 0.85rem; padding: 0.75rem 1rem; background: #fafafa; border: 1px solid #e5e5ea; border-radius: 10px; transition: background 0.15s; }
-    #panel-teamperf .tp-perf-goal-row:hover { background: #f5f5f8; }
-    #panel-teamperf .tp-perf-goal-name { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.88rem; font-weight: 700; color: #1a1a1a; width: 120px; flex-shrink: 0; }
-    #panel-teamperf .tp-perf-goal-bar-wrap { flex: 1; }
-    #panel-teamperf .tp-perf-goal-bar-labels { display: flex; justify-content: space-between; margin-bottom: 0.25rem; font-size: 0.68rem; font-weight: 600; color: #666; }
-    #panel-teamperf .tp-perf-goal-bar-labels .current { color: #2563eb; font-weight: 700; }
-    #panel-teamperf .tp-perf-goal-bar { height: 14px; background: #f0f0f3; border-radius: 7px; overflow: hidden; position: relative; }
-    #panel-teamperf .tp-perf-goal-fill { height: 100%; border-radius: 7px; transition: width 0.6s ease; background: #2563eb; }
-    #panel-teamperf .tp-perf-goal-fill.ahead { background: linear-gradient(90deg, #16a34a, #22c55e); }
-    #panel-teamperf .tp-perf-goal-fill.behind { background: linear-gradient(90deg, #dc2626, #ef4444); }
-    #panel-teamperf .tp-perf-goal-status { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.72rem; font-weight: 700; width: 90px; text-align: right; flex-shrink: 0; }
-    #panel-teamperf .tp-perf-goal-status.ahead { color: #16a34a; }
-    #panel-teamperf .tp-perf-goal-status.behind { color: #dc2626; }
-    #panel-teamperf .tp-perf-goal-status.no-goal { color: #888; }
+    /* ─── Team Performance dashboard — Kairos editorial-financial design.
+       Apple-rainbow accents (modern muted, lower chroma than the original).
+       Scoped to #tpatab-performance and #tpatab-agents (both use the same
+       design language) so the rest of the Sales Hub keeps its existing look. */
+    #tpatab-performance, #tpatab-agents {
+      --rb-green:   oklch(0.72 0.16 145);
+      --rb-yellow:  oklch(0.82 0.14 90);
+      --rb-orange:  oklch(0.74 0.16 50);
+      --rb-red:     oklch(0.66 0.18 25);
+      --rb-purple:  oklch(0.62 0.15 305);
+      --rb-blue:    oklch(0.68 0.13 240);
+      --tp-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+      --tp-sans: "Geist", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+      --tp-radius: 10px;
+      --tp-radius-sm: 6px;
+      /* Dark theme — default */
+      --tp-bg:        #0d0e10;
+      --tp-bg-2:      #131418;
+      --tp-surface:   #16181d;
+      --tp-surface-2: #1c1f26;
+      --tp-surface-3: #232730;
+      --tp-hairline:  rgba(255, 255, 255, 0.07);
+      --tp-hairline-strong: rgba(255, 255, 255, 0.13);
+      --tp-ink-1:     #f3f3f1;
+      --tp-ink-2:     rgba(243, 243, 241, 0.72);
+      --tp-ink-3:     rgba(243, 243, 241, 0.45);
+      --tp-ink-4:     rgba(243, 243, 241, 0.28);
+      --tp-pos:       oklch(0.78 0.16 145);
+      --tp-neg:       oklch(0.7 0.18 25);
+      --tp-grain:     rgba(255, 255, 255, 0.012);
+
+      background: var(--tp-bg);
+      color: var(--tp-ink-1);
+      font-family: var(--tp-sans);
+      font-size: 14px;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      font-feature-settings: "ss01", "cv11";
+      margin: 0 -22px;
+      padding: 28px 32px 40px;
+      border-radius: var(--tp-radius);
+      background-image:
+        radial-gradient(1100px 600px at 90% -10%, color-mix(in oklch, var(--rb-blue) 8%, transparent), transparent 60%),
+        radial-gradient(900px 500px at -10% 110%, color-mix(in oklch, var(--rb-purple) 7%, transparent), transparent 60%);
+      position: relative;
+      overflow: hidden;
+    }
+    #tpatab-performance[data-tp-theme="light"], #tpatab-agents[data-tp-theme="light"] {
+      --tp-bg:        #f6f5f1;
+      --tp-bg-2:      #efece5;
+      --tp-surface:   #ffffff;
+      --tp-surface-2: #fbfaf6;
+      --tp-surface-3: #f1efe8;
+      --tp-hairline:  rgba(15, 12, 8, 0.08);
+      --tp-hairline-strong: rgba(15, 12, 8, 0.16);
+      --tp-ink-1:     #14130f;
+      --tp-ink-2:     rgba(20, 19, 15, 0.74);
+      --tp-ink-3:     rgba(20, 19, 15, 0.5);
+      --tp-ink-4:     rgba(20, 19, 15, 0.32);
+      --tp-pos:       oklch(0.55 0.14 145);
+      --tp-neg:       oklch(0.55 0.18 25);
+      --tp-grain:     rgba(0, 0, 0, 0.012);
+      --rb-green:  oklch(0.55 0.15 145);
+      --rb-yellow: oklch(0.7 0.14 85);
+      --rb-orange: oklch(0.62 0.16 50);
+      --rb-red:    oklch(0.55 0.17 25);
+      --rb-purple: oklch(0.5 0.15 305);
+      --rb-blue:   oklch(0.55 0.13 240);
+    }
+    /* Film grain — subtle texture on the dark surface */
+    #tpatab-performance::before, #tpatab-agents::before {
+      content: ""; position: absolute; inset: 0; pointer-events: none;
+      background-image:
+        radial-gradient(circle at 25% 20%, var(--tp-grain) 0.5px, transparent 1px),
+        radial-gradient(circle at 75% 60%, var(--tp-grain) 0.5px, transparent 1px);
+      background-size: 3px 3px, 4px 4px;
+      z-index: 0;
+    }
+    #tpatab-performance > *, #tpatab-agents > * { position: relative; z-index: 1; }
+    #tpDashboardRoot, #tpAgentsRoot { color: var(--tp-ink-1); font-family: var(--tp-sans); }
+
+    /* Header */
+    #tpatab-performance .tp-hdr, #tpatab-agents .tp-hdr {
+      display: flex; align-items: flex-end; justify-content: space-between;
+      gap: 24px; margin-bottom: 28px; padding-bottom: 18px;
+      border-bottom: 1px solid var(--tp-hairline);
+    }
+    #tpatab-performance .tp-hdr-l, #tpatab-agents .tp-hdr-l { display: flex; flex-direction: column; gap: 4px; }
+    #tpatab-performance .tp-hdr-brand, #tpatab-agents .tp-hdr-brand { display: flex; align-items: center; gap: 12px; }
+    #tpatab-performance .tp-hdr-mark, #tpatab-agents .tp-hdr-mark {
+      width: 22px; height: 22px; border-radius: 5px;
+      background:
+        linear-gradient(180deg,
+          var(--rb-green) 0 16.66%,
+          var(--rb-yellow) 16.66% 33.33%,
+          var(--rb-orange) 33.33% 50%,
+          var(--rb-red) 50% 66.66%,
+          var(--rb-purple) 66.66% 83.33%,
+          var(--rb-blue) 83.33% 100%);
+      box-shadow: 0 0 0 1px var(--tp-hairline-strong);
+    }
+    #tpatab-performance .tp-hdr-title, #tpatab-agents .tp-hdr-title { font-size: 20px; font-weight: 600; letter-spacing: -0.01em; color: var(--tp-ink-1); }
+    #tpatab-performance .tp-hdr-sub, #tpatab-agents .tp-hdr-sub {
+      font-family: var(--tp-mono); font-size: 11px;
+      color: var(--tp-ink-3); letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    #tpatab-performance .tp-hdr-r, #tpatab-agents .tp-hdr-r { display: flex; align-items: center; gap: 16px; }
+    #tpatab-performance .tp-hdr-time, #tpatab-agents .tp-hdr-time { font-family: var(--tp-mono); font-size: 11px; color: var(--tp-ink-3); }
+    #tpatab-performance .tp-hdr-time b, #tpatab-agents .tp-hdr-time b { color: var(--tp-ink-1); font-weight: 500; }
+    #tpatab-performance .tp-theme-toggle, #tpatab-agents .tp-theme-toggle {
+      appearance: none; border: 1px solid var(--tp-hairline-strong);
+      background: var(--tp-surface); color: var(--tp-ink-2);
+      width: 34px; height: 34px; border-radius: 8px;
+      display: grid; place-items: center; cursor: pointer; transition: all 120ms;
+    }
+    #tpatab-performance .tp-theme-toggle:hover, #tpatab-agents .tp-theme-toggle:hover { color: var(--tp-ink-1); border-color: var(--tp-ink-3); }
+
+    /* Filter bar */
+    #tpatab-performance .tp-filter-bar, #tpatab-agents .tp-filter-bar {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 16px; margin-bottom: 20px; flex-wrap: wrap;
+    }
+    #tpatab-performance .tp-tf-segment, #tpatab-agents .tp-tf-segment {
+      display: inline-flex; padding: 3px;
+      background: var(--tp-surface); border: 1px solid var(--tp-hairline); border-radius: 9px;
+    }
+    #tpatab-performance .tp-tf-segment button, #tpatab-agents .tp-tf-segment button {
+      appearance: none; border: 0; background: transparent;
+      color: var(--tp-ink-3); cursor: pointer;
+      padding: 7px 16px; border-radius: 6px;
+      font-family: var(--tp-mono); font-size: 11px; letter-spacing: 0.06em;
+      text-transform: uppercase; transition: all 120ms;
+    }
+    #tpatab-performance .tp-tf-segment button:hover, #tpatab-agents .tp-tf-segment button:hover { color: var(--tp-ink-1); }
+    #tpatab-performance .tp-tf-segment button.on, #tpatab-agents .tp-tf-segment button.on {
+      background: var(--tp-surface-3); color: var(--tp-ink-1);
+      box-shadow: 0 1px 0 var(--tp-hairline-strong) inset;
+    }
+    #tpatab-performance .tp-filter-pill, #tpatab-agents .tp-filter-pill {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 7px 12px 7px 14px; border-radius: 99px;
+      background: color-mix(in oklch, var(--rb-blue) 14%, transparent);
+      border: 1px solid color-mix(in oklch, var(--rb-blue) 32%, transparent);
+      color: var(--tp-ink-1); font-size: 12px;
+    }
+    #tpatab-performance .tp-filter-pill .x, #tpatab-agents .tp-filter-pill .x {
+      appearance: none; border: 0; background: transparent;
+      color: var(--tp-ink-2); cursor: pointer; padding: 0;
+      width: 16px; height: 16px; border-radius: 99px;
+      display: grid; place-items: center; font-size: 14px; line-height: 1;
+    }
+    #tpatab-performance .tp-filter-pill .x:hover, #tpatab-agents .tp-filter-pill .x:hover { background: var(--tp-hairline-strong); color: var(--tp-ink-1); }
+
+    /* Cards & layout */
+    #tpatab-performance .tp-grid, #tpatab-agents .tp-grid { display: grid; gap: 16px; }
+    #tpatab-performance .tp-grid-12, #tpatab-agents .tp-grid-12 { grid-template-columns: repeat(12, 1fr); }
+    #tpatab-performance .tp-card, #tpatab-agents .tp-card {
+      background: var(--tp-surface);
+      border: 1px solid var(--tp-hairline);
+      border-radius: var(--tp-radius);
+      padding: 20px 22px;
+      position: relative; overflow: hidden;
+    }
+    #tpatab-performance .tp-card-hd, #tpatab-agents .tp-card-hd {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    #tpatab-performance .tp-card-title, #tpatab-agents .tp-card-title {
+      font-size: 11px; font-family: var(--tp-mono);
+      text-transform: uppercase; letter-spacing: 0.08em;
+      color: var(--tp-ink-3); font-weight: 500;
+    }
+    #tpatab-performance .tp-card-meta, #tpatab-agents .tp-card-meta {
+      font-family: var(--tp-mono); font-size: 11px; color: var(--tp-ink-3);
+    }
+
+    /* AP hero */
+    #tpatab-performance .tp-ap-hero { grid-column: span 12; padding: 22px 24px 12px; }
+    #tpatab-performance .tp-ap-stats { display: flex; align-items: baseline; gap: 28px; flex-wrap: wrap; margin-bottom: 6px; }
+    #tpatab-performance .tp-ap-num {
+      font-family: var(--tp-mono); font-size: 38px; font-weight: 500;
+      color: var(--tp-ink-1); letter-spacing: -0.02em;
+      font-variant-numeric: tabular-nums;
+    }
+    #tpatab-performance .tp-ap-num-sub { font-family: var(--tp-mono); font-size: 13px; color: var(--tp-ink-3); }
+    #tpatab-performance .tp-ap-delta {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-family: var(--tp-mono); font-size: 12px;
+      padding: 3px 8px; border-radius: 4px;
+    }
+    #tpatab-performance .tp-ap-delta.pos { color: var(--tp-pos); background: color-mix(in oklch, var(--tp-pos) 14%, transparent); }
+    #tpatab-performance .tp-ap-delta.neg { color: var(--tp-neg); background: color-mix(in oklch, var(--tp-neg) 14%, transparent); }
+
+    /* Chart wrap + tooltip */
+    #tpatab-performance .tp-chart-wrap, #tpatab-agents .tp-chart-wrap { position: relative; width: 100%; }
+    #tpatab-performance .tp-chart-tip, #tpatab-agents .tp-chart-tip {
+      position: absolute; pointer-events: none;
+      background: var(--tp-surface-2);
+      border: 1px solid var(--tp-hairline-strong);
+      border-radius: 6px; padding: 8px 10px;
+      font-size: 11px; color: var(--tp-ink-1);
+      font-family: var(--tp-mono);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+      z-index: 10; min-width: 120px;
+    }
+    #tpatab-performance .tp-chart-tip-lbl, #tpatab-agents .tp-chart-tip-lbl { color: var(--tp-ink-3); font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
+    #tpatab-performance .tp-chart-tip-val, #tpatab-agents .tp-chart-tip-val { font-size: 14px; font-weight: 500; }
+    #tpatab-performance .tp-chart-tip-row, #tpatab-agents .tp-chart-tip-row { display: flex; align-items: center; gap: 6px; padding: 2px 0; }
+    #tpatab-performance .tp-chart-tip-row b, #tpatab-agents .tp-chart-tip-row b { margin-left: auto; }
+    #tpatab-performance .tp-dot, #tpatab-agents .tp-dot { width: 8px; height: 8px; border-radius: 99px; display: inline-block; }
+
+    /* Leaderboard / Agents table */
+    #tpatab-performance .tp-lb, #tpatab-agents .tp-lb { grid-column: span 7; padding: 0; }
+    #tpatab-agents .tp-lb { grid-column: span 12; }
+    #tpatab-performance .tp-lb-hd, #tpatab-agents .tp-lb-hd {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 22px 14px; border-bottom: 1px solid var(--tp-hairline);
+    }
+    #tpatab-performance .tp-lb-table, #tpatab-agents .tp-lb-table { width: 100%; border-collapse: collapse; }
+    #tpatab-performance .tp-lb-table thead th, #tpatab-agents .tp-lb-table thead th {
+      text-align: left;
+      font-family: var(--tp-mono); font-size: 10px; font-weight: 500;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      color: var(--tp-ink-3);
+      padding: 10px 14px; cursor: pointer;
+      border-bottom: 1px solid var(--tp-hairline);
+      user-select: none; background: transparent;
+    }
+    #tpatab-performance .tp-lb-table thead th:first-child, #tpatab-agents .tp-lb-table thead th:first-child { padding-left: 22px; }
+    #tpatab-performance .tp-lb-table thead th:last-child, #tpatab-agents .tp-lb-table thead th:last-child { padding-right: 22px; text-align: right; }
+    #tpatab-performance .tp-lb-table thead th.num, #tpatab-agents .tp-lb-table thead th.num { text-align: right; }
+    #tpatab-performance .tp-lb-table thead th:hover, #tpatab-agents .tp-lb-table thead th:hover { color: var(--tp-ink-1); }
+    #tpatab-performance .tp-lb-table thead th .arrow, #tpatab-agents .tp-lb-table thead th .arrow { margin-left: 4px; opacity: 0.6; }
+    #tpatab-performance .tp-lb-table tbody tr, #tpatab-agents .tp-lb-table tbody tr {
+      border-bottom: 1px solid var(--tp-hairline);
+      cursor: pointer; transition: background 80ms; background: transparent;
+    }
+    #tpatab-performance .tp-lb-table tbody tr:last-child, #tpatab-agents .tp-lb-table tbody tr:last-child { border-bottom: 0; }
+    #tpatab-performance .tp-lb-table tbody tr:hover, #tpatab-agents .tp-lb-table tbody tr:hover { background: var(--tp-surface-2); }
+    #tpatab-performance .tp-lb-table tbody tr.active, #tpatab-agents .tp-lb-table tbody tr.active { background: color-mix(in oklch, var(--rb-blue) 10%, var(--tp-surface)); }
+    #tpatab-performance .tp-lb-table tbody td, #tpatab-agents .tp-lb-table tbody td {
+      padding: 12px 14px; font-size: 13px; vertical-align: middle;
+      font-variant-numeric: tabular-nums; color: var(--tp-ink-1);
+    }
+    #tpatab-performance .tp-lb-table tbody td:first-child, #tpatab-agents .tp-lb-table tbody td:first-child { padding-left: 22px; }
+    #tpatab-performance .tp-lb-table tbody td:last-child, #tpatab-agents .tp-lb-table tbody td:last-child { padding-right: 22px; text-align: right; }
+    #tpatab-performance .tp-lb-table tbody td.num, #tpatab-agents .tp-lb-table tbody td.num { text-align: right; font-family: var(--tp-mono); }
+    #tpatab-performance .tp-agt-cell, #tpatab-agents .tp-agt-cell { display: flex; align-items: center; gap: 10px; }
+    #tpatab-performance .tp-avatar, #tpatab-agents .tp-avatar {
+      width: 28px; height: 28px; border-radius: 99px;
+      display: grid; place-items: center;
+      font-family: var(--tp-mono); font-size: 10px; font-weight: 500;
+      color: var(--tp-ink-1); border: 1px solid var(--tp-hairline-strong);
+    }
+    #tpatab-performance .tp-agt-name, #tpatab-agents .tp-agt-name { font-weight: 500; color: var(--tp-ink-1); }
+    #tpatab-performance .tp-agt-tenure, #tpatab-agents .tp-agt-tenure { font-family: var(--tp-mono); font-size: 10px; color: var(--tp-ink-4); }
+    #tpatab-performance .tp-rank, #tpatab-agents .tp-rank { font-family: var(--tp-mono); font-size: 10px; color: var(--tp-ink-3); width: 18px; display: inline-block; }
+    #tpatab-performance .tp-dial-pct { font-family: var(--tp-mono); font-size: 13px; color: var(--tp-ink-1); }
+
+    /* Carriers */
+    #tpatab-performance .tp-carriers { grid-column: span 5; }
+    #tpatab-performance .tp-carriers-body { display: flex; gap: 22px; align-items: center; }
+    #tpatab-performance .tp-carrier-list { flex: 1; display: flex; flex-direction: column; gap: 12px; }
+    #tpatab-performance .tp-carrier-row { display: flex; align-items: center; gap: 12px; }
+    #tpatab-performance .tp-carrier-row .name { flex: 1; font-size: 13px; color: var(--tp-ink-1); display: flex; align-items: center; gap: 10px; }
+    #tpatab-performance .tp-carrier-row .pct { font-family: var(--tp-mono); font-size: 12px; color: var(--tp-ink-2); width: 48px; text-align: right; }
+    #tpatab-performance .tp-carrier-row .ap { font-family: var(--tp-mono); font-size: 11px; color: var(--tp-ink-3); width: 60px; text-align: right; }
+    #tpatab-performance .tp-bar-track { height: 4px; background: var(--tp-surface-3); border-radius: 99px; overflow: hidden; margin-top: 6px; }
+    #tpatab-performance .tp-bar-fill { height: 100%; border-radius: 99px; }
+
+    /* Comparison */
+    #tpatab-performance .tp-compare { grid-column: span 12; }
+    #tpatab-performance .tp-compare-hd {
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 16px; margin-bottom: 14px;
+    }
+    #tpatab-performance .tp-legend { display: flex; align-items: center; gap: 18px; font-size: 12px; color: var(--tp-ink-2); }
+    #tpatab-performance .tp-legend > div { display: flex; align-items: center; gap: 6px; }
+
+    /* KPI panel */
+    #tpatab-performance .tp-kpi-panel { grid-column: span 12; }
+    #tpatab-performance .tp-kpi-grid {
+      display: grid; grid-template-columns: repeat(5, 1fr); gap: 1px;
+      background: var(--tp-hairline);
+      border: 1px solid var(--tp-hairline);
+      border-radius: var(--tp-radius);
+      overflow: hidden;
+    }
+    #tpatab-performance .tp-kpi-cell {
+      background: var(--tp-surface);
+      padding: 16px 18px 18px;
+      display: flex; flex-direction: column; gap: 8px;
+      position: relative; min-height: 110px;
+    }
+    #tpatab-performance .tp-kpi-lbl {
+      font-family: var(--tp-mono); font-size: 10px;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      color: var(--tp-ink-3); display: flex; align-items: center; gap: 6px;
+    }
+    #tpatab-performance .tp-kpi-lbl .swatch { width: 6px; height: 6px; border-radius: 2px; display: inline-block; }
+    #tpatab-performance .tp-kpi-val {
+      font-family: var(--tp-mono); font-size: 26px; font-weight: 500;
+      color: var(--tp-ink-1); letter-spacing: -0.01em;
+      font-variant-numeric: tabular-nums; line-height: 1; margin-top: 4px;
+    }
+    #tpatab-performance .tp-kpi-sub { font-family: var(--tp-mono); font-size: 11px; color: var(--tp-ink-3); }
+    #tpatab-performance .tp-kpi-sub b { color: var(--tp-ink-1); font-weight: 500; }
+    #tpatab-performance .tp-kpi-cell.featured { grid-column: span 1; background: var(--tp-surface-2); }
+    #tpatab-performance .tp-kpi-cell.featured .tp-kpi-val { font-size: 30px; }
+    #tpatab-performance .tp-ring-wrap { display: flex; align-items: center; gap: 14px; }
+    #tpatab-performance .tp-ring-text { display: flex; flex-direction: column; gap: 2px; }
+
+    /* Footer */
+    #tpatab-performance .tp-foot, #tpatab-agents .tp-foot {
+      margin-top: 36px; padding-top: 16px;
+      border-top: 1px solid var(--tp-hairline);
+      display: flex; justify-content: space-between;
+      font-family: var(--tp-mono); font-size: 10px;
+      color: var(--tp-ink-4); letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    /* Agents-specific cells (training progress, comp dropdown, status pill, action buttons) */
+    #tpatab-agents .tp-agent-status {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 3px 9px; border-radius: 99px;
+      font-family: var(--tp-mono); font-size: 10px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    #tpatab-agents .tp-agent-status.active {
+      background: color-mix(in oklch, var(--rb-green) 16%, transparent);
+      color: var(--rb-green);
+      border: 1px solid color-mix(in oklch, var(--rb-green) 32%, transparent);
+    }
+    #tpatab-agents .tp-agent-status.training {
+      background: color-mix(in oklch, var(--rb-yellow) 14%, transparent);
+      color: var(--rb-yellow);
+      border: 1px solid color-mix(in oklch, var(--rb-yellow) 30%, transparent);
+    }
+    #tpatab-agents .tp-progress-track {
+      width: 110px; height: 4px; background: var(--tp-surface-3);
+      border-radius: 99px; overflow: hidden; margin-top: 4px;
+    }
+    #tpatab-agents .tp-progress-fill { height: 100%; border-radius: 99px; }
+    #tpatab-agents .tp-input, #tpatab-agents .tp-select {
+      background: var(--tp-surface-2);
+      border: 1px solid var(--tp-hairline-strong);
+      color: var(--tp-ink-1);
+      padding: 6px 10px; border-radius: 6px;
+      font-family: var(--tp-sans); font-size: 12px;
+      transition: border-color 120ms;
+    }
+    #tpatab-agents .tp-input:focus, #tpatab-agents .tp-select:focus { outline: none; border-color: color-mix(in oklch, var(--rb-blue) 50%, transparent); }
+    #tpatab-agents .tp-select option { background: var(--tp-surface); color: var(--tp-ink-1); }
+    #tpatab-agents .tp-btn {
+      appearance: none; border: 1px solid var(--tp-hairline-strong);
+      background: var(--tp-surface-2); color: var(--tp-ink-1);
+      padding: 6px 12px; border-radius: 6px;
+      font-family: var(--tp-mono); font-size: 11px;
+      letter-spacing: 0.04em; text-transform: uppercase;
+      cursor: pointer; transition: all 120ms;
+    }
+    #tpatab-agents .tp-btn:hover { border-color: var(--tp-ink-3); }
+    #tpatab-agents .tp-btn.primary {
+      background: color-mix(in oklch, var(--rb-blue) 25%, var(--tp-surface-2));
+      border-color: color-mix(in oklch, var(--rb-blue) 50%, transparent);
+    }
+    #tpatab-agents .tp-btn.danger {
+      background: color-mix(in oklch, var(--rb-red) 22%, var(--tp-surface-2));
+      border-color: color-mix(in oklch, var(--rb-red) 50%, transparent);
+    }
+    #tpatab-agents .tp-btn.success {
+      background: color-mix(in oklch, var(--rb-green) 22%, var(--tp-surface-2));
+      border-color: color-mix(in oklch, var(--rb-green) 50%, transparent);
+    }
+    #tpatab-agents .tp-actions-cell { display: flex; gap: 6px; justify-content: flex-end; }
+    #tpatab-agents .tp-loading {
+      padding: 60px 20px; text-align: center;
+      color: var(--tp-ink-3); font-family: var(--tp-mono); font-size: 12px;
+      letter-spacing: 0.06em; text-transform: uppercase;
+    }
 
     /* Edit / Add modals (Team Performance) */
     .tp-ae-overlay { display: none; position: fixed; inset: 0; z-index: 9998; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); align-items: center; justify-content: center; }
@@ -1825,28 +2123,22 @@
       #panel-teamperf .tp-admin-table tbody td.tp-admin-actions::before { display: none; }
       #panel-teamperf .tp-action-btn { font-size: 0.65rem; padding: 0.3rem 0.7rem; }
       #panel-teamperf .tp-more-btn { width: 28px; height: 28px; }
-      #panel-teamperf .tp-perf-header { gap: 0.6rem; }
-      #panel-teamperf .tp-perf-header-controls { width: 100%; justify-content: space-between; }
-      #panel-teamperf .tp-perf-charts { grid-template-columns: 1fr; }
-      #panel-teamperf .tp-perf-kpis { grid-template-columns: 1fr 1fr; }
-      #panel-teamperf .tp-perf-kpi { padding: 0.95rem 1rem; }
-      #panel-teamperf .tp-perf-kpi-value { font-size: 1.25rem; }
-      #panel-teamperf .tp-perf-chart-card { padding: 1.1rem 0.95rem; }
-      #panel-teamperf .tp-perf-svg-chart { min-height: 200px; }
-      #panel-teamperf .tp-perf-bar-label { width: 52px !important; font-size: 0.68rem; }
-      #panel-teamperf .tp-perf-status-bars { flex-direction: column; gap: 0.85rem; }
-      #panel-teamperf .tp-perf-goal-row { flex-wrap: wrap; gap: 0.5rem; }
-      #panel-teamperf .tp-perf-goal-name { width: 100%; }
-      #panel-teamperf .tp-perf-goal-status { width: auto; text-align: left; }
       .tp-ae-modal { padding: 1.5rem 1.2rem; max-height: 90vh; overflow-y: auto; }
       .tp-ae-overlay { padding: 0.75rem; }
+      /* Team Performance dashboard (React) — collapse to single column */
+      #tpatab-performance, #tpatab-agents { padding: 16px 14px 24px; margin: 0 -8px; }
+      #tpatab-performance .tp-grid-12, #tpatab-agents .tp-grid-12 { grid-template-columns: 1fr; }
+      #tpatab-performance .tp-lb, #tpatab-performance .tp-carriers, #tpatab-performance .tp-compare, #tpatab-performance .tp-kpi-panel,
+      #tpatab-agents .tp-lb { grid-column: span 1; }
+      #tpatab-performance .tp-kpi-grid { grid-template-columns: repeat(2, 1fr); }
+      #tpatab-performance .tp-ap-num { font-size: 28px; }
+      #tpatab-performance .tp-carriers-body { flex-direction: column; align-items: stretch; gap: 16px; }
+      #tpatab-performance .tp-hdr, #tpatab-agents .tp-hdr { flex-direction: column; align-items: flex-start; gap: 12px; }
     }
     @media (max-width: 520px) {
       #panel-teamperf .tp-admin-stats { grid-template-columns: 1fr 1fr; }
       #panel-teamperf .tp-admin-stat-value { font-size: 1.1rem; }
-      #panel-teamperf .tp-perf-kpis { grid-template-columns: 1fr; }
-      #panel-teamperf .tp-perf-range-btn { padding: 0.4rem 0.85rem; font-size: 0.68rem; }
-      #panel-teamperf .tp-perf-rep-select { width: 100%; }
+      #tpatab-performance .tp-kpi-grid { grid-template-columns: 1fr; }
     }
 
     @media print {
@@ -4564,6 +4856,18 @@
       .perf-agent-kpis { grid-template-columns: 1fr 1fr; }
     }
   </style>
+
+  <!-- Team Performance dashboard — Geist + JetBrains Mono fonts (loaded once,
+       scoped to #panel-teamperf so the rest of the Sales Hub keeps its existing
+       typography). -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <!-- React + Babel for the Team Performance dashboard. The rest of saleshub.html
+       is plain JS — these scripts only run for the admin who reaches the panel. -->
+  <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin></script>
 </head>
 <body>
 
@@ -6041,58 +6345,14 @@
             </div>
           </div>
 
-          <!-- Performance tab -->
+          <!-- Performance tab — rendered by the React app at #tpDashboardRoot -->
           <div class="tp-admin-panel active" id="tpatab-performance">
-            <div class="tp-perf-header">
-              <div class="tp-perf-title">Performance Dashboard</div>
-              <div class="tp-perf-header-controls">
-                <div class="tp-perf-range-toggle" id="tpPerfRangeToggle">
-                  <button class="tp-perf-range-btn" data-perf-range="wtd">WTD</button>
-                  <button class="tp-perf-range-btn" data-perf-range="mtd">MTD</button>
-                  <button class="tp-perf-range-btn active" data-perf-range="ytd">YTD</button>
-                  <button class="tp-perf-range-btn" data-perf-range="lastweek">Last Week</button>
-                  <button class="tp-perf-range-btn" data-perf-range="lastmonth">Last Month</button>
-                  <button class="tp-perf-range-btn" data-perf-range="custom">Custom</button>
-                </div>
-                <div class="tp-perf-divider"></div>
-                <select class="tp-perf-rep-select" id="tpPerfRepSelect">
-                  <option value="all">All Reps (Team)</option>
-                </select>
-                <div class="tp-perf-checks">
-                  <label style="display:flex;align-items:center;gap:0.35rem;font-size:0.72rem;color:#555;cursor:pointer;font-weight:600;">
-                    <input type="checkbox" id="tpPerfExcludeSat" style="accent-color:#2563eb;" /> Exclude Sat
-                  </label>
-                  <label style="display:flex;align-items:center;gap:0.35rem;font-size:0.72rem;color:#555;cursor:pointer;font-weight:600;">
-                    <input type="checkbox" id="tpPerfExcludeSun" style="accent-color:#2563eb;" /> Exclude Sun
-                  </label>
-                </div>
-              </div>
-            </div>
-            <div id="tpPerfCustomRange" style="display:none;gap:0.5rem;align-items:center;margin-bottom:1rem;flex-wrap:wrap;">
-              <input type="date" id="tpPerfDateFrom" style="padding:0.4rem 0.7rem;font-size:0.8rem;background:#fff;border:1px solid #ddd;border-radius:8px;color:#1a1a1a;color-scheme:light;" />
-              <span style="color:#555;font-size:0.8rem;">to</span>
-              <input type="date" id="tpPerfDateTo" style="padding:0.4rem 0.7rem;font-size:0.8rem;background:#fff;border:1px solid #ddd;border-radius:8px;color:#1a1a1a;color-scheme:light;" />
-              <button id="tpPerfCustomApply" style="padding:0.4rem 1rem;font-size:0.78rem;font-weight:700;background:#2d2d35;color:#fff;border:none;border-radius:100px;cursor:pointer;">Apply</button>
-            </div>
-            <div id="tpPerfKpis"></div>
-            <div id="tpPerfExtraCharts" class="tp-perf-charts"></div>
-            <div id="tpPerfCharts" class="tp-perf-charts"></div>
-            <div id="tpPerfStatus"></div>
-            <div id="tpPerfGoals"></div>
-            <div id="tpPerfKpiSection"></div>
+            <div id="tpDashboardRoot"></div>
           </div>
 
-          <!-- Agent Profiles tab -->
+          <!-- Agent Profiles tab — same Kairos design system, separate React mount -->
           <div class="tp-admin-panel" id="tpatab-agents">
-            <div class="tp-admin-header">
-              <div>
-                <div class="tp-admin-title">Agent Profiles</div>
-                <div class="tp-admin-subtitle">Manage agent info, comp levels, and training access</div>
-              </div>
-            </div>
-            <div class="tp-admin-table-wrap">
-              <div id="tpAgentProfilesContent"><div class="tp-admin-loading">Loading...</div></div>
-            </div>
+            <div id="tpAgentsRoot"></div>
           </div>
         </div>
       </div>
@@ -13634,10 +13894,11 @@
         gate.style.display = 'none';
         content.style.display = 'block';
         if (!initialized) { wireUp(); initialized = true; }
-        // loadAll() fills allData (used by the performance dashboard too) and
-        // renders the policies tab; once it resolves, draw the performance
-        // tab so the default-active tab isn't blank on first open.
-        loadAll().then(() => { try { renderPerformance(); } catch (e) {} });
+        // Policies tab still uses the IIFE-driven loadAll(); the
+        // Performance tab is the React app at #tpDashboardRoot, mounted via
+        // window.tpMountDashboard() (idempotent).
+        loadAll();
+        if (window.tpMountDashboard) window.tpMountDashboard();
       };
 
       function wireUp() {
@@ -13652,8 +13913,11 @@
             tab.classList.add('active');
             const which = tab.dataset.tpatab;
             document.getElementById('tpatab-' + which).classList.add('active');
-            if (which === 'performance') renderPerformance();
-            if (which === 'agents') loadAgentProfiles();
+            // The Performance + Agent Profiles tabs are owned by the
+            // KairosDashboard React app (see below). Notify it so it can
+            // mount the right tree on first open.
+            if (which === 'performance' && window.tpMountDashboard) window.tpMountDashboard();
+            if (which === 'agents' && window.tpMountAgents) window.tpMountAgents();
           });
         });
 
@@ -13732,20 +13996,8 @@
           if (e.key === 'Escape') { aeOverlay.classList.remove('open'); addOverlay.classList.remove('open'); }
         });
 
-        // Performance controls
-        document.getElementById('tpPerfRepSelect').addEventListener('change', (e) => { perfRep = e.target.value; renderPerformance(); });
-        document.getElementById('tpPerfExcludeSat').addEventListener('change', () => renderPerformance());
-        document.getElementById('tpPerfExcludeSun').addEventListener('change', () => renderPerformance());
-        document.querySelectorAll('#tpPerfRangeToggle .tp-perf-range-btn').forEach(btn => {
-          btn.addEventListener('click', () => {
-            document.querySelectorAll('#tpPerfRangeToggle .tp-perf-range-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            perfRange = btn.dataset.perfRange;
-            document.getElementById('tpPerfCustomRange').style.display = perfRange === 'custom' ? 'flex' : 'none';
-            if (perfRange !== 'custom') renderPerformance();
-          });
-        });
-        document.getElementById('tpPerfCustomApply').addEventListener('click', () => renderPerformance());
+        // Performance + Agent Profiles tabs are React-rendered (see the
+        // KairosDashboard IIFE below) — no DOM controls to wire up here.
       }
 
       async function loadUserList() {
@@ -13933,522 +14185,1177 @@
         document.getElementById('tpAeOverlay').classList.add('open');
       }
 
-      function kpi(label, value, sub, trend) {
-        const cls = trend ? ' ' + trend : '';
-        const changeCls = trend || 'neutral';
-        return '<div class="tp-perf-kpi' + cls + '"><div class="tp-perf-kpi-label">' + label + '</div><div class="tp-perf-kpi-value">' + value + '</div><div class="tp-perf-kpi-change ' + changeCls + '">' + sub + '</div></div>';
+    })();
+
+    // ─── KAIROS TEAM PERFORMANCE DASHBOARD (React) ───
+    // Renders the Performance and Agent Profiles tabs using the editorial-
+    // financial design from claude.ai/design (Apple-rainbow accents, dark mode
+    // default). JSX is transformed in-browser by Babel standalone so we don't
+    // need a build step. Mounts only when the user reaches the panel
+    // (loadTeamPerf() exposes window.tpMountDashboard / window.tpMountAgents).
+  </script>
+
+  <script type="text/babel" data-presets="env,react">
+    (function () {
+      if (!window.React || !window.ReactDOM) return;
+      const { useState, useMemo, useEffect, useRef } = React;
+
+      // SUPABASE_URL / SUPABASE_KEY are top-level consts in the main script;
+      // this IIFE runs in the same window so they're accessible via globalThis.
+      const HDRS = { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY };
+      const HDRS_WRITE = Object.assign({}, HDRS, { 'Content-Type': 'application/json', 'Prefer': 'return=minimal' });
+      const TOTAL_TRAINING_VIDEOS = 24;
+
+      // All carriers we currently sell — extends the design's 5-color rainbow
+      // palette to cover all 15 by cycling through CSS rainbow tokens.
+      const CARRIER_LIST = ['Mutual of Omaha', 'Americo', 'Transamerica', 'American Amicable', 'Corebridge', 'Chubb', 'Ethos', 'Aetna', 'InstaBrain', 'Liberty', 'NLG', 'Royal Neighbors', 'Foresters', 'KCL', 'CICA'];
+      const RAINBOW_TOKENS = ['var(--rb-green)', 'var(--rb-yellow)', 'var(--rb-orange)', 'var(--rb-red)', 'var(--rb-purple)', 'var(--rb-blue)'];
+      const carrierColor = (name) => {
+        const idx = CARRIER_LIST.indexOf(name);
+        return idx >= 0 ? RAINBOW_TOKENS[idx % RAINBOW_TOKENS.length] : RAINBOW_TOKENS[0];
+      };
+
+      // ─── Theme persistence ─────────────────────────────────────────────────
+      const TP_THEME_KEY = 'tp_theme_v1';
+      const initialTheme = (function () {
+        try { return localStorage.getItem(TP_THEME_KEY) || 'dark'; } catch (e) { return 'dark'; }
+      })();
+
+      // ─── Formatters ────────────────────────────────────────────────────────
+      function fmtCurrency(n, opts) {
+        const o = opts || {};
+        if (o.compact) {
+          if (n >= 1e6) return '$' + (n/1e6).toFixed(o.decimals || 2) + 'M';
+          if (n >= 1e3) return '$' + (n/1e3).toFixed(o.decimals || 1) + 'K';
+          return '$' + Math.round(n);
+        }
+        return '$' + Math.round(n).toLocaleString();
+      }
+      function fmtNum(n) {
+        if (n >= 1e6) return (n/1e6).toFixed(2) + 'M';
+        if (n >= 1e3) return (n/1e3).toFixed(1) + 'K';
+        return Math.round(n).toLocaleString();
       }
 
-      function statusBar(label, pct, cls) {
-        return '<div class="tp-perf-status-item"><div class="tp-perf-status-item-label"><span>' + label + '</span><span>' + pct + '%</span></div><div class="tp-perf-status-item-bar"><div class="tp-perf-status-item-fill ' + cls + '" style="width:' + pct + '%"></div></div></div>';
+      // ─── Smooth Catmull-Rom → cubic Bezier path ────────────────────────────
+      function smoothPath(points, tension) {
+        if (points.length < 2) return '';
+        const p = points;
+        const t = tension == null ? 0.5 : tension;
+        let d = 'M ' + p[0][0] + ',' + p[0][1];
+        for (let i = 0; i < p.length - 1; i++) {
+          const p0 = p[i - 1] || p[i];
+          const p1 = p[i];
+          const p2 = p[i + 1];
+          const p3 = p[i + 2] || p2;
+          const cp1x = p1[0] + (p2[0] - p0[0]) * t / 6;
+          const cp1y = p1[1] + (p2[1] - p0[1]) * t / 6;
+          const cp2x = p2[0] - (p3[0] - p1[0]) * t / 6;
+          const cp2y = p2[1] - (p3[1] - p1[1]) * t / 6;
+          d += ' C ' + cp1x + ',' + cp1y + ' ' + cp2x + ',' + cp2y + ' ' + p2[0] + ',' + p2[1];
+        }
+        return d;
       }
 
-      function buildWeeklyBars(data) {
-        const now = new Date();
-        const weeks = [];
-        for (let i = 3; i >= 0; i--) {
-          const wEnd = new Date(now); wEnd.setDate(wEnd.getDate() - (i * 7));
-          const wStart = new Date(wEnd); wStart.setDate(wStart.getDate() - 7);
-          const label = i === 0 ? 'This Week' : i === 1 ? 'Last Week' : i + 'w ago';
-          const ap = data.filter(r => { const d = new Date(r.created_at); return d >= wStart && d < wEnd; }).reduce((s,r) => s + parseFloat(r.annual_premium||0), 0);
-          weeks.push({ label, ap });
-        }
-        const max = Math.max(...weeks.map(w => w.ap), 1);
-        return weeks.map(w => {
-          const pct = (w.ap / max * 100).toFixed(1);
-          return '<div class="tp-perf-bar-row"><div class="tp-perf-bar-label">' + w.label + '</div><div class="tp-perf-bar-amount">$' + fmtAP(w.ap) + '</div><div class="tp-perf-bar-track"><div class="tp-perf-bar-fill green" style="width:' + pct + '%"></div></div></div>';
-        }).join('');
+      // ─── Date helpers ──────────────────────────────────────────────────────
+      function startOfWeek(d) {
+        const x = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+        x.setDate(x.getDate() - x.getDay());
+        return x;
+      }
+      function startOfMonth(d) { return new Date(d.getFullYear(), d.getMonth(), 1); }
+      function startOfYear(d) { return new Date(d.getFullYear(), 0, 1); }
+
+      // ─── Supabase fetchers ─────────────────────────────────────────────────
+      async function fetchPolicies() {
+        const res = await fetch(SUPABASE_URL + '/rest/v1/policies?select=user_id,sales_rep,annual_premium,policy_date,created_at,carrier,status,product_type&order=created_at.desc', {
+          headers: Object.assign({}, HDRS, { 'Range-Unit': 'items', 'Range': '0-49999' })
+        });
+        if (!res.ok && res.status !== 206) throw new Error('policies fetch ' + res.status);
+        return res.json();
+      }
+      async function fetchKpis() {
+        const res = await fetch(SUPABASE_URL + '/rest/v1/daily_kpis?select=*&order=kpi_date.desc&limit=10000', { headers: HDRS });
+        if (!res.ok) return [];
+        return res.json();
+      }
+      async function fetchAgentProfiles() {
+        const res = await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?select=user_id,agent_name,comp_level,training_complete,annual_goal&order=agent_name.asc', { headers: HDRS });
+        if (!res.ok) return [];
+        return res.json();
+      }
+      async function fetchVideoProgress() {
+        const res = await fetch(SUPABASE_URL + '/rest/v1/video_progress?select=user_id,video_id', { headers: HDRS });
+        if (!res.ok) return [];
+        return res.json();
       }
 
-      function buildMonthComparisonChart(data, now) {
-        const thisMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-        const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-        const thisMonthEnd = now;
-        const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59);
-        const thisMonthRows = data.filter(r => { const d = new Date(r.created_at); return d >= thisMonthStart && d <= thisMonthEnd; });
-        const lastMonthRows = data.filter(r => { const d = new Date(r.created_at); return d >= lastMonthStart && d <= lastMonthEnd; });
-        const tmAP = thisMonthRows.reduce((s, r) => s + parseFloat(r.annual_premium || 0), 0);
-        const lmAP = lastMonthRows.reduce((s, r) => s + parseFloat(r.annual_premium || 0), 0);
-        const tmCount = thisMonthRows.length;
-        const lmCount = lastMonthRows.length;
-        const thisLabel = thisMonthStart.toLocaleString('default', { month: 'short' });
-        const lastLabel = lastMonthStart.toLocaleString('default', { month: 'short' });
-        const W = 600, H = 240, padL = 56, padR = 16, padT = 20, padB = 48;
-        const plotW = W - padL - padR;
-        const plotH = H - padT - padB;
-        const maxAP = Math.max(tmAP, lmAP, 1);
-        const barW = 90;
-        const groupGap = 60;
-        const totalBarsWidth = barW * 2 + groupGap;
-        const startX = padL + (plotW - totalBarsWidth) / 2;
-        const barY = (val) => padT + plotH - (val / maxAP) * plotH;
-        const lmY = barY(lmAP);
-        const tmY = barY(tmAP);
-        const lmX = startX;
-        const tmX = startX + barW + groupGap;
-        const lmHeight = padT + plotH - lmY;
-        const tmHeight = padT + plotH - tmY;
-        const trend = tmAP >= lmAP ? 'up' : 'down';
-        const thisColor = trend === 'up' ? '#4ade80' : '#f87171';
-        const thisColorDark = trend === 'up' ? '#16a34a' : '#dc2626';
-        let grid = '';
-        for (let i = 0; i <= 4; i++) {
-          const val = (maxAP / 4) * i;
-          const y = barY(val);
-          grid += '<line x1="' + padL + '" y1="' + y + '" x2="' + (W - padR) + '" y2="' + y + '" stroke="#e5e5ea" stroke-width="1"/>';
-          grid += '<text x="' + (padL - 8) + '" y="' + (y + 3) + '" fill="#888" font-size="9" font-family="Inter, sans-serif" text-anchor="end">$' + fmtAP(val) + '</text>';
-        }
-        const diff = tmAP - lmAP;
-        const diffPct = lmAP > 0 ? (diff / lmAP) * 100 : 0;
-        const summaryTxt = (diff >= 0 ? '+$' : '-$') + fmtAP(Math.abs(diff)) + ' (' + (diff >= 0 ? '+' : '') + diffPct.toFixed(1) + '%)';
-        return '<div class="tp-perf-chart-card">' +
-          '<div class="tp-perf-chart-title">This Month vs Last Month</div>' +
-          '<svg class="tp-perf-svg-chart" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="xMidYMid meet">' +
-            grid +
-            '<defs>' +
-              '<linearGradient id="tpLmGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#64748b" stop-opacity="0.9"/><stop offset="1" stop-color="#475569" stop-opacity="0.9"/></linearGradient>' +
-              '<linearGradient id="tpTmGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="' + thisColor + '" stop-opacity="0.95"/><stop offset="1" stop-color="' + thisColorDark + '" stop-opacity="0.95"/></linearGradient>' +
-            '</defs>' +
-            '<rect x="' + lmX + '" y="' + lmY + '" width="' + barW + '" height="' + lmHeight + '" rx="6" fill="url(#tpLmGrad)"/>' +
-            '<rect x="' + tmX + '" y="' + tmY + '" width="' + barW + '" height="' + tmHeight + '" rx="6" fill="url(#tpTmGrad)"/>' +
-            '<text x="' + (lmX + barW/2) + '" y="' + (lmY - 8) + '" fill="#1a1a1a" font-size="12" font-weight="800" font-family="Plus Jakarta Sans, sans-serif" text-anchor="middle">$' + fmtAP(lmAP) + '</text>' +
-            '<text x="' + (tmX + barW/2) + '" y="' + (tmY - 8) + '" fill="' + thisColorDark + '" font-size="12" font-weight="800" font-family="Plus Jakarta Sans, sans-serif" text-anchor="middle">$' + fmtAP(tmAP) + '</text>' +
-            '<text x="' + (lmX + barW/2) + '" y="' + (H - 22) + '" fill="#1a1a1a" font-size="11" font-weight="700" font-family="Plus Jakarta Sans, sans-serif" text-anchor="middle">' + lastLabel + '</text>' +
-            '<text x="' + (lmX + barW/2) + '" y="' + (H - 8) + '" fill="#888" font-size="9" font-family="Inter, sans-serif" text-anchor="middle">' + lmCount + ' policies</text>' +
-            '<text x="' + (tmX + barW/2) + '" y="' + (H - 22) + '" fill="#1a1a1a" font-size="11" font-weight="700" font-family="Plus Jakarta Sans, sans-serif" text-anchor="middle">' + thisLabel + '</text>' +
-            '<text x="' + (tmX + barW/2) + '" y="' + (H - 8) + '" fill="#888" font-size="9" font-family="Inter, sans-serif" text-anchor="middle">' + tmCount + ' policies</text>' +
-          '</svg>' +
-          '<div class="tp-perf-chart-summary ' + trend + '"><span class="tp-perf-chart-summary-label">Change</span><span class="tp-perf-chart-summary-value">' + summaryTxt + '</span></div>' +
-        '</div>';
-      }
+      // ─── Aggregations ──────────────────────────────────────────────────────
+      function buildAgents(profiles, policies, kpis) {
+        const today = new Date();
+        const yearStart = startOfYear(today);
+        const monthStart = startOfMonth(today);
+        const weekStart = startOfWeek(today);
 
-      function renderPerformance() {
-        const reps = [...new Set(allData.map(r => r.sales_rep).filter(Boolean))].sort();
-        const sel = document.getElementById('tpPerfRepSelect');
-        const prev = sel.value;
-        sel.innerHTML = '<option value="all">All Reps (Team)</option>';
-        reps.forEach(r => { const o = document.createElement('option'); o.value = r; o.textContent = r; sel.appendChild(o); });
-        sel.value = prev || 'all';
-        perfRep = sel.value;
+        const repNameById = {};
+        policies.forEach(p => { if (p.user_id && p.sales_rep) repNameById[p.user_id] = p.sales_rep; });
 
-        const data = perfRep === 'all' ? allData : allData.filter(r => r.sales_rep === perfRep);
-        const now = new Date();
-        const weekStart = new Date(now); weekStart.setDate(weekStart.getDate() - weekStart.getDay()); weekStart.setHours(0,0,0,0);
-        const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-        const yearStart = new Date(now.getFullYear(), 0, 1);
-        const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-        const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59);
-        const lastWeekStart = new Date(weekStart); lastWeekStart.setDate(lastWeekStart.getDate() - 7);
-
-        const wtd = data.filter(r => new Date(r.created_at) >= weekStart);
-        const mtd = data.filter(r => new Date(r.created_at) >= monthStart);
-        const ytd = data.filter(r => new Date(r.created_at) >= yearStart);
-        const lastWeek = data.filter(r => { const d = new Date(r.created_at); return d >= lastWeekStart && d < weekStart; });
-        const lastMonth = data.filter(r => { const d = new Date(r.created_at); return d >= lastMonthStart && d <= lastMonthEnd; });
-
-        let customRange = [];
-        if (perfRange === 'custom') {
-          const from = document.getElementById('tpPerfDateFrom').value;
-          const to = document.getElementById('tpPerfDateTo').value;
-          if (from && to) {
-            const fromDate = new Date(from); fromDate.setHours(0,0,0,0);
-            const toDate = new Date(to); toDate.setHours(23,59,59,999);
-            customRange = data.filter(r => { const d = new Date(r.created_at); return d >= fromDate && d <= toDate; });
-          }
-        }
-
-        const sumAP = arr => arr.reduce((s, r) => s + parseFloat(r.annual_premium || 0), 0);
-        const ytdAP = sumAP(ytd);
-        const dayOfYear = Math.floor((now - yearStart) / (1000*60*60*24)) + 1;
-        const yearlyPace = dayOfYear > 0 ? (ytdAP / dayOfYear) * 365 : 0;
-        const monthlyPace = dayOfYear > 0 ? (ytdAP / dayOfYear) * 30.44 : 0;
-
-        const priorWeekStart = new Date(weekStart); priorWeekStart.setDate(priorWeekStart.getDate() - 7);
-        const priorYearStart = new Date(now.getFullYear() - 1, 0, 1);
-        const priorYearEndSameDay = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate(), 23, 59, 59);
-        const twoWeeksAgoStart = new Date(lastWeekStart); twoWeeksAgoStart.setDate(twoWeeksAgoStart.getDate() - 7);
-        const twoMonthsAgoStart = new Date(now.getFullYear(), now.getMonth() - 2, 1);
-        const twoMonthsAgoEnd = new Date(now.getFullYear(), now.getMonth() - 1, 0, 23, 59, 59);
-
-        const priorWeek = data.filter(r => { const d = new Date(r.created_at); return d >= priorWeekStart && d < weekStart; });
-        const priorYear = data.filter(r => { const d = new Date(r.created_at); return d >= priorYearStart && d <= priorYearEndSameDay; });
-        const twoWeeksAgo = data.filter(r => { const d = new Date(r.created_at); return d >= twoWeeksAgoStart && d < lastWeekStart; });
-        const twoMonthsAgo = data.filter(r => { const d = new Date(r.created_at); return d >= twoMonthsAgoStart && d <= twoMonthsAgoEnd; });
-
-        let curRows, priorRows, rangeLabel, priorLabel;
-        if (perfRange === 'wtd') { curRows = wtd; priorRows = priorWeek; rangeLabel = 'Week to Date'; priorLabel = 'vs Last Week'; }
-        else if (perfRange === 'mtd') { curRows = mtd; priorRows = lastMonth; rangeLabel = 'Month to Date'; priorLabel = 'vs Last Month'; }
-        else if (perfRange === 'lastweek') { curRows = data.filter(r => { const d = new Date(r.created_at); return d >= lastWeekStart && d < weekStart; }); priorRows = twoWeeksAgo; rangeLabel = 'Last Week'; priorLabel = 'vs Week Before'; }
-        else if (perfRange === 'lastmonth') { curRows = lastMonth; priorRows = twoMonthsAgo; rangeLabel = 'Last Month'; priorLabel = 'vs Month Before'; }
-        else if (perfRange === 'custom') {
-          curRows = customRange;
-          const from = document.getElementById('tpPerfDateFrom').value;
-          const to = document.getElementById('tpPerfDateTo').value;
-          if (from && to) {
-            const fromDate = new Date(from); fromDate.setHours(0,0,0,0);
-            const toDate = new Date(to); toDate.setHours(23,59,59,999);
-            const ms = toDate - fromDate;
-            const priorTo = new Date(fromDate.getTime() - 1);
-            const priorFrom = new Date(priorTo.getTime() - ms);
-            priorRows = data.filter(r => { const d = new Date(r.created_at); return d >= priorFrom && d <= priorTo; });
-          } else { priorRows = []; }
-          rangeLabel = 'Custom Range'; priorLabel = 'vs Prior Period';
-        } else {
-          curRows = ytd; priorRows = priorYear; rangeLabel = 'Year to Date'; priorLabel = 'vs Last Year';
-        }
-
-        const curAP = sumAP(curRows);
-        const priorAP = sumAP(priorRows);
-        const change = priorAP > 0 ? ((curAP - priorAP) / priorAP * 100) : (curAP > 0 ? 100 : 0);
-        const changeClass = change > 0 ? 'up' : change < 0 ? 'down' : 'neutral';
-        const changeSign = change > 0 ? '+' : '';
-        const avgPerPolicy = curRows.length > 0 ? curAP / curRows.length : 0;
-
-        document.getElementById('tpPerfKpis').innerHTML =
-          '<div class="tp-perf-kpis">' +
-            kpi(rangeLabel, '$' + fmtAP(curAP), curRows.length + ' policies', '') +
-            '<div class="tp-perf-kpi ' + changeClass + '"><div class="tp-perf-kpi-label">' + priorLabel + '</div><div class="tp-perf-kpi-value" style="font-size:1.3rem;">' + changeSign + change.toFixed(1) + '%</div><div class="tp-perf-kpi-change ' + changeClass + '">' + (priorAP > 0 ? 'prior $' + fmtAP(priorAP) : 'no prior data') + '</div></div>' +
-            kpi('Avg Per Policy', '$' + fmtAP(avgPerPolicy), curRows.length + ' policies', '') +
-            kpi('Yearly Pace', '$' + fmtAP(yearlyPace), '$' + fmtAP(monthlyPace) + '/mo avg', '') +
-          '</div>';
-
-        const extraCharts = document.getElementById('tpPerfExtraCharts');
-        extraCharts.style.gridTemplateColumns = '1fr';
-        extraCharts.innerHTML = buildMonthComparisonChart(data, now);
-
-        const months = {};
-        ytd.forEach(r => {
-          const d = new Date(r.created_at);
-          const key = d.toLocaleString('default', { month: 'short' });
-          if (!months[key]) months[key] = { count: 0, ap: 0 };
-          months[key].count++;
-          months[key].ap += parseFloat(r.annual_premium || 0);
+        const polsBy = {};
+        policies.forEach(p => {
+          const uid = p.user_id || '__norep__';
+          (polsBy[uid] || (polsBy[uid] = [])).push(p);
         });
 
-        const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-        const currentMonthIdx = now.getMonth();
-        const activeMonths = monthNames.slice(0, currentMonthIdx + 1);
-        const maxMonthAP = Math.max(...activeMonths.map(m => (months[m]?.ap || 0)), 1);
-        let monthBars = '';
-        activeMonths.forEach(m => {
-          const val = months[m]?.ap || 0;
-          const pct = (val / maxMonthAP * 100).toFixed(1);
-          monthBars += '<div class="tp-perf-bar-row"><div class="tp-perf-bar-label">' + m + '</div><div class="tp-perf-bar-amount">$' + fmtAP(val) + '</div><div class="tp-perf-bar-track"><div class="tp-perf-bar-fill blue" style="width:' + pct + '%"></div></div></div>';
+        const kpisByRep = {};
+        kpis.forEach(k => {
+          if (!k.sales_rep) return;
+          (kpisByRep[k.sales_rep] || (kpisByRep[k.sales_rep] = [])).push(k);
         });
 
-        let repBars = '';
-        const rangeLabelMap = { wtd: 'Week to Date', mtd: 'Month to Date', ytd: 'Year to Date', lastweek: 'Last Week', lastmonth: 'Last Month', custom: 'Custom Range' };
-        const repRangeLabel = rangeLabelMap[perfRange] || 'Year to Date';
-        if (perfRep === 'all') {
-          const rangeMap = { wtd: wtd, mtd: mtd, ytd: ytd, lastweek: lastWeek, lastmonth: lastMonth, custom: customRange };
-          const rangeRows = rangeMap[perfRange] || ytd;
-          const repTotals = {};
-          rangeRows.forEach(r => {
-            if (!r.sales_rep) return;
-            repTotals[r.sales_rep] = (repTotals[r.sales_rep] || 0) + parseFloat(r.annual_premium || 0);
-          });
-          const sorted = Object.entries(repTotals).sort((a,b) => b[1] - a[1]);
-          const teamTotal = sorted.reduce((s, [, ap]) => s + ap, 0);
-          const maxRepAP = Math.max(teamTotal, sorted.length ? sorted[0][1] : 1, 1);
-          const teamPct = (teamTotal / maxRepAP * 100).toFixed(1);
-          repBars += '<div class="tp-perf-bar-row tp-perf-bar-team"><div class="tp-perf-bar-label" style="width:90px;color:#1a1a1a;font-weight:800;">Team</div><div class="tp-perf-bar-amount">$' + fmtAP(teamTotal) + '</div><div class="tp-perf-bar-track"><div class="tp-perf-bar-fill team" style="width:' + teamPct + '%"></div></div></div>';
-          if (sorted.length === 0) {
-            repBars += '<div style="text-align:center;padding:1.25rem;color:#888;font-size:0.8rem;">No sales recorded for this timeframe yet.</div>';
-          } else {
-            const repColors = ['gold', 'blue', 'green', 'team', 'purple', 'pink'];
-            sorted.forEach(([name, ap], i) => {
-              const pct = (ap / maxRepAP * 100).toFixed(1);
-              const color = repColors[i % repColors.length];
-              repBars += '<div class="tp-perf-bar-row"><div class="tp-perf-bar-label" style="width:90px;">' + name.split(' ')[0] + '</div><div class="tp-perf-bar-amount">$' + fmtAP(ap) + '</div><div class="tp-perf-bar-track"><div class="tp-perf-bar-fill ' + color + '" style="width:' + pct + '%"></div></div></div>';
-            });
+        const sumAP = (arr, pred) => arr.reduce((s, p) => {
+          const d = new Date(p.policy_date || p.created_at);
+          return pred(d) ? s + parseFloat(p.annual_premium || 0) : s;
+        }, 0);
+
+        return profiles.map((p) => {
+          const uid = p.user_id;
+          const name = p.agent_name || repNameById[uid] || 'Unknown';
+          const myPols = polsBy[uid] || [];
+          const myKpis = kpisByRep[name] || [];
+
+          const apYTD = sumAP(myPols, d => d >= yearStart);
+          const apMTD = sumAP(myPols, d => d >= monthStart);
+          const apWTD = sumAP(myPols, d => d >= weekStart);
+          const dealsYTD = myPols.filter(x => new Date(x.policy_date || x.created_at) >= yearStart).length;
+          const dealsMTD = myPols.filter(x => new Date(x.policy_date || x.created_at) >= monthStart).length;
+          const dealsWTD = myPols.filter(x => new Date(x.policy_date || x.created_at) >= weekStart).length;
+
+          const monthly = [];
+          const monthLabels = [];
+          for (let i = 11; i >= 0; i--) {
+            const ms = new Date(today.getFullYear(), today.getMonth() - i, 1);
+            const me = new Date(today.getFullYear(), today.getMonth() - i + 1, 1);
+            monthly.push(sumAP(myPols, d => d >= ms && d < me));
+            monthLabels.push(ms.toLocaleString('default', { month: 'short' }));
           }
-        }
+          const weekly = [];
+          const weekLabels = [];
+          for (let i = 12; i >= 0; i--) {
+            const ws = new Date(weekStart); ws.setDate(ws.getDate() - i * 7);
+            const we = new Date(ws); we.setDate(we.getDate() + 7);
+            weekly.push(sumAP(myPols, d => d >= ws && d < we));
+            weekLabels.push((ws.getMonth()+1) + '/' + ws.getDate());
+          }
 
-        document.getElementById('tpPerfCharts').innerHTML =
-          '<div class="tp-perf-chart-card"><div class="tp-perf-chart-title">Monthly AP Breakdown (YTD)</div><div class="tp-perf-bars">' + monthBars + '</div></div>' +
-          (perfRep === 'all' && repBars ? '<div class="tp-perf-chart-card"><div class="tp-perf-chart-title">Rep Comparison (' + repRangeLabel + ')</div><div class="tp-perf-bars">' + repBars + '</div></div>' : '<div class="tp-perf-chart-card"><div class="tp-perf-chart-title">Weekly Trend</div><div class="tp-perf-bars">' + buildWeeklyBars(data) + '</div></div>');
+          const kpiTotal = (rangeStart) => {
+            const inRange = myKpis.filter(r => new Date((r.kpi_date || '') + 'T00:00:00') >= rangeStart);
+            return {
+              dials: inRange.reduce((s,r) => s + (r.dials||0), 0),
+              answers: inRange.reduce((s,r) => s + (r.answers||0), 0),
+              appointments: inRange.reduce((s,r) => s + (r.appointments||0), 0),
+              presentations: inRange.reduce((s,r) => s + (r.presentations||0), 0),
+              deals: inRange.reduce((s,r) => s + (r.deals||0), 0),
+              leadSpend: inRange.reduce((s,r) => s + parseFloat(r.lead_spend||0), 0),
+              deposits: inRange.reduce((s,r) => s + parseFloat(r.deposits||0), 0),
+            };
+          };
+          const wtd = kpiTotal(weekStart);
+          const mtd = kpiTotal(monthStart);
+          const ytd = kpiTotal(yearStart);
 
-        const statusEl = document.getElementById('tpPerfStatus');
-        if (perfRep !== 'all') {
-          const uwCount = mtd.filter(r => r.status === 'Underwriting').length;
-          const appCount = mtd.filter(r => r.status === 'Approved').length;
-          const paidCount = mtd.filter(r => r.status === 'Issue Paid').length;
-          const total = mtd.length || 1;
-          statusEl.innerHTML = '<div class="tp-perf-status-section"><div class="tp-perf-status-title">Status Breakdown (Month to Date)</div><div class="tp-perf-status-bars">' +
-            statusBar('Underwriting', (uwCount / total * 100).toFixed(0), 'uw') +
-            statusBar('Approved', (appCount / total * 100).toFixed(0), 'app') +
-            statusBar('Issue Paid', (paidCount / total * 100).toFixed(0), 'paid') +
-            '</div></div>';
+          const carrierMix = {};
+          CARRIER_LIST.forEach(c => carrierMix[c] = 0);
+          myPols.forEach(po => {
+            const d = new Date(po.policy_date || po.created_at);
+            if (d < monthStart) return;
+            const c = po.carrier;
+            if (CARRIER_LIST.includes(c)) carrierMix[c] += parseFloat(po.annual_premium || 0);
+          });
+
+          const initials = name.split(' ').map(s => s[0]).filter(Boolean).slice(0,2).join('').toUpperCase() || '··';
+          const dialToDeal = ytd.dials > 0 ? (dealsYTD / ytd.dials) * 100 : 0;
+          const roi = ytd.leadSpend > 0 ? ((ytd.deposits - ytd.leadSpend) / ytd.leadSpend) * 100 : 0;
+          const avgPremium = dealsMTD > 0 ? Math.round(apMTD / dealsMTD) : 0;
+
+          return {
+            id: uid,
+            name,
+            initials,
+            compLevel: p.comp_level || null,
+            trainingComplete: p.training_complete === true,
+            annualGoal: parseFloat(p.annual_goal) || 0,
+            apYTD, apMTD, apWTD,
+            dealsYTD, dealsMTD, dealsWTD,
+            roi, dialToDeal, avgPremium,
+            kpiWTD: wtd, kpiMTD: mtd, kpiYTD: ytd,
+            monthly, weekly, monthLabels, weekLabels,
+            carrierMix,
+            policies: myPols,
+          };
+        });
+      }
+
+      function buildTeam(agents) {
+        if (!agents.length) return null;
+        const sumF = (k) => agents.reduce((s, a) => s + a[k], 0);
+        const sumKpi = (which, key) => agents.reduce((s, a) => s + a[which][key], 0);
+        const monthly = agents[0].monthly.map((_, i) => agents.reduce((s,a) => s + a.monthly[i], 0));
+        const weekly  = agents[0].weekly.map((_, i)  => agents.reduce((s,a) => s + a.weekly[i], 0));
+        const carrierMix = {};
+        CARRIER_LIST.forEach(c => carrierMix[c] = agents.reduce((s,a) => s + (a.carrierMix[c]||0), 0));
+        const dealsMTD = sumF('dealsMTD');
+        const apMTD = sumF('apMTD');
+        const ytd = ['dials','answers','appointments','presentations','deals','leadSpend','deposits']
+          .reduce((o,k) => (o[k] = sumKpi('kpiYTD', k), o), {});
+        const mtd = ['dials','answers','appointments','presentations','deals','leadSpend','deposits']
+          .reduce((o,k) => (o[k] = sumKpi('kpiMTD', k), o), {});
+        const wtd = ['dials','answers','appointments','presentations','deals','leadSpend','deposits']
+          .reduce((o,k) => (o[k] = sumKpi('kpiWTD', k), o), {});
+        const dialToDeal = ytd.dials > 0 ? (sumF('dealsYTD') / ytd.dials) * 100 : 0;
+        const roi = ytd.leadSpend > 0 ? ((ytd.deposits - ytd.leadSpend) / ytd.leadSpend) * 100 : 0;
+        const teamPolicies = [];
+        agents.forEach(a => (a.policies || []).forEach(p => teamPolicies.push(p)));
+        return {
+          id: '__team__',
+          name: 'Team',
+          initials: 'TM',
+          apYTD: sumF('apYTD'),
+          apMTD,
+          apWTD: sumF('apWTD'),
+          dealsYTD: sumF('dealsYTD'),
+          dealsMTD,
+          dealsWTD: sumF('dealsWTD'),
+          roi, dialToDeal,
+          avgPremium: dealsMTD > 0 ? Math.round(apMTD / dealsMTD) : 0,
+          kpiWTD: wtd, kpiMTD: mtd, kpiYTD: ytd,
+          monthly, weekly,
+          monthLabels: agents[0].monthLabels,
+          weekLabels: agents[0].weekLabels,
+          carrierMix,
+          policies: teamPolicies,
+        };
+      }
+
+      function scopedView(scope, timeframe) {
+        if (!scope) return null;
+        const ap = timeframe === 'WTD' ? scope.apWTD : timeframe === 'YTD' ? scope.apYTD : scope.apMTD;
+        const deals = timeframe === 'WTD' ? scope.dealsWTD : timeframe === 'YTD' ? scope.dealsYTD : scope.dealsMTD;
+        const k = timeframe === 'WTD' ? scope.kpiWTD : timeframe === 'YTD' ? scope.kpiYTD : scope.kpiMTD;
+        const dialToDeal = k.dials > 0 ? (deals / k.dials) * 100 : 0;
+        const roi = k.leadSpend > 0 ? ((k.deposits - k.leadSpend) / k.leadSpend) * 100 : 0;
+        const avgPremium = deals > 0 ? Math.round(ap / deals) : 0;
+        return {
+          timeframe, ap, deals, dialToDeal, roi, avgPremium,
+          dials: k.dials,
+          answers: k.answers,
+          appointments: k.appointments,
+          presentations: k.presentations,
+          leadSpend: k.leadSpend,
+          deposits: k.deposits,
+          carrierMix: scope.carrierMix,
+          name: scope.name,
+        };
+      }
+
+      // ─── Charts ─────────────────────────────────────────────────────────
+      function APLineChart({ labels, series, color, height }) {
+        const ref = useRef(null);
+        const [w, setW] = useState(800);
+        const [hover, setHover] = useState(null);
+        const c = color || 'var(--rb-green)';
+        const h = height || 280;
+        useEffect(() => {
+          if (!ref.current) return;
+          const ro = new ResizeObserver(([e]) => setW(e.contentRect.width));
+          ro.observe(ref.current);
+          return () => ro.disconnect();
+        }, []);
+        const pad = { top: 24, right: 16, bottom: 28, left: 56 };
+        const innerW = Math.max(100, w - pad.left - pad.right);
+        const innerH = h - pad.top - pad.bottom;
+        const max = Math.max.apply(null, series.concat([1])) * 1.1;
+        const xs = (i) => pad.left + (i / Math.max(labels.length - 1, 1)) * innerW;
+        const ys = (v) => pad.top + (1 - v / max) * innerH;
+        const points = series.map((v, i) => [xs(i), ys(v)]);
+        const linePath = smoothPath(points, 0.5);
+        const areaPath = linePath + ' L ' + xs(labels.length - 1) + ',' + (pad.top + innerH) + ' L ' + xs(0) + ',' + (pad.top + innerH) + ' Z';
+        const grid = [0, 0.25, 0.5, 0.75, 1].map(t => ({ y: pad.top + t * innerH, v: max * (1 - t) }));
+        const onMove = (e) => {
+          const rect = ref.current.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const idx = Math.round(((x - pad.left) / innerW) * (labels.length - 1));
+          if (idx >= 0 && idx < labels.length) setHover(idx);
+        };
+        return (
+          <div ref={ref} className="tp-chart-wrap" onMouseLeave={() => setHover(null)} onMouseMove={onMove}>
+            <svg width={w} height={h} style={{display:'block'}}>
+              <defs>
+                <linearGradient id="tpApGrad" x1="0" x2="0" y1="0" y2="1">
+                  <stop offset="0%" stopColor={c} stopOpacity="0.32" />
+                  <stop offset="100%" stopColor={c} stopOpacity="0" />
+                </linearGradient>
+              </defs>
+              {grid.map((g, i) => (
+                <g key={i}>
+                  <line x1={pad.left} x2={w - pad.right} y1={g.y} y2={g.y}
+                    stroke="var(--tp-hairline)" strokeDasharray={i === grid.length - 1 ? '0' : '2 4'} />
+                  <text x={pad.left - 10} y={g.y + 4} textAnchor="end"
+                    fill="var(--tp-ink-3)" fontSize="11" fontFamily="var(--tp-mono)">
+                    {fmtCurrency(g.v, {compact:true})}
+                  </text>
+                </g>
+              ))}
+              <path d={areaPath} fill="url(#tpApGrad)" />
+              <path d={linePath} fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              {labels.map((lbl, i) => {
+                const step = Math.max(1, Math.floor(labels.length / 8));
+                if (i % step !== 0 && i !== labels.length - 1) return null;
+                return (
+                  <text key={i} x={xs(i)} y={h - 8} textAnchor="middle"
+                    fill="var(--tp-ink-3)" fontSize="11" fontFamily="var(--tp-mono)">{lbl}</text>
+                );
+              })}
+              {hover !== null && (
+                <g>
+                  <line x1={xs(hover)} x2={xs(hover)} y1={pad.top} y2={pad.top + innerH}
+                    stroke="var(--tp-ink-3)" strokeDasharray="2 3" />
+                  <circle cx={xs(hover)} cy={ys(series[hover])} r="5" fill="var(--tp-surface)" stroke={c} strokeWidth="2" />
+                </g>
+              )}
+            </svg>
+            {hover !== null && (
+              <div className="tp-chart-tip" style={{
+                left: Math.min(w - 140, Math.max(0, xs(hover) - 60)),
+                top: ys(series[hover]) - 52,
+              }}>
+                <div className="tp-chart-tip-lbl">{labels[hover]}</div>
+                <div className="tp-chart-tip-val">{fmtCurrency(series[hover])}</div>
+              </div>
+            )}
+          </div>
+        );
+      }
+
+      function MonthlyBars({ labels, primary, secondary, primaryLabel, secondaryLabel,
+                              primaryColor, secondaryColor, height }) {
+        const ref = useRef(null);
+        const [w, setW] = useState(800);
+        const [hover, setHover] = useState(null);
+        const h = height || 220;
+        useEffect(() => {
+          if (!ref.current) return;
+          const ro = new ResizeObserver(([e]) => setW(e.contentRect.width));
+          ro.observe(ref.current);
+          return () => ro.disconnect();
+        }, []);
+        const pad = { top: 16, right: 12, bottom: 28, left: 56 };
+        const innerW = Math.max(100, w - pad.left - pad.right);
+        const innerH = h - pad.top - pad.bottom;
+        const max = Math.max.apply(null, primary.concat(secondary || [0]).concat([1])) * 1.15;
+        const groupW = innerW / labels.length;
+        const barW = secondary ? Math.min(14, groupW * 0.32) : Math.min(22, groupW * 0.55);
+        const gap = secondary ? 3 : 0;
+        const ys = (v) => pad.top + (1 - v / max) * innerH;
+        return (
+          <div ref={ref} className="tp-chart-wrap">
+            <svg width={w} height={h} style={{display:'block'}}>
+              {[0, 0.5, 1].map((t, i) => (
+                <g key={i}>
+                  <line x1={pad.left} x2={w - pad.right} y1={pad.top + t * innerH} y2={pad.top + t * innerH}
+                    stroke="var(--tp-hairline)" strokeDasharray={i === 2 ? '0' : '2 4'} />
+                  <text x={pad.left - 10} y={pad.top + t * innerH + 4} textAnchor="end"
+                    fill="var(--tp-ink-3)" fontSize="11" fontFamily="var(--tp-mono)">
+                    {fmtCurrency(max * (1 - t), {compact:true})}
+                  </text>
+                </g>
+              ))}
+              {labels.map((lbl, i) => {
+                const cx = pad.left + groupW * (i + 0.5);
+                const p = primary[i] || 0;
+                const s = secondary ? (secondary[i] || 0) : null;
+                const pX = secondary ? cx - barW - gap/2 : cx - barW/2;
+                const sX = cx + gap/2;
+                return (
+                  <g key={i} onMouseEnter={() => setHover(i)} onMouseLeave={() => setHover(null)}>
+                    <rect x={pad.left + groupW * i} y={pad.top} width={groupW} height={innerH} fill="transparent" />
+                    <rect x={pX} y={ys(p)} width={barW} height={Math.max(0, pad.top + innerH - ys(p))}
+                      fill={primaryColor} rx="2" opacity={hover === null || hover === i ? 1 : 0.45} />
+                    {s !== null && (
+                      <rect x={sX} y={ys(s)} width={barW} height={Math.max(0, pad.top + innerH - ys(s))}
+                        fill={secondaryColor} rx="2" opacity={hover === null || hover === i ? 1 : 0.45} />
+                    )}
+                    <text x={cx} y={h - 8} textAnchor="middle"
+                      fill={hover === i ? 'var(--tp-ink-1)' : 'var(--tp-ink-3)'} fontSize="11" fontFamily="var(--tp-mono)">
+                      {lbl}
+                    </text>
+                  </g>
+                );
+              })}
+            </svg>
+            {hover !== null && (
+              <div className="tp-chart-tip" style={{
+                left: Math.min(w - 180, pad.left + groupW * (hover + 0.5) - 80),
+                top: 0,
+              }}>
+                <div className="tp-chart-tip-lbl">{labels[hover]}</div>
+                <div className="tp-chart-tip-row"><span className="tp-dot" style={{background:primaryColor}}></span>{primaryLabel} <b>{fmtCurrency(primary[hover] || 0, {compact:true})}</b></div>
+                {secondary && (
+                  <div className="tp-chart-tip-row"><span className="tp-dot" style={{background:secondaryColor}}></span>{secondaryLabel} <b>{fmtCurrency(secondary[hover] || 0, {compact:true})}</b></div>
+                )}
+              </div>
+            )}
+          </div>
+        );
+      }
+
+      function CarrierDonut({ data, size }) {
+        const sz = size || 200;
+        const r = sz / 2 - 8;
+        const cx = sz / 2, cy = sz / 2;
+        const inner = r * 0.62;
+        const total = data.reduce((s, d) => s + d.value, 0);
+        const [hover, setHover] = useState(null);
+        let acc = -Math.PI / 2;
+        const segs = data.map((d, i) => {
+          if (total <= 0) return null;
+          const a0 = acc;
+          const a1 = acc + (d.value / total) * Math.PI * 2;
+          acc = a1;
+          if (a1 - a0 < 0.0001) return null;
+          const large = a1 - a0 > Math.PI ? 1 : 0;
+          const x0 = cx + Math.cos(a0) * r, y0 = cy + Math.sin(a0) * r;
+          const x1 = cx + Math.cos(a1) * r, y1 = cy + Math.sin(a1) * r;
+          const ix0 = cx + Math.cos(a0) * inner, iy0 = cy + Math.sin(a0) * inner;
+          const ix1 = cx + Math.cos(a1) * inner, iy1 = cy + Math.sin(a1) * inner;
+          const path = 'M ' + x0 + ',' + y0 + ' A ' + r + ',' + r + ' 0 ' + large + ' 1 ' + x1 + ',' + y1 + ' L ' + ix1 + ',' + iy1 + ' A ' + inner + ',' + inner + ' 0 ' + large + ' 0 ' + ix0 + ',' + iy0 + ' Z';
+          return { path, color: d.color, label: d.label, value: d.value, pct: d.value / total, i };
+        }).filter(Boolean);
+        const focused = hover !== null ? segs[hover] : null;
+        return (
+          <svg width={sz} height={sz} style={{display:'block'}}>
+            {segs.map((s, i) => (
+              <path key={i} d={s.path} fill={s.color}
+                opacity={hover === null || hover === i ? 1 : 0.32}
+                onMouseEnter={() => setHover(i)} onMouseLeave={() => setHover(null)}
+                style={{transition:'opacity 120ms'}} />
+            ))}
+            <text x={cx} y={cy - 4} textAnchor="middle" fill="var(--tp-ink-2)" fontSize="10"
+                  fontFamily="var(--tp-mono)" letterSpacing="0.08em">
+              {focused ? focused.label.toUpperCase() : 'CARRIER MIX'}
+            </text>
+            <text x={cx} y={cy + 14} textAnchor="middle" fill="var(--tp-ink-1)" fontSize="18"
+                  fontFamily="var(--tp-mono)" fontWeight="500">
+              {focused ? (focused.pct * 100).toFixed(1) + '%' : (total > 0 ? '100%' : '—')}
+            </text>
+          </svg>
+        );
+      }
+
+      function Sparkline({ data, color, w, h }) {
+        const W = w || 88, H = h || 24;
+        if (!data || !data.length) return <svg width={W} height={H} />;
+        const max = Math.max.apply(null, data.concat([1]));
+        const min = Math.min.apply(null, data.concat([0]));
+        const range = max - min || 1;
+        const pts = data.map((v, i) => [
+          (i / Math.max(data.length - 1, 1)) * W,
+          H - ((v - min) / range) * H,
+        ]);
+        return (
+          <svg width={W} height={H} style={{display:'block'}}>
+            <path d={smoothPath(pts, 0.5)} fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" />
+            <circle cx={pts[pts.length-1][0]} cy={pts[pts.length-1][1]} r="2" fill={color} />
+          </svg>
+        );
+      }
+
+      // ─── Header ────────────────────────────────────────────────────────
+      const SunIcon = () => (
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round">
+          <circle cx="12" cy="12" r="4" />
+          <path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
+        </svg>
+      );
+      const MoonIcon = () => (
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+        </svg>
+      );
+
+      function Header({ theme, onToggleTheme, agentCount, subtitle }) {
+        const today = new Date();
+        const dateStr = today.toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric', year:'numeric' });
+        return (
+          <header className="tp-hdr">
+            <div className="tp-hdr-l">
+              <div className="tp-hdr-brand">
+                <div className="tp-hdr-mark"></div>
+                <div className="tp-hdr-title">Kairos Financial</div>
+                <span className="tp-hdr-sub">· {subtitle}</span>
+              </div>
+              <div className="tp-hdr-sub" style={{marginTop:6, marginLeft:34}}>
+                {agentCount} producers · Life &amp; Final Expense Division
+              </div>
+            </div>
+            <div className="tp-hdr-r">
+              <div className="tp-hdr-time"><b>{dateStr}</b></div>
+              <button className="tp-theme-toggle" onClick={onToggleTheme} aria-label="Toggle theme">
+                {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
+              </button>
+            </div>
+          </header>
+        );
+      }
+
+      // ─── AP Hero ────────────────────────────────────────────────────────
+      function APHero({ scope, view, timeframe, setTimeframe }) {
+        const today = new Date();
+        let series, labels, total, prior, label;
+        if (timeframe === 'WTD') {
+          const weekStart = startOfWeek(today);
+          const dayBuckets = [0,0,0,0,0,0,0];
+          (scope.policies || []).forEach(p => {
+            const d = new Date(p.policy_date || p.created_at);
+            if (d >= weekStart) {
+              const idx = d.getDay();
+              dayBuckets[idx] += parseFloat(p.annual_premium || 0);
+            }
+          });
+          series = [dayBuckets[1], dayBuckets[2], dayBuckets[3], dayBuckets[4], dayBuckets[5], dayBuckets[6], dayBuckets[0]];
+          labels = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+          total = view.ap;
+          prior = (scope.weekly || [])[(scope.weekly || []).length - 2] || 0;
+          label = 'Week-to-date';
+        } else if (timeframe === 'MTD') {
+          const monthStart = startOfMonth(today);
+          const daysInMonth = today.getDate();
+          const dayBuckets = new Array(daysInMonth).fill(0);
+          (scope.policies || []).forEach(p => {
+            const d = new Date(p.policy_date || p.created_at);
+            if (d >= monthStart && d <= today) {
+              dayBuckets[d.getDate() - 1] += parseFloat(p.annual_premium || 0);
+            }
+          });
+          series = dayBuckets;
+          labels = Array.from({length: daysInMonth}, (_, i) => String(i + 1));
+          total = view.ap;
+          prior = (scope.monthly || [])[(scope.monthly || []).length - 2] || 0;
+          label = 'Month-to-date';
         } else {
-          statusEl.innerHTML = '';
+          const monthly = scope.monthly || [];
+          series = monthly.reduce((a, v, i) => { a.push((a[i-1] || 0) + v); return a; }, []);
+          labels = scope.monthLabels || [];
+          total = view.ap;
+          prior = (monthly[monthly.length - 2] || 0);
+          label = 'Year-to-date';
+        }
+        const delta = prior ? ((total - prior) / prior) * 100 : 0;
+        const deltaLabel = timeframe === 'WTD' ? 'vs last week' : timeframe === 'MTD' ? 'vs last month' : 'vs prior month';
+        const isTeam = scope.id === '__team__';
+        return (
+          <div className="tp-card tp-ap-hero">
+            <div className="tp-card-hd">
+              <div style={{display:'flex', alignItems:'center', gap:14}}>
+                <div className="tp-card-title">{isTeam ? 'Total Annual Premium' : (scope.name.split(' ')[0] + "'s Annual Premium")}</div>
+                <div className="tp-card-meta">{label}</div>
+              </div>
+              <div className="tp-tf-segment">
+                {['WTD','MTD','YTD'].map(t => (
+                  <button key={t} className={timeframe === t ? 'on' : ''} onClick={() => setTimeframe(t)}>{t}</button>
+                ))}
+              </div>
+            </div>
+            <div className="tp-ap-stats">
+              <div className="tp-ap-num">{fmtCurrency(total)}</div>
+              {prior > 0 ? (
+                <div className={'tp-ap-delta ' + (delta >= 0 ? 'pos' : 'neg')}>
+                  {delta >= 0 ? '▲' : '▼'} {Math.abs(delta).toFixed(1)}%
+                  <span style={{color:'var(--tp-ink-3)', marginLeft:6}}>{deltaLabel}</span>
+                </div>
+              ) : (
+                <div className="tp-ap-num-sub">no prior period to compare</div>
+              )}
+              <div className="tp-ap-num-sub">
+                Avg premium <b style={{color:'var(--tp-ink-1)'}}>{fmtCurrency(view.avgPremium)}</b> · Deals <b style={{color:'var(--tp-ink-1)'}}>{view.deals.toLocaleString()}</b>
+              </div>
+            </div>
+            <APLineChart labels={labels} series={series} color="var(--rb-green)" height={300} />
+          </div>
+        );
+      }
+
+      // ─── Leaderboard ─────────────────────────────────────────────────
+      function Leaderboard({ agents, activeId, onSelect }) {
+        const [sortKey, setSortKey] = useState('apMTD');
+        const [sortDir, setSortDir] = useState('desc');
+        const sorted = useMemo(() => {
+          const arr = [...agents];
+          arr.sort((a, b) => {
+            const va = a[sortKey] || 0, vb = b[sortKey] || 0;
+            return sortDir === 'asc' ? va - vb : vb - va;
+          });
+          return arr;
+        }, [agents, sortKey, sortDir]);
+        const setSort = (k) => {
+          if (k === sortKey) setSortDir(d => d === 'asc' ? 'desc' : 'asc');
+          else { setSortKey(k); setSortDir('desc'); }
+        };
+        const arrow = (k) => sortKey === k ? <span className="arrow">{sortDir === 'asc' ? '↑' : '↓'}</span> : null;
+        const avatarColor = (i) => RAINBOW_TOKENS[i % RAINBOW_TOKENS.length];
+        return (
+          <div className="tp-card tp-lb">
+            <div className="tp-lb-hd">
+              <div className="tp-card-title">Agent leaderboard</div>
+              <div className="tp-card-meta">Click an agent to filter</div>
+            </div>
+            <table className="tp-lb-table">
+              <thead>
+                <tr>
+                  <th onClick={() => setSort('apMTD')}>Agent</th>
+                  <th className="num" onClick={() => setSort('apMTD')}>AP MTD {arrow('apMTD')}</th>
+                  <th className="num" onClick={() => setSort('dealsMTD')}>Deals {arrow('dealsMTD')}</th>
+                  <th className="num" onClick={() => setSort('dialToDeal')}>D→D % {arrow('dialToDeal')}</th>
+                  <th className="num" onClick={() => setSort('roi')}>ROI {arrow('roi')}</th>
+                  <th className="num">Trend (12mo)</th>
+                </tr>
+              </thead>
+              <tbody>
+                {sorted.map((a, i) => {
+                  const orig = agents.findIndex(x => x.id === a.id);
+                  const sparkColor = avatarColor(orig);
+                  return (
+                    <tr key={a.id} className={activeId === a.id ? 'active' : ''} onClick={() => onSelect(a.id)}>
+                      <td>
+                        <div className="tp-agt-cell">
+                          <span className="tp-rank">{String(i + 1).padStart(2, '0')}</span>
+                          <div className="tp-avatar" style={{background:'color-mix(in oklch, ' + sparkColor + ' 22%, var(--tp-surface-2))', borderColor:'color-mix(in oklch, ' + sparkColor + ' 40%, transparent)'}}>
+                            {a.initials}
+                          </div>
+                          <div style={{display:'flex', flexDirection:'column'}}>
+                            <span className="tp-agt-name">{a.name}</span>
+                            <span className="tp-agt-tenure">{(a.kpiYTD.dials || 0).toLocaleString()} dials YTD</span>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="num">{fmtCurrency(a.apMTD, {compact:true})}</td>
+                      <td className="num">{a.dealsMTD}</td>
+                      <td className="num"><span className="tp-dial-pct">{a.dialToDeal.toFixed(2)}%</span></td>
+                      <td className="num" style={{color: a.roi >= 0 ? 'var(--tp-pos)' : 'var(--tp-neg)'}}>
+                        {a.roi >= 0 ? '+' : ''}{a.roi.toFixed(0)}%
+                      </td>
+                      <td className="num" style={{paddingRight: 22}}>
+                        <div style={{display:'flex', justifyContent:'flex-end'}}>
+                          <Sparkline data={a.monthly} color={sparkColor} />
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        );
+      }
+
+      // ─── Carrier breakdown ──────────────────────────────────────────────
+      function CarrierBreakdown({ scope, view, timeframe }) {
+        const isTeam = scope.id === '__team__';
+        const data = CARRIER_LIST.map(name => ({
+          label: name,
+          color: carrierColor(name),
+          value: scope.carrierMix[name] || 0,
+        })).filter(d => d.value > 0).sort((a, b) => b.value - a.value);
+        const apTotal = data.reduce((s, d) => s + d.value, 0);
+        return (
+          <div className="tp-card tp-carriers">
+            <div className="tp-card-hd">
+              <div className="tp-card-title">Carrier mix · {timeframe}</div>
+              <div className="tp-card-meta">{isTeam ? 'Team' : scope.name.split(' ')[0]}</div>
+            </div>
+            <div className="tp-carriers-body">
+              <CarrierDonut data={data} size={180} />
+              <div className="tp-carrier-list">
+                {data.length === 0 ? (
+                  <div style={{color:'var(--tp-ink-3)', fontFamily:'var(--tp-mono)', fontSize:11}}>No policies in this window.</div>
+                ) : data.map((d) => (
+                  <div key={d.label}>
+                    <div className="tp-carrier-row">
+                      <span className="name"><span className="tp-dot" style={{background: d.color}}></span>{d.label}</span>
+                      <span className="ap">{fmtCurrency(d.value, {compact:true})}</span>
+                      <span className="pct">{apTotal > 0 ? (d.value / apTotal * 100).toFixed(1) : '0.0'}%</span>
+                    </div>
+                    <div className="tp-bar-track">
+                      <div className="tp-bar-fill" style={{width: (apTotal > 0 ? (d.value / apTotal * 100) : 0) + '%', background: d.color}}></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        );
+      }
+
+      // ─── Comparison ─────────────────────────────────────────────────────
+      function Comparison({ scope, team, agents, months }) {
+        const isTeam = scope.id === '__team__';
+        const [mode, setMode] = useState(isTeam ? 'thisVsLast' : 'agentVsTeam');
+        useEffect(() => { setMode(isTeam ? 'thisVsLast' : 'agentVsTeam'); }, [isTeam]);
+        const labels = (scope.monthLabels || []).slice(-months);
+        const teamMonthly = (team.monthly || []).slice(-months);
+        let primary, secondary, primaryLabel, secondaryLabel, primaryColor, secondaryColor;
+        if (!isTeam && mode === 'agentVsTeam') {
+          primary = (scope.monthly || []).slice(-months);
+          secondary = teamMonthly.map(v => Math.round(v / Math.max(agents.length, 1)));
+          primaryLabel = scope.name.split(' ')[0];
+          secondaryLabel = 'Team avg';
+          primaryColor = 'var(--rb-green)';
+          secondaryColor = 'var(--rb-blue)';
+        } else if (mode === 'thisVsLast') {
+          primary = teamMonthly;
+          const today = new Date();
+          const allPols = team.policies || [];
+          const priorYearMonthly = [];
+          for (let i = months - 1; i >= 0; i--) {
+            const ms = new Date(today.getFullYear() - 1, today.getMonth() - i, 1);
+            const me = new Date(today.getFullYear() - 1, today.getMonth() - i + 1, 1);
+            const sum = allPols.reduce((s, p) => {
+              const d = new Date(p.policy_date || p.created_at);
+              return d >= ms && d < me ? s + parseFloat(p.annual_premium || 0) : s;
+            }, 0);
+            priorYearMonthly.push(sum);
+          }
+          secondary = priorYearMonthly;
+          primaryLabel = 'This year';
+          secondaryLabel = 'Prior year';
+          primaryColor = 'var(--rb-green)';
+          secondaryColor = 'var(--rb-purple)';
+        } else {
+          primary = isTeam ? teamMonthly : (scope.monthly || []).slice(-months);
+          secondary = null;
+          primaryLabel = isTeam ? 'Team total' : scope.name.split(' ')[0];
+          primaryColor = 'var(--rb-green)';
+        }
+        return (
+          <div className="tp-card tp-compare">
+            <div className="tp-compare-hd">
+              <div>
+                <div className="tp-card-title">Month-over-month · {isTeam ? 'Team' : scope.name}</div>
+                <div className="tp-card-meta" style={{marginTop:4}}>Last {months} months · annual premium</div>
+              </div>
+              <div style={{display:'flex', alignItems:'center', gap:18}}>
+                <div className="tp-legend">
+                  <div><span className="tp-dot" style={{background: primaryColor}}></span>{primaryLabel}</div>
+                  {secondary && <div><span className="tp-dot" style={{background: secondaryColor}}></span>{secondaryLabel}</div>}
+                </div>
+                <div className="tp-tf-segment">
+                  {!isTeam ? (
+                    <>
+                      <button className={mode === 'agentVsTeam' ? 'on' : ''} onClick={() => setMode('agentVsTeam')}>vs Team avg</button>
+                      <button className={mode === 'soloOnly' ? 'on' : ''} onClick={() => setMode('soloOnly')}>Solo</button>
+                    </>
+                  ) : (
+                    <>
+                      <button className={mode === 'thisVsLast' ? 'on' : ''} onClick={() => setMode('thisVsLast')}>YoY</button>
+                      <button className={mode === 'soloOnly' ? 'on' : ''} onClick={() => setMode('soloOnly')}>Solo</button>
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
+            <MonthlyBars
+              labels={labels}
+              primary={primary}
+              secondary={secondary}
+              primaryLabel={primaryLabel}
+              secondaryLabel={secondaryLabel}
+              primaryColor={primaryColor}
+              secondaryColor={secondaryColor}
+              height={240}
+            />
+          </div>
+        );
+      }
+
+      // ─── KPI Panel ─────────────────────────────────────────────────────
+      function ROIRing({ value, color }) {
+        const r = 22, c = 2 * Math.PI * r;
+        const pct = Math.max(-100, Math.min(300, value));
+        const fill = Math.min(100, Math.max(0, pct / 3));
+        return (
+          <svg width="56" height="56" viewBox="0 0 56 56">
+            <circle cx="28" cy="28" r={r} fill="none" stroke="var(--tp-surface-3)" strokeWidth="4" />
+            <circle cx="28" cy="28" r={r} fill="none" stroke={color} strokeWidth="4"
+              strokeDasharray={(fill/100)*c + ' ' + c} strokeDashoffset={c/4} strokeLinecap="round"
+              transform="rotate(-90 28 28)" />
+          </svg>
+        );
+      }
+
+      function KPIPanel({ scope, view, timeframe }) {
+        const s = view;
+        const isTeam = scope.id === '__team__';
+        const dayDivisor = timeframe === 'WTD' ? 5 : timeframe === 'MTD' ? 22 : 220;
+        const HUES = {
+          dials: 'var(--rb-green)', answers: 'var(--rb-yellow)',
+          appointments: 'var(--rb-orange)', presentations: 'var(--rb-red)',
+          deals: 'var(--rb-purple)', leadSpend: 'var(--rb-blue)',
+          deposits: 'var(--rb-green)', roi: 'var(--rb-orange)', dialToDeal: 'var(--rb-purple)',
+        };
+        const cells = [
+          { lbl: 'Dials', val: fmtNum(s.dials), sub: <>{(s.dials / dayDivisor).toFixed(0)} <span style={{color:'var(--tp-ink-4)'}}>/ business day</span></>, hue: HUES.dials },
+          { lbl: 'Answers', val: fmtNum(s.answers), sub: <><b>{(s.answers / Math.max(s.dials, 1) * 100).toFixed(1)}%</b> answer rate</>, hue: HUES.answers },
+          { lbl: 'Appointments', val: fmtNum(s.appointments), sub: <><b>{(s.appointments / Math.max(s.answers, 1) * 100).toFixed(1)}%</b> set rate</>, hue: HUES.appointments },
+          { lbl: 'Presentations', val: fmtNum(s.presentations), sub: <><b>{(s.presentations / Math.max(s.appointments, 1) * 100).toFixed(1)}%</b> show rate</>, hue: HUES.presentations },
+          { lbl: 'Deals', val: fmtNum(s.deals), sub: <><b>{(s.deals / Math.max(s.presentations, 1) * 100).toFixed(1)}%</b> close rate</>, hue: HUES.deals },
+          { lbl: 'Lead spend', val: fmtCurrency(s.leadSpend, {compact:true}), sub: <>{fmtCurrency(s.leadSpend / Math.max(s.deals, 1))} <span style={{color:'var(--tp-ink-4)'}}>per deal</span></>, hue: HUES.leadSpend },
+          { lbl: 'Deposits', val: fmtCurrency(s.deposits, {compact:true}), sub: <>{(s.deposits / Math.max(s.ap, 1) * 100).toFixed(0)}% <span style={{color:'var(--tp-ink-4)'}}>of AP collected</span></>, hue: HUES.deposits },
+        ];
+        return (
+          <div className="tp-kpi-panel">
+            <div className="tp-card-hd" style={{padding:'0 4px 12px'}}>
+              <div className="tp-card-title">KPI tracking · {isTeam ? 'Team total' : scope.name}</div>
+              <div className="tp-card-meta">{timeframe} · live from daily KPIs</div>
+            </div>
+            <div className="tp-kpi-grid">
+              {cells.map(c => (
+                <div key={c.lbl} className="tp-kpi-cell">
+                  <div className="tp-kpi-lbl"><span className="swatch" style={{background:c.hue}}></span>{c.lbl}</div>
+                  <div className="tp-kpi-val">{c.val}</div>
+                  <div className="tp-kpi-sub">{c.sub}</div>
+                </div>
+              ))}
+              <div className="tp-kpi-cell featured">
+                <div className="tp-kpi-lbl"><span className="swatch" style={{background: HUES.roi}}></span>ROI</div>
+                <div className="tp-ring-wrap">
+                  <ROIRing value={s.roi} color={HUES.roi} />
+                  <div className="tp-ring-text">
+                    <div className="tp-kpi-val" style={{fontSize:22, color: s.roi >= 0 ? 'var(--tp-pos)' : 'var(--tp-neg)'}}>
+                      {s.roi >= 0 ? '+' : ''}{s.roi.toFixed(0)}%
+                    </div>
+                    <div className="tp-kpi-sub">(deposits − spend) / spend</div>
+                  </div>
+                </div>
+              </div>
+              <div className="tp-kpi-cell featured">
+                <div className="tp-kpi-lbl"><span className="swatch" style={{background: HUES.dialToDeal}}></span>Dial → Deal</div>
+                <div className="tp-ring-wrap">
+                  <ROIRing value={s.dialToDeal * 30} color={HUES.dialToDeal} />
+                  <div className="tp-ring-text">
+                    <div className="tp-kpi-val" style={{fontSize:22}}>{s.dialToDeal.toFixed(2)}%</div>
+                    <div className="tp-kpi-sub">{Math.round(s.dials / Math.max(s.deals, 1))} dials → 1 deal</div>
+                  </div>
+                </div>
+              </div>
+              <div className="tp-kpi-cell">
+                <div className="tp-kpi-lbl"><span className="swatch" style={{background: 'var(--rb-blue)'}}></span>Avg premium</div>
+                <div className="tp-kpi-val">{fmtCurrency(s.avgPremium, {compact:true})}</div>
+                <div className="tp-kpi-sub">per closed deal</div>
+              </div>
+            </div>
+          </div>
+        );
+      }
+
+      // ─── Dashboard ───────────────────────────────────────────────────
+      function Dashboard() {
+        const [theme, setTheme] = useState(initialTheme);
+        const [timeframe, setTimeframe] = useState('MTD');
+        const [activeId, setActiveId] = useState(null);
+        const [agents, setAgents] = useState([]);
+        const [team, setTeam] = useState(null);
+        const [loading, setLoading] = useState(true);
+        const [error, setError] = useState(null);
+
+        useEffect(() => {
+          const root = document.getElementById('tpatab-performance');
+          if (root) root.setAttribute('data-tp-theme', theme);
+          try { localStorage.setItem(TP_THEME_KEY, theme); } catch (e) {}
+        }, [theme]);
+
+        useEffect(() => {
+          let cancelled = false;
+          (async () => {
+            try {
+              setLoading(true);
+              const [profiles, policies, kpis] = await Promise.all([
+                fetchAgentProfiles(), fetchPolicies(), fetchKpis()
+              ]);
+              if (cancelled) return;
+              const builtAgents = buildAgents(profiles, policies, kpis);
+              const builtTeam = buildTeam(builtAgents);
+              setAgents(builtAgents);
+              setTeam(builtTeam);
+              setLoading(false);
+            } catch (e) {
+              if (cancelled) return;
+              console.error('TP dashboard load failed:', e);
+              setError(e.message || String(e));
+              setLoading(false);
+            }
+          })();
+          return () => { cancelled = true; };
+        }, []);
+
+        const scope = activeId ? (agents.find(a => a.id === activeId) || team) : team;
+        const view = useMemo(() => scope ? scopedView(scope, timeframe) : null, [scope, timeframe, agents, team]);
+
+        if (loading) {
+          return (
+            <div>
+              <Header theme={theme} onToggleTheme={() => setTheme(theme === 'dark' ? 'light' : 'dark')} agentCount="—" subtitle="Team Performance" />
+              <div className="tp-loading">Loading dashboard data…</div>
+            </div>
+          );
+        }
+        if (error || !team) {
+          return (
+            <div>
+              <Header theme={theme} onToggleTheme={() => setTheme(theme === 'dark' ? 'light' : 'dark')} agentCount="—" subtitle="Team Performance" />
+              <div className="tp-loading">Failed to load: {error || 'no agent profiles'}</div>
+            </div>
+          );
         }
 
-        renderGoals(ytd);
-        renderCompLevels();
-        renderKpiSection();
+        return (
+          <div>
+            <Header
+              theme={theme}
+              onToggleTheme={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+              agentCount={agents.length}
+              subtitle="Team Performance"
+            />
+            <div className="tp-filter-bar">
+              <div style={{display:'flex', alignItems:'center', gap:12}}>
+                {scope && scope.id !== '__team__' ? (
+                  <div className="tp-filter-pill">
+                    <span style={{color:'var(--tp-ink-3)'}}>Filtered to</span>
+                    <b>{scope.name}</b>
+                    <button className="x" onClick={() => setActiveId(null)} aria-label="Clear filter">×</button>
+                  </div>
+                ) : (
+                  <div className="tp-hdr-sub">All {agents.length} agents</div>
+                )}
+              </div>
+              <div className="tp-hdr-sub">Last sync · {new Date().toLocaleTimeString('en-US', {hour:'numeric', minute:'2-digit'})}</div>
+            </div>
+            <div className="tp-grid tp-grid-12">
+              <APHero scope={scope} view={view} timeframe={timeframe} setTimeframe={setTimeframe} />
+              <Leaderboard agents={agents} activeId={activeId} onSelect={(id) => setActiveId(curr => curr === id ? null : id)} />
+              <CarrierBreakdown scope={scope} view={view} timeframe={timeframe} />
+              <Comparison scope={scope} team={team} agents={agents} months={12} />
+              <KPIPanel scope={scope} view={view} timeframe={timeframe} />
+            </div>
+            <div className="tp-foot">
+              <div>Kairos Financial · Internal · Confidential</div>
+              <div>Synced from Supabase · {new Date().toLocaleDateString('en-US', {month:'short', day:'numeric'})}</div>
+            </div>
+          </div>
+        );
       }
 
-      async function renderGoals(ytdRows) {
-        const goalsEl = document.getElementById('tpPerfGoals');
-        try {
-          const res = await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?select=user_id,annual_goal&annual_goal=gt.0', { headers: TP_HDRS_BASE });
-          const profiles = await res.json();
-          if (!profiles || !profiles.length) { goalsEl.innerHTML = ''; return; }
-          const repMap = {};
-          ytdRows.forEach(r => { if (r.user_id && r.sales_rep) repMap[r.user_id] = r.sales_rep; });
-          const allReps = await fetch(SUPABASE_URL + '/rest/v1/policies?select=user_id,sales_rep&order=created_at.desc&limit=500', { headers: TP_HDRS_BASE });
-          const allRepData = await allReps.json();
-          allRepData.forEach(r => { if (r.user_id && r.sales_rep && !repMap[r.user_id]) repMap[r.user_id] = r.sales_rep; });
-          const ytdByUser = {};
-          const yearStart = new Date(new Date().getFullYear(), 0, 1);
-          allData.forEach(r => {
-            if (!r.user_id) return;
-            if (new Date(r.created_at) >= yearStart) {
-              ytdByUser[r.user_id] = (ytdByUser[r.user_id] || 0) + parseFloat(r.annual_premium || 0);
+      // ─── Agent Profiles ──────────────────────────────────────────────
+      function AgentProfiles() {
+        const [theme, setTheme] = useState(initialTheme);
+        const [profiles, setProfiles] = useState([]);
+        const [videoCounts, setVideoCounts] = useState({});
+        const [loading, setLoading] = useState(true);
+        const [savedFor, setSavedFor] = useState({});
+        const [drafts, setDrafts] = useState({});
+        const [sortKey, setSortKey] = useState('agent_name');
+        const [sortDir, setSortDir] = useState('asc');
+
+        useEffect(() => {
+          const root = document.getElementById('tpatab-agents');
+          if (root) root.setAttribute('data-tp-theme', theme);
+          try { localStorage.setItem(TP_THEME_KEY, theme); } catch (e) {}
+        }, [theme]);
+
+        const reload = async () => {
+          setLoading(true);
+          const [profs, vids] = await Promise.all([fetchAgentProfiles(), fetchVideoProgress()]);
+          const counts = {};
+          vids.forEach(v => { counts[v.user_id] = (counts[v.user_id] || 0) + 1; });
+          setProfiles(profs);
+          setVideoCounts(counts);
+          setLoading(false);
+        };
+        useEffect(() => { reload(); }, []);
+
+        const sorted = useMemo(() => {
+          const arr = [...profiles];
+          arr.sort((a, b) => {
+            let va, vb;
+            if (sortKey === 'training') {
+              va = videoCounts[a.user_id] || 0; vb = videoCounts[b.user_id] || 0;
+            } else if (sortKey === 'comp_level') {
+              va = parseInt(a.comp_level || 0); vb = parseInt(b.comp_level || 0);
+            } else {
+              va = (a[sortKey] || '').toString().toLowerCase();
+              vb = (b[sortKey] || '').toString().toLowerCase();
             }
+            if (va < vb) return sortDir === 'asc' ? -1 : 1;
+            if (va > vb) return sortDir === 'asc' ? 1 : -1;
+            return 0;
           });
-          const now = new Date();
-          const dayOfYear = Math.floor((now - yearStart) / (1000*60*60*24)) + 1;
-          let html = '<div class="tp-perf-goals-card"><div class="tp-perf-goals-title">\ud83c\udfaf Agent Annual Goals</div><div class="tp-perf-goals-grid">';
-          profiles.sort((a, b) => (b.annual_goal || 0) - (a.annual_goal || 0));
-          profiles.forEach(p => {
-            const name = repMap[p.user_id] || 'Unknown Agent';
-            const goal = parseFloat(p.annual_goal) || 0;
-            const ytdAP = ytdByUser[p.user_id] || 0;
-            const pct = goal > 0 ? Math.min((ytdAP / goal) * 100, 100) : 0;
-            const expectedByNow = (goal / 365) * dayOfYear;
-            const ahead = ytdAP >= expectedByNow;
-            const fillClass = ahead ? 'ahead' : 'behind';
-            const statusClass = ahead ? 'ahead' : 'behind';
-            const statusText = ahead ? '+$' + fmtAP(ytdAP - expectedByNow) + ' ahead' : '-$' + fmtAP(expectedByNow - ytdAP) + ' behind';
-            html += '<div class="tp-perf-goal-row">';
-            html += '<div class="tp-perf-goal-name">' + name.split(' ')[0] + '</div>';
-            html += '<div class="tp-perf-goal-bar-wrap">';
-            html += '<div class="tp-perf-goal-bar-labels"><span class="current">$' + fmtAP(ytdAP) + '</span><span>Goal: $' + fmtAP(goal) + '</span></div>';
-            html += '<div class="tp-perf-goal-bar"><div class="tp-perf-goal-fill ' + fillClass + '" style="width:' + pct.toFixed(1) + '%"></div></div>';
-            html += '</div>';
-            html += '<div class="tp-perf-goal-status ' + statusClass + '">' + statusText + '</div>';
-            html += '</div>';
+          return arr;
+        }, [profiles, videoCounts, sortKey, sortDir]);
+
+        const setSort = (k) => {
+          if (k === sortKey) setSortDir(d => d === 'asc' ? 'desc' : 'asc');
+          else { setSortKey(k); setSortDir(k === 'agent_name' ? 'asc' : 'desc'); }
+        };
+        const arrow = (k) => sortKey === k ? <span className="arrow">{sortDir === 'asc' ? '↑' : '↓'}</span> : null;
+
+        const draftFor = (uid, prof) => drafts[uid] || { agent_name: prof.agent_name || '', comp_level: prof.comp_level || '' };
+        const updateDraft = (uid, key, value) => {
+          const prof = profiles.find(p => p.user_id === uid) || {};
+          setDrafts(d => Object.assign({}, d, { [uid]: Object.assign({}, draftFor(uid, prof), { [key]: value }) }));
+        };
+
+        const saveRow = async (uid) => {
+          const prof = profiles.find(p => p.user_id === uid);
+          if (!prof) return;
+          const draft = draftFor(uid, prof);
+          const body = { agent_name: draft.agent_name };
+          body.comp_level = draft.comp_level ? parseInt(draft.comp_level) : null;
+          await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?user_id=eq.' + uid, {
+            method: 'PATCH', headers: HDRS_WRITE, body: JSON.stringify(body)
           });
-          html += '</div></div>';
-          goalsEl.innerHTML = html;
-        } catch (e) { console.error('TP goals render failed:', e); goalsEl.innerHTML = ''; }
+          setSavedFor(s => Object.assign({}, s, { [uid]: Date.now() }));
+          setTimeout(() => setSavedFor(s => { const c = Object.assign({}, s); delete c[uid]; return c; }), 1800);
+          reload();
+        };
+
+        const toggleAccess = async (uid, current) => {
+          await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?user_id=eq.' + uid, {
+            method: 'PATCH', headers: HDRS_WRITE, body: JSON.stringify({ training_complete: !current })
+          });
+          reload();
+        };
+
+        const avatarColor = (i) => RAINBOW_TOKENS[i % RAINBOW_TOKENS.length];
+        const initialsOf = (name) => (name || '').split(' ').map(s => s[0]).filter(Boolean).slice(0,2).join('').toUpperCase() || '··';
+
+        return (
+          <div>
+            <Header
+              theme={theme}
+              onToggleTheme={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+              agentCount={profiles.length}
+              subtitle="Agent Profiles"
+            />
+            <div className="tp-filter-bar">
+              <div className="tp-hdr-sub">Manage agent info, comp levels, and training access</div>
+              <div className="tp-hdr-sub">{profiles.length} profiles · synced from agent_profiles</div>
+            </div>
+            <div className="tp-grid tp-grid-12">
+              <div className="tp-card tp-lb">
+                <div className="tp-lb-hd">
+                  <div className="tp-card-title">All agents</div>
+                  <div className="tp-card-meta">Inline edit · click headers to sort</div>
+                </div>
+                {loading ? (
+                  <div className="tp-loading">Loading agent profiles…</div>
+                ) : profiles.length === 0 ? (
+                  <div className="tp-loading">No agent profiles found.</div>
+                ) : (
+                  <table className="tp-lb-table">
+                    <thead>
+                      <tr>
+                        <th onClick={() => setSort('agent_name')}>Agent {arrow('agent_name')}</th>
+                        <th onClick={() => setSort('comp_level')}>Comp level {arrow('comp_level')}</th>
+                        <th onClick={() => setSort('training')}>Training {arrow('training')}</th>
+                        <th>Status</th>
+                        <th className="num">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {sorted.map((p, i) => {
+                        const orig = profiles.findIndex(x => x.user_id === p.user_id);
+                        const sparkColor = avatarColor(orig);
+                        const draft = draftFor(p.user_id, p);
+                        const vCount = videoCounts[p.user_id] || 0;
+                        const pct = Math.min(100, Math.round((vCount / TOTAL_TRAINING_VIDEOS) * 100));
+                        const isComplete = p.training_complete === true;
+                        const justSaved = !!savedFor[p.user_id];
+                        return (
+                          <tr key={p.user_id}>
+                            <td>
+                              <div className="tp-agt-cell">
+                                <div className="tp-avatar" style={{background:'color-mix(in oklch, ' + sparkColor + ' 22%, var(--tp-surface-2))', borderColor:'color-mix(in oklch, ' + sparkColor + ' 40%, transparent)'}}>
+                                  {initialsOf(draft.agent_name)}
+                                </div>
+                                <input className="tp-input"
+                                  style={{minWidth:160}}
+                                  value={draft.agent_name}
+                                  onChange={e => updateDraft(p.user_id, 'agent_name', e.target.value)} />
+                              </div>
+                            </td>
+                            <td>
+                              <select className="tp-select"
+                                value={draft.comp_level || ''}
+                                onChange={e => updateDraft(p.user_id, 'comp_level', e.target.value)}>
+                                <option value="">—</option>
+                                {Array.from({length: 17}, (_, k) => 65 + k * 5).map(v => (
+                                  <option key={v} value={v}>{v}%</option>
+                                ))}
+                              </select>
+                            </td>
+                            <td>
+                              <div style={{display:'flex', flexDirection:'column', gap:2}}>
+                                <span style={{fontFamily:'var(--tp-mono)', fontSize:11, color:'var(--tp-ink-2)'}}>{vCount} / {TOTAL_TRAINING_VIDEOS}</span>
+                                <div className="tp-progress-track">
+                                  <div className="tp-progress-fill" style={{width:pct + '%', background: pct >= 100 ? 'var(--rb-green)' : 'linear-gradient(90deg, var(--rb-purple), var(--rb-blue))'}}></div>
+                                </div>
+                              </div>
+                            </td>
+                            <td>
+                              <span className={'tp-agent-status ' + (isComplete ? 'active' : 'training')}>
+                                {isComplete ? 'Active' : 'In training'}
+                              </span>
+                            </td>
+                            <td className="num">
+                              <div className="tp-actions-cell">
+                                <button className="tp-btn primary" onClick={() => saveRow(p.user_id)}>
+                                  {justSaved ? 'Saved ✓' : 'Save'}
+                                </button>
+                                <button className={'tp-btn ' + (isComplete ? 'danger' : 'success')}
+                                  onClick={() => toggleAccess(p.user_id, isComplete)}>
+                                  {isComplete ? 'Revoke' : 'Grant'}
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                )}
+              </div>
+            </div>
+            <div className="tp-foot">
+              <div>Kairos Financial · Internal · Confidential</div>
+              <div>{profiles.length} agent profiles</div>
+            </div>
+          </div>
+        );
       }
 
-      async function renderCompLevels() {
-        const goalsEl = document.getElementById('tpPerfGoals');
-        try {
-          const res = await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?select=user_id,comp_level', { headers: TP_HDRS_BASE });
-          const profiles = await res.json();
-          const repMap = {};
-          allData.forEach(r => { if (r.user_id && r.sales_rep) repMap[r.user_id] = r.sales_rep; });
-          const knownIds = Object.keys(repMap);
-          const profileMap = {};
-          profiles.forEach(p => { profileMap[p.user_id] = p.comp_level; });
-          let html = '<div class="tp-perf-goals-card" style="margin-top:1rem;"><div class="tp-perf-goals-title">\ud83d\udcb5 Agent Comp Levels</div><div class="tp-perf-goals-grid">';
-          knownIds.sort((a, b) => (repMap[a] || '').localeCompare(repMap[b] || ''));
-          knownIds.forEach(uid => {
-            const name = repMap[uid];
-            const current = profileMap[uid] || '';
-            let opts = '<option value="">Not set</option>';
-            for (let v = 65; v <= 145; v += 5) {
-              opts += '<option value="' + v + '"' + (current == v ? ' selected' : '') + '>' + v + '%</option>';
-            }
-            html += '<div class="tp-perf-goal-row" style="gap:1rem;">';
-            html += '<div class="tp-perf-goal-name">' + escTp(name.split(' ')[0]) + '</div>';
-            html += '<select class="tp-admin-rep-select" data-tp-comp-uid="' + uid + '" style="flex:1;max-width:160px;">' + opts + '</select>';
-            html += '<span class="tp-comp-save-msg" data-tp-msg-uid="' + uid + '" style="font-size:0.72rem;color:#16a34a;display:none;">✓ Saved</span>';
-            html += '</div>';
-          });
-          html += '</div></div>';
-          goalsEl.insertAdjacentHTML('beforeend', html);
-          document.querySelectorAll('[data-tp-comp-uid]').forEach(sel => {
-            sel.addEventListener('change', async () => {
-              const uid = sel.dataset.tpCompUid;
-              const val = sel.value ? parseInt(sel.value) : null;
-              const upd = await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?user_id=eq.' + uid, {
-                method: 'PATCH', headers: TP_HDRS_WRITE, body: JSON.stringify({ comp_level: val })
-              });
-              const updRows = await upd.json().catch(() => []);
-              if (!Array.isArray(updRows) || updRows.length === 0) {
-                await fetch(SUPABASE_URL + '/rest/v1/agent_profiles', {
-                  method: 'POST', headers: TP_HDRS_WRITE, body: JSON.stringify({ user_id: uid, comp_level: val })
-                });
-              }
-              const msgEl = document.querySelector('[data-tp-msg-uid="' + uid + '"]');
-              if (msgEl) { msgEl.style.display = 'inline'; setTimeout(() => { msgEl.style.display = 'none'; }, 2000); }
-            });
-          });
-        } catch (e) { console.error('TP comp levels render failed:', e); }
-      }
-
-      async function renderKpiSection() {
-        const el = document.getElementById('tpPerfKpiSection');
-        try {
-          const res = await fetch(SUPABASE_URL + '/rest/v1/daily_kpis?order=kpi_date.desc&limit=1000', { headers: TP_HDRS_BASE });
-          const kpiRows = await res.json();
-          if (!kpiRows || !kpiRows.length) { el.innerHTML = ''; return; }
-          let filtered = perfRep === 'all' ? kpiRows : kpiRows.filter(r => r.sales_rep === perfRep);
-          const now = new Date();
-          const ws = new Date(now); ws.setDate(ws.getDate() - ws.getDay()); ws.setHours(0,0,0,0);
-          const ms = new Date(now.getFullYear(), now.getMonth(), 1);
-          const ys = new Date(now.getFullYear(), 0, 1);
-          const lws = new Date(ws); lws.setDate(lws.getDate() - 7);
-          const lms = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-          const lme = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59);
-          if (perfRange === 'wtd') filtered = filtered.filter(r => new Date(r.kpi_date) >= ws);
-          else if (perfRange === 'mtd') filtered = filtered.filter(r => new Date(r.kpi_date) >= ms);
-          else if (perfRange === 'ytd') filtered = filtered.filter(r => new Date(r.kpi_date) >= ys);
-          else if (perfRange === 'lastweek') filtered = filtered.filter(r => { const d = new Date(r.kpi_date); return d >= lws && d < ws; });
-          else if (perfRange === 'lastmonth') filtered = filtered.filter(r => { const d = new Date(r.kpi_date); return d >= lms && d <= lme; });
-          else if (perfRange === 'custom') {
-            const from = document.getElementById('tpPerfDateFrom').value;
-            const to = document.getElementById('tpPerfDateTo').value;
-            if (from && to) filtered = filtered.filter(r => r.kpi_date >= from && r.kpi_date <= to);
-          }
-          const excludeSat = document.getElementById('tpPerfExcludeSat').checked;
-          const excludeSun = document.getElementById('tpPerfExcludeSun').checked;
-          if (excludeSat || excludeSun) {
-            filtered = filtered.filter(r => {
-              const d = new Date(r.kpi_date + 'T00:00:00').getDay();
-              if (excludeSat && d === 6) return false;
-              if (excludeSun && d === 0) return false;
-              return true;
-            });
-          }
-          if (!filtered.length) { el.innerHTML = ''; return; }
-          const totalDials = filtered.reduce((s, r) => s + (r.dials || 0), 0);
-          const totalAnswers = filtered.reduce((s, r) => s + (r.answers || 0), 0);
-          const totalAppts = filtered.reduce((s, r) => s + (r.appointments || 0), 0);
-          const totalPres = filtered.reduce((s, r) => s + (r.presentations || 0), 0);
-          const totalDeals = filtered.reduce((s, r) => s + (r.deals || 0), 0);
-          const totalSpend = filtered.reduce((s, r) => s + parseFloat(r.lead_spend || 0), 0);
-          const totalDeposits = filtered.reduce((s, r) => s + parseFloat(r.deposits || 0), 0);
-          const days = filtered.length;
-          const pct = (a, b) => b > 0 ? (a / b * 100).toFixed(1) + '%' : '0%';
-          const roi = totalSpend > 0 ? ((totalDeposits - totalSpend) / totalSpend * 100).toFixed(1) : '0.0';
-          const excludeLabel = (excludeSat && excludeSun) ? ' · excl. weekends' : excludeSat ? ' · excl. Sat' : excludeSun ? ' · excl. Sun' : '';
-          let html = '<div class="tp-perf-chart-card" style="margin-top:1.5rem;"><div class="tp-perf-chart-title">KPI Conversion Funnel (' + days + ' days' + (perfRep !== 'all' ? ' · ' + perfRep : ' · All Reps') + excludeLabel + ')</div>';
-          html += '<div class="tp-perf-kpis" style="margin-bottom:1rem;">';
-          html += kpi('Avg Dials/Day', Math.round(totalDials / days), totalDials + ' total', '');
-          html += kpi('Avg Answers/Day', Math.round(totalAnswers / days), totalAnswers + ' total', '');
-          html += kpi('Avg Appts/Day', (totalAppts / days).toFixed(1), totalAppts + ' total', '');
-          html += kpi('Avg Deals/Day', (totalDeals / days).toFixed(1), totalDeals + ' total', '');
-          html += kpi('Lead Spend', '$' + fmtAP(totalSpend), '$' + fmtAP(Math.round(totalSpend / days)) + '/day', '');
-          html += kpi('Deposits', '$' + fmtAP(totalDeposits), '$' + fmtAP(Math.round(totalDeposits / days)) + '/day', '');
-          const roiCls = parseFloat(roi) > 0 ? 'up' : parseFloat(roi) < 0 ? 'down' : 'neutral';
-          html += kpi('ROI', roi + '%', '$' + fmtAP(totalDeposits) + ' on $' + fmtAP(totalSpend) + ' spend', roiCls);
-          html += '</div>';
-          html += '<div class="tp-perf-status-section"><div class="tp-perf-status-title">Conversion Rates</div><div class="tp-perf-status-bars">';
-          html += statusBar('Dials → Answers', pct(totalAnswers, totalDials).replace('%',''), 'uw');
-          html += statusBar('Answers → Appts', pct(totalAppts, totalAnswers).replace('%',''), 'app');
-          html += statusBar('Appts → Presentations', pct(totalPres, totalAppts).replace('%',''), 'paid');
-          html += statusBar('Presentations → Deals', pct(totalDeals, totalPres).replace('%',''), 'app');
-          html += '</div></div>';
-          html += '<div style="margin-top:0.5rem;font-size:0.72rem;color:#888;">Overall: ' + pct(totalDeals, totalDials) + ' of dials convert to deals</div>';
-          html += '</div>';
-          el.innerHTML = html;
-        } catch (e) { el.innerHTML = ''; console.error('TP KPI render failed:', e); }
-      }
-
-      async function loadAgentProfiles() {
-        const container = document.getElementById('tpAgentProfilesContent');
-        container.innerHTML = '<div class="tp-admin-loading">Loading...</div>';
-        try {
-          const profRes = await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?select=user_id,agent_name,comp_level,training_complete&order=agent_name.asc', { headers: TP_HDRS_BASE });
-          const profiles = profRes.ok ? await profRes.json() : [];
-          const vpRes = await fetch(SUPABASE_URL + '/rest/v1/video_progress?select=user_id,video_id', { headers: TP_HDRS_BASE });
-          const vpData = vpRes.ok ? await vpRes.json() : [];
-          const videoCounts = {};
-          vpData.forEach(row => { videoCounts[row.user_id] = (videoCounts[row.user_id] || 0) + 1; });
-          if (profiles.length === 0) {
-            container.innerHTML = '<p style="color:#888;text-align:center;padding:2rem;">No agent profiles found.</p>';
-            return;
-          }
-          let html = '<table class="tp-admin-table" style="width:100%;border-collapse:collapse;">';
-          html += '<thead><tr style="background:#f8f8fa;border-bottom:2px solid #e5e5ea;">';
-          html += '<th style="padding:0.7rem 1rem;text-align:left;font-size:0.78rem;font-weight:700;color:#555;">Agent Name</th>';
-          html += '<th style="padding:0.7rem 1rem;text-align:left;font-size:0.78rem;font-weight:700;color:#555;">Comp Level</th>';
-          html += '<th style="padding:0.7rem 1rem;text-align:left;font-size:0.78rem;font-weight:700;color:#555;">Training Progress</th>';
-          html += '<th style="padding:0.7rem 1rem;text-align:left;font-size:0.78rem;font-weight:700;color:#555;">Status</th>';
-          html += '<th style="padding:0.7rem 1rem;text-align:center;font-size:0.78rem;font-weight:700;color:#555;">Actions</th>';
-          html += '</tr></thead><tbody>';
-          profiles.forEach(p => {
-            const vCount = videoCounts[p.user_id] || 0;
-            const pct = Math.round((vCount / TP_TOTAL_TRAINING_VIDEOS) * 100);
-            const isComplete = p.training_complete === true;
-            const name = p.agent_name || 'Unknown';
-            const compLevel = p.comp_level || '—';
-            html += '<tr style="border-bottom:1px solid #eee;" data-uid="' + p.user_id + '">';
-            html += '<td style="padding:0.7rem 1rem;"><input type="text" value="' + name.replace(/"/g, '&quot;') + '" class="tp-ap-name-input" data-uid="' + p.user_id + '" style="border:1px solid #ddd;border-radius:6px;padding:0.35rem 0.6rem;font-size:0.85rem;width:160px;" /></td>';
-            html += '<td style="padding:0.7rem 1rem;"><select class="tp-ap-comp-select" data-uid="' + p.user_id + '" style="border:1px solid #ddd;border-radius:6px;padding:0.35rem 0.6rem;font-size:0.85rem;">';
-            html += '<option value="">—</option>';
-            for (let v = 65; v <= 145; v += 5) {
-              html += '<option value="' + v + '"' + (parseInt(compLevel) === v ? ' selected' : '') + '>' + v + '%</option>';
-            }
-            html += '</select></td>';
-            html += '<td style="padding:0.7rem 1rem;"><div style="display:flex;align-items:center;gap:0.5rem;">';
-            html += '<div style="flex:1;background:#f0f0f3;border-radius:100px;height:8px;overflow:hidden;max-width:120px;"><div style="height:100%;border-radius:100px;background:' + (pct >= 100 ? '#22c55e' : 'linear-gradient(90deg,#7c3aed,#a855f7)') + ';width:' + pct + '%;"></div></div>';
-            html += '<span style="font-size:0.78rem;font-weight:600;color:#888;">' + vCount + '/' + TP_TOTAL_TRAINING_VIDEOS + '</span>';
-            html += '</div></td>';
-            html += '<td style="padding:0.7rem 1rem;">';
-            if (isComplete) html += '<span style="display:inline-flex;align-items:center;gap:0.3rem;padding:0.25rem 0.7rem;border-radius:100px;background:#dcfce7;color:#16a34a;font-size:0.75rem;font-weight:700;">Active</span>';
-            else html += '<span style="display:inline-flex;align-items:center;gap:0.3rem;padding:0.25rem 0.7rem;border-radius:100px;background:#fef3c7;color:#d97706;font-size:0.75rem;font-weight:700;">In Training</span>';
-            html += '</td>';
-            html += '<td style="padding:0.7rem 1rem;text-align:center;"><div style="display:flex;gap:0.4rem;justify-content:center;flex-wrap:wrap;">';
-            html += '<button class="tp-ap-save-btn" data-uid="' + p.user_id + '" style="padding:0.3rem 0.8rem;font-size:0.75rem;font-weight:700;background:#2563eb;color:#fff;border:none;border-radius:6px;cursor:pointer;">Save</button>';
-            if (isComplete) html += '<button class="tp-ap-grant-btn" data-uid="' + p.user_id + '" data-current="true" style="padding:0.3rem 0.8rem;font-size:0.75rem;font-weight:700;background:#c0392b;color:#fff;border:none;border-radius:6px;cursor:pointer;">Revoke Access</button>';
-            else html += '<button class="tp-ap-grant-btn" data-uid="' + p.user_id + '" data-current="false" style="padding:0.3rem 0.8rem;font-size:0.75rem;font-weight:700;background:#16a34a;color:#fff;border:none;border-radius:6px;cursor:pointer;">Grant Access</button>';
-            html += '</div></td></tr>';
-          });
-          html += '</tbody></table>';
-          container.innerHTML = html;
-
-          container.querySelectorAll('.tp-ap-save-btn').forEach(btn => {
-            btn.addEventListener('click', async () => {
-              const uid = btn.dataset.uid;
-              const row = btn.closest('tr');
-              const name = row.querySelector('.tp-ap-name-input').value.trim();
-              const comp = row.querySelector('.tp-ap-comp-select').value;
-              const body = { agent_name: name };
-              if (comp) body.comp_level = parseInt(comp);
-              try {
-                await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?user_id=eq.' + uid, {
-                  method: 'PATCH', headers: TP_HDRS_WRITE, body: JSON.stringify(body)
-                });
-                btn.textContent = 'Saved!'; btn.style.background = '#16a34a';
-                setTimeout(() => { btn.textContent = 'Save'; btn.style.background = '#2563eb'; }, 1500);
-              } catch (err) { console.error(err); btn.textContent = 'Error'; }
-            });
-          });
-          container.querySelectorAll('.tp-ap-grant-btn').forEach(btn => {
-            btn.addEventListener('click', async () => {
-              const uid = btn.dataset.uid;
-              const isCurrentlyActive = btn.dataset.current === 'true';
-              const newValue = !isCurrentlyActive;
-              btn.disabled = true; btn.textContent = 'Saving...';
-              try {
-                await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?user_id=eq.' + uid, {
-                  method: 'PATCH', headers: TP_HDRS_WRITE, body: JSON.stringify({ training_complete: newValue })
-                });
-                btn.dataset.current = String(newValue);
-                const statusCell = btn.closest('tr').querySelectorAll('td')[3];
-                if (newValue) {
-                  btn.textContent = 'Revoke Access'; btn.style.background = '#c0392b';
-                  statusCell.innerHTML = '<span style="display:inline-flex;align-items:center;gap:0.3rem;padding:0.25rem 0.7rem;border-radius:100px;background:#dcfce7;color:#16a34a;font-size:0.75rem;font-weight:700;">Active</span>';
-                } else {
-                  btn.textContent = 'Grant Access'; btn.style.background = '#16a34a';
-                  statusCell.innerHTML = '<span style="display:inline-flex;align-items:center;gap:0.3rem;padding:0.25rem 0.7rem;border-radius:100px;background:#fef3c7;color:#d97706;font-size:0.75rem;font-weight:700;">In Training</span>';
-                }
-                btn.disabled = false;
-              } catch (err) { console.error(err); btn.textContent = 'Error'; btn.disabled = false; }
-            });
-          });
-        } catch (err) {
-          console.error('TP agent profiles load failed:', err);
-          container.innerHTML = '<p style="color:#c0392b;text-align:center;padding:2rem;">Failed to load agent profiles.</p>';
-        }
-      }
+      // ─── Mount lifecycle ──────────────────────────────────────────────
+      let dashRoot = null;
+      let agentsRoot = null;
+      window.tpMountDashboard = function () {
+        const el = document.getElementById('tpDashboardRoot');
+        if (!el) return;
+        if (!dashRoot) dashRoot = ReactDOM.createRoot(el);
+        dashRoot.render(<Dashboard />);
+      };
+      window.tpMountAgents = function () {
+        const el = document.getElementById('tpAgentsRoot');
+        if (!el) return;
+        if (!agentsRoot) agentsRoot = ReactDOM.createRoot(el);
+        agentsRoot.render(<AgentProfiles />);
+      };
     })();
   </script>
 </body>
