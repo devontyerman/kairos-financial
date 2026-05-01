@@ -2276,6 +2276,370 @@
       #tpatab-policies .tp-filter-group { width: 100%; }
     }
 
+    /* ─── Leaderboard — claude.ai/design ───────────────────────────────────
+       Same Kairos editorial-financial design system as Tracker / Team
+       Dashboard, full-bleed dark, scoped to #panel-leaderboard. */
+    #panel-leaderboard {
+      --rb-green:   oklch(0.72 0.16 145);
+      --rb-yellow:  oklch(0.82 0.14 90);
+      --rb-orange:  oklch(0.74 0.16 50);
+      --rb-red:     oklch(0.66 0.18 25);
+      --rb-purple:  oklch(0.62 0.15 305);
+      --rb-blue:    oklch(0.68 0.13 240);
+      --lb-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+      --lb-sans: "Geist", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+      --lb-radius: 10px;
+      --lb-bg:        #0d0e10;
+      --lb-bg-2:      #131418;
+      --lb-surface:   #16181d;
+      --lb-surface-2: #1c1f26;
+      --lb-surface-3: #232730;
+      --lb-hairline:  rgba(255,255,255,0.07);
+      --lb-hairline-strong: rgba(255,255,255,0.13);
+      --lb-ink-1:     #f3f3f1;
+      --lb-ink-2:     rgba(243,243,241,0.72);
+      --lb-ink-3:     rgba(243,243,241,0.45);
+      --lb-ink-4:     rgba(243,243,241,0.28);
+      --lb-pos:       oklch(0.78 0.16 145);
+      --lb-neg:       oklch(0.7 0.18 25);
+    }
+    #panel-leaderboard[data-lb-theme="light"] {
+      --lb-bg: #f6f5f1; --lb-bg-2: #efece5; --lb-surface: #ffffff;
+      --lb-surface-2: #fbfaf6; --lb-surface-3: #f1efe8;
+      --lb-hairline: rgba(15,12,8,0.08); --lb-hairline-strong: rgba(15,12,8,0.16);
+      --lb-ink-1: #14130f; --lb-ink-2: rgba(20,19,15,0.74);
+      --lb-ink-3: rgba(20,19,15,0.5); --lb-ink-4: rgba(20,19,15,0.32);
+      --lb-pos: oklch(0.55 0.14 145); --lb-neg: oklch(0.55 0.18 25);
+      --rb-green: oklch(0.55 0.15 145); --rb-yellow: oklch(0.7 0.14 85);
+      --rb-orange: oklch(0.62 0.16 50); --rb-red: oklch(0.55 0.17 25);
+      --rb-purple: oklch(0.5 0.15 305); --rb-blue: oklch(0.55 0.13 240);
+    }
+    #panel-leaderboard.active {
+      margin: -1.5rem -2rem -4rem;
+      padding: 28px 32px 40px;
+      background: var(--lb-bg);
+      color: var(--lb-ink-1);
+      font-family: var(--lb-sans);
+      font-size: 14px;
+      -webkit-font-smoothing: antialiased;
+      min-height: calc(100vh - 1.5rem);
+      background-image:
+        radial-gradient(1100px 600px at 90% -10%, color-mix(in oklch, var(--rb-blue) 8%, transparent), transparent 60%),
+        radial-gradient(900px 500px at -10% 110%, color-mix(in oklch, var(--rb-purple) 7%, transparent), transparent 60%);
+    }
+    #lbLeaderboardRoot { color: var(--lb-ink-1); font-family: var(--lb-sans); }
+
+    /* Header */
+    #panel-leaderboard .lb-hdr {
+      display: flex; align-items: flex-end; justify-content: space-between;
+      gap: 24px; margin-bottom: 24px; padding-bottom: 18px;
+      border-bottom: 1px solid var(--lb-hairline);
+    }
+    #panel-leaderboard .lb-hdr-l { display: flex; flex-direction: column; gap: 4px; }
+    #panel-leaderboard .lb-hdr-title { font-size: 20px; font-weight: 600; letter-spacing: -0.01em; color: var(--lb-ink-1); }
+    #panel-leaderboard .lb-hdr-sub {
+      font-family: var(--lb-mono); font-size: 11px;
+      color: var(--lb-ink-3); letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    #panel-leaderboard .lb-hdr-r { display: flex; align-items: center; gap: 16px; }
+    #panel-leaderboard .lb-hdr-time { font-family: var(--lb-mono); font-size: 11px; color: var(--lb-ink-3); }
+    #panel-leaderboard .lb-hdr-time b { color: var(--lb-ink-1); font-weight: 500; }
+    #panel-leaderboard .lb-theme-toggle {
+      appearance: none; border: 1px solid var(--lb-hairline-strong);
+      background: var(--lb-surface); color: var(--lb-ink-2);
+      width: 34px; height: 34px; border-radius: 8px;
+      display: grid; place-items: center; cursor: pointer; transition: all 120ms;
+    }
+    #panel-leaderboard .lb-theme-toggle:hover { color: var(--lb-ink-1); border-color: var(--lb-ink-3); }
+
+    /* Filter bar */
+    #panel-leaderboard .lb-bar {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 16px; margin-bottom: 16px; flex-wrap: wrap;
+    }
+    #panel-leaderboard .lb-tf-segment {
+      display: inline-flex; padding: 3px;
+      background: var(--lb-surface); border: 1px solid var(--lb-hairline);
+      border-radius: 9px; flex-wrap: wrap;
+    }
+    #panel-leaderboard .lb-tf-segment button {
+      appearance: none; border: 0; background: transparent;
+      color: var(--lb-ink-3); cursor: pointer;
+      padding: 7px 14px; border-radius: 6px;
+      font-family: var(--lb-mono); font-size: 11px; letter-spacing: 0.06em;
+      text-transform: uppercase; transition: all 120ms;
+    }
+    #panel-leaderboard .lb-tf-segment button:hover { color: var(--lb-ink-1); }
+    #panel-leaderboard .lb-tf-segment button.on {
+      background: var(--lb-surface-3); color: var(--lb-ink-1);
+      box-shadow: 0 1px 0 var(--lb-hairline-strong) inset;
+    }
+    #panel-leaderboard .lb-search {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 7px 12px;
+      background: var(--lb-surface);
+      border: 1px solid var(--lb-hairline);
+      border-radius: 8px;
+      min-width: 220px;
+    }
+    #panel-leaderboard .lb-search svg { color: var(--lb-ink-3); flex-shrink: 0; }
+    #panel-leaderboard .lb-search input {
+      appearance: none; border: 0; background: transparent;
+      color: var(--lb-ink-1); font-family: var(--lb-sans); font-size: 13px;
+      outline: none; flex: 1; min-width: 0;
+    }
+    #panel-leaderboard .lb-search input::placeholder { color: var(--lb-ink-4); }
+
+    /* Card framing */
+    #panel-leaderboard .lb-grid { display: grid; gap: 16px; }
+    #panel-leaderboard .lb-grid-12 { grid-template-columns: repeat(12, 1fr); }
+    #panel-leaderboard .lb-card {
+      background: var(--lb-surface);
+      border: 1px solid var(--lb-hairline);
+      border-radius: var(--lb-radius);
+      padding: 20px 22px; position: relative; overflow: hidden;
+    }
+    #panel-leaderboard .lb-card-title {
+      font-size: 11px; font-family: var(--lb-mono);
+      text-transform: uppercase; letter-spacing: 0.08em;
+      color: var(--lb-ink-3); font-weight: 500;
+    }
+    #panel-leaderboard .lb-card-meta {
+      font-family: var(--lb-mono); font-size: 11px; color: var(--lb-ink-3);
+    }
+
+    /* Podium */
+    #panel-leaderboard .lb-podium { grid-column: span 12; padding: 26px 28px 28px; overflow: visible; }
+    #panel-leaderboard .lb-podium-hd {
+      display: flex; align-items: baseline; justify-content: space-between;
+      gap: 16px; margin-bottom: 20px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--lb-hairline);
+    }
+    #panel-leaderboard .lb-podium-hd-l { display: flex; align-items: baseline; gap: 14px; }
+    #panel-leaderboard .lb-podium-hd-title {
+      font-size: 15px; font-weight: 600; color: var(--lb-ink-1);
+      letter-spacing: -0.005em;
+    }
+    #panel-leaderboard .lb-podium-hd-meta {
+      font-family: var(--lb-mono); font-size: 10px; color: var(--lb-ink-3);
+      text-transform: uppercase; letter-spacing: 0.08em;
+    }
+    #panel-leaderboard .lb-podium-row {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr 1fr;
+      gap: 14px;
+      align-items: end;
+    }
+    #panel-leaderboard .lb-podium-card {
+      border: 1px solid var(--lb-hairline-strong);
+      border-radius: var(--lb-radius);
+      padding: 22px 22px 24px;
+      position: relative; overflow: hidden;
+      background: var(--lb-surface-2);
+      transition: transform 200ms ease;
+    }
+    #panel-leaderboard .lb-podium-card:hover { transform: translateY(-2px); }
+    #panel-leaderboard .lb-podium-card::before {
+      content: ""; position: absolute;
+      inset: 0 0 auto 0; height: 3px;
+      background: var(--lb-accent, var(--rb-blue));
+    }
+    #panel-leaderboard .lb-podium-card.gold { --lb-accent: var(--rb-yellow); padding-top: 30px; padding-bottom: 30px; }
+    #panel-leaderboard .lb-podium-card.silver { --lb-accent: var(--rb-blue); }
+    #panel-leaderboard .lb-podium-card.bronze { --lb-accent: var(--rb-orange); }
+    #panel-leaderboard .lb-podium-card.gold {
+      background:
+        radial-gradient(380px 240px at 80% -20%, color-mix(in oklch, var(--rb-yellow) 14%, transparent), transparent 60%),
+        var(--lb-surface-2);
+    }
+    #panel-leaderboard .lb-podium-card.silver {
+      background:
+        radial-gradient(380px 240px at 80% -20%, color-mix(in oklch, var(--rb-blue) 10%, transparent), transparent 60%),
+        var(--lb-surface-2);
+    }
+    #panel-leaderboard .lb-podium-card.bronze {
+      background:
+        radial-gradient(380px 240px at 80% -20%, color-mix(in oklch, var(--rb-orange) 10%, transparent), transparent 60%),
+        var(--lb-surface-2);
+    }
+    #panel-leaderboard .lb-podium-rank {
+      position: absolute;
+      top: 18px; right: 22px;
+      font-family: var(--lb-mono); font-size: 64px; font-weight: 500;
+      color: color-mix(in oklch, var(--lb-accent) 60%, transparent);
+      letter-spacing: -0.04em;
+      line-height: 0.85;
+      font-variant-numeric: tabular-nums;
+    }
+    #panel-leaderboard .lb-podium-card.gold .lb-podium-rank { font-size: 80px; }
+    #panel-leaderboard .lb-podium-medal {
+      font-family: var(--lb-mono); font-size: 9px;
+      text-transform: uppercase; letter-spacing: 0.12em;
+      color: var(--lb-accent);
+      margin-bottom: 18px;
+      display: inline-flex; align-items: center; gap: 6px;
+    }
+    #panel-leaderboard .lb-podium-medal::before {
+      content: ""; width: 6px; height: 6px; border-radius: 99px;
+      background: var(--lb-accent);
+      box-shadow: 0 0 0 3px color-mix(in oklch, var(--lb-accent) 22%, transparent);
+    }
+    #panel-leaderboard .lb-podium-agt {
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 18px;
+    }
+    #panel-leaderboard .lb-podium-avatar {
+      width: 44px; height: 44px; border-radius: 99px;
+      display: grid; place-items: center;
+      font-family: var(--lb-mono); font-size: 14px; font-weight: 500;
+      color: var(--lb-ink-1);
+      background: color-mix(in oklch, var(--lb-accent) 24%, var(--lb-surface));
+      border: 1px solid color-mix(in oklch, var(--lb-accent) 50%, transparent);
+    }
+    #panel-leaderboard .lb-podium-card.gold .lb-podium-avatar { width: 54px; height: 54px; font-size: 16px; }
+    #panel-leaderboard .lb-podium-name {
+      font-size: 17px; font-weight: 600; color: var(--lb-ink-1);
+      letter-spacing: -0.005em; line-height: 1.15;
+    }
+    #panel-leaderboard .lb-podium-card.gold .lb-podium-name { font-size: 19px; }
+    #panel-leaderboard .lb-podium-meta {
+      font-family: var(--lb-mono); font-size: 10px; color: var(--lb-ink-3);
+      text-transform: uppercase; letter-spacing: 0.06em;
+      margin-top: 3px;
+    }
+    #panel-leaderboard .lb-podium-stats {
+      display: flex; gap: 22px;
+      padding-top: 16px;
+      border-top: 1px solid var(--lb-hairline);
+    }
+    #panel-leaderboard .lb-podium-stat { display: flex; flex-direction: column; gap: 3px; }
+    #panel-leaderboard .lb-podium-stat-lbl {
+      font-family: var(--lb-mono); font-size: 9px;
+      text-transform: uppercase; letter-spacing: 0.1em;
+      color: var(--lb-ink-3);
+    }
+    #panel-leaderboard .lb-podium-stat-val {
+      font-family: var(--lb-mono); font-size: 18px; font-weight: 500;
+      color: var(--lb-ink-1);
+      font-variant-numeric: tabular-nums;
+    }
+    #panel-leaderboard .lb-podium-card.gold .lb-podium-stat-val { font-size: 22px; }
+
+    /* Full leaderboard table */
+    #panel-leaderboard .lb-full { grid-column: span 12; padding: 0; }
+    #panel-leaderboard .lb-full-hd {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 22px 14px;
+      border-bottom: 1px solid var(--lb-hairline);
+    }
+    #panel-leaderboard .lb-table { width: 100%; border-collapse: collapse; }
+    #panel-leaderboard .lb-table thead th {
+      text-align: left;
+      font-family: var(--lb-mono); font-size: 10px; font-weight: 500;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      color: var(--lb-ink-3);
+      padding: 11px 12px;
+      cursor: pointer;
+      border-bottom: 1px solid var(--lb-hairline);
+      user-select: none;
+      white-space: nowrap;
+    }
+    #panel-leaderboard .lb-table thead th:first-child { padding-left: 22px; }
+    #panel-leaderboard .lb-table thead th:last-child { padding-right: 22px; text-align: right; }
+    #panel-leaderboard .lb-table thead th.num { text-align: right; }
+    #panel-leaderboard .lb-table thead th:hover { color: var(--lb-ink-1); }
+    #panel-leaderboard .lb-table thead th.sorted { color: var(--lb-ink-1); }
+    #panel-leaderboard .lb-table thead th .arrow { margin-left: 4px; opacity: 0.6; }
+    #panel-leaderboard .lb-table tbody tr {
+      border-bottom: 1px solid var(--lb-hairline);
+      transition: background 80ms;
+    }
+    #panel-leaderboard .lb-table tbody tr:last-child { border-bottom: 0; }
+    #panel-leaderboard .lb-table tbody tr:hover { background: var(--lb-surface-2); }
+    #panel-leaderboard .lb-table tbody tr.you { background: color-mix(in oklch, var(--rb-yellow) 7%, var(--lb-surface)); }
+    #panel-leaderboard .lb-table tbody tr.you:hover { background: color-mix(in oklch, var(--rb-yellow) 12%, var(--lb-surface)); }
+    #panel-leaderboard .lb-table tbody td {
+      padding: 14px 12px;
+      font-size: 13px;
+      vertical-align: middle;
+      font-variant-numeric: tabular-nums;
+      color: var(--lb-ink-1);
+    }
+    #panel-leaderboard .lb-table tbody td:first-child { padding-left: 22px; }
+    #panel-leaderboard .lb-table tbody td:last-child { padding-right: 22px; text-align: right; }
+    #panel-leaderboard .lb-table tbody td.num { text-align: right; font-family: var(--lb-mono); }
+    #panel-leaderboard .lb-rank-pill {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-width: 26px; height: 22px;
+      padding: 0 7px;
+      font-family: var(--lb-mono); font-size: 11px; font-weight: 500;
+      border-radius: 5px;
+      background: var(--lb-surface-3);
+      color: var(--lb-ink-2);
+      font-variant-numeric: tabular-nums;
+    }
+    #panel-leaderboard .lb-rank-pill.r1 { background: color-mix(in oklch, var(--rb-yellow) 26%, var(--lb-surface)); color: var(--lb-ink-1); border: 1px solid color-mix(in oklch, var(--rb-yellow) 45%, transparent); }
+    #panel-leaderboard .lb-rank-pill.r2 { background: color-mix(in oklch, var(--rb-blue) 22%, var(--lb-surface)); color: var(--lb-ink-1); border: 1px solid color-mix(in oklch, var(--rb-blue) 40%, transparent); }
+    #panel-leaderboard .lb-rank-pill.r3 { background: color-mix(in oklch, var(--rb-orange) 22%, var(--lb-surface)); color: var(--lb-ink-1); border: 1px solid color-mix(in oklch, var(--rb-orange) 40%, transparent); }
+    #panel-leaderboard .lb-rank-move {
+      display: inline-flex; align-items: center; gap: 3px;
+      font-family: var(--lb-mono); font-size: 10px;
+      margin-left: 6px;
+      font-variant-numeric: tabular-nums;
+    }
+    #panel-leaderboard .lb-rank-move.up { color: var(--lb-pos); }
+    #panel-leaderboard .lb-rank-move.down { color: var(--lb-neg); }
+    #panel-leaderboard .lb-rank-move.flat { color: var(--lb-ink-4); }
+    #panel-leaderboard .lb-agt-cell { display: flex; align-items: center; gap: 10px; }
+    #panel-leaderboard .lb-avatar {
+      width: 28px; height: 28px; border-radius: 99px;
+      display: grid; place-items: center;
+      font-family: var(--lb-mono); font-size: 10px; font-weight: 500;
+      color: var(--lb-ink-1);
+      border: 1px solid var(--lb-hairline-strong);
+    }
+    #panel-leaderboard .lb-agt-name { font-weight: 500; color: var(--lb-ink-1); }
+    #panel-leaderboard .lb-agt-tenure { font-family: var(--lb-mono); font-size: 10px; color: var(--lb-ink-4); }
+    #panel-leaderboard .lb-you-tag {
+      display: inline-block; margin-left: 8px;
+      font-family: var(--lb-mono); font-size: 9px;
+      text-transform: uppercase; letter-spacing: 0.1em;
+      padding: 2px 6px; border-radius: 4px;
+      background: color-mix(in oklch, var(--rb-yellow) 22%, transparent);
+      color: var(--lb-ink-1);
+      border: 1px solid color-mix(in oklch, var(--rb-yellow) 45%, transparent);
+    }
+    #panel-leaderboard .lb-foot {
+      margin-top: 36px; padding-top: 16px;
+      border-top: 1px solid var(--lb-hairline);
+      display: flex; justify-content: space-between;
+      font-family: var(--lb-mono); font-size: 10px;
+      color: var(--lb-ink-4); letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    #panel-leaderboard .lb-loading {
+      padding: 60px 20px; text-align: center;
+      color: var(--lb-ink-3); font-family: var(--lb-mono); font-size: 12px;
+      letter-spacing: 0.06em; text-transform: uppercase;
+    }
+    #panel-leaderboard .lb-empty {
+      padding: 60px 22px; text-align: center;
+      font-family: var(--lb-mono); font-size: 12px; color: var(--lb-ink-3);
+    }
+
+    @media (max-width: 1180px) {
+      #panel-leaderboard .lb-podium-row { grid-template-columns: 1fr; }
+      #panel-leaderboard .lb-podium-card.gold { padding-top: 22px; padding-bottom: 22px; }
+    }
+    @media (max-width: 768px) {
+      #panel-leaderboard.active { margin: -0.75rem -0.75rem -3rem; padding: 16px 12px 24px; min-height: calc(100vh - 0.75rem); }
+      #panel-leaderboard .lb-hdr { flex-direction: column; align-items: flex-start; gap: 12px; }
+      #panel-leaderboard .lb-bar { gap: 10px; }
+      #panel-leaderboard .lb-search { min-width: 0; width: 100%; }
+      #panel-leaderboard .lb-table thead th, #panel-leaderboard .lb-table tbody td { padding: 10px 8px; font-size: 12px; }
+    }
+
     /* ─── Tracker (Agent Dashboard) — claude.ai/design ─────────────────────
        Same Kairos editorial-financial system as Team Dashboard, scoped to
        the per-agent Tracker panel. Full-bleed dark fills the entire .ss-main
@@ -2353,6 +2717,10 @@
     }
 
     #tkTrackerRoot { color: var(--tk-ink-1); font-family: var(--tk-sans); }
+    /* Cap content width on ultrawide monitors so the heatmap and goal hero
+       don't stretch into uncomfortably wide cards. The dark canvas still
+       fills the entire .ss-main area; only the inner content is centered. */
+    #tkTrackerRoot > div { max-width: 1480px; margin-left: auto; margin-right: auto; }
 
     /* Header */
     #panel-goals .tk-hdr {
@@ -6737,37 +7105,9 @@
     </div>
 
     <!-- LEADERBOARD -->
+    <!-- ═══ LEADERBOARD PANEL — claude.ai/design Leaderboard, React-rendered ═══ -->
     <div class="ss-panel" id="panel-leaderboard">
-      <div class="ss-lb-inner">
-        <div id="lbNotAuth" class="mp-not-auth" style="display:none;">Sign in to view the leaderboard.</div>
-        <div id="lbAuthWrap">
-        <div class="ss-panel-head">
-          <h2>Leaderboard</h2>
-          <p class="ss-panel-sub">Who's closing the most business?</p>
-        </div>
-        <div class="ss-lb-filter-rows">
-          <div class="ss-lb-filter-row">
-            <button class="ss-lb-filter" data-range="daily">Today</button>
-            <button class="ss-lb-filter" data-range="weekly">This Week</button>
-            <button class="ss-lb-filter active" data-range="monthly">This Month</button>
-            <button class="ss-lb-filter" data-range="yearly">This Year</button>
-          </div>
-          <div class="ss-lb-filter-row">
-            <button class="ss-lb-filter" data-range="yesterday">Yesterday</button>
-            <button class="ss-lb-filter" data-range="lastweek">Last Week</button>
-            <button class="ss-lb-filter" data-range="lastmonth">Last Month</button>
-            <button class="ss-lb-filter" data-range="custom">Custom Range</button>
-          </div>
-        </div>
-        <div class="ss-lb-custom-range" id="lbCustomRange">
-          <input type="date" id="lbDateFrom" />
-          <span>to</span>
-          <input type="date" id="lbDateTo" />
-          <button id="lbCustomApply">Apply</button>
-        </div>
-        <div id="lbContent"><div class="ss-loading">Loading...</div></div>
-        </div><!-- end lbAuthWrap -->
-      </div>
+      <div id="lbLeaderboardRoot"></div>
     </div>
 
     <!-- MY POLICIES -->
@@ -7921,8 +8261,13 @@
         saleForm.style.opacity = '1';
         saleForm.style.pointerEvents = 'auto';
         document.getElementById('kpiFormWrap').style.display = 'block';
-        document.getElementById('lbNotAuth').style.display = 'none';
-        document.getElementById('lbAuthWrap').style.display = 'block';
+        // Legacy leaderboard auth gate elements were removed when the new
+        // React leaderboard took over — guard prevents null-deref that was
+        // crashing updateAuthUI() and blocking the login flow.
+        const _lbNotAuth = document.getElementById('lbNotAuth');
+        const _lbAuthWrap = document.getElementById('lbAuthWrap');
+        if (_lbNotAuth) _lbNotAuth.style.display = 'none';
+        if (_lbAuthWrap) _lbAuthWrap.style.display = 'block';
         if (signupLink) signupLink.style.display = 'none';
         if (globalGate) globalGate.style.display = 'none';
         // Show admin-only Weekly Tracker + Team Performance for the owner
@@ -7947,8 +8292,10 @@
         saleForm.style.opacity = '0.35';
         saleForm.style.pointerEvents = 'none';
         document.getElementById('kpiFormWrap').style.display = 'none';
-        document.getElementById('lbNotAuth').style.display = 'block';
-        document.getElementById('lbAuthWrap').style.display = 'none';
+        const _lbNotAuth2 = document.getElementById('lbNotAuth');
+        const _lbAuthWrap2 = document.getElementById('lbAuthWrap');
+        if (_lbNotAuth2) _lbNotAuth2.style.display = 'block';
+        if (_lbAuthWrap2) _lbAuthWrap2.style.display = 'none';
         if (signupLink) signupLink.style.display = 'block';
         if (globalGate) globalGate.style.display = 'flex';
         if (wtBtn) wtBtn.style.display = 'none';
@@ -8067,7 +8414,9 @@
       if (btn) btn.classList.add('active');
       const panel = document.getElementById('panel-' + panelName);
       if (panel) panel.classList.add('active');
-      if (panelName === 'leaderboard') loadLeaderboard();
+      if (panelName === 'leaderboard' && window.lbMountLeaderboard) {
+        try { window.lbMountLeaderboard(); } catch (e) { console.error('Leaderboard mount failed:', e); }
+      }
       if (panelName === 'policies') loadPolicies();
       if (panelName === 'performance') loadAgentPerformance();
       if (panelName === 'goals' && currentUser && window.tkMountTracker) {
@@ -10082,7 +10431,12 @@
       });
     });
 
-    document.getElementById('lbCustomApply').addEventListener('click', () => {
+    // Legacy custom-range Apply button — the entire UI was replaced by the
+    // React leaderboard, so this element no longer exists. Guard prevents
+    // a null-deref TypeError at script-init that was killing every script
+    // below this point (including the Supabase login handler).
+    const _legacyLbCustomApply = document.getElementById('lbCustomApply');
+    if (_legacyLbCustomApply) _legacyLbCustomApply.addEventListener('click', () => {
       const f = document.getElementById('lbDateFrom').value;
       const t = document.getElementById('lbDateTo').value;
       if (!f || !t) {
@@ -17636,6 +17990,325 @@
         if (!el) return;
         if (!trackerRoot) trackerRoot = ReactDOM.createRoot(el);
         trackerRoot.render(<TrackerView />);
+      };
+
+      // ─── LEADERBOARD (claude.ai/design — wired to Supabase) ──────────
+      const LB_THEME_KEY = 'lb_theme_v1';
+      function lbInitialTheme() {
+        try { return localStorage.getItem(LB_THEME_KEY) || 'dark'; } catch (e) { return 'dark'; }
+      }
+      const LB_PERIODS = [
+        { key: 'TODAY',     label: 'Today' },
+        { key: 'YESTERDAY', label: 'Yesterday' },
+        { key: 'WTD',       label: 'This Week' },
+        { key: 'LW',        label: 'Last Week' },
+        { key: 'MTD',       label: 'This Month' },
+        { key: 'LM',        label: 'Last Month' },
+        { key: 'QTD',       label: 'QTD' },
+        { key: 'YTD',       label: 'YTD' },
+      ];
+      // Returns { start, end, prevStart, prevEnd, label } for a given period key.
+      function lbPeriodRange(key) {
+        const now = new Date();
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const tomorrow = new Date(today); tomorrow.setDate(tomorrow.getDate() + 1);
+        const yesterday = new Date(today); yesterday.setDate(yesterday.getDate() - 1);
+        const dayOfWeek = today.getDay();
+        const weekStart = new Date(today); weekStart.setDate(weekStart.getDate() - dayOfWeek);
+        const weekEnd = new Date(weekStart); weekEnd.setDate(weekEnd.getDate() + 7);
+        const lastWeekStart = new Date(weekStart); lastWeekStart.setDate(lastWeekStart.getDate() - 7);
+        const lastWeekEnd = new Date(weekStart);
+        const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+        const monthEnd = new Date(today.getFullYear(), today.getMonth() + 1, 1);
+        const lastMonthStart = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+        const lastMonthEnd = new Date(today.getFullYear(), today.getMonth(), 1);
+        const q = Math.floor(today.getMonth() / 3);
+        const quarterStart = new Date(today.getFullYear(), q * 3, 1);
+        const quarterEnd = new Date(today.getFullYear(), q * 3 + 3, 1);
+        const lastQuarterStart = new Date(today.getFullYear(), (q - 1) * 3, 1);
+        const lastQuarterEnd = quarterStart;
+        const yearStart = new Date(today.getFullYear(), 0, 1);
+        const yearEnd = new Date(today.getFullYear() + 1, 0, 1);
+        const lastYearStart = new Date(today.getFullYear() - 1, 0, 1);
+        const lastYearEnd = yearStart;
+        switch (key) {
+          case 'TODAY':     return { start: today,        end: tomorrow,      prevStart: yesterday,     prevEnd: today,            label: 'Today' };
+          case 'YESTERDAY': return { start: yesterday,    end: today,         prevStart: new Date(yesterday.getFullYear(), yesterday.getMonth(), yesterday.getDate() - 1), prevEnd: yesterday, label: 'Yesterday' };
+          case 'WTD':       return { start: weekStart,    end: tomorrow,      prevStart: lastWeekStart, prevEnd: weekStart,        label: 'This Week' };
+          case 'LW':        return { start: lastWeekStart, end: weekStart,    prevStart: new Date(lastWeekStart.getFullYear(), lastWeekStart.getMonth(), lastWeekStart.getDate() - 7), prevEnd: lastWeekStart, label: 'Last Week' };
+          case 'MTD':       return { start: monthStart,   end: tomorrow,      prevStart: lastMonthStart, prevEnd: monthStart,      label: 'This Month' };
+          case 'LM':        return { start: lastMonthStart, end: lastMonthEnd, prevStart: new Date(lastMonthStart.getFullYear(), lastMonthStart.getMonth() - 1, 1), prevEnd: lastMonthStart, label: 'Last Month' };
+          case 'QTD':       return { start: quarterStart, end: tomorrow,      prevStart: lastQuarterStart, prevEnd: lastQuarterEnd, label: 'Quarter to Date' };
+          case 'YTD':
+          default:          return { start: yearStart,    end: tomorrow,      prevStart: lastYearStart, prevEnd: lastYearEnd,      label: 'Year to Date' };
+        }
+      }
+      function lbInitialsOf(name) {
+        return (name || '').split(' ').map(s => s[0]).filter(Boolean).slice(0, 2).join('').toUpperCase() || '··';
+      }
+      function lbHueIdx(name) {
+        let s = 0;
+        const str = name || '';
+        for (let i = 0; i < str.length; i++) s = (s + str.charCodeAt(i)) % 9999;
+        return s % RAINBOW_TOKENS.length;
+      }
+
+      function LeaderboardView() {
+        const [theme, setTheme] = useState(lbInitialTheme());
+        const [period, setPeriod] = useState('MTD');
+        const [search, setSearch] = useState('');
+        const [sortKey, setSortKey] = useState('rank');
+        const [sortDir, setSortDir] = useState('asc');
+        const [policies, setPolicies] = useState([]);
+        const [loading, setLoading] = useState(true);
+        const [error, setError] = useState(null);
+
+        useEffect(() => {
+          const root = document.getElementById('panel-leaderboard');
+          if (root) root.setAttribute('data-lb-theme', theme);
+          try { localStorage.setItem(LB_THEME_KEY, theme); } catch (e) {}
+        }, [theme]);
+
+        const reload = async () => {
+          setLoading(true);
+          setError(null);
+          try {
+            // Fetch all policies for the year — same pattern as the legacy
+            // loadLeaderboard(). The React app filters per-period client-side
+            // so timeframe switching is instant. Range header lifts the
+            // PostgREST 1000-row default cap.
+            const yearStartYMD = new Date().getFullYear() + '-01-01';
+            const res = await fetch(
+              SUPABASE_URL + '/rest/v1/policies?select=sales_rep,user_id,annual_premium,policy_date,created_at&policy_date=gte.' + yearStartYMD + '&order=policy_date.desc',
+              { headers: Object.assign({}, HDRS, { 'Range-Unit': 'items', 'Range': '0-49999' }) }
+            );
+            if (!res.ok && res.status !== 206) throw new Error('policies fetch ' + res.status);
+            const data = await res.json();
+            setPolicies(data);
+            setLoading(false);
+          } catch (e) {
+            console.error('Leaderboard load failed:', e);
+            setError(e.message || String(e));
+            setLoading(false);
+          }
+        };
+        useEffect(() => { reload(); }, []);
+
+        // Aggregate per period — current + prior windows so we can show rank movement
+        const reps = useMemo(() => {
+          const range = lbPeriodRange(period);
+          const inWindow = (d, s, e) => d && d >= s && d < e;
+          const curMap = {}, prevMap = {};
+          policies.forEach(p => {
+            if (!p.sales_rep) return;
+            const d = parsePolicyDate(p.policy_date || p.created_at);
+            if (!d) return;
+            if (inWindow(d, range.start, range.end)) {
+              if (!curMap[p.sales_rep]) curMap[p.sales_rep] = { name: p.sales_rep, premium: 0, deals: 0, user_id: p.user_id || null };
+              curMap[p.sales_rep].premium += parseFloat(p.annual_premium || 0);
+              curMap[p.sales_rep].deals += 1;
+            }
+            if (inWindow(d, range.prevStart, range.prevEnd)) {
+              if (!prevMap[p.sales_rep]) prevMap[p.sales_rep] = { premium: 0 };
+              prevMap[p.sales_rep].premium += parseFloat(p.annual_premium || 0);
+            }
+          });
+          // Build ranked lists (by premium desc) for both windows
+          const curList = Object.values(curMap).sort((a, b) => b.premium - a.premium);
+          curList.forEach((r, i) => { r.rank = i + 1; });
+          const prevSorted = Object.values(prevMap).map((v, i) => v).map(() => null); // placeholder
+          // Build prev rank by name
+          const prevRanks = {};
+          Object.keys(prevMap).map(name => ({ name, premium: prevMap[name].premium }))
+            .sort((a, b) => b.premium - a.premium)
+            .forEach((r, i) => { prevRanks[r.name] = i + 1; });
+          // Mark "you" against the signed-in user's name
+          const meName = (window.currentUser && (window.currentUser.user_metadata?.name || window.currentUser.email)) || '';
+          curList.forEach(r => {
+            const prevRank = prevRanks[r.name];
+            r.rankMove = prevRank ? (prevRank - r.rank) : 0;
+            r.you = meName && (r.name === meName || (r.user_id && window.currentUser && r.user_id === window.currentUser.id));
+            r.initials = lbInitialsOf(r.name);
+            r.hue = RAINBOW_TOKENS[lbHueIdx(r.name)];
+          });
+          return curList;
+        }, [policies, period]);
+
+        const filtered = useMemo(() => {
+          let list = reps.slice();
+          if (search.trim()) {
+            const q = search.trim().toLowerCase();
+            list = list.filter(r => (r.name || '').toLowerCase().includes(q));
+          }
+          // Re-sort by current sort key
+          list.sort((a, b) => {
+            const av = a[sortKey], bv = b[sortKey];
+            if (sortKey === 'name') return sortDir === 'asc' ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name);
+            if (typeof av === 'number') return sortDir === 'asc' ? av - bv : bv - av;
+            return 0;
+          });
+          return list;
+        }, [reps, search, sortKey, sortDir]);
+
+        const onSort = (k) => {
+          if (sortKey === k) setSortDir(d => d === 'asc' ? 'desc' : 'asc');
+          else { setSortKey(k); setSortDir(k === 'rank' || k === 'name' ? 'asc' : 'desc'); }
+        };
+
+        const periodLabel = lbPeriodRange(period).label;
+        const today = new Date();
+        const dateStr = today.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+
+        return (
+          <div>
+            <header className="lb-hdr">
+              <div className="lb-hdr-l">
+                <div style={{display:'flex', alignItems:'center', gap:12}}>
+                  <div className="lb-hdr-title">Kairos Financial</div>
+                  <span className="lb-hdr-sub">· Leaderboard</span>
+                </div>
+                <div className="lb-hdr-sub" style={{marginTop:6}}>
+                  Top Sales Reps · Annual Premium · Plan Year {today.getFullYear()}
+                </div>
+              </div>
+              <div className="lb-hdr-r">
+                <div className="lb-hdr-time"><b>{dateStr}</b></div>
+                <button className="lb-theme-toggle" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} aria-label="Toggle theme">
+                  {theme === 'dark'
+                    ? <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+                    : <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>}
+                </button>
+              </div>
+            </header>
+
+            <div className="lb-bar">
+              <div className="lb-tf-segment">
+                {LB_PERIODS.map(p => (
+                  <button key={p.key} className={period === p.key ? 'on' : ''} onClick={() => setPeriod(p.key)}>{p.label}</button>
+                ))}
+              </div>
+              <div className="lb-search">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+                <input type="text" placeholder="Search reps…" value={search} onChange={e => setSearch(e.target.value)} />
+              </div>
+            </div>
+
+            {loading ? (
+              <div className="lb-loading">Loading leaderboard…</div>
+            ) : error ? (
+              <div className="lb-loading">Failed to load: {error}</div>
+            ) : (
+              <div className="lb-grid lb-grid-12">
+                {/* Top 3 podium */}
+                {reps.length >= 3 && (
+                  <section className="lb-card lb-podium">
+                    <div className="lb-podium-hd">
+                      <div className="lb-podium-hd-l">
+                        <div className="lb-podium-hd-title">Top 3 · {periodLabel}</div>
+                        <div className="lb-podium-hd-meta">Premium · Sorted</div>
+                      </div>
+                      <div className="lb-podium-hd-meta">As of {today.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' })}</div>
+                    </div>
+                    <div className="lb-podium-row">
+                      {[reps[0], reps[1], reps[2]].map((rep, i) => {
+                        const variant = ['gold','silver','bronze'][i];
+                        const medalLabel = ['1ST · GOLD','2ND · SILVER','3RD · BRONZE'][i];
+                        return (
+                          <div key={rep.name} className={'lb-podium-card ' + variant}>
+                            <div className="lb-podium-rank">#{rep.rank}</div>
+                            <div className="lb-podium-medal">{medalLabel}</div>
+                            <div className="lb-podium-agt">
+                              <div className="lb-podium-avatar">{rep.initials}</div>
+                              <div>
+                                <div className="lb-podium-name">{rep.name}</div>
+                                {rep.you && <div className="lb-podium-meta">You</div>}
+                              </div>
+                            </div>
+                            <div className="lb-podium-stats">
+                              <div className="lb-podium-stat">
+                                <div className="lb-podium-stat-lbl">Premium</div>
+                                <div className="lb-podium-stat-val">{fmtCurrency(rep.premium, { compact: true, decimals: 2 })}</div>
+                              </div>
+                              <div className="lb-podium-stat">
+                                <div className="lb-podium-stat-lbl">Policies</div>
+                                <div className="lb-podium-stat-val">{rep.deals}</div>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </section>
+                )}
+
+                {/* Full table */}
+                <section className="lb-card lb-full">
+                  <div className="lb-full-hd">
+                    <div className="lb-card-title">Full Leaderboard · {filtered.length} reps</div>
+                    <div className="lb-card-meta">Click headers to sort</div>
+                  </div>
+                  <table className="lb-table">
+                    <thead>
+                      <tr>
+                        <th className={sortKey === 'rank' ? 'sorted' : ''} onClick={() => onSort('rank')}>Rank{sortKey === 'rank' && <span className="arrow">{sortDir === 'asc' ? '↑' : '↓'}</span>}</th>
+                        <th className={sortKey === 'name' ? 'sorted' : ''} onClick={() => onSort('name')}>Producer{sortKey === 'name' && <span className="arrow">{sortDir === 'asc' ? '↑' : '↓'}</span>}</th>
+                        <th className={'num ' + (sortKey === 'premium' ? 'sorted' : '')} onClick={() => onSort('premium')}>Premium{sortKey === 'premium' && <span className="arrow">{sortDir === 'asc' ? '↑' : '↓'}</span>}</th>
+                        <th className={'num ' + (sortKey === 'deals' ? 'sorted' : '')} onClick={() => onSort('deals')}>Policies{sortKey === 'deals' && <span className="arrow">{sortDir === 'asc' ? '↑' : '↓'}</span>}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filtered.length === 0 ? (
+                        <tr><td colSpan="4" className="lb-empty">No sales recorded for this period yet.</td></tr>
+                      ) : filtered.map(rep => {
+                        const rankClass = rep.rank === 1 ? 'r1' : rep.rank === 2 ? 'r2' : rep.rank === 3 ? 'r3' : '';
+                        return (
+                          <tr key={rep.name} className={rep.you ? 'you' : ''}>
+                            <td>
+                              <span className={'lb-rank-pill ' + rankClass}>{rep.rank}</span>
+                              {rep.rankMove > 0 ? (
+                                <span className="lb-rank-move up"><svg width="9" height="9" viewBox="0 0 12 12"><path d="M6 2 L10 7 L7.5 7 L7.5 10 L4.5 10 L4.5 7 L2 7 Z" fill="currentColor"/></svg>{rep.rankMove}</span>
+                              ) : rep.rankMove < 0 ? (
+                                <span className="lb-rank-move down"><svg width="9" height="9" viewBox="0 0 12 12"><path d="M6 10 L2 5 L4.5 5 L4.5 2 L7.5 2 L7.5 5 L10 5 Z" fill="currentColor"/></svg>{Math.abs(rep.rankMove)}</span>
+                              ) : (
+                                <span className="lb-rank-move flat"><svg width="9" height="9" viewBox="0 0 12 12"><rect x="2.5" y="5" width="7" height="2" fill="currentColor"/></svg></span>
+                              )}
+                            </td>
+                            <td>
+                              <div className="lb-agt-cell">
+                                <div className="lb-avatar" style={{
+                                  background: 'color-mix(in oklch, ' + rep.hue + ' 22%, var(--lb-surface))',
+                                  borderColor: 'color-mix(in oklch, ' + rep.hue + ' 45%, transparent)',
+                                }}>{rep.initials}</div>
+                                <div>
+                                  <div className="lb-agt-name">{rep.name}{rep.you && <span className="lb-you-tag">You</span>}</div>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="num" style={{color:'var(--lb-ink-1)', fontSize:14}}>{fmtCurrency(rep.premium)}</td>
+                            <td className="num">{rep.deals}</td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </section>
+              </div>
+            )}
+
+            <footer className="lb-foot">
+              <span>Kairos Financial · Plan Year {today.getFullYear()}</span>
+              <span>Updated {today.toLocaleTimeString('en-US', { hour:'numeric', minute:'2-digit' })}</span>
+            </footer>
+          </div>
+        );
+      }
+
+      let leaderboardRoot = null;
+      window.lbMountLeaderboard = function () {
+        const el = document.getElementById('lbLeaderboardRoot');
+        if (!el) return;
+        if (!leaderboardRoot) leaderboardRoot = ReactDOM.createRoot(el);
+        leaderboardRoot.render(<LeaderboardView />);
       };
     })();
   </script>
