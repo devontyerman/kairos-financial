@@ -14541,14 +14541,22 @@
           const mtd = kpiTotal(monthStart);
           const ytd = kpiTotal(yearStart);
 
-          const carrierMix = {};
-          CARRIER_LIST.forEach(c => carrierMix[c] = 0);
-          myPols.forEach(po => {
-            const d = parsePolicyDate(po.policy_date || po.created_at);
-            if (d < monthStart) return;
-            const c = po.carrier;
-            if (CARRIER_LIST.includes(c)) carrierMix[c] += parseFloat(po.annual_premium || 0);
-          });
+          // Carrier mix per timeframe so the donut/bars react to WTD/MTD/YTD
+          // toggles. Each map keys carrier name → AP sum within that window.
+          const carrierMixFor = (start) => {
+            const mix = {};
+            CARRIER_LIST.forEach(c => mix[c] = 0);
+            myPols.forEach(po => {
+              const d = parsePolicyDate(po.policy_date || po.created_at);
+              if (d < start) return;
+              const c = po.carrier;
+              if (CARRIER_LIST.includes(c)) mix[c] += parseFloat(po.annual_premium || 0);
+            });
+            return mix;
+          };
+          const carrierMixWTD = carrierMixFor(weekStart);
+          const carrierMixMTD = carrierMixFor(monthStart);
+          const carrierMixYTD = carrierMixFor(yearStart);
 
           const initials = name.split(' ').map(s => s[0]).filter(Boolean).slice(0,2).join('').toUpperCase() || '··';
           const dialToDeal = ytd.dials > 0 ? (dealsYTD / ytd.dials) * 100 : 0;
@@ -14567,7 +14575,10 @@
             roi, dialToDeal, avgPremium,
             kpiWTD: wtd, kpiMTD: mtd, kpiYTD: ytd,
             monthly, weekly, monthLabels, weekLabels,
-            carrierMix,
+            // Default `carrierMix` stays MTD-keyed for components that don't
+            // pass a timeframe; explicit WTD/MTD/YTD maps used by the donut.
+            carrierMix: carrierMixMTD,
+            carrierMixWTD, carrierMixMTD, carrierMixYTD,
             policies: myPols,
           };
         });
@@ -14579,8 +14590,14 @@
         const sumKpi = (which, key) => agents.reduce((s, a) => s + a[which][key], 0);
         const monthly = agents[0].monthly.map((_, i) => agents.reduce((s,a) => s + a.monthly[i], 0));
         const weekly  = agents[0].weekly.map((_, i)  => agents.reduce((s,a) => s + a.weekly[i], 0));
-        const carrierMix = {};
-        CARRIER_LIST.forEach(c => carrierMix[c] = agents.reduce((s,a) => s + (a.carrierMix[c]||0), 0));
+        const carrierMixFor = (key) => {
+          const out = {};
+          CARRIER_LIST.forEach(c => out[c] = agents.reduce((s,a) => s + ((a[key] || {})[c] || 0), 0));
+          return out;
+        };
+        const carrierMixWTD = carrierMixFor('carrierMixWTD');
+        const carrierMixMTD = carrierMixFor('carrierMixMTD');
+        const carrierMixYTD = carrierMixFor('carrierMixYTD');
         const dealsMTD = sumF('dealsMTD');
         const apMTD = sumF('apMTD');
         const ytd = ['dials','answers','appointments','presentations','deals','leadSpend','deposits']
@@ -14609,7 +14626,8 @@
           monthly, weekly,
           monthLabels: agents[0].monthLabels,
           weekLabels: agents[0].weekLabels,
-          carrierMix,
+          carrierMix: carrierMixMTD,
+          carrierMixWTD, carrierMixMTD, carrierMixYTD,
           policies: teamPolicies,
         };
       }
@@ -14619,6 +14637,9 @@
         const ap = timeframe === 'WTD' ? scope.apWTD : timeframe === 'YTD' ? scope.apYTD : scope.apMTD;
         const deals = timeframe === 'WTD' ? scope.dealsWTD : timeframe === 'YTD' ? scope.dealsYTD : scope.dealsMTD;
         const k = timeframe === 'WTD' ? scope.kpiWTD : timeframe === 'YTD' ? scope.kpiYTD : scope.kpiMTD;
+        const carrierMix = timeframe === 'WTD' ? (scope.carrierMixWTD || scope.carrierMix)
+                          : timeframe === 'YTD' ? (scope.carrierMixYTD || scope.carrierMix)
+                          : (scope.carrierMixMTD || scope.carrierMix);
         const dialToDeal = k.dials > 0 ? (deals / k.dials) * 100 : 0;
         const roi = k.leadSpend > 0 ? ((k.deposits - k.leadSpend) / k.leadSpend) * 100 : 0;
         const avgPremium = deals > 0 ? Math.round(ap / deals) : 0;
@@ -14630,13 +14651,17 @@
           presentations: k.presentations,
           leadSpend: k.leadSpend,
           deposits: k.deposits,
-          carrierMix: scope.carrierMix,
+          carrierMix,
           name: scope.name,
         };
       }
 
       // ─── Charts ─────────────────────────────────────────────────────────
-      function APLineChart({ labels, series, color, height }) {
+      // `projectionFromIdx` (optional): index in `series` where the data
+      // transitions from real → projected. The chart draws a solid line +
+      // gradient fill up to that index, then a dashed line beyond it. Used
+      // by the YTD view to extrapolate the rest of the year.
+      function APLineChart({ labels, series, color, height, projectionFromIdx }) {
         const ref = useRef(null);
         const [w, setW] = useState(800);
         const [hover, setHover] = useState(null);
@@ -14655,8 +14680,16 @@
         const xs = (i) => pad.left + (i / Math.max(labels.length - 1, 1)) * innerW;
         const ys = (v) => pad.top + (1 - v / max) * innerH;
         const points = series.map((v, i) => [xs(i), ys(v)]);
-        const linePath = smoothPath(points, 0.5);
-        const areaPath = linePath + ' L ' + xs(labels.length - 1) + ',' + (pad.top + innerH) + ' L ' + xs(0) + ',' + (pad.top + innerH) + ' Z';
+        const hasProjection = (typeof projectionFromIdx === 'number')
+          && projectionFromIdx >= 0 && projectionFromIdx < points.length - 1;
+        const realPoints      = hasProjection ? points.slice(0, projectionFromIdx + 1) : points;
+        const projectedPoints = hasProjection ? points.slice(projectionFromIdx)         : [];
+        const realPath        = smoothPath(realPoints, 0.5);
+        const projectedPath   = projectedPoints.length >= 2 ? smoothPath(projectedPoints, 0.5) : '';
+        // Gradient fill follows only the real portion so the projection feels
+        // visually "lighter" — a future estimate, not booked AP.
+        const areaEndIdx = hasProjection ? projectionFromIdx : labels.length - 1;
+        const areaPath = realPath + ' L ' + xs(areaEndIdx) + ',' + (pad.top + innerH) + ' L ' + xs(0) + ',' + (pad.top + innerH) + ' Z';
         const grid = [0, 0.25, 0.5, 0.75, 1].map(t => ({ y: pad.top + t * innerH, v: max * (1 - t) }));
         const onMove = (e) => {
           const rect = ref.current.getBoundingClientRect();
@@ -14684,7 +14717,17 @@
                 </g>
               ))}
               <path d={areaPath} fill="url(#tpApGrad)" />
-              <path d={linePath} fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              <path d={realPath} fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              {projectedPath && (
+                <path d={projectedPath} fill="none" stroke={c} strokeWidth="2"
+                  strokeLinecap="round" strokeLinejoin="round"
+                  strokeDasharray="4 5" opacity="0.55" />
+              )}
+              {hasProjection && (
+                <line x1={xs(projectionFromIdx)} x2={xs(projectionFromIdx)}
+                  y1={pad.top} y2={pad.top + innerH}
+                  stroke="var(--tp-ink-4)" strokeDasharray="2 4" opacity="0.5" />
+              )}
               {labels.map((lbl, i) => {
                 const step = Math.max(1, Math.floor(labels.length / 8));
                 if (i % step !== 0 && i !== labels.length - 1) return null;
@@ -14888,7 +14931,7 @@
       // ─── AP Hero ────────────────────────────────────────────────────────
       function APHero({ scope, view, timeframe, setTimeframe }) {
         const today = new Date();
-        let series, labels, total, prior, label;
+        let series, labels, total, prior, label, projectionFromIdx;
         if (timeframe === 'WTD') {
           const weekStart = startOfWeek(today);
           const dayBuckets = [0,0,0,0,0,0,0];
@@ -14924,15 +14967,48 @@
           prior = (scope.monthly || [])[(scope.monthly || []).length - 2] || 0;
           label = 'Month-to-date';
         } else {
-          const monthly = scope.monthly || [];
-          series = monthly.reduce((a, v, i) => { a.push((a[i-1] || 0) + v); return a; }, []);
-          labels = scope.monthLabels || [];
+          // YTD: chart spans Jan → Dec of the current year. Past + current
+          // months show real cumulative AP; future months show a linear
+          // projection from current pace to year-end (rendered dashed).
+          const yearStart = startOfYear(today);
+          const monthly = new Array(12).fill(0);
+          (scope.policies || []).forEach(p => {
+            const d = parsePolicyDate(p.policy_date || p.created_at);
+            if (d && d.getFullYear() === today.getFullYear()) {
+              monthly[d.getMonth()] += parseFloat(p.annual_premium || 0);
+            }
+          });
+          const cumulative = monthly.reduce((arr, v) => { arr.push((arr[arr.length-1] || 0) + v); return arr; }, []);
+          const currentMonthIdx = today.getMonth();
+          const apYTD = cumulative[currentMonthIdx] || 0;
+          const dayOfYear = Math.floor((today - yearStart) / 86400000) + 1;
+          const yearEndProjection = dayOfYear > 0 && apYTD > 0 ? (apYTD / dayOfYear) * 365 : apYTD;
+          const projected = cumulative.slice();
+          if (currentMonthIdx < 11 && yearEndProjection > apYTD) {
+            const monthsRemaining = 11 - currentMonthIdx;
+            const step = (yearEndProjection - apYTD) / monthsRemaining;
+            for (let i = currentMonthIdx + 1; i <= 11; i++) {
+              projected[i] = apYTD + step * (i - currentMonthIdx);
+            }
+          }
+          series = projected;
+          labels = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
           total = view.ap;
-          prior = (monthly[monthly.length - 2] || 0);
+          projectionFromIdx = currentMonthIdx;
+          // Prior = same window last year (Jan 1 → today's anniversary)
+          const priorYearStart = new Date(today.getFullYear() - 1, 0, 1);
+          const priorAnniversary = new Date(today.getFullYear() - 1, today.getMonth(), today.getDate(), 23, 59, 59);
+          prior = 0;
+          (scope.policies || []).forEach(p => {
+            const d = parsePolicyDate(p.policy_date || p.created_at);
+            if (d && d >= priorYearStart && d <= priorAnniversary) {
+              prior += parseFloat(p.annual_premium || 0);
+            }
+          });
           label = 'Year-to-date';
         }
         const delta = prior ? ((total - prior) / prior) * 100 : 0;
-        const deltaLabel = timeframe === 'WTD' ? 'vs last week' : timeframe === 'MTD' ? 'vs last month' : 'vs prior month';
+        const deltaLabel = timeframe === 'WTD' ? 'vs last week' : timeframe === 'MTD' ? 'vs last month' : 'vs same point last year';
         const isTeam = scope.id === '__team__';
         return (
           <div className="tp-card tp-ap-hero">
@@ -14961,23 +15037,47 @@
                 Avg premium <b style={{color:'var(--tp-ink-1)'}}>{fmtCurrency(view.avgPremium)}</b> · Deals <b style={{color:'var(--tp-ink-1)'}}>{view.deals.toLocaleString()}</b>
               </div>
             </div>
-            <APLineChart labels={labels} series={series} color="var(--rb-green)" height={300} />
+            <APLineChart labels={labels} series={series} color="var(--rb-green)" height={300} projectionFromIdx={projectionFromIdx} />
+            {typeof projectionFromIdx === 'number' && (
+              <div style={{display:'flex', gap:14, alignItems:'center', marginTop:8, fontFamily:'var(--tp-mono)', fontSize:10, color:'var(--tp-ink-3)', textTransform:'uppercase', letterSpacing:'0.06em'}}>
+                <span style={{display:'inline-flex', alignItems:'center', gap:6}}>
+                  <span style={{display:'inline-block', width:14, height:2, background:'var(--rb-green)', borderRadius:2}}></span>
+                  Booked
+                </span>
+                <span style={{display:'inline-flex', alignItems:'center', gap:6}}>
+                  <span style={{display:'inline-block', width:14, height:2, background:'repeating-linear-gradient(90deg, var(--rb-green) 0 4px, transparent 4px 9px)', opacity:0.7}}></span>
+                  Projected · {fmtCurrency(series[series.length-1] || 0, {compact:true})} year-end pace
+                </span>
+              </div>
+            )}
           </div>
         );
       }
 
       // ─── Leaderboard ─────────────────────────────────────────────────
-      function Leaderboard({ agents, activeId, onSelect }) {
-        const [sortKey, setSortKey] = useState('apMTD');
+      // All numeric columns (AP, Deals, D→D %, ROI) reflect the active
+      // timeframe so a switch from MTD → WTD/YTD updates every row.
+      function Leaderboard({ agents, activeId, onSelect, timeframe }) {
+        const tfLabel = timeframe === 'WTD' ? 'WTD' : timeframe === 'YTD' ? 'YTD' : 'MTD';
+        const apKey = timeframe === 'WTD' ? 'apWTD' : timeframe === 'YTD' ? 'apYTD' : 'apMTD';
+        const dealsKey = timeframe === 'WTD' ? 'dealsWTD' : timeframe === 'YTD' ? 'dealsYTD' : 'dealsMTD';
+        const kpiKey = timeframe === 'WTD' ? 'kpiWTD' : timeframe === 'YTD' ? 'kpiYTD' : 'kpiMTD';
+        const enriched = useMemo(() => agents.map(a => {
+          const k = a[kpiKey] || { dials: 0, leadSpend: 0, deposits: 0 };
+          const d2d = k.dials > 0 ? (a[dealsKey] / k.dials) * 100 : 0;
+          const r = k.leadSpend > 0 ? ((k.deposits - k.leadSpend) / k.leadSpend) * 100 : 0;
+          return Object.assign({}, a, { _ap: a[apKey] || 0, _deals: a[dealsKey] || 0, _dialToDeal: d2d, _roi: r, _dials: k.dials });
+        }), [agents, timeframe, apKey, dealsKey, kpiKey]);
+        const [sortKey, setSortKey] = useState('_ap');
         const [sortDir, setSortDir] = useState('desc');
         const sorted = useMemo(() => {
-          const arr = [...agents];
+          const arr = [...enriched];
           arr.sort((a, b) => {
             const va = a[sortKey] || 0, vb = b[sortKey] || 0;
             return sortDir === 'asc' ? va - vb : vb - va;
           });
           return arr;
-        }, [agents, sortKey, sortDir]);
+        }, [enriched, sortKey, sortDir]);
         const setSort = (k) => {
           if (k === sortKey) setSortDir(d => d === 'asc' ? 'desc' : 'asc');
           else { setSortKey(k); setSortDir('desc'); }
@@ -14987,17 +15087,17 @@
         return (
           <div className="tp-card tp-lb">
             <div className="tp-lb-hd">
-              <div className="tp-card-title">Agent leaderboard</div>
+              <div className="tp-card-title">Agent leaderboard · {tfLabel}</div>
               <div className="tp-card-meta">Click an agent to filter</div>
             </div>
             <table className="tp-lb-table">
               <thead>
                 <tr>
-                  <th onClick={() => setSort('apMTD')}>Agent</th>
-                  <th className="num" onClick={() => setSort('apMTD')}>AP MTD {arrow('apMTD')}</th>
-                  <th className="num" onClick={() => setSort('dealsMTD')}>Deals {arrow('dealsMTD')}</th>
-                  <th className="num" onClick={() => setSort('dialToDeal')}>D→D % {arrow('dialToDeal')}</th>
-                  <th className="num" onClick={() => setSort('roi')}>ROI {arrow('roi')}</th>
+                  <th onClick={() => setSort('_ap')}>Agent</th>
+                  <th className="num" onClick={() => setSort('_ap')}>AP {tfLabel} {arrow('_ap')}</th>
+                  <th className="num" onClick={() => setSort('_deals')}>Deals {arrow('_deals')}</th>
+                  <th className="num" onClick={() => setSort('_dialToDeal')}>D→D % {arrow('_dialToDeal')}</th>
+                  <th className="num" onClick={() => setSort('_roi')}>ROI {arrow('_roi')}</th>
                   <th className="num">Trend (12mo)</th>
                 </tr>
               </thead>
@@ -15015,15 +15115,15 @@
                           </div>
                           <div style={{display:'flex', flexDirection:'column'}}>
                             <span className="tp-agt-name">{a.name}</span>
-                            <span className="tp-agt-tenure">{(a.kpiYTD.dials || 0).toLocaleString()} dials YTD</span>
+                            <span className="tp-agt-tenure">{(a._dials || 0).toLocaleString()} dials {tfLabel}</span>
                           </div>
                         </div>
                       </td>
-                      <td className="num">{fmtCurrency(a.apMTD, {compact:true})}</td>
-                      <td className="num">{a.dealsMTD}</td>
-                      <td className="num"><span className="tp-dial-pct">{a.dialToDeal.toFixed(2)}%</span></td>
-                      <td className="num" style={{color: a.roi >= 0 ? 'var(--tp-pos)' : 'var(--tp-neg)'}}>
-                        {a.roi >= 0 ? '+' : ''}{a.roi.toFixed(0)}%
+                      <td className="num">{fmtCurrency(a._ap, {compact:true})}</td>
+                      <td className="num">{a._deals}</td>
+                      <td className="num"><span className="tp-dial-pct">{a._dialToDeal.toFixed(2)}%</span></td>
+                      <td className="num" style={{color: a._roi >= 0 ? 'var(--tp-pos)' : 'var(--tp-neg)'}}>
+                        {a._roi >= 0 ? '+' : ''}{a._roi.toFixed(0)}%
                       </td>
                       <td className="num" style={{paddingRight: 22}}>
                         <div style={{display:'flex', justifyContent:'flex-end'}}>
@@ -15322,7 +15422,7 @@
             </div>
             <div className="tp-grid tp-grid-12">
               <APHero scope={scope} view={view} timeframe={timeframe} setTimeframe={setTimeframe} />
-              <Leaderboard agents={agents} activeId={activeId} onSelect={(id) => setActiveId(curr => curr === id ? null : id)} />
+              <Leaderboard agents={agents} activeId={activeId} timeframe={timeframe} onSelect={(id) => setActiveId(curr => curr === id ? null : id)} />
               <CarrierBreakdown scope={scope} view={view} timeframe={timeframe} />
               <Comparison scope={scope} team={team} agents={agents} months={12} />
               <KPIPanel scope={scope} view={view} timeframe={timeframe} />
