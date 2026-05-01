@@ -2435,19 +2435,23 @@
       font-family: var(--lb-mono); font-size: 10px; color: var(--lb-ink-3);
       text-transform: uppercase; letter-spacing: 0.08em;
     }
+    /* Three uniform podium cards — same width, padding, type sizes. The
+       rank/medal accent color (gold / silver / bronze) is the only thing
+       that differs between them. */
     #panel-leaderboard .lb-podium-row {
       display: grid;
-      grid-template-columns: 1fr 1.2fr 1fr;
+      grid-template-columns: repeat(3, 1fr);
       gap: 14px;
-      align-items: end;
+      align-items: stretch;
     }
     #panel-leaderboard .lb-podium-card {
       border: 1px solid var(--lb-hairline-strong);
       border-radius: var(--lb-radius);
-      padding: 22px 22px 24px;
+      padding: 24px 22px 24px;
       position: relative; overflow: hidden;
       background: var(--lb-surface-2);
       transition: transform 200ms ease;
+      display: flex; flex-direction: column;
     }
     #panel-leaderboard .lb-podium-card:hover { transform: translateY(-2px); }
     #panel-leaderboard .lb-podium-card::before {
@@ -2455,7 +2459,7 @@
       inset: 0 0 auto 0; height: 3px;
       background: var(--lb-accent, var(--rb-blue));
     }
-    #panel-leaderboard .lb-podium-card.gold { --lb-accent: var(--rb-yellow); padding-top: 30px; padding-bottom: 30px; }
+    #panel-leaderboard .lb-podium-card.gold   { --lb-accent: var(--rb-yellow); }
     #panel-leaderboard .lb-podium-card.silver { --lb-accent: var(--rb-blue); }
     #panel-leaderboard .lb-podium-card.bronze { --lb-accent: var(--rb-orange); }
     #panel-leaderboard .lb-podium-card.gold {
@@ -2473,16 +2477,19 @@
         radial-gradient(380px 240px at 80% -20%, color-mix(in oklch, var(--rb-orange) 10%, transparent), transparent 60%),
         var(--lb-surface-2);
     }
+    /* Rank numeral — same size on every card */
     #panel-leaderboard .lb-podium-rank {
       position: absolute;
       top: 18px; right: 22px;
-      font-family: var(--lb-mono); font-size: 64px; font-weight: 500;
+      font-family: var(--lb-mono);
+      font-size: 64px;
+      font-weight: 500;
       color: color-mix(in oklch, var(--lb-accent) 60%, transparent);
       letter-spacing: -0.04em;
       line-height: 0.85;
       font-variant-numeric: tabular-nums;
     }
-    #panel-leaderboard .lb-podium-card.gold .lb-podium-rank { font-size: 80px; }
+    /* Medal label — fixed width so 1ST / 2ND / 3RD never reflow the row */
     #panel-leaderboard .lb-podium-medal {
       font-family: var(--lb-mono); font-size: 9px;
       text-transform: uppercase; letter-spacing: 0.12em;
@@ -2499,6 +2506,7 @@
       display: flex; align-items: center; gap: 12px;
       margin-bottom: 18px;
     }
+    /* Avatar — same size on every card */
     #panel-leaderboard .lb-podium-avatar {
       width: 44px; height: 44px; border-radius: 99px;
       display: grid; place-items: center;
@@ -2506,22 +2514,23 @@
       color: var(--lb-ink-1);
       background: color-mix(in oklch, var(--lb-accent) 24%, var(--lb-surface));
       border: 1px solid color-mix(in oklch, var(--lb-accent) 50%, transparent);
+      flex-shrink: 0;
     }
-    #panel-leaderboard .lb-podium-card.gold .lb-podium-avatar { width: 54px; height: 54px; font-size: 16px; }
     #panel-leaderboard .lb-podium-name {
       font-size: 17px; font-weight: 600; color: var(--lb-ink-1);
-      letter-spacing: -0.005em; line-height: 1.15;
+      letter-spacing: -0.005em; line-height: 1.2;
     }
-    #panel-leaderboard .lb-podium-card.gold .lb-podium-name { font-size: 19px; }
     #panel-leaderboard .lb-podium-meta {
       font-family: var(--lb-mono); font-size: 10px; color: var(--lb-ink-3);
       text-transform: uppercase; letter-spacing: 0.06em;
       margin-top: 3px;
     }
+    /* Stats row pinned to bottom so all three cards line up the same */
     #panel-leaderboard .lb-podium-stats {
       display: flex; gap: 22px;
       padding-top: 16px;
       border-top: 1px solid var(--lb-hairline);
+      margin-top: auto;
     }
     #panel-leaderboard .lb-podium-stat { display: flex; flex-direction: column; gap: 3px; }
     #panel-leaderboard .lb-podium-stat-lbl {
@@ -2534,7 +2543,6 @@
       color: var(--lb-ink-1);
       font-variant-numeric: tabular-nums;
     }
-    #panel-leaderboard .lb-podium-card.gold .lb-podium-stat-val { font-size: 22px; }
 
     /* Full leaderboard table */
     #panel-leaderboard .lb-full { grid-column: span 12; padding: 0; }
@@ -2640,7 +2648,6 @@
 
     @media (max-width: 1180px) {
       #panel-leaderboard .lb-podium-row { grid-template-columns: 1fr; }
-      #panel-leaderboard .lb-podium-card.gold { padding-top: 22px; padding-bottom: 22px; }
     }
     @media (max-width: 768px) {
       #panel-leaderboard.active { margin: -0.75rem -0.75rem -3rem; padding: 16px 12px 24px; min-height: calc(100vh - 0.75rem); }
