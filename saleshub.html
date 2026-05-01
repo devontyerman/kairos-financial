@@ -2125,20 +2125,56 @@
       #panel-teamperf .tp-more-btn { width: 28px; height: 28px; }
       .tp-ae-modal { padding: 1.5rem 1.2rem; max-height: 90vh; overflow-y: auto; }
       .tp-ae-overlay { padding: 0.75rem; }
-      /* Team Performance dashboard (React) — collapse to single column */
-      #tpatab-performance, #tpatab-agents { padding: 16px 14px 24px; margin: 0 -8px; }
+      /* Team Performance dashboard (React) — mobile pass for all 3 sub-tabs */
+      #tpatab-performance, #tpatab-agents, #tpatab-policies { padding: 16px 12px 24px; margin: 0 -8px; }
       #tpatab-performance .tp-grid-12, #tpatab-agents .tp-grid-12, #tpatab-policies .tp-grid-12 { grid-template-columns: 1fr; }
       #tpatab-performance .tp-lb, #tpatab-performance .tp-carriers, #tpatab-performance .tp-compare, #tpatab-performance .tp-kpi-panel,
-      #tpatab-agents .tp-lb { grid-column: span 1; }
+      #tpatab-agents .tp-lb,
+      #tpatab-policies .tp-policy-table-wrap { grid-column: span 1; }
       #tpatab-performance .tp-kpi-grid { grid-template-columns: repeat(2, 1fr); }
       #tpatab-performance .tp-ap-num { font-size: 28px; }
+      #tpatab-performance .tp-ap-stats { gap: 12px; }
       #tpatab-performance .tp-carriers-body { flex-direction: column; align-items: stretch; gap: 16px; }
       #tpatab-performance .tp-hdr, #tpatab-agents .tp-hdr, #tpatab-policies .tp-hdr { flex-direction: column; align-items: flex-start; gap: 12px; }
+      #tpatab-performance .tp-card, #tpatab-agents .tp-card, #tpatab-policies .tp-card { padding: 16px 14px; }
+      /* AP hero chart needs more height to be readable on a phone */
+      #tpatab-performance .tp-ap-hero { padding: 16px 14px 8px; }
+      /* Compare card legend wraps under the title on mobile */
+      #tpatab-performance .tp-compare-hd { flex-direction: column; align-items: flex-start; gap: 10px; }
+      /* Performance + Agents share the same .tp-lb table — let it scroll */
+      #tpatab-performance .tp-lb table, #tpatab-agents .tp-lb table { font-size: 12px; }
+      #tpatab-performance .tp-lb-table thead th, #tpatab-agents .tp-lb-table thead th { padding: 8px 10px; font-size: 9px; }
+      #tpatab-performance .tp-lb-table tbody td, #tpatab-agents .tp-lb-table tbody td { padding: 10px; font-size: 12px; }
+      /* Hide the 12-month sparkline on mobile — column is too narrow to be useful */
+      #tpatab-performance .tp-lb-table thead th:nth-child(6),
+      #tpatab-performance .tp-lb-table tbody td:nth-child(6) { display: none; }
+
+      /* Policy Management — mobile: collapse 4-up KPI strip + filters */
+      #tpatab-policies .tp-kpi-strip { grid-template-columns: repeat(2, 1fr); }
+      #tpatab-policies .tp-filters-row { gap: 10px; }
+      #tpatab-policies .tp-dropdown-btn { min-width: 0 !important; width: 100%; }
+      #tpatab-policies .tp-filter-group { width: calc(50% - 5px); }
+      #tpatab-policies .tp-pt-hd { padding: 14px 14px 12px; flex-direction: column; align-items: flex-start; }
+      #tpatab-policies .tp-pt-search { width: 100%; }
+      /* Drop low-priority columns on phones to keep the rest readable.
+         Hide: Carrier, Product, Policy #, Effective. */
+      #tpatab-policies .tp-pt thead th:nth-child(5),
+      #tpatab-policies .tp-pt thead th:nth-child(6),
+      #tpatab-policies .tp-pt thead th:nth-child(7),
+      #tpatab-policies .tp-pt thead th:nth-child(9),
+      #tpatab-policies .tp-pt tbody td:nth-child(5),
+      #tpatab-policies .tp-pt tbody td:nth-child(6),
+      #tpatab-policies .tp-pt tbody td:nth-child(7),
+      #tpatab-policies .tp-pt tbody td:nth-child(9) { display: none; }
+      #tpatab-policies .tp-pt-foot { padding: 12px 14px; flex-direction: column; align-items: flex-start; }
+      #tpatab-policies .tp-pager { flex-wrap: wrap; }
     }
     @media (max-width: 520px) {
       #panel-teamperf .tp-admin-stats { grid-template-columns: 1fr 1fr; }
       #panel-teamperf .tp-admin-stat-value { font-size: 1.1rem; }
       #tpatab-performance .tp-kpi-grid { grid-template-columns: 1fr; }
+      #tpatab-policies .tp-kpi-strip { grid-template-columns: 1fr; }
+      #tpatab-policies .tp-filter-group { width: 100%; }
     }
 
     /* ─── Policy Management — design-specific styles (claude.ai/design) ─── */
@@ -2249,7 +2285,10 @@
     #tpatab-policies .tp-pt-scroll { overflow-x: auto; }
     #tpatab-policies .tp-pt {
       width: 100%; border-collapse: collapse;
-      min-width: 1400px;
+      /* No min-width — let the table fit its container so there's no
+         horizontal dead space on standard laptop widths. The table only
+         scrolls horizontally on tablet/mobile widths via the wrap below. */
+      table-layout: auto;
     }
     #tpatab-policies .tp-pt thead th {
       position: sticky; top: 0;
@@ -2258,13 +2297,13 @@
       font-family: var(--tp-mono); font-size: 10px; font-weight: 500;
       text-transform: uppercase; letter-spacing: 0.08em;
       color: var(--tp-ink-3);
-      padding: 11px 12px;
+      padding: 10px 8px;
       border-bottom: 1px solid var(--tp-hairline);
       white-space: nowrap;
       cursor: pointer; user-select: none;
     }
-    #tpatab-policies .tp-pt thead th:first-child { padding-left: 22px; }
-    #tpatab-policies .tp-pt thead th:last-child { padding-right: 22px; }
+    #tpatab-policies .tp-pt thead th:first-child { padding-left: 18px; }
+    #tpatab-policies .tp-pt thead th:last-child { padding-right: 18px; }
     #tpatab-policies .tp-pt thead th.num { text-align: right; }
     #tpatab-policies .tp-pt thead th:hover { color: var(--tp-ink-1); }
     #tpatab-policies .tp-pt thead th .arrow { margin-left: 4px; opacity: 0.6; }
@@ -2275,15 +2314,15 @@
     #tpatab-policies .tp-pt tbody tr:last-child { border-bottom: 0; }
     #tpatab-policies .tp-pt tbody tr:hover { background: var(--tp-surface-2); }
     #tpatab-policies .tp-pt tbody td {
-      padding: 12px;
+      padding: 10px 8px;
       font-size: 13px;
       vertical-align: middle;
       font-variant-numeric: tabular-nums;
       white-space: nowrap;
       color: var(--tp-ink-1);
     }
-    #tpatab-policies .tp-pt tbody td:first-child { padding-left: 22px; }
-    #tpatab-policies .tp-pt tbody td:last-child { padding-right: 22px; }
+    #tpatab-policies .tp-pt tbody td:first-child { padding-left: 18px; }
+    #tpatab-policies .tp-pt tbody td:last-child { padding-right: 18px; }
     #tpatab-policies .tp-pt tbody td.num { text-align: right; font-family: var(--tp-mono); }
     #tpatab-policies .tp-pt tbody td.mono { font-family: var(--tp-mono); font-size: 12px; color: var(--tp-ink-2); }
     #tpatab-policies .tp-pt-empty { padding: 60px 22px; text-align: center; font-family: var(--tp-mono); font-size: 12px; color: var(--tp-ink-3); }
@@ -2291,11 +2330,13 @@
     #tpatab-policies .tp-cell-date { display: flex; flex-direction: column; gap: 2px; }
     #tpatab-policies .tp-cell-date .d { font-family: var(--tp-mono); font-size: 12px; color: var(--tp-ink-1); }
     #tpatab-policies .tp-cell-date .day { font-family: var(--tp-mono); font-size: 10px; color: var(--tp-ink-4); text-transform: uppercase; letter-spacing: 0.06em; }
-    #tpatab-policies .tp-cell-client { display: flex; flex-direction: column; gap: 2px; min-width: 160px; }
+    #tpatab-policies .tp-cell-client { display: flex; flex-direction: column; gap: 2px; min-width: 130px; }
     #tpatab-policies .tp-cell-client .name { font-weight: 500; color: var(--tp-ink-1); font-size: 13px; }
     #tpatab-policies .tp-cell-client .phone { font-family: var(--tp-mono); font-size: 11px; color: var(--tp-ink-3); }
-    #tpatab-policies .tp-cell-rep { display: flex; align-items: center; gap: 10px; min-width: 150px; }
+    #tpatab-policies .tp-cell-rep { display: flex; align-items: center; gap: 8px; min-width: 120px; }
     #tpatab-policies .tp-cell-rep .name { font-weight: 500; color: var(--tp-ink-1); }
+    /* Avatar a hair smaller in the policies table to save horizontal space */
+    #tpatab-policies .tp-avatar { width: 24px; height: 24px; }
     #tpatab-policies .tp-policy-num { font-family: var(--tp-mono); font-size: 11px; color: var(--tp-ink-2); letter-spacing: 0.02em; }
 
     /* Status badges (3 statuses real to saleshub: Underwriting / Approved / Issue Paid) */
@@ -8849,15 +8890,15 @@
       const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59);
       const yearStart = new Date(now.getFullYear(), 0, 1);
 
-      const mtd = rows.filter(r => new Date(r.policy_date || r.created_at) >= monthStart);
-      const lastMonth = rows.filter(r => { const d = new Date(r.policy_date || r.created_at); return d >= lastMonthStart && d <= lastMonthEnd; });
-      const ytd = rows.filter(r => new Date(r.policy_date || r.created_at) >= yearStart);
+      const mtd = rows.filter(r => parsePolicyDate(r.policy_date || r.created_at) >= monthStart);
+      const lastMonth = rows.filter(r => { const d = parsePolicyDate(r.policy_date || r.created_at); return d >= lastMonthStart && d <= lastMonthEnd; });
+      const ytd = rows.filter(r => parsePolicyDate(r.policy_date || r.created_at) >= yearStart);
 
       const mtdAP = sumAP(mtd), lmAP = sumAP(lastMonth), ytdAP = sumAP(ytd), totalAP = sumAP(rows);
       // Compare pace: what did we have by this same day last month?
       const dayOfMonth = now.getDate();
       const lastMonthSameDay = new Date(now.getFullYear(), now.getMonth() - 1, dayOfMonth, 23, 59, 59);
-      const lmAtThisPoint = rows.filter(function(r) { var d = new Date(r.policy_date || r.created_at); return d >= lastMonthStart && d <= lastMonthSameDay; });
+      const lmAtThisPoint = rows.filter(function(r) { var d = parsePolicyDate(r.policy_date || r.created_at); return d >= lastMonthStart && d <= lastMonthSameDay; });
       const lmAtThisPointAP = sumAP(lmAtThisPoint);
       // Project current month based on pace
       const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
@@ -8928,7 +8969,7 @@
       const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
       const monthData = {};
       ytd.forEach(r => {
-        const d = new Date(r.policy_date || r.created_at);
+        const d = parsePolicyDate(r.policy_date || r.created_at);
         const key = monthNames[d.getMonth()];
         if (!monthData[key]) monthData[key] = { ap: 0, count: 0 };
         monthData[key].ap += parseFloat(r.annual_premium || 0);
@@ -14256,11 +14297,26 @@
 
       // ─── Supabase fetchers ─────────────────────────────────────────────────
       async function fetchPolicies() {
-        const res = await fetch(SUPABASE_URL + '/rest/v1/policies?select=user_id,sales_rep,annual_premium,policy_date,created_at,carrier,status,product_type&order=created_at.desc', {
+        // Include every column the Policies tab renders — earlier this was
+        // missing client_name/phone/policy_number/effective_date/id, which made
+        // those columns show "—" and edits unable to PATCH by id.
+        const res = await fetch(SUPABASE_URL + '/rest/v1/policies?select=id,user_id,sales_rep,client_name,phone,annual_premium,policy_date,created_at,carrier,status,product_type,policy_number,effective_date&order=created_at.desc', {
           headers: Object.assign({}, HDRS, { 'Range-Unit': 'items', 'Range': '0-49999' })
         });
         if (!res.ok && res.status !== 206) throw new Error('policies fetch ' + res.status);
         return res.json();
+      }
+      // Treat a YYYY-MM-DD date string (the format Supabase returns) as a
+      // LOCAL date, not UTC. Without this, a Pacific-time user sees yesterday
+      // for every policy_date because `new Date("2026-05-01")` is parsed as
+      // UTC midnight = Apr 30 4pm PT. Bug surfaces in: Today filter, WTD
+      // chart day labels, and MTD chart bucketing.
+      function parsePolicyDate(d) {
+        if (!d) return null;
+        if (typeof d === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(d)) {
+          return new Date(d + 'T00:00:00');
+        }
+        return new Date(d);
       }
       async function fetchKpis() {
         const res = await fetch(SUPABASE_URL + '/rest/v1/daily_kpis?select=*&order=kpi_date.desc&limit=10000', { headers: HDRS });
@@ -14301,7 +14357,7 @@
         });
 
         const sumAP = (arr, pred) => arr.reduce((s, p) => {
-          const d = new Date(p.policy_date || p.created_at);
+          const d = parsePolicyDate(p.policy_date || p.created_at);
           return pred(d) ? s + parseFloat(p.annual_premium || 0) : s;
         }, 0);
 
@@ -14314,9 +14370,9 @@
           const apYTD = sumAP(myPols, d => d >= yearStart);
           const apMTD = sumAP(myPols, d => d >= monthStart);
           const apWTD = sumAP(myPols, d => d >= weekStart);
-          const dealsYTD = myPols.filter(x => new Date(x.policy_date || x.created_at) >= yearStart).length;
-          const dealsMTD = myPols.filter(x => new Date(x.policy_date || x.created_at) >= monthStart).length;
-          const dealsWTD = myPols.filter(x => new Date(x.policy_date || x.created_at) >= weekStart).length;
+          const dealsYTD = myPols.filter(x => parsePolicyDate(x.policy_date || x.created_at) >= yearStart).length;
+          const dealsMTD = myPols.filter(x => parsePolicyDate(x.policy_date || x.created_at) >= monthStart).length;
+          const dealsWTD = myPols.filter(x => parsePolicyDate(x.policy_date || x.created_at) >= weekStart).length;
 
           const monthly = [];
           const monthLabels = [];
@@ -14354,7 +14410,7 @@
           const carrierMix = {};
           CARRIER_LIST.forEach(c => carrierMix[c] = 0);
           myPols.forEach(po => {
-            const d = new Date(po.policy_date || po.created_at);
+            const d = parsePolicyDate(po.policy_date || po.created_at);
             if (d < monthStart) return;
             const c = po.carrier;
             if (CARRIER_LIST.includes(c)) carrierMix[c] += parseFloat(po.annual_premium || 0);
@@ -14703,7 +14759,7 @@
           const weekStart = startOfWeek(today);
           const dayBuckets = [0,0,0,0,0,0,0];
           (scope.policies || []).forEach(p => {
-            const d = new Date(p.policy_date || p.created_at);
+            const d = parsePolicyDate(p.policy_date || p.created_at);
             if (d >= weekStart) {
               const idx = d.getDay();
               dayBuckets[idx] += parseFloat(p.annual_premium || 0);
@@ -14719,7 +14775,7 @@
           const daysInMonth = today.getDate();
           const dayBuckets = new Array(daysInMonth).fill(0);
           (scope.policies || []).forEach(p => {
-            const d = new Date(p.policy_date || p.created_at);
+            const d = parsePolicyDate(p.policy_date || p.created_at);
             if (d >= monthStart && d <= today) {
               dayBuckets[d.getDate() - 1] += parseFloat(p.annual_premium || 0);
             }
@@ -14907,7 +14963,7 @@
             const ms = new Date(today.getFullYear() - 1, today.getMonth() - i, 1);
             const me = new Date(today.getFullYear() - 1, today.getMonth() - i + 1, 1);
             const sum = allPols.reduce((s, p) => {
-              const d = new Date(p.policy_date || p.created_at);
+              const d = parsePolicyDate(p.policy_date || p.created_at);
               return d >= ms && d < me ? s + parseFloat(p.annual_premium || 0) : s;
             }, 0);
             priorYearMonthly.push(sum);
@@ -15358,7 +15414,7 @@
       function inTimeframe(date, tf) {
         if (tf === 'all' || !date) return true;
         const now = new Date();
-        const d = new Date(date);
+        const d = parsePolicyDate(date);
         if (tf === 'today') {
           return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth() && d.getDate() === now.getDate();
         }
@@ -15377,16 +15433,18 @@
       }
       function fmtDateShort(d) {
         if (!d) return '—';
-        const dt = new Date(d);
+        const dt = parsePolicyDate(d) || new Date(d);
         return (dt.getMonth() + 1) + '/' + dt.getDate() + '/' + String(dt.getFullYear()).slice(-2);
       }
       function fmtDateLong(d) {
         if (!d) return '—';
-        return new Date(d).toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric', year:'numeric' });
+        const dt = parsePolicyDate(d) || new Date(d);
+        return dt.toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric', year:'numeric' });
       }
       function fmtDay(d) {
         if (!d) return '';
-        return new Date(d).toLocaleDateString('en-US', { weekday: 'short' });
+        const dt = parsePolicyDate(d) || new Date(d);
+        return dt.toLocaleDateString('en-US', { weekday: 'short' });
       }
 
       const ChevDown = () => (
@@ -15507,44 +15565,24 @@
         );
       }
 
-      function PolicyRowActions({ policy, onEdit, onDelete }) {
-        const [open, setOpen] = useState(false);
-        const ref = useRef(null);
-        useEffect(() => {
-          const onClick = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
-          if (open) document.addEventListener('mousedown', onClick);
-          return () => document.removeEventListener('mousedown', onClick);
-        }, [open]);
+      function PolicyRowActions({ policy, onEdit }) {
+        // 3-dot menu removed — the pencil already opens the edit modal where
+        // status changes happen, so the menu was redundant. Delete is a
+        // separate row of its own controls inside the modal if needed in the
+        // future; for now a click on the pencil is the only row action.
         return (
-          <div className="tp-actions-cell" ref={ref}>
+          <div className="tp-actions-cell">
             <button className="tp-btn-icon" title="Edit policy" onClick={(e) => { e.stopPropagation(); onEdit(policy); }}>
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
                 <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
               </svg>
             </button>
-            <button className="tp-btn-icon" title="More actions" onClick={(e) => { e.stopPropagation(); setOpen(o => !o); }}>
-              <DotsIcon />
-            </button>
-            {open && (
-              <div className="tp-row-menu" onClick={(e) => e.stopPropagation()}>
-                <button onClick={() => { setOpen(false); onEdit(policy); }}>
-                  <EditIcon /> Edit details
-                </button>
-                <button onClick={() => { setOpen(false); onEdit(policy); }}>
-                  <ChangeStatusIcon /> Change status
-                </button>
-                <div className="sep"></div>
-                <button className="danger" onClick={() => { setOpen(false); onDelete(policy); }}>
-                  <TrashIcon /> Delete policy
-                </button>
-              </div>
-            )}
           </div>
         );
       }
 
-      function PolicyEditModal({ policy, theme, agentProfiles, onClose, onSave }) {
+      function PolicyEditModal({ policy, theme, agentProfiles, onClose, onSave, onDelete }) {
         const [draft, setDraft] = useState(policy);
         useEffect(() => { setDraft(policy); }, [policy]);
         if (!policy) return null;
@@ -15652,6 +15690,12 @@
                 </section>
               </div>
               <div className="tp-drawer-foot">
+                <button className="tp-modal-btn ghost"
+                  onClick={() => onDelete(draft)}
+                  style={{color: 'var(--tp-neg)', borderColor: 'color-mix(in oklch, var(--tp-neg) 30%, transparent)'}}>
+                  Delete
+                </button>
+                <div style={{flex:1}}></div>
                 <button className="tp-modal-btn ghost" onClick={onClose}>Cancel</button>
                 <button className="tp-modal-btn primary" onClick={() => onSave(draft)}>Save changes</button>
               </div>
@@ -15725,8 +15769,8 @@
           const cmp = (a, b) => {
             let va, vb;
             switch (sortKey) {
-              case 'soldDate':      va = new Date(a.policy_date || a.created_at).getTime(); vb = new Date(b.policy_date || b.created_at).getTime(); break;
-              case 'effectiveDate': va = a.effective_date ? new Date(a.effective_date).getTime() : 0; vb = b.effective_date ? new Date(b.effective_date).getTime() : 0; break;
+              case 'soldDate':      va = parsePolicyDate(a.policy_date || a.created_at).getTime(); vb = parsePolicyDate(b.policy_date || b.created_at).getTime(); break;
+              case 'effectiveDate': va = a.effective_date ? parsePolicyDate(a.effective_date).getTime() : 0; vb = b.effective_date ? parsePolicyDate(b.effective_date).getTime() : 0; break;
               case 'rep':           va = a.sales_rep || ''; vb = b.sales_rep || ''; break;
               case 'client':        va = a.client_name || ''; vb = b.client_name || ''; break;
               case 'ap':            va = parseFloat(a.annual_premium || 0); vb = parseFloat(b.annual_premium || 0); break;
@@ -15952,7 +15996,7 @@
                       ) : slice.length === 0 ? (
                         <tr><td colSpan={headers.length} className="tp-pt-empty">No policies match the current filters.</td></tr>
                       ) : slice.map(p => {
-                        const sold = new Date(p.policy_date || p.created_at);
+                        const sold = parsePolicyDate(p.policy_date || p.created_at);
                         const repName = p.sales_rep || (agents.find(a => a.user_id === p.user_id) || {}).agent_name || '—';
                         const repHueIdx = Math.abs((p.user_id || repName).split('').reduce((s,c)=>s+c.charCodeAt(0), 0)) % RAINBOW_TOKENS.length;
                         const sparkColor = RAINBOW_TOKENS[repHueIdx];
@@ -15989,7 +16033,6 @@
                               <PolicyRowActions
                                 policy={p}
                                 onEdit={(pp) => setOpenPolicy(pp)}
-                                onDelete={(pp) => handleDelete(pp)}
                               />
                             </td>
                           </tr>
@@ -16024,7 +16067,8 @@
               theme={theme}
               agentProfiles={agents}
               onClose={() => setOpenPolicy(null)}
-              onSave={handleSave} />}
+              onSave={handleSave}
+              onDelete={(p) => { handleDelete(p); setOpenPolicy(null); }} />}
           </div>
         );
       }
