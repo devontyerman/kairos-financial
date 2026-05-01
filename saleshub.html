@@ -2276,6 +2276,458 @@
       #tpatab-policies .tp-filter-group { width: 100%; }
     }
 
+    /* ─── Tracker (Agent Dashboard) — claude.ai/design ─────────────────────
+       Same Kairos editorial-financial system as Team Dashboard, scoped to
+       the per-agent Tracker panel. Full-bleed dark fills the entire .ss-main
+       area. */
+    #panel-goals {
+      --rb-green:   oklch(0.72 0.16 145);
+      --rb-yellow:  oklch(0.82 0.14 90);
+      --rb-orange:  oklch(0.74 0.16 50);
+      --rb-red:     oklch(0.66 0.18 25);
+      --rb-purple:  oklch(0.62 0.15 305);
+      --rb-blue:    oklch(0.68 0.13 240);
+      --tk-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+      --tk-sans: "Geist", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+      --tk-radius: 10px;
+      --tk-bg:        #0d0e10;
+      --tk-bg-2:      #131418;
+      --tk-surface:   #16181d;
+      --tk-surface-2: #1c1f26;
+      --tk-surface-3: #232730;
+      --tk-hairline:  rgba(255, 255, 255, 0.07);
+      --tk-hairline-strong: rgba(255, 255, 255, 0.13);
+      --tk-ink-1:     #f3f3f1;
+      --tk-ink-2:     rgba(243, 243, 241, 0.72);
+      --tk-ink-3:     rgba(243, 243, 241, 0.45);
+      --tk-ink-4:     rgba(243, 243, 241, 0.28);
+      --tk-pos:       oklch(0.78 0.16 145);
+      --tk-neg:       oklch(0.7 0.18 25);
+      /* Aliases so the shared MonthlyBars chart (built for the Team
+         Dashboard) inherits the right text + grid colors when rendered
+         inside the Tracker panel. Without these its axis labels render
+         in default black on the dark background. */
+      --tp-mono: var(--tk-mono);
+      --tp-sans: var(--tk-sans);
+      --tp-bg: var(--tk-bg); --tp-bg-2: var(--tk-bg-2);
+      --tp-surface: var(--tk-surface); --tp-surface-2: var(--tk-surface-2); --tp-surface-3: var(--tk-surface-3);
+      --tp-hairline: var(--tk-hairline); --tp-hairline-strong: var(--tk-hairline-strong);
+      --tp-ink-1: var(--tk-ink-1); --tp-ink-2: var(--tk-ink-2);
+      --tp-ink-3: var(--tk-ink-3); --tp-ink-4: var(--tk-ink-4);
+      --tp-pos: var(--tk-pos); --tp-neg: var(--tk-neg);
+    }
+    #panel-goals[data-tk-theme="light"] {
+      --tk-bg:        #f6f5f1;
+      --tk-bg-2:      #efece5;
+      --tk-surface:   #ffffff;
+      --tk-surface-2: #fbfaf6;
+      --tk-surface-3: #f1efe8;
+      --tk-hairline:  rgba(15, 12, 8, 0.08);
+      --tk-hairline-strong: rgba(15, 12, 8, 0.16);
+      --tk-ink-1:     #14130f;
+      --tk-ink-2:     rgba(20, 19, 15, 0.74);
+      --tk-ink-3:     rgba(20, 19, 15, 0.5);
+      --tk-ink-4:     rgba(20, 19, 15, 0.32);
+      --tk-pos:       oklch(0.55 0.14 145);
+      --tk-neg:       oklch(0.55 0.18 25);
+      --rb-green:  oklch(0.55 0.15 145);
+      --rb-yellow: oklch(0.7 0.14 85);
+      --rb-orange: oklch(0.62 0.16 50);
+      --rb-red:    oklch(0.55 0.17 25);
+      --rb-purple: oklch(0.5 0.15 305);
+      --rb-blue:   oklch(0.55 0.13 240);
+    }
+    /* Full-bleed: when active, the panel fills the entire .ss-main area */
+    #panel-goals.active {
+      margin: -1.5rem -2rem -4rem;
+      padding: 28px 32px 40px;
+      background: var(--tk-bg);
+      color: var(--tk-ink-1);
+      font-family: var(--tk-sans);
+      font-size: 14px;
+      -webkit-font-smoothing: antialiased;
+      min-height: calc(100vh - 1.5rem);
+      background-image:
+        radial-gradient(1100px 600px at 90% -10%, color-mix(in oklch, var(--rb-blue) 8%, transparent), transparent 60%),
+        radial-gradient(900px 500px at -10% 110%, color-mix(in oklch, var(--rb-purple) 7%, transparent), transparent 60%);
+    }
+
+    #tkTrackerRoot { color: var(--tk-ink-1); font-family: var(--tk-sans); }
+
+    /* Header */
+    #panel-goals .tk-hdr {
+      display: flex; align-items: flex-end; justify-content: space-between;
+      gap: 24px; margin-bottom: 28px; padding-bottom: 18px;
+      border-bottom: 1px solid var(--tk-hairline);
+    }
+    #panel-goals .tk-hdr-l { display: flex; flex-direction: column; gap: 4px; }
+    #panel-goals .tk-hdr-brand { display: flex; align-items: center; gap: 12px; }
+    #panel-goals .tk-hdr-mark {
+      width: 22px; height: 22px; border-radius: 5px;
+      background: linear-gradient(180deg,
+        var(--rb-green) 0 16.66%,
+        var(--rb-yellow) 16.66% 33.33%,
+        var(--rb-orange) 33.33% 50%,
+        var(--rb-red) 50% 66.66%,
+        var(--rb-purple) 66.66% 83.33%,
+        var(--rb-blue) 83.33% 100%);
+      box-shadow: 0 0 0 1px var(--tk-hairline-strong);
+    }
+    #panel-goals .tk-hdr-title { font-size: 20px; font-weight: 600; letter-spacing: -0.01em; color: var(--tk-ink-1); }
+    #panel-goals .tk-hdr-sub {
+      font-family: var(--tk-mono); font-size: 11px;
+      color: var(--tk-ink-3); letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    #panel-goals .tk-hdr-r { display: flex; align-items: center; gap: 16px; }
+    #panel-goals .tk-hdr-time { font-family: var(--tk-mono); font-size: 11px; color: var(--tk-ink-3); }
+    #panel-goals .tk-hdr-time b { color: var(--tk-ink-1); font-weight: 500; }
+    #panel-goals .tk-theme-toggle {
+      appearance: none; border: 1px solid var(--tk-hairline-strong);
+      background: var(--tk-surface); color: var(--tk-ink-2);
+      width: 34px; height: 34px; border-radius: 8px;
+      display: grid; place-items: center; cursor: pointer; transition: all 120ms;
+    }
+    #panel-goals .tk-theme-toggle:hover { color: var(--tk-ink-1); border-color: var(--tk-ink-3); }
+
+    #panel-goals .tk-filter-bar {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 16px; margin-bottom: 20px; flex-wrap: wrap;
+    }
+    #panel-goals .tk-filter-pill {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 7px 12px 7px 14px; border-radius: 99px;
+      background: color-mix(in oklch, var(--rb-blue) 14%, transparent);
+      border: 1px solid color-mix(in oklch, var(--rb-blue) 32%, transparent);
+      color: var(--tk-ink-1); font-size: 12px;
+    }
+
+    /* Cards / grid */
+    #panel-goals .tk-grid { display: grid; gap: 16px; }
+    #panel-goals .tk-grid-12 { grid-template-columns: repeat(12, 1fr); }
+    #panel-goals .tk-card {
+      background: var(--tk-surface);
+      border: 1px solid var(--tk-hairline);
+      border-radius: var(--tk-radius);
+      padding: 20px 22px; position: relative; overflow: hidden;
+    }
+    #panel-goals .tk-card-hd { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+    #panel-goals .tk-card-title {
+      font-size: 11px; font-family: var(--tk-mono);
+      text-transform: uppercase; letter-spacing: 0.08em;
+      color: var(--tk-ink-3); font-weight: 500;
+    }
+    #panel-goals .tk-card-meta { font-family: var(--tk-mono); font-size: 11px; color: var(--tk-ink-3); }
+    #panel-goals .tk-dot { width: 8px; height: 8px; border-radius: 99px; display: inline-block; }
+
+    /* AP hero */
+    #panel-goals .tk-ap-hero { grid-column: span 12; padding: 26px 28px; }
+    #panel-goals .tk-ap-num {
+      font-family: var(--tk-mono); font-size: 38px; font-weight: 500;
+      color: var(--tk-ink-1); letter-spacing: -0.02em;
+      font-variant-numeric: tabular-nums; line-height: 1.1;
+    }
+    #panel-goals .tk-ap-num-sub { font-family: var(--tk-mono); font-size: 13px; color: var(--tk-ink-3); }
+    #panel-goals .tk-ap-delta {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-family: var(--tk-mono); font-size: 12px;
+      padding: 3px 8px; border-radius: 4px;
+    }
+    #panel-goals .tk-ap-delta.pos { color: var(--tk-pos); background: color-mix(in oklch, var(--tk-pos) 14%, transparent); }
+    #panel-goals .tk-ap-delta.neg { color: var(--tk-neg); background: color-mix(in oklch, var(--tk-neg) 14%, transparent); }
+    #panel-goals .tk-editable {
+      cursor: pointer; border-bottom: 1px dashed var(--tk-ink-4);
+      padding-bottom: 1px; font-family: var(--tk-mono);
+    }
+    #panel-goals .tk-edit-input {
+      font: inherit; font-family: var(--tk-mono);
+      background: var(--tk-surface-2);
+      border: 1px solid var(--tk-hairline-strong);
+      color: var(--tk-ink-1); border-radius: 4px; padding: 2px 6px;
+      outline: none;
+    }
+
+    /* Action button (Submit Deal / Submit KPI) */
+    #panel-goals .tk-action-btn {
+      appearance: none; background: var(--tk-surface-2);
+      color: var(--tk-ink-1);
+      padding: 7px 14px; border-radius: 8px;
+      font-family: var(--tk-mono); font-size: 11px;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+      transition: all 120ms;
+    }
+    #panel-goals .tk-action-btn .tk-plus { font-size: 14px; line-height: 1; }
+    #panel-goals .tk-action-btn.green { border: 1px solid var(--rb-green); background: color-mix(in oklch, var(--rb-green) 18%, transparent); }
+    #panel-goals .tk-action-btn.green:hover { background: color-mix(in oklch, var(--rb-green) 32%, transparent); }
+    #panel-goals .tk-action-btn.blue  { border: 1px solid var(--rb-blue);  background: color-mix(in oklch, var(--rb-blue) 18%, transparent); }
+    #panel-goals .tk-action-btn.blue:hover  { background: color-mix(in oklch, var(--rb-blue) 32%, transparent); }
+
+    /* Chart wrap + tooltip */
+    #panel-goals .tk-chart-wrap { position: relative; width: 100%; }
+    #panel-goals .tk-chart-tip {
+      position: absolute; pointer-events: none;
+      background: var(--tk-surface-2);
+      border: 1px solid var(--tk-hairline-strong);
+      border-radius: 6px; padding: 8px 10px;
+      font-size: 11px; color: var(--tk-ink-1);
+      font-family: var(--tk-mono);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+      z-index: 10; min-width: 130px;
+    }
+    #panel-goals .tk-chart-tip-lbl { color: var(--tk-ink-3); font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
+    #panel-goals .tk-chart-tip-val { font-size: 14px; font-weight: 500; }
+
+    /* KPI cells */
+    #panel-goals .tk-kpi-grid {
+      display: grid; gap: 1px;
+      background: var(--tk-hairline);
+      border: 1px solid var(--tk-hairline);
+      border-radius: var(--tk-radius);
+      overflow: hidden;
+    }
+    #panel-goals .tk-kpi-cell { background: var(--tk-surface); padding: 16px 18px 18px; display: flex; flex-direction: column; gap: 8px; min-height: 110px; }
+    #panel-goals .tk-kpi-lbl {
+      font-family: var(--tk-mono); font-size: 10px;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      color: var(--tk-ink-3); display: flex; align-items: center; gap: 6px;
+    }
+    #panel-goals .tk-kpi-lbl .swatch { width: 6px; height: 6px; border-radius: 2px; display: inline-block; }
+    #panel-goals .tk-kpi-val {
+      font-family: var(--tk-mono); font-size: 26px; font-weight: 500;
+      color: var(--tk-ink-1); letter-spacing: -0.01em;
+      font-variant-numeric: tabular-nums; line-height: 1; margin-top: 4px;
+    }
+    #panel-goals .tk-kpi-sub { font-family: var(--tk-mono); font-size: 11px; color: var(--tk-ink-3); }
+    #panel-goals .tk-kpi-sub b { color: var(--tk-ink-1); font-weight: 500; }
+
+    /* Timeframe segmented control */
+    #panel-goals .tk-tf-segment {
+      display: inline-flex; padding: 3px;
+      background: var(--tk-surface); border: 1px solid var(--tk-hairline);
+      border-radius: 9px;
+    }
+    #panel-goals .tk-tf-segment button {
+      appearance: none; border: 0; background: transparent;
+      color: var(--tk-ink-3); cursor: pointer;
+      padding: 7px 14px; border-radius: 6px;
+      font-family: var(--tk-mono); font-size: 11px; letter-spacing: 0.06em;
+      text-transform: uppercase; transition: all 120ms;
+    }
+    #panel-goals .tk-tf-segment button:hover { color: var(--tk-ink-1); }
+    #panel-goals .tk-tf-segment button.on {
+      background: var(--tk-surface-3); color: var(--tk-ink-1);
+      box-shadow: 0 1px 0 var(--tk-hairline-strong) inset;
+    }
+
+    /* Heatmap */
+    #panel-goals .tk-heat-cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+    #panel-goals .tk-heat-day {
+      aspect-ratio: 1; border-radius: 4px;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--tk-mono); font-size: 10px;
+      color: var(--tk-ink-3);
+      background: var(--tk-surface-3);
+      border: 1px solid transparent;
+      transition: transform 120ms, border-color 120ms;
+      cursor: default;
+    }
+    #panel-goals .tk-heat-day.empty { background: transparent; }
+    #panel-goals .tk-heat-day.future { opacity: 0.25; }
+    #panel-goals .tk-heat-day.today { border-color: var(--rb-blue); }
+    #panel-goals .tk-heat-day:hover:not(.empty):not(.future) { transform: scale(1.06); border-color: var(--tk-hairline-strong); }
+    #panel-goals .tk-heat-week-row {
+      display: grid; grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+      font-family: var(--tk-mono); font-size: 9px;
+      color: var(--tk-ink-4); text-transform: uppercase; letter-spacing: 0.08em;
+      margin-bottom: 6px;
+    }
+    #panel-goals .tk-heat-week-row > span { text-align: center; }
+    #panel-goals .tk-heat-month-label {
+      font-family: var(--tk-mono); font-size: 11px; color: var(--tk-ink-2);
+      text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 10px;
+    }
+
+    /* Horizontal bar chart (deal status) — thin bars matching the rest of
+       the Kairos design system. Two-row layout: label/count up top, thin
+       bar below, premium value to the right. */
+    #panel-goals .tk-hbar-item { padding: 10px 0; }
+    #panel-goals .tk-hbar-row { display: flex; align-items: center; gap: 12px; }
+    #panel-goals .tk-hbar-row .lbl { flex: 1; font-size: 13px; color: var(--tk-ink-1); display: flex; align-items: center; gap: 8px; }
+    #panel-goals .tk-hbar-row .count { font-family: var(--tk-mono); font-size: 11px; color: var(--tk-ink-3); }
+    #panel-goals .tk-hbar-row .val { font-family: var(--tk-mono); font-size: 13px; color: var(--tk-ink-1); }
+    #panel-goals .tk-hbar-track {
+      height: 6px; background: var(--tk-surface-3);
+      border-radius: 99px; overflow: hidden; margin-top: 8px;
+    }
+    #panel-goals .tk-hbar-fill { height: 100%; border-radius: 99px; transition: width 600ms ease; }
+
+    /* Carrier list — same thin-bar pattern; track + fill are real siblings
+       of the carrier row so they render. */
+    #panel-goals .tk-carrier-item { padding: 8px 0; }
+    #panel-goals .tk-carrier-row { display: flex; align-items: center; gap: 12px; }
+    #panel-goals .tk-carrier-row .name { flex: 1; font-size: 13px; color: var(--tk-ink-1); display: flex; align-items: center; gap: 10px; }
+    #panel-goals .tk-carrier-row .pct { font-family: var(--tk-mono); font-size: 12px; color: var(--tk-ink-2); width: 56px; text-align: right; }
+    #panel-goals .tk-carrier-row .ap { font-family: var(--tk-mono); font-size: 11px; color: var(--tk-ink-3); width: 70px; text-align: right; }
+    #panel-goals .tk-carrier-track {
+      height: 4px; background: var(--tk-surface-3);
+      border-radius: 99px; overflow: hidden; margin-top: 6px;
+    }
+    #panel-goals .tk-carrier-fill { height: 100%; border-radius: 99px; transition: width 600ms ease; }
+
+    /* Stat cell helpers (heatmap totals + monthly trend totals) */
+    #panel-goals .tk-stat { display: flex; flex-direction: column; gap: 6px; }
+    #panel-goals .tk-stat .v {
+      font-family: var(--tk-mono); font-size: 22px; font-weight: 500;
+      color: var(--tk-ink-1); letter-spacing: -0.01em; line-height: 1;
+      font-variant-numeric: tabular-nums;
+    }
+    #panel-goals .tk-stat .v.pos { color: var(--rb-green); }
+
+    /* Footer */
+    #panel-goals .tk-foot {
+      margin-top: 36px; padding-top: 16px;
+      border-top: 1px solid var(--tk-hairline);
+      display: flex; justify-content: space-between;
+      font-family: var(--tk-mono); font-size: 10px;
+      color: var(--tk-ink-4); letter-spacing: 0.06em; text-transform: uppercase;
+    }
+
+    /* Loading state */
+    #panel-goals .tk-loading {
+      padding: 60px 20px; text-align: center;
+      color: var(--tk-ink-3); font-family: var(--tk-mono); font-size: 12px;
+      letter-spacing: 0.06em; text-transform: uppercase;
+    }
+
+    /* ─── Modal (Submit Deal / Submit KPI) — portaled to body ─── */
+    .tk-modal-layer {
+      position: fixed; inset: 0; z-index: 10000;
+      display: grid; place-items: center; padding: 24px;
+      font-family: 'Geist','Inter',system-ui,sans-serif;
+      --tk-mono: 'JetBrains Mono', ui-monospace, monospace;
+      --tk-sans: 'Geist','Inter',system-ui,sans-serif;
+      --tk-bg: #0d0e10; --tk-bg-2: #131418; --tk-surface: #16181d;
+      --tk-surface-2: #1c1f26; --tk-surface-3: #232730;
+      --tk-hairline: rgba(255,255,255,0.07); --tk-hairline-strong: rgba(255,255,255,0.13);
+      --tk-ink-1: #f3f3f1; --tk-ink-2: rgba(243,243,241,0.72); --tk-ink-3: rgba(243,243,241,0.45); --tk-ink-4: rgba(243,243,241,0.28);
+      --rb-blue: oklch(0.68 0.13 240); --rb-green: oklch(0.72 0.16 145);
+    }
+    .tk-modal-layer[data-tk-theme="light"] {
+      --tk-bg: #f6f5f1; --tk-bg-2: #efece5; --tk-surface: #ffffff;
+      --tk-surface-2: #fbfaf6; --tk-surface-3: #f1efe8;
+      --tk-hairline: rgba(15,12,8,0.08); --tk-hairline-strong: rgba(15,12,8,0.16);
+      --tk-ink-1: #14130f; --tk-ink-2: rgba(20,19,15,0.74); --tk-ink-3: rgba(20,19,15,0.5); --tk-ink-4: rgba(20,19,15,0.32);
+      --rb-blue: oklch(0.55 0.13 240); --rb-green: oklch(0.55 0.15 145);
+    }
+    .tk-modal-backdrop {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.55);
+      backdrop-filter: blur(3px);
+      animation: tkModalFade 140ms ease-out;
+    }
+    .tk-modal {
+      position: relative;
+      width: 540px; max-width: 100%;
+      max-height: calc(100vh - 48px);
+      background: var(--tk-bg-2);
+      border: 1px solid var(--tk-hairline-strong);
+      border-radius: 12px;
+      display: flex; flex-direction: column;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.5), 0 8px 24px rgba(0,0,0,0.3);
+      overflow: hidden; color: var(--tk-ink-1);
+      animation: tkModalPop 180ms cubic-bezier(0.2, 0.7, 0.2, 1.05);
+    }
+    @keyframes tkModalFade { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes tkModalPop { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
+    .tk-mod-hd {
+      padding: 20px 24px 16px;
+      border-bottom: 1px solid var(--tk-hairline);
+      display: flex; align-items: flex-start; justify-content: space-between;
+      gap: 12px;
+    }
+    .tk-mod-hd h3 { margin: 0; font-size: 16px; font-weight: 600; letter-spacing: -0.01em; color: var(--tk-ink-1); }
+    .tk-mod-hd .meta { font-family: var(--tk-mono); font-size: 11px; color: var(--tk-ink-3); margin-top: 4px; }
+    .tk-mod-body {
+      flex: 1; overflow-y: auto;
+      padding: 20px 24px;
+      display: flex; flex-direction: column; gap: 14px;
+    }
+    .tk-mod-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .tk-mod-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+    .tk-mod-grid.cols-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+    .tk-mod-grid .full { grid-column: 1 / -1; }
+    .tk-mod-field { display: flex; flex-direction: column; gap: 6px; }
+    .tk-mod-field label {
+      font-family: var(--tk-mono); font-size: 10px;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      color: var(--tk-ink-4);
+    }
+    .tk-mod-input, .tk-mod-select, .tk-mod-textarea {
+      width: 100%; appearance: none;
+      background: var(--tk-surface);
+      border: 1px solid var(--tk-hairline);
+      color: var(--tk-ink-1);
+      border-radius: 6px;
+      padding: 9px 10px;
+      font-family: var(--tk-sans); font-size: 13px;
+      outline: none;
+    }
+    .tk-mod-input:focus, .tk-mod-select:focus, .tk-mod-textarea:focus { border-color: var(--rb-blue); }
+    .tk-mod-input.mono { font-family: var(--tk-mono); font-size: 12px; }
+    .tk-mod-foot {
+      padding: 14px 24px;
+      border-top: 1px solid var(--tk-hairline);
+      display: flex; gap: 10px; justify-content: flex-end;
+      background: var(--tk-bg);
+    }
+    .tk-mod-btn {
+      appearance: none; border: 1px solid var(--tk-hairline-strong);
+      background: var(--tk-surface); color: var(--tk-ink-1);
+      padding: 9px 16px; border-radius: 8px;
+      font-family: var(--tk-sans); font-size: 12px; font-weight: 500;
+      cursor: pointer; transition: all 120ms;
+    }
+    .tk-mod-btn:hover { background: var(--tk-surface-3); }
+    .tk-mod-btn.ghost { background: transparent; }
+    .tk-mod-btn.primary {
+      background: var(--rb-green); border-color: var(--rb-green);
+      color: #0d0e10; font-weight: 600;
+    }
+    .tk-mod-btn.primary.blue { background: var(--rb-blue); border-color: var(--rb-blue); }
+    .tk-mod-btn.primary:hover { opacity: 0.9; }
+    .tk-mod-toast {
+      padding: 10px 14px; margin: 0 24px 0; border-radius: 7px;
+      font-size: 13px; color: var(--tk-ink-1);
+    }
+    .tk-mod-toast.green {
+      background: color-mix(in oklch, var(--rb-green) 18%, transparent);
+      border: 1px solid var(--rb-green);
+    }
+    .tk-mod-toast.blue {
+      background: color-mix(in oklch, var(--rb-blue) 18%, transparent);
+      border: 1px solid var(--rb-blue);
+    }
+    .tk-mod-x {
+      appearance: none; border: 1px solid var(--tk-hairline);
+      background: var(--tk-surface-2); color: var(--tk-ink-2);
+      width: 28px; height: 28px; border-radius: 6px;
+      display: inline-grid; place-items: center; cursor: pointer;
+    }
+    .tk-mod-x:hover { color: var(--tk-ink-1); }
+
+    @media (max-width: 1100px) {
+      #panel-goals .tk-kpi-grid { grid-template-columns: repeat(3, 1fr) !important; }
+    }
+    @media (max-width: 768px) {
+      #panel-goals.active { margin: -0.75rem -0.75rem -3rem; padding: 16px 12px 24px; min-height: calc(100vh - 0.75rem); }
+      #panel-goals .tk-hdr { flex-direction: column; align-items: flex-start; gap: 12px; }
+      #panel-goals .tk-card { padding: 16px 14px; }
+      #panel-goals .tk-ap-num { font-size: 28px; }
+      #panel-goals .tk-grid-12 > * { grid-column: span 12 !important; }
+      #panel-goals .tk-kpi-grid { grid-template-columns: repeat(2, 1fr) !important; }
+      .tk-mod-grid, .tk-mod-grid.cols-3, .tk-mod-grid.cols-4 { grid-template-columns: 1fr !important; }
+    }
+
     /* ─── Policy Management — design-specific styles (claude.ai/design) ─── */
     #tpatab-policies .tp-filters-row {
       display: flex; align-items: flex-end; gap: 14px;
@@ -5716,125 +6168,9 @@
      </div>
     </div>
 
-    <!-- ═══ GOAL TRACKER PANEL ═══ -->
+    <!-- ═══ TRACKER PANEL — claude.ai/design Agent Dashboard, React-rendered ═══ -->
     <div class="ss-panel active" id="panel-goals">
-      <div style="padding: 2.5rem 1.5rem;">
-        <div class="ss-panel-head">
-          <h2>Tracker</h2>
-          <p class="ss-panel-sub">Your annual goal, KPIs, conversion rates, and trends at a glance.</p>
-          <div id="adminAgentSelect" style="display:none;margin-top:1rem;">
-            <select id="adminAgentDropdown" style="padding:0.5rem 1rem;font-family:'Inter',sans-serif;font-size:0.85rem;font-weight:600;color:#454040;background:#f8f8fa;border:1px solid #ddd;border-radius:10px;cursor:pointer;min-width:220px;">
-              <option value="">My Tracker</option>
-            </select>
-          </div>
-        </div>
-        <div class="ss-goal-tracker visible" id="goalTracker">
-          <div class="ss-goal-header">
-            <div class="ss-goal-title">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
-              Annual Goal
-            </div>
-            <div class="ss-goal-input-row">
-              <span class="ss-goal-input-label">$</span>
-              <input type="text" class="ss-goal-input" id="goalInput" placeholder="e.g. 250,000" inputmode="numeric" />
-              <button class="ss-goal-save" id="goalSave">Set Goal</button>
-            </div>
-          </div>
-          <div id="goalChartArea"></div>
-          <div class="ss-goal-submit-row">
-            <button type="button" class="ss-goal-submit-btn" id="goalSubmitDealBtn">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
-              Submit Deal
-            </button>
-          </div>
-        </div>
-
-        <!-- ═══ ANSWERS HEATMAP CALENDAR ═══ -->
-        <div class="ss-answers-heatmap" id="answersHeatmap">
-          <div class="ss-heatmap-header">
-            <div class="ss-heatmap-header-left">
-              <div class="ss-heatmap-title">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                Daily Activity
-              </div>
-              <div class="ss-heatmap-sub">Answers heatmap · dials shown inside each day</div>
-            </div>
-            <div class="ss-heatmap-legend">
-              <span>Less</span>
-              <span class="ss-heatmap-legend-cell tier-0" title="0 answers"></span>
-              <span class="ss-heatmap-legend-cell tier-1" title="1–4 answers"></span>
-              <span class="ss-heatmap-legend-cell tier-2" title="5–9 answers"></span>
-              <span class="ss-heatmap-legend-cell tier-3" title="10–14 answers"></span>
-              <span class="ss-heatmap-legend-cell tier-4" title="15–19 answers"></span>
-              <span class="ss-heatmap-legend-cell tier-5" title="20+ answers"></span>
-              <span>More</span>
-            </div>
-          </div>
-          <div class="ss-heatmap-submit-row">
-            <button type="button" class="ss-heatmap-submit-btn" id="heatmapSubmitKpisBtn">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-              Submit KPIs
-            </button>
-          </div>
-          <div class="ss-heatmap-nav">
-            <button class="ss-heatmap-nav-btn" id="heatmapPrev" aria-label="Previous months">‹</button>
-            <span class="ss-heatmap-range-label" id="heatmapRangeLabel"></span>
-            <button class="ss-heatmap-nav-btn" id="heatmapNext" aria-label="Next months">›</button>
-            <button class="ss-heatmap-reset" id="heatmapReset" hidden>Today</button>
-          </div>
-          <div class="ss-heatmap-months" id="heatmapMonths"></div>
-        </div>
-
-        <!-- Performance (moved from Track page) -->
-        <div id="perfNotAuth" class="mp-not-auth" style="display:none;">Sign in to view your performance.</div>
-        <div id="perfContent" style="display:none;">
-          <div class="mp-header" style="margin-bottom:1.25rem;">
-            <div>
-              <div class="mp-count" id="perfSummary" style="color:#888;font-size:0.78rem;"></div>
-            </div>
-          </div>
-
-          <!-- KPI Cards -->
-          <div class="perf-agent-kpis" id="agentKpis"></div>
-
-          <!-- Status Conversion -->
-          <div class="perf-agent-section" id="agentStatus"></div>
-
-          <!-- Monthly Trend -->
-          <div class="perf-agent-section" id="agentTrend"></div>
-
-          <!-- Carrier Breakdown -->
-          <div class="perf-agent-section" id="agentCarriers"></div>
-
-          <!-- KPI Stats -->
-          <div class="perf-agent-section" id="agentKpiStats" style="background:#ffffff;border:1px solid #ddd;">
-            <div class="perf-agent-section-title">Daily KPIs</div>
-            <div style="display:flex;flex-wrap:wrap;gap:0.4rem;align-items:center;margin-bottom:0.75rem;">
-              <button class="mp-filter active" data-kpi-range="mtd">MTD</button>
-              <button class="mp-filter" data-kpi-range="wtd">WTD</button>
-              <button class="mp-filter" data-kpi-range="ytd">YTD</button>
-              <button class="mp-filter" data-kpi-range="lastweek">Last Week</button>
-              <button class="mp-filter" data-kpi-range="lastmonth">Last Month</button>
-              <button class="mp-filter" data-kpi-range="custom">Custom</button>
-              <div style="margin-left:auto;display:flex;gap:0.75rem;">
-                <label style="display:flex;align-items:center;gap:0.3rem;font-size:0.7rem;color:#777;cursor:pointer;">
-                  <input type="checkbox" id="kpiExcludeSat" style="accent-color:#088395;" /> Exclude Sat
-                </label>
-                <label style="display:flex;align-items:center;gap:0.3rem;font-size:0.7rem;color:#777;cursor:pointer;">
-                  <input type="checkbox" id="kpiExcludeSun" checked style="accent-color:#088395;" /> Exclude Sun
-                </label>
-              </div>
-            </div>
-            <div id="kpiCustomRange" style="display:none;gap:0.5rem;align-items:center;margin-bottom:0.75rem;flex-wrap:wrap;">
-              <input type="date" id="kpiDateFrom" style="padding:0.35rem 0.6rem;font-size:0.78rem;background:#ffffff;border:1px solid #ddd;border-radius:8px;color:#1a1a1a;" />
-              <span style="color:#555;font-size:0.78rem;">to</span>
-              <input type="date" id="kpiDateTo" style="padding:0.35rem 0.6rem;font-size:0.78rem;background:#ffffff;border:1px solid #ddd;border-radius:8px;color:#1a1a1a;" />
-              <button id="kpiCustomApply" style="padding:0.35rem 0.9rem;font-size:0.72rem;font-weight:700;background:#1a1a1a;color:#fff;border:none;border-radius:100px;cursor:pointer;">Apply</button>
-            </div>
-            <div id="kpiStatsContent"></div>
-          </div>
-        </div>
-      </div>
+      <div id="tkTrackerRoot"></div>
     </div>
 
     <!-- ═══ DIAL TRACKER PANEL ═══ -->
@@ -7734,7 +8070,9 @@
       if (panelName === 'leaderboard') loadLeaderboard();
       if (panelName === 'policies') loadPolicies();
       if (panelName === 'performance') loadAgentPerformance();
-      if (panelName === 'goals' && currentUser) { loadGoalTracker(); loadAgentPerformance(); }
+      if (panelName === 'goals' && currentUser && window.tkMountTracker) {
+        try { window.tkMountTracker(); } catch (e) { console.error('Tracker mount failed:', e); }
+      }
       if (panelName === 'profile') loadProfilePanel();
       if (panelName === 'calculator' && currentUser) loadCommissionPipeline();
       if (panelName === 'dialtracker' && typeof renderDialTracker === 'function') renderDialTracker();
@@ -10979,51 +11317,29 @@
       if (currentUser) {
         setTimeout(checkUnderwritingReminders, 1500);
         setTimeout(checkEffectiveDateReminders, 2500);
-        loadGoalTracker();
-        loadAgentPerformance();
-        // Admin agent selector
-        var isAdmin = (currentUser.email || '').toLowerCase() === 'dev@kairos-financial.com';
-        var selectWrap = document.getElementById('adminAgentSelect');
-        if (isAdmin && selectWrap) {
-          selectWrap.style.display = '';
-          var dd = document.getElementById('adminAgentDropdown');
-          if (dd.options.length <= 1) {
-            fetch(SUPABASE_URL + '/rest/v1/agent_profiles?select=user_id,agent_name&order=agent_name.asc', {
-              headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + (accessToken || SUPABASE_KEY) }
-            }).then(function(r) { return r.json(); }).then(function(agents) {
-              agents.forEach(function(a) {
-                if (!a.agent_name || a.agent_name.trim() === '') return;
-                var opt = document.createElement('option');
-                opt.value = a.user_id;
-                opt.textContent = a.agent_name.trim();
-                dd.appendChild(opt);
-              });
-            });
-          }
-        }
+        // The Tracker panel is now React-rendered (see KairosTracker IIFE).
+        // Mount it on auth so the dashboard fills with the user's data.
+        if (window.tkMountTracker) { try { window.tkMountTracker(); } catch (e) { console.error('Tracker mount failed:', e); } }
       }
     };
 
-    // Admin dropdown change handler
-    document.getElementById('adminAgentDropdown').addEventListener('change', function() {
-      adminViewUserId = this.value;
-      loadGoalTracker();
-      loadAgentPerformance();
-    });
-
-    // ─── GOAL TRACKER ───
+    // The legacy goal-tracker DOM (#goalTracker, #goalInput, #goalSave, the
+    // admin agent dropdown, etc.) was replaced by the React Tracker app.
+    // The handlers below remain as no-ops only when those elements still
+    // exist somewhere; otherwise they short-circuit to avoid null-deref
+    // crashes at script-load time.
     const goalTracker = document.getElementById('goalTracker');
     const goalInput = document.getElementById('goalInput');
-
-    // Live comma formatting for the goal input
     function formatWithCommas(n) { return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
     function parseGoalInput(v) { return parseFloat((v || '').replace(/,/g, '')) || 0; }
-    goalInput.addEventListener('input', () => {
-      const raw = goalInput.value.replace(/[^0-9]/g, '');
-      goalInput.value = raw ? formatWithCommas(raw) : '';
-    });
-
-    document.getElementById('goalSave').addEventListener('click', async () => {
+    if (goalInput) {
+      goalInput.addEventListener('input', () => {
+        const raw = goalInput.value.replace(/[^0-9]/g, '');
+        goalInput.value = raw ? formatWithCommas(raw) : '';
+      });
+    }
+    const _legacyGoalSave = document.getElementById('goalSave');
+    if (_legacyGoalSave) _legacyGoalSave.addEventListener('click', async () => {
       const val = parseGoalInput(goalInput.value);
       if (!val || val <= 0 || !currentUser) return;
 
@@ -16335,6 +16651,991 @@
         if (!el) return;
         if (!policiesRoot) policiesRoot = ReactDOM.createRoot(el);
         policiesRoot.render(<PoliciesView />);
+      };
+
+      // ─── TRACKER (Agent Dashboard — claude.ai/design) ────────────────
+      // Per-agent personal dashboard. Reads/writes only the signed-in
+      // user's own rows: their policies, daily_kpis, and agent_profiles.
+      const TK_THEME_KEY = 'tk_theme_v1';
+      const TK_PRODUCT_TYPES = ['Whole Life', 'Term', 'IUL', 'GIWL', 'Health/Accidental'];
+
+      function tkInitialTheme() {
+        try { return localStorage.getItem(TK_THEME_KEY) || 'dark'; } catch (e) { return 'dark'; }
+      }
+
+      function startOfWeekTk(d) { const x = new Date(d.getFullYear(), d.getMonth(), d.getDate()); x.setDate(x.getDate() - x.getDay()); return x; }
+      function startOfMonthTk(d) { return new Date(d.getFullYear(), d.getMonth(), 1); }
+      function startOfYearTk(d) { return new Date(d.getFullYear(), 0, 1); }
+      function endOfMonthTk(d) { return new Date(d.getFullYear(), d.getMonth() + 1, 0); }
+
+      // ─── Submit Deal modal ─────────────────────────────────────────
+      function SubmitDealModal({ theme, agentName, userId, onClose, onSaved }) {
+        const today = new Date();
+        const todayYMD = today.getFullYear() + '-' + String(today.getMonth()+1).padStart(2,'0') + '-' + String(today.getDate()).padStart(2,'0');
+        const [client, setClient] = useState('');
+        const [phone, setPhone] = useState('');
+        const [ap, setAp] = useState('');
+        const [policyNumber, setPolicyNumber] = useState('');
+        const [carrier, setCarrier] = useState('');
+        const [productType, setProductType] = useState('');
+        const [policyDate, setPolicyDate] = useState(todayYMD);
+        const [effectiveDate, setEffectiveDate] = useState('');
+        const [status, setStatus] = useState('Underwriting');
+        const [saving, setSaving] = useState(false);
+        const [toast, setToast] = useState(null);
+
+        const submit = async () => {
+          if (!client || !ap || !policyNumber || !carrier || !productType || !policyDate) {
+            setToast({ kind: 'err', msg: 'Please fill in all required fields' });
+            return;
+          }
+          setSaving(true);
+          try {
+            const res = await fetch(SUPABASE_URL + '/rest/v1/policies', {
+              method: 'POST',
+              headers: HDRS_WRITE,
+              body: JSON.stringify({
+                user_id: userId || null,
+                sales_rep: agentName,
+                client_name: client,
+                phone: phone || null,
+                annual_premium: parseFloat(ap),
+                policy_number: policyNumber,
+                carrier,
+                product_type: productType,
+                policy_date: policyDate,
+                effective_date: effectiveDate || null,
+                status,
+              })
+            });
+            if (!res.ok) throw new Error('save failed (' + res.status + ')');
+            setToast({ kind: 'ok', msg: '✓ Deal submitted' });
+            setTimeout(() => { onSaved(); onClose(); }, 700);
+          } catch (e) {
+            console.error('Submit deal failed:', e);
+            setToast({ kind: 'err', msg: 'Failed to submit — ' + (e.message || 'unknown error') });
+            setSaving(false);
+          }
+        };
+
+        return ReactDOM.createPortal(
+          <div className="tk-modal-layer" data-tk-theme={theme}>
+            <div className="tk-modal-backdrop" onClick={onClose}></div>
+            <div className="tk-modal" role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
+              <div className="tk-mod-hd">
+                <div>
+                  <h3>New Sale</h3>
+                  <div className="meta">Add a deal to your pipeline</div>
+                </div>
+                <button className="tk-mod-x" onClick={onClose} aria-label="Close">×</button>
+              </div>
+              {toast && <div className={'tk-mod-toast ' + (toast.kind === 'ok' ? 'green' : 'blue')} style={toast.kind === 'err' ? {background:'color-mix(in oklch, var(--tk-neg, oklch(0.7 0.18 25)) 18%, transparent)', borderColor:'var(--tk-neg, oklch(0.7 0.18 25))'} : null}>{toast.msg}</div>}
+              <div className="tk-mod-body">
+                <div className="tk-mod-grid">
+                  <div className="tk-mod-field full">
+                    <label>Client name *</label>
+                    <input className="tk-mod-input" value={client} onChange={e => setClient(e.target.value)} required />
+                  </div>
+                  <div className="tk-mod-field full">
+                    <label>Client phone</label>
+                    <input className="tk-mod-input mono" value={phone} onChange={e => setPhone(e.target.value)} placeholder="(555) 123-4567" />
+                  </div>
+                  <div className="tk-mod-field">
+                    <label>Annual premium ($) *</label>
+                    <input className="tk-mod-input mono" type="number" step="0.01" value={ap} onChange={e => setAp(e.target.value)} required />
+                  </div>
+                  <div className="tk-mod-field">
+                    <label>Policy number *</label>
+                    <input className="tk-mod-input mono" value={policyNumber} onChange={e => setPolicyNumber(e.target.value)} required />
+                  </div>
+                  <div className="tk-mod-field">
+                    <label>Carrier *</label>
+                    <select className="tk-mod-select" value={carrier} onChange={e => setCarrier(e.target.value)} required>
+                      <option value="">Select carrier…</option>
+                      {CARRIER_LIST.map(c => <option key={c} value={c}>{c}</option>)}
+                    </select>
+                  </div>
+                  <div className="tk-mod-field">
+                    <label>Product type *</label>
+                    <select className="tk-mod-select" value={productType} onChange={e => setProductType(e.target.value)} required>
+                      <option value="">Select product…</option>
+                      {TK_PRODUCT_TYPES.map(p => <option key={p} value={p}>{p}</option>)}
+                    </select>
+                  </div>
+                  <div className="tk-mod-field">
+                    <label>Sold date *</label>
+                    <input className="tk-mod-input mono" type="date" value={policyDate} onChange={e => setPolicyDate(e.target.value)} required />
+                  </div>
+                  <div className="tk-mod-field">
+                    <label>Effective date</label>
+                    <input className="tk-mod-input mono" type="date" value={effectiveDate} onChange={e => setEffectiveDate(e.target.value)} />
+                  </div>
+                  <div className="tk-mod-field">
+                    <label>Status</label>
+                    <select className="tk-mod-select" value={status} onChange={e => setStatus(e.target.value)}>
+                      <option value="Underwriting">Underwriting</option>
+                      <option value="Approved">Approved</option>
+                      <option value="Issue Paid">Issue Paid</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div className="tk-mod-foot">
+                <button className="tk-mod-btn ghost" onClick={onClose} disabled={saving}>Cancel</button>
+                <button className="tk-mod-btn primary" onClick={submit} disabled={saving}>{saving ? 'Saving…' : 'Submit Deal'}</button>
+              </div>
+            </div>
+          </div>,
+          document.body
+        );
+      }
+
+      // ─── Submit KPI modal ──────────────────────────────────────────
+      function SubmitKpiModal({ theme, agentName, userId, onClose, onSaved }) {
+        const today = new Date();
+        const todayYMD = today.getFullYear() + '-' + String(today.getMonth()+1).padStart(2,'0') + '-' + String(today.getDate()).padStart(2,'0');
+        const [date, setDate] = useState(todayYMD);
+        const [dials, setDials] = useState('');
+        const [answers, setAnswers] = useState('');
+        const [appointments, setAppointments] = useState('');
+        const [presentations, setPresentations] = useState('');
+        const [deals, setDeals] = useState('');
+        const [leadSpend, setLeadSpend] = useState('');
+        const [deposits, setDeposits] = useState('');
+        const [saving, setSaving] = useState(false);
+        const [toast, setToast] = useState(null);
+
+        const num = (v) => v === '' ? 0 : parseFloat(v);
+        const submit = async () => {
+          setSaving(true);
+          try {
+            // Upsert by (sales_rep, kpi_date) — same pattern as the existing
+            // Sales Hub KPI form. We POST with on_conflict resolution so a
+            // second log on the same day overwrites cleanly.
+            const body = {
+              user_id: userId || null,
+              sales_rep: agentName,
+              kpi_date: date,
+              dials: num(dials),
+              answers: num(answers),
+              appointments: num(appointments),
+              presentations: num(presentations),
+              deals: num(deals),
+              lead_spend: num(leadSpend),
+              deposits: num(deposits),
+            };
+            const res = await fetch(SUPABASE_URL + '/rest/v1/daily_kpis?on_conflict=sales_rep,kpi_date', {
+              method: 'POST',
+              headers: Object.assign({}, HDRS_WRITE, { Prefer: 'resolution=merge-duplicates,return=minimal' }),
+              body: JSON.stringify(body)
+            });
+            if (!res.ok) throw new Error('save failed (' + res.status + ')');
+            setToast({ kind: 'ok', msg: '✓ KPIs logged' });
+            setTimeout(() => { onSaved(); onClose(); }, 700);
+          } catch (e) {
+            console.error('Submit KPI failed:', e);
+            setToast({ kind: 'err', msg: 'Failed to submit — ' + (e.message || 'unknown error') });
+            setSaving(false);
+          }
+        };
+
+        return ReactDOM.createPortal(
+          <div className="tk-modal-layer" data-tk-theme={theme}>
+            <div className="tk-modal-backdrop" onClick={onClose}></div>
+            <div className="tk-modal" role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
+              <div className="tk-mod-hd">
+                <div>
+                  <h3>Daily KPIs</h3>
+                  <div className="meta">Log your activity for the day</div>
+                </div>
+                <button className="tk-mod-x" onClick={onClose} aria-label="Close">×</button>
+              </div>
+              {toast && <div className={'tk-mod-toast ' + (toast.kind === 'ok' ? 'blue' : 'green')} style={toast.kind === 'err' ? {background:'color-mix(in oklch, var(--tk-neg, oklch(0.7 0.18 25)) 18%, transparent)', borderColor:'var(--tk-neg, oklch(0.7 0.18 25))'} : null}>{toast.msg}</div>}
+              <div className="tk-mod-body">
+                <div className="tk-mod-grid">
+                  <div className="tk-mod-field full">
+                    <label>Date *</label>
+                    <input className="tk-mod-input mono" type="date" value={date} onChange={e => setDate(e.target.value)} />
+                  </div>
+                </div>
+                <div className="tk-mod-grid cols-4">
+                  <div className="tk-mod-field"><label>Dials</label><input className="tk-mod-input mono" type="number" min="0" value={dials} onChange={e => setDials(e.target.value)} placeholder="0" /></div>
+                  <div className="tk-mod-field"><label>Answers</label><input className="tk-mod-input mono" type="number" min="0" value={answers} onChange={e => setAnswers(e.target.value)} placeholder="0" /></div>
+                  <div className="tk-mod-field"><label>Appts</label><input className="tk-mod-input mono" type="number" min="0" value={appointments} onChange={e => setAppointments(e.target.value)} placeholder="0" /></div>
+                  <div className="tk-mod-field"><label>Pres.</label><input className="tk-mod-input mono" type="number" min="0" value={presentations} onChange={e => setPresentations(e.target.value)} placeholder="0" /></div>
+                </div>
+                <div className="tk-mod-grid cols-3">
+                  <div className="tk-mod-field"><label>Deals</label><input className="tk-mod-input mono" type="number" min="0" value={deals} onChange={e => setDeals(e.target.value)} placeholder="0" /></div>
+                  <div className="tk-mod-field"><label>Lead spend</label><input className="tk-mod-input mono" type="number" min="0" step="0.01" value={leadSpend} onChange={e => setLeadSpend(e.target.value)} placeholder="0.00" /></div>
+                  <div className="tk-mod-field"><label>Deposits</label><input className="tk-mod-input mono" type="number" min="0" step="0.01" value={deposits} onChange={e => setDeposits(e.target.value)} placeholder="0.00" /></div>
+                </div>
+              </div>
+              <div className="tk-mod-foot">
+                <button className="tk-mod-btn ghost" onClick={onClose} disabled={saving}>Cancel</button>
+                <button className="tk-mod-btn primary blue" onClick={submit} disabled={saving}>{saving ? 'Saving…' : 'Submit KPIs'}</button>
+              </div>
+            </div>
+          </div>,
+          document.body
+        );
+      }
+
+      // ─── Tracker line chart (Jan-Dec cumulative + projection) ──────
+      function GoalLineChart({ monthlyValues, currentMonthIdx, goal, color }) {
+        const ref = useRef(null);
+        const [w, setW] = useState(800);
+        const [hover, setHover] = useState(null);
+        const h = 280;
+        useEffect(() => {
+          if (!ref.current) return;
+          const ro = new ResizeObserver(([e]) => setW(e.contentRect.width));
+          ro.observe(ref.current);
+          return () => ro.disconnect();
+        }, []);
+        const labels = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        // Cumulative actual through current month
+        const cumActual = monthlyValues.reduce((arr, v, i) => {
+          arr.push(i <= currentMonthIdx ? (arr[arr.length-1] || 0) + v : null);
+          return arr;
+        }, []);
+        const apYTD = cumActual[currentMonthIdx] || 0;
+        const today = new Date();
+        const dayOfYear = Math.floor((today - startOfYearTk(today)) / 86400000) + 1;
+        const yearEndProjection = dayOfYear > 0 && apYTD > 0 ? (apYTD / dayOfYear) * 365 : apYTD;
+        const cumProjected = cumActual.slice();
+        if (currentMonthIdx < 11 && yearEndProjection > apYTD) {
+          const monthsRemaining = 11 - currentMonthIdx;
+          const step = (yearEndProjection - apYTD) / monthsRemaining;
+          for (let i = currentMonthIdx + 1; i <= 11; i++) {
+            cumProjected[i] = apYTD + step * (i - currentMonthIdx);
+          }
+        } else {
+          for (let i = currentMonthIdx + 1; i <= 11; i++) cumProjected[i] = apYTD;
+        }
+        const pad = { top: 24, right: 16, bottom: 28, left: 64 };
+        const innerW = Math.max(100, w - pad.left - pad.right);
+        const innerH = h - pad.top - pad.bottom;
+        const max = Math.max(goal, cumProjected[11] || 0, 1) * 1.1;
+        const xs = (i) => pad.left + (i / 11) * innerW;
+        const ys = (v) => pad.top + (1 - v / max) * innerH;
+        const realPoints = cumActual.slice(0, currentMonthIdx + 1).map((v, i) => [xs(i), ys(v || 0)]);
+        const projPoints = cumProjected.slice(currentMonthIdx).map((v, i) => [xs(i + currentMonthIdx), ys(v || 0)]);
+        const realPath = smoothPath(realPoints, 0.5);
+        const projPath = projPoints.length >= 2 ? smoothPath(projPoints, 0.5) : '';
+        const areaPath = realPath ? realPath + ' L ' + xs(currentMonthIdx) + ',' + (pad.top + innerH) + ' L ' + xs(0) + ',' + (pad.top + innerH) + ' Z' : '';
+        const grid = [0, 0.25, 0.5, 0.75, 1].map(t => ({ y: pad.top + t * innerH, v: max * (1 - t) }));
+        const goalY = ys(goal);
+        const onMove = (e) => {
+          const rect = ref.current.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const idx = Math.round(((x - pad.left) / innerW) * 11);
+          if (idx >= 0 && idx <= 11) setHover(idx);
+        };
+        return (
+          <div ref={ref} className="tk-chart-wrap" onMouseLeave={() => setHover(null)} onMouseMove={onMove}>
+            <svg width={w} height={h} style={{display:'block'}}>
+              <defs>
+                <linearGradient id="tkApGrad" x1="0" x2="0" y1="0" y2="1">
+                  <stop offset="0%" stopColor={color} stopOpacity="0.32" />
+                  <stop offset="100%" stopColor={color} stopOpacity="0" />
+                </linearGradient>
+              </defs>
+              {grid.map((g, i) => (
+                <g key={i}>
+                  <line x1={pad.left} x2={w - pad.right} y1={g.y} y2={g.y} stroke="var(--tk-hairline)" strokeDasharray={i === grid.length - 1 ? '0' : '2 4'} />
+                  <text x={pad.left - 10} y={g.y + 4} textAnchor="end" fill="var(--tk-ink-3)" fontSize="11" fontFamily="var(--tk-mono)">${(g.v / 1000).toFixed(0)}K</text>
+                </g>
+              ))}
+              {/* Goal reference line */}
+              {goal > 0 && goalY > pad.top && goalY < pad.top + innerH && (
+                <g>
+                  <line x1={pad.left} x2={w - pad.right} y1={goalY} y2={goalY} stroke="var(--tk-ink-2)" strokeDasharray="4 5" opacity="0.5" />
+                  <text x={w - pad.right} y={goalY - 4} textAnchor="end" fill="var(--tk-ink-2)" fontSize="10" fontFamily="var(--tk-mono)" letterSpacing="0.06em">GOAL ${(goal/1000).toFixed(0)}K</text>
+                </g>
+              )}
+              <path d={areaPath} fill="url(#tkApGrad)" />
+              <path d={realPath} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              {projPath && <path d={projPath} fill="none" stroke="var(--rb-blue)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="4 5" opacity="0.7" />}
+              <line x1={xs(currentMonthIdx)} x2={xs(currentMonthIdx)} y1={pad.top} y2={pad.top + innerH} stroke="var(--tk-ink-4)" strokeDasharray="2 4" opacity="0.6" />
+              {labels.map((lbl, i) => (
+                <text key={i} x={xs(i)} y={h - 8} textAnchor="middle" fill={i === currentMonthIdx ? 'var(--tk-ink-1)' : 'var(--tk-ink-3)'} fontSize="11" fontFamily="var(--tk-mono)">{lbl}</text>
+              ))}
+              {hover !== null && (
+                <g>
+                  <line x1={xs(hover)} x2={xs(hover)} y1={pad.top} y2={pad.top + innerH} stroke="var(--tk-ink-3)" strokeDasharray="2 3" />
+                  <circle cx={xs(hover)} cy={ys(cumProjected[hover] || 0)} r="5" fill="var(--tk-surface)" stroke={hover <= currentMonthIdx ? color : 'var(--rb-blue)'} strokeWidth="2" />
+                </g>
+              )}
+            </svg>
+            {hover !== null && (
+              <div className="tk-chart-tip" style={{
+                left: Math.min(w - 150, Math.max(0, xs(hover) - 70)),
+                top: ys(cumProjected[hover] || 0) - 60,
+              }}>
+                <div className="tk-chart-tip-lbl">{labels[hover]} {hover <= currentMonthIdx ? '· actual' : '· projected'}</div>
+                <div className="tk-chart-tip-val">{fmtCurrency(cumProjected[hover] || 0)}</div>
+                {goal > 0 && <div style={{fontSize:10, color:'var(--tk-ink-3)', marginTop:2}}>{(((cumProjected[hover] || 0) / goal) * 100).toFixed(1)}% of goal</div>}
+              </div>
+            )}
+          </div>
+        );
+      }
+
+      // ─── Heatmap (one month) ────────────────────────────────────────
+      // Activity scoring rules:
+      //   * NOT active (level 0):  < 75 dials AND no presentations AND no sales
+      //   * DARKEST (level 5):     1+ sale OR 300+ dials OR 3+ presentations
+      //   * In-between levels 1-4: weighted score where presentations count
+      //     much more than dials (1 presentation ≈ 100 dials of work).
+      const TK_DARK_DIALS = 300;
+      const TK_DARK_PRES  = 3;
+      const TK_DARK_SALES = 1;
+      const TK_ACT_DIALS  = 75;
+      function tkActivityLevel(c) {
+        if (!c) return 0;
+        const dials = c.dials || 0, pres = c.pres || 0, deals = c.deals || 0;
+        // Hard "active day" gate
+        const active = dials >= TK_ACT_DIALS || pres >= 1 || deals >= 1;
+        if (!active) return 0;
+        // Hard "darkest" gate
+        if (deals >= TK_DARK_SALES || pres >= TK_DARK_PRES || dials >= TK_DARK_DIALS) return 5;
+        // Weighted in-between score (1 pres ≈ 100 dials, 1 sale ≈ 999)
+        const score = dials + pres * 100 + deals * 999;
+        if (score >= 250) return 4;
+        if (score >= 175) return 3;
+        if (score >= 125) return 2;
+        return 1;
+      }
+      function HeatmapMonth({ year, month, kpis, policies, today }) {
+        // Build a Sun-anchored grid
+        const first = new Date(year, month, 1);
+        const last = new Date(year, month + 1, 0);
+        const startBlanks = first.getDay();
+        const totalCells = startBlanks + last.getDate();
+        const gridRows = Math.ceil(totalCells / 7) * 7;
+        // Per-day raw counts — dials/pres come from daily_kpis, sales from
+        // BOTH daily_kpis.deals AND the policies table so a policy logged
+        // without a matching KPI row still lights the cell up.
+        const byDay = {};
+        kpis.forEach(k => {
+          if (!k.kpi_date) return;
+          const d = parsePolicyDate(k.kpi_date);
+          if (!d || d.getFullYear() !== year || d.getMonth() !== month) return;
+          const day = d.getDate();
+          const cur = byDay[day] || { dials: 0, pres: 0, deals: 0 };
+          cur.dials += (k.dials || 0);
+          cur.pres += (k.presentations || 0);
+          cur.deals += (k.deals || 0);
+          byDay[day] = cur;
+        });
+        (policies || []).forEach(p => {
+          const d = parsePolicyDate(p.policy_date || p.created_at);
+          if (!d || d.getFullYear() !== year || d.getMonth() !== month) return;
+          const day = d.getDate();
+          const cur = byDay[day] || { dials: 0, pres: 0, deals: 0 };
+          cur.deals += 1;
+          byDay[day] = cur;
+        });
+        const monthLabel = first.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+        const todayY = today.getFullYear(), todayM = today.getMonth(), todayD = today.getDate();
+        const cells = [];
+        for (let i = 0; i < gridRows; i++) {
+          const day = i - startBlanks + 1;
+          if (day < 1 || day > last.getDate()) {
+            cells.push({ empty: true });
+            continue;
+          }
+          const data = byDay[day];
+          const isFuture = (year > todayY) || (year === todayY && month > todayM) || (year === todayY && month === todayM && day > todayD);
+          const isToday = year === todayY && month === todayM && day === todayD;
+          const lvl = tkActivityLevel(data);
+          const bgPct = [0, 18, 34, 55, 78, 100][lvl];
+          cells.push({ day, data, isFuture, isToday, bgPct, lvl });
+        }
+        return (
+          <div>
+            <div className="tk-heat-month-label">{monthLabel}</div>
+            <div className="tk-heat-week-row">
+              <span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span>
+            </div>
+            <div className="tk-heat-cal">
+              {cells.map((c, i) => {
+                if (c.empty) return <div key={i} className="tk-heat-day empty"></div>;
+                const bg = c.lvl === 0
+                  ? 'var(--tk-surface-3)'
+                  : 'color-mix(in oklch, var(--rb-green) ' + c.bgPct + '%, var(--tk-surface-3))';
+                const cls = 'tk-heat-day' + (c.isFuture ? ' future' : '') + (c.isToday ? ' today' : '');
+                const tip = c.data
+                  ? c.data.dials + ' dials · ' + c.data.pres + ' pres · ' + c.data.deals + ' deals'
+                  : 'No activity';
+                return (
+                  <div key={i} className={cls} style={{background: bg, color: c.lvl >= 4 ? '#0d0e10' : 'var(--tk-ink-3)'}} title={tip}>
+                    {c.day}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        );
+      }
+
+      // ─── Tracker root component ──────────────────────────────────────
+      const TK_ADMIN_EMAIL = 'dev@kairos-financial.com';
+      function TrackerView() {
+        const [theme, setTheme] = useState(tkInitialTheme());
+        const [agentProfile, setAgentProfile] = useState(null);
+        const [policies, setPolicies] = useState([]);
+        const [kpis, setKpis] = useState([]);
+        const [loading, setLoading] = useState(true);
+        const [error, setError] = useState(null);
+        const [tf, setTf] = useState('WTD');
+        const [showDealModal, setShowDealModal] = useState(false);
+        const [showKpiModal, setShowKpiModal] = useState(false);
+        const [editingGoal, setEditingGoal] = useState(false);
+        const [goalDraft, setGoalDraft] = useState('');
+        // Admin-only "view as" — when set, the dashboard renders that
+        // agent's stats (read-only). Hidden for everyone else.
+        const [viewAsUserId, setViewAsUserId] = useState('');
+        const [allAgents, setAllAgents] = useState([]);
+        const isAdmin = !!(window.currentUser && (window.currentUser.email || '').toLowerCase() === TK_ADMIN_EMAIL);
+
+        useEffect(() => {
+          const root = document.getElementById('panel-goals');
+          if (root) root.setAttribute('data-tk-theme', theme);
+          try { localStorage.setItem(TK_THEME_KEY, theme); } catch (e) {}
+        }, [theme]);
+
+        // Load the full agent roster once when the admin opens the panel
+        useEffect(() => {
+          if (!isAdmin) return;
+          (async () => {
+            try {
+              const res = await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?select=user_id,agent_name&order=agent_name.asc', { headers: HDRS });
+              if (!res.ok) return;
+              const rows = await res.json();
+              setAllAgents(rows.filter(r => r.agent_name && r.agent_name.trim()));
+            } catch (e) {}
+          })();
+        }, [isAdmin]);
+
+        const reload = async () => {
+          setLoading(true);
+          setError(null);
+          try {
+            const u = window.currentUser;
+            if (!u || !u.id) { setError('Sign in to view your tracker.'); setLoading(false); return; }
+            // Effective viewing target: admin can override; everyone else is locked to themselves.
+            const targetId = (isAdmin && viewAsUserId) ? viewAsUserId : u.id;
+            const [profilesRes, policiesRes] = await Promise.all([
+              fetch(SUPABASE_URL + '/rest/v1/agent_profiles?select=user_id,agent_name,annual_goal&user_id=eq.' + targetId, { headers: HDRS }),
+              fetch(SUPABASE_URL + '/rest/v1/policies?select=id,user_id,sales_rep,client_name,phone,annual_premium,policy_date,created_at,carrier,status,product_type,policy_number,effective_date&user_id=eq.' + targetId + '&order=policy_date.desc', { headers: HDRS }),
+            ]);
+            const profiles = profilesRes.ok ? await profilesRes.json() : [];
+            const policiesData = policiesRes.ok ? await policiesRes.json() : [];
+            const profile = profiles[0] || (
+              targetId === u.id
+                ? { user_id: u.id, agent_name: u.user_metadata?.name || u.email, annual_goal: 0 }
+                : { user_id: targetId, agent_name: 'Unknown agent', annual_goal: 0 }
+            );
+            // KPIs are keyed by sales_rep name (not user_id)
+            const kpisRes2 = await fetch(SUPABASE_URL + '/rest/v1/daily_kpis?select=*&sales_rep=eq.' + encodeURIComponent(profile.agent_name) + '&order=kpi_date.desc&limit=2000', { headers: HDRS });
+            const kpisData = kpisRes2.ok ? await kpisRes2.json() : [];
+            setAgentProfile(profile);
+            setPolicies(policiesData);
+            setKpis(kpisData);
+            setLoading(false);
+          } catch (e) {
+            console.error('Tracker load failed:', e);
+            setError(e.message || String(e));
+            setLoading(false);
+          }
+        };
+        useEffect(() => { reload(); }, [viewAsUserId]);
+        const viewingOther = isAdmin && !!viewAsUserId;
+
+        const saveGoal = async (newGoal) => {
+          if (!agentProfile) return;
+          try {
+            // PATCH first; if no row yet, fall back to POST
+            const patch = await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?user_id=eq.' + agentProfile.user_id, {
+              method: 'PATCH', headers: HDRS_WRITE,
+              body: JSON.stringify({ annual_goal: newGoal })
+            });
+            const updRows = await patch.json().catch(() => []);
+            if (!Array.isArray(updRows) || updRows.length === 0) {
+              await fetch(SUPABASE_URL + '/rest/v1/agent_profiles', {
+                method: 'POST', headers: HDRS_WRITE,
+                body: JSON.stringify({ user_id: agentProfile.user_id, agent_name: agentProfile.agent_name, annual_goal: newGoal })
+              });
+            }
+            setAgentProfile(Object.assign({}, agentProfile, { annual_goal: newGoal }));
+          } catch (e) { console.error('Save goal failed:', e); }
+        };
+
+        if (loading) {
+          return (
+            <div>
+              <header className="tk-hdr"><div className="tk-hdr-l"><div className="tk-hdr-brand"><div className="tk-hdr-title">Kairos Financial</div><span className="tk-hdr-sub">· My Tracker</span></div></div></header>
+              <div className="tk-loading">Loading your tracker…</div>
+            </div>
+          );
+        }
+        if (error) {
+          return (
+            <div>
+              <header className="tk-hdr"><div className="tk-hdr-l"><div className="tk-hdr-brand"><div className="tk-hdr-title">Kairos Financial</div><span className="tk-hdr-sub">· My Tracker</span></div></div></header>
+              <div className="tk-loading">{error}</div>
+            </div>
+          );
+        }
+
+        const today = new Date();
+        const yearStart = startOfYearTk(today);
+        const monthStart = startOfMonthTk(today);
+        const weekStart = startOfWeekTk(today);
+        const lastMonthStart = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+        const lastMonthEnd = new Date(today.getFullYear(), today.getMonth(), 0, 23, 59, 59);
+        const lastWeekStart = new Date(weekStart); lastWeekStart.setDate(lastWeekStart.getDate() - 7);
+
+        const policyDate = (p) => parsePolicyDate(p.policy_date || p.created_at);
+        const kpiDate = (k) => parsePolicyDate(k.kpi_date);
+
+        // Per-month policy AP (Jan-current)
+        const monthlyPremium = new Array(12).fill(0);
+        policies.forEach(p => {
+          const d = policyDate(p);
+          if (d && d.getFullYear() === today.getFullYear()) {
+            monthlyPremium[d.getMonth()] += parseFloat(p.annual_premium || 0);
+          }
+        });
+        const apYTD = monthlyPremium.slice(0, today.getMonth() + 1).reduce((a, b) => a + b, 0);
+        const dealsYTD = policies.filter(p => { const d = policyDate(p); return d && d.getFullYear() === today.getFullYear(); }).length;
+        const goal = parseFloat(agentProfile.annual_goal) || 0;
+        const goalPct = goal > 0 ? (apYTD / goal) * 100 : 0;
+        const dayOfYear = Math.floor((today - yearStart) / 86400000) + 1;
+        const expectedPct = (dayOfYear / 365) * 100;
+        const pace = goalPct - expectedPct;
+        const paceColor = pace >= -2 ? 'var(--rb-green)' : pace >= -8 ? 'var(--rb-yellow)' : 'var(--rb-red)';
+        const remaining = Math.max(0, goal - apYTD);
+        const monthsLeft = 12 - today.getMonth();
+        const neededPerMonth = monthsLeft > 0 ? remaining / monthsLeft : 0;
+
+        // Deal status pipeline (YTD)
+        const ytdPolicies = policies.filter(p => { const d = policyDate(p); return d && d >= yearStart; });
+        const statusBuckets = { 'Underwriting': { premium: 0, count: 0 }, 'Approved': { premium: 0, count: 0 }, 'Issue Paid': { premium: 0, count: 0 } };
+        ytdPolicies.forEach(p => {
+          const s = p.status || 'Underwriting';
+          if (statusBuckets[s]) {
+            statusBuckets[s].premium += parseFloat(p.annual_premium || 0);
+            statusBuckets[s].count++;
+          }
+        });
+        const totalStatusAP = Object.values(statusBuckets).reduce((s, b) => s + b.premium, 0);
+        const totalStatusCount = Object.values(statusBuckets).reduce((s, b) => s + b.count, 0);
+        const statusItems = [
+          { label: 'Underwriting', premium: statusBuckets['Underwriting'].premium, count: statusBuckets['Underwriting'].count, color: 'var(--rb-yellow)' },
+          { label: 'Approved',     premium: statusBuckets['Approved'].premium,     count: statusBuckets['Approved'].count,     color: 'var(--rb-green)' },
+          { label: 'Issue Paid',   premium: statusBuckets['Issue Paid'].premium,   count: statusBuckets['Issue Paid'].count,   color: 'var(--rb-purple)' },
+        ];
+        const maxStatusAP = Math.max(...statusItems.map(s => s.premium), 1);
+
+        // Carriers (YTD)
+        const carrierMap = {};
+        ytdPolicies.forEach(p => {
+          if (!p.carrier) return;
+          carrierMap[p.carrier] = (carrierMap[p.carrier] || 0) + parseFloat(p.annual_premium || 0);
+        });
+        const carriers = Object.entries(carrierMap).map(([name, ap]) => ({ name, ap })).sort((a, b) => b.ap - a.ap);
+        const totalCarrierAP = carriers.reduce((s, c) => s + c.ap, 0);
+        const carrierColorByName = (name) => {
+          const idx = CARRIER_LIST.indexOf(name);
+          return idx >= 0 ? RAINBOW_TOKENS[idx % RAINBOW_TOKENS.length] : RAINBOW_TOKENS[0];
+        };
+
+        // KPI tracker (timeframe-aware)
+        const filterKpis = (start, end) => kpis.filter(k => {
+          const d = kpiDate(k);
+          if (!d) return false;
+          if (end) return d >= start && d <= end;
+          return d >= start;
+        });
+        const sumK = (arr) => ({
+          dials: arr.reduce((s, r) => s + (r.dials||0), 0),
+          answers: arr.reduce((s, r) => s + (r.answers||0), 0),
+          appointments: arr.reduce((s, r) => s + (r.appointments||0), 0),
+          presentations: arr.reduce((s, r) => s + (r.presentations||0), 0),
+          deals: arr.reduce((s, r) => s + (r.deals||0), 0),
+          leadSpend: arr.reduce((s, r) => s + parseFloat(r.lead_spend||0), 0),
+          deposits: arr.reduce((s, r) => s + parseFloat(r.deposits||0), 0),
+        });
+        const sumPolAP = (start, end) => policies.reduce((s, p) => {
+          const d = policyDate(p);
+          if (!d) return s;
+          if (end ? (d >= start && d <= end) : d >= start) return s + parseFloat(p.annual_premium || 0);
+          return s;
+        }, 0);
+        const tfRange = {
+          WTD: [weekStart, null],
+          MTD: [monthStart, null],
+          YTD: [yearStart, null],
+          LW:  [lastWeekStart, new Date(weekStart.getTime() - 1)],
+          LM:  [lastMonthStart, lastMonthEnd],
+        }[tf];
+        const tfKpis = filterKpis(tfRange[0], tfRange[1]);
+        const k = sumK(tfKpis);
+        const tfPolAP = sumPolAP(tfRange[0], tfRange[1]);
+        const tfDeals = k.deals || policies.filter(p => { const d = policyDate(p); return d && (tfRange[1] ? (d >= tfRange[0] && d <= tfRange[1]) : d >= tfRange[0]); }).length;
+        const conversion = k.dials > 0 ? (tfDeals / k.dials) * 100 : 0;
+        const roi = k.leadSpend > 0 ? ((k.deposits - k.leadSpend) / k.leadSpend) * 100 : 0;
+        const avgPremium = tfDeals > 0 ? tfPolAP / tfDeals : 0;
+        const tfLabel = { WTD: 'Week to date', MTD: 'Month to date', YTD: 'Year to date', LW: 'Last week', LM: 'Last month' }[tf];
+
+        // Heatmap totals (last + this month combined). Active-day count
+        // dedupes across both KPI rows AND policy rows so a day with only
+        // a sale (no daily KPI logged) still counts as "active".
+        const heatLastMonth = kpis.filter(kp => { const d = kpiDate(kp); return d && d >= lastMonthStart && d <= lastMonthEnd; });
+        const heatThisMonth = kpis.filter(kp => { const d = kpiDate(kp); return d && d >= monthStart && d <= today; });
+        const heatAll = heatLastMonth.concat(heatThisMonth);
+        const heatTotals = sumK(heatAll);
+        const heatSales = policies.filter(p => { const d = policyDate(p); return d && d >= lastMonthStart && d <= today; }).length;
+        // Active-day rule: 75+ dials OR 1+ presentation OR 1+ sale.
+        // Anything less doesn't count. Same threshold the heatmap uses
+        // for "cell is colored at all" so the two stats agree visually.
+        const ymd = (d) => d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+        const dayMap = {};
+        heatAll.forEach(r => {
+          if (!r.kpi_date) return;
+          const cur = dayMap[r.kpi_date] || { dials: 0, pres: 0, deals: 0 };
+          cur.dials += (r.dials || 0);
+          cur.pres += (r.presentations || 0);
+          cur.deals += (r.deals || 0);
+          dayMap[r.kpi_date] = cur;
+        });
+        policies.forEach(p => {
+          const d = policyDate(p);
+          if (!d || d < lastMonthStart || d > today) return;
+          const k = ymd(d);
+          const cur = dayMap[k] || { dials: 0, pres: 0, deals: 0 };
+          cur.deals += 1;
+          dayMap[k] = cur;
+        });
+        const activeDays = Object.values(dayMap).filter(c => tkActivityLevel(c) > 0).length;
+        // Denominator: number of calendar days from lastMonthStart through today
+        const totalHeatDays = Math.max(1, Math.floor((today - lastMonthStart) / 86400000) + 1);
+        const dateStr = today.toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric', year:'numeric' });
+
+        return (
+          <div>
+            <header className="tk-hdr">
+              <div className="tk-hdr-l">
+                <div className="tk-hdr-brand">
+                  <div className="tk-hdr-title">Kairos Financial</div>
+                  <span className="tk-hdr-sub">· My Tracker</span>
+                </div>
+                <div className="tk-hdr-sub" style={{marginTop:6}}>
+                  {agentProfile.agent_name} · Life &amp; Final Expense Division
+                </div>
+              </div>
+              <div className="tk-hdr-r">
+                <div className="tk-hdr-time"><b>{dateStr}</b> · Day {dayOfYear} / 365</div>
+                <button className="tk-theme-toggle" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} aria-label="Toggle theme">
+                  {theme === 'dark'
+                    ? <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+                    : <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>}
+                </button>
+              </div>
+            </header>
+
+            <div className="tk-filter-bar">
+              <div style={{display:'flex', alignItems:'center', gap:12, flexWrap:'wrap'}}>
+                <div className="tk-filter-pill">
+                  <span style={{color:'var(--tk-ink-3)'}}>{viewingOther ? 'Viewing as' : 'Signed in as'}</span>
+                  <b>{agentProfile.agent_name}</b>
+                  {viewingOther && (
+                    <button className="x" onClick={() => setViewAsUserId('')} aria-label="Back to my tracker"
+                      style={{appearance:'none', border:0, background:'transparent', color:'var(--tk-ink-2)', cursor:'pointer', padding:0, width:16, height:16, borderRadius:99, display:'grid', placeItems:'center', fontSize:14, lineHeight:1}}>×</button>
+                  )}
+                </div>
+                {isAdmin && (
+                  <select
+                    value={viewAsUserId}
+                    onChange={e => setViewAsUserId(e.target.value)}
+                    title="Admin: view another agent's tracker"
+                    style={{
+                      appearance:'none',
+                      background:'var(--tk-surface)', color:'var(--tk-ink-1)',
+                      border:'1px solid var(--tk-hairline-strong)',
+                      borderRadius:8, padding:'7px 12px',
+                      fontFamily:'var(--tk-sans)', fontSize:12,
+                      outline:'none', cursor:'pointer'
+                    }}>
+                    <option value="">My Tracker</option>
+                    {allAgents.map(a => (
+                      <option key={a.user_id} value={a.user_id}>View as · {a.agent_name}</option>
+                    ))}
+                  </select>
+                )}
+              </div>
+              <div className="tk-hdr-sub">Last sync · {today.toLocaleTimeString('en-US', {hour:'numeric', minute:'2-digit'})}</div>
+            </div>
+
+            <div className="tk-grid tk-grid-12">
+              {/* Annual Premium Goal hero */}
+              <div className="tk-card tk-ap-hero" style={{gridColumn:'span 12'}}>
+                <div className="tk-card-hd" style={{marginBottom:18}}>
+                  <div style={{display:'flex', alignItems:'center', gap:14}}>
+                    <div className="tk-card-title">Annual Premium Goal · {today.getFullYear()}</div>
+                    <div className="tk-card-meta">{Math.round(expectedPct)}% of year elapsed</div>
+                  </div>
+                  <div style={{display:'flex', alignItems:'center', gap:12}}>
+                    <div className="tk-card-meta" style={{display:'flex', alignItems:'center', gap:6}}>
+                      <span className="tk-dot" style={{background: paceColor}}></span>
+                      {pace >= -2 ? 'On pace' : pace >= -8 ? 'Slightly behind' : 'Behind'}
+                    </div>
+                    {!viewingOther && (
+                      <button className="tk-action-btn green" onClick={() => setShowDealModal(true)}>
+                        <span className="tk-plus">+</span> Submit Deal
+                      </button>
+                    )}
+                  </div>
+                </div>
+                <div style={{display:'flex', flexDirection:'column', gap:4, marginBottom:14}}>
+                  <div className="tk-card-title">Annual Premium</div>
+                  <div className="tk-ap-num">
+                    {fmtCurrency(apYTD, {compact:true})}
+                    <span style={{color:'var(--tk-ink-4)', fontSize:22, marginLeft:10}}>
+                      / {editingGoal ? (
+                        <input
+                          autoFocus
+                          className="tk-edit-input"
+                          value={goalDraft}
+                          onChange={e => setGoalDraft(e.target.value)}
+                          onBlur={() => {
+                            const n = parseInt(String(goalDraft).replace(/[^\d]/g, ''), 10);
+                            if (!isNaN(n) && n > 0) saveGoal(n);
+                            setEditingGoal(false);
+                          }}
+                          onKeyDown={e => {
+                            if (e.key === 'Enter') e.target.blur();
+                            if (e.key === 'Escape') { setGoalDraft(''); setEditingGoal(false); }
+                          }}
+                          style={{width:'8ch', fontSize:'inherit'}} />
+                      ) : (
+                        <span
+                          className={viewingOther ? '' : 'tk-editable'}
+                          onClick={viewingOther ? undefined : () => { setGoalDraft(String(goal || '')); setEditingGoal(true); }}
+                          title={viewingOther ? '' : 'Click to edit'}
+                          style={viewingOther ? {fontFamily:'var(--tk-mono)'} : null}>
+                          ${goal > 0 ? goal.toLocaleString() : '— set goal'}
+                        </span>
+                      )}
+                    </span>
+                    <span style={{fontFamily:'var(--tk-mono)', fontSize:16, color:'var(--tk-ink-3)', marginLeft:14}}>
+                      {goal > 0 ? goalPct.toFixed(1) + '%' : ''}
+                    </span>
+                  </div>
+                  <div className="tk-ap-num-sub">
+                    {goal > 0 && (
+                      <>
+                        <span className={'tk-ap-delta ' + (pace >= 0 ? 'pos' : 'neg')} style={{marginRight:8}}>
+                          {pace >= 0 ? '▲' : '▼'} {Math.abs(pace).toFixed(1)}%
+                        </span>
+                        {pace >= 0 ? 'ahead of' : 'behind'} pace ·{' '}
+                        <b style={{color:'var(--tk-ink-1)'}}>{fmtCurrency(remaining, {compact:true})}</b> to goal ·{' '}
+                        <b style={{color:'var(--tk-ink-1)'}}>{fmtCurrency(neededPerMonth, {compact:true})}/mo</b> needed
+                      </>
+                    )}
+                    {goal === 0 && <span>Set an annual premium goal to start tracking pace</span>}
+                  </div>
+                </div>
+                <GoalLineChart monthlyValues={monthlyPremium} currentMonthIdx={today.getMonth()} goal={goal} color={paceColor} />
+                <div style={{marginTop:14, paddingTop:14, borderTop:'1px solid var(--tk-hairline)', display:'flex', alignItems:'center', gap:22, flexWrap:'wrap', fontFamily:'var(--tk-mono)', fontSize:11, color:'var(--tk-ink-3)'}}>
+                  <span><span style={{display:'inline-block', width:18, height:2, background:paceColor, marginRight:6, verticalAlign:'middle', borderRadius:1}}></span>Cumulative actual</span>
+                  <span><span style={{display:'inline-block', width:18, height:2, background:'repeating-linear-gradient(to right, var(--rb-blue) 0 5px, transparent 5px 10px)', marginRight:6, verticalAlign:'middle'}}></span>Projected to year-end</span>
+                  {goal > 0 && <span><span style={{display:'inline-block', width:18, height:2, background:'repeating-linear-gradient(to right, var(--tk-ink-2) 0 4px, transparent 4px 9px)', marginRight:6, verticalAlign:'middle'}}></span>Annual goal</span>}
+                </div>
+              </div>
+
+              {/* Daily Activity Heatmap */}
+              <div className="tk-card" style={{gridColumn:'span 12'}}>
+                <div className="tk-card-hd">
+                  <div style={{display:'flex', alignItems:'baseline', gap:14}}>
+                    <div className="tk-card-title">Daily Activity Heatmap</div>
+                    <div className="tk-card-meta">Weighted: dials · presentations · sales</div>
+                  </div>
+                  <div style={{display:'flex', alignItems:'center', gap:16, flexWrap:'wrap'}}>
+                    <div style={{display:'flex', alignItems:'center', gap:8}}>
+                      <span style={{fontFamily:'var(--tk-mono)', fontSize:10, color:'var(--tk-ink-4)', textTransform:'uppercase', letterSpacing:'0.06em'}}>Less</span>
+                      <div style={{display:'flex', gap:3}}>
+                        {[1,2,3,4,5].map(lvl => (
+                          <div key={lvl} style={{width:12, height:12, borderRadius:3, background:'color-mix(in oklch, var(--rb-green) ' + [18,34,55,78,100][lvl-1] + '%, var(--tk-surface-3))'}}></div>
+                        ))}
+                      </div>
+                      <span style={{fontFamily:'var(--tk-mono)', fontSize:10, color:'var(--tk-ink-4)', textTransform:'uppercase', letterSpacing:'0.06em'}}>More</span>
+                    </div>
+                    {!viewingOther && (
+                      <button className="tk-action-btn blue" onClick={() => setShowKpiModal(true)}>
+                        <span className="tk-plus">+</span> Submit KPI
+                      </button>
+                    )}
+                  </div>
+                </div>
+                <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:32}}>
+                  <HeatmapMonth year={lastMonthStart.getFullYear()} month={lastMonthStart.getMonth()} kpis={kpis} policies={policies} today={today} />
+                  <HeatmapMonth year={today.getFullYear()} month={today.getMonth()} kpis={kpis} policies={policies} today={today} />
+                </div>
+                <div style={{marginTop:22, paddingTop:16, borderTop:'1px solid var(--tk-hairline)', display:'grid', gridTemplateColumns:'repeat(4, 1fr)', gap:24}}>
+                  <div className="tk-stat"><div className="tk-kpi-lbl">Total Dials</div><div className="v">{fmtNum(heatTotals.dials)}</div><div className="tk-kpi-sub">across 2 months</div></div>
+                  <div className="tk-stat"><div className="tk-kpi-lbl">Presentations</div><div className="v">{fmtNum(heatTotals.presentations)}</div><div className="tk-kpi-sub">2 months</div></div>
+                  <div className="tk-stat"><div className="tk-kpi-lbl">Sales</div><div className="v pos">{heatSales}</div><div className="tk-kpi-sub">2 months</div></div>
+                  <div className="tk-stat"><div className="tk-kpi-lbl">Active Days</div><div className="v">{activeDays} / {totalHeatDays}</div><div className="tk-kpi-sub">{(activeDays/totalHeatDays*100).toFixed(0)}% activity rate</div></div>
+                </div>
+              </div>
+
+              {/* Deal Status pipeline */}
+              <div className="tk-card" style={{gridColumn:'span 6'}}>
+                <div className="tk-card-hd">
+                  <div style={{display:'flex', alignItems:'baseline', gap:14}}>
+                    <div className="tk-card-title">Deal Status · Pipeline &amp; Closed</div>
+                    <div className="tk-card-meta">By premium volume · YTD</div>
+                  </div>
+                  <div className="tk-card-meta" style={{fontFamily:'var(--tk-mono)'}}>
+                    {totalStatusCount} deals · {fmtCurrency(totalStatusAP, {compact:true})}
+                  </div>
+                </div>
+                {statusItems.map(s => (
+                  <div key={s.label} className="tk-hbar-item">
+                    <div className="tk-hbar-row">
+                      <div className="lbl">
+                        <span className="tk-dot" style={{background: s.color}}></span>{s.label}
+                        <span className="count">· {s.count}</span>
+                      </div>
+                      <div className="val">{fmtCurrency(s.premium, {compact:true})}</div>
+                    </div>
+                    <div className="tk-hbar-track">
+                      <div className="tk-hbar-fill" style={{width: (s.premium / maxStatusAP * 100) + '%', background: s.color}}></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Monthly Trend */}
+              <div className="tk-card" style={{gridColumn:'span 6'}}>
+                <div className="tk-card-hd">
+                  <div style={{display:'flex', alignItems:'baseline', gap:14}}>
+                    <div className="tk-card-title">Premium Sold · {today.getFullYear()} YTD</div>
+                    <div className="tk-card-meta">Through {today.toLocaleString('default',{month:'long'})}</div>
+                  </div>
+                  <div className="tk-card-meta" style={{fontFamily:'var(--tk-mono)'}}>
+                    Avg {fmtCurrency(apYTD / Math.max(today.getMonth() + 1, 1), {compact:true})}/mo
+                  </div>
+                </div>
+                <MonthlyBars
+                  labels={['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'].slice(0, today.getMonth() + 1)}
+                  primary={monthlyPremium.slice(0, today.getMonth() + 1)}
+                  primaryLabel="Premium"
+                  primaryColor="var(--rb-purple)"
+                  height={220}
+                />
+                <div style={{marginTop:14, paddingTop:14, borderTop:'1px solid var(--tk-hairline)', display:'grid', gridTemplateColumns:'repeat(3, 1fr)', gap:16}}>
+                  <div className="tk-stat"><div className="tk-kpi-lbl">YTD Total</div><div className="v">{fmtCurrency(apYTD, {compact:true})}</div><div className="tk-kpi-sub">{dealsYTD} deals closed</div></div>
+                  <div className="tk-stat"><div className="tk-kpi-lbl">Best Month</div><div className="v">{fmtCurrency(Math.max.apply(null, monthlyPremium.concat([0])), {compact:true})}</div><div className="tk-kpi-sub">{['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][monthlyPremium.indexOf(Math.max.apply(null, monthlyPremium.concat([0])))] || '—'}</div></div>
+                  <div className="tk-stat"><div className="tk-kpi-lbl">Last Full Mo.</div><div className="v">{fmtCurrency(monthlyPremium[Math.max(0, today.getMonth() - 1)] || 0, {compact:true})}</div><div className="tk-kpi-sub">{['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][Math.max(0, today.getMonth() - 1)]}</div></div>
+                </div>
+              </div>
+
+              {/* Top Carriers YTD */}
+              <div className="tk-card" style={{gridColumn:'span 12'}}>
+                <div className="tk-card-hd">
+                  <div style={{display:'flex', alignItems:'baseline', gap:14}}>
+                    <div className="tk-card-title">Top Carriers · YTD</div>
+                    <div className="tk-card-meta">By premium written</div>
+                  </div>
+                  <div className="tk-card-meta" style={{fontFamily:'var(--tk-mono)'}}>
+                    {carriers.length} carriers · {fmtCurrency(totalCarrierAP, {compact:true})}
+                  </div>
+                </div>
+                {carriers.length === 0 ? (
+                  <div style={{padding:'24px 0', color:'var(--tk-ink-3)', fontFamily:'var(--tk-mono)', fontSize:11}}>No policies written yet this year.</div>
+                ) : carriers.map(c => {
+                  const color = carrierColorByName(c.name);
+                  const pct = totalCarrierAP > 0 ? (c.ap / totalCarrierAP * 100) : 0;
+                  return (
+                    <div key={c.name} className="tk-carrier-item">
+                      <div className="tk-carrier-row">
+                        <span className="name"><span className="tk-dot" style={{background: color}}></span>{c.name}</span>
+                        <span className="ap">{fmtCurrency(c.ap, {compact:true})}</span>
+                        <span className="pct">{pct.toFixed(1)}%</span>
+                      </div>
+                      <div className="tk-carrier-track">
+                        <div className="tk-carrier-fill" style={{width: pct + '%', background: color}}></div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* KPI Tracker */}
+              <div className="tk-card" style={{gridColumn:'span 12', padding:0}}>
+                <div className="tk-card-hd" style={{padding:'18px 22px 14px', borderBottom:'1px solid var(--tk-hairline)'}}>
+                  <div style={{display:'flex', alignItems:'baseline', gap:14}}>
+                    <div className="tk-card-title">KPI Tracker</div>
+                    <div className="tk-card-meta">{tfLabel}</div>
+                  </div>
+                  <div className="tk-tf-segment">
+                    {[['WTD','WTD'],['MTD','MTD'],['YTD','YTD'],['LW','Last Wk'],['LM','Last Mo']].map(([key, lbl]) => (
+                      <button key={key} className={tf === key ? 'on' : ''} onClick={() => setTf(key)}>{lbl}</button>
+                    ))}
+                  </div>
+                </div>
+                <div className="tk-kpi-grid" style={{gridTemplateColumns:'repeat(5, 1fr)', borderRadius:0, border:'none'}}>
+                  <div className="tk-kpi-cell"><div className="tk-kpi-lbl"><span className="swatch" style={{background:'var(--rb-green)'}}></span>Dials</div><div className="tk-kpi-val">{fmtNum(k.dials)}</div><div className="tk-kpi-sub">outbound calls</div></div>
+                  <div className="tk-kpi-cell"><div className="tk-kpi-lbl"><span className="swatch" style={{background:'var(--rb-yellow)'}}></span>Answers</div><div className="tk-kpi-val">{fmtNum(k.answers)}</div><div className="tk-kpi-sub"><b>{k.dials > 0 ? (k.answers / k.dials * 100).toFixed(1) : '0.0'}%</b> answer rate</div></div>
+                  <div className="tk-kpi-cell"><div className="tk-kpi-lbl"><span className="swatch" style={{background:'var(--rb-orange)'}}></span>Appointments</div><div className="tk-kpi-val">{fmtNum(k.appointments)}</div><div className="tk-kpi-sub"><b>{k.answers > 0 ? (k.appointments / k.answers * 100).toFixed(1) : '0.0'}%</b> set rate</div></div>
+                  <div className="tk-kpi-cell"><div className="tk-kpi-lbl"><span className="swatch" style={{background:'var(--rb-red)'}}></span>Presentations</div><div className="tk-kpi-val">{fmtNum(k.presentations)}</div><div className="tk-kpi-sub"><b>{k.appointments > 0 ? (k.presentations / k.appointments * 100).toFixed(1) : '0.0'}%</b> show rate</div></div>
+                  <div className="tk-kpi-cell"><div className="tk-kpi-lbl"><span className="swatch" style={{background:'var(--rb-purple)'}}></span>Deals</div><div className="tk-kpi-val">{fmtNum(tfDeals)}</div><div className="tk-kpi-sub">closed business</div></div>
+                  <div className="tk-kpi-cell"><div className="tk-kpi-lbl"><span className="swatch" style={{background:'var(--rb-blue)'}}></span>Lead Spend</div><div className="tk-kpi-val">{fmtCurrency(k.leadSpend, {compact:true})}</div><div className="tk-kpi-sub">{tfDeals > 0 ? fmtCurrency(k.leadSpend / tfDeals) : '$0'} <span style={{color:'var(--tk-ink-4)'}}>/ deal</span></div></div>
+                  <div className="tk-kpi-cell"><div className="tk-kpi-lbl"><span className="swatch" style={{background:'var(--rb-green)'}}></span>Deposits</div><div className="tk-kpi-val">{fmtCurrency(k.deposits, {compact:true})}</div><div className="tk-kpi-sub">premium collected</div></div>
+                  <div className="tk-kpi-cell"><div className="tk-kpi-lbl"><span className="swatch" style={{background:'var(--rb-blue)'}}></span>Avg Premium</div><div className="tk-kpi-val">{fmtCurrency(avgPremium, {compact:true})}</div><div className="tk-kpi-sub">per closed deal</div></div>
+                  <div className="tk-kpi-cell"><div className="tk-kpi-lbl"><span className="swatch" style={{background:'var(--rb-purple)'}}></span>Conversion</div><div className="tk-kpi-val">{conversion.toFixed(2)}%</div><div className="tk-kpi-sub">{tfDeals > 0 ? Math.round(k.dials / tfDeals) : 0} <span style={{color:'var(--tk-ink-4)'}}>dials → 1 deal</span></div></div>
+                  <div className="tk-kpi-cell"><div className="tk-kpi-lbl"><span className="swatch" style={{background:'var(--rb-orange)'}}></span>ROI</div><div className="tk-kpi-val" style={{color: roi >= 0 ? 'var(--tk-pos)' : 'var(--tk-neg)'}}>{roi >= 0 ? '+' : ''}{roi.toFixed(0)}%</div><div className="tk-kpi-sub">(deposits − spend) / spend</div></div>
+                </div>
+              </div>
+            </div>
+
+            <div className="tk-foot">
+              <div>Kairos Financial · {agentProfile.agent_name} · Confidential</div>
+              <div>Synced from Supabase · {today.toLocaleDateString('en-US', {month:'short', day:'numeric'})}</div>
+            </div>
+
+            {showDealModal && (
+              <SubmitDealModal
+                theme={theme}
+                agentName={agentProfile.agent_name}
+                userId={agentProfile.user_id}
+                onClose={() => setShowDealModal(false)}
+                onSaved={() => reload()}
+              />
+            )}
+            {showKpiModal && (
+              <SubmitKpiModal
+                theme={theme}
+                agentName={agentProfile.agent_name}
+                userId={agentProfile.user_id}
+                onClose={() => setShowKpiModal(false)}
+                onSaved={() => reload()}
+              />
+            )}
+          </div>
+        );
+      }
+
+      let trackerRoot = null;
+      window.tkMountTracker = function () {
+        const el = document.getElementById('tkTrackerRoot');
+        if (!el) return;
+        if (!trackerRoot) trackerRoot = ReactDOM.createRoot(el);
+        trackerRoot.render(<TrackerView />);
       };
     })();
   </script>
