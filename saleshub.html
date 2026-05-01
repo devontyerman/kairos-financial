@@ -15142,10 +15142,13 @@
       // ─── Carrier breakdown ──────────────────────────────────────────────
       function CarrierBreakdown({ scope, view, timeframe }) {
         const isTeam = scope.id === '__team__';
+        // Use view.carrierMix (timeframe-scoped) — scope.carrierMix is a
+        // static MTD-only fallback that ignored WTD/YTD switches.
+        const mix = (view && view.carrierMix) || scope.carrierMix || {};
         const data = CARRIER_LIST.map(name => ({
           label: name,
           color: carrierColor(name),
-          value: scope.carrierMix[name] || 0,
+          value: mix[name] || 0,
         })).filter(d => d.value > 0).sort((a, b) => b.value - a.value);
         const apTotal = data.reduce((s, d) => s + d.value, 0);
         return (
