@@ -327,8 +327,9 @@
     .ss-sidebar.collapsed .ss-sidebar-btn span { display: none; }
     .ss-sidebar.collapsed .ss-sidebar-btn svg { margin: 0; }
     .ss-sidebar.collapsed .ss-nav-links { padding: 4px 0; }
-    .ss-sidebar.collapsed .ss-nav-links a { justify-content: center; padding: 9px 0; gap: 0; }
+    .ss-sidebar.collapsed .ss-nav-links a { justify-content: center; padding: 9px 0; gap: 0; font-size: 0; }
     .ss-sidebar.collapsed .ss-nav-links a > *:not(svg) { display: none; }
+    .ss-sidebar.collapsed .ss-nav-links a > svg { font-size: 18px; width: 18px; height: 18px; }
     /* When the sidebar is collapsed, .ss-main shifts left to claim the
        freed-up space. Selector targets `body:has(...)` so the main content
        reacts without needing JS to toggle a class on it. */
