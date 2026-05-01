@@ -1363,8 +1363,12 @@
     #panel-weeklytracker .wt-name-cell { padding: 0 8px !important; font-weight: 500; color: var(--wt-gray-900); width: 130px; min-width: 130px; max-width: 130px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; background: white; border-right: 1px solid var(--wt-gray-200) !important; font-size: 14px; position: sticky; left: 44px; z-index: 2; box-sizing: border-box; }
     /* (Avatar still used on Sales Reps tab; week sheet shows the name only.) */
     #panel-weeklytracker .wt-avatar { display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--wt-blue-100); color: var(--wt-blue-700); font-weight: 600; font-size: 11px; margin-right: 6px; vertical-align: middle; flex-shrink: 0; }
-    #panel-weeklytracker .wt-mtd-cell { background: #dbe9fe; text-align: right; padding: 0 5px !important; font-family: 'JetBrains Mono', monospace; font-weight: 600; color: var(--wt-blue-900); width: 76px; min-width: 76px; max-width: 76px; font-size: 13px; position: sticky; left: 174px; z-index: 2; box-sizing: border-box; border-right: 1px solid var(--wt-blue-100) !important; }
-    #panel-weeklytracker .wt-wtd-cell { background: var(--wt-blue-50); text-align: right; padding: 0 5px !important; font-family: 'JetBrains Mono', monospace; font-weight: 600; color: var(--wt-blue-700); width: 76px; min-width: 76px; max-width: 76px; font-size: 13px; position: sticky; left: 250px; z-index: 2; box-sizing: border-box; border-right: 1px solid var(--wt-blue-100) !important; }
+    /* Column order (sticky pins, left-to-right):
+         rank(44) → name(130) → monthly goal(80) → MTD total(76) → weekly goal(80) → WTD total(76)
+       Cumulative left offsets: 0, 44, 174, 254, 330, 410. */
+    #panel-weeklytracker .wt-monthly-cell { width: 80px; min-width: 80px; max-width: 80px; position: sticky; left: 174px; z-index: 2; background: var(--wt-gray-25); border-right: 1px solid var(--wt-gray-200) !important; }
+    #panel-weeklytracker .wt-mtd-cell { background: #dbe9fe; text-align: right; padding: 0 5px !important; font-family: 'JetBrains Mono', monospace; font-weight: 600; color: var(--wt-blue-900); width: 76px; min-width: 76px; max-width: 76px; font-size: 13px; position: sticky; left: 254px; z-index: 2; box-sizing: border-box; border-right: 1px solid var(--wt-blue-100) !important; }
+    #panel-weeklytracker .wt-wtd-cell { background: var(--wt-blue-50); text-align: right; padding: 0 5px !important; font-family: 'JetBrains Mono', monospace; font-weight: 600; color: var(--wt-blue-700); width: 76px; min-width: 76px; max-width: 76px; font-size: 13px; position: sticky; left: 410px; z-index: 2; box-sizing: border-box; border-right: 1px solid var(--wt-blue-100) !important; }
     #panel-weeklytracker .wt-ytd-cell { background: var(--wt-green-50); text-align: right; padding: 0 5px !important; font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--wt-green-700); width: 88px; min-width: 88px; max-width: 88px; border-left: 1px solid var(--wt-green-100); font-size: 13px; }
     #panel-weeklytracker .wt-day-cell { width: 66px; min-width: 66px; max-width: 66px; padding: 0 !important; text-align: right; box-sizing: border-box; }
     #panel-weeklytracker .wt-day-cell input { width: 100%; height: 36px; border: none; background: transparent; text-align: right; padding: 0 2px; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--wt-gray-700); outline: none; font-weight: 500; box-sizing: border-box; }
@@ -1389,19 +1393,21 @@
     #panel-weeklytracker .wt-day-cell.actual.under      { color: var(--wt-gray-700); }
     #panel-weeklytracker .wt-day-cell.actual.empty      { color: var(--wt-gray-400); }
     #panel-weeklytracker .wt-day-cell.first-of-day { border-left: 1px solid var(--wt-blue-100); }
-    #panel-weeklytracker .wt-weekly-cell { width: 80px; min-width: 80px; max-width: 80px; position: sticky; left: 326px; z-index: 2; background: var(--wt-gray-25); border-right: 1px solid var(--wt-gray-200) !important; }
+    #panel-weeklytracker .wt-weekly-cell { width: 80px; min-width: 80px; max-width: 80px; position: sticky; left: 330px; z-index: 2; background: var(--wt-gray-25); border-right: 1px solid var(--wt-gray-200) !important; }
     /* Sticky header cells (rank/name/MTD/WTD/Weekly pin to the left while scrolling horizontally) */
     #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th.wt-rank-h   { position: sticky; left: 0;    z-index: 6; width: 44px; min-width: 44px; max-width: 44px; }
     #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th.wt-name-h   { position: sticky; left: 44px; z-index: 6; width: 130px; min-width: 130px; max-width: 130px; }
-    #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th.wt-mtd-h    { position: sticky; left: 174px; z-index: 6; width: 76px; min-width: 76px; max-width: 76px; background: var(--wt-blue-900); }
-    #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th.wt-wtd-h    { position: sticky; left: 250px; z-index: 6; width: 76px; min-width: 76px; max-width: 76px; }
-    #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th.wt-weekly-h { position: sticky; left: 326px; z-index: 6; width: 80px; min-width: 80px; max-width: 80px; background: var(--wt-blue-900); }
+    #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th.wt-monthly-h{ position: sticky; left: 174px; z-index: 6; width: 80px; min-width: 80px; max-width: 80px; background: var(--wt-blue-900); }
+    #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th.wt-mtd-h    { position: sticky; left: 254px; z-index: 6; width: 76px; min-width: 76px; max-width: 76px; background: var(--wt-blue-900); }
+    #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th.wt-weekly-h { position: sticky; left: 330px; z-index: 6; width: 80px; min-width: 80px; max-width: 80px; background: var(--wt-blue-900); }
+    #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th.wt-wtd-h    { position: sticky; left: 410px; z-index: 6; width: 76px; min-width: 76px; max-width: 76px; }
     /* Sticky footer cells (mirror the body offsets so totals stay aligned with the data rows) */
     #panel-weeklytracker .wt-grid-table tfoot td.wt-foot-rank   { position: sticky; left: 0;    z-index: 2; width: 44px; min-width: 44px; max-width: 44px; }
     #panel-weeklytracker .wt-grid-table tfoot td.wt-foot-name   { position: sticky; left: 44px; z-index: 2; width: 130px; min-width: 130px; max-width: 130px; text-align: left; text-transform: uppercase; letter-spacing: 0.04em; font-size: 12px; font-family: 'Inter', sans-serif; }
-    #panel-weeklytracker .wt-grid-table tfoot td.wt-foot-mtd    { position: sticky; left: 174px; z-index: 2; width: 76px; min-width: 76px; max-width: 76px; }
-    #panel-weeklytracker .wt-grid-table tfoot td.wt-foot-wtd    { position: sticky; left: 250px; z-index: 2; width: 76px; min-width: 76px; max-width: 76px; }
-    #panel-weeklytracker .wt-grid-table tfoot td.wt-foot-weekly { position: sticky; left: 326px; z-index: 2; width: 80px; min-width: 80px; max-width: 80px; }
+    #panel-weeklytracker .wt-grid-table tfoot td.wt-foot-monthly{ position: sticky; left: 174px; z-index: 2; width: 80px; min-width: 80px; max-width: 80px; }
+    #panel-weeklytracker .wt-grid-table tfoot td.wt-foot-mtd    { position: sticky; left: 254px; z-index: 2; width: 76px; min-width: 76px; max-width: 76px; }
+    #panel-weeklytracker .wt-grid-table tfoot td.wt-foot-weekly { position: sticky; left: 330px; z-index: 2; width: 80px; min-width: 80px; max-width: 80px; }
+    #panel-weeklytracker .wt-grid-table tfoot td.wt-foot-wtd    { position: sticky; left: 410px; z-index: 2; width: 76px; min-width: 76px; max-width: 76px; }
     #panel-weeklytracker .wt-day-cell .wt-pct { display: block; font-size: 9px; color: var(--wt-gray-400); text-align: right; padding-right: 0; margin-top: -2px; font-weight: 500; }
     #panel-weeklytracker .wt-day-cell.actual.over .wt-pct       { color: var(--wt-green-600); }
     #panel-weeklytracker .wt-day-cell.actual.met .wt-pct        { color: var(--wt-green-600); }
@@ -1521,21 +1527,28 @@
         padding: 0 6px !important;
         font-size: 12px;
       }
+      /* Mobile sticky pin order — same as desktop, just narrower:
+           rank(30) → name(88) → monthly(60) → mtd(56) → weekly(60) → wtd(56)
+         Cumulative left offsets: 0, 30, 118, 178, 234, 294. */
+      #panel-weeklytracker .wt-monthly-cell {
+        width: 60px; min-width: 60px; max-width: 60px;
+        left: 118px;
+      }
       #panel-weeklytracker .wt-mtd-cell {
         width: 56px; min-width: 56px; max-width: 56px;
-        left: 118px;
-        font-size: 11px;
-        padding: 0 4px !important;
-      }
-      #panel-weeklytracker .wt-wtd-cell {
-        width: 56px; min-width: 56px; max-width: 56px;
-        left: 174px;
+        left: 178px;
         font-size: 11px;
         padding: 0 4px !important;
       }
       #panel-weeklytracker .wt-weekly-cell {
         width: 60px; min-width: 60px; max-width: 60px;
-        left: 230px;
+        left: 234px;
+      }
+      #panel-weeklytracker .wt-wtd-cell {
+        width: 56px; min-width: 56px; max-width: 56px;
+        left: 294px;
+        font-size: 11px;
+        padding: 0 4px !important;
       }
       #panel-weeklytracker .wt-ytd-cell {
         width: 64px; min-width: 64px; max-width: 64px;
@@ -1549,19 +1562,21 @@
       #panel-weeklytracker .wt-day-cell.actual { font-size: 11px; }
 
       /* Header sticky offsets — must mirror body */
-      #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th.wt-rank-h   { width: 30px; min-width: 30px; max-width: 30px; }
-      #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th.wt-name-h   { left: 30px; width: 88px; min-width: 88px; max-width: 88px; }
-      #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th.wt-mtd-h    { left: 118px; width: 56px; min-width: 56px; max-width: 56px; }
-      #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th.wt-wtd-h    { left: 174px; width: 56px; min-width: 56px; max-width: 56px; }
-      #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th.wt-weekly-h { left: 230px; width: 60px; min-width: 60px; max-width: 60px; }
+      #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th.wt-rank-h    { width: 30px; min-width: 30px; max-width: 30px; }
+      #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th.wt-name-h    { left: 30px; width: 88px; min-width: 88px; max-width: 88px; }
+      #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th.wt-monthly-h { left: 118px; width: 60px; min-width: 60px; max-width: 60px; }
+      #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th.wt-mtd-h     { left: 178px; width: 56px; min-width: 56px; max-width: 56px; }
+      #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th.wt-weekly-h  { left: 234px; width: 60px; min-width: 60px; max-width: 60px; }
+      #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th.wt-wtd-h     { left: 294px; width: 56px; min-width: 56px; max-width: 56px; }
 
       /* Footer sticky offsets */
       #panel-weeklytracker .wt-grid-table tfoot td { font-size: 11px; padding: 6px 4px; }
-      #panel-weeklytracker .wt-grid-table tfoot td.wt-foot-rank   { width: 30px; min-width: 30px; max-width: 30px; }
-      #panel-weeklytracker .wt-grid-table tfoot td.wt-foot-name   { left: 30px; width: 88px; min-width: 88px; max-width: 88px; font-size: 10px; padding: 6px 6px; }
-      #panel-weeklytracker .wt-grid-table tfoot td.wt-foot-mtd    { left: 118px; width: 56px; min-width: 56px; max-width: 56px; }
-      #panel-weeklytracker .wt-grid-table tfoot td.wt-foot-wtd    { left: 174px; width: 56px; min-width: 56px; max-width: 56px; }
-      #panel-weeklytracker .wt-grid-table tfoot td.wt-foot-weekly { left: 230px; width: 60px; min-width: 60px; max-width: 60px; }
+      #panel-weeklytracker .wt-grid-table tfoot td.wt-foot-rank    { width: 30px; min-width: 30px; max-width: 30px; }
+      #panel-weeklytracker .wt-grid-table tfoot td.wt-foot-name    { left: 30px; width: 88px; min-width: 88px; max-width: 88px; font-size: 10px; padding: 6px 6px; }
+      #panel-weeklytracker .wt-grid-table tfoot td.wt-foot-monthly { left: 118px; width: 60px; min-width: 60px; max-width: 60px; }
+      #panel-weeklytracker .wt-grid-table tfoot td.wt-foot-mtd     { left: 178px; width: 56px; min-width: 56px; max-width: 56px; }
+      #panel-weeklytracker .wt-grid-table tfoot td.wt-foot-weekly  { left: 234px; width: 60px; min-width: 60px; max-width: 60px; }
+      #panel-weeklytracker .wt-grid-table tfoot td.wt-foot-wtd     { left: 294px; width: 56px; min-width: 56px; max-width: 56px; }
 
       /* Tabs bar: more touch-friendly */
       #panel-weeklytracker .wt-tabs-bar { min-height: 40px; padding: 0 6px; }
@@ -1575,12 +1590,15 @@
          <th> covers both header rows — hiding them removes both header rows.
          Day cells are not sticky, so the freed horizontal space is filled by
          the table's natural layout when the user scrolls. */
+      #panel-weeklytracker .wt-shell.wt-totals-collapsed .wt-monthly-cell,
       #panel-weeklytracker .wt-shell.wt-totals-collapsed .wt-mtd-cell,
       #panel-weeklytracker .wt-shell.wt-totals-collapsed .wt-wtd-cell,
       #panel-weeklytracker .wt-shell.wt-totals-collapsed .wt-weekly-cell,
+      #panel-weeklytracker .wt-shell.wt-totals-collapsed .wt-grid-table thead tr.wt-day-row th.wt-monthly-h,
       #panel-weeklytracker .wt-shell.wt-totals-collapsed .wt-grid-table thead tr.wt-day-row th.wt-mtd-h,
       #panel-weeklytracker .wt-shell.wt-totals-collapsed .wt-grid-table thead tr.wt-day-row th.wt-wtd-h,
       #panel-weeklytracker .wt-shell.wt-totals-collapsed .wt-grid-table thead tr.wt-day-row th.wt-weekly-h,
+      #panel-weeklytracker .wt-shell.wt-totals-collapsed .wt-grid-table tfoot td.wt-foot-monthly,
       #panel-weeklytracker .wt-shell.wt-totals-collapsed .wt-grid-table tfoot td.wt-foot-mtd,
       #panel-weeklytracker .wt-shell.wt-totals-collapsed .wt-grid-table tfoot td.wt-foot-wtd,
       #panel-weeklytracker .wt-shell.wt-totals-collapsed .wt-grid-table tfoot td.wt-foot-weekly {
@@ -11105,7 +11123,7 @@
       let allReps = [];          // every rep on the Sales Reps tab (incl. hidden)
       let hiddenReps = new Set();
       let ytdSeed = {};
-      let goals = {};            // { _default: { rep: ap }, _defaultDial: { rep: dials }, [weekKey]: { [rep]: { ap:[6], dial:[6] } }, _weeklyAp: { [weekKey]: { [rep]: ap } } }
+      let goals = {};            // { _default: { rep: ap }, _defaultDial: { rep: dials }, [weekKey]: { [rep]: { ap:[6], dial:[6] } }, _weeklyAp: { [weekKey]: { [rep]: ap } }, _monthlyAp: { [monthKey]: { [rep]: ap } } }
       let loaded = false;
       let loading = false;
       // Mobile-only: collapse the sticky MTD/WTD/Weekly total columns so the
@@ -11148,10 +11166,11 @@
       const authHdrs = anonHdrs;
 
       async function fetchGoalsFromSupabase() {
-        const [dailyRes, defaultRes, weeklyRes, hiddenRes] = await Promise.all([
+        const [dailyRes, defaultRes, weeklyRes, monthlyRes, hiddenRes] = await Promise.all([
           fetch(SUPABASE_URL + '/rest/v1/wt_daily_goals?select=week_start,sales_rep,day_idx,goal,dial_goal', { headers: authHdrs() }),
           fetch(SUPABASE_URL + '/rest/v1/wt_default_goals?select=sales_rep,goal,dial_goal', { headers: authHdrs() }),
           fetch(SUPABASE_URL + '/rest/v1/wt_weekly_ap_goals?select=week_start,sales_rep,ap_goal', { headers: authHdrs() }),
+          fetch(SUPABASE_URL + '/rest/v1/wt_monthly_ap_goals?select=month_start,sales_rep,ap_goal', { headers: authHdrs() }),
           fetch(SUPABASE_URL + '/rest/v1/wt_hidden_reps?select=sales_rep', { headers: authHdrs() })
         ]);
         if (!dailyRes.ok) throw new Error('Failed to load daily goals (' + dailyRes.status + ')');
@@ -11161,9 +11180,14 @@
         const dailyRows = await dailyRes.json();
         const defaultRows = await defaultRes.json();
         const weeklyRows = await weeklyRes.json();
+        // Monthly goal table is optional — pre-v6 deploys won't have it yet.
+        // Treat a missing/erroring response as "no monthly goals saved" so the
+        // tracker keeps loading instead of crashing.
+        const monthlyRows = monthlyRes.ok ? await monthlyRes.json() : [];
+        if (!monthlyRes.ok) console.warn('[WT] monthly goals load failed (' + monthlyRes.status + ') — run v6 migration');
         const hiddenRows = await hiddenRes.json();
         hiddenReps = new Set(hiddenRows.map(r => r.sales_rep).filter(Boolean));
-        const next = { _default: {}, _defaultDial: {}, _weeklyAp: {} };
+        const next = { _default: {}, _defaultDial: {}, _weeklyAp: {}, _monthlyAp: {} };
         dailyRows.forEach(r => {
           if (!next[r.week_start]) next[r.week_start] = {};
           if (!next[r.week_start][r.sales_rep]) next[r.week_start][r.sales_rep] = { ap: [null,null,null,null,null,null], dial: [null,null,null,null,null,null] };
@@ -11177,6 +11201,10 @@
         weeklyRows.forEach(r => {
           if (!next._weeklyAp[r.week_start]) next._weeklyAp[r.week_start] = {};
           next._weeklyAp[r.week_start][r.sales_rep] = Number(r.ap_goal);
+        });
+        monthlyRows.forEach(r => {
+          if (!next._monthlyAp[r.month_start]) next._monthlyAp[r.month_start] = {};
+          next._monthlyAp[r.month_start][r.sales_rep] = Number(r.ap_goal);
         });
         goals = next;
       }
@@ -11276,6 +11304,41 @@
             await checkSaveResponse(r, 'show rep (' + rep + ')');
           }
         } catch (e) { console.error('[WT] hide/show rep save threw:', e); }
+      }
+
+      // Month key = first day of the week's month, formatted YYYY-MM-DD.
+      // Anchored on the week's Monday so a week that crosses months is bucketed
+      // with its start month — matches the MTD calculation in getMTDAtWeek().
+      function monthKeyForWeek(weekKey) {
+        const d = new Date(weekKey + 'T00:00:00');
+        return ymdLocal(new Date(d.getFullYear(), d.getMonth(), 1));
+      }
+      function getMonthlyApGoal(monthKey, rep) {
+        const m = goals._monthlyAp && goals._monthlyAp[monthKey];
+        return (m && m[rep] != null) ? m[rep] : null;
+      }
+      async function setMonthlyApGoal(monthKey, rep, value) {
+        const num = (value === '' || value == null || isNaN(Number(value))) ? null : Number(value);
+        if (!goals._monthlyAp) goals._monthlyAp = {};
+        if (!goals._monthlyAp[monthKey]) goals._monthlyAp[monthKey] = {};
+        goals._monthlyAp[monthKey][rep] = num;
+        const userEmail = (currentUser && currentUser.email) || null;
+        try {
+          if (num == null) {
+            const r = await fetch(SUPABASE_URL + '/rest/v1/wt_monthly_ap_goals?month_start=eq.' + monthKey + '&sales_rep=eq.' + encodeURIComponent(rep), {
+              method: 'DELETE',
+              headers: authHdrs({ Prefer: 'return=minimal' })
+            });
+            await checkSaveResponse(r, 'monthly AP delete (' + rep + ')');
+          } else {
+            const r = await fetch(SUPABASE_URL + '/rest/v1/wt_monthly_ap_goals?on_conflict=month_start,sales_rep', {
+              method: 'POST',
+              headers: authHdrs({ 'Content-Type': 'application/json', Prefer: 'resolution=merge-duplicates,return=minimal' }),
+              body: JSON.stringify({ month_start: monthKey, sales_rep: rep, ap_goal: num, updated_by: userEmail })
+            });
+            await checkSaveResponse(r, 'monthly AP upsert (' + rep + ')');
+          }
+        } catch (e) { console.error('[WT] monthly AP save threw:', e); }
       }
 
       function getWeeklyApGoal(weekKey, rep) {
@@ -11644,6 +11707,7 @@
         const week = WEEKS.find(w => w.key === weekKey);
         if (!week) return '<div class="wt-loading">Week not found.</div>';
         const isCurrent = weekKey === currentWeekKey();
+        const monthKey = monthKeyForWeek(weekKey);
         const actuals = getWeekActuals(weekKey);
         const dialActuals = getWeekDials(weekKey);
         const mtdSnap = getMTDAtWeek(weekKey);
@@ -11665,7 +11729,8 @@
             return g != null ? g : (dgDial != null ? dgDial : null);
           });
           const weeklyGoal = getWeeklyApGoal(weekKey, rep);
-          return { rep, actuals: a, dialActuals: da, apGoals, dialGoals, wtd, weeklyGoal, mtd: mtdSnap[rep] || 0, ytd: ytdSnap[rep] || 0 };
+          const monthlyGoal = getMonthlyApGoal(monthKey, rep);
+          return { rep, actuals: a, dialActuals: da, apGoals, dialGoals, wtd, weeklyGoal, monthlyGoal, mtd: mtdSnap[rep] || 0, ytd: ytdSnap[rep] || 0 };
         }).sort((a, b) => {
           // Primary rank: MTD descending. Tiebreaker / fallback when nobody has
           // MTD yet (start of month): YTD descending.
@@ -11737,16 +11802,20 @@
               '<td class="wt-day-cell actual ' + apCls.cls + '">' + escHtml(apActualDisplay) + apCls.pct + apCrown + '</td>';
           }
           const weeklyGoalDisplay = (row.weeklyGoal != null) ? '$' + Number(row.weeklyGoal).toLocaleString() : '';
+          const monthlyGoalDisplay = (row.monthlyGoal != null) ? '$' + Number(row.monthlyGoal).toLocaleString() : '';
           const wtdCrown = (row.wtd > 0 && row.wtd === repBest.bestWeek) ? '<span class="wt-crown" title="Best week">👑</span>' : '';
           const mtdCrown = (row.mtd > 0 && row.mtd === repBest.bestMonth) ? '<span class="wt-crown" title="Best month">👑</span>' : '';
           bodyHtml += '<tr>' +
             '<td class="wt-rank-cell">' + rankCell + '</td>' +
             '<td class="wt-name-cell" title="' + escHtml(row.rep) + '">' + escHtml(shortName(row.rep)) + '</td>' +
+            '<td class="wt-day-cell goal wt-monthly-cell">' +
+              '<input type="text" inputmode="decimal" data-wt-monthly-goal-month="' + escHtml(monthKey) + '" data-wt-monthly-goal-rep="' + escHtml(row.rep) + '" value="' + escHtml(monthlyGoalDisplay) + '" placeholder="$0" />' +
+            '</td>' +
             '<td class="wt-mtd-cell">' + escHtml(fmtMoney(row.mtd)) + mtdCrown + '</td>' +
-            '<td class="wt-wtd-cell">' + escHtml(fmtMoney(row.wtd)) + wtdCrown + '</td>' +
             '<td class="wt-day-cell goal wt-weekly-cell">' +
               '<input type="text" inputmode="decimal" data-wt-weekly-goal-week="' + escHtml(weekKey) + '" data-wt-weekly-goal-rep="' + escHtml(row.rep) + '" value="' + escHtml(weeklyGoalDisplay) + '" placeholder="$0" />' +
             '</td>' +
+            '<td class="wt-wtd-cell">' + escHtml(fmtMoney(row.wtd)) + wtdCrown + '</td>' +
             dayCells +
             '<td class="wt-ytd-cell">' + escHtml(fmtMoney(row.ytd)) + '</td>' +
           '</tr>';
@@ -11767,6 +11836,7 @@
         const totalWTD = rows.reduce((s, r) => s + r.wtd, 0);
         const totalMTD = rows.reduce((s, r) => s + r.mtd, 0);
         const totalWeeklyGoal = rows.reduce((s, r) => s + (r.weeklyGoal || 0), 0);
+        const totalMonthlyGoal = rows.reduce((s, r) => s + (r.monthlyGoal || 0), 0);
         const totalYTD = rows.reduce((s, r) => s + r.ytd, 0);
 
         // Header rows: each day spans 4 sub-cols (AP Goal/Actual, Dial Goal/Actual)
@@ -11789,7 +11859,7 @@
                          '<td>' + escHtml(fmtMoney(dt.apActual)) + '</td>';
         });
 
-        const colCount = 5 + (DAYS.length * 4) + 1; // rank,name,mtd,wtd,weeklyGoal + 4*days + ytd
+        const colCount = 6 + (DAYS.length * 4) + 1; // rank,name,monthlyGoal,mtd,weeklyGoal,wtd + 4*days + ytd
 
         const headerHtml =
           '<div class="wt-sheet-header">' +
@@ -11797,7 +11867,7 @@
               '<div class="wt-sheet-title">' + escHtml(week.full) + '</div>' +
               (isCurrent ? '<span class="wt-sheet-pill">● Current Week</span>' : '') +
             '</div>' +
-            '<div class="wt-sheet-sub">Reps ranked by Month-to-Date · AP actuals pull from submitted policies · dial actuals pull from daily KPIs · Rank/Name/MTD/WTD/Weekly pinned while you scroll horizontally</div>' +
+            '<div class="wt-sheet-sub">Reps ranked by Month-to-Date · AP actuals pull from submitted policies · dial actuals pull from daily KPIs · Rank/Name/MTD Goal/MTD/WTD Goal/WTD pinned while you scroll horizontally</div>' +
           '</div>' +
           '<div class="wt-summary-strip" style="grid-template-columns: repeat(3, 1fr);">' +
             '<div class="wt-summary-card"><div class="wt-lbl">Team WTD</div><div class="wt-val">' + escHtml(fmtMoney(totalWTD)) + '</div><div class="wt-delta">of ' + escHtml(fmtMoneyShort(totalWeeklyGoal)) + ' weekly goal</div></div>' +
@@ -11812,9 +11882,10 @@
                 '<tr class="wt-day-row">' +
                   '<th class="wt-rank-h" rowspan="2">#</th>' +
                   '<th class="wt-name-h" rowspan="2">Sales Rep</th>' +
+                  '<th class="wt-monthly-h" rowspan="2">MTD Goal</th>' +
                   '<th class="wt-mtd-h" rowspan="2">MTD Total</th>' +
+                  '<th class="wt-weekly-h" rowspan="2">WTD Goal</th>' +
                   '<th class="wt-wtd-h" rowspan="2">WTD Total</th>' +
-                  '<th class="wt-weekly-h" rowspan="2">Weekly Goal</th>' +
                   dayHeaderHtml +
                   '<th class="wt-ytd-h" rowspan="2">YTD Total</th>' +
                 '</tr>' +
@@ -11824,9 +11895,10 @@
               (rows.length ? ('<tfoot><tr>' +
                 '<td class="wt-foot-rank"></td>' +
                 '<td class="wt-foot-name">Team Totals</td>' +
+                '<td class="wt-foot-monthly">' + escHtml(fmtMoney(totalMonthlyGoal)) + '</td>' +
                 '<td class="wt-foot-mtd">' + escHtml(fmtMoney(totalMTD)) + '</td>' +
-                '<td class="wt-foot-wtd">' + escHtml(fmtMoney(totalWTD)) + '</td>' +
                 '<td class="wt-foot-weekly">' + escHtml(fmtMoney(totalWeeklyGoal)) + '</td>' +
+                '<td class="wt-foot-wtd">' + escHtml(fmtMoney(totalWTD)) + '</td>' +
                 footDayHtml +
                 '<td class="wt-ytd-foot">' + escHtml(fmtMoney(totalYTD)) + '</td>' +
               '</tr></tfoot>') : '') +
@@ -11979,6 +12051,20 @@
             const cleaned = sanitize(e.target.value);
             const num = cleaned === '' ? null : Number(cleaned);
             setWeeklyApGoal(wk, rep, num);
+            render();
+          });
+          inp.addEventListener('keydown', e => { if (e.key === 'Enter') e.target.blur(); });
+        });
+        // Monthly AP goal inputs (one row per rep per month — every weekly
+        // sheet inside the same month reads/writes the same Supabase row).
+        root.querySelectorAll('[data-wt-monthly-goal-month]').forEach(inp => {
+          inp.addEventListener('focus', e => { e.target.value = sanitize(e.target.value || ''); e.target.select(); });
+          inp.addEventListener('blur', e => {
+            const mk = inp.getAttribute('data-wt-monthly-goal-month');
+            const rep = inp.getAttribute('data-wt-monthly-goal-rep');
+            const cleaned = sanitize(e.target.value);
+            const num = cleaned === '' ? null : Number(cleaned);
+            setMonthlyApGoal(mk, rep, num);
             render();
           });
           inp.addEventListener('keydown', e => { if (e.key === 'Enter') e.target.blur(); });
