@@ -102,6 +102,7 @@
       flex-direction: column;
       align-items: center;
       padding: 0 8px 8px;
+      transition: width 180ms ease;
       gap: 0;
       z-index: 1000;
       overflow-y: auto;
@@ -282,6 +283,64 @@
     }
     .ss-sidebar-settings:hover { background: #f0f0f5; color: #1a1a1a; }
     .ss-sidebar-settings svg { width: 18px; height: 18px; }
+
+    /* Collapse button — desktop-only chevron at the top-right of the sidebar
+       header. Tap to shrink the sidebar to icons-only; tap again to expand. */
+    .ss-sidebar-collapse {
+      position: absolute;
+      right: 0.4rem;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 26px;
+      height: 26px;
+      display: grid; place-items: center;
+      cursor: pointer;
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 6px;
+      color: #888;
+      transition: all 0.15s ease;
+      z-index: 11;
+    }
+    .ss-sidebar-collapse:hover {
+      color: #1a1a1a;
+      background: #f0f0f5;
+      border-color: #e5e5ea;
+    }
+    .ss-sidebar.collapsed .ss-sidebar-collapse .ss-collapse-icon {
+      transform: rotate(180deg);
+    }
+
+    /* Collapsed sidebar state — icons-only rail. Applies on desktop only;
+       on mobile the sidebar is already a top bar and uses a different layout. */
+    .ss-sidebar.collapsed { width: 64px; padding: 0 6px 8px; }
+    .ss-sidebar.collapsed .ss-sidebar-logo { padding: 1.4rem 0 1.2rem; }
+    .ss-sidebar.collapsed .ss-sidebar-logo .logo-sales,
+    .ss-sidebar.collapsed .ss-sidebar-logo .logo-hub {
+      font-size: 11px; letter-spacing: 0.16em;
+    }
+    .ss-sidebar.collapsed .ss-sidebar-collapse { right: 50%; transform: translate(50%, -50%); top: auto; bottom: -32px; position: relative; }
+    .ss-sidebar.collapsed .ss-sidebar-header { flex-direction: column; gap: 8px; padding-bottom: 6px; }
+    .ss-sidebar.collapsed .ss-sidebar-user { padding: 6px; justify-content: center; }
+    .ss-sidebar.collapsed .ss-sidebar-user-name { display: none; }
+    .ss-sidebar.collapsed .ss-sidebar-btn { justify-content: center; padding: 9px 0; gap: 0; }
+    .ss-sidebar.collapsed .ss-sidebar-btn span { display: none; }
+    .ss-sidebar.collapsed .ss-sidebar-btn svg { margin: 0; }
+    .ss-sidebar.collapsed .ss-nav-links { padding: 4px 0; }
+    .ss-sidebar.collapsed .ss-nav-links a { justify-content: center; padding: 9px 0; gap: 0; }
+    .ss-sidebar.collapsed .ss-nav-links a > *:not(svg) { display: none; }
+    /* When the sidebar is collapsed, .ss-main shifts left to claim the
+       freed-up space. Selector targets `body:has(...)` so the main content
+       reacts without needing JS to toggle a class on it. */
+    body:has(.ss-sidebar.collapsed) .ss-main {
+      width: calc(100vw - 64px);
+      margin-left: 64px;
+    }
+    /* Team Dashboard recalculates its negative margins to match the new
+       sidebar width — keeps the dark area edge-to-edge. */
+    body:has(.ss-sidebar.collapsed) #panel-teamperf.active {
+      margin: -1.5rem -2rem -4rem;
+    }
 
     /* Dial Tracker — vertical stack */
     .dt-grid {
@@ -5063,6 +5122,15 @@
       }
       .ss-sidebar-header { position: relative; }
       .ss-sidebar-hamburger { display: flex; }
+      /* Collapse only makes sense on desktop — on mobile the sidebar is a
+         top bar that's already compact via the hamburger. */
+      .ss-sidebar-collapse { display: none; }
+      .ss-sidebar.collapsed { width: 100%; padding: 0.5rem 0 0; }
+      .ss-sidebar.collapsed .ss-sidebar-logo { padding: 0.75rem 0 0.7rem; }
+      .ss-sidebar.collapsed .ss-sidebar-logo .logo-sales,
+      .ss-sidebar.collapsed .ss-sidebar-logo .logo-hub { font-size: 1.3rem; letter-spacing: 0.22em; }
+      body:has(.ss-sidebar.collapsed) .ss-main { width: 100% !important; margin-left: 0 !important; }
+      body:has(.ss-sidebar.collapsed) #panel-teamperf.active { margin: -0.75rem -0.75rem -3rem; }
       .ss-nav-links { display: none; }
 
       /* Single unified dropdown menu — replaces horizontal pill bar
@@ -5373,6 +5441,11 @@
         <span class="logo-sales">SALES</span>
         <span class="logo-hub">HUB</span>
       </div>
+      <button class="ss-sidebar-collapse" id="ssCollapseBtn" type="button" aria-label="Collapse sidebar" title="Collapse sidebar">
+        <svg class="ss-collapse-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+      </button>
       <button class="ss-sidebar-hamburger" id="ssHamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
     </div>
     <div class="ss-sidebar-user" id="sidebarUser">
@@ -8326,6 +8399,27 @@
           ssMobileMenu.classList.remove('open');
           ssSidebarEl?.classList.remove('mobile-open');
         });
+      });
+    }
+
+    // ─── SIDEBAR COLLAPSE (desktop) ───
+    // Persists to localStorage so the choice survives reloads. Restored on
+    // page load below. Mobile keeps its own layout — see the @media block.
+    const ssCollapseBtn = document.getElementById('ssCollapseBtn');
+    const SIDEBAR_COLLAPSED_KEY = 'ss_sidebar_collapsed_v1';
+    (function () {
+      try {
+        if (localStorage.getItem(SIDEBAR_COLLAPSED_KEY) === '1') {
+          ssSidebarEl?.classList.add('collapsed');
+        }
+      } catch (e) {}
+    })();
+    if (ssCollapseBtn && ssSidebarEl) {
+      ssCollapseBtn.addEventListener('click', () => {
+        const collapsed = ssSidebarEl.classList.toggle('collapsed');
+        try { localStorage.setItem(SIDEBAR_COLLAPSED_KEY, collapsed ? '1' : '0'); } catch (e) {}
+        ssCollapseBtn.setAttribute('aria-label', collapsed ? 'Expand sidebar' : 'Collapse sidebar');
+        ssCollapseBtn.setAttribute('title', collapsed ? 'Expand sidebar' : 'Collapse sidebar');
       });
     }
 
