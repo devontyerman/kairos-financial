@@ -2328,6 +2328,9 @@
         radial-gradient(900px 500px at -10% 110%, color-mix(in oklch, var(--rb-purple) 7%, transparent), transparent 60%);
     }
     #lbLeaderboardRoot { color: var(--lb-ink-1); font-family: var(--lb-sans); }
+    /* Cap content width on ultrawide monitors — dark canvas still fills the
+       entire .ss-main area, only the inner content is centered. */
+    #lbLeaderboardRoot > div { max-width: 1480px; margin-left: auto; margin-right: auto; }
 
     /* Header */
     #panel-leaderboard .lb-hdr {
