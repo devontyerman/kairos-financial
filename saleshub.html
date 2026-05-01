@@ -1631,6 +1631,224 @@
       #panel-weeklytracker .wt-setup-footer { padding: 12px 14px; font-size: 12px; }
     }
 
+    /* ─── Team Performance panel (admin-only — moved from admin-sales.html) ─── */
+    #panel-teamperf .tp-admin-page { padding: 0.5rem 0 4rem; max-width: 1700px; margin: 0 auto; }
+    #panel-teamperf .tp-admin-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem; }
+    #panel-teamperf .tp-admin-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.4rem; font-weight: 900; color: #1a1a1a; }
+    #panel-teamperf .tp-admin-subtitle { font-size: 0.8rem; color: #888; }
+    #panel-teamperf .tp-admin-stats { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+    #panel-teamperf .tp-admin-stat { background: #fff; border: 1px solid #e5e5ea; border-radius: 10px; padding: 1rem 1.25rem; min-width: 140px; }
+    #panel-teamperf .tp-admin-stat-value { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.3rem; font-weight: 900; color: #3b82f6; }
+    #panel-teamperf .tp-admin-stat-label { font-size: 0.7rem; color: #666; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; margin-top: 0.2rem; }
+    #panel-teamperf .tp-admin-filters { display: flex; gap: 0.75rem; margin-bottom: 1.5rem; flex-wrap: wrap; align-items: center; }
+    #panel-teamperf .tp-admin-filter-group { display: flex; gap: 0.3rem; flex-wrap: wrap; }
+    #panel-teamperf .tp-admin-filter-label { font-size: 0.7rem; font-weight: 700; color: #999; text-transform: uppercase; letter-spacing: 0.06em; margin-right: 0.3rem; align-self: center; }
+    #panel-teamperf .tp-af { padding: 0.4rem 0.9rem; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.72rem; font-weight: 600; color: #888; background: #f8f8fa; border: 1px solid #e0e0e5; border-radius: 100px; cursor: pointer; transition: all 0.2s ease; }
+    #panel-teamperf .tp-af:hover { border-color: rgba(56,120,255,0.3); color: #1a1a1a; }
+    #panel-teamperf .tp-af.active { background: #2d2d35; color: #fff; border-color: #2d2d35; }
+    #panel-teamperf .tp-admin-rep-select { padding: 0.4rem 0.8rem; font-size: 0.78rem; font-family: 'Inter', sans-serif; color: #1a1a1a; background: #f5f5f8; border: 1px solid #ddd; border-radius: 8px; appearance: none; background-image: url("data:image/svg+xml,%3Csvg width='12' height='12' viewBox='0 0 12 12' fill='none' stroke='%23666' stroke-width='2' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolyline points='2 4 6 8 10 4'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 0.6rem center; padding-right: 2rem; }
+    #panel-teamperf .tp-admin-rep-select option { background: #fff; }
+    #panel-teamperf .tp-admin-add-btn { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.5rem 1rem; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.78rem; font-weight: 700; color: #fff; background: #2d2d35; border: none; border-radius: 8px; cursor: pointer; transition: all 0.2s ease; }
+    #panel-teamperf .tp-admin-add-btn:hover { box-shadow: 0 4px 12px rgba(37,99,235,0.3); }
+    #panel-teamperf .tp-admin-table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid #e5e5ea; background: #fafafa; }
+    #panel-teamperf .tp-admin-table { width: 100%; border-collapse: collapse; min-width: 1450px; }
+    #panel-teamperf .tp-admin-table thead th { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.65rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #999; padding: 0.65rem 0.75rem; text-align: left; border-bottom: 1px solid #e5e5ea; background: #fff; white-space: nowrap; cursor: pointer; user-select: none; transition: color 0.2s; }
+    #panel-teamperf .tp-admin-table thead th:hover { color: #3b82f6; }
+    #panel-teamperf .tp-admin-table thead th.sorted { color: #3b82f6; }
+    #panel-teamperf .tp-admin-table tbody tr { transition: background 0.15s; }
+    #panel-teamperf .tp-admin-table tbody tr:hover { background: #f8f8fa; }
+    #panel-teamperf .tp-admin-table tbody tr:nth-child(even) { background: #fafafa; }
+    #panel-teamperf .tp-admin-table tbody tr:nth-child(even):hover { background: #f8f8fa; }
+    #panel-teamperf .tp-admin-table tbody td { padding: 0.55rem 0.75rem; font-size: 0.78rem; border-bottom: 1px solid #ececf0; color: #555; white-space: nowrap; }
+    #panel-teamperf .tp-admin-table .td-ap { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; color: #3b82f6; }
+    #panel-teamperf .tp-admin-table .td-rep { font-weight: 600; color: #1a1a1a; }
+    #panel-teamperf .tp-admin-table .td-date { color: #999; font-size: 0.72rem; }
+    #panel-teamperf .tp-status { display: inline-block; padding: 0.15rem 0.55rem; font-size: 0.65rem; font-weight: 700; border-radius: 100px; text-transform: uppercase; letter-spacing: 0.04em; }
+    #panel-teamperf .tp-status.underwriting { background: rgba(249,115,22,0.12); color: #c2410c; border: 1px solid rgba(249,115,22,0.22); }
+    #panel-teamperf .tp-status.approved { background: rgba(56,120,255,0.12); color: #2563eb; border: 1px solid rgba(56,120,255,0.2); }
+    #panel-teamperf .tp-status.issue-paid { background: rgba(34,197,94,0.12); color: #16a34a; border: 1px solid rgba(34,197,94,0.2); }
+    #panel-teamperf .tp-admin-actions { display: flex; align-items: center; gap: 0.4rem; white-space: nowrap; }
+    #panel-teamperf .tp-action-btn { padding: 0.35rem 0.85rem; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.7rem; font-weight: 800; border-radius: 6px; border: none; cursor: pointer; transition: all 0.2s ease; letter-spacing: 0.03em; }
+    #panel-teamperf .tp-action-approve { background: #2563eb; color: #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+    #panel-teamperf .tp-action-approve:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.15); transform: translateY(-1px); }
+    #panel-teamperf .tp-action-paid { background: #16a34a; color: #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+    #panel-teamperf .tp-action-paid:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.15); transform: translateY(-1px); }
+    #panel-teamperf .tp-more-wrap { position: relative; display: inline-block; }
+    #panel-teamperf .tp-more-btn { width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; font-weight: 900; color: #777; background: #f8f8fa; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; transition: all 0.2s ease; letter-spacing: 2px; }
+    #panel-teamperf .tp-more-btn:hover { color: #1a1a1a; border-color: #999; background: #ececf0; }
+    #panel-teamperf .tp-more-menu { display: none; position: absolute; right: 0; top: 100%; margin-top: 0.35rem; min-width: 140px; background: #fff; border: 1px solid #ddd; border-radius: 10px; padding: 0.35rem; box-shadow: 0 4px 16px rgba(0,0,0,0.1); z-index: 50; }
+    #panel-teamperf .tp-more-menu.open { display: flex; flex-direction: column; gap: 0.2rem; }
+    #panel-teamperf .tp-btn-edit, #panel-teamperf .tp-btn-del { padding: 0.5rem 0.75rem; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.75rem; font-weight: 600; border-radius: 6px; border: none; cursor: pointer; transition: all 0.15s ease; text-align: left; width: 100%; }
+    #panel-teamperf .tp-btn-edit { background: transparent; color: #333; }
+    #panel-teamperf .tp-btn-edit:hover { background: #f0f0f5; color: #1a1a1a; }
+    #panel-teamperf .tp-btn-del { background: transparent; color: #dc2626; }
+    #panel-teamperf .tp-btn-del:hover { background: #fef0f0; color: #fca5a5; }
+    #panel-teamperf .tp-admin-empty { text-align: center; padding: 4rem 1rem; color: #999; font-size: 0.88rem; }
+    #panel-teamperf .tp-admin-loading { text-align: center; padding: 3rem; color: #999; }
+
+    /* Tabs */
+    #panel-teamperf .tp-admin-tabs { display: flex; gap: 0.5rem; margin-bottom: 2rem; border-bottom: 1px solid #e5e5ea; padding-bottom: 0.75rem; }
+    #panel-teamperf .tp-admin-tab { padding: 0.6rem 1.4rem; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.85rem; font-weight: 700; color: #888; background: none; border: 1px solid transparent; border-radius: 100px; cursor: pointer; transition: all 0.2s; }
+    #panel-teamperf .tp-admin-tab:hover { color: #1a1a1a; }
+    #panel-teamperf .tp-admin-tab.active { color: #fff; background: #2d2d35; border-color: #3b82f6; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+    #panel-teamperf .tp-admin-panel { display: none; }
+    #panel-teamperf .tp-admin-panel.active { display: block; animation: tpPop 0.3s ease; }
+    @keyframes tpPop { from { opacity: 0; transform: scale(0.9) translateY(20px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+
+    /* Performance dashboard */
+    #panel-teamperf #tpatab-performance { max-width: 1400px; margin: 0 auto; }
+    #panel-teamperf .tp-perf-header { display: flex; flex-direction: column; gap: 1rem; margin-bottom: 1.75rem; }
+    #panel-teamperf .tp-perf-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.5rem; font-weight: 900; color: #1a1a1a; }
+    #panel-teamperf .tp-perf-header-controls { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; padding: 0.85rem 1rem; background: #fff; border: 1px solid #e5e5ea; border-radius: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
+    #panel-teamperf .tp-perf-header-controls .tp-perf-divider { width: 1px; height: 24px; background: #e5e5ea; margin: 0 0.25rem; }
+    #panel-teamperf .tp-perf-header-controls .tp-perf-checks { display: flex; gap: 0.85rem; margin-left: auto; }
+    #panel-teamperf .tp-perf-range-toggle { display: inline-flex; padding: 0.25rem; background: #f8f8fa; border: 1px solid #e0e0e5; border-radius: 100px; gap: 0.15rem; }
+    #panel-teamperf .tp-perf-range-btn { padding: 0.45rem 1rem; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.06em; color: #555; background: transparent; border: none; border-radius: 100px; cursor: pointer; transition: all 0.2s ease; }
+    #panel-teamperf .tp-perf-range-btn:hover { color: #1a1a1a; background: #f5f5f8; }
+    #panel-teamperf .tp-perf-range-btn.active { background: #2d2d35; color: #fff; box-shadow: 0 4px 14px rgba(0,0,0,0.15); }
+    #panel-teamperf .tp-perf-rep-select { padding: 0.45rem 2rem 0.45rem 0.8rem; font-size: 0.8rem; font-family: 'Inter', sans-serif; color: #1a1a1a; background: #f5f5f8; border: 1px solid #ddd; border-radius: 8px; appearance: none; background-image: url("data:image/svg+xml,%3Csvg width='12' height='12' viewBox='0 0 12 12' fill='none' stroke='%23666' stroke-width='2' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolyline points='2 4 6 8 10 4'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 0.6rem center; }
+    #panel-teamperf .tp-perf-rep-select option { background: #fff; }
+    #panel-teamperf .tp-perf-kpis { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 0.85rem; margin-bottom: 1.5rem; }
+    #panel-teamperf .tp-perf-kpi { background: #fff; border: 1px solid #e5e5ea; border-radius: 12px; padding: 1.25rem; position: relative; overflow: hidden; }
+    #panel-teamperf .tp-perf-kpi::before { content: ''; position: absolute; inset: 0 auto 0 0; width: 3px; background: linear-gradient(180deg, #3b82f6, #2563eb); opacity: 0.75; }
+    #panel-teamperf .tp-perf-kpi.up::before { background: linear-gradient(180deg, #4ade80, #16a34a); }
+    #panel-teamperf .tp-perf-kpi.down::before { background: linear-gradient(180deg, #f87171, #dc2626); }
+    #panel-teamperf .tp-perf-kpi.neutral::before { background: linear-gradient(180deg, #fbbf24, #d97706); }
+    #panel-teamperf .tp-perf-kpi-label { font-size: 0.68rem; font-weight: 700; color: #555; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.4rem; }
+    #panel-teamperf .tp-perf-kpi-value { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.5rem; font-weight: 900; color: #1a1a1a; }
+    #panel-teamperf .tp-perf-kpi.up .tp-perf-kpi-value { color: #16a34a; }
+    #panel-teamperf .tp-perf-kpi.down .tp-perf-kpi-value { color: #dc2626; }
+    #panel-teamperf .tp-perf-kpi.neutral .tp-perf-kpi-value { color: #fbbf24; }
+    #panel-teamperf .tp-perf-kpi-change { font-size: 0.72rem; font-weight: 700; margin-top: 0.25rem; }
+    #panel-teamperf .tp-perf-kpi-change.up { color: #16a34a; }
+    #panel-teamperf .tp-perf-kpi-change.down { color: #dc2626; }
+    #panel-teamperf .tp-perf-kpi-change.neutral { color: #777; }
+    #panel-teamperf .tp-perf-svg-chart { width: 100%; height: auto; display: block; }
+    #panel-teamperf .tp-perf-chart-summary { display: flex; align-items: baseline; gap: 0.5rem; margin-top: 1rem; padding: 0.75rem 1rem; border-radius: 8px; background: #fff; border: 1px solid #e5e5ea; }
+    #panel-teamperf .tp-perf-chart-summary.up { background: rgba(34,197,94,0.08); border-color: rgba(34,197,94,0.25); }
+    #panel-teamperf .tp-perf-chart-summary.down { background: rgba(239,68,68,0.08); border-color: rgba(239,68,68,0.25); }
+    #panel-teamperf .tp-perf-chart-summary-label { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: #666; }
+    #panel-teamperf .tp-perf-chart-summary-value { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.05rem; font-weight: 900; color: #1a1a1a; margin-left: auto; }
+    #panel-teamperf .tp-perf-chart-summary.up .tp-perf-chart-summary-value { color: #16a34a; }
+    #panel-teamperf .tp-perf-chart-summary.down .tp-perf-chart-summary-value { color: #dc2626; }
+    #panel-teamperf .tp-perf-charts { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
+    #panel-teamperf .tp-perf-chart-card { background: #fff; border: 1px solid #e5e5ea; border-radius: 12px; padding: 1.5rem; min-width: 0; }
+    #panel-teamperf #tpPerfExtraCharts { display: block; margin: 0 auto 1.5rem; }
+    #panel-teamperf #tpPerfExtraCharts .tp-perf-chart-card { max-width: 680px; margin: 0 auto; padding: 1.25rem 1.5rem; }
+    #panel-teamperf #tpPerfExtraCharts .tp-perf-svg-chart { max-height: 240px; }
+    #panel-teamperf .tp-perf-chart-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.85rem; font-weight: 800; color: #1a1a1a; margin-bottom: 1rem; }
+    #panel-teamperf .tp-perf-bars { display: flex; flex-direction: column; gap: 0.5rem; }
+    #panel-teamperf .tp-perf-bar-row { display: flex; align-items: center; gap: 0.6rem; }
+    #panel-teamperf .tp-perf-bar-label { font-size: 0.72rem; color: #333; width: 65px; flex-shrink: 0; text-align: right; font-weight: 600; }
+    #panel-teamperf .tp-perf-bar-amount { font-size: 0.72rem; font-weight: 800; color: #1a1a1a; width: 78px; flex-shrink: 0; text-align: right; font-family: 'Plus Jakarta Sans', sans-serif; }
+    #panel-teamperf .tp-perf-bar-track { flex: 1; height: 24px; background: #f8f8fa; border-radius: 6px; overflow: hidden; position: relative; }
+    #panel-teamperf .tp-perf-bar-fill { height: 100%; border-radius: 6px; transition: width 0.6s ease; min-width: 0; }
+    #panel-teamperf .tp-perf-bar-fill.blue { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
+    #panel-teamperf .tp-perf-bar-fill.green { background: linear-gradient(90deg, #16a34a, #4ade80); }
+    #panel-teamperf .tp-perf-bar-fill.gold { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+    #panel-teamperf .tp-perf-bar-fill.team { background: linear-gradient(90deg, #14b8a6, #2dd4bf); }
+    #panel-teamperf .tp-perf-bar-fill.purple { background: linear-gradient(90deg, #8b5cf6, #a78bfa); }
+    #panel-teamperf .tp-perf-bar-fill.pink { background: linear-gradient(90deg, #ec4899, #f472b6); }
+    #panel-teamperf .tp-perf-bar-row.tp-perf-bar-team { padding-bottom: 0.5rem; margin-bottom: 0.4rem; border-bottom: 1px solid #e0e0e5; }
+    #panel-teamperf .tp-perf-bar-row.tp-perf-bar-team .tp-perf-bar-track { height: 30px; }
+    #panel-teamperf .tp-perf-status-section { background: #fff; border: 1px solid #e5e5ea; border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem; }
+    #panel-teamperf .tp-perf-status-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.85rem; font-weight: 800; color: #1a1a1a; margin-bottom: 1rem; }
+    #panel-teamperf .tp-perf-status-bars { display: flex; gap: 1.5rem; flex-wrap: wrap; }
+    #panel-teamperf .tp-perf-status-item { flex: 1; min-width: 120px; }
+    #panel-teamperf .tp-perf-status-item-label { font-size: 0.72rem; color: #333; margin-bottom: 0.3rem; display: flex; justify-content: space-between; font-weight: 600; }
+    #panel-teamperf .tp-perf-status-item-bar { height: 8px; background: #f0f0f3; border-radius: 4px; overflow: hidden; }
+    #panel-teamperf .tp-perf-status-item-fill { height: 100%; border-radius: 4px; transition: width 0.5s ease; }
+    #panel-teamperf .tp-perf-status-item-fill.uw { background: #f97316; }
+    #panel-teamperf .tp-perf-status-item-fill.app { background: #3b82f6; }
+    #panel-teamperf .tp-perf-status-item-fill.paid { background: #22c55e; }
+    #panel-teamperf .tp-perf-goals-card { background: #fff; border: 1px solid #e5e5ea; border-radius: 12px; padding: 1.5rem; margin-top: 2rem; }
+    #panel-teamperf .tp-perf-goals-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.85rem; font-weight: 800; color: #1a1a1a; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
+    #panel-teamperf .tp-perf-goals-grid { display: flex; flex-direction: column; gap: 0.65rem; }
+    #panel-teamperf .tp-perf-goal-row { display: flex; align-items: center; gap: 0.85rem; padding: 0.75rem 1rem; background: #fafafa; border: 1px solid #e5e5ea; border-radius: 10px; transition: background 0.15s; }
+    #panel-teamperf .tp-perf-goal-row:hover { background: #f5f5f8; }
+    #panel-teamperf .tp-perf-goal-name { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.88rem; font-weight: 700; color: #1a1a1a; width: 120px; flex-shrink: 0; }
+    #panel-teamperf .tp-perf-goal-bar-wrap { flex: 1; }
+    #panel-teamperf .tp-perf-goal-bar-labels { display: flex; justify-content: space-between; margin-bottom: 0.25rem; font-size: 0.68rem; font-weight: 600; color: #666; }
+    #panel-teamperf .tp-perf-goal-bar-labels .current { color: #2563eb; font-weight: 700; }
+    #panel-teamperf .tp-perf-goal-bar { height: 14px; background: #f0f0f3; border-radius: 7px; overflow: hidden; position: relative; }
+    #panel-teamperf .tp-perf-goal-fill { height: 100%; border-radius: 7px; transition: width 0.6s ease; background: #2563eb; }
+    #panel-teamperf .tp-perf-goal-fill.ahead { background: linear-gradient(90deg, #16a34a, #22c55e); }
+    #panel-teamperf .tp-perf-goal-fill.behind { background: linear-gradient(90deg, #dc2626, #ef4444); }
+    #panel-teamperf .tp-perf-goal-status { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.72rem; font-weight: 700; width: 90px; text-align: right; flex-shrink: 0; }
+    #panel-teamperf .tp-perf-goal-status.ahead { color: #16a34a; }
+    #panel-teamperf .tp-perf-goal-status.behind { color: #dc2626; }
+    #panel-teamperf .tp-perf-goal-status.no-goal { color: #888; }
+
+    /* Edit / Add modals (Team Performance) */
+    .tp-ae-overlay { display: none; position: fixed; inset: 0; z-index: 9998; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); align-items: center; justify-content: center; }
+    .tp-ae-overlay.open { display: flex; }
+    .tp-ae-modal { background: #fff; border: 1px solid rgba(56,120,255,0.15); border-radius: 16px; padding: 2rem; max-width: 520px; width: 92%; animation: tpPop 0.3s ease; }
+    .tp-ae-modal h3 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.1rem; font-weight: 800; color: #1a1a1a; margin-bottom: 1.25rem; }
+    .tp-ae-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+    .tp-ae-field label { display: block; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.68rem; font-weight: 700; color: #888; margin-bottom: 0.2rem; text-transform: uppercase; letter-spacing: 0.06em; }
+    .tp-ae-field input, .tp-ae-field select { width: 100%; padding: 0.5rem 0.7rem; font-size: 0.82rem; color: #1a1a1a; background: #f0f0f3; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
+    .tp-ae-field input:focus, .tp-ae-field select:focus { outline: none; border-color: #3b82f6; }
+    .tp-ae-field select option { background: #fff; }
+    .tp-ae-btns { display: flex; gap: 0.75rem; margin-top: 1.25rem; grid-column: 1 / -1; }
+    .tp-ae-btns button { flex: 1; padding: 0.6rem; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.85rem; font-weight: 700; border-radius: 8px; border: none; cursor: pointer; }
+    .tp-ae-cancel { background: #f0f0f3; color: #777; }
+    .tp-ae-save { background: #2d2d35; color: #fff; }
+
+    /* Team Performance — mobile (≤768px) */
+    @media (max-width: 768px) {
+      #panel-teamperf .tp-admin-header { gap: 0.6rem; }
+      #panel-teamperf .tp-ae-grid { grid-template-columns: 1fr; }
+      #panel-teamperf .tp-admin-tabs { gap: 0.35rem; overflow-x: auto; flex-wrap: nowrap; -webkit-overflow-scrolling: touch; scrollbar-width: none; padding-bottom: 0.5rem; }
+      #panel-teamperf .tp-admin-tabs::-webkit-scrollbar { display: none; }
+      #panel-teamperf .tp-admin-tabs button, #panel-teamperf .tp-admin-tabs .tp-admin-tab { flex-shrink: 0; white-space: nowrap; }
+      #panel-teamperf .tp-admin-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+      #panel-teamperf .tp-admin-stat { min-width: 0; padding: 0.75rem 0.9rem; }
+      #panel-teamperf .tp-admin-filters { gap: 0.4rem; }
+      #panel-teamperf .tp-admin-filters .tp-af { font-size: 0.66rem; padding: 0.35rem 0.7rem; }
+      #panel-teamperf .tp-admin-filters input, #panel-teamperf .tp-admin-filters select { font-size: 0.78rem; padding: 0.45rem 0.65rem; }
+      #panel-teamperf .tp-admin-table-wrap { overflow-x: visible !important; border: none; background: transparent; border-radius: 0; }
+      #panel-teamperf .tp-admin-table { min-width: 0 !important; }
+      #panel-teamperf .tp-admin-table,
+      #panel-teamperf .tp-admin-table thead,
+      #panel-teamperf .tp-admin-table tbody,
+      #panel-teamperf .tp-admin-table tr,
+      #panel-teamperf .tp-admin-table th,
+      #panel-teamperf .tp-admin-table td { display: block; width: 100%; }
+      #panel-teamperf .tp-admin-table thead { display: none; }
+      #panel-teamperf .tp-admin-table tbody tr { margin-bottom: 0.75rem; padding: 0.85rem 0.95rem; background: #fafafa !important; border: 1px solid #e0e0e5; border-radius: 12px; }
+      #panel-teamperf .tp-admin-table tbody tr:hover { background: rgba(56,120,255,0.08) !important; }
+      #panel-teamperf .tp-admin-table tbody td { padding: 0.25rem 0; border-bottom: none; font-size: 0.82rem; display: flex; justify-content: space-between; align-items: baseline; gap: 0.75rem; white-space: normal; }
+      #panel-teamperf .tp-admin-table tbody td::before { content: attr(data-label); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.62rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: #666; flex-shrink: 0; }
+      #panel-teamperf .tp-admin-table tbody td.td-rep { padding-bottom: 0.55rem; margin-bottom: 0.5rem; border-bottom: 1px solid #e0e0e5; font-size: 1rem; display: block; text-align: left; }
+      #panel-teamperf .tp-admin-table tbody td.td-rep::before { display: none; }
+      #panel-teamperf .tp-admin-table tbody td.tp-admin-actions { margin-top: 0.6rem; padding-top: 0.6rem; border-top: 1px solid #e0e0e5; display: flex; flex-wrap: nowrap; justify-content: flex-end; align-items: center; gap: 0.4rem; }
+      #panel-teamperf .tp-admin-table tbody td.tp-admin-actions::before { display: none; }
+      #panel-teamperf .tp-action-btn { font-size: 0.65rem; padding: 0.3rem 0.7rem; }
+      #panel-teamperf .tp-more-btn { width: 28px; height: 28px; }
+      #panel-teamperf .tp-perf-header { gap: 0.6rem; }
+      #panel-teamperf .tp-perf-header-controls { width: 100%; justify-content: space-between; }
+      #panel-teamperf .tp-perf-charts { grid-template-columns: 1fr; }
+      #panel-teamperf .tp-perf-kpis { grid-template-columns: 1fr 1fr; }
+      #panel-teamperf .tp-perf-kpi { padding: 0.95rem 1rem; }
+      #panel-teamperf .tp-perf-kpi-value { font-size: 1.25rem; }
+      #panel-teamperf .tp-perf-chart-card { padding: 1.1rem 0.95rem; }
+      #panel-teamperf .tp-perf-svg-chart { min-height: 200px; }
+      #panel-teamperf .tp-perf-bar-label { width: 52px !important; font-size: 0.68rem; }
+      #panel-teamperf .tp-perf-status-bars { flex-direction: column; gap: 0.85rem; }
+      #panel-teamperf .tp-perf-goal-row { flex-wrap: wrap; gap: 0.5rem; }
+      #panel-teamperf .tp-perf-goal-name { width: 100%; }
+      #panel-teamperf .tp-perf-goal-status { width: auto; text-align: left; }
+      .tp-ae-modal { padding: 1.5rem 1.2rem; max-height: 90vh; overflow-y: auto; }
+      .tp-ae-overlay { padding: 0.75rem; }
+    }
+    @media (max-width: 520px) {
+      #panel-teamperf .tp-admin-stats { grid-template-columns: 1fr 1fr; }
+      #panel-teamperf .tp-admin-stat-value { font-size: 1.1rem; }
+      #panel-teamperf .tp-perf-kpis { grid-template-columns: 1fr; }
+      #panel-teamperf .tp-perf-range-btn { padding: 0.4rem 0.85rem; font-size: 0.68rem; }
+      #panel-teamperf .tp-perf-rep-select { width: 100%; }
+    }
+
     @media print {
       @page { size: letter; margin: 0.35in; }
       html, body { background: #fff !important; height: auto !important; overflow: visible !important; }
@@ -4458,6 +4676,10 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
       <span>Weekly Tracker</span>
     </button>
+    <button class="ss-sidebar-btn" data-panel="teamperf" id="teamPerfSidebarBtn" style="display:none;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 4 4 5-5"/></svg>
+      <span>Team Performance</span>
+    </button>
     </div>
 
     <!-- Mobile dropdown menu (inside sidebar, no z-index issues) -->
@@ -5766,6 +5988,165 @@
     <!-- ═══ WEEKLY TRACKER PANEL (admin-only, populated by JS) ═══ -->
     <div class="ss-panel" id="panel-weeklytracker"></div>
 
+    <!-- ═══ TEAM PERFORMANCE PANEL (admin-only — moved from admin-sales.html) ═══
+         Sidebar gate hides this panel for non-admins; the JS gate inside
+         loadTeamPerf() is the actual access control. -->
+    <div class="ss-panel" id="panel-teamperf">
+      <div class="tp-admin-page">
+        <div id="tpGate" style="display:none;padding:3rem 1rem;text-align:center;color:#666;font-size:0.9rem;">
+          You do not have access to this view.
+        </div>
+        <div id="tpContent" style="display:none;">
+          <div class="tp-admin-tabs">
+            <button class="tp-admin-tab active" data-tpatab="policies">Policies</button>
+            <button class="tp-admin-tab" data-tpatab="performance">Performance Dashboard</button>
+            <button class="tp-admin-tab" data-tpatab="agents">Agent Profiles</button>
+          </div>
+
+          <!-- Policies tab -->
+          <div class="tp-admin-panel active" id="tpatab-policies">
+            <div class="tp-admin-header">
+              <div>
+                <div class="tp-admin-title">Sales Admin</div>
+                <div class="tp-admin-subtitle">View, edit, and manage all agent policies</div>
+              </div>
+              <button class="tp-admin-add-btn" id="tpAddRecordBtn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Add Record
+              </button>
+            </div>
+            <div class="tp-admin-stats" id="tpAdminStats"></div>
+            <div class="tp-admin-filters">
+              <span class="tp-admin-filter-label">Time:</span>
+              <div class="tp-admin-filter-group" id="tpAdminTimeFilters">
+                <button class="tp-af active" data-range="all">All</button>
+                <button class="tp-af" data-range="week">This Week</button>
+                <button class="tp-af" data-range="month">This Month</button>
+                <button class="tp-af" data-range="ytd">YTD</button>
+              </div>
+              <span class="tp-admin-filter-label" style="margin-left:0.5rem;">Rep:</span>
+              <select class="tp-admin-rep-select" id="tpAdminRepFilter">
+                <option value="all">All Reps</option>
+              </select>
+              <span class="tp-admin-filter-label" style="margin-left:0.5rem;">Status:</span>
+              <div class="tp-admin-filter-group" id="tpAdminStatusFilters">
+                <button class="tp-af active" data-status="all">All</button>
+                <button class="tp-af" data-status="Underwriting">UW</button>
+                <button class="tp-af" data-status="Approved">Approved</button>
+                <button class="tp-af" data-status="Issue Paid">Paid</button>
+              </div>
+            </div>
+            <div class="tp-admin-table-wrap">
+              <div id="tpAdminTableContent"><div class="tp-admin-loading">Loading...</div></div>
+            </div>
+          </div>
+
+          <!-- Performance tab -->
+          <div class="tp-admin-panel" id="tpatab-performance">
+            <div class="tp-perf-header">
+              <div class="tp-perf-title">Performance Dashboard</div>
+              <div class="tp-perf-header-controls">
+                <div class="tp-perf-range-toggle" id="tpPerfRangeToggle">
+                  <button class="tp-perf-range-btn" data-perf-range="wtd">WTD</button>
+                  <button class="tp-perf-range-btn" data-perf-range="mtd">MTD</button>
+                  <button class="tp-perf-range-btn active" data-perf-range="ytd">YTD</button>
+                  <button class="tp-perf-range-btn" data-perf-range="lastweek">Last Week</button>
+                  <button class="tp-perf-range-btn" data-perf-range="lastmonth">Last Month</button>
+                  <button class="tp-perf-range-btn" data-perf-range="custom">Custom</button>
+                </div>
+                <div class="tp-perf-divider"></div>
+                <select class="tp-perf-rep-select" id="tpPerfRepSelect">
+                  <option value="all">All Reps (Team)</option>
+                </select>
+                <div class="tp-perf-checks">
+                  <label style="display:flex;align-items:center;gap:0.35rem;font-size:0.72rem;color:#555;cursor:pointer;font-weight:600;">
+                    <input type="checkbox" id="tpPerfExcludeSat" style="accent-color:#2563eb;" /> Exclude Sat
+                  </label>
+                  <label style="display:flex;align-items:center;gap:0.35rem;font-size:0.72rem;color:#555;cursor:pointer;font-weight:600;">
+                    <input type="checkbox" id="tpPerfExcludeSun" style="accent-color:#2563eb;" /> Exclude Sun
+                  </label>
+                </div>
+              </div>
+            </div>
+            <div id="tpPerfCustomRange" style="display:none;gap:0.5rem;align-items:center;margin-bottom:1rem;flex-wrap:wrap;">
+              <input type="date" id="tpPerfDateFrom" style="padding:0.4rem 0.7rem;font-size:0.8rem;background:#fff;border:1px solid #ddd;border-radius:8px;color:#1a1a1a;color-scheme:light;" />
+              <span style="color:#555;font-size:0.8rem;">to</span>
+              <input type="date" id="tpPerfDateTo" style="padding:0.4rem 0.7rem;font-size:0.8rem;background:#fff;border:1px solid #ddd;border-radius:8px;color:#1a1a1a;color-scheme:light;" />
+              <button id="tpPerfCustomApply" style="padding:0.4rem 1rem;font-size:0.78rem;font-weight:700;background:#2d2d35;color:#fff;border:none;border-radius:100px;cursor:pointer;">Apply</button>
+            </div>
+            <div id="tpPerfKpis"></div>
+            <div id="tpPerfExtraCharts" class="tp-perf-charts"></div>
+            <div id="tpPerfCharts" class="tp-perf-charts"></div>
+            <div id="tpPerfStatus"></div>
+            <div id="tpPerfGoals"></div>
+            <div id="tpPerfKpiSection"></div>
+          </div>
+
+          <!-- Agent Profiles tab -->
+          <div class="tp-admin-panel" id="tpatab-agents">
+            <div class="tp-admin-header">
+              <div>
+                <div class="tp-admin-title">Agent Profiles</div>
+                <div class="tp-admin-subtitle">Manage agent info, comp levels, and training access</div>
+              </div>
+            </div>
+            <div class="tp-admin-table-wrap">
+              <div id="tpAgentProfilesContent"><div class="tp-admin-loading">Loading...</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Edit modal (Team Performance) -->
+      <div class="tp-ae-overlay" id="tpAeOverlay">
+        <div class="tp-ae-modal">
+          <h3>Edit Policy</h3>
+          <form id="tpAeForm">
+            <div class="tp-ae-grid">
+              <div class="tp-ae-field"><label>Sales Rep</label><input type="text" id="tpAeRep" required /></div>
+              <div class="tp-ae-field"><label>Client Name</label><input type="text" id="tpAeClient" required /></div>
+              <div class="tp-ae-field"><label>Phone</label><input type="tel" id="tpAePhone" /></div>
+              <div class="tp-ae-field"><label>Annual Premium</label><input type="number" id="tpAeAP" step="0.01" required /></div>
+              <div class="tp-ae-field"><label>Policy Number</label><input type="text" id="tpAePolicy" required /></div>
+              <div class="tp-ae-field"><label>Carrier</label><select id="tpAeCarrier"></select></div>
+              <div class="tp-ae-field"><label>Product Type</label><select id="tpAeProduct"></select></div>
+              <div class="tp-ae-field"><label>Effective Date</label><input type="date" id="tpAeEffectiveDate" /></div>
+              <div class="tp-ae-field"><label>Status</label><select id="tpAeStatus"><option value="Underwriting">Underwriting</option><option value="Approved">Approved</option><option value="Issue Paid">Issue Paid</option></select></div>
+              <div class="tp-ae-btns">
+                <button type="button" class="tp-ae-cancel" id="tpAeCancel">Cancel</button>
+                <button type="submit" class="tp-ae-save">Save Changes</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Add modal (Team Performance) -->
+      <div class="tp-ae-overlay" id="tpAddOverlay">
+        <div class="tp-ae-modal">
+          <h3>Add New Record</h3>
+          <form id="tpAddForm">
+            <div class="tp-ae-grid">
+              <div class="tp-ae-field"><label>Sales Rep</label><select id="tpAddRep" required><option value="">Select agent...</option></select></div>
+              <input type="hidden" id="tpAddUserId" />
+              <div class="tp-ae-field"><label>Client Name</label><input type="text" id="tpAddClient" required /></div>
+              <div class="tp-ae-field"><label>Phone</label><input type="tel" id="tpAddPhone" /></div>
+              <div class="tp-ae-field"><label>Annual Premium</label><input type="number" id="tpAddAP" step="0.01" required /></div>
+              <div class="tp-ae-field"><label>Policy Number</label><input type="text" id="tpAddPolicy" required /></div>
+              <div class="tp-ae-field"><label>Carrier</label><select id="tpAddCarrier"></select></div>
+              <div class="tp-ae-field"><label>Product Type</label><select id="tpAddProduct"></select></div>
+              <div class="tp-ae-field"><label>Effective Date</label><input type="date" id="tpAddEffectiveDate" /></div>
+              <div class="tp-ae-field"><label>Status</label><select id="tpAddStatus"><option value="Underwriting">Underwriting</option><option value="Approved">Approved</option><option value="Issue Paid">Issue Paid</option></select></div>
+              <div class="tp-ae-btns">
+                <button type="button" class="tp-ae-cancel" id="tpAddCancel">Cancel</button>
+                <button type="submit" class="tp-ae-save">Add Record</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
     <!-- ═══ TRAINING PANEL ═══ -->
     <div class="ss-panel" id="panel-training">
       <div class="ss-training-layout">
@@ -6487,6 +6868,7 @@
       const sidebarUser = document.getElementById('sidebarUser');
       const sidebarUserName = document.getElementById('sidebarUserName');
       const wtBtn = document.getElementById('weeklyTrackerSidebarBtn');
+      const tpBtn = document.getElementById('teamPerfSidebarBtn');
       if (currentUser) {
         const name = currentUser.user_metadata?.name || currentUser.email;
         authName.textContent = name;
@@ -6501,10 +6883,11 @@
         document.getElementById('lbAuthWrap').style.display = 'block';
         if (signupLink) signupLink.style.display = 'none';
         if (globalGate) globalGate.style.display = 'none';
-        // Show admin-only Weekly Tracker for the owner
+        // Show admin-only Weekly Tracker + Team Performance for the owner
         const WT_ADMIN_EMAILS = ['dev@kairos-financial.com'];
         const isWtAdmin = WT_ADMIN_EMAILS.includes((currentUser.email || '').toLowerCase());
         if (wtBtn) wtBtn.style.display = isWtAdmin ? '' : 'none';
+        if (tpBtn) tpBtn.style.display = isWtAdmin ? '' : 'none';
         // If WT panel is currently active and we just got auth, reload so goals fetch with the user bearer
         if (isWtAdmin) {
           const activePanel = document.querySelector('.ss-panel.active');
@@ -6527,6 +6910,7 @@
         if (signupLink) signupLink.style.display = 'block';
         if (globalGate) globalGate.style.display = 'flex';
         if (wtBtn) wtBtn.style.display = 'none';
+        if (tpBtn) tpBtn.style.display = 'none';
       }
     }
 
@@ -6651,6 +7035,9 @@
       if (panelName === 'products' && typeof renderCarrierProducts === 'function') renderCarrierProducts();
       if (panelName === 'weeklytracker' && typeof loadWeeklyTracker === 'function') {
         try { loadWeeklyTracker(); } catch (e) { console.error('Weekly Tracker load threw:', e); }
+      }
+      if (panelName === 'teamperf' && typeof window.loadTeamPerf === 'function') {
+        try { window.loadTeamPerf(); } catch (e) { console.error('Team Performance load threw:', e); }
       }
       try { history.replaceState(null, '', '#' + panelName); } catch (e) { /* ignore */ }
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -13187,6 +13574,871 @@
         setTimeout(cleanup, 2000);
       }
       exportBtn.addEventListener('click', exportPdf);
+    })();
+
+    // ─── TEAM PERFORMANCE PANEL (admin-only — moved from admin-sales.html) ───
+    // Wrapped in an IIFE so locals stay isolated. Visibility is gated by
+    // updateAuthUI() which toggles the sidebar button + access check below;
+    // the JS gate inside loadTeamPerf() is defense-in-depth.
+    (function () {
+      const TP_ADMIN_EMAILS = ['dev@kairos-financial.com'];
+      const TP_HDRS_BASE = { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY };
+      const TP_HDRS_WRITE = Object.assign({}, TP_HDRS_BASE, { 'Content-Type': 'application/json', 'Prefer': 'return=minimal' });
+      const TP_CARRIERS = ['Mutual of Omaha', 'Americo', 'Transamerica', 'AmAm', 'Corebridge', 'Chubb', 'Ethos', 'Aetna', 'InstaBrain', 'Banner', 'AHL', 'F&G', 'KCL', 'Royal Neighbors', 'Cica', 'Baltimore Life', 'Foresters', 'Liberty', 'Liberty Bankers', 'UHL'];
+      const TP_PRODUCT_TYPES = ['Whole Life', 'Term', 'IUL', 'Health/Accidental'];
+      const TP_TOTAL_TRAINING_VIDEOS = 24;
+
+      let allData = [];
+      let filteredData = [];
+      let currentRange = 'all';
+      let currentRep = 'all';
+      let currentStatus = 'all';
+      let sortCol = 'created_at';
+      let sortDir = 'desc';
+      let editId = null;
+      let userList = [];
+      let perfRep = 'all';
+      let perfRange = 'ytd';
+      let initialized = false;
+
+      function escTp(s) { return (s || '').toString().replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+      function fmtAP(n) { return Math.round(n).toLocaleString('en-US'); }
+      function fillSel(id, items) {
+        const s = document.getElementById(id);
+        if (!s) return;
+        s.innerHTML = '';
+        items.forEach(i => { const o = document.createElement('option'); o.value = i; o.textContent = i; s.appendChild(o); });
+      }
+
+      function isAdmin() {
+        return !!(window.currentUser && TP_ADMIN_EMAILS.includes((window.currentUser.email || '').toLowerCase()));
+      }
+
+      // Public entry point — called from activatePanel('teamperf').
+      window.loadTeamPerf = function () {
+        const gate = document.getElementById('tpGate');
+        const content = document.getElementById('tpContent');
+        if (!gate || !content) return;
+        if (!isAdmin()) {
+          gate.style.display = 'block';
+          content.style.display = 'none';
+          return;
+        }
+        gate.style.display = 'none';
+        content.style.display = 'block';
+        if (!initialized) { wireUp(); initialized = true; }
+        loadAll();
+      };
+
+      function wireUp() {
+        fillSel('tpAeCarrier', TP_CARRIERS); fillSel('tpAeProduct', TP_PRODUCT_TYPES);
+        fillSel('tpAddCarrier', TP_CARRIERS); fillSel('tpAddProduct', TP_PRODUCT_TYPES);
+
+        // Sub-tabs
+        document.querySelectorAll('#panel-teamperf .tp-admin-tab').forEach(tab => {
+          tab.addEventListener('click', () => {
+            document.querySelectorAll('#panel-teamperf .tp-admin-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('#panel-teamperf .tp-admin-panel').forEach(p => p.classList.remove('active'));
+            tab.classList.add('active');
+            const which = tab.dataset.tpatab;
+            document.getElementById('tpatab-' + which).classList.add('active');
+            if (which === 'performance') renderPerformance();
+            if (which === 'agents') loadAgentProfiles();
+          });
+        });
+
+        // Filters
+        document.querySelectorAll('#tpAdminTimeFilters .tp-af').forEach(b => {
+          b.addEventListener('click', () => {
+            document.querySelectorAll('#tpAdminTimeFilters .tp-af').forEach(x => x.classList.remove('active'));
+            b.classList.add('active'); currentRange = b.dataset.range; applyFilters();
+          });
+        });
+        document.querySelectorAll('#tpAdminStatusFilters .tp-af').forEach(b => {
+          b.addEventListener('click', () => {
+            document.querySelectorAll('#tpAdminStatusFilters .tp-af').forEach(x => x.classList.remove('active'));
+            b.classList.add('active'); currentStatus = b.dataset.status; applyFilters();
+          });
+        });
+        document.getElementById('tpAdminRepFilter').addEventListener('change', (e) => { currentRep = e.target.value; applyFilters(); });
+
+        // Edit modal
+        const aeOverlay = document.getElementById('tpAeOverlay');
+        document.getElementById('tpAeCancel').addEventListener('click', () => aeOverlay.classList.remove('open'));
+        aeOverlay.addEventListener('click', (e) => { if (e.target === aeOverlay) aeOverlay.classList.remove('open'); });
+        document.getElementById('tpAeForm').addEventListener('submit', async (e) => {
+          e.preventDefault();
+          await fetch(SUPABASE_URL + '/rest/v1/policies?id=eq.' + editId, {
+            method: 'PATCH', headers: TP_HDRS_WRITE,
+            body: JSON.stringify({
+              sales_rep: document.getElementById('tpAeRep').value,
+              client_name: document.getElementById('tpAeClient').value,
+              phone: document.getElementById('tpAePhone').value || null,
+              annual_premium: parseFloat(document.getElementById('tpAeAP').value),
+              policy_number: document.getElementById('tpAePolicy').value,
+              carrier: document.getElementById('tpAeCarrier').value,
+              product_type: document.getElementById('tpAeProduct').value,
+              effective_date: document.getElementById('tpAeEffectiveDate').value || null,
+              status: document.getElementById('tpAeStatus').value
+            })
+          });
+          aeOverlay.classList.remove('open');
+          loadAll();
+        });
+
+        // Add modal
+        const addOverlay = document.getElementById('tpAddOverlay');
+        document.getElementById('tpAddRecordBtn').addEventListener('click', () => addOverlay.classList.add('open'));
+        document.getElementById('tpAddCancel').addEventListener('click', () => addOverlay.classList.remove('open'));
+        addOverlay.addEventListener('click', (e) => { if (e.target === addOverlay) addOverlay.classList.remove('open'); });
+        document.getElementById('tpAddForm').addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const repSel = document.getElementById('tpAddRep');
+          const selectedOption = repSel.options[repSel.selectedIndex];
+          const userId = repSel.value;
+          const repName = selectedOption.dataset.name || '';
+          await fetch(SUPABASE_URL + '/rest/v1/policies', {
+            method: 'POST', headers: TP_HDRS_WRITE,
+            body: JSON.stringify({
+              user_id: userId || null,
+              sales_rep: repName,
+              client_name: document.getElementById('tpAddClient').value,
+              phone: document.getElementById('tpAddPhone').value || null,
+              annual_premium: parseFloat(document.getElementById('tpAddAP').value),
+              policy_number: document.getElementById('tpAddPolicy').value,
+              carrier: document.getElementById('tpAddCarrier').value,
+              product_type: document.getElementById('tpAddProduct').value,
+              effective_date: document.getElementById('tpAddEffectiveDate').value || null,
+              status: document.getElementById('tpAddStatus').value
+            })
+          });
+          addOverlay.classList.remove('open');
+          e.target.reset();
+          loadAll();
+        });
+
+        // Esc closes modals
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape') { aeOverlay.classList.remove('open'); addOverlay.classList.remove('open'); }
+        });
+
+        // Performance controls
+        document.getElementById('tpPerfRepSelect').addEventListener('change', (e) => { perfRep = e.target.value; renderPerformance(); });
+        document.getElementById('tpPerfExcludeSat').addEventListener('change', () => renderPerformance());
+        document.getElementById('tpPerfExcludeSun').addEventListener('change', () => renderPerformance());
+        document.querySelectorAll('#tpPerfRangeToggle .tp-perf-range-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            document.querySelectorAll('#tpPerfRangeToggle .tp-perf-range-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            perfRange = btn.dataset.perfRange;
+            document.getElementById('tpPerfCustomRange').style.display = perfRange === 'custom' ? 'flex' : 'none';
+            if (perfRange !== 'custom') renderPerformance();
+          });
+        });
+        document.getElementById('tpPerfCustomApply').addEventListener('click', () => renderPerformance());
+      }
+
+      async function loadUserList() {
+        try {
+          const res = await fetch(SUPABASE_URL + '/rest/v1/user_list?select=*&order=name.asc', { headers: TP_HDRS_BASE });
+          userList = await res.json();
+        } catch (e) { userList = []; }
+        const sel = document.getElementById('tpAddRep');
+        if (!sel) return;
+        sel.innerHTML = '<option value="">Select agent...</option>';
+        userList.forEach(u => {
+          const o = document.createElement('option');
+          o.value = u.id;
+          o.textContent = (u.name || u.email) + (u.name ? ' (' + u.email + ')' : '');
+          o.dataset.name = u.name || u.email;
+          sel.appendChild(o);
+        });
+      }
+
+      async function loadAll() {
+        const container = document.getElementById('tpAdminTableContent');
+        container.innerHTML = '<div class="tp-admin-loading">Loading...</div>';
+        try {
+          const res = await fetch(SUPABASE_URL + '/rest/v1/policies?select=*&order=created_at.desc', { headers: TP_HDRS_BASE });
+          allData = await res.json();
+        } catch (e) { allData = []; }
+        loadUserList();
+        const reps = [...new Set(allData.map(r => r.sales_rep).filter(Boolean))].sort();
+        const repSel = document.getElementById('tpAdminRepFilter');
+        repSel.innerHTML = '<option value="all">All Reps (' + allData.length + ')</option>';
+        reps.forEach(r => {
+          const count = allData.filter(d => d.sales_rep === r).length;
+          const o = document.createElement('option'); o.value = r; o.textContent = r + ' (' + count + ')'; repSel.appendChild(o);
+        });
+        if (currentRep !== 'all') repSel.value = currentRep;
+        applyFilters();
+      }
+
+      function applyFilters() {
+        const now = new Date();
+        filteredData = allData.filter(row => {
+          if (currentRep !== 'all' && row.sales_rep !== currentRep) return false;
+          if (currentStatus !== 'all' && row.status !== currentStatus) return false;
+          if (currentRange !== 'all') {
+            const d = new Date(row.created_at);
+            if (currentRange === 'week') {
+              const start = new Date(now); start.setDate(start.getDate() - start.getDay()); start.setHours(0,0,0,0);
+              if (d < start) return false;
+            } else if (currentRange === 'month') {
+              if (d < new Date(now.getFullYear(), now.getMonth(), 1)) return false;
+            } else if (currentRange === 'ytd') {
+              if (d < new Date(now.getFullYear(), 0, 1)) return false;
+            }
+          }
+          return true;
+        });
+        filteredData.sort((a, b) => {
+          let va = a[sortCol], vb = b[sortCol];
+          if (sortCol === 'annual_premium') { va = parseFloat(va||0); vb = parseFloat(vb||0); }
+          else { va = (va||'').toString().toLowerCase(); vb = (vb||'').toString().toLowerCase(); }
+          if (va < vb) return sortDir === 'asc' ? -1 : 1;
+          if (va > vb) return sortDir === 'asc' ? 1 : -1;
+          return 0;
+        });
+        renderStats();
+        renderTable();
+      }
+
+      function renderStats() {
+        const totalAP = filteredData.reduce((s, r) => s + parseFloat(r.annual_premium || 0), 0);
+        const uwCount = filteredData.filter(r => r.status === 'Underwriting').length;
+        const appCount = filteredData.filter(r => r.status === 'Approved').length;
+        const paidCount = filteredData.filter(r => r.status === 'Issue Paid').length;
+        document.getElementById('tpAdminStats').innerHTML =
+          '<div class="tp-admin-stat"><div class="tp-admin-stat-value">' + filteredData.length + '</div><div class="tp-admin-stat-label">Policies</div></div>' +
+          '<div class="tp-admin-stat"><div class="tp-admin-stat-value" style="color:#60a5fa;">$' + totalAP.toLocaleString('en-US',{maximumFractionDigits:0}) + '</div><div class="tp-admin-stat-label">Total AP</div></div>' +
+          '<div class="tp-admin-stat"><div class="tp-admin-stat-value" style="color:#fb923c;">' + uwCount + '</div><div class="tp-admin-stat-label">Underwriting</div></div>' +
+          '<div class="tp-admin-stat"><div class="tp-admin-stat-value" style="color:#60a5fa;">' + appCount + '</div><div class="tp-admin-stat-label">Approved</div></div>' +
+          '<div class="tp-admin-stat"><div class="tp-admin-stat-value" style="color:#4ade80;">' + paidCount + '</div><div class="tp-admin-stat-label">Issue Paid</div></div>';
+      }
+
+      function renderTable() {
+        const container = document.getElementById('tpAdminTableContent');
+        if (!filteredData.length) { container.innerHTML = '<div class="tp-admin-empty">No policies match the current filters.</div>'; return; }
+        const cols = [
+          {key:'created_at',label:'Date'},{key:'sales_rep',label:'Sales Rep'},{key:'client_name',label:'Client'},
+          {key:'phone',label:'Phone'},
+          {key:'annual_premium',label:'AP'},{key:'carrier',label:'Carrier'},{key:'product_type',label:'Product'},
+          {key:'policy_number',label:'Policy #'},{key:'status',label:'Status'},
+          {key:'effective_date',label:'Effective Date'}
+        ];
+        let html = '<table class="tp-admin-table"><thead><tr>';
+        cols.forEach(c => {
+          const sorted = sortCol === c.key;
+          const arrow = sorted ? (sortDir === 'asc' ? ' ▲' : ' ▼') : '';
+          html += '<th class="' + (sorted?'sorted':'') + '" data-sort="' + c.key + '">' + c.label + arrow + '</th>';
+        });
+        html += '<th>Actions</th></tr></thead><tbody>';
+        filteredData.forEach(row => {
+          const d = new Date(row.created_at);
+          const dateStr = (d.getMonth()+1) + '/' + d.getDate() + '/' + d.getFullYear();
+          const ap = parseFloat(row.annual_premium || 0);
+          const status = row.status || 'Underwriting';
+          const statusClass = status.toLowerCase().replace(/\s+/g, '-');
+          html += '<tr>';
+          html += '<td class="td-date" data-label="Date">' + dateStr + '</td>';
+          html += '<td class="td-rep" data-label="Sales Rep">' + escTp(row.sales_rep) + '</td>';
+          html += '<td data-label="Client">' + escTp(row.client_name) + '</td>';
+          const phone = row.phone || '';
+          const phoneDigits = phone.replace(/\D/g, '');
+          html += '<td data-label="Phone">' + (phone ? '<a href="tel:' + phoneDigits + '" style="color:#2563eb;text-decoration:none;font-weight:600;">' + escTp(phone) + '</a>' : '<span style="color:#999;">—</span>') + '</td>';
+          html += '<td class="td-ap" data-label="AP">$' + ap.toLocaleString('en-US',{minimumFractionDigits:0}) + '</td>';
+          html += '<td data-label="Carrier">' + escTp(row.carrier) + '</td>';
+          html += '<td data-label="Product">' + escTp(row.product_type) + '</td>';
+          html += '<td data-label="Policy #">' + escTp(row.policy_number) + '</td>';
+          html += '<td data-label="Status"><span class="tp-status ' + statusClass + '">' + status + '</span></td>';
+          const effDate = row.effective_date ? (function(dd){var dt=new Date(dd+'T00:00:00');return (dt.getMonth()+1)+'/'+dt.getDate()+'/'+dt.getFullYear();})(row.effective_date) : '';
+          html += '<td class="td-date" data-label="Effective Date">' + effDate + '</td>';
+          html += '<td class="tp-admin-actions" data-label="Actions">';
+          if (status === 'Underwriting') html += '<button class="tp-action-btn tp-action-approve" data-id="' + row.id + '" data-action="approve">Approve Policy</button>';
+          if (status === 'Approved') html += '<button class="tp-action-btn tp-action-paid" data-id="' + row.id + '" data-action="paid">Mark as Paid</button>';
+          html += '<div class="tp-more-wrap"><button class="tp-more-btn" data-id="' + row.id + '">&#8943;</button><div class="tp-more-menu"><button class="tp-btn-edit" data-id="' + row.id + '">Edit Policy</button><button class="tp-btn-del" data-id="' + row.id + '">Delete Policy</button></div></div>';
+          html += '</td></tr>';
+        });
+        html += '</tbody></table>';
+        container.innerHTML = html;
+
+        container.querySelectorAll('[data-sort]').forEach(th => {
+          th.addEventListener('click', () => {
+            const col = th.dataset.sort;
+            if (sortCol === col) sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+            else { sortCol = col; sortDir = (col === 'annual_premium' || col === 'created_at') ? 'desc' : 'asc'; }
+            applyFilters();
+          });
+        });
+        container.querySelectorAll('[data-action="approve"]').forEach(b => {
+          b.addEventListener('click', async () => { await patchStatus(b.dataset.id, 'Approved'); loadAll(); });
+        });
+        container.querySelectorAll('[data-action="paid"]').forEach(b => {
+          b.addEventListener('click', async () => { await patchStatus(b.dataset.id, 'Issue Paid'); loadAll(); });
+        });
+        container.querySelectorAll('.tp-more-btn').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const menu = btn.nextElementSibling;
+            container.querySelectorAll('.tp-more-menu.open').forEach(m => { if (m !== menu) m.classList.remove('open'); });
+            menu.classList.toggle('open');
+          });
+        });
+        document.addEventListener('click', () => {
+          container.querySelectorAll('.tp-more-menu.open').forEach(m => m.classList.remove('open'));
+        });
+        container.querySelectorAll('.tp-btn-edit').forEach(b => {
+          b.addEventListener('click', () => { openEdit(b.dataset.id); b.closest('.tp-more-menu').classList.remove('open'); });
+        });
+        container.querySelectorAll('.tp-btn-del').forEach(b => {
+          b.addEventListener('click', async () => {
+            b.closest('.tp-more-menu').classList.remove('open');
+            if (!confirm('Delete this policy permanently?')) return;
+            await fetch(SUPABASE_URL + '/rest/v1/policies?id=eq.' + b.dataset.id, { method: 'DELETE', headers: TP_HDRS_WRITE });
+            loadAll();
+          });
+        });
+      }
+
+      async function patchStatus(id, status) {
+        await fetch(SUPABASE_URL + '/rest/v1/policies?id=eq.' + id, {
+          method: 'PATCH', headers: TP_HDRS_WRITE, body: JSON.stringify({ status })
+        });
+      }
+
+      function openEdit(id) {
+        const row = allData.find(r => r.id === id);
+        if (!row) return;
+        editId = id;
+        document.getElementById('tpAeRep').value = row.sales_rep || '';
+        document.getElementById('tpAeClient').value = row.client_name || '';
+        document.getElementById('tpAePhone').value = row.phone || '';
+        document.getElementById('tpAeAP').value = row.annual_premium || '';
+        document.getElementById('tpAePolicy').value = row.policy_number || '';
+        document.getElementById('tpAeCarrier').value = row.carrier || '';
+        document.getElementById('tpAeProduct').value = row.product_type || '';
+        document.getElementById('tpAeEffectiveDate').value = row.effective_date ? row.effective_date.split('T')[0] : '';
+        document.getElementById('tpAeStatus').value = row.status || 'Underwriting';
+        document.getElementById('tpAeOverlay').classList.add('open');
+      }
+
+      function kpi(label, value, sub, trend) {
+        const cls = trend ? ' ' + trend : '';
+        const changeCls = trend || 'neutral';
+        return '<div class="tp-perf-kpi' + cls + '"><div class="tp-perf-kpi-label">' + label + '</div><div class="tp-perf-kpi-value">' + value + '</div><div class="tp-perf-kpi-change ' + changeCls + '">' + sub + '</div></div>';
+      }
+
+      function statusBar(label, pct, cls) {
+        return '<div class="tp-perf-status-item"><div class="tp-perf-status-item-label"><span>' + label + '</span><span>' + pct + '%</span></div><div class="tp-perf-status-item-bar"><div class="tp-perf-status-item-fill ' + cls + '" style="width:' + pct + '%"></div></div></div>';
+      }
+
+      function buildWeeklyBars(data) {
+        const now = new Date();
+        const weeks = [];
+        for (let i = 3; i >= 0; i--) {
+          const wEnd = new Date(now); wEnd.setDate(wEnd.getDate() - (i * 7));
+          const wStart = new Date(wEnd); wStart.setDate(wStart.getDate() - 7);
+          const label = i === 0 ? 'This Week' : i === 1 ? 'Last Week' : i + 'w ago';
+          const ap = data.filter(r => { const d = new Date(r.created_at); return d >= wStart && d < wEnd; }).reduce((s,r) => s + parseFloat(r.annual_premium||0), 0);
+          weeks.push({ label, ap });
+        }
+        const max = Math.max(...weeks.map(w => w.ap), 1);
+        return weeks.map(w => {
+          const pct = (w.ap / max * 100).toFixed(1);
+          return '<div class="tp-perf-bar-row"><div class="tp-perf-bar-label">' + w.label + '</div><div class="tp-perf-bar-amount">$' + fmtAP(w.ap) + '</div><div class="tp-perf-bar-track"><div class="tp-perf-bar-fill green" style="width:' + pct + '%"></div></div></div>';
+        }).join('');
+      }
+
+      function buildMonthComparisonChart(data, now) {
+        const thisMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+        const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+        const thisMonthEnd = now;
+        const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59);
+        const thisMonthRows = data.filter(r => { const d = new Date(r.created_at); return d >= thisMonthStart && d <= thisMonthEnd; });
+        const lastMonthRows = data.filter(r => { const d = new Date(r.created_at); return d >= lastMonthStart && d <= lastMonthEnd; });
+        const tmAP = thisMonthRows.reduce((s, r) => s + parseFloat(r.annual_premium || 0), 0);
+        const lmAP = lastMonthRows.reduce((s, r) => s + parseFloat(r.annual_premium || 0), 0);
+        const tmCount = thisMonthRows.length;
+        const lmCount = lastMonthRows.length;
+        const thisLabel = thisMonthStart.toLocaleString('default', { month: 'short' });
+        const lastLabel = lastMonthStart.toLocaleString('default', { month: 'short' });
+        const W = 600, H = 240, padL = 56, padR = 16, padT = 20, padB = 48;
+        const plotW = W - padL - padR;
+        const plotH = H - padT - padB;
+        const maxAP = Math.max(tmAP, lmAP, 1);
+        const barW = 90;
+        const groupGap = 60;
+        const totalBarsWidth = barW * 2 + groupGap;
+        const startX = padL + (plotW - totalBarsWidth) / 2;
+        const barY = (val) => padT + plotH - (val / maxAP) * plotH;
+        const lmY = barY(lmAP);
+        const tmY = barY(tmAP);
+        const lmX = startX;
+        const tmX = startX + barW + groupGap;
+        const lmHeight = padT + plotH - lmY;
+        const tmHeight = padT + plotH - tmY;
+        const trend = tmAP >= lmAP ? 'up' : 'down';
+        const thisColor = trend === 'up' ? '#4ade80' : '#f87171';
+        const thisColorDark = trend === 'up' ? '#16a34a' : '#dc2626';
+        let grid = '';
+        for (let i = 0; i <= 4; i++) {
+          const val = (maxAP / 4) * i;
+          const y = barY(val);
+          grid += '<line x1="' + padL + '" y1="' + y + '" x2="' + (W - padR) + '" y2="' + y + '" stroke="#e5e5ea" stroke-width="1"/>';
+          grid += '<text x="' + (padL - 8) + '" y="' + (y + 3) + '" fill="#888" font-size="9" font-family="Inter, sans-serif" text-anchor="end">$' + fmtAP(val) + '</text>';
+        }
+        const diff = tmAP - lmAP;
+        const diffPct = lmAP > 0 ? (diff / lmAP) * 100 : 0;
+        const summaryTxt = (diff >= 0 ? '+$' : '-$') + fmtAP(Math.abs(diff)) + ' (' + (diff >= 0 ? '+' : '') + diffPct.toFixed(1) + '%)';
+        return '<div class="tp-perf-chart-card">' +
+          '<div class="tp-perf-chart-title">This Month vs Last Month</div>' +
+          '<svg class="tp-perf-svg-chart" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="xMidYMid meet">' +
+            grid +
+            '<defs>' +
+              '<linearGradient id="tpLmGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#64748b" stop-opacity="0.9"/><stop offset="1" stop-color="#475569" stop-opacity="0.9"/></linearGradient>' +
+              '<linearGradient id="tpTmGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="' + thisColor + '" stop-opacity="0.95"/><stop offset="1" stop-color="' + thisColorDark + '" stop-opacity="0.95"/></linearGradient>' +
+            '</defs>' +
+            '<rect x="' + lmX + '" y="' + lmY + '" width="' + barW + '" height="' + lmHeight + '" rx="6" fill="url(#tpLmGrad)"/>' +
+            '<rect x="' + tmX + '" y="' + tmY + '" width="' + barW + '" height="' + tmHeight + '" rx="6" fill="url(#tpTmGrad)"/>' +
+            '<text x="' + (lmX + barW/2) + '" y="' + (lmY - 8) + '" fill="#1a1a1a" font-size="12" font-weight="800" font-family="Plus Jakarta Sans, sans-serif" text-anchor="middle">$' + fmtAP(lmAP) + '</text>' +
+            '<text x="' + (tmX + barW/2) + '" y="' + (tmY - 8) + '" fill="' + thisColorDark + '" font-size="12" font-weight="800" font-family="Plus Jakarta Sans, sans-serif" text-anchor="middle">$' + fmtAP(tmAP) + '</text>' +
+            '<text x="' + (lmX + barW/2) + '" y="' + (H - 22) + '" fill="#1a1a1a" font-size="11" font-weight="700" font-family="Plus Jakarta Sans, sans-serif" text-anchor="middle">' + lastLabel + '</text>' +
+            '<text x="' + (lmX + barW/2) + '" y="' + (H - 8) + '" fill="#888" font-size="9" font-family="Inter, sans-serif" text-anchor="middle">' + lmCount + ' policies</text>' +
+            '<text x="' + (tmX + barW/2) + '" y="' + (H - 22) + '" fill="#1a1a1a" font-size="11" font-weight="700" font-family="Plus Jakarta Sans, sans-serif" text-anchor="middle">' + thisLabel + '</text>' +
+            '<text x="' + (tmX + barW/2) + '" y="' + (H - 8) + '" fill="#888" font-size="9" font-family="Inter, sans-serif" text-anchor="middle">' + tmCount + ' policies</text>' +
+          '</svg>' +
+          '<div class="tp-perf-chart-summary ' + trend + '"><span class="tp-perf-chart-summary-label">Change</span><span class="tp-perf-chart-summary-value">' + summaryTxt + '</span></div>' +
+        '</div>';
+      }
+
+      function renderPerformance() {
+        const reps = [...new Set(allData.map(r => r.sales_rep).filter(Boolean))].sort();
+        const sel = document.getElementById('tpPerfRepSelect');
+        const prev = sel.value;
+        sel.innerHTML = '<option value="all">All Reps (Team)</option>';
+        reps.forEach(r => { const o = document.createElement('option'); o.value = r; o.textContent = r; sel.appendChild(o); });
+        sel.value = prev || 'all';
+        perfRep = sel.value;
+
+        const data = perfRep === 'all' ? allData : allData.filter(r => r.sales_rep === perfRep);
+        const now = new Date();
+        const weekStart = new Date(now); weekStart.setDate(weekStart.getDate() - weekStart.getDay()); weekStart.setHours(0,0,0,0);
+        const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+        const yearStart = new Date(now.getFullYear(), 0, 1);
+        const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+        const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59);
+        const lastWeekStart = new Date(weekStart); lastWeekStart.setDate(lastWeekStart.getDate() - 7);
+
+        const wtd = data.filter(r => new Date(r.created_at) >= weekStart);
+        const mtd = data.filter(r => new Date(r.created_at) >= monthStart);
+        const ytd = data.filter(r => new Date(r.created_at) >= yearStart);
+        const lastWeek = data.filter(r => { const d = new Date(r.created_at); return d >= lastWeekStart && d < weekStart; });
+        const lastMonth = data.filter(r => { const d = new Date(r.created_at); return d >= lastMonthStart && d <= lastMonthEnd; });
+
+        let customRange = [];
+        if (perfRange === 'custom') {
+          const from = document.getElementById('tpPerfDateFrom').value;
+          const to = document.getElementById('tpPerfDateTo').value;
+          if (from && to) {
+            const fromDate = new Date(from); fromDate.setHours(0,0,0,0);
+            const toDate = new Date(to); toDate.setHours(23,59,59,999);
+            customRange = data.filter(r => { const d = new Date(r.created_at); return d >= fromDate && d <= toDate; });
+          }
+        }
+
+        const sumAP = arr => arr.reduce((s, r) => s + parseFloat(r.annual_premium || 0), 0);
+        const ytdAP = sumAP(ytd);
+        const dayOfYear = Math.floor((now - yearStart) / (1000*60*60*24)) + 1;
+        const yearlyPace = dayOfYear > 0 ? (ytdAP / dayOfYear) * 365 : 0;
+        const monthlyPace = dayOfYear > 0 ? (ytdAP / dayOfYear) * 30.44 : 0;
+
+        const priorWeekStart = new Date(weekStart); priorWeekStart.setDate(priorWeekStart.getDate() - 7);
+        const priorYearStart = new Date(now.getFullYear() - 1, 0, 1);
+        const priorYearEndSameDay = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate(), 23, 59, 59);
+        const twoWeeksAgoStart = new Date(lastWeekStart); twoWeeksAgoStart.setDate(twoWeeksAgoStart.getDate() - 7);
+        const twoMonthsAgoStart = new Date(now.getFullYear(), now.getMonth() - 2, 1);
+        const twoMonthsAgoEnd = new Date(now.getFullYear(), now.getMonth() - 1, 0, 23, 59, 59);
+
+        const priorWeek = data.filter(r => { const d = new Date(r.created_at); return d >= priorWeekStart && d < weekStart; });
+        const priorYear = data.filter(r => { const d = new Date(r.created_at); return d >= priorYearStart && d <= priorYearEndSameDay; });
+        const twoWeeksAgo = data.filter(r => { const d = new Date(r.created_at); return d >= twoWeeksAgoStart && d < lastWeekStart; });
+        const twoMonthsAgo = data.filter(r => { const d = new Date(r.created_at); return d >= twoMonthsAgoStart && d <= twoMonthsAgoEnd; });
+
+        let curRows, priorRows, rangeLabel, priorLabel;
+        if (perfRange === 'wtd') { curRows = wtd; priorRows = priorWeek; rangeLabel = 'Week to Date'; priorLabel = 'vs Last Week'; }
+        else if (perfRange === 'mtd') { curRows = mtd; priorRows = lastMonth; rangeLabel = 'Month to Date'; priorLabel = 'vs Last Month'; }
+        else if (perfRange === 'lastweek') { curRows = data.filter(r => { const d = new Date(r.created_at); return d >= lastWeekStart && d < weekStart; }); priorRows = twoWeeksAgo; rangeLabel = 'Last Week'; priorLabel = 'vs Week Before'; }
+        else if (perfRange === 'lastmonth') { curRows = lastMonth; priorRows = twoMonthsAgo; rangeLabel = 'Last Month'; priorLabel = 'vs Month Before'; }
+        else if (perfRange === 'custom') {
+          curRows = customRange;
+          const from = document.getElementById('tpPerfDateFrom').value;
+          const to = document.getElementById('tpPerfDateTo').value;
+          if (from && to) {
+            const fromDate = new Date(from); fromDate.setHours(0,0,0,0);
+            const toDate = new Date(to); toDate.setHours(23,59,59,999);
+            const ms = toDate - fromDate;
+            const priorTo = new Date(fromDate.getTime() - 1);
+            const priorFrom = new Date(priorTo.getTime() - ms);
+            priorRows = data.filter(r => { const d = new Date(r.created_at); return d >= priorFrom && d <= priorTo; });
+          } else { priorRows = []; }
+          rangeLabel = 'Custom Range'; priorLabel = 'vs Prior Period';
+        } else {
+          curRows = ytd; priorRows = priorYear; rangeLabel = 'Year to Date'; priorLabel = 'vs Last Year';
+        }
+
+        const curAP = sumAP(curRows);
+        const priorAP = sumAP(priorRows);
+        const change = priorAP > 0 ? ((curAP - priorAP) / priorAP * 100) : (curAP > 0 ? 100 : 0);
+        const changeClass = change > 0 ? 'up' : change < 0 ? 'down' : 'neutral';
+        const changeSign = change > 0 ? '+' : '';
+        const avgPerPolicy = curRows.length > 0 ? curAP / curRows.length : 0;
+
+        document.getElementById('tpPerfKpis').innerHTML =
+          '<div class="tp-perf-kpis">' +
+            kpi(rangeLabel, '$' + fmtAP(curAP), curRows.length + ' policies', '') +
+            '<div class="tp-perf-kpi ' + changeClass + '"><div class="tp-perf-kpi-label">' + priorLabel + '</div><div class="tp-perf-kpi-value" style="font-size:1.3rem;">' + changeSign + change.toFixed(1) + '%</div><div class="tp-perf-kpi-change ' + changeClass + '">' + (priorAP > 0 ? 'prior $' + fmtAP(priorAP) : 'no prior data') + '</div></div>' +
+            kpi('Avg Per Policy', '$' + fmtAP(avgPerPolicy), curRows.length + ' policies', '') +
+            kpi('Yearly Pace', '$' + fmtAP(yearlyPace), '$' + fmtAP(monthlyPace) + '/mo avg', '') +
+          '</div>';
+
+        const extraCharts = document.getElementById('tpPerfExtraCharts');
+        extraCharts.style.gridTemplateColumns = '1fr';
+        extraCharts.innerHTML = buildMonthComparisonChart(data, now);
+
+        const months = {};
+        ytd.forEach(r => {
+          const d = new Date(r.created_at);
+          const key = d.toLocaleString('default', { month: 'short' });
+          if (!months[key]) months[key] = { count: 0, ap: 0 };
+          months[key].count++;
+          months[key].ap += parseFloat(r.annual_premium || 0);
+        });
+
+        const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        const currentMonthIdx = now.getMonth();
+        const activeMonths = monthNames.slice(0, currentMonthIdx + 1);
+        const maxMonthAP = Math.max(...activeMonths.map(m => (months[m]?.ap || 0)), 1);
+        let monthBars = '';
+        activeMonths.forEach(m => {
+          const val = months[m]?.ap || 0;
+          const pct = (val / maxMonthAP * 100).toFixed(1);
+          monthBars += '<div class="tp-perf-bar-row"><div class="tp-perf-bar-label">' + m + '</div><div class="tp-perf-bar-amount">$' + fmtAP(val) + '</div><div class="tp-perf-bar-track"><div class="tp-perf-bar-fill blue" style="width:' + pct + '%"></div></div></div>';
+        });
+
+        let repBars = '';
+        const rangeLabelMap = { wtd: 'Week to Date', mtd: 'Month to Date', ytd: 'Year to Date', lastweek: 'Last Week', lastmonth: 'Last Month', custom: 'Custom Range' };
+        const repRangeLabel = rangeLabelMap[perfRange] || 'Year to Date';
+        if (perfRep === 'all') {
+          const rangeMap = { wtd: wtd, mtd: mtd, ytd: ytd, lastweek: lastWeek, lastmonth: lastMonth, custom: customRange };
+          const rangeRows = rangeMap[perfRange] || ytd;
+          const repTotals = {};
+          rangeRows.forEach(r => {
+            if (!r.sales_rep) return;
+            repTotals[r.sales_rep] = (repTotals[r.sales_rep] || 0) + parseFloat(r.annual_premium || 0);
+          });
+          const sorted = Object.entries(repTotals).sort((a,b) => b[1] - a[1]);
+          const teamTotal = sorted.reduce((s, [, ap]) => s + ap, 0);
+          const maxRepAP = Math.max(teamTotal, sorted.length ? sorted[0][1] : 1, 1);
+          const teamPct = (teamTotal / maxRepAP * 100).toFixed(1);
+          repBars += '<div class="tp-perf-bar-row tp-perf-bar-team"><div class="tp-perf-bar-label" style="width:90px;color:#1a1a1a;font-weight:800;">Team</div><div class="tp-perf-bar-amount">$' + fmtAP(teamTotal) + '</div><div class="tp-perf-bar-track"><div class="tp-perf-bar-fill team" style="width:' + teamPct + '%"></div></div></div>';
+          if (sorted.length === 0) {
+            repBars += '<div style="text-align:center;padding:1.25rem;color:#888;font-size:0.8rem;">No sales recorded for this timeframe yet.</div>';
+          } else {
+            const repColors = ['gold', 'blue', 'green', 'team', 'purple', 'pink'];
+            sorted.forEach(([name, ap], i) => {
+              const pct = (ap / maxRepAP * 100).toFixed(1);
+              const color = repColors[i % repColors.length];
+              repBars += '<div class="tp-perf-bar-row"><div class="tp-perf-bar-label" style="width:90px;">' + name.split(' ')[0] + '</div><div class="tp-perf-bar-amount">$' + fmtAP(ap) + '</div><div class="tp-perf-bar-track"><div class="tp-perf-bar-fill ' + color + '" style="width:' + pct + '%"></div></div></div>';
+            });
+          }
+        }
+
+        document.getElementById('tpPerfCharts').innerHTML =
+          '<div class="tp-perf-chart-card"><div class="tp-perf-chart-title">Monthly AP Breakdown (YTD)</div><div class="tp-perf-bars">' + monthBars + '</div></div>' +
+          (perfRep === 'all' && repBars ? '<div class="tp-perf-chart-card"><div class="tp-perf-chart-title">Rep Comparison (' + repRangeLabel + ')</div><div class="tp-perf-bars">' + repBars + '</div></div>' : '<div class="tp-perf-chart-card"><div class="tp-perf-chart-title">Weekly Trend</div><div class="tp-perf-bars">' + buildWeeklyBars(data) + '</div></div>');
+
+        const statusEl = document.getElementById('tpPerfStatus');
+        if (perfRep !== 'all') {
+          const uwCount = mtd.filter(r => r.status === 'Underwriting').length;
+          const appCount = mtd.filter(r => r.status === 'Approved').length;
+          const paidCount = mtd.filter(r => r.status === 'Issue Paid').length;
+          const total = mtd.length || 1;
+          statusEl.innerHTML = '<div class="tp-perf-status-section"><div class="tp-perf-status-title">Status Breakdown (Month to Date)</div><div class="tp-perf-status-bars">' +
+            statusBar('Underwriting', (uwCount / total * 100).toFixed(0), 'uw') +
+            statusBar('Approved', (appCount / total * 100).toFixed(0), 'app') +
+            statusBar('Issue Paid', (paidCount / total * 100).toFixed(0), 'paid') +
+            '</div></div>';
+        } else {
+          statusEl.innerHTML = '';
+        }
+
+        renderGoals(ytd);
+        renderCompLevels();
+        renderKpiSection();
+      }
+
+      async function renderGoals(ytdRows) {
+        const goalsEl = document.getElementById('tpPerfGoals');
+        try {
+          const res = await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?select=user_id,annual_goal&annual_goal=gt.0', { headers: TP_HDRS_BASE });
+          const profiles = await res.json();
+          if (!profiles || !profiles.length) { goalsEl.innerHTML = ''; return; }
+          const repMap = {};
+          ytdRows.forEach(r => { if (r.user_id && r.sales_rep) repMap[r.user_id] = r.sales_rep; });
+          const allReps = await fetch(SUPABASE_URL + '/rest/v1/policies?select=user_id,sales_rep&order=created_at.desc&limit=500', { headers: TP_HDRS_BASE });
+          const allRepData = await allReps.json();
+          allRepData.forEach(r => { if (r.user_id && r.sales_rep && !repMap[r.user_id]) repMap[r.user_id] = r.sales_rep; });
+          const ytdByUser = {};
+          const yearStart = new Date(new Date().getFullYear(), 0, 1);
+          allData.forEach(r => {
+            if (!r.user_id) return;
+            if (new Date(r.created_at) >= yearStart) {
+              ytdByUser[r.user_id] = (ytdByUser[r.user_id] || 0) + parseFloat(r.annual_premium || 0);
+            }
+          });
+          const now = new Date();
+          const dayOfYear = Math.floor((now - yearStart) / (1000*60*60*24)) + 1;
+          let html = '<div class="tp-perf-goals-card"><div class="tp-perf-goals-title">\ud83c\udfaf Agent Annual Goals</div><div class="tp-perf-goals-grid">';
+          profiles.sort((a, b) => (b.annual_goal || 0) - (a.annual_goal || 0));
+          profiles.forEach(p => {
+            const name = repMap[p.user_id] || 'Unknown Agent';
+            const goal = parseFloat(p.annual_goal) || 0;
+            const ytdAP = ytdByUser[p.user_id] || 0;
+            const pct = goal > 0 ? Math.min((ytdAP / goal) * 100, 100) : 0;
+            const expectedByNow = (goal / 365) * dayOfYear;
+            const ahead = ytdAP >= expectedByNow;
+            const fillClass = ahead ? 'ahead' : 'behind';
+            const statusClass = ahead ? 'ahead' : 'behind';
+            const statusText = ahead ? '+$' + fmtAP(ytdAP - expectedByNow) + ' ahead' : '-$' + fmtAP(expectedByNow - ytdAP) + ' behind';
+            html += '<div class="tp-perf-goal-row">';
+            html += '<div class="tp-perf-goal-name">' + name.split(' ')[0] + '</div>';
+            html += '<div class="tp-perf-goal-bar-wrap">';
+            html += '<div class="tp-perf-goal-bar-labels"><span class="current">$' + fmtAP(ytdAP) + '</span><span>Goal: $' + fmtAP(goal) + '</span></div>';
+            html += '<div class="tp-perf-goal-bar"><div class="tp-perf-goal-fill ' + fillClass + '" style="width:' + pct.toFixed(1) + '%"></div></div>';
+            html += '</div>';
+            html += '<div class="tp-perf-goal-status ' + statusClass + '">' + statusText + '</div>';
+            html += '</div>';
+          });
+          html += '</div></div>';
+          goalsEl.innerHTML = html;
+        } catch (e) { console.error('TP goals render failed:', e); goalsEl.innerHTML = ''; }
+      }
+
+      async function renderCompLevels() {
+        const goalsEl = document.getElementById('tpPerfGoals');
+        try {
+          const res = await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?select=user_id,comp_level', { headers: TP_HDRS_BASE });
+          const profiles = await res.json();
+          const repMap = {};
+          allData.forEach(r => { if (r.user_id && r.sales_rep) repMap[r.user_id] = r.sales_rep; });
+          const knownIds = Object.keys(repMap);
+          const profileMap = {};
+          profiles.forEach(p => { profileMap[p.user_id] = p.comp_level; });
+          let html = '<div class="tp-perf-goals-card" style="margin-top:1rem;"><div class="tp-perf-goals-title">\ud83d\udcb5 Agent Comp Levels</div><div class="tp-perf-goals-grid">';
+          knownIds.sort((a, b) => (repMap[a] || '').localeCompare(repMap[b] || ''));
+          knownIds.forEach(uid => {
+            const name = repMap[uid];
+            const current = profileMap[uid] || '';
+            let opts = '<option value="">Not set</option>';
+            for (let v = 65; v <= 145; v += 5) {
+              opts += '<option value="' + v + '"' + (current == v ? ' selected' : '') + '>' + v + '%</option>';
+            }
+            html += '<div class="tp-perf-goal-row" style="gap:1rem;">';
+            html += '<div class="tp-perf-goal-name">' + escTp(name.split(' ')[0]) + '</div>';
+            html += '<select class="tp-admin-rep-select" data-tp-comp-uid="' + uid + '" style="flex:1;max-width:160px;">' + opts + '</select>';
+            html += '<span class="tp-comp-save-msg" data-tp-msg-uid="' + uid + '" style="font-size:0.72rem;color:#16a34a;display:none;">✓ Saved</span>';
+            html += '</div>';
+          });
+          html += '</div></div>';
+          goalsEl.insertAdjacentHTML('beforeend', html);
+          document.querySelectorAll('[data-tp-comp-uid]').forEach(sel => {
+            sel.addEventListener('change', async () => {
+              const uid = sel.dataset.tpCompUid;
+              const val = sel.value ? parseInt(sel.value) : null;
+              const upd = await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?user_id=eq.' + uid, {
+                method: 'PATCH', headers: TP_HDRS_WRITE, body: JSON.stringify({ comp_level: val })
+              });
+              const updRows = await upd.json().catch(() => []);
+              if (!Array.isArray(updRows) || updRows.length === 0) {
+                await fetch(SUPABASE_URL + '/rest/v1/agent_profiles', {
+                  method: 'POST', headers: TP_HDRS_WRITE, body: JSON.stringify({ user_id: uid, comp_level: val })
+                });
+              }
+              const msgEl = document.querySelector('[data-tp-msg-uid="' + uid + '"]');
+              if (msgEl) { msgEl.style.display = 'inline'; setTimeout(() => { msgEl.style.display = 'none'; }, 2000); }
+            });
+          });
+        } catch (e) { console.error('TP comp levels render failed:', e); }
+      }
+
+      async function renderKpiSection() {
+        const el = document.getElementById('tpPerfKpiSection');
+        try {
+          const res = await fetch(SUPABASE_URL + '/rest/v1/daily_kpis?order=kpi_date.desc&limit=1000', { headers: TP_HDRS_BASE });
+          const kpiRows = await res.json();
+          if (!kpiRows || !kpiRows.length) { el.innerHTML = ''; return; }
+          let filtered = perfRep === 'all' ? kpiRows : kpiRows.filter(r => r.sales_rep === perfRep);
+          const now = new Date();
+          const ws = new Date(now); ws.setDate(ws.getDate() - ws.getDay()); ws.setHours(0,0,0,0);
+          const ms = new Date(now.getFullYear(), now.getMonth(), 1);
+          const ys = new Date(now.getFullYear(), 0, 1);
+          const lws = new Date(ws); lws.setDate(lws.getDate() - 7);
+          const lms = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+          const lme = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59);
+          if (perfRange === 'wtd') filtered = filtered.filter(r => new Date(r.kpi_date) >= ws);
+          else if (perfRange === 'mtd') filtered = filtered.filter(r => new Date(r.kpi_date) >= ms);
+          else if (perfRange === 'ytd') filtered = filtered.filter(r => new Date(r.kpi_date) >= ys);
+          else if (perfRange === 'lastweek') filtered = filtered.filter(r => { const d = new Date(r.kpi_date); return d >= lws && d < ws; });
+          else if (perfRange === 'lastmonth') filtered = filtered.filter(r => { const d = new Date(r.kpi_date); return d >= lms && d <= lme; });
+          else if (perfRange === 'custom') {
+            const from = document.getElementById('tpPerfDateFrom').value;
+            const to = document.getElementById('tpPerfDateTo').value;
+            if (from && to) filtered = filtered.filter(r => r.kpi_date >= from && r.kpi_date <= to);
+          }
+          const excludeSat = document.getElementById('tpPerfExcludeSat').checked;
+          const excludeSun = document.getElementById('tpPerfExcludeSun').checked;
+          if (excludeSat || excludeSun) {
+            filtered = filtered.filter(r => {
+              const d = new Date(r.kpi_date + 'T00:00:00').getDay();
+              if (excludeSat && d === 6) return false;
+              if (excludeSun && d === 0) return false;
+              return true;
+            });
+          }
+          if (!filtered.length) { el.innerHTML = ''; return; }
+          const totalDials = filtered.reduce((s, r) => s + (r.dials || 0), 0);
+          const totalAnswers = filtered.reduce((s, r) => s + (r.answers || 0), 0);
+          const totalAppts = filtered.reduce((s, r) => s + (r.appointments || 0), 0);
+          const totalPres = filtered.reduce((s, r) => s + (r.presentations || 0), 0);
+          const totalDeals = filtered.reduce((s, r) => s + (r.deals || 0), 0);
+          const totalSpend = filtered.reduce((s, r) => s + parseFloat(r.lead_spend || 0), 0);
+          const totalDeposits = filtered.reduce((s, r) => s + parseFloat(r.deposits || 0), 0);
+          const days = filtered.length;
+          const pct = (a, b) => b > 0 ? (a / b * 100).toFixed(1) + '%' : '0%';
+          const roi = totalSpend > 0 ? ((totalDeposits - totalSpend) / totalSpend * 100).toFixed(1) : '0.0';
+          const excludeLabel = (excludeSat && excludeSun) ? ' · excl. weekends' : excludeSat ? ' · excl. Sat' : excludeSun ? ' · excl. Sun' : '';
+          let html = '<div class="tp-perf-chart-card" style="margin-top:1.5rem;"><div class="tp-perf-chart-title">KPI Conversion Funnel (' + days + ' days' + (perfRep !== 'all' ? ' · ' + perfRep : ' · All Reps') + excludeLabel + ')</div>';
+          html += '<div class="tp-perf-kpis" style="margin-bottom:1rem;">';
+          html += kpi('Avg Dials/Day', Math.round(totalDials / days), totalDials + ' total', '');
+          html += kpi('Avg Answers/Day', Math.round(totalAnswers / days), totalAnswers + ' total', '');
+          html += kpi('Avg Appts/Day', (totalAppts / days).toFixed(1), totalAppts + ' total', '');
+          html += kpi('Avg Deals/Day', (totalDeals / days).toFixed(1), totalDeals + ' total', '');
+          html += kpi('Lead Spend', '$' + fmtAP(totalSpend), '$' + fmtAP(Math.round(totalSpend / days)) + '/day', '');
+          html += kpi('Deposits', '$' + fmtAP(totalDeposits), '$' + fmtAP(Math.round(totalDeposits / days)) + '/day', '');
+          const roiCls = parseFloat(roi) > 0 ? 'up' : parseFloat(roi) < 0 ? 'down' : 'neutral';
+          html += kpi('ROI', roi + '%', '$' + fmtAP(totalDeposits) + ' on $' + fmtAP(totalSpend) + ' spend', roiCls);
+          html += '</div>';
+          html += '<div class="tp-perf-status-section"><div class="tp-perf-status-title">Conversion Rates</div><div class="tp-perf-status-bars">';
+          html += statusBar('Dials → Answers', pct(totalAnswers, totalDials).replace('%',''), 'uw');
+          html += statusBar('Answers → Appts', pct(totalAppts, totalAnswers).replace('%',''), 'app');
+          html += statusBar('Appts → Presentations', pct(totalPres, totalAppts).replace('%',''), 'paid');
+          html += statusBar('Presentations → Deals', pct(totalDeals, totalPres).replace('%',''), 'app');
+          html += '</div></div>';
+          html += '<div style="margin-top:0.5rem;font-size:0.72rem;color:#888;">Overall: ' + pct(totalDeals, totalDials) + ' of dials convert to deals</div>';
+          html += '</div>';
+          el.innerHTML = html;
+        } catch (e) { el.innerHTML = ''; console.error('TP KPI render failed:', e); }
+      }
+
+      async function loadAgentProfiles() {
+        const container = document.getElementById('tpAgentProfilesContent');
+        container.innerHTML = '<div class="tp-admin-loading">Loading...</div>';
+        try {
+          const profRes = await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?select=user_id,agent_name,comp_level,training_complete&order=agent_name.asc', { headers: TP_HDRS_BASE });
+          const profiles = profRes.ok ? await profRes.json() : [];
+          const vpRes = await fetch(SUPABASE_URL + '/rest/v1/video_progress?select=user_id,video_id', { headers: TP_HDRS_BASE });
+          const vpData = vpRes.ok ? await vpRes.json() : [];
+          const videoCounts = {};
+          vpData.forEach(row => { videoCounts[row.user_id] = (videoCounts[row.user_id] || 0) + 1; });
+          if (profiles.length === 0) {
+            container.innerHTML = '<p style="color:#888;text-align:center;padding:2rem;">No agent profiles found.</p>';
+            return;
+          }
+          let html = '<table class="tp-admin-table" style="width:100%;border-collapse:collapse;">';
+          html += '<thead><tr style="background:#f8f8fa;border-bottom:2px solid #e5e5ea;">';
+          html += '<th style="padding:0.7rem 1rem;text-align:left;font-size:0.78rem;font-weight:700;color:#555;">Agent Name</th>';
+          html += '<th style="padding:0.7rem 1rem;text-align:left;font-size:0.78rem;font-weight:700;color:#555;">Comp Level</th>';
+          html += '<th style="padding:0.7rem 1rem;text-align:left;font-size:0.78rem;font-weight:700;color:#555;">Training Progress</th>';
+          html += '<th style="padding:0.7rem 1rem;text-align:left;font-size:0.78rem;font-weight:700;color:#555;">Status</th>';
+          html += '<th style="padding:0.7rem 1rem;text-align:center;font-size:0.78rem;font-weight:700;color:#555;">Actions</th>';
+          html += '</tr></thead><tbody>';
+          profiles.forEach(p => {
+            const vCount = videoCounts[p.user_id] || 0;
+            const pct = Math.round((vCount / TP_TOTAL_TRAINING_VIDEOS) * 100);
+            const isComplete = p.training_complete === true;
+            const name = p.agent_name || 'Unknown';
+            const compLevel = p.comp_level || '—';
+            html += '<tr style="border-bottom:1px solid #eee;" data-uid="' + p.user_id + '">';
+            html += '<td style="padding:0.7rem 1rem;"><input type="text" value="' + name.replace(/"/g, '&quot;') + '" class="tp-ap-name-input" data-uid="' + p.user_id + '" style="border:1px solid #ddd;border-radius:6px;padding:0.35rem 0.6rem;font-size:0.85rem;width:160px;" /></td>';
+            html += '<td style="padding:0.7rem 1rem;"><select class="tp-ap-comp-select" data-uid="' + p.user_id + '" style="border:1px solid #ddd;border-radius:6px;padding:0.35rem 0.6rem;font-size:0.85rem;">';
+            html += '<option value="">—</option>';
+            for (let v = 65; v <= 145; v += 5) {
+              html += '<option value="' + v + '"' + (parseInt(compLevel) === v ? ' selected' : '') + '>' + v + '%</option>';
+            }
+            html += '</select></td>';
+            html += '<td style="padding:0.7rem 1rem;"><div style="display:flex;align-items:center;gap:0.5rem;">';
+            html += '<div style="flex:1;background:#f0f0f3;border-radius:100px;height:8px;overflow:hidden;max-width:120px;"><div style="height:100%;border-radius:100px;background:' + (pct >= 100 ? '#22c55e' : 'linear-gradient(90deg,#7c3aed,#a855f7)') + ';width:' + pct + '%;"></div></div>';
+            html += '<span style="font-size:0.78rem;font-weight:600;color:#888;">' + vCount + '/' + TP_TOTAL_TRAINING_VIDEOS + '</span>';
+            html += '</div></td>';
+            html += '<td style="padding:0.7rem 1rem;">';
+            if (isComplete) html += '<span style="display:inline-flex;align-items:center;gap:0.3rem;padding:0.25rem 0.7rem;border-radius:100px;background:#dcfce7;color:#16a34a;font-size:0.75rem;font-weight:700;">Active</span>';
+            else html += '<span style="display:inline-flex;align-items:center;gap:0.3rem;padding:0.25rem 0.7rem;border-radius:100px;background:#fef3c7;color:#d97706;font-size:0.75rem;font-weight:700;">In Training</span>';
+            html += '</td>';
+            html += '<td style="padding:0.7rem 1rem;text-align:center;"><div style="display:flex;gap:0.4rem;justify-content:center;flex-wrap:wrap;">';
+            html += '<button class="tp-ap-save-btn" data-uid="' + p.user_id + '" style="padding:0.3rem 0.8rem;font-size:0.75rem;font-weight:700;background:#2563eb;color:#fff;border:none;border-radius:6px;cursor:pointer;">Save</button>';
+            if (isComplete) html += '<button class="tp-ap-grant-btn" data-uid="' + p.user_id + '" data-current="true" style="padding:0.3rem 0.8rem;font-size:0.75rem;font-weight:700;background:#c0392b;color:#fff;border:none;border-radius:6px;cursor:pointer;">Revoke Access</button>';
+            else html += '<button class="tp-ap-grant-btn" data-uid="' + p.user_id + '" data-current="false" style="padding:0.3rem 0.8rem;font-size:0.75rem;font-weight:700;background:#16a34a;color:#fff;border:none;border-radius:6px;cursor:pointer;">Grant Access</button>';
+            html += '</div></td></tr>';
+          });
+          html += '</tbody></table>';
+          container.innerHTML = html;
+
+          container.querySelectorAll('.tp-ap-save-btn').forEach(btn => {
+            btn.addEventListener('click', async () => {
+              const uid = btn.dataset.uid;
+              const row = btn.closest('tr');
+              const name = row.querySelector('.tp-ap-name-input').value.trim();
+              const comp = row.querySelector('.tp-ap-comp-select').value;
+              const body = { agent_name: name };
+              if (comp) body.comp_level = parseInt(comp);
+              try {
+                await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?user_id=eq.' + uid, {
+                  method: 'PATCH', headers: TP_HDRS_WRITE, body: JSON.stringify(body)
+                });
+                btn.textContent = 'Saved!'; btn.style.background = '#16a34a';
+                setTimeout(() => { btn.textContent = 'Save'; btn.style.background = '#2563eb'; }, 1500);
+              } catch (err) { console.error(err); btn.textContent = 'Error'; }
+            });
+          });
+          container.querySelectorAll('.tp-ap-grant-btn').forEach(btn => {
+            btn.addEventListener('click', async () => {
+              const uid = btn.dataset.uid;
+              const isCurrentlyActive = btn.dataset.current === 'true';
+              const newValue = !isCurrentlyActive;
+              btn.disabled = true; btn.textContent = 'Saving...';
+              try {
+                await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?user_id=eq.' + uid, {
+                  method: 'PATCH', headers: TP_HDRS_WRITE, body: JSON.stringify({ training_complete: newValue })
+                });
+                btn.dataset.current = String(newValue);
+                const statusCell = btn.closest('tr').querySelectorAll('td')[3];
+                if (newValue) {
+                  btn.textContent = 'Revoke Access'; btn.style.background = '#c0392b';
+                  statusCell.innerHTML = '<span style="display:inline-flex;align-items:center;gap:0.3rem;padding:0.25rem 0.7rem;border-radius:100px;background:#dcfce7;color:#16a34a;font-size:0.75rem;font-weight:700;">Active</span>';
+                } else {
+                  btn.textContent = 'Grant Access'; btn.style.background = '#16a34a';
+                  statusCell.innerHTML = '<span style="display:inline-flex;align-items:center;gap:0.3rem;padding:0.25rem 0.7rem;border-radius:100px;background:#fef3c7;color:#d97706;font-size:0.75rem;font-weight:700;">In Training</span>';
+                }
+                btn.disabled = false;
+              } catch (err) { console.error(err); btn.textContent = 'Error'; btn.disabled = false; }
+            });
+          });
+        } catch (err) {
+          console.error('TP agent profiles load failed:', err);
+          container.innerHTML = '<p style="color:#c0392b;text-align:center;padding:2rem;">Failed to load agent profiles.</p>';
+        }
+      }
     })();
   </script>
 </body>
