@@ -1697,9 +1697,9 @@
 
     /* ─── Team Performance dashboard — Kairos editorial-financial design.
        Apple-rainbow accents (modern muted, lower chroma than the original).
-       Scoped to #tpatab-performance and #tpatab-agents (both use the same
-       design language) so the rest of the Sales Hub keeps its existing look. */
-    #tpatab-performance, #tpatab-agents {
+       Scoped to all three Team Performance tabs (Performance, Policies, Agents)
+       so the rest of the Sales Hub keeps its existing look. */
+    #tpatab-performance, #tpatab-agents, #tpatab-policies {
       --rb-green:   oklch(0.72 0.16 145);
       --rb-yellow:  oklch(0.82 0.14 90);
       --rb-orange:  oklch(0.74 0.16 50);
@@ -1742,7 +1742,7 @@
       position: relative;
       overflow: hidden;
     }
-    #tpatab-performance[data-tp-theme="light"], #tpatab-agents[data-tp-theme="light"] {
+    #tpatab-performance[data-tp-theme="light"], #tpatab-agents[data-tp-theme="light"], #tpatab-policies[data-tp-theme="light"] {
       --tp-bg:        #f6f5f1;
       --tp-bg-2:      #efece5;
       --tp-surface:   #ffffff;
@@ -1765,7 +1765,7 @@
       --rb-blue:   oklch(0.55 0.13 240);
     }
     /* Film grain — subtle texture on the dark surface */
-    #tpatab-performance::before, #tpatab-agents::before {
+    #tpatab-performance::before, #tpatab-agents::before, #tpatab-policies::before {
       content: ""; position: absolute; inset: 0; pointer-events: none;
       background-image:
         radial-gradient(circle at 25% 20%, var(--tp-grain) 0.5px, transparent 1px),
@@ -1773,18 +1773,18 @@
       background-size: 3px 3px, 4px 4px;
       z-index: 0;
     }
-    #tpatab-performance > *, #tpatab-agents > * { position: relative; z-index: 1; }
-    #tpDashboardRoot, #tpAgentsRoot { color: var(--tp-ink-1); font-family: var(--tp-sans); }
+    #tpatab-performance > *, #tpatab-agents > *, #tpatab-policies > *, #tpatab-policies > * { position: relative; z-index: 1; }
+    #tpDashboardRoot, #tpAgentsRoot, #tpPoliciesRoot { color: var(--tp-ink-1); font-family: var(--tp-sans); }
 
     /* Header */
-    #tpatab-performance .tp-hdr, #tpatab-agents .tp-hdr {
+    #tpatab-performance .tp-hdr, #tpatab-agents .tp-hdr, #tpatab-policies .tp-hdr {
       display: flex; align-items: flex-end; justify-content: space-between;
       gap: 24px; margin-bottom: 28px; padding-bottom: 18px;
       border-bottom: 1px solid var(--tp-hairline);
     }
-    #tpatab-performance .tp-hdr-l, #tpatab-agents .tp-hdr-l { display: flex; flex-direction: column; gap: 4px; }
-    #tpatab-performance .tp-hdr-brand, #tpatab-agents .tp-hdr-brand { display: flex; align-items: center; gap: 12px; }
-    #tpatab-performance .tp-hdr-mark, #tpatab-agents .tp-hdr-mark {
+    #tpatab-performance .tp-hdr-l, #tpatab-agents .tp-hdr-l, #tpatab-policies .tp-hdr-l { display: flex; flex-direction: column; gap: 4px; }
+    #tpatab-performance .tp-hdr-brand, #tpatab-agents .tp-hdr-brand, #tpatab-policies .tp-hdr-brand { display: flex; align-items: center; gap: 12px; }
+    #tpatab-performance .tp-hdr-mark, #tpatab-agents .tp-hdr-mark, #tpatab-policies .tp-hdr-mark {
       width: 22px; height: 22px; border-radius: 5px;
       background:
         linear-gradient(180deg,
@@ -1796,78 +1796,78 @@
           var(--rb-blue) 83.33% 100%);
       box-shadow: 0 0 0 1px var(--tp-hairline-strong);
     }
-    #tpatab-performance .tp-hdr-title, #tpatab-agents .tp-hdr-title { font-size: 20px; font-weight: 600; letter-spacing: -0.01em; color: var(--tp-ink-1); }
-    #tpatab-performance .tp-hdr-sub, #tpatab-agents .tp-hdr-sub {
+    #tpatab-performance .tp-hdr-title, #tpatab-agents .tp-hdr-title, #tpatab-policies .tp-hdr-title { font-size: 20px; font-weight: 600; letter-spacing: -0.01em; color: var(--tp-ink-1); }
+    #tpatab-performance .tp-hdr-sub, #tpatab-agents .tp-hdr-sub, #tpatab-policies .tp-hdr-sub {
       font-family: var(--tp-mono); font-size: 11px;
       color: var(--tp-ink-3); letter-spacing: 0.04em; text-transform: uppercase;
     }
-    #tpatab-performance .tp-hdr-r, #tpatab-agents .tp-hdr-r { display: flex; align-items: center; gap: 16px; }
-    #tpatab-performance .tp-hdr-time, #tpatab-agents .tp-hdr-time { font-family: var(--tp-mono); font-size: 11px; color: var(--tp-ink-3); }
-    #tpatab-performance .tp-hdr-time b, #tpatab-agents .tp-hdr-time b { color: var(--tp-ink-1); font-weight: 500; }
-    #tpatab-performance .tp-theme-toggle, #tpatab-agents .tp-theme-toggle {
+    #tpatab-performance .tp-hdr-r, #tpatab-agents .tp-hdr-r, #tpatab-policies .tp-hdr-r { display: flex; align-items: center; gap: 16px; }
+    #tpatab-performance .tp-hdr-time, #tpatab-agents .tp-hdr-time, #tpatab-policies .tp-hdr-time { font-family: var(--tp-mono); font-size: 11px; color: var(--tp-ink-3); }
+    #tpatab-performance .tp-hdr-time b, #tpatab-agents .tp-hdr-time b, #tpatab-policies .tp-hdr-time b { color: var(--tp-ink-1); font-weight: 500; }
+    #tpatab-performance .tp-theme-toggle, #tpatab-agents .tp-theme-toggle, #tpatab-policies .tp-theme-toggle {
       appearance: none; border: 1px solid var(--tp-hairline-strong);
       background: var(--tp-surface); color: var(--tp-ink-2);
       width: 34px; height: 34px; border-radius: 8px;
       display: grid; place-items: center; cursor: pointer; transition: all 120ms;
     }
-    #tpatab-performance .tp-theme-toggle:hover, #tpatab-agents .tp-theme-toggle:hover { color: var(--tp-ink-1); border-color: var(--tp-ink-3); }
+    #tpatab-performance .tp-theme-toggle:hover, #tpatab-agents .tp-theme-toggle:hover, #tpatab-policies .tp-theme-toggle:hover { color: var(--tp-ink-1); border-color: var(--tp-ink-3); }
 
     /* Filter bar */
-    #tpatab-performance .tp-filter-bar, #tpatab-agents .tp-filter-bar {
+    #tpatab-performance .tp-filter-bar, #tpatab-agents .tp-filter-bar, #tpatab-policies .tp-filter-bar {
       display: flex; align-items: center; justify-content: space-between;
       gap: 16px; margin-bottom: 20px; flex-wrap: wrap;
     }
-    #tpatab-performance .tp-tf-segment, #tpatab-agents .tp-tf-segment {
+    #tpatab-performance .tp-tf-segment, #tpatab-agents .tp-tf-segment, #tpatab-policies .tp-tf-segment {
       display: inline-flex; padding: 3px;
       background: var(--tp-surface); border: 1px solid var(--tp-hairline); border-radius: 9px;
     }
-    #tpatab-performance .tp-tf-segment button, #tpatab-agents .tp-tf-segment button {
+    #tpatab-performance .tp-tf-segment button, #tpatab-agents .tp-tf-segment button, #tpatab-policies .tp-tf-segment button {
       appearance: none; border: 0; background: transparent;
       color: var(--tp-ink-3); cursor: pointer;
       padding: 7px 16px; border-radius: 6px;
       font-family: var(--tp-mono); font-size: 11px; letter-spacing: 0.06em;
       text-transform: uppercase; transition: all 120ms;
     }
-    #tpatab-performance .tp-tf-segment button:hover, #tpatab-agents .tp-tf-segment button:hover { color: var(--tp-ink-1); }
-    #tpatab-performance .tp-tf-segment button.on, #tpatab-agents .tp-tf-segment button.on {
+    #tpatab-performance .tp-tf-segment button:hover, #tpatab-agents .tp-tf-segment button:hover, #tpatab-policies .tp-tf-segment button:hover { color: var(--tp-ink-1); }
+    #tpatab-performance .tp-tf-segment button.on, #tpatab-agents .tp-tf-segment button.on, #tpatab-policies .tp-tf-segment button.on {
       background: var(--tp-surface-3); color: var(--tp-ink-1);
       box-shadow: 0 1px 0 var(--tp-hairline-strong) inset;
     }
-    #tpatab-performance .tp-filter-pill, #tpatab-agents .tp-filter-pill {
+    #tpatab-performance .tp-filter-pill, #tpatab-agents .tp-filter-pill, #tpatab-policies .tp-filter-pill {
       display: inline-flex; align-items: center; gap: 8px;
       padding: 7px 12px 7px 14px; border-radius: 99px;
       background: color-mix(in oklch, var(--rb-blue) 14%, transparent);
       border: 1px solid color-mix(in oklch, var(--rb-blue) 32%, transparent);
       color: var(--tp-ink-1); font-size: 12px;
     }
-    #tpatab-performance .tp-filter-pill .x, #tpatab-agents .tp-filter-pill .x {
+    #tpatab-performance .tp-filter-pill .x, #tpatab-agents .tp-filter-pill .x, #tpatab-policies .tp-filter-pill .x {
       appearance: none; border: 0; background: transparent;
       color: var(--tp-ink-2); cursor: pointer; padding: 0;
       width: 16px; height: 16px; border-radius: 99px;
       display: grid; place-items: center; font-size: 14px; line-height: 1;
     }
-    #tpatab-performance .tp-filter-pill .x:hover, #tpatab-agents .tp-filter-pill .x:hover { background: var(--tp-hairline-strong); color: var(--tp-ink-1); }
+    #tpatab-performance .tp-filter-pill .x:hover, #tpatab-agents .tp-filter-pill .x:hover, #tpatab-policies .tp-filter-pill .x:hover { background: var(--tp-hairline-strong); color: var(--tp-ink-1); }
 
     /* Cards & layout */
-    #tpatab-performance .tp-grid, #tpatab-agents .tp-grid { display: grid; gap: 16px; }
-    #tpatab-performance .tp-grid-12, #tpatab-agents .tp-grid-12 { grid-template-columns: repeat(12, 1fr); }
-    #tpatab-performance .tp-card, #tpatab-agents .tp-card {
+    #tpatab-performance .tp-grid, #tpatab-agents .tp-grid, #tpatab-policies .tp-grid { display: grid; gap: 16px; }
+    #tpatab-performance .tp-grid-12, #tpatab-agents .tp-grid-12, #tpatab-policies .tp-grid-12 { grid-template-columns: repeat(12, 1fr); }
+    #tpatab-performance .tp-card, #tpatab-agents .tp-card, #tpatab-policies .tp-card {
       background: var(--tp-surface);
       border: 1px solid var(--tp-hairline);
       border-radius: var(--tp-radius);
       padding: 20px 22px;
       position: relative; overflow: hidden;
     }
-    #tpatab-performance .tp-card-hd, #tpatab-agents .tp-card-hd {
+    #tpatab-performance .tp-card-hd, #tpatab-agents .tp-card-hd, #tpatab-policies .tp-card-hd {
       display: flex; align-items: center; justify-content: space-between;
       margin-bottom: 16px;
     }
-    #tpatab-performance .tp-card-title, #tpatab-agents .tp-card-title {
+    #tpatab-performance .tp-card-title, #tpatab-agents .tp-card-title, #tpatab-policies .tp-card-title {
       font-size: 11px; font-family: var(--tp-mono);
       text-transform: uppercase; letter-spacing: 0.08em;
       color: var(--tp-ink-3); font-weight: 500;
     }
-    #tpatab-performance .tp-card-meta, #tpatab-agents .tp-card-meta {
+    #tpatab-performance .tp-card-meta, #tpatab-agents .tp-card-meta, #tpatab-policies .tp-card-meta {
       font-family: var(--tp-mono); font-size: 11px; color: var(--tp-ink-3);
     }
 
@@ -1889,8 +1889,8 @@
     #tpatab-performance .tp-ap-delta.neg { color: var(--tp-neg); background: color-mix(in oklch, var(--tp-neg) 14%, transparent); }
 
     /* Chart wrap + tooltip */
-    #tpatab-performance .tp-chart-wrap, #tpatab-agents .tp-chart-wrap { position: relative; width: 100%; }
-    #tpatab-performance .tp-chart-tip, #tpatab-agents .tp-chart-tip {
+    #tpatab-performance .tp-chart-wrap, #tpatab-agents .tp-chart-wrap, #tpatab-policies .tp-chart-wrap { position: relative; width: 100%; }
+    #tpatab-performance .tp-chart-tip, #tpatab-agents .tp-chart-tip, #tpatab-policies .tp-chart-tip {
       position: absolute; pointer-events: none;
       background: var(--tp-surface-2);
       border: 1px solid var(--tp-hairline-strong);
@@ -1900,21 +1900,21 @@
       box-shadow: 0 8px 24px rgba(0,0,0,0.3);
       z-index: 10; min-width: 120px;
     }
-    #tpatab-performance .tp-chart-tip-lbl, #tpatab-agents .tp-chart-tip-lbl { color: var(--tp-ink-3); font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
-    #tpatab-performance .tp-chart-tip-val, #tpatab-agents .tp-chart-tip-val { font-size: 14px; font-weight: 500; }
-    #tpatab-performance .tp-chart-tip-row, #tpatab-agents .tp-chart-tip-row { display: flex; align-items: center; gap: 6px; padding: 2px 0; }
-    #tpatab-performance .tp-chart-tip-row b, #tpatab-agents .tp-chart-tip-row b { margin-left: auto; }
-    #tpatab-performance .tp-dot, #tpatab-agents .tp-dot { width: 8px; height: 8px; border-radius: 99px; display: inline-block; }
+    #tpatab-performance .tp-chart-tip-lbl, #tpatab-agents .tp-chart-tip-lbl, #tpatab-policies .tp-chart-tip-lbl { color: var(--tp-ink-3); font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
+    #tpatab-performance .tp-chart-tip-val, #tpatab-agents .tp-chart-tip-val, #tpatab-policies .tp-chart-tip-val { font-size: 14px; font-weight: 500; }
+    #tpatab-performance .tp-chart-tip-row, #tpatab-agents .tp-chart-tip-row, #tpatab-policies .tp-chart-tip-row { display: flex; align-items: center; gap: 6px; padding: 2px 0; }
+    #tpatab-performance .tp-chart-tip-row b, #tpatab-agents .tp-chart-tip-row b, #tpatab-policies .tp-chart-tip-row b { margin-left: auto; }
+    #tpatab-performance .tp-dot, #tpatab-agents .tp-dot, #tpatab-policies .tp-dot { width: 8px; height: 8px; border-radius: 99px; display: inline-block; }
 
     /* Leaderboard / Agents table */
-    #tpatab-performance .tp-lb, #tpatab-agents .tp-lb { grid-column: span 7; padding: 0; }
+    #tpatab-performance .tp-lb, #tpatab-agents .tp-lb, #tpatab-policies .tp-lb { grid-column: span 7; padding: 0; }
     #tpatab-agents .tp-lb { grid-column: span 12; }
-    #tpatab-performance .tp-lb-hd, #tpatab-agents .tp-lb-hd {
+    #tpatab-performance .tp-lb-hd, #tpatab-agents .tp-lb-hd, #tpatab-policies .tp-lb-hd {
       display: flex; align-items: center; justify-content: space-between;
       padding: 18px 22px 14px; border-bottom: 1px solid var(--tp-hairline);
     }
-    #tpatab-performance .tp-lb-table, #tpatab-agents .tp-lb-table { width: 100%; border-collapse: collapse; }
-    #tpatab-performance .tp-lb-table thead th, #tpatab-agents .tp-lb-table thead th {
+    #tpatab-performance .tp-lb-table, #tpatab-agents .tp-lb-table, #tpatab-policies .tp-lb-table { width: 100%; border-collapse: collapse; }
+    #tpatab-performance .tp-lb-table thead th, #tpatab-agents .tp-lb-table thead th, #tpatab-policies .tp-lb-table thead th {
       text-align: left;
       font-family: var(--tp-mono); font-size: 10px; font-weight: 500;
       text-transform: uppercase; letter-spacing: 0.08em;
@@ -1923,35 +1923,35 @@
       border-bottom: 1px solid var(--tp-hairline);
       user-select: none; background: transparent;
     }
-    #tpatab-performance .tp-lb-table thead th:first-child, #tpatab-agents .tp-lb-table thead th:first-child { padding-left: 22px; }
-    #tpatab-performance .tp-lb-table thead th:last-child, #tpatab-agents .tp-lb-table thead th:last-child { padding-right: 22px; text-align: right; }
-    #tpatab-performance .tp-lb-table thead th.num, #tpatab-agents .tp-lb-table thead th.num { text-align: right; }
-    #tpatab-performance .tp-lb-table thead th:hover, #tpatab-agents .tp-lb-table thead th:hover { color: var(--tp-ink-1); }
-    #tpatab-performance .tp-lb-table thead th .arrow, #tpatab-agents .tp-lb-table thead th .arrow { margin-left: 4px; opacity: 0.6; }
-    #tpatab-performance .tp-lb-table tbody tr, #tpatab-agents .tp-lb-table tbody tr {
+    #tpatab-performance .tp-lb-table thead th:first-child, #tpatab-agents .tp-lb-table thead th:first-child, #tpatab-policies .tp-lb-table thead th:first-child { padding-left: 22px; }
+    #tpatab-performance .tp-lb-table thead th:last-child, #tpatab-agents .tp-lb-table thead th:last-child, #tpatab-policies .tp-lb-table thead th:last-child { padding-right: 22px; text-align: right; }
+    #tpatab-performance .tp-lb-table thead th.num, #tpatab-agents .tp-lb-table thead th.num, #tpatab-policies .tp-lb-table thead th.num { text-align: right; }
+    #tpatab-performance .tp-lb-table thead th:hover, #tpatab-agents .tp-lb-table thead th:hover, #tpatab-policies .tp-lb-table thead th:hover { color: var(--tp-ink-1); }
+    #tpatab-performance .tp-lb-table thead th .arrow, #tpatab-agents .tp-lb-table thead th .arrow, #tpatab-policies .tp-lb-table thead th .arrow { margin-left: 4px; opacity: 0.6; }
+    #tpatab-performance .tp-lb-table tbody tr, #tpatab-agents .tp-lb-table tbody tr, #tpatab-policies .tp-lb-table tbody tr {
       border-bottom: 1px solid var(--tp-hairline);
       cursor: pointer; transition: background 80ms; background: transparent;
     }
-    #tpatab-performance .tp-lb-table tbody tr:last-child, #tpatab-agents .tp-lb-table tbody tr:last-child { border-bottom: 0; }
-    #tpatab-performance .tp-lb-table tbody tr:hover, #tpatab-agents .tp-lb-table tbody tr:hover { background: var(--tp-surface-2); }
-    #tpatab-performance .tp-lb-table tbody tr.active, #tpatab-agents .tp-lb-table tbody tr.active { background: color-mix(in oklch, var(--rb-blue) 10%, var(--tp-surface)); }
-    #tpatab-performance .tp-lb-table tbody td, #tpatab-agents .tp-lb-table tbody td {
+    #tpatab-performance .tp-lb-table tbody tr:last-child, #tpatab-agents .tp-lb-table tbody tr:last-child, #tpatab-policies .tp-lb-table tbody tr:last-child { border-bottom: 0; }
+    #tpatab-performance .tp-lb-table tbody tr:hover, #tpatab-agents .tp-lb-table tbody tr:hover, #tpatab-policies .tp-lb-table tbody tr:hover { background: var(--tp-surface-2); }
+    #tpatab-performance .tp-lb-table tbody tr.active, #tpatab-agents .tp-lb-table tbody tr.active, #tpatab-policies .tp-lb-table tbody tr.active { background: color-mix(in oklch, var(--rb-blue) 10%, var(--tp-surface)); }
+    #tpatab-performance .tp-lb-table tbody td, #tpatab-agents .tp-lb-table tbody td, #tpatab-policies .tp-lb-table tbody td {
       padding: 12px 14px; font-size: 13px; vertical-align: middle;
       font-variant-numeric: tabular-nums; color: var(--tp-ink-1);
     }
-    #tpatab-performance .tp-lb-table tbody td:first-child, #tpatab-agents .tp-lb-table tbody td:first-child { padding-left: 22px; }
-    #tpatab-performance .tp-lb-table tbody td:last-child, #tpatab-agents .tp-lb-table tbody td:last-child { padding-right: 22px; text-align: right; }
-    #tpatab-performance .tp-lb-table tbody td.num, #tpatab-agents .tp-lb-table tbody td.num { text-align: right; font-family: var(--tp-mono); }
-    #tpatab-performance .tp-agt-cell, #tpatab-agents .tp-agt-cell { display: flex; align-items: center; gap: 10px; }
-    #tpatab-performance .tp-avatar, #tpatab-agents .tp-avatar {
+    #tpatab-performance .tp-lb-table tbody td:first-child, #tpatab-agents .tp-lb-table tbody td:first-child, #tpatab-policies .tp-lb-table tbody td:first-child { padding-left: 22px; }
+    #tpatab-performance .tp-lb-table tbody td:last-child, #tpatab-agents .tp-lb-table tbody td:last-child, #tpatab-policies .tp-lb-table tbody td:last-child { padding-right: 22px; text-align: right; }
+    #tpatab-performance .tp-lb-table tbody td.num, #tpatab-agents .tp-lb-table tbody td.num, #tpatab-policies .tp-lb-table tbody td.num { text-align: right; font-family: var(--tp-mono); }
+    #tpatab-performance .tp-agt-cell, #tpatab-agents .tp-agt-cell, #tpatab-policies .tp-agt-cell { display: flex; align-items: center; gap: 10px; }
+    #tpatab-performance .tp-avatar, #tpatab-agents .tp-avatar, #tpatab-policies .tp-avatar {
       width: 28px; height: 28px; border-radius: 99px;
       display: grid; place-items: center;
       font-family: var(--tp-mono); font-size: 10px; font-weight: 500;
       color: var(--tp-ink-1); border: 1px solid var(--tp-hairline-strong);
     }
-    #tpatab-performance .tp-agt-name, #tpatab-agents .tp-agt-name { font-weight: 500; color: var(--tp-ink-1); }
-    #tpatab-performance .tp-agt-tenure, #tpatab-agents .tp-agt-tenure { font-family: var(--tp-mono); font-size: 10px; color: var(--tp-ink-4); }
-    #tpatab-performance .tp-rank, #tpatab-agents .tp-rank { font-family: var(--tp-mono); font-size: 10px; color: var(--tp-ink-3); width: 18px; display: inline-block; }
+    #tpatab-performance .tp-agt-name, #tpatab-agents .tp-agt-name, #tpatab-policies .tp-agt-name { font-weight: 500; color: var(--tp-ink-1); }
+    #tpatab-performance .tp-agt-tenure, #tpatab-agents .tp-agt-tenure, #tpatab-policies .tp-agt-tenure { font-family: var(--tp-mono); font-size: 10px; color: var(--tp-ink-4); }
+    #tpatab-performance .tp-rank, #tpatab-agents .tp-rank, #tpatab-policies .tp-rank { font-family: var(--tp-mono); font-size: 10px; color: var(--tp-ink-3); width: 18px; display: inline-block; }
     #tpatab-performance .tp-dial-pct { font-family: var(--tp-mono); font-size: 13px; color: var(--tp-ink-1); }
 
     /* Carriers */
@@ -2008,7 +2008,7 @@
     #tpatab-performance .tp-ring-text { display: flex; flex-direction: column; gap: 2px; }
 
     /* Footer */
-    #tpatab-performance .tp-foot, #tpatab-agents .tp-foot {
+    #tpatab-performance .tp-foot, #tpatab-agents .tp-foot, #tpatab-policies .tp-foot {
       margin-top: 36px; padding-top: 16px;
       border-top: 1px solid var(--tp-hairline);
       display: flex; justify-content: space-between;
@@ -2127,18 +2127,388 @@
       .tp-ae-overlay { padding: 0.75rem; }
       /* Team Performance dashboard (React) — collapse to single column */
       #tpatab-performance, #tpatab-agents { padding: 16px 14px 24px; margin: 0 -8px; }
-      #tpatab-performance .tp-grid-12, #tpatab-agents .tp-grid-12 { grid-template-columns: 1fr; }
+      #tpatab-performance .tp-grid-12, #tpatab-agents .tp-grid-12, #tpatab-policies .tp-grid-12 { grid-template-columns: 1fr; }
       #tpatab-performance .tp-lb, #tpatab-performance .tp-carriers, #tpatab-performance .tp-compare, #tpatab-performance .tp-kpi-panel,
       #tpatab-agents .tp-lb { grid-column: span 1; }
       #tpatab-performance .tp-kpi-grid { grid-template-columns: repeat(2, 1fr); }
       #tpatab-performance .tp-ap-num { font-size: 28px; }
       #tpatab-performance .tp-carriers-body { flex-direction: column; align-items: stretch; gap: 16px; }
-      #tpatab-performance .tp-hdr, #tpatab-agents .tp-hdr { flex-direction: column; align-items: flex-start; gap: 12px; }
+      #tpatab-performance .tp-hdr, #tpatab-agents .tp-hdr, #tpatab-policies .tp-hdr { flex-direction: column; align-items: flex-start; gap: 12px; }
     }
     @media (max-width: 520px) {
       #panel-teamperf .tp-admin-stats { grid-template-columns: 1fr 1fr; }
       #panel-teamperf .tp-admin-stat-value { font-size: 1.1rem; }
       #tpatab-performance .tp-kpi-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ─── Policy Management — design-specific styles (claude.ai/design) ─── */
+    #tpatab-policies .tp-filters-row {
+      display: flex; align-items: flex-end; gap: 14px;
+      flex-wrap: wrap; margin-bottom: 18px;
+      position: relative; z-index: 50;
+    }
+    #tpatab-policies .tp-filter-group { display: flex; flex-direction: column; gap: 6px; }
+    #tpatab-policies .tp-filter-label-sm {
+      font-family: var(--tp-mono); font-size: 9px;
+      text-transform: uppercase; letter-spacing: 0.1em;
+      color: var(--tp-ink-4);
+    }
+    #tpatab-policies .tp-dropdown { position: relative; z-index: 1; }
+    #tpatab-policies .tp-dropdown.open { z-index: 200; }
+    #tpatab-policies .tp-dropdown-btn {
+      appearance: none;
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 8px 12px;
+      background: var(--tp-surface); border: 1px solid var(--tp-hairline);
+      color: var(--tp-ink-1); cursor: pointer;
+      border-radius: 8px;
+      font-family: var(--tp-sans); font-size: 12px;
+      min-width: 180px;
+      justify-content: space-between;
+      transition: all 120ms;
+    }
+    #tpatab-policies .tp-dropdown-btn:hover { border-color: var(--tp-hairline-strong); }
+    #tpatab-policies .tp-dropdown-btn .chev { color: var(--tp-ink-3); display: inline-flex; }
+    #tpatab-policies .tp-dropdown-panel {
+      position: absolute; top: calc(100% + 4px); left: 0;
+      z-index: 200;
+      background: var(--tp-surface); border: 1px solid var(--tp-hairline-strong);
+      border-radius: 8px; padding: 6px;
+      min-width: 240px; max-height: 320px; overflow-y: auto;
+      box-shadow: 0 16px 40px rgba(0,0,0,0.4), 0 4px 12px rgba(0,0,0,0.2);
+    }
+    #tpatab-policies .tp-dropdown-panel .opt {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 10px; border-radius: 5px; cursor: pointer;
+      font-size: 12px; color: var(--tp-ink-1);
+    }
+    #tpatab-policies .tp-dropdown-panel .opt:hover { background: var(--tp-surface-2); }
+    #tpatab-policies .tp-dropdown-panel .opt.on { background: color-mix(in oklch, var(--rb-blue) 10%, var(--tp-surface-2)); }
+    #tpatab-policies .tp-dropdown-panel .opt .check {
+      width: 14px; height: 14px; border-radius: 4px;
+      border: 1px solid var(--tp-hairline-strong);
+      display: grid; place-items: center; flex-shrink: 0;
+      background: var(--tp-surface); color: white;
+    }
+    #tpatab-policies .tp-dropdown-panel .opt.on .check {
+      background: var(--rb-blue); border-color: var(--rb-blue);
+    }
+    #tpatab-policies .tp-dropdown-panel .opt-radio {
+      width: 14px; height: 14px; border-radius: 99px;
+      border: 1px solid var(--tp-hairline-strong); flex-shrink: 0;
+      position: relative;
+    }
+    #tpatab-policies .tp-dropdown-panel .opt.on .opt-radio { border-color: var(--rb-blue); }
+    #tpatab-policies .tp-dropdown-panel .opt.on .opt-radio::after {
+      content: ""; position: absolute; inset: 3px;
+      border-radius: 99px; background: var(--rb-blue);
+    }
+    #tpatab-policies .tp-dropdown-panel .opt .opt-meta {
+      margin-left: auto; font-family: var(--tp-mono); font-size: 10px; color: var(--tp-ink-4);
+    }
+    #tpatab-policies .tp-dropdown-panel .sep { height: 1px; background: var(--tp-hairline); margin: 4px 0; }
+
+    /* KPI strip on the policies tab */
+    #tpatab-policies .tp-kpi-strip {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px;
+      background: var(--tp-hairline);
+      border: 1px solid var(--tp-hairline);
+      border-radius: var(--tp-radius);
+      overflow: hidden;
+      margin-bottom: 18px;
+    }
+    #tpatab-policies .tp-kpi-strip .tp-kpi-cell { min-height: 88px; padding: 14px 18px; background: var(--tp-surface); display:flex; flex-direction:column; gap:8px; }
+    #tpatab-policies .tp-kpi-strip .tp-kpi-lbl { font-family: var(--tp-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--tp-ink-3); display: flex; align-items: center; gap: 6px; }
+    #tpatab-policies .tp-kpi-strip .tp-kpi-lbl .swatch { width: 6px; height: 6px; border-radius: 2px; display: inline-block; }
+    #tpatab-policies .tp-kpi-strip .tp-kpi-val { font-family: var(--tp-mono); font-size: 22px; font-weight: 500; color: var(--tp-ink-1); letter-spacing: -0.01em; font-variant-numeric: tabular-nums; line-height: 1; margin-top: 4px; }
+    #tpatab-policies .tp-kpi-strip .tp-kpi-sub { font-family: var(--tp-mono); font-size: 11px; color: var(--tp-ink-3); }
+    #tpatab-policies .tp-kpi-strip .tp-kpi-sub b { color: var(--tp-ink-1); font-weight: 500; }
+
+    /* Policy table */
+    #tpatab-policies .tp-policy-table-wrap { grid-column: span 12; padding: 0; overflow: hidden; }
+    #tpatab-policies .tp-pt-hd {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 22px 14px;
+      border-bottom: 1px solid var(--tp-hairline);
+      flex-wrap: wrap; gap: 12px;
+    }
+    #tpatab-policies .tp-pt-hd-l { display: flex; align-items: baseline; gap: 14px; }
+    #tpatab-policies .tp-pt-count { font-family: var(--tp-mono); font-size: 11px; color: var(--tp-ink-3); letter-spacing: 0.04em; }
+    #tpatab-policies .tp-pt-count b { color: var(--tp-ink-1); font-weight: 500; }
+    #tpatab-policies .tp-pt-search {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 7px 12px; border-radius: 8px;
+      background: var(--tp-surface-2); border: 1px solid var(--tp-hairline);
+      color: var(--tp-ink-2); width: 240px;
+    }
+    #tpatab-policies .tp-pt-search input {
+      background: transparent; border: 0; outline: 0; color: var(--tp-ink-1);
+      font-family: var(--tp-sans); font-size: 12px; flex: 1; padding: 0;
+    }
+    #tpatab-policies .tp-pt-search input::placeholder { color: var(--tp-ink-4); }
+    #tpatab-policies .tp-pt-scroll { overflow-x: auto; }
+    #tpatab-policies .tp-pt {
+      width: 100%; border-collapse: collapse;
+      min-width: 1400px;
+    }
+    #tpatab-policies .tp-pt thead th {
+      position: sticky; top: 0;
+      background: var(--tp-surface);
+      text-align: left;
+      font-family: var(--tp-mono); font-size: 10px; font-weight: 500;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      color: var(--tp-ink-3);
+      padding: 11px 12px;
+      border-bottom: 1px solid var(--tp-hairline);
+      white-space: nowrap;
+      cursor: pointer; user-select: none;
+    }
+    #tpatab-policies .tp-pt thead th:first-child { padding-left: 22px; }
+    #tpatab-policies .tp-pt thead th:last-child { padding-right: 22px; }
+    #tpatab-policies .tp-pt thead th.num { text-align: right; }
+    #tpatab-policies .tp-pt thead th:hover { color: var(--tp-ink-1); }
+    #tpatab-policies .tp-pt thead th .arrow { margin-left: 4px; opacity: 0.6; }
+    #tpatab-policies .tp-pt tbody tr {
+      border-bottom: 1px solid var(--tp-hairline);
+      transition: background 80ms;
+    }
+    #tpatab-policies .tp-pt tbody tr:last-child { border-bottom: 0; }
+    #tpatab-policies .tp-pt tbody tr:hover { background: var(--tp-surface-2); }
+    #tpatab-policies .tp-pt tbody td {
+      padding: 12px;
+      font-size: 13px;
+      vertical-align: middle;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+      color: var(--tp-ink-1);
+    }
+    #tpatab-policies .tp-pt tbody td:first-child { padding-left: 22px; }
+    #tpatab-policies .tp-pt tbody td:last-child { padding-right: 22px; }
+    #tpatab-policies .tp-pt tbody td.num { text-align: right; font-family: var(--tp-mono); }
+    #tpatab-policies .tp-pt tbody td.mono { font-family: var(--tp-mono); font-size: 12px; color: var(--tp-ink-2); }
+    #tpatab-policies .tp-pt-empty { padding: 60px 22px; text-align: center; font-family: var(--tp-mono); font-size: 12px; color: var(--tp-ink-3); }
+
+    #tpatab-policies .tp-cell-date { display: flex; flex-direction: column; gap: 2px; }
+    #tpatab-policies .tp-cell-date .d { font-family: var(--tp-mono); font-size: 12px; color: var(--tp-ink-1); }
+    #tpatab-policies .tp-cell-date .day { font-family: var(--tp-mono); font-size: 10px; color: var(--tp-ink-4); text-transform: uppercase; letter-spacing: 0.06em; }
+    #tpatab-policies .tp-cell-client { display: flex; flex-direction: column; gap: 2px; min-width: 160px; }
+    #tpatab-policies .tp-cell-client .name { font-weight: 500; color: var(--tp-ink-1); font-size: 13px; }
+    #tpatab-policies .tp-cell-client .phone { font-family: var(--tp-mono); font-size: 11px; color: var(--tp-ink-3); }
+    #tpatab-policies .tp-cell-rep { display: flex; align-items: center; gap: 10px; min-width: 150px; }
+    #tpatab-policies .tp-cell-rep .name { font-weight: 500; color: var(--tp-ink-1); }
+    #tpatab-policies .tp-policy-num { font-family: var(--tp-mono); font-size: 11px; color: var(--tp-ink-2); letter-spacing: 0.02em; }
+
+    /* Status badges (3 statuses real to saleshub: Underwriting / Approved / Issue Paid) */
+    #tpatab-policies .tp-status-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 10px 4px 8px;
+      border-radius: 99px;
+      font-family: var(--tp-mono); font-size: 10px;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      font-weight: 500; border: 1px solid transparent;
+      white-space: nowrap;
+    }
+    #tpatab-policies .tp-status-badge .s-dot { width: 6px; height: 6px; border-radius: 99px; display: inline-block; }
+    #tpatab-policies .tp-status-underwriting { color: var(--rb-yellow); background: color-mix(in oklch, var(--rb-yellow) 14%, transparent); border-color: color-mix(in oklch, var(--rb-yellow) 32%, transparent); }
+    #tpatab-policies .tp-status-approved    { color: var(--rb-green);  background: color-mix(in oklch, var(--rb-green) 12%, transparent);  border-color: color-mix(in oklch, var(--rb-green) 28%, transparent); }
+    #tpatab-policies .tp-status-paid        { color: var(--rb-purple); background: color-mix(in oklch, var(--rb-purple) 14%, transparent); border-color: color-mix(in oklch, var(--rb-purple) 32%, transparent); }
+
+    /* Row actions */
+    #tpatab-policies .tp-actions-cell { position: relative; text-align: right; }
+    #tpatab-policies .tp-btn-icon {
+      appearance: none; border: 1px solid var(--tp-hairline);
+      background: var(--tp-surface-2); color: var(--tp-ink-2);
+      width: 28px; height: 28px; border-radius: 6px;
+      display: inline-grid; place-items: center; cursor: pointer;
+      transition: all 120ms;
+    }
+    #tpatab-policies .tp-btn-icon:hover { color: var(--tp-ink-1); border-color: var(--tp-hairline-strong); background: var(--tp-surface-3); }
+    #tpatab-policies .tp-btn-icon + .tp-btn-icon { margin-left: 4px; }
+    #tpatab-policies .tp-row-menu {
+      position: absolute; right: 22px; top: calc(100% - 6px);
+      z-index: 50;
+      background: var(--tp-surface); border: 1px solid var(--tp-hairline-strong);
+      border-radius: 8px; padding: 4px;
+      min-width: 200px;
+      box-shadow: 0 12px 32px rgba(0,0,0,0.4), 0 2px 8px rgba(0,0,0,0.2);
+    }
+    #tpatab-policies .tp-row-menu button {
+      display: flex; align-items: center; gap: 10px;
+      width: 100%; appearance: none; border: 0; background: transparent;
+      color: var(--tp-ink-1); cursor: pointer;
+      padding: 8px 10px; border-radius: 5px;
+      font-family: var(--tp-sans); font-size: 12px;
+      text-align: left;
+    }
+    #tpatab-policies .tp-row-menu button:hover { background: var(--tp-surface-2); }
+    #tpatab-policies .tp-row-menu button.danger { color: var(--tp-neg); }
+    #tpatab-policies .tp-row-menu .sep { height: 1px; background: var(--tp-hairline); margin: 4px 0; }
+    #tpatab-policies .tp-row-menu .ico { color: var(--tp-ink-3); width: 14px; height: 14px; flex-shrink: 0; }
+
+    /* Generic buttons used by filter row + modal */
+    #tpatab-policies .tp-button {
+      appearance: none; border: 1px solid var(--tp-hairline-strong);
+      background: var(--tp-surface); color: var(--tp-ink-1);
+      padding: 9px 16px; border-radius: 8px;
+      font-family: var(--tp-sans); font-size: 12px; font-weight: 500;
+      cursor: pointer; transition: all 120ms;
+    }
+    #tpatab-policies .tp-button:hover { background: var(--tp-surface-3); }
+    #tpatab-policies .tp-button.primary { background: var(--tp-ink-1); color: var(--tp-bg); border-color: var(--tp-ink-1); }
+    #tpatab-policies .tp-button.primary:hover { opacity: 0.9; }
+    #tpatab-policies .tp-button.ghost { background: transparent; }
+
+    /* Pagination */
+    #tpatab-policies .tp-pt-foot {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 22px;
+      border-top: 1px solid var(--tp-hairline);
+      font-family: var(--tp-mono); font-size: 11px; color: var(--tp-ink-3);
+      flex-wrap: wrap; gap: 10px;
+    }
+    #tpatab-policies .tp-pager { display: flex; align-items: center; gap: 6px; }
+    #tpatab-policies .tp-pager button {
+      appearance: none; border: 1px solid var(--tp-hairline);
+      background: var(--tp-surface); color: var(--tp-ink-2);
+      padding: 5px 10px; border-radius: 6px;
+      font-family: var(--tp-mono); font-size: 11px;
+      cursor: pointer; transition: all 120ms;
+    }
+    #tpatab-policies .tp-pager button:hover:not(:disabled) { color: var(--tp-ink-1); border-color: var(--tp-hairline-strong); }
+    #tpatab-policies .tp-pager button:disabled { opacity: 0.4; cursor: not-allowed; }
+    #tpatab-policies .tp-pager .current { color: var(--tp-ink-1); background: var(--tp-surface-3); padding: 5px 10px; border-radius: 6px; }
+
+    /* ─── Edit modal (centered, portaled to body) ─── */
+    .tp-modal-layer {
+      position: fixed; inset: 0; z-index: 10000;
+      display: grid; place-items: center; padding: 24px;
+      font-family: var(--tp-sans), 'Geist', system-ui, sans-serif;
+      --tp-mono: 'JetBrains Mono', ui-monospace, monospace;
+      --tp-sans: 'Geist', 'Inter', system-ui, sans-serif;
+    }
+    .tp-modal-layer[data-tp-theme="light"] {
+      --tp-bg: #f6f5f1; --tp-bg-2: #efece5; --tp-surface: #ffffff;
+      --tp-surface-2: #fbfaf6; --tp-surface-3: #f1efe8;
+      --tp-hairline: rgba(15,12,8,0.08); --tp-hairline-strong: rgba(15,12,8,0.16);
+      --tp-ink-1: #14130f; --tp-ink-2: rgba(20,19,15,0.74); --tp-ink-3: rgba(20,19,15,0.5); --tp-ink-4: rgba(20,19,15,0.32);
+      --rb-blue: oklch(0.55 0.13 240); --rb-green: oklch(0.55 0.15 145); --rb-yellow: oklch(0.7 0.14 85); --rb-purple: oklch(0.5 0.15 305);
+    }
+    .tp-modal-layer[data-tp-theme="dark"] {
+      --tp-bg: #0d0e10; --tp-bg-2: #131418; --tp-surface: #16181d;
+      --tp-surface-2: #1c1f26; --tp-surface-3: #232730;
+      --tp-hairline: rgba(255,255,255,0.07); --tp-hairline-strong: rgba(255,255,255,0.13);
+      --tp-ink-1: #f3f3f1; --tp-ink-2: rgba(243,243,241,0.72); --tp-ink-3: rgba(243,243,241,0.45); --tp-ink-4: rgba(243,243,241,0.28);
+      --rb-blue: oklch(0.68 0.13 240); --rb-green: oklch(0.72 0.16 145); --rb-yellow: oklch(0.82 0.14 90); --rb-purple: oklch(0.62 0.15 305);
+    }
+    .tp-modal-backdrop {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.55);
+      backdrop-filter: blur(3px);
+      animation: tpModalFade 140ms ease-out;
+    }
+    .tp-modal {
+      position: relative;
+      width: 560px; max-width: 100%;
+      max-height: calc(100vh - 48px);
+      background: var(--tp-bg-2);
+      border: 1px solid var(--tp-hairline-strong);
+      border-radius: 12px;
+      display: flex; flex-direction: column;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.5), 0 8px 24px rgba(0,0,0,0.3);
+      overflow: hidden;
+      color: var(--tp-ink-1);
+      animation: tpModalPop 180ms cubic-bezier(0.2, 0.7, 0.2, 1.05);
+    }
+    @keyframes tpModalFade { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes tpModalPop { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
+    .tp-drawer-hd {
+      padding: 20px 24px 16px;
+      border-bottom: 1px solid var(--tp-hairline);
+      display: flex; align-items: flex-start; justify-content: space-between;
+      gap: 12px;
+    }
+    .tp-drawer-hd h3 { margin: 0; font-size: 16px; font-weight: 600; letter-spacing: -0.01em; color: var(--tp-ink-1); }
+    .tp-drawer-hd .meta { font-family: var(--tp-mono); font-size: 11px; color: var(--tp-ink-3); margin-top: 4px; }
+    .tp-drawer-body {
+      flex: 1; overflow-y: auto;
+      padding: 20px 24px;
+      display: flex; flex-direction: column; gap: 22px;
+    }
+    .tp-dr-section-title {
+      font-family: var(--tp-mono); font-size: 10px;
+      text-transform: uppercase; letter-spacing: 0.1em;
+      color: var(--tp-ink-4); margin-bottom: 10px;
+    }
+    .tp-dr-row {
+      display: flex; justify-content: space-between; align-items: baseline;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--tp-hairline);
+      gap: 12px;
+    }
+    .tp-dr-row:last-child { border-bottom: 0; }
+    .tp-dr-row .k { font-size: 12px; color: var(--tp-ink-3); font-family: var(--tp-mono); }
+    .tp-dr-row .v { font-size: 13px; color: var(--tp-ink-1); text-align: right; }
+    .tp-dr-row .v.mono { font-family: var(--tp-mono); }
+    .tp-dr-input {
+      width: 100%; appearance: none;
+      background: var(--tp-surface);
+      border: 1px solid var(--tp-hairline);
+      color: var(--tp-ink-1);
+      border-radius: 6px;
+      padding: 8px 10px;
+      font-family: var(--tp-sans); font-size: 13px;
+      outline: none;
+    }
+    .tp-dr-input:focus { border-color: var(--rb-blue); }
+    .tp-dr-input.mono { font-family: var(--tp-mono); font-size: 12px; }
+    .tp-dr-field { display: flex; flex-direction: column; gap: 6px; }
+    .tp-dr-field label {
+      font-family: var(--tp-mono); font-size: 10px;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      color: var(--tp-ink-4);
+    }
+    .tp-dr-status-row { display: flex; gap: 6px; flex-wrap: wrap; }
+    .tp-dr-status-row button {
+      appearance: none; border: 1px solid var(--tp-hairline);
+      background: var(--tp-surface); color: var(--tp-ink-2);
+      padding: 6px 12px; border-radius: 99px;
+      font-family: var(--tp-mono); font-size: 10px;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      cursor: pointer; transition: all 120ms;
+    }
+    .tp-dr-status-row button:hover { color: var(--tp-ink-1); }
+    .tp-dr-status-row button.on {
+      color: var(--tp-ink-1);
+      border-color: var(--tp-hairline-strong);
+      background: var(--tp-surface-3);
+    }
+    .tp-drawer-foot {
+      padding: 14px 24px;
+      border-top: 1px solid var(--tp-hairline);
+      display: flex; gap: 10px; justify-content: flex-end;
+      background: var(--tp-bg);
+    }
+    .tp-modal-btn {
+      appearance: none; border: 1px solid var(--tp-hairline-strong);
+      background: var(--tp-surface); color: var(--tp-ink-1);
+      padding: 9px 16px; border-radius: 8px;
+      font-family: var(--tp-sans); font-size: 12px; font-weight: 500;
+      cursor: pointer; transition: all 120ms;
+    }
+    .tp-modal-btn:hover { background: var(--tp-surface-3); }
+    .tp-modal-btn.primary { background: var(--tp-ink-1); color: var(--tp-bg); border-color: var(--tp-ink-1); }
+    .tp-modal-btn.primary:hover { opacity: 0.9; }
+    .tp-modal-btn.ghost { background: transparent; }
+    .tp-modal-btn-x {
+      appearance: none; border: 1px solid var(--tp-hairline);
+      background: var(--tp-surface-2); color: var(--tp-ink-2);
+      width: 28px; height: 28px; border-radius: 6px;
+      display: inline-grid; place-items: center; cursor: pointer;
+    }
+    .tp-modal-btn-x:hover { color: var(--tp-ink-1); }
+
+    @media (max-width: 1100px) {
+      #tpatab-policies .tp-kpi-strip { grid-template-columns: repeat(2, 1fr); }
     }
 
     @media print {
@@ -6307,42 +6677,9 @@
             <button class="tp-admin-tab" data-tpatab="agents">Agent Profiles</button>
           </div>
 
-          <!-- Policies tab -->
+          <!-- Policies tab — rendered by the React app at #tpPoliciesRoot -->
           <div class="tp-admin-panel" id="tpatab-policies">
-            <div class="tp-admin-header">
-              <div>
-                <div class="tp-admin-title">Sales Admin</div>
-                <div class="tp-admin-subtitle">View, edit, and manage all agent policies</div>
-              </div>
-              <button class="tp-admin-add-btn" id="tpAddRecordBtn">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                Add Record
-              </button>
-            </div>
-            <div class="tp-admin-stats" id="tpAdminStats"></div>
-            <div class="tp-admin-filters">
-              <span class="tp-admin-filter-label">Time:</span>
-              <div class="tp-admin-filter-group" id="tpAdminTimeFilters">
-                <button class="tp-af active" data-range="all">All</button>
-                <button class="tp-af" data-range="week">This Week</button>
-                <button class="tp-af" data-range="month">This Month</button>
-                <button class="tp-af" data-range="ytd">YTD</button>
-              </div>
-              <span class="tp-admin-filter-label" style="margin-left:0.5rem;">Rep:</span>
-              <select class="tp-admin-rep-select" id="tpAdminRepFilter">
-                <option value="all">All Reps</option>
-              </select>
-              <span class="tp-admin-filter-label" style="margin-left:0.5rem;">Status:</span>
-              <div class="tp-admin-filter-group" id="tpAdminStatusFilters">
-                <button class="tp-af active" data-status="all">All</button>
-                <button class="tp-af" data-status="Underwriting">UW</button>
-                <button class="tp-af" data-status="Approved">Approved</button>
-                <button class="tp-af" data-status="Issue Paid">Paid</button>
-              </div>
-            </div>
-            <div class="tp-admin-table-wrap">
-              <div id="tpAdminTableContent"><div class="tp-admin-loading">Loading...</div></div>
-            </div>
+            <div id="tpPoliciesRoot"></div>
           </div>
 
           <!-- Performance tab — rendered by the React app at #tpDashboardRoot -->
@@ -6354,55 +6691,6 @@
           <div class="tp-admin-panel" id="tpatab-agents">
             <div id="tpAgentsRoot"></div>
           </div>
-        </div>
-      </div>
-
-      <!-- Edit modal (Team Performance) -->
-      <div class="tp-ae-overlay" id="tpAeOverlay">
-        <div class="tp-ae-modal">
-          <h3>Edit Policy</h3>
-          <form id="tpAeForm">
-            <div class="tp-ae-grid">
-              <div class="tp-ae-field"><label>Sales Rep</label><input type="text" id="tpAeRep" required /></div>
-              <div class="tp-ae-field"><label>Client Name</label><input type="text" id="tpAeClient" required /></div>
-              <div class="tp-ae-field"><label>Phone</label><input type="tel" id="tpAePhone" /></div>
-              <div class="tp-ae-field"><label>Annual Premium</label><input type="number" id="tpAeAP" step="0.01" required /></div>
-              <div class="tp-ae-field"><label>Policy Number</label><input type="text" id="tpAePolicy" required /></div>
-              <div class="tp-ae-field"><label>Carrier</label><select id="tpAeCarrier"></select></div>
-              <div class="tp-ae-field"><label>Product Type</label><select id="tpAeProduct"></select></div>
-              <div class="tp-ae-field"><label>Effective Date</label><input type="date" id="tpAeEffectiveDate" /></div>
-              <div class="tp-ae-field"><label>Status</label><select id="tpAeStatus"><option value="Underwriting">Underwriting</option><option value="Approved">Approved</option><option value="Issue Paid">Issue Paid</option></select></div>
-              <div class="tp-ae-btns">
-                <button type="button" class="tp-ae-cancel" id="tpAeCancel">Cancel</button>
-                <button type="submit" class="tp-ae-save">Save Changes</button>
-              </div>
-            </div>
-          </form>
-        </div>
-      </div>
-
-      <!-- Add modal (Team Performance) -->
-      <div class="tp-ae-overlay" id="tpAddOverlay">
-        <div class="tp-ae-modal">
-          <h3>Add New Record</h3>
-          <form id="tpAddForm">
-            <div class="tp-ae-grid">
-              <div class="tp-ae-field"><label>Sales Rep</label><select id="tpAddRep" required><option value="">Select agent...</option></select></div>
-              <input type="hidden" id="tpAddUserId" />
-              <div class="tp-ae-field"><label>Client Name</label><input type="text" id="tpAddClient" required /></div>
-              <div class="tp-ae-field"><label>Phone</label><input type="tel" id="tpAddPhone" /></div>
-              <div class="tp-ae-field"><label>Annual Premium</label><input type="number" id="tpAddAP" step="0.01" required /></div>
-              <div class="tp-ae-field"><label>Policy Number</label><input type="text" id="tpAddPolicy" required /></div>
-              <div class="tp-ae-field"><label>Carrier</label><select id="tpAddCarrier"></select></div>
-              <div class="tp-ae-field"><label>Product Type</label><select id="tpAddProduct"></select></div>
-              <div class="tp-ae-field"><label>Effective Date</label><input type="date" id="tpAddEffectiveDate" /></div>
-              <div class="tp-ae-field"><label>Status</label><select id="tpAddStatus"><option value="Underwriting">Underwriting</option><option value="Approved">Approved</option><option value="Issue Paid">Issue Paid</option></select></div>
-              <div class="tp-ae-btns">
-                <button type="button" class="tp-ae-cancel" id="tpAddCancel">Cancel</button>
-                <button type="submit" class="tp-ae-save">Add Record</button>
-              </div>
-            </div>
-          </form>
         </div>
       </div>
     </div>
@@ -13840,48 +14128,34 @@
       exportBtn.addEventListener('click', exportPdf);
     })();
 
-    // ─── TEAM PERFORMANCE PANEL (admin-only — moved from admin-sales.html) ───
-    // Wrapped in an IIFE so locals stay isolated. Visibility is gated by
-    // updateAuthUI() which toggles the sidebar button + access check below;
-    // the JS gate inside loadTeamPerf() is defense-in-depth.
+    // ─── TEAM PERFORMANCE PANEL — admin gate + sub-tab switcher ───
+    // Each sub-tab (Policies / Performance / Agents) renders into a React
+    // mount in the next <script> block. This IIFE only owns the admin email
+    // gate, tab switching, and the public loadTeamPerf() entry point.
     (function () {
       const TP_ADMIN_EMAILS = ['dev@kairos-financial.com'];
-      const TP_HDRS_BASE = { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY };
-      const TP_HDRS_WRITE = Object.assign({}, TP_HDRS_BASE, { 'Content-Type': 'application/json', 'Prefer': 'return=minimal' });
-      const TP_CARRIERS = ['Mutual of Omaha', 'Americo', 'Transamerica', 'AmAm', 'Corebridge', 'Chubb', 'Ethos', 'Aetna', 'InstaBrain', 'Banner', 'AHL', 'F&G', 'KCL', 'Royal Neighbors', 'Cica', 'Baltimore Life', 'Foresters', 'Liberty', 'Liberty Bankers', 'UHL'];
-      const TP_PRODUCT_TYPES = ['Whole Life', 'Term', 'IUL', 'Health/Accidental'];
-      const TP_TOTAL_TRAINING_VIDEOS = 24;
-
-      let allData = [];
-      let filteredData = [];
-      let currentRange = 'all';
-      let currentRep = 'all';
-      let currentStatus = 'all';
-      let sortCol = 'created_at';
-      let sortDir = 'desc';
-      let editId = null;
-      let userList = [];
-      let perfRep = 'all';
-      let perfRange = 'ytd';
       let initialized = false;
 
-      function escTp(s) { return (s || '').toString().replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-      function fmtAP(n) { return Math.round(n).toLocaleString('en-US'); }
-      function fillSel(id, items) {
-        const s = document.getElementById(id);
-        if (!s) return;
-        s.innerHTML = '';
-        items.forEach(i => { const o = document.createElement('option'); o.value = i; o.textContent = i; s.appendChild(o); });
-      }
-
       function isAdmin() {
-        // updateAuthUI() mirrors `currentUser` (a `let` in the outer script)
-        // onto window so this cross-script IIFE can read it.
         const u = window.currentUser;
         return !!(u && TP_ADMIN_EMAILS.includes((u.email || '').toLowerCase()));
       }
 
-      // Public entry point — called from activatePanel('teamperf').
+      function wireUp() {
+        document.querySelectorAll('#panel-teamperf .tp-admin-tab').forEach(tab => {
+          tab.addEventListener('click', () => {
+            document.querySelectorAll('#panel-teamperf .tp-admin-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('#panel-teamperf .tp-admin-panel').forEach(p => p.classList.remove('active'));
+            tab.classList.add('active');
+            const which = tab.dataset.tpatab;
+            document.getElementById('tpatab-' + which).classList.add('active');
+            if (which === 'performance' && window.tpMountDashboard) window.tpMountDashboard();
+            if (which === 'agents' && window.tpMountAgents) window.tpMountAgents();
+            if (which === 'policies' && window.tpMountPolicies) window.tpMountPolicies();
+          });
+        });
+      }
+
       window.loadTeamPerf = function () {
         const gate = document.getElementById('tpGate');
         const content = document.getElementById('tpContent');
@@ -13894,305 +14168,19 @@
         gate.style.display = 'none';
         content.style.display = 'block';
         if (!initialized) { wireUp(); initialized = true; }
-        // Policies tab still uses the IIFE-driven loadAll(); the
-        // Performance tab is the React app at #tpDashboardRoot, mounted via
-        // window.tpMountDashboard() (idempotent).
-        loadAll();
+        // Performance is the default-active tab — mount it first. Policies +
+        // Agents lazy-mount when their tabs are clicked.
         if (window.tpMountDashboard) window.tpMountDashboard();
       };
-
-      function wireUp() {
-        fillSel('tpAeCarrier', TP_CARRIERS); fillSel('tpAeProduct', TP_PRODUCT_TYPES);
-        fillSel('tpAddCarrier', TP_CARRIERS); fillSel('tpAddProduct', TP_PRODUCT_TYPES);
-
-        // Sub-tabs
-        document.querySelectorAll('#panel-teamperf .tp-admin-tab').forEach(tab => {
-          tab.addEventListener('click', () => {
-            document.querySelectorAll('#panel-teamperf .tp-admin-tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('#panel-teamperf .tp-admin-panel').forEach(p => p.classList.remove('active'));
-            tab.classList.add('active');
-            const which = tab.dataset.tpatab;
-            document.getElementById('tpatab-' + which).classList.add('active');
-            // The Performance + Agent Profiles tabs are owned by the
-            // KairosDashboard React app (see below). Notify it so it can
-            // mount the right tree on first open.
-            if (which === 'performance' && window.tpMountDashboard) window.tpMountDashboard();
-            if (which === 'agents' && window.tpMountAgents) window.tpMountAgents();
-          });
-        });
-
-        // Filters
-        document.querySelectorAll('#tpAdminTimeFilters .tp-af').forEach(b => {
-          b.addEventListener('click', () => {
-            document.querySelectorAll('#tpAdminTimeFilters .tp-af').forEach(x => x.classList.remove('active'));
-            b.classList.add('active'); currentRange = b.dataset.range; applyFilters();
-          });
-        });
-        document.querySelectorAll('#tpAdminStatusFilters .tp-af').forEach(b => {
-          b.addEventListener('click', () => {
-            document.querySelectorAll('#tpAdminStatusFilters .tp-af').forEach(x => x.classList.remove('active'));
-            b.classList.add('active'); currentStatus = b.dataset.status; applyFilters();
-          });
-        });
-        document.getElementById('tpAdminRepFilter').addEventListener('change', (e) => { currentRep = e.target.value; applyFilters(); });
-
-        // Edit modal
-        const aeOverlay = document.getElementById('tpAeOverlay');
-        document.getElementById('tpAeCancel').addEventListener('click', () => aeOverlay.classList.remove('open'));
-        aeOverlay.addEventListener('click', (e) => { if (e.target === aeOverlay) aeOverlay.classList.remove('open'); });
-        document.getElementById('tpAeForm').addEventListener('submit', async (e) => {
-          e.preventDefault();
-          await fetch(SUPABASE_URL + '/rest/v1/policies?id=eq.' + editId, {
-            method: 'PATCH', headers: TP_HDRS_WRITE,
-            body: JSON.stringify({
-              sales_rep: document.getElementById('tpAeRep').value,
-              client_name: document.getElementById('tpAeClient').value,
-              phone: document.getElementById('tpAePhone').value || null,
-              annual_premium: parseFloat(document.getElementById('tpAeAP').value),
-              policy_number: document.getElementById('tpAePolicy').value,
-              carrier: document.getElementById('tpAeCarrier').value,
-              product_type: document.getElementById('tpAeProduct').value,
-              effective_date: document.getElementById('tpAeEffectiveDate').value || null,
-              status: document.getElementById('tpAeStatus').value
-            })
-          });
-          aeOverlay.classList.remove('open');
-          loadAll();
-        });
-
-        // Add modal
-        const addOverlay = document.getElementById('tpAddOverlay');
-        document.getElementById('tpAddRecordBtn').addEventListener('click', () => addOverlay.classList.add('open'));
-        document.getElementById('tpAddCancel').addEventListener('click', () => addOverlay.classList.remove('open'));
-        addOverlay.addEventListener('click', (e) => { if (e.target === addOverlay) addOverlay.classList.remove('open'); });
-        document.getElementById('tpAddForm').addEventListener('submit', async (e) => {
-          e.preventDefault();
-          const repSel = document.getElementById('tpAddRep');
-          const selectedOption = repSel.options[repSel.selectedIndex];
-          const userId = repSel.value;
-          const repName = selectedOption.dataset.name || '';
-          await fetch(SUPABASE_URL + '/rest/v1/policies', {
-            method: 'POST', headers: TP_HDRS_WRITE,
-            body: JSON.stringify({
-              user_id: userId || null,
-              sales_rep: repName,
-              client_name: document.getElementById('tpAddClient').value,
-              phone: document.getElementById('tpAddPhone').value || null,
-              annual_premium: parseFloat(document.getElementById('tpAddAP').value),
-              policy_number: document.getElementById('tpAddPolicy').value,
-              carrier: document.getElementById('tpAddCarrier').value,
-              product_type: document.getElementById('tpAddProduct').value,
-              effective_date: document.getElementById('tpAddEffectiveDate').value || null,
-              status: document.getElementById('tpAddStatus').value
-            })
-          });
-          addOverlay.classList.remove('open');
-          e.target.reset();
-          loadAll();
-        });
-
-        // Esc closes modals
-        document.addEventListener('keydown', (e) => {
-          if (e.key === 'Escape') { aeOverlay.classList.remove('open'); addOverlay.classList.remove('open'); }
-        });
-
-        // Performance + Agent Profiles tabs are React-rendered (see the
-        // KairosDashboard IIFE below) — no DOM controls to wire up here.
-      }
-
-      async function loadUserList() {
-        try {
-          const res = await fetch(SUPABASE_URL + '/rest/v1/user_list?select=*&order=name.asc', { headers: TP_HDRS_BASE });
-          userList = await res.json();
-        } catch (e) { userList = []; }
-        const sel = document.getElementById('tpAddRep');
-        if (!sel) return;
-        sel.innerHTML = '<option value="">Select agent...</option>';
-        userList.forEach(u => {
-          const o = document.createElement('option');
-          o.value = u.id;
-          o.textContent = (u.name || u.email) + (u.name ? ' (' + u.email + ')' : '');
-          o.dataset.name = u.name || u.email;
-          sel.appendChild(o);
-        });
-      }
-
-      async function loadAll() {
-        const container = document.getElementById('tpAdminTableContent');
-        container.innerHTML = '<div class="tp-admin-loading">Loading...</div>';
-        try {
-          const res = await fetch(SUPABASE_URL + '/rest/v1/policies?select=*&order=created_at.desc', { headers: TP_HDRS_BASE });
-          allData = await res.json();
-        } catch (e) { allData = []; }
-        loadUserList();
-        const reps = [...new Set(allData.map(r => r.sales_rep).filter(Boolean))].sort();
-        const repSel = document.getElementById('tpAdminRepFilter');
-        repSel.innerHTML = '<option value="all">All Reps (' + allData.length + ')</option>';
-        reps.forEach(r => {
-          const count = allData.filter(d => d.sales_rep === r).length;
-          const o = document.createElement('option'); o.value = r; o.textContent = r + ' (' + count + ')'; repSel.appendChild(o);
-        });
-        if (currentRep !== 'all') repSel.value = currentRep;
-        applyFilters();
-      }
-
-      function applyFilters() {
-        const now = new Date();
-        filteredData = allData.filter(row => {
-          if (currentRep !== 'all' && row.sales_rep !== currentRep) return false;
-          if (currentStatus !== 'all' && row.status !== currentStatus) return false;
-          if (currentRange !== 'all') {
-            const d = new Date(row.created_at);
-            if (currentRange === 'week') {
-              const start = new Date(now); start.setDate(start.getDate() - start.getDay()); start.setHours(0,0,0,0);
-              if (d < start) return false;
-            } else if (currentRange === 'month') {
-              if (d < new Date(now.getFullYear(), now.getMonth(), 1)) return false;
-            } else if (currentRange === 'ytd') {
-              if (d < new Date(now.getFullYear(), 0, 1)) return false;
-            }
-          }
-          return true;
-        });
-        filteredData.sort((a, b) => {
-          let va = a[sortCol], vb = b[sortCol];
-          if (sortCol === 'annual_premium') { va = parseFloat(va||0); vb = parseFloat(vb||0); }
-          else { va = (va||'').toString().toLowerCase(); vb = (vb||'').toString().toLowerCase(); }
-          if (va < vb) return sortDir === 'asc' ? -1 : 1;
-          if (va > vb) return sortDir === 'asc' ? 1 : -1;
-          return 0;
-        });
-        renderStats();
-        renderTable();
-      }
-
-      function renderStats() {
-        const totalAP = filteredData.reduce((s, r) => s + parseFloat(r.annual_premium || 0), 0);
-        const uwCount = filteredData.filter(r => r.status === 'Underwriting').length;
-        const appCount = filteredData.filter(r => r.status === 'Approved').length;
-        const paidCount = filteredData.filter(r => r.status === 'Issue Paid').length;
-        document.getElementById('tpAdminStats').innerHTML =
-          '<div class="tp-admin-stat"><div class="tp-admin-stat-value">' + filteredData.length + '</div><div class="tp-admin-stat-label">Policies</div></div>' +
-          '<div class="tp-admin-stat"><div class="tp-admin-stat-value" style="color:#60a5fa;">$' + totalAP.toLocaleString('en-US',{maximumFractionDigits:0}) + '</div><div class="tp-admin-stat-label">Total AP</div></div>' +
-          '<div class="tp-admin-stat"><div class="tp-admin-stat-value" style="color:#fb923c;">' + uwCount + '</div><div class="tp-admin-stat-label">Underwriting</div></div>' +
-          '<div class="tp-admin-stat"><div class="tp-admin-stat-value" style="color:#60a5fa;">' + appCount + '</div><div class="tp-admin-stat-label">Approved</div></div>' +
-          '<div class="tp-admin-stat"><div class="tp-admin-stat-value" style="color:#4ade80;">' + paidCount + '</div><div class="tp-admin-stat-label">Issue Paid</div></div>';
-      }
-
-      function renderTable() {
-        const container = document.getElementById('tpAdminTableContent');
-        if (!filteredData.length) { container.innerHTML = '<div class="tp-admin-empty">No policies match the current filters.</div>'; return; }
-        const cols = [
-          {key:'created_at',label:'Date'},{key:'sales_rep',label:'Sales Rep'},{key:'client_name',label:'Client'},
-          {key:'phone',label:'Phone'},
-          {key:'annual_premium',label:'AP'},{key:'carrier',label:'Carrier'},{key:'product_type',label:'Product'},
-          {key:'policy_number',label:'Policy #'},{key:'status',label:'Status'},
-          {key:'effective_date',label:'Effective Date'}
-        ];
-        let html = '<table class="tp-admin-table"><thead><tr>';
-        cols.forEach(c => {
-          const sorted = sortCol === c.key;
-          const arrow = sorted ? (sortDir === 'asc' ? ' ▲' : ' ▼') : '';
-          html += '<th class="' + (sorted?'sorted':'') + '" data-sort="' + c.key + '">' + c.label + arrow + '</th>';
-        });
-        html += '<th>Actions</th></tr></thead><tbody>';
-        filteredData.forEach(row => {
-          const d = new Date(row.created_at);
-          const dateStr = (d.getMonth()+1) + '/' + d.getDate() + '/' + d.getFullYear();
-          const ap = parseFloat(row.annual_premium || 0);
-          const status = row.status || 'Underwriting';
-          const statusClass = status.toLowerCase().replace(/\s+/g, '-');
-          html += '<tr>';
-          html += '<td class="td-date" data-label="Date">' + dateStr + '</td>';
-          html += '<td class="td-rep" data-label="Sales Rep">' + escTp(row.sales_rep) + '</td>';
-          html += '<td data-label="Client">' + escTp(row.client_name) + '</td>';
-          const phone = row.phone || '';
-          const phoneDigits = phone.replace(/\D/g, '');
-          html += '<td data-label="Phone">' + (phone ? '<a href="tel:' + phoneDigits + '" style="color:#2563eb;text-decoration:none;font-weight:600;">' + escTp(phone) + '</a>' : '<span style="color:#999;">—</span>') + '</td>';
-          html += '<td class="td-ap" data-label="AP">$' + ap.toLocaleString('en-US',{minimumFractionDigits:0}) + '</td>';
-          html += '<td data-label="Carrier">' + escTp(row.carrier) + '</td>';
-          html += '<td data-label="Product">' + escTp(row.product_type) + '</td>';
-          html += '<td data-label="Policy #">' + escTp(row.policy_number) + '</td>';
-          html += '<td data-label="Status"><span class="tp-status ' + statusClass + '">' + status + '</span></td>';
-          const effDate = row.effective_date ? (function(dd){var dt=new Date(dd+'T00:00:00');return (dt.getMonth()+1)+'/'+dt.getDate()+'/'+dt.getFullYear();})(row.effective_date) : '';
-          html += '<td class="td-date" data-label="Effective Date">' + effDate + '</td>';
-          html += '<td class="tp-admin-actions" data-label="Actions">';
-          if (status === 'Underwriting') html += '<button class="tp-action-btn tp-action-approve" data-id="' + row.id + '" data-action="approve">Approve Policy</button>';
-          if (status === 'Approved') html += '<button class="tp-action-btn tp-action-paid" data-id="' + row.id + '" data-action="paid">Mark as Paid</button>';
-          html += '<div class="tp-more-wrap"><button class="tp-more-btn" data-id="' + row.id + '">&#8943;</button><div class="tp-more-menu"><button class="tp-btn-edit" data-id="' + row.id + '">Edit Policy</button><button class="tp-btn-del" data-id="' + row.id + '">Delete Policy</button></div></div>';
-          html += '</td></tr>';
-        });
-        html += '</tbody></table>';
-        container.innerHTML = html;
-
-        container.querySelectorAll('[data-sort]').forEach(th => {
-          th.addEventListener('click', () => {
-            const col = th.dataset.sort;
-            if (sortCol === col) sortDir = sortDir === 'asc' ? 'desc' : 'asc';
-            else { sortCol = col; sortDir = (col === 'annual_premium' || col === 'created_at') ? 'desc' : 'asc'; }
-            applyFilters();
-          });
-        });
-        container.querySelectorAll('[data-action="approve"]').forEach(b => {
-          b.addEventListener('click', async () => { await patchStatus(b.dataset.id, 'Approved'); loadAll(); });
-        });
-        container.querySelectorAll('[data-action="paid"]').forEach(b => {
-          b.addEventListener('click', async () => { await patchStatus(b.dataset.id, 'Issue Paid'); loadAll(); });
-        });
-        container.querySelectorAll('.tp-more-btn').forEach(btn => {
-          btn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const menu = btn.nextElementSibling;
-            container.querySelectorAll('.tp-more-menu.open').forEach(m => { if (m !== menu) m.classList.remove('open'); });
-            menu.classList.toggle('open');
-          });
-        });
-        document.addEventListener('click', () => {
-          container.querySelectorAll('.tp-more-menu.open').forEach(m => m.classList.remove('open'));
-        });
-        container.querySelectorAll('.tp-btn-edit').forEach(b => {
-          b.addEventListener('click', () => { openEdit(b.dataset.id); b.closest('.tp-more-menu').classList.remove('open'); });
-        });
-        container.querySelectorAll('.tp-btn-del').forEach(b => {
-          b.addEventListener('click', async () => {
-            b.closest('.tp-more-menu').classList.remove('open');
-            if (!confirm('Delete this policy permanently?')) return;
-            await fetch(SUPABASE_URL + '/rest/v1/policies?id=eq.' + b.dataset.id, { method: 'DELETE', headers: TP_HDRS_WRITE });
-            loadAll();
-          });
-        });
-      }
-
-      async function patchStatus(id, status) {
-        await fetch(SUPABASE_URL + '/rest/v1/policies?id=eq.' + id, {
-          method: 'PATCH', headers: TP_HDRS_WRITE, body: JSON.stringify({ status })
-        });
-      }
-
-      function openEdit(id) {
-        const row = allData.find(r => r.id === id);
-        if (!row) return;
-        editId = id;
-        document.getElementById('tpAeRep').value = row.sales_rep || '';
-        document.getElementById('tpAeClient').value = row.client_name || '';
-        document.getElementById('tpAePhone').value = row.phone || '';
-        document.getElementById('tpAeAP').value = row.annual_premium || '';
-        document.getElementById('tpAePolicy').value = row.policy_number || '';
-        document.getElementById('tpAeCarrier').value = row.carrier || '';
-        document.getElementById('tpAeProduct').value = row.product_type || '';
-        document.getElementById('tpAeEffectiveDate').value = row.effective_date ? row.effective_date.split('T')[0] : '';
-        document.getElementById('tpAeStatus').value = row.status || 'Underwriting';
-        document.getElementById('tpAeOverlay').classList.add('open');
-      }
-
     })();
 
     // ─── KAIROS TEAM PERFORMANCE DASHBOARD (React) ───
-    // Renders the Performance and Agent Profiles tabs using the editorial-
-    // financial design from claude.ai/design (Apple-rainbow accents, dark mode
-    // default). JSX is transformed in-browser by Babel standalone so we don't
-    // need a build step. Mounts only when the user reaches the panel
-    // (loadTeamPerf() exposes window.tpMountDashboard / window.tpMountAgents).
+    // Renders the Performance, Policies, and Agent Profiles tabs using the
+    // editorial-financial design from claude.ai/design (Apple-rainbow accents,
+    // dark mode default). JSX is transformed in-browser by Babel standalone
+    // so we don't need a build step. Mounts only when the user reaches the
+    // panel (loadTeamPerf() exposes window.tpMountDashboard /
+    // window.tpMountPolicies / window.tpMountAgents).
   </script>
 
   <script type="text/babel" data-presets="env,react">
@@ -15341,9 +15329,710 @@
         );
       }
 
+      // ─── Policy Management (claude.ai/design — wired to Supabase) ──────
+      // Real status set is 3 values from the saleshub policies table:
+      //   'Underwriting' / 'Approved' / 'Issue Paid'
+      // The design shipped with 4 (added an "Issued"); we collapse to the 3
+      // that actually exist in Supabase.
+      const POLICY_STATUSES = ['Underwriting', 'Approved', 'Issue Paid'];
+      const POLICY_STATUS_HUE = {
+        'Underwriting': 'var(--rb-yellow)',
+        'Approved':     'var(--rb-green)',
+        'Issue Paid':   'var(--rb-purple)',
+      };
+      const POLICY_STATUS_CLASS = {
+        'Underwriting': 'tp-status-underwriting',
+        'Approved':     'tp-status-approved',
+        'Issue Paid':   'tp-status-paid',
+      };
+      const TIMEFRAMES = [
+        { id: 'all',     label: 'All time' },
+        { id: 'today',   label: 'Today' },
+        { id: 'week',    label: 'This week' },
+        { id: 'month',   label: 'This month' },
+        { id: 'quarter', label: 'This quarter' },
+        { id: 'ytd',     label: 'YTD' },
+      ];
+      const PRODUCT_TYPES = ['Whole Life', 'Term', 'IUL', 'GIWL', 'Health/Accidental'];
+
+      function inTimeframe(date, tf) {
+        if (tf === 'all' || !date) return true;
+        const now = new Date();
+        const d = new Date(date);
+        if (tf === 'today') {
+          return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth() && d.getDate() === now.getDate();
+        }
+        if (tf === 'week') {
+          const ws = startOfWeek(now);
+          return d >= ws;
+        }
+        if (tf === 'month') return d >= startOfMonth(now);
+        if (tf === 'quarter') {
+          const q = Math.floor(now.getMonth() / 3);
+          const qs = new Date(now.getFullYear(), q * 3, 1);
+          return d >= qs;
+        }
+        if (tf === 'ytd') return d >= startOfYear(now);
+        return true;
+      }
+      function fmtDateShort(d) {
+        if (!d) return '—';
+        const dt = new Date(d);
+        return (dt.getMonth() + 1) + '/' + dt.getDate() + '/' + String(dt.getFullYear()).slice(-2);
+      }
+      function fmtDateLong(d) {
+        if (!d) return '—';
+        return new Date(d).toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric', year:'numeric' });
+      }
+      function fmtDay(d) {
+        if (!d) return '';
+        return new Date(d).toLocaleDateString('en-US', { weekday: 'short' });
+      }
+
+      const ChevDown = () => (
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <polyline points="6 9 12 15 18 9" />
+        </svg>
+      );
+      const SearchIcon = () => (
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="11" cy="11" r="7" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
+        </svg>
+      );
+      const DotsIcon = () => (
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+          <circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/>
+        </svg>
+      );
+      const CheckIcon = () => (
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+          <polyline points="20 6 9 17 4 12" />
+        </svg>
+      );
+      const XIcon = () => (
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      );
+      const EditIcon = () => (
+        <svg className="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+        </svg>
+      );
+      const ChangeStatusIcon = () => (
+        <svg className="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/>
+          <polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>
+        </svg>
+      );
+      const TrashIcon = () => (
+        <svg className="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <polyline points="3 6 5 6 21 6"/>
+          <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6M10 11v6M14 11v6"/>
+          <path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/>
+        </svg>
+      );
+
+      function PolicyDropdown({ label, value, onChange, options, multi, placeholder, width }) {
+        const [open, setOpen] = useState(false);
+        const ref = useRef(null);
+        useEffect(() => {
+          const onClick = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
+          if (open) document.addEventListener('mousedown', onClick);
+          return () => document.removeEventListener('mousedown', onClick);
+        }, [open]);
+        let display;
+        if (multi) {
+          if (!value || value.length === 0) display = placeholder || 'Select';
+          else if (value.length === options.length) display = 'All ' + label.toLowerCase();
+          else if (value.length === 1) {
+            const o = options.find(o => o.id === value[0]);
+            display = o ? o.label : (placeholder || 'Select');
+          } else display = value.length + ' selected';
+        } else {
+          const o = options.find(o => o.id === value);
+          display = o ? o.label : (placeholder || 'Select');
+        }
+        const isOn = (id) => multi ? value.includes(id) : value === id;
+        const toggle = (id) => {
+          if (multi) {
+            const next = value.includes(id) ? value.filter(v => v !== id) : value.concat([id]);
+            onChange(next);
+          } else { onChange(id); setOpen(false); }
+        };
+        return (
+          <div className="tp-filter-group">
+            <span className="tp-filter-label-sm">{label}</span>
+            <div className={'tp-dropdown' + (open ? ' open' : '')} ref={ref}>
+              <button className="tp-dropdown-btn" onClick={() => setOpen(o => !o)} style={{minWidth: width || 180}}>
+                <span style={{whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis'}}>{display}</span>
+                <span className="chev"><ChevDown /></span>
+              </button>
+              {open && (
+                <div className="tp-dropdown-panel">
+                  {multi && (
+                    <>
+                      <div className="opt" onClick={() => onChange(value.length === options.length ? [] : options.map(o => o.id))}>
+                        <span className="check">{value.length === options.length && <CheckIcon />}</span>
+                        <span style={{fontWeight:500}}>{value.length === options.length ? 'Clear all' : 'Select all'}</span>
+                      </div>
+                      <div className="sep"></div>
+                    </>
+                  )}
+                  {options.map(o => (
+                    <div key={o.id} className={'opt' + (isOn(o.id) ? ' on' : '')} onClick={() => toggle(o.id)}>
+                      {multi
+                        ? <span className="check">{isOn(o.id) && <CheckIcon />}</span>
+                        : <span className="opt-radio"></span>}
+                      <span>{o.label}</span>
+                      {o.meta && <span className="opt-meta">{o.meta}</span>}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        );
+      }
+
+      function PolicyStatusBadge({ status }) {
+        const cls = POLICY_STATUS_CLASS[status] || 'tp-status-underwriting';
+        const hue = POLICY_STATUS_HUE[status] || 'var(--rb-yellow)';
+        return (
+          <span className={'tp-status-badge ' + cls}>
+            <span className="s-dot" style={{background: hue}}></span>
+            {status || '—'}
+          </span>
+        );
+      }
+
+      function PolicyRowActions({ policy, onEdit, onDelete }) {
+        const [open, setOpen] = useState(false);
+        const ref = useRef(null);
+        useEffect(() => {
+          const onClick = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
+          if (open) document.addEventListener('mousedown', onClick);
+          return () => document.removeEventListener('mousedown', onClick);
+        }, [open]);
+        return (
+          <div className="tp-actions-cell" ref={ref}>
+            <button className="tp-btn-icon" title="Edit policy" onClick={(e) => { e.stopPropagation(); onEdit(policy); }}>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+              </svg>
+            </button>
+            <button className="tp-btn-icon" title="More actions" onClick={(e) => { e.stopPropagation(); setOpen(o => !o); }}>
+              <DotsIcon />
+            </button>
+            {open && (
+              <div className="tp-row-menu" onClick={(e) => e.stopPropagation()}>
+                <button onClick={() => { setOpen(false); onEdit(policy); }}>
+                  <EditIcon /> Edit details
+                </button>
+                <button onClick={() => { setOpen(false); onEdit(policy); }}>
+                  <ChangeStatusIcon /> Change status
+                </button>
+                <div className="sep"></div>
+                <button className="danger" onClick={() => { setOpen(false); onDelete(policy); }}>
+                  <TrashIcon /> Delete policy
+                </button>
+              </div>
+            )}
+          </div>
+        );
+      }
+
+      function PolicyEditModal({ policy, theme, agentProfiles, onClose, onSave }) {
+        const [draft, setDraft] = useState(policy);
+        useEffect(() => { setDraft(policy); }, [policy]);
+        if (!policy) return null;
+        const update = (k, v) => setDraft(d => Object.assign({}, d, { [k]: v }));
+        const isoDate = (d) => d ? new Date(d).toISOString().slice(0, 10) : '';
+        const initialsOf = (name) => (name || '').split(' ').map(s => s[0]).filter(Boolean).slice(0,2).join('').toUpperCase() || '··';
+        const repHue = RAINBOW_TOKENS[Math.abs((draft.user_id || '').split('').reduce((s,c)=>s+c.charCodeAt(0),0)) % RAINBOW_TOKENS.length];
+        return ReactDOM.createPortal(
+          <div className="tp-modal-layer" data-tp-theme={theme}>
+            <div className="tp-modal-backdrop" onClick={onClose}></div>
+            <div className="tp-modal" role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
+              <div className="tp-drawer-hd">
+                <div>
+                  <h3>{draft.client_name || 'Policy'}</h3>
+                  <div className="meta">{draft.policy_number || '—'} · {draft.carrier || '—'}</div>
+                </div>
+                <button className="tp-modal-btn-x" onClick={onClose} aria-label="Close"><XIcon /></button>
+              </div>
+              <div className="tp-drawer-body">
+                <section>
+                  <div className="tp-dr-section-title">Status</div>
+                  <div className="tp-dr-status-row">
+                    {POLICY_STATUSES.map(s => (
+                      <button key={s}
+                        className={draft.status === s ? 'on' : ''}
+                        onClick={() => update('status', s)}
+                        style={draft.status === s ? {
+                          color: POLICY_STATUS_HUE[s],
+                          borderColor: 'color-mix(in oklch, ' + POLICY_STATUS_HUE[s] + ' 40%, transparent)',
+                          background: 'color-mix(in oklch, ' + POLICY_STATUS_HUE[s] + ' 14%, transparent)',
+                        } : null}
+                      >{s}</button>
+                    ))}
+                  </div>
+                </section>
+                <section>
+                  <div className="tp-dr-section-title">Client</div>
+                  <div className="tp-dr-field">
+                    <label>Client name</label>
+                    <input className="tp-dr-input" value={draft.client_name || ''} onChange={e => update('client_name', e.target.value)} />
+                  </div>
+                  <div className="tp-dr-field" style={{marginTop:10}}>
+                    <label>Phone</label>
+                    <input className="tp-dr-input mono" value={draft.phone || ''} onChange={e => update('phone', e.target.value)} />
+                  </div>
+                </section>
+                <section>
+                  <div className="tp-dr-section-title">Sales rep</div>
+                  <div className="tp-dr-field">
+                    <label>Assigned</label>
+                    <select className="tp-dr-input" value={draft.user_id || ''}
+                      onChange={e => {
+                        const uid = e.target.value;
+                        const prof = agentProfiles.find(p => p.user_id === uid);
+                        update('user_id', uid || null);
+                        if (prof) update('sales_rep', prof.agent_name);
+                      }}>
+                      <option value="">— Unassigned —</option>
+                      {agentProfiles.map(p => (
+                        <option key={p.user_id} value={p.user_id}>{p.agent_name}</option>
+                      ))}
+                    </select>
+                  </div>
+                </section>
+                <section>
+                  <div className="tp-dr-section-title">Policy</div>
+                  <div className="tp-dr-field">
+                    <label>Annual premium</label>
+                    <input className="tp-dr-input mono" type="number" step="0.01"
+                      value={draft.annual_premium || 0}
+                      onChange={e => update('annual_premium', parseFloat(e.target.value))} />
+                  </div>
+                  <div className="tp-dr-field" style={{marginTop:10}}>
+                    <label>Carrier</label>
+                    <select className="tp-dr-input" value={draft.carrier || ''} onChange={e => update('carrier', e.target.value)}>
+                      <option value="">— Select carrier —</option>
+                      {CARRIER_LIST.map(c => <option key={c} value={c}>{c}</option>)}
+                    </select>
+                  </div>
+                  <div className="tp-dr-field" style={{marginTop:10}}>
+                    <label>Product</label>
+                    <select className="tp-dr-input" value={draft.product_type || ''} onChange={e => update('product_type', e.target.value)}>
+                      <option value="">— Select product —</option>
+                      {PRODUCT_TYPES.map(p => <option key={p} value={p}>{p}</option>)}
+                    </select>
+                  </div>
+                  <div className="tp-dr-field" style={{marginTop:10}}>
+                    <label>Policy number</label>
+                    <input className="tp-dr-input mono" value={draft.policy_number || ''}
+                      onChange={e => update('policy_number', e.target.value)} />
+                  </div>
+                </section>
+                <section>
+                  <div className="tp-dr-section-title">Dates</div>
+                  <div className="tp-dr-row">
+                    <span className="k">Date sold</span>
+                    <span className="v mono">{fmtDateLong(draft.policy_date || draft.created_at)}</span>
+                  </div>
+                  <div className="tp-dr-field" style={{marginTop:10}}>
+                    <label>Effective date</label>
+                    <input className="tp-dr-input mono" type="date"
+                      value={isoDate(draft.effective_date)}
+                      onChange={e => update('effective_date', e.target.value || null)} />
+                  </div>
+                </section>
+              </div>
+              <div className="tp-drawer-foot">
+                <button className="tp-modal-btn ghost" onClick={onClose}>Cancel</button>
+                <button className="tp-modal-btn primary" onClick={() => onSave(draft)}>Save changes</button>
+              </div>
+            </div>
+          </div>,
+          document.body
+        );
+      }
+
+      function PoliciesView() {
+        const [theme, setTheme] = useState(initialTheme);
+        const [policies, setPolicies] = useState([]);
+        const [agents, setAgents] = useState([]);
+        const [loading, setLoading] = useState(true);
+        const [filters, setFilters] = useState({
+          timeframe: 'all',
+          reps: [],
+          statuses: POLICY_STATUSES.slice(),
+          carriers: CARRIER_LIST.slice(),
+        });
+        const [search, setSearch] = useState('');
+        const [sortKey, setSortKey] = useState('soldDate');
+        const [sortDir, setSortDir] = useState('desc');
+        const [page, setPage] = useState(0);
+        const [perPage] = useState(25);
+        const [openPolicy, setOpenPolicy] = useState(null);
+
+        useEffect(() => {
+          const root = document.getElementById('tpatab-policies');
+          if (root) root.setAttribute('data-tp-theme', theme);
+          try { localStorage.setItem(TP_THEME_KEY, theme); } catch (e) {}
+        }, [theme]);
+
+        const reload = async () => {
+          setLoading(true);
+          try {
+            const [p, a] = await Promise.all([fetchPolicies(), fetchAgentProfiles()]);
+            setPolicies(p);
+            setAgents(a);
+            // Default filters.reps to all known agents the first time we get them
+            setFilters(f => f.reps.length === 0 ? Object.assign({}, f, { reps: a.map(x => x.user_id) }) : f);
+          } catch (e) {
+            console.error('TP policies load failed:', e);
+          } finally { setLoading(false); }
+        };
+        useEffect(() => { reload(); }, []);
+
+        // Filter + sort
+        const filtered = useMemo(() => {
+          const rows = policies.filter(p => {
+            const sold = p.policy_date || p.created_at;
+            if (!inTimeframe(sold, filters.timeframe)) return false;
+            // If a policy has a user_id, gate on selected reps; if no user_id
+            // and "all reps" is selected, include it (legacy data).
+            if (filters.reps.length < agents.length) {
+              if (!p.user_id || !filters.reps.includes(p.user_id)) return false;
+            }
+            if (filters.statuses.length < POLICY_STATUSES.length) {
+              if (!filters.statuses.includes(p.status)) return false;
+            }
+            if (filters.carriers.length < CARRIER_LIST.length) {
+              if (!filters.carriers.includes(p.carrier)) return false;
+            }
+            if (search) {
+              const q = search.toLowerCase();
+              const hay = [p.client_name, p.policy_number, p.phone, p.carrier, p.product_type, p.sales_rep].join(' ').toLowerCase();
+              if (!hay.includes(q)) return false;
+            }
+            return true;
+          });
+          const cmp = (a, b) => {
+            let va, vb;
+            switch (sortKey) {
+              case 'soldDate':      va = new Date(a.policy_date || a.created_at).getTime(); vb = new Date(b.policy_date || b.created_at).getTime(); break;
+              case 'effectiveDate': va = a.effective_date ? new Date(a.effective_date).getTime() : 0; vb = b.effective_date ? new Date(b.effective_date).getTime() : 0; break;
+              case 'rep':           va = a.sales_rep || ''; vb = b.sales_rep || ''; break;
+              case 'client':        va = a.client_name || ''; vb = b.client_name || ''; break;
+              case 'ap':            va = parseFloat(a.annual_premium || 0); vb = parseFloat(b.annual_premium || 0); break;
+              case 'carrier':       va = a.carrier || ''; vb = b.carrier || ''; break;
+              case 'product':       va = a.product_type || ''; vb = b.product_type || ''; break;
+              case 'policyNumber':  va = a.policy_number || ''; vb = b.policy_number || ''; break;
+              case 'status':        va = POLICY_STATUSES.indexOf(a.status); vb = POLICY_STATUSES.indexOf(b.status); break;
+              default:              va = 0; vb = 0;
+            }
+            if (typeof va === 'string') return sortDir === 'asc' ? va.localeCompare(vb) : vb.localeCompare(va);
+            return sortDir === 'asc' ? va - vb : vb - va;
+          };
+          rows.sort(cmp);
+          return rows;
+        }, [policies, agents, filters, search, sortKey, sortDir]);
+
+        useEffect(() => { setPage(0); }, [filters, search, sortKey, sortDir]);
+
+        const onSort = (k) => {
+          if (k === sortKey) setSortDir(d => d === 'asc' ? 'desc' : 'asc');
+          else { setSortKey(k); setSortDir(k === 'ap' || k === 'soldDate' || k === 'effectiveDate' ? 'desc' : 'asc'); }
+        };
+
+        const handleSave = async (draft) => {
+          try {
+            await fetch(SUPABASE_URL + '/rest/v1/policies?id=eq.' + draft.id, {
+              method: 'PATCH', headers: HDRS_WRITE,
+              body: JSON.stringify({
+                client_name: draft.client_name,
+                phone: draft.phone || null,
+                annual_premium: parseFloat(draft.annual_premium || 0),
+                policy_number: draft.policy_number,
+                carrier: draft.carrier,
+                product_type: draft.product_type,
+                effective_date: draft.effective_date || null,
+                status: draft.status,
+                user_id: draft.user_id || null,
+                sales_rep: draft.sales_rep || null,
+              })
+            });
+            setOpenPolicy(null);
+            reload();
+          } catch (e) { console.error('Policy save failed:', e); }
+        };
+
+        const handleDelete = async (p) => {
+          if (!confirm('Delete this policy permanently?')) return;
+          try {
+            await fetch(SUPABASE_URL + '/rest/v1/policies?id=eq.' + p.id, { method: 'DELETE', headers: HDRS_WRITE });
+            reload();
+          } catch (e) { console.error('Policy delete failed:', e); }
+        };
+
+        // Filter pills (only show non-default)
+        const repCount = filters.reps.length;
+        const allRepCount = agents.length;
+        const pills = [];
+        if (filters.timeframe !== 'all') {
+          const tf = TIMEFRAMES.find(t => t.id === filters.timeframe);
+          pills.push({ key:'tf', label: tf.label, color:'blue', clear: () => setFilters(f => Object.assign({}, f, { timeframe: 'all' })) });
+        }
+        if (repCount !== allRepCount) {
+          pills.push({ key:'reps', label: repCount + ' reps', color:'green', clear: () => setFilters(f => Object.assign({}, f, { reps: agents.map(a => a.user_id) })) });
+        }
+        if (filters.statuses.length !== POLICY_STATUSES.length) {
+          pills.push({ key:'status', label: filters.statuses.length === 1 ? filters.statuses[0] : filters.statuses.length + ' statuses', color:'yellow', clear: () => setFilters(f => Object.assign({}, f, { statuses: POLICY_STATUSES.slice() })) });
+        }
+        if (filters.carriers.length !== CARRIER_LIST.length) {
+          pills.push({ key:'carriers', label: filters.carriers.length + ' carriers', color:'purple', clear: () => setFilters(f => Object.assign({}, f, { carriers: CARRIER_LIST.slice() })) });
+        }
+
+        const isCleared = pills.length === 0;
+        const clearAll = () => setFilters({
+          timeframe: 'all',
+          reps: agents.map(a => a.user_id),
+          statuses: POLICY_STATUSES.slice(),
+          carriers: CARRIER_LIST.slice(),
+        });
+
+        // KPI strip totals
+        const total = filtered.reduce((s, p) => s + parseFloat(p.annual_premium || 0), 0);
+        const avg = filtered.length ? total / filtered.length : 0;
+        const issuedPaid = filtered.filter(r => r.status === 'Approved' || r.status === 'Issue Paid').length;
+        const inUW = filtered.filter(r => r.status === 'Underwriting').length;
+
+        const start = page * perPage;
+        const slice = filtered.slice(start, start + perPage);
+        const totalPages = Math.max(1, Math.ceil(filtered.length / perPage));
+        const arrow = (k) => sortKey === k ? <span className="arrow">{sortDir === 'asc' ? '↑' : '↓'}</span> : null;
+        const headers = [
+          { key:'soldDate',      label:'Date sold' },
+          { key:'rep',           label:'Sales rep' },
+          { key:'client',        label:'Client' },
+          { key:'ap',            label:'Annual premium', num:true },
+          { key:'carrier',       label:'Carrier' },
+          { key:'product',       label:'Product' },
+          { key:'policyNumber',  label:'Policy #' },
+          { key:'status',        label:'Status' },
+          { key:'effectiveDate', label:'Effective' },
+          { key:'actions',       label:'', noSort:true },
+        ];
+
+        const repOpts = agents.map(a => ({ id: a.user_id, label: a.agent_name }));
+        const tfOpts = TIMEFRAMES.map(t => ({ id: t.id, label: t.label }));
+        const statusOpts = POLICY_STATUSES.map(s => ({ id: s, label: s }));
+        const carrierOpts = CARRIER_LIST.map(c => ({ id: c, label: c }));
+
+        return (
+          <div>
+            <Header
+              theme={theme}
+              onToggleTheme={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+              agentCount={agents.length}
+              subtitle="Policy Management"
+            />
+
+            <div className="tp-filters-row">
+              <PolicyDropdown label="Timeframe" value={filters.timeframe}
+                onChange={v => setFilters(f => Object.assign({}, f, { timeframe: v }))}
+                options={tfOpts} width={170} />
+              <PolicyDropdown label="Sales rep" value={filters.reps} multi
+                onChange={v => setFilters(f => Object.assign({}, f, { reps: v }))}
+                options={repOpts} width={200} />
+              <PolicyDropdown label="Status" value={filters.statuses} multi
+                onChange={v => setFilters(f => Object.assign({}, f, { statuses: v }))}
+                options={statusOpts} width={170} />
+              <PolicyDropdown label="Carrier" value={filters.carriers} multi
+                onChange={v => setFilters(f => Object.assign({}, f, { carriers: v }))}
+                options={carrierOpts} width={200} />
+              <div style={{flex:1}}></div>
+              <div className="tp-filter-group">
+                <span className="tp-filter-label-sm">&nbsp;</span>
+                <div style={{display:'flex', gap:8, alignItems:'center'}}>
+                  {!isCleared && (
+                    <button className="tp-button ghost" onClick={clearAll} style={{padding:'8px 12px', fontSize:11, fontFamily:'var(--tp-mono)', textTransform:'uppercase', letterSpacing:'0.06em'}}>
+                      Reset filters
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {pills.length > 0 && (
+              <div style={{display:'flex', gap:8, flexWrap:'wrap', marginBottom:18, alignItems:'center'}}>
+                <span className="tp-filter-label-sm" style={{marginRight:4}}>Active</span>
+                {pills.map(p => (
+                  <span key={p.key} className="tp-filter-pill"
+                    style={{
+                      background: 'color-mix(in oklch, var(--rb-' + p.color + ') 14%, transparent)',
+                      borderColor: 'color-mix(in oklch, var(--rb-' + p.color + ') 32%, transparent)',
+                    }}>
+                    <b>{p.label}</b>
+                    <button className="x" onClick={p.clear} aria-label="Clear filter">×</button>
+                  </span>
+                ))}
+              </div>
+            )}
+
+            <div className="tp-kpi-strip">
+              <div className="tp-kpi-cell">
+                <div className="tp-kpi-lbl"><span className="swatch" style={{background:'var(--rb-green)'}}></span>Annual premium</div>
+                <div className="tp-kpi-val">{fmtCurrency(total, {compact:true})}</div>
+                <div className="tp-kpi-sub"><b>{filtered.length}</b> policies in view</div>
+              </div>
+              <div className="tp-kpi-cell">
+                <div className="tp-kpi-lbl"><span className="swatch" style={{background:'var(--rb-orange)'}}></span>Avg premium</div>
+                <div className="tp-kpi-val">{fmtCurrency(avg, {compact:true})}</div>
+                <div className="tp-kpi-sub">across filtered set</div>
+              </div>
+              <div className="tp-kpi-cell">
+                <div className="tp-kpi-lbl"><span className="swatch" style={{background:'var(--rb-blue)'}}></span>Approved or paid</div>
+                <div className="tp-kpi-val">{issuedPaid}</div>
+                <div className="tp-kpi-sub"><b>{filtered.length ? Math.round(issuedPaid / filtered.length * 100) : 0}%</b> of in-view policies</div>
+              </div>
+              <div className="tp-kpi-cell">
+                <div className="tp-kpi-lbl"><span className="swatch" style={{background:'var(--rb-yellow)'}}></span>In underwriting</div>
+                <div className="tp-kpi-val">{inUW}</div>
+                <div className="tp-kpi-sub">awaiting carrier review</div>
+              </div>
+            </div>
+
+            <div className="tp-grid tp-grid-12">
+              <div className="tp-card tp-policy-table-wrap">
+                <div className="tp-pt-hd">
+                  <div className="tp-pt-hd-l">
+                    <div className="tp-card-title">Policies</div>
+                    <div className="tp-pt-count">
+                      <b>{filtered.length.toLocaleString()}</b> of {policies.length.toLocaleString()}
+                      {filtered.length !== policies.length && <span style={{color:'var(--tp-ink-4)', marginLeft:6}}>(filtered)</span>}
+                    </div>
+                  </div>
+                  <div className="tp-pt-search">
+                    <SearchIcon />
+                    <input
+                      placeholder="Search client, policy #, phone…"
+                      value={search}
+                      onChange={(e) => setSearch(e.target.value)} />
+                    {search && (
+                      <button onClick={() => setSearch('')} style={{appearance:'none', border:0, background:'transparent', color:'var(--tp-ink-3)', cursor:'pointer', padding:0, display:'grid', placeItems:'center'}}>
+                        <XIcon />
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                <div className="tp-pt-scroll">
+                  <table className="tp-pt">
+                    <thead>
+                      <tr>
+                        {headers.map(h => (
+                          <th key={h.key}
+                            className={h.num ? 'num' : ''}
+                            onClick={() => !h.noSort && onSort(h.key)}
+                            style={h.noSort ? {cursor:'default'} : null}>
+                            {h.label} {!h.noSort && arrow(h.key)}
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {loading ? (
+                        <tr><td colSpan={headers.length} className="tp-pt-empty">Loading…</td></tr>
+                      ) : slice.length === 0 ? (
+                        <tr><td colSpan={headers.length} className="tp-pt-empty">No policies match the current filters.</td></tr>
+                      ) : slice.map(p => {
+                        const sold = new Date(p.policy_date || p.created_at);
+                        const repName = p.sales_rep || (agents.find(a => a.user_id === p.user_id) || {}).agent_name || '—';
+                        const repHueIdx = Math.abs((p.user_id || repName).split('').reduce((s,c)=>s+c.charCodeAt(0), 0)) % RAINBOW_TOKENS.length;
+                        const sparkColor = RAINBOW_TOKENS[repHueIdx];
+                        const initials = repName.split(' ').map(s => s[0]).filter(Boolean).slice(0,2).join('').toUpperCase() || '··';
+                        return (
+                          <tr key={p.id}>
+                            <td>
+                              <div className="tp-cell-date">
+                                <span className="d">{fmtDateShort(sold)}</span>
+                                <span className="day">{fmtDay(sold)} · {sold.getFullYear()}</span>
+                              </div>
+                            </td>
+                            <td>
+                              <div className="tp-cell-rep">
+                                <div className="tp-avatar" style={{background: 'color-mix(in oklch, ' + sparkColor + ' 22%, var(--tp-surface-2))', borderColor: 'color-mix(in oklch, ' + sparkColor + ' 40%, transparent)'}}>
+                                  {initials}
+                                </div>
+                                <span className="name">{repName}</span>
+                              </div>
+                            </td>
+                            <td>
+                              <div className="tp-cell-client">
+                                <span className="name">{p.client_name || '—'}</span>
+                                <span className="phone">{p.phone || '—'}</span>
+                              </div>
+                            </td>
+                            <td className="num">{fmtCurrency(parseFloat(p.annual_premium || 0))}</td>
+                            <td>{p.carrier || '—'}</td>
+                            <td style={{color:'var(--tp-ink-2)'}}>{p.product_type || '—'}</td>
+                            <td><span className="tp-policy-num">{p.policy_number || '—'}</span></td>
+                            <td><PolicyStatusBadge status={p.status} /></td>
+                            <td className="mono">{fmtDateShort(p.effective_date)}</td>
+                            <td>
+                              <PolicyRowActions
+                                policy={p}
+                                onEdit={(pp) => setOpenPolicy(pp)}
+                                onDelete={(pp) => handleDelete(pp)}
+                              />
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+
+                <div className="tp-pt-foot">
+                  <div>
+                    Showing {filtered.length === 0 ? 0 : start + 1}–{Math.min(start + perPage, filtered.length)} of {filtered.length.toLocaleString()}
+                  </div>
+                  <div className="tp-pager">
+                    <button onClick={() => setPage(0)} disabled={page === 0}>« First</button>
+                    <button onClick={() => setPage(p => Math.max(0, p - 1))} disabled={page === 0}>‹ Prev</button>
+                    <span className="current">Page {page + 1} / {totalPages}</span>
+                    <button onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))} disabled={page >= totalPages - 1}>Next ›</button>
+                    <button onClick={() => setPage(totalPages - 1)} disabled={page >= totalPages - 1}>Last »</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="tp-foot">
+              <div>Kairos Financial · Internal · Confidential</div>
+              <div>{filtered.length.toLocaleString()} policies in view · synced from Supabase</div>
+            </div>
+
+            {openPolicy && <PolicyEditModal
+              policy={openPolicy}
+              theme={theme}
+              agentProfiles={agents}
+              onClose={() => setOpenPolicy(null)}
+              onSave={handleSave} />}
+          </div>
+        );
+      }
+
       // ─── Mount lifecycle ──────────────────────────────────────────────
       let dashRoot = null;
       let agentsRoot = null;
+      let policiesRoot = null;
       window.tpMountDashboard = function () {
         const el = document.getElementById('tpDashboardRoot');
         if (!el) return;
@@ -15355,6 +16044,12 @@
         if (!el) return;
         if (!agentsRoot) agentsRoot = ReactDOM.createRoot(el);
         agentsRoot.render(<AgentProfiles />);
+      };
+      window.tpMountPolicies = function () {
+        const el = document.getElementById('tpPoliciesRoot');
+        if (!el) return;
+        if (!policiesRoot) policiesRoot = ReactDOM.createRoot(el);
+        policiesRoot.render(<PoliciesView />);
       };
     })();
   </script>
