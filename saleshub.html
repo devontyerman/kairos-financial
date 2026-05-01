@@ -1632,7 +1632,17 @@
     }
 
     /* ─── Team Performance panel (admin-only — moved from admin-sales.html) ─── */
-    #panel-teamperf .tp-admin-page { padding: 0.5rem 0 4rem; max-width: 1700px; margin: 0 auto; }
+    /* When the Team Dashboard is active, fill the entire .ss-main area edge
+       to edge so the dark design isn't a "page within a page". The negative
+       margins cancel .ss-main's padding (1.5rem top, 2rem horizontal, 4rem
+       bottom). */
+    #panel-teamperf.active {
+      margin: -1.5rem -2rem -4rem;
+      padding: 0;
+      min-height: calc(100vh - 1.5rem);
+      background: #0d0e10;
+    }
+    #panel-teamperf .tp-admin-page { padding: 0; max-width: none; margin: 0; }
     #panel-teamperf .tp-admin-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem; }
     #panel-teamperf .tp-admin-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.4rem; font-weight: 900; color: #1a1a1a; }
     #panel-teamperf .tp-admin-subtitle { font-size: 0.8rem; color: #888; }
@@ -1686,14 +1696,31 @@
     #panel-teamperf .tp-admin-empty { text-align: center; padding: 4rem 1rem; color: #999; font-size: 0.88rem; }
     #panel-teamperf .tp-admin-loading { text-align: center; padding: 3rem; color: #999; }
 
-    /* Tabs */
-    #panel-teamperf .tp-admin-tabs { display: flex; gap: 0.5rem; margin-bottom: 2rem; border-bottom: 1px solid #e5e5ea; padding-bottom: 0.75rem; }
-    #panel-teamperf .tp-admin-tab { padding: 0.6rem 1.4rem; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.85rem; font-weight: 700; color: #888; background: none; border: 1px solid transparent; border-radius: 100px; cursor: pointer; transition: all 0.2s; }
-    #panel-teamperf .tp-admin-tab:hover { color: #1a1a1a; }
-    #panel-teamperf .tp-admin-tab.active { color: #fff; background: #2d2d35; border-color: #3b82f6; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+    /* Tabs — sit at the top of the dark Kairos design as a unified header.
+       No bottom border (each sub-tab has its own header section just below). */
+    #panel-teamperf .tp-admin-tabs {
+      display: flex; gap: 0.25rem;
+      padding: 14px 32px 0 32px;
+      background: #0d0e10;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+    }
+    #panel-teamperf .tp-admin-tab {
+      appearance: none; border: 0; background: transparent; cursor: pointer;
+      padding: 12px 18px; margin-bottom: -1px;
+      font-family: 'Geist','Inter',system-ui,sans-serif;
+      font-size: 12px; font-weight: 500; letter-spacing: 0.02em;
+      color: rgba(243,243,241,0.45);
+      border-bottom: 2px solid transparent;
+      transition: color 120ms, border-color 120ms;
+    }
+    #panel-teamperf .tp-admin-tab:hover { color: rgba(243,243,241,0.85); }
+    #panel-teamperf .tp-admin-tab.active {
+      color: #f3f3f1;
+      border-bottom-color: oklch(0.72 0.16 145);
+    }
     #panel-teamperf .tp-admin-panel { display: none; }
     #panel-teamperf .tp-admin-panel.active { display: block; animation: tpPop 0.3s ease; }
-    @keyframes tpPop { from { opacity: 0; transform: scale(0.9) translateY(20px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+    @keyframes tpPop { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 
     /* ─── Team Performance dashboard — Kairos editorial-financial design.
        Apple-rainbow accents (modern muted, lower chroma than the original).
@@ -1733,9 +1760,11 @@
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
       font-feature-settings: "ss01", "cv11";
-      margin: 0 -22px;
+      /* No negative margins — the parent #panel-teamperf already fills the
+         entire .ss-main area edge-to-edge. */
+      margin: 0;
       padding: 28px 32px 40px;
-      border-radius: var(--tp-radius);
+      border-radius: 0;
       background-image:
         radial-gradient(1100px 600px at 90% -10%, color-mix(in oklch, var(--rb-blue) 8%, transparent), transparent 60%),
         radial-gradient(900px 500px at -10% 110%, color-mix(in oklch, var(--rb-purple) 7%, transparent), transparent 60%);
@@ -2096,9 +2125,6 @@
     @media (max-width: 768px) {
       #panel-teamperf .tp-admin-header { gap: 0.6rem; }
       #panel-teamperf .tp-ae-grid { grid-template-columns: 1fr; }
-      #panel-teamperf .tp-admin-tabs { gap: 0.35rem; overflow-x: auto; flex-wrap: nowrap; -webkit-overflow-scrolling: touch; scrollbar-width: none; padding-bottom: 0.5rem; }
-      #panel-teamperf .tp-admin-tabs::-webkit-scrollbar { display: none; }
-      #panel-teamperf .tp-admin-tabs button, #panel-teamperf .tp-admin-tabs .tp-admin-tab { flex-shrink: 0; white-space: nowrap; }
       #panel-teamperf .tp-admin-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
       #panel-teamperf .tp-admin-stat { min-width: 0; padding: 0.75rem 0.9rem; }
       #panel-teamperf .tp-admin-filters { gap: 0.4rem; }
@@ -2126,7 +2152,20 @@
       .tp-ae-modal { padding: 1.5rem 1.2rem; max-height: 90vh; overflow-y: auto; }
       .tp-ae-overlay { padding: 0.75rem; }
       /* Team Performance dashboard (React) — mobile pass for all 3 sub-tabs */
-      #tpatab-performance, #tpatab-agents, #tpatab-policies { padding: 16px 12px 24px; margin: 0 -8px; }
+      #panel-teamperf.active {
+        margin: -0.75rem -0.75rem -3rem; /* cancels .ss-main mobile padding */
+        min-height: calc(100vh - 0.75rem);
+      }
+      #panel-teamperf .tp-admin-tabs {
+        padding: 10px 14px 0;
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+      }
+      #panel-teamperf .tp-admin-tabs::-webkit-scrollbar { display: none; }
+      #panel-teamperf .tp-admin-tab { padding: 10px 12px; font-size: 11px; flex-shrink: 0; white-space: nowrap; }
+      #tpatab-performance, #tpatab-agents, #tpatab-policies { padding: 16px 12px 24px; margin: 0; }
       #tpatab-performance .tp-grid-12, #tpatab-agents .tp-grid-12, #tpatab-policies .tp-grid-12 { grid-template-columns: 1fr; }
       #tpatab-performance .tp-lb, #tpatab-performance .tp-carriers, #tpatab-performance .tp-compare, #tpatab-performance .tp-kpi-panel,
       #tpatab-agents .tp-lb,
@@ -5347,6 +5386,10 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
       <span>Tracker</span>
     </button>
+    <button class="ss-sidebar-btn" data-panel="teamperf" id="teamPerfSidebarBtn" style="display:none;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 4 4 5-5"/></svg>
+      <span>Team Dashboard</span>
+    </button>
     <button class="ss-sidebar-btn" data-panel="dialtracker">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.13.96.37 1.9.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.91.33 1.85.57 2.81.7A2 2 0 0122 16.92z"/></svg>
       <span>Dial Tracker</span>
@@ -5390,10 +5433,6 @@
     <button class="ss-sidebar-btn" data-panel="weeklytracker" id="weeklyTrackerSidebarBtn" style="display:none;">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
       <span>Weekly Tracker</span>
-    </button>
-    <button class="ss-sidebar-btn" data-panel="teamperf" id="teamPerfSidebarBtn" style="display:none;">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 4 4 5-5"/></svg>
-      <span>Team Performance</span>
     </button>
     </div>
 
@@ -14771,17 +14810,21 @@
           prior = (scope.weekly || [])[(scope.weekly || []).length - 2] || 0;
           label = 'Week-to-date';
         } else if (timeframe === 'MTD') {
+          // Render the full month (e.g. days 1-31) so the line chart always
+          // has enough data points to draw a smooth curve, even on day 1 of
+          // the month. Past + today carry real values; future days are 0.
           const monthStart = startOfMonth(today);
-          const daysInMonth = today.getDate();
-          const dayBuckets = new Array(daysInMonth).fill(0);
+          const monthEnd = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+          const totalDays = monthEnd.getDate();
+          const dayBuckets = new Array(totalDays).fill(0);
           (scope.policies || []).forEach(p => {
             const d = parsePolicyDate(p.policy_date || p.created_at);
-            if (d >= monthStart && d <= today) {
+            if (d >= monthStart && d <= monthEnd) {
               dayBuckets[d.getDate() - 1] += parseFloat(p.annual_premium || 0);
             }
           });
           series = dayBuckets;
-          labels = Array.from({length: daysInMonth}, (_, i) => String(i + 1));
+          labels = Array.from({length: totalDays}, (_, i) => String(i + 1));
           total = view.ap;
           prior = (scope.monthly || [])[(scope.monthly || []).length - 2] || 0;
           label = 'Month-to-date';
