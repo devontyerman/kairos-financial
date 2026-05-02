@@ -250,12 +250,6 @@
       border: none;
       border-radius: 0;
     }
-    /* Match the spacing of the bottom nav links to the panel buttons so
-       the rail reads as one consistent column. */
-    .ss-nav-links {
-      display: flex; flex-direction: column;
-      gap: 4px;
-    }
     .ss-sidebar-btn {
       display: flex;
       flex-direction: row;
@@ -864,17 +858,18 @@
     /* Sales Hub panel reset for products: remove default panel padding */
     #panel-products { padding: 0 !important; }
 
-    /* Page links below sidebar grid */
+    /* Page links below sidebar grid — same gap as the panel buttons grid
+       so the rail reads as one consistent column. */
     .ss-nav-links {
       display: flex;
       flex-direction: column;
-      gap: 2px;
+      gap: 4px;
       width: 100%;
       padding: 0;
       background: transparent;
       border: none;
       border-radius: 0;
-      margin-top: 2px;
+      margin-top: 4px;
     }
     .ss-nav-links a {
       display: flex;
