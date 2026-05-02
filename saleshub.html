@@ -22403,8 +22403,9 @@
           })();
         }, [isAdmin]);
 
-        const reload = async () => {
-          setLoading(true);
+        const reload = async (opts) => {
+          const quiet = !!(opts && opts.quiet);
+          if (!quiet) setLoading(true);
           setError(null);
           try {
             // currentUser is populated asynchronously by Supabase auth on
@@ -22415,7 +22416,7 @@
               await new Promise(r => setTimeout(r, 200));
               u = window.currentUser;
             }
-            if (!u || !u.id) { setError('Sign in to view your tracker.'); setLoading(false); return; }
+            if (!u || !u.id) { setError('Sign in to view your tracker.'); if (!quiet) setLoading(false); return; }
             // Effective viewing target: admin can override; everyone else is locked to themselves.
             const targetId = (isAdmin && viewAsUserId) ? viewAsUserId : u.id;
             const [profilesRes, policiesRes] = await Promise.all([
@@ -22448,11 +22449,11 @@
             setPolicies(policiesData);
             setKpis(kpisData);
             setMonthlyGoal(mGoal);
-            setLoading(false);
+            if (!quiet) setLoading(false);
           } catch (e) {
             console.error('Tracker load failed:', e);
             setError(e.message || String(e));
-            setLoading(false);
+            if (!quiet) setLoading(false);
           }
         };
         useEffect(() => { reload(); }, [viewAsUserId]);
@@ -23080,7 +23081,7 @@
                 userId={agentProfile.user_id}
                 initial={kpiInitial}
                 onClose={() => { setShowKpiModal(false); setKpiInitial(null); }}
-                onSaved={() => reload()}
+                onSaved={() => reload({ quiet: true })}
               />
             )}
           </div>
