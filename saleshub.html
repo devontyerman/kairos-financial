@@ -2283,6 +2283,523 @@
       #tpatab-policies .tp-filter-group { width: 100%; }
     }
 
+    /* ─── Book of Business — claude.ai/design Policy Management ────────────
+       Same Kairos editorial-financial design system as Tracker / Leaderboard /
+       Team Dashboard, full-bleed dark, scoped to #panel-policies. */
+    #panel-policies {
+      --rb-green:   oklch(0.72 0.16 145);
+      --rb-yellow:  oklch(0.82 0.14 90);
+      --rb-orange:  oklch(0.74 0.16 50);
+      --rb-red:     oklch(0.66 0.18 25);
+      --rb-purple:  oklch(0.62 0.15 305);
+      --rb-blue:    oklch(0.68 0.13 240);
+      --bob-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+      --bob-sans: "Geist", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+      --bob-radius: 10px;
+      --bob-bg:        #0d0e10;
+      --bob-bg-2:      #131418;
+      --bob-surface:   #16181d;
+      --bob-surface-2: #1c1f26;
+      --bob-surface-3: #232730;
+      --bob-hairline:  rgba(255,255,255,0.07);
+      --bob-hairline-strong: rgba(255,255,255,0.13);
+      --bob-ink-1:     #f3f3f1;
+      --bob-ink-2:     rgba(243,243,241,0.72);
+      --bob-ink-3:     rgba(243,243,241,0.45);
+      --bob-ink-4:     rgba(243,243,241,0.28);
+      --bob-pos:       oklch(0.78 0.16 145);
+      --bob-neg:       oklch(0.7 0.18 25);
+    }
+    #panel-policies[data-bob-theme="light"] {
+      --bob-bg: #f6f5f1; --bob-bg-2: #efece5; --bob-surface: #ffffff;
+      --bob-surface-2: #fbfaf6; --bob-surface-3: #f1efe8;
+      --bob-hairline: rgba(15,12,8,0.08); --bob-hairline-strong: rgba(15,12,8,0.16);
+      --bob-ink-1: #14130f; --bob-ink-2: rgba(20,19,15,0.74);
+      --bob-ink-3: rgba(20,19,15,0.5); --bob-ink-4: rgba(20,19,15,0.32);
+      --bob-pos: oklch(0.55 0.14 145); --bob-neg: oklch(0.55 0.18 25);
+    }
+    #panel-policies.active {
+      margin: -1.5rem -2rem -4rem;
+      padding: 28px 32px 40px;
+      background: var(--bob-bg);
+      color: var(--bob-ink-1);
+      font-family: var(--bob-sans);
+      font-size: 14px;
+      -webkit-font-smoothing: antialiased;
+      min-height: calc(100vh - 1.5rem);
+      background-image:
+        radial-gradient(1100px 600px at 90% -10%, color-mix(in oklch, var(--rb-blue) 8%, transparent), transparent 60%),
+        radial-gradient(900px 500px at -10% 110%, color-mix(in oklch, var(--rb-purple) 7%, transparent), transparent 60%);
+    }
+    #bobBookRoot { color: var(--bob-ink-1); font-family: var(--bob-sans); }
+    #bobBookRoot > div { max-width: 1480px; margin-left: auto; margin-right: auto; }
+
+    #panel-policies .bob-hdr {
+      display: flex; align-items: flex-end; justify-content: space-between;
+      gap: 24px; margin-bottom: 24px; padding-bottom: 18px;
+      border-bottom: 1px solid var(--bob-hairline);
+    }
+    #panel-policies .bob-hdr-l { display: flex; flex-direction: column; gap: 4px; }
+    #panel-policies .bob-hdr-title { font-size: 20px; font-weight: 600; letter-spacing: -0.01em; color: var(--bob-ink-1); }
+    #panel-policies .bob-hdr-sub {
+      font-family: var(--bob-mono); font-size: 11px;
+      color: var(--bob-ink-3); letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    #panel-policies .bob-hdr-r { display: flex; align-items: center; gap: 16px; }
+    #panel-policies .bob-hdr-time { font-family: var(--bob-mono); font-size: 11px; color: var(--bob-ink-3); }
+    #panel-policies .bob-hdr-time b { color: var(--bob-ink-1); font-weight: 500; }
+    #panel-policies .bob-theme-toggle {
+      appearance: none; border: 1px solid var(--bob-hairline-strong);
+      background: var(--bob-surface); color: var(--bob-ink-2);
+      width: 34px; height: 34px; border-radius: 8px;
+      display: grid; place-items: center; cursor: pointer; transition: all 120ms;
+    }
+    #panel-policies .bob-theme-toggle:hover { color: var(--bob-ink-1); border-color: var(--bob-ink-3); }
+
+    /* Filters row */
+    #panel-policies .bob-filters {
+      display: flex; align-items: flex-end; gap: 14px;
+      flex-wrap: wrap; margin-bottom: 18px;
+      position: relative; z-index: 50;
+    }
+    #panel-policies .bob-filter-group { display: flex; flex-direction: column; gap: 6px; }
+    #panel-policies .bob-filter-label-sm {
+      font-family: var(--bob-mono); font-size: 9px;
+      text-transform: uppercase; letter-spacing: 0.1em;
+      color: var(--bob-ink-4);
+    }
+    #panel-policies .bob-dropdown { position: relative; z-index: 1; }
+    #panel-policies .bob-dropdown.open { z-index: 200; }
+    #panel-policies .bob-dropdown-btn {
+      appearance: none;
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 8px 12px;
+      background: var(--bob-surface); border: 1px solid var(--bob-hairline);
+      color: var(--bob-ink-1); cursor: pointer;
+      border-radius: 8px;
+      font-family: var(--bob-sans); font-size: 12px;
+      min-width: 180px;
+      justify-content: space-between;
+      transition: all 120ms;
+    }
+    #panel-policies .bob-dropdown-btn:hover { border-color: var(--bob-hairline-strong); }
+    #panel-policies .bob-dropdown-btn .chev { color: var(--bob-ink-3); display: inline-flex; }
+    #panel-policies .bob-dropdown-panel {
+      position: absolute; top: calc(100% + 4px); left: 0;
+      z-index: 200;
+      background: var(--bob-surface); border: 1px solid var(--bob-hairline-strong);
+      border-radius: 8px; padding: 6px;
+      min-width: 240px; max-height: 320px; overflow-y: auto;
+      box-shadow: 0 16px 40px rgba(0,0,0,0.4), 0 4px 12px rgba(0,0,0,0.2);
+    }
+    #panel-policies .bob-dropdown-panel .opt {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 10px; border-radius: 5px; cursor: pointer;
+      font-size: 12px; color: var(--bob-ink-1);
+    }
+    #panel-policies .bob-dropdown-panel .opt:hover { background: var(--bob-surface-2); }
+    #panel-policies .bob-dropdown-panel .opt.on { background: color-mix(in oklch, var(--rb-blue) 10%, var(--bob-surface-2)); }
+    #panel-policies .bob-dropdown-panel .opt .check {
+      width: 14px; height: 14px; border-radius: 4px;
+      border: 1px solid var(--bob-hairline-strong);
+      display: grid; place-items: center; flex-shrink: 0;
+      background: var(--bob-surface); color: white;
+    }
+    #panel-policies .bob-dropdown-panel .opt.on .check {
+      background: var(--rb-blue); border-color: var(--rb-blue);
+    }
+    #panel-policies .bob-dropdown-panel .opt-radio {
+      width: 14px; height: 14px; border-radius: 99px;
+      border: 1px solid var(--bob-hairline-strong); flex-shrink: 0;
+      position: relative;
+    }
+    #panel-policies .bob-dropdown-panel .opt.on .opt-radio { border-color: var(--rb-blue); }
+    #panel-policies .bob-dropdown-panel .opt.on .opt-radio::after {
+      content: ""; position: absolute; inset: 3px;
+      border-radius: 99px; background: var(--rb-blue);
+    }
+    #panel-policies .bob-dropdown-panel .sep { height: 1px; background: var(--bob-hairline); margin: 4px 0; }
+    #panel-policies .bob-button {
+      appearance: none; border: 1px solid var(--bob-hairline-strong);
+      background: var(--bob-surface); color: var(--bob-ink-1);
+      padding: 9px 14px; border-radius: 8px;
+      font-family: var(--bob-sans); font-size: 12px; font-weight: 500;
+      cursor: pointer; transition: all 120ms;
+      display: inline-flex; align-items: center; gap: 8px;
+    }
+    #panel-policies .bob-button:hover { background: var(--bob-surface-3); }
+    #panel-policies .bob-button.ghost { background: transparent; }
+    #panel-policies .bob-button.primary { background: var(--bob-ink-1); color: var(--bob-bg); border-color: var(--bob-ink-1); }
+    #panel-policies .bob-button.primary:hover { opacity: 0.9; }
+    #panel-policies .bob-button.btn-sm { padding: 6px 10px; font-size: 11px; }
+    #panel-policies .bob-filter-pill {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 7px 12px 7px 14px; border-radius: 99px;
+      color: var(--bob-ink-1); font-size: 12px;
+    }
+    #panel-policies .bob-filter-pill .x {
+      appearance: none; border: 0; background: transparent;
+      color: var(--bob-ink-2); cursor: pointer; padding: 0;
+      width: 16px; height: 16px; border-radius: 99px;
+      display: grid; place-items: center; font-size: 14px; line-height: 1;
+    }
+
+    /* Attention cards */
+    #panel-policies .bob-attn-card {
+      background: var(--bob-surface);
+      border: 1px solid var(--bob-hairline);
+      border-radius: var(--bob-radius);
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+    #panel-policies .bob-attn-card.yellow { border-color: color-mix(in oklch, var(--rb-yellow) 28%, var(--bob-hairline-strong)); }
+    #panel-policies .bob-attn-card.orange { border-color: color-mix(in oklch, var(--rb-orange) 28%, var(--bob-hairline-strong)); }
+    #panel-policies .bob-attn-hd {
+      display: flex; align-items: center; gap: 14px;
+      padding: 14px 22px; border-bottom: 1px solid var(--bob-hairline);
+      flex-wrap: wrap;
+    }
+    #panel-policies .bob-attn-dot {
+      width: 8px; height: 8px; border-radius: 99px; display: inline-block;
+    }
+    #panel-policies .bob-attn-title {
+      font-family: var(--bob-mono); font-size: 11px;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      color: var(--bob-ink-1); font-weight: 500;
+    }
+    #panel-policies .bob-attn-count {
+      font-family: var(--bob-mono); font-size: 11px; color: var(--bob-ink-3);
+      letter-spacing: 0.04em;
+    }
+    #panel-policies .bob-attn-count b { color: var(--bob-ink-1); font-weight: 500; }
+    #panel-policies .bob-attn-sub {
+      font-family: var(--bob-mono); font-size: 11px; color: var(--bob-ink-3);
+      margin-left: auto;
+    }
+    #panel-policies .bob-attn-empty {
+      padding: 28px 22px; text-align: center;
+      color: var(--bob-ink-3); font-family: var(--bob-mono); font-size: 12px;
+    }
+
+    /* Section divider */
+    #panel-policies .bob-section-rule {
+      display: flex; align-items: center; gap: 16px;
+      margin: 28px 0 16px;
+    }
+    #panel-policies .bob-section-rule::before,
+    #panel-policies .bob-section-rule::after {
+      content: ""; flex: 1; height: 1px; background: var(--bob-hairline);
+    }
+    #panel-policies .bob-section-rule-lbl {
+      font-family: var(--bob-mono); font-size: 10px;
+      text-transform: uppercase; letter-spacing: 0.12em;
+      color: var(--bob-ink-3);
+    }
+
+    /* Policy table */
+    #panel-policies .bob-card {
+      background: var(--bob-surface);
+      border: 1px solid var(--bob-hairline);
+      border-radius: var(--bob-radius);
+      overflow: hidden;
+    }
+    #panel-policies .bob-pt-hd {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 22px 14px;
+      border-bottom: 1px solid var(--bob-hairline);
+      flex-wrap: wrap; gap: 12px;
+    }
+    #panel-policies .bob-pt-hd-l { display: flex; align-items: baseline; gap: 14px; }
+    #panel-policies .bob-card-title {
+      font-size: 11px; font-family: var(--bob-mono);
+      text-transform: uppercase; letter-spacing: 0.08em;
+      color: var(--bob-ink-3); font-weight: 500;
+    }
+    #panel-policies .bob-pt-count { font-family: var(--bob-mono); font-size: 11px; color: var(--bob-ink-3); letter-spacing: 0.04em; }
+    #panel-policies .bob-pt-count b { color: var(--bob-ink-1); font-weight: 500; }
+    #panel-policies .bob-pt-search {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 7px 12px; border-radius: 8px;
+      background: var(--bob-surface-2); border: 1px solid var(--bob-hairline);
+      color: var(--bob-ink-2); width: 240px;
+    }
+    #panel-policies .bob-pt-search input {
+      background: transparent; border: 0; outline: 0; color: var(--bob-ink-1);
+      font-family: var(--bob-sans); font-size: 12px; flex: 1; padding: 0;
+    }
+    #panel-policies .bob-pt-search input::placeholder { color: var(--bob-ink-4); }
+    #panel-policies .bob-pt-scroll { overflow-x: auto; }
+    #panel-policies .bob-pt {
+      width: 100%; border-collapse: collapse; table-layout: auto;
+    }
+    #panel-policies .bob-pt thead th {
+      position: sticky; top: 0;
+      background: var(--bob-surface);
+      text-align: left;
+      font-family: var(--bob-mono); font-size: 10px; font-weight: 500;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      color: var(--bob-ink-3);
+      padding: 10px 8px;
+      border-bottom: 1px solid var(--bob-hairline);
+      white-space: nowrap;
+      cursor: pointer; user-select: none;
+    }
+    #panel-policies .bob-pt thead th:first-child { padding-left: 18px; }
+    #panel-policies .bob-pt thead th:last-child { padding-right: 18px; }
+    #panel-policies .bob-pt thead th.num { text-align: right; }
+    #panel-policies .bob-pt thead th:hover { color: var(--bob-ink-1); }
+    #panel-policies .bob-pt thead th .arrow { margin-left: 4px; opacity: 0.6; }
+    #panel-policies .bob-pt tbody tr {
+      border-bottom: 1px solid var(--bob-hairline);
+      transition: background 80ms;
+    }
+    #panel-policies .bob-pt tbody tr:last-child { border-bottom: 0; }
+    #panel-policies .bob-pt tbody tr:hover { background: var(--bob-surface-2); }
+    #panel-policies .bob-pt tbody td {
+      padding: 10px 8px;
+      font-size: 13px;
+      vertical-align: middle;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+      color: var(--bob-ink-1);
+    }
+    #panel-policies .bob-pt tbody td:first-child { padding-left: 18px; }
+    #panel-policies .bob-pt tbody td:last-child { padding-right: 18px; }
+    #panel-policies .bob-pt tbody td.num { text-align: right; font-family: var(--bob-mono); }
+    #panel-policies .bob-pt tbody td.mono { font-family: var(--bob-mono); font-size: 12px; color: var(--bob-ink-2); }
+    #panel-policies .bob-pt-empty {
+      padding: 60px 22px; text-align: center;
+      font-family: var(--bob-mono); font-size: 12px; color: var(--bob-ink-3);
+    }
+
+    #panel-policies .bob-cell-date { display: flex; flex-direction: column; gap: 2px; }
+    #panel-policies .bob-cell-date .d { font-family: var(--bob-mono); font-size: 12px; color: var(--bob-ink-1); }
+    #panel-policies .bob-cell-date .day { font-family: var(--bob-mono); font-size: 10px; color: var(--bob-ink-4); text-transform: uppercase; letter-spacing: 0.06em; }
+    #panel-policies .bob-cell-client { display: flex; flex-direction: column; gap: 2px; min-width: 130px; }
+    #panel-policies .bob-cell-client .name { font-weight: 500; color: var(--bob-ink-1); font-size: 13px; }
+    #panel-policies .bob-cell-client .phone { font-family: var(--bob-mono); font-size: 11px; color: var(--bob-ink-3); }
+    #panel-policies .bob-cell-client .phone a { color: var(--rb-blue); text-decoration: none; }
+    #panel-policies .bob-policy-num { font-family: var(--bob-mono); font-size: 11px; color: var(--bob-ink-2); letter-spacing: 0.02em; }
+
+    #panel-policies .bob-status-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 10px 4px 8px;
+      border-radius: 99px;
+      font-family: var(--bob-mono); font-size: 10px;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      font-weight: 500; border: 1px solid transparent;
+      white-space: nowrap;
+    }
+    #panel-policies .bob-status-badge .s-dot { width: 6px; height: 6px; border-radius: 99px; display: inline-block; }
+    #panel-policies .bob-status-underwriting { color: var(--rb-yellow); background: color-mix(in oklch, var(--rb-yellow) 14%, transparent); border-color: color-mix(in oklch, var(--rb-yellow) 32%, transparent); }
+    #panel-policies .bob-status-approved    { color: var(--rb-green);  background: color-mix(in oklch, var(--rb-green) 12%, transparent);  border-color: color-mix(in oklch, var(--rb-green) 28%, transparent); }
+    #panel-policies .bob-status-paid        { color: var(--rb-purple); background: color-mix(in oklch, var(--rb-purple) 14%, transparent); border-color: color-mix(in oklch, var(--rb-purple) 32%, transparent); }
+
+    #panel-policies .bob-age-pill {
+      display: inline-flex; align-items: center;
+      padding: 3px 8px; border-radius: 99px;
+      font-family: var(--bob-mono); font-size: 10px;
+      letter-spacing: 0.04em;
+      border: 1px solid;
+      white-space: nowrap;
+    }
+
+    #panel-policies .bob-actions-cell { display: flex; gap: 6px; justify-content: flex-end; align-items: center; white-space: nowrap; }
+    #panel-policies .bob-btn-icon {
+      appearance: none; border: 1px solid var(--bob-hairline);
+      background: var(--bob-surface-2); color: var(--bob-ink-2);
+      width: 28px; height: 28px; border-radius: 6px;
+      display: inline-grid; place-items: center; cursor: pointer;
+      transition: all 120ms;
+    }
+    #panel-policies .bob-btn-icon:hover { color: var(--bob-ink-1); border-color: var(--bob-hairline-strong); background: var(--bob-surface-3); }
+
+    #panel-policies .bob-pt-foot {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 22px;
+      border-top: 1px solid var(--bob-hairline);
+      font-family: var(--bob-mono); font-size: 11px; color: var(--bob-ink-3);
+      flex-wrap: wrap; gap: 10px;
+    }
+    #panel-policies .bob-pager { display: flex; align-items: center; gap: 6px; }
+    #panel-policies .bob-pager button {
+      appearance: none; border: 1px solid var(--bob-hairline);
+      background: var(--bob-surface); color: var(--bob-ink-2);
+      padding: 5px 10px; border-radius: 6px;
+      font-family: var(--bob-mono); font-size: 11px;
+      cursor: pointer; transition: all 120ms;
+    }
+    #panel-policies .bob-pager button:hover:not(:disabled) { color: var(--bob-ink-1); border-color: var(--bob-hairline-strong); }
+    #panel-policies .bob-pager button:disabled { opacity: 0.4; cursor: not-allowed; }
+    #panel-policies .bob-pager .current { color: var(--bob-ink-1); background: var(--bob-surface-3); padding: 5px 10px; border-radius: 6px; }
+
+    #panel-policies .bob-foot {
+      margin-top: 36px; padding-top: 16px;
+      border-top: 1px solid var(--bob-hairline);
+      display: flex; justify-content: space-between;
+      font-family: var(--bob-mono); font-size: 10px;
+      color: var(--bob-ink-4); letter-spacing: 0.06em; text-transform: uppercase;
+    }
+    #panel-policies .bob-loading {
+      padding: 60px 20px; text-align: center;
+      color: var(--bob-ink-3); font-family: var(--bob-mono); font-size: 12px;
+      letter-spacing: 0.06em; text-transform: uppercase;
+    }
+
+    /* Custom date range row */
+    #panel-policies .bob-date-range {
+      display: flex; align-items: center; gap: 8px;
+      margin-bottom: 16px; flex-wrap: wrap;
+    }
+    #panel-policies .bob-date-range input[type="date"] {
+      background: var(--bob-surface); color: var(--bob-ink-1);
+      border: 1px solid var(--bob-hairline);
+      border-radius: 8px; padding: 7px 12px;
+      font-family: var(--bob-mono); font-size: 12px;
+      outline: none; color-scheme: dark;
+    }
+
+    /* Edit modal — portaled, theme-aware */
+    .bob-modal-layer {
+      position: fixed; inset: 0; z-index: 10000;
+      display: grid; place-items: center; padding: 24px;
+      font-family: 'Geist','Inter',system-ui,sans-serif;
+    }
+    .bob-modal-layer[data-bob-theme="light"] {
+      --bob-bg: #f6f5f1; --bob-bg-2: #efece5; --bob-surface: #ffffff;
+      --bob-surface-2: #fbfaf6; --bob-surface-3: #f1efe8;
+      --bob-hairline: rgba(15,12,8,0.08); --bob-hairline-strong: rgba(15,12,8,0.16);
+      --bob-ink-1: #14130f; --bob-ink-2: rgba(20,19,15,0.74);
+      --bob-ink-3: rgba(20,19,15,0.5); --bob-ink-4: rgba(20,19,15,0.32);
+      --rb-blue: oklch(0.55 0.13 240); --rb-green: oklch(0.55 0.15 145);
+      --rb-yellow: oklch(0.7 0.14 85); --rb-purple: oklch(0.5 0.15 305);
+    }
+    .bob-modal-layer[data-bob-theme="dark"] {
+      --bob-bg: #0d0e10; --bob-bg-2: #131418; --bob-surface: #16181d;
+      --bob-surface-2: #1c1f26; --bob-surface-3: #232730;
+      --bob-hairline: rgba(255,255,255,0.07); --bob-hairline-strong: rgba(255,255,255,0.13);
+      --bob-ink-1: #f3f3f1; --bob-ink-2: rgba(243,243,241,0.72);
+      --bob-ink-3: rgba(243,243,241,0.45); --bob-ink-4: rgba(243,243,241,0.28);
+      --rb-blue: oklch(0.68 0.13 240); --rb-green: oklch(0.72 0.16 145);
+      --rb-yellow: oklch(0.82 0.14 90); --rb-purple: oklch(0.62 0.15 305);
+    }
+    .bob-modal-backdrop {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.55);
+      backdrop-filter: blur(3px);
+    }
+    .bob-modal {
+      position: relative; width: 540px; max-width: 100%;
+      max-height: calc(100vh - 48px);
+      background: var(--bob-bg-2);
+      border: 1px solid var(--bob-hairline-strong);
+      border-radius: 12px;
+      display: flex; flex-direction: column;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.5);
+      overflow: hidden; color: var(--bob-ink-1);
+    }
+    .bob-mod-hd {
+      padding: 20px 24px 16px;
+      border-bottom: 1px solid var(--bob-hairline);
+      display: flex; align-items: flex-start; justify-content: space-between;
+      gap: 12px;
+    }
+    .bob-mod-hd h3 { margin: 0; font-size: 16px; font-weight: 600; color: var(--bob-ink-1); }
+    .bob-mod-hd .meta { font-family: var(--bob-mono); font-size: 11px; color: var(--bob-ink-3); margin-top: 4px; }
+    .bob-mod-body {
+      flex: 1; overflow-y: auto;
+      padding: 20px 24px;
+      display: flex; flex-direction: column; gap: 18px;
+    }
+    .bob-mod-section-title {
+      font-family: var(--bob-mono); font-size: 10px;
+      text-transform: uppercase; letter-spacing: 0.1em;
+      color: var(--bob-ink-4); margin-bottom: 8px;
+    }
+    .bob-mod-status-row { display: flex; gap: 6px; flex-wrap: wrap; }
+    .bob-mod-status-row button {
+      appearance: none; border: 1px solid var(--bob-hairline);
+      background: var(--bob-surface); color: var(--bob-ink-2);
+      padding: 6px 12px; border-radius: 99px;
+      font-family: var(--bob-mono); font-size: 10px;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      cursor: pointer; transition: all 120ms;
+    }
+    .bob-mod-status-row button.on {
+      color: var(--bob-ink-1);
+      border-color: var(--bob-hairline-strong);
+      background: var(--bob-surface-3);
+    }
+    .bob-mod-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .bob-mod-grid .full { grid-column: 1 / -1; }
+    .bob-mod-field { display: flex; flex-direction: column; gap: 6px; }
+    .bob-mod-field label {
+      font-family: var(--bob-mono); font-size: 10px;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      color: var(--bob-ink-4);
+    }
+    .bob-mod-input, .bob-mod-select {
+      width: 100%; appearance: none;
+      background: var(--bob-surface);
+      border: 1px solid var(--bob-hairline);
+      color: var(--bob-ink-1);
+      border-radius: 6px;
+      padding: 9px 10px;
+      font-family: var(--bob-sans); font-size: 13px;
+      outline: none;
+    }
+    .bob-mod-input:focus, .bob-mod-select:focus { border-color: var(--rb-blue); }
+    .bob-mod-input.mono { font-family: var(--bob-mono); font-size: 12px; }
+    /* Make the native date-picker calendar icon match the modal's theme — was
+       black-on-dark and unreadable. color-scheme flips the native chrome. */
+    .bob-modal-layer[data-bob-theme="dark"] .bob-mod-input[type="date"] { color-scheme: dark; }
+    .bob-modal-layer[data-bob-theme="light"] .bob-mod-input[type="date"] { color-scheme: light; }
+    .bob-mod-foot {
+      padding: 14px 24px;
+      border-top: 1px solid var(--bob-hairline);
+      display: flex; gap: 10px; justify-content: flex-end;
+      background: var(--bob-bg);
+    }
+    .bob-mod-btn {
+      appearance: none; border: 1px solid var(--bob-hairline-strong);
+      background: var(--bob-surface); color: var(--bob-ink-1);
+      padding: 9px 16px; border-radius: 8px;
+      font-family: var(--bob-sans); font-size: 12px; font-weight: 500;
+      cursor: pointer; transition: all 120ms;
+    }
+    .bob-mod-btn:hover { background: var(--bob-surface-3); }
+    .bob-mod-btn.ghost { background: transparent; }
+    .bob-mod-btn.primary { background: var(--bob-ink-1); color: var(--bob-bg); border-color: var(--bob-ink-1); }
+    .bob-mod-btn.primary:hover { opacity: 0.9; }
+    .bob-mod-x {
+      appearance: none; border: 1px solid var(--bob-hairline);
+      background: var(--bob-surface-2); color: var(--bob-ink-2);
+      width: 28px; height: 28px; border-radius: 6px;
+      display: inline-grid; place-items: center; cursor: pointer;
+    }
+    .bob-mod-x:hover { color: var(--bob-ink-1); }
+
+    @media (max-width: 768px) {
+      #panel-policies.active { margin: -0.75rem -0.75rem -3rem; padding: 16px 12px 24px; min-height: calc(100vh - 0.75rem); }
+      #panel-policies .bob-hdr { flex-direction: column; align-items: flex-start; gap: 12px; }
+      #panel-policies .bob-filters { gap: 10px; }
+      #panel-policies .bob-dropdown-btn { min-width: 0 !important; width: 100%; }
+      #panel-policies .bob-filter-group { width: calc(50% - 5px); }
+      #panel-policies .bob-pt-hd { padding: 14px 14px 12px; flex-direction: column; align-items: flex-start; }
+      #panel-policies .bob-pt-search { width: 100%; }
+      #panel-policies .bob-pt thead th:nth-child(5),
+      #panel-policies .bob-pt thead th:nth-child(6),
+      #panel-policies .bob-pt thead th:nth-child(7),
+      #panel-policies .bob-pt thead th:nth-child(9),
+      #panel-policies .bob-pt tbody td:nth-child(5),
+      #panel-policies .bob-pt tbody td:nth-child(6),
+      #panel-policies .bob-pt tbody td:nth-child(7),
+      #panel-policies .bob-pt tbody td:nth-child(9) { display: none; }
+      .bob-mod-grid { grid-template-columns: 1fr !important; }
+    }
+    @media (max-width: 520px) {
+      #panel-policies .bob-filter-group { width: 100%; }
+    }
+
     /* ─── Leaderboard — claude.ai/design ───────────────────────────────────
        Same Kairos editorial-financial design system as Tracker / Team
        Dashboard, full-bleed dark, scoped to #panel-leaderboard. */
@@ -7188,60 +7705,9 @@
     </div>
 
     <!-- MY POLICIES -->
+    <!-- ═══ BOOK OF BUSINESS — claude.ai/design Policy Management Dashboard ═══ -->
     <div class="ss-panel" id="panel-policies">
-      <div class="mp-inner">
-        <div class="ss-panel-head">
-          <h2>Book of Business</h2>
-          <p class="ss-panel-sub">All your submitted policies in one place.</p>
-        </div>
-        <div id="mpNotAuth" class="mp-not-auth" style="display:none;">
-          Sign in to view and manage your policies.
-        </div>
-        <div id="mpAttention"></div>
-        <div id="mpContent" style="display:none;">
-          <div class="mp-header">
-            <div>
-              <div class="mp-count" id="mpCount"></div>
-            </div>
-            <button class="mp-export-btn" id="mpExportCsv">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-              Export CSV
-            </button>
-          </div>
-          <div style="margin-bottom:0.6rem;">
-            <input type="text" id="mpSearchBar" placeholder="Search clients..." style="width:100%;padding:0.5rem 0.85rem;font-family:'Inter',sans-serif;font-size:0.85rem;color:#1a1a1a;background:#f0f0f3;border:1px solid #ddd;border-radius:10px;box-sizing:border-box;" />
-          </div>
-          <div class="mp-filters" id="mpFilters">
-            <button class="mp-filter" data-mp-range="month">This Month</button>
-            <button class="mp-filter active" data-mp-range="ytd">YTD</button>
-            <select class="mp-range-dropdown" id="mpRangeDropdown">
-              <option value="" disabled selected>More...</option>
-              <option value="week">This Week</option>
-              <option value="month">This Month</option>
-              <option value="ytd">This Year</option>
-              <option value="lastweek">Last Week</option>
-              <option value="lastmonth">Last Month</option>
-              <option value="all">All Time</option>
-              <option value="custom">Custom Range</option>
-            </select>
-          </div>
-          <div class="mp-filters mp-status-filters" id="mpStatusFilters" style="margin-bottom: 0.5rem;">
-            <button class="mp-filter mp-sf-all active" data-mp-status="all">All Status</button>
-            <button class="mp-filter mp-sf-uw" data-mp-status="Underwriting">Underwriting</button>
-            <button class="mp-filter mp-sf-app" data-mp-status="Approved">Approved</button>
-            <button class="mp-filter mp-sf-paid" data-mp-status="Issue Paid">Issue Paid</button>
-          </div>
-          <div class="mp-custom-range" id="mpCustomRange">
-            <input type="date" id="mpDateFrom" />
-            <span style="color:#444;">to</span>
-            <input type="date" id="mpDateTo" />
-            <button id="mpCustomApply">Apply</button>
-          </div>
-          <div class="mp-table-wrap">
-            <div id="mpTable"><div class="mp-loading">Loading...</div></div>
-          </div>
-        </div>
-      </div>
+      <div id="bobBookRoot"></div>
     </div>
 
     <!-- ═══ PERFORMANCE TAB ═══ -->
@@ -8494,7 +8960,9 @@
       if (panelName === 'leaderboard' && window.lbMountLeaderboard) {
         try { window.lbMountLeaderboard(); } catch (e) { console.error('Leaderboard mount failed:', e); }
       }
-      if (panelName === 'policies') loadPolicies();
+      if (panelName === 'policies' && window.bobMountBookOfBusiness) {
+        try { window.bobMountBookOfBusiness(); } catch (e) { console.error('Book of Business mount failed:', e); }
+      }
       if (panelName === 'performance') loadAgentPerformance();
       if (panelName === 'goals' && currentUser && window.tkMountTracker) {
         try { window.tkMountTracker(); } catch (e) { console.error('Tracker mount failed:', e); }
@@ -10999,11 +11467,12 @@
     let mpAllData = [];
     let mpEditId = null;
 
-    // Populate edit modal dropdowns
+    // Legacy edit-modal dropdowns — the entire panel was replaced by the
+    // React Book of Business app. Guards prevent null-deref at script-init.
     const mpEditCarrier = document.getElementById('mpEditCarrier');
     const mpEditProduct = document.getElementById('mpEditProduct');
-    CARRIERS.forEach(c => { const o = document.createElement('option'); o.value = c; o.textContent = c; mpEditCarrier.appendChild(o); });
-    PRODUCT_TYPES.forEach(p => { const o = document.createElement('option'); o.value = p; o.textContent = p; mpEditProduct.appendChild(o); });
+    if (mpEditCarrier) CARRIERS.forEach(c => { const o = document.createElement('option'); o.value = c; o.textContent = c; mpEditCarrier.appendChild(o); });
+    if (mpEditProduct) PRODUCT_TYPES.forEach(p => { const o = document.createElement('option'); o.value = p; o.textContent = p; mpEditProduct.appendChild(o); });
 
     // Date filter: "This Month" + "YTD" buttons + dropdown for everything else
     const mpFilterBtns = document.querySelectorAll('#mpFilters .mp-filter[data-mp-range]');
@@ -11031,8 +11500,9 @@
       });
     }
 
-    // Search bar
-    document.getElementById('mpSearchBar').addEventListener('input', function() {
+    // Search bar (guarded — element removed when BOB went React)
+    const _mpSearchBar = document.getElementById('mpSearchBar');
+    if (_mpSearchBar) _mpSearchBar.addEventListener('input', function() {
       mpSearchTerm = this.value.trim().toLowerCase();
       mpPage = 0;
       renderPoliciesTable();
@@ -11048,7 +11518,8 @@
         loadPolicies();
       });
     });
-    document.getElementById('mpCustomApply').addEventListener('click', loadPolicies);
+    const _mpCustomApply = document.getElementById('mpCustomApply');
+    if (_mpCustomApply) _mpCustomApply.addEventListener('click', loadPolicies);
 
     // Returns YYYY-MM-DD date-string bounds for policy_date filtering
     function getMpDateRange() {
@@ -11325,7 +11796,8 @@
 
     // Edit modal
     const mpEditOverlay = document.getElementById('mpEditOverlay');
-    document.getElementById('mpEditCancel').addEventListener('click', () => mpEditOverlay.classList.remove('open'));
+    const _mpEditCancel = document.getElementById('mpEditCancel');
+    if (_mpEditCancel) _mpEditCancel.addEventListener('click', () => mpEditOverlay && mpEditOverlay.classList.remove('open'));
     mpEditOverlay.addEventListener('click', (e) => { if (e.target === mpEditOverlay) mpEditOverlay.classList.remove('open'); });
 
     function openEditModal(id) {
@@ -11345,7 +11817,8 @@
       mpEditOverlay.classList.add('open');
     }
 
-    document.getElementById('mpEditForm').addEventListener('submit', async (e) => {
+    const _mpEditForm = document.getElementById('mpEditForm');
+    if (_mpEditForm) _mpEditForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const token = accessToken || SUPABASE_KEY;
       const editPolicyDate = document.getElementById('mpEditPolicyDate').value;
@@ -14074,7 +14547,8 @@
 
   <!-- CSV export -->
   <script>
-    document.getElementById('mpExportCsv').addEventListener('click', async function() {
+    const _mpExportCsv = document.getElementById('mpExportCsv');
+    if (_mpExportCsv) _mpExportCsv.addEventListener('click', async function() {
       if (!mpAllData || !mpAllData.length) {
         showConfirmModal({ title: 'No Data', message: 'There are no policies to export for the current filter.', confirmText: 'OK', cancelText: '', variant: 'info', icon: '\ud83d\udcc4' });
         return;
@@ -18386,6 +18860,813 @@
         if (!el) return;
         if (!leaderboardRoot) leaderboardRoot = ReactDOM.createRoot(el);
         leaderboardRoot.render(<LeaderboardView />);
+      };
+
+      // ─── BOOK OF BUSINESS (claude.ai/design — wired to Supabase) ────────
+      const BOB_THEME_KEY = 'bob_theme_v1';
+      const BOB_PRODUCT_TYPES = ['Whole Life', 'Term', 'IUL', 'GIWL', 'Health/Accidental'];
+      const BOB_STATUSES = ['Underwriting', 'Approved', 'Issue Paid'];
+      const BOB_STATUS_HUE = {
+        'Underwriting': 'var(--rb-yellow)',
+        'Approved':     'var(--rb-green)',
+        'Issue Paid':   'var(--rb-purple)',
+      };
+      const BOB_STATUS_CLASS = {
+        'Underwriting': 'bob-status-underwriting',
+        'Approved':     'bob-status-approved',
+        'Issue Paid':   'bob-status-paid',
+      };
+      const BOB_TIMEFRAMES = [
+        { id: 'all',       label: 'All time' },
+        { id: 'week',      label: 'This week' },
+        { id: 'month',     label: 'This month' },
+        { id: 'ytd',       label: 'YTD' },
+        { id: 'lastweek',  label: 'Last week' },
+        { id: 'lastmonth', label: 'Last month' },
+        { id: 'custom',    label: 'Custom range' },
+      ];
+      function bobInitialTheme() {
+        try { return localStorage.getItem(BOB_THEME_KEY) || 'dark'; } catch (e) { return 'dark'; }
+      }
+      function bobInTimeframe(date, tf, customFrom, customTo) {
+        if (tf === 'all' || !date) return true;
+        const now = new Date();
+        const d = parsePolicyDate(date);
+        if (!d) return false;
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        if (tf === 'week') {
+          const ws = new Date(today); ws.setDate(ws.getDate() - ws.getDay());
+          return d >= ws;
+        }
+        if (tf === 'lastweek') {
+          const end = new Date(today); end.setDate(end.getDate() - end.getDay());
+          const start = new Date(end); start.setDate(start.getDate() - 7);
+          const endIncl = new Date(end); endIncl.setDate(endIncl.getDate() - 1); endIncl.setHours(23,59,59,999);
+          return d >= start && d <= endIncl;
+        }
+        if (tf === 'month') return d >= new Date(today.getFullYear(), today.getMonth(), 1);
+        if (tf === 'lastmonth') {
+          const start = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+          const end = new Date(today.getFullYear(), today.getMonth(), 0, 23, 59, 59);
+          return d >= start && d <= end;
+        }
+        if (tf === 'ytd') return d >= new Date(today.getFullYear(), 0, 1);
+        if (tf === 'custom') {
+          const f = customFrom ? new Date(customFrom + 'T00:00:00') : null;
+          const t = customTo ? new Date(customTo + 'T23:59:59') : null;
+          if (f && d < f) return false;
+          if (t && d > t) return false;
+          return true;
+        }
+        return true;
+      }
+
+      function BobDropdown({ label, value, onChange, options, multi, width }) {
+        const [open, setOpen] = useState(false);
+        const ref = useRef(null);
+        useEffect(() => {
+          const onClick = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
+          if (open) document.addEventListener('mousedown', onClick);
+          return () => document.removeEventListener('mousedown', onClick);
+        }, [open]);
+        let display;
+        if (multi) {
+          if (!value || value.length === 0) display = 'Select';
+          else if (value.length === options.length) display = 'All ' + label.toLowerCase();
+          else if (value.length === 1) {
+            const o = options.find(o => o.id === value[0]);
+            display = o ? o.label : 'Select';
+          } else display = value.length + ' selected';
+        } else {
+          const o = options.find(o => o.id === value);
+          display = o ? o.label : 'Select';
+        }
+        const isOn = (id) => multi ? value.includes(id) : value === id;
+        const toggle = (id) => {
+          if (multi) {
+            const next = value.includes(id) ? value.filter(v => v !== id) : value.concat([id]);
+            onChange(next);
+          } else { onChange(id); setOpen(false); }
+        };
+        return (
+          <div className="bob-filter-group">
+            <span className="bob-filter-label-sm">{label}</span>
+            <div className={'bob-dropdown' + (open ? ' open' : '')} ref={ref}>
+              <button className="bob-dropdown-btn" onClick={() => setOpen(o => !o)} style={{minWidth: width || 180}}>
+                <span style={{whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis'}}>{display}</span>
+                <span className="chev"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+              </button>
+              {open && (
+                <div className="bob-dropdown-panel">
+                  {multi && (
+                    <>
+                      <div className="opt" onClick={() => onChange(value.length === options.length ? [] : options.map(o => o.id))}>
+                        <span className="check">{value.length === options.length && <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>}</span>
+                        <span style={{fontWeight:500}}>{value.length === options.length ? 'Clear all' : 'Select all'}</span>
+                      </div>
+                      <div className="sep"></div>
+                    </>
+                  )}
+                  {options.map(o => (
+                    <div key={o.id} className={'opt' + (isOn(o.id) ? ' on' : '')} onClick={() => toggle(o.id)}>
+                      {multi
+                        ? <span className="check">{isOn(o.id) && <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>}</span>
+                        : <span className="opt-radio"></span>}
+                      <span>{o.label}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        );
+      }
+
+      function BobStatusBadge({ status }) {
+        const cls = BOB_STATUS_CLASS[status] || 'bob-status-underwriting';
+        const hue = BOB_STATUS_HUE[status] || 'var(--rb-yellow)';
+        return (
+          <span className={'bob-status-badge ' + cls}>
+            <span className="s-dot" style={{background: hue}}></span>
+            {status || '—'}
+          </span>
+        );
+      }
+
+      function BobEditModal({ policy, theme, onClose, onSave, onDelete }) {
+        const [draft, setDraft] = useState(policy);
+        useEffect(() => { setDraft(policy); }, [policy]);
+        if (!policy) return null;
+        const update = (k, v) => setDraft(d => Object.assign({}, d, { [k]: v }));
+        const isoDate = (d) => d ? new Date(d).toISOString().slice(0, 10) : '';
+        return ReactDOM.createPortal(
+          <div className="bob-modal-layer" data-bob-theme={theme}>
+            <div className="bob-modal-backdrop" onClick={onClose}></div>
+            <div className="bob-modal" role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
+              <div className="bob-mod-hd">
+                <div>
+                  <h3>{draft.client_name || 'Policy'}</h3>
+                  <div className="meta">{draft.policy_number || '—'} · {draft.carrier || '—'}</div>
+                </div>
+                <button className="bob-mod-x" onClick={onClose} aria-label="Close">×</button>
+              </div>
+              <div className="bob-mod-body">
+                <div>
+                  <div className="bob-mod-section-title">Status</div>
+                  <div className="bob-mod-status-row">
+                    {BOB_STATUSES.map(s => (
+                      <button key={s}
+                        className={draft.status === s ? 'on' : ''}
+                        onClick={() => update('status', s)}
+                        style={draft.status === s ? {
+                          color: BOB_STATUS_HUE[s],
+                          borderColor: 'color-mix(in oklch, ' + BOB_STATUS_HUE[s] + ' 40%, transparent)',
+                          background: 'color-mix(in oklch, ' + BOB_STATUS_HUE[s] + ' 14%, transparent)',
+                        } : null}
+                      >{s}</button>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <div className="bob-mod-section-title">Client</div>
+                  <div className="bob-mod-grid">
+                    <div className="bob-mod-field full">
+                      <label>Client name</label>
+                      <input className="bob-mod-input" value={draft.client_name || ''} onChange={e => update('client_name', e.target.value)} />
+                    </div>
+                    <div className="bob-mod-field full">
+                      <label>Phone</label>
+                      <input className="bob-mod-input mono" value={draft.phone || ''} onChange={e => update('phone', e.target.value)} placeholder="(555) 123-4567" />
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <div className="bob-mod-section-title">Policy</div>
+                  <div className="bob-mod-grid">
+                    <div className="bob-mod-field">
+                      <label>Annual premium ($)</label>
+                      <input className="bob-mod-input mono" type="number" step="0.01" value={draft.annual_premium || 0} onChange={e => update('annual_premium', parseFloat(e.target.value))} />
+                    </div>
+                    <div className="bob-mod-field">
+                      <label>Policy number</label>
+                      <input className="bob-mod-input mono" value={draft.policy_number || ''} onChange={e => update('policy_number', e.target.value)} />
+                    </div>
+                    <div className="bob-mod-field">
+                      <label>Carrier</label>
+                      <select className="bob-mod-select" value={draft.carrier || ''} onChange={e => update('carrier', e.target.value)}>
+                        <option value="">— Select carrier —</option>
+                        {CARRIER_LIST.map(c => <option key={c} value={c}>{c}</option>)}
+                      </select>
+                    </div>
+                    <div className="bob-mod-field">
+                      <label>Product type</label>
+                      <select className="bob-mod-select" value={draft.product_type || ''} onChange={e => update('product_type', e.target.value)}>
+                        <option value="">— Select product —</option>
+                        {BOB_PRODUCT_TYPES.map(p => <option key={p} value={p}>{p}</option>)}
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <div className="bob-mod-section-title">Dates</div>
+                  <div className="bob-mod-grid">
+                    <div className="bob-mod-field">
+                      <label>Sold date</label>
+                      <input className="bob-mod-input mono" type="date" value={isoDate(draft.policy_date)} onChange={e => update('policy_date', e.target.value || null)} />
+                    </div>
+                    <div className="bob-mod-field">
+                      <label>Effective date</label>
+                      <input className="bob-mod-input mono" type="date" value={isoDate(draft.effective_date)} onChange={e => update('effective_date', e.target.value || null)} />
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="bob-mod-foot">
+                <button className="bob-mod-btn ghost" onClick={() => onDelete(draft)}
+                  style={{color:'var(--bob-neg)', borderColor:'color-mix(in oklch, var(--bob-neg) 30%, transparent)'}}>Delete</button>
+                <div style={{flex:1}}></div>
+                <button className="bob-mod-btn ghost" onClick={onClose}>Cancel</button>
+                <button className="bob-mod-btn primary" onClick={() => onSave(draft)}>Save changes</button>
+              </div>
+            </div>
+          </div>,
+          document.body
+        );
+      }
+
+      // Small confirm modal — used before applying status advances so the user
+      // can't fat-finger Mark approved / Mark issue paid.
+      function BobConfirmModal({ theme, title, body, confirmLabel, accent, onClose, onConfirm }) {
+        const accentVar = accent === 'green' ? 'var(--rb-green)' : accent === 'orange' ? 'var(--rb-orange)' : accent === 'purple' ? 'var(--rb-purple)' : 'var(--rb-blue)';
+        return ReactDOM.createPortal(
+          <div className="bob-modal-layer" data-bob-theme={theme}>
+            <div className="bob-modal-backdrop" onClick={onClose}></div>
+            <div className="bob-modal" style={{width: 420}} role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
+              <div className="bob-mod-hd">
+                <div>
+                  <h3>{title}</h3>
+                </div>
+                <button className="bob-mod-x" onClick={onClose} aria-label="Close">×</button>
+              </div>
+              <div className="bob-mod-body" style={{paddingBottom: 4}}>
+                <div style={{fontSize: 13, color: 'var(--bob-ink-2)', lineHeight: 1.5}}>{body}</div>
+              </div>
+              <div className="bob-mod-foot">
+                <button className="bob-mod-btn ghost" onClick={onClose}>Cancel</button>
+                <button className="bob-mod-btn primary" onClick={onConfirm}
+                  style={{background: accentVar, borderColor: accentVar, color: '#0d0e10'}}>{confirmLabel}</button>
+              </div>
+            </div>
+          </div>,
+          document.body
+        );
+      }
+
+      function BookOfBusinessView() {
+        const [theme, setTheme] = useState(bobInitialTheme());
+        const [policies, setPolicies] = useState([]);
+        const [agentName, setAgentName] = useState('');
+        const [loading, setLoading] = useState(true);
+        const [error, setError] = useState(null);
+        const [filters, setFilters] = useState({
+          timeframe: 'ytd',
+          statuses: BOB_STATUSES.slice(),
+          carriers: CARRIER_LIST.slice(),
+          customFrom: '',
+          customTo: '',
+        });
+        const [search, setSearch] = useState('');
+        const [sortKey, setSortKey] = useState('policy_date');
+        const [sortDir, setSortDir] = useState('desc');
+        const [page, setPage] = useState(0);
+        const [perPage] = useState(25);
+        const [openPolicy, setOpenPolicy] = useState(null);
+        // Pending status-advance awaiting user confirmation
+        const [confirmAdvance, setConfirmAdvance] = useState(null);
+
+        useEffect(() => {
+          const root = document.getElementById('panel-policies');
+          if (root) root.setAttribute('data-bob-theme', theme);
+          try { localStorage.setItem(BOB_THEME_KEY, theme); } catch (e) {}
+        }, [theme]);
+
+        const reload = async () => {
+          setLoading(true); setError(null);
+          try {
+            const u = window.currentUser;
+            if (!u || !u.id) { setError('Sign in to view your book of business.'); setLoading(false); return; }
+            const [profilesRes, policiesRes] = await Promise.all([
+              fetch(SUPABASE_URL + '/rest/v1/agent_profiles?select=user_id,agent_name&user_id=eq.' + u.id, { headers: HDRS }),
+              fetch(SUPABASE_URL + '/rest/v1/policies?select=id,user_id,sales_rep,client_name,phone,annual_premium,policy_date,created_at,carrier,status,product_type,policy_number,effective_date&user_id=eq.' + u.id + '&order=policy_date.desc', { headers: Object.assign({}, HDRS, { 'Range-Unit': 'items', 'Range': '0-49999' }) }),
+            ]);
+            const profiles = profilesRes.ok ? await profilesRes.json() : [];
+            const policiesData = (policiesRes.ok || policiesRes.status === 206) ? await policiesRes.json() : [];
+            setAgentName(profiles[0]?.agent_name || u.user_metadata?.name || u.email);
+            setPolicies(policiesData);
+            setLoading(false);
+          } catch (e) { console.error('BOB load failed:', e); setError(e.message || String(e)); setLoading(false); }
+        };
+        useEffect(() => { reload(); }, []);
+
+        // Needs Attention = status='Underwriting', sorted by oldest policy_date
+        const needsAttention = useMemo(() => {
+          return policies
+            .filter(p => p.status === 'Underwriting')
+            .sort((a, b) => {
+              const da = parsePolicyDate(a.policy_date || a.created_at);
+              const db = parsePolicyDate(b.policy_date || b.created_at);
+              return (da || 0) - (db || 0);
+            });
+        }, [policies]);
+
+        // Approved Not Issued = same criteria as the legacy effective-date reminder:
+        //   status='Approved' AND effective_date is set AND effective_date is 5+ days in the past
+        const approvedNotIssued = useMemo(() => {
+          const now = new Date();
+          now.setHours(0, 0, 0, 0);
+          const fiveDaysMs = 5 * 24 * 60 * 60 * 1000;
+          return policies
+            .filter(p => {
+              if (p.status !== 'Approved') return false;
+              if (!p.effective_date) return false;
+              const eff = parsePolicyDate(p.effective_date);
+              return eff && (now - eff) >= fiveDaysMs;
+            })
+            .sort((a, b) => {
+              const da = parsePolicyDate(a.effective_date);
+              const db = parsePolicyDate(b.effective_date);
+              return (da || 0) - (db || 0);
+            });
+        }, [policies]);
+
+        // Filter + sort the full table
+        const filtered = useMemo(() => {
+          const rows = policies.filter(p => {
+            const sold = p.policy_date || p.created_at;
+            if (!bobInTimeframe(sold, filters.timeframe, filters.customFrom, filters.customTo)) return false;
+            if (filters.statuses.length < BOB_STATUSES.length && !filters.statuses.includes(p.status)) return false;
+            if (filters.carriers.length < CARRIER_LIST.length && !filters.carriers.includes(p.carrier)) return false;
+            if (search) {
+              const q = search.toLowerCase();
+              const hay = [p.client_name, p.policy_number, p.phone, p.carrier, p.product_type].join(' ').toLowerCase();
+              if (!hay.includes(q)) return false;
+            }
+            return true;
+          });
+          const cmp = (a, b) => {
+            let va, vb;
+            switch (sortKey) {
+              case 'policy_date':    va = (parsePolicyDate(a.policy_date || a.created_at) || 0).getTime?.() || 0; vb = (parsePolicyDate(b.policy_date || b.created_at) || 0).getTime?.() || 0; break;
+              case 'effective_date': va = a.effective_date ? (parsePolicyDate(a.effective_date) || 0).getTime?.() : 0; vb = b.effective_date ? (parsePolicyDate(b.effective_date) || 0).getTime?.() : 0; break;
+              case 'client_name':    va = a.client_name || ''; vb = b.client_name || ''; break;
+              case 'annual_premium': va = parseFloat(a.annual_premium || 0); vb = parseFloat(b.annual_premium || 0); break;
+              case 'carrier':        va = a.carrier || ''; vb = b.carrier || ''; break;
+              case 'product_type':   va = a.product_type || ''; vb = b.product_type || ''; break;
+              case 'policy_number':  va = a.policy_number || ''; vb = b.policy_number || ''; break;
+              case 'status':         va = BOB_STATUSES.indexOf(a.status); vb = BOB_STATUSES.indexOf(b.status); break;
+              default: va = 0; vb = 0;
+            }
+            if (typeof va === 'string') return sortDir === 'asc' ? va.localeCompare(vb) : vb.localeCompare(va);
+            return sortDir === 'asc' ? va - vb : vb - va;
+          };
+          rows.sort(cmp);
+          return rows;
+        }, [policies, filters, search, sortKey, sortDir]);
+
+        useEffect(() => { setPage(0); }, [filters, search, sortKey, sortDir]);
+
+        const onSort = (k) => {
+          if (sortKey === k) setSortDir(d => d === 'asc' ? 'desc' : 'asc');
+          else { setSortKey(k); setSortDir(['annual_premium','policy_date','effective_date'].includes(k) ? 'desc' : 'asc'); }
+        };
+
+        const handleSave = async (draft) => {
+          try {
+            await fetch(SUPABASE_URL + '/rest/v1/policies?id=eq.' + draft.id, {
+              method: 'PATCH', headers: HDRS_WRITE,
+              body: JSON.stringify({
+                client_name: draft.client_name,
+                phone: draft.phone || null,
+                annual_premium: parseFloat(draft.annual_premium || 0),
+                policy_number: draft.policy_number,
+                carrier: draft.carrier,
+                product_type: draft.product_type,
+                policy_date: draft.policy_date || null,
+                effective_date: draft.effective_date || null,
+                status: draft.status,
+              })
+            });
+            setOpenPolicy(null);
+            reload();
+          } catch (e) { console.error('Policy save failed:', e); }
+        };
+        const handleDelete = async (p) => {
+          if (!confirm('Delete this policy permanently?')) return;
+          try {
+            await fetch(SUPABASE_URL + '/rest/v1/policies?id=eq.' + p.id, { method: 'DELETE', headers: HDRS_WRITE });
+            setOpenPolicy(null);
+            reload();
+          } catch (e) { console.error('Policy delete failed:', e); }
+        };
+        const advancePolicy = async (p, nextStatus, extra) => {
+          try {
+            const body = Object.assign({ status: nextStatus }, extra || {});
+            await fetch(SUPABASE_URL + '/rest/v1/policies?id=eq.' + p.id, {
+              method: 'PATCH', headers: HDRS_WRITE, body: JSON.stringify(body)
+            });
+            reload();
+          } catch (e) { console.error('Advance failed:', e); }
+        };
+
+        const exportCSV = () => {
+          const headers = ['Date Sold','Client','Phone','Annual Premium','Carrier','Product','Policy #','Status','Effective Date'];
+          const escape = (v) => {
+            const s = (v == null ? '' : String(v));
+            return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+          };
+          const rows = filtered.map(p => [
+            p.policy_date || '',
+            p.client_name || '',
+            p.phone || '',
+            p.annual_premium || 0,
+            p.carrier || '',
+            p.product_type || '',
+            p.policy_number || '',
+            p.status || '',
+            p.effective_date || '',
+          ].map(escape).join(','));
+          const csv = headers.join(',') + '\n' + rows.join('\n');
+          const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'book-of-business-' + new Date().toISOString().slice(0, 10) + '.csv';
+          a.click();
+          URL.revokeObjectURL(url);
+        };
+
+        // Filter pills
+        const pills = [];
+        if (filters.timeframe !== 'all' && filters.timeframe !== 'ytd') {
+          const tf = BOB_TIMEFRAMES.find(t => t.id === filters.timeframe);
+          if (tf) pills.push({ key: 'tf', label: tf.label, color: 'blue', clear: () => setFilters(f => Object.assign({}, f, { timeframe: 'ytd' })) });
+        }
+        if (filters.statuses.length !== BOB_STATUSES.length) {
+          pills.push({ key: 'st', label: filters.statuses.length === 1 ? filters.statuses[0] : filters.statuses.length + ' statuses', color: 'yellow', clear: () => setFilters(f => Object.assign({}, f, { statuses: BOB_STATUSES.slice() })) });
+        }
+        if (filters.carriers.length !== CARRIER_LIST.length) {
+          pills.push({ key: 'c', label: filters.carriers.length + ' carriers', color: 'purple', clear: () => setFilters(f => Object.assign({}, f, { carriers: CARRIER_LIST.slice() })) });
+        }
+        const isCleared = pills.length === 0 && filters.timeframe === 'ytd';
+
+        const today = new Date();
+        const dateStr = today.toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric', year:'numeric' });
+        const daysSince = (d) => {
+          const dt = parsePolicyDate(d);
+          if (!dt) return 0;
+          const now = new Date(); now.setHours(0,0,0,0);
+          return Math.floor((now - dt) / 86400000);
+        };
+        const ageHue = (days) => {
+          if (days >= 30) return 'var(--rb-red)';
+          if (days >= 14) return 'var(--rb-orange)';
+          if (days >= 7) return 'var(--rb-yellow)';
+          return 'var(--bob-ink-3)';
+        };
+
+        const start = page * perPage;
+        const slice = filtered.slice(start, start + perPage);
+        const totalPages = Math.max(1, Math.ceil(filtered.length / perPage));
+        const arrow = (k) => sortKey === k ? <span className="arrow">{sortDir === 'asc' ? '↑' : '↓'}</span> : null;
+
+        const tfOpts = BOB_TIMEFRAMES.filter(t => t.id !== 'custom').map(t => ({ id: t.id, label: t.label })).concat([{ id: 'custom', label: 'Custom range' }]);
+        const statusOpts = BOB_STATUSES.map(s => ({ id: s, label: s }));
+        const carrierOpts = CARRIER_LIST.map(c => ({ id: c, label: c }));
+
+        const AttentionTable = ({ rows, accent, onAdvance, advanceLabel }) => (
+          <div className="bob-pt-scroll">
+            <table className="bob-pt">
+              <thead>
+                <tr>
+                  <th>Date sold</th><th>Waiting</th><th>Client</th><th className="num">Premium</th>
+                  <th>Carrier</th><th>Product</th><th>Policy #</th><th>Status</th>
+                  <th style={{textAlign:'right', paddingRight:18}}>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map(p => {
+                  const refDate = accent === 'orange' ? p.effective_date : (p.policy_date || p.created_at);
+                  const days = daysSince(refDate);
+                  return (
+                    <tr key={p.id}>
+                      <td>
+                        <div className="bob-cell-date">
+                          <span className="d">{(parsePolicyDate(p.policy_date || p.created_at) || new Date()).toLocaleDateString('en-US', { month:'numeric', day:'numeric', year:'2-digit' })}</span>
+                          <span className="day">{(parsePolicyDate(p.policy_date || p.created_at) || new Date()).toLocaleDateString('en-US', { weekday:'short' })}</span>
+                        </div>
+                      </td>
+                      <td>
+                        <span className="bob-age-pill" style={{
+                          color: ageHue(days),
+                          background: 'color-mix(in oklch, ' + ageHue(days) + ' 12%, transparent)',
+                          borderColor: 'color-mix(in oklch, ' + ageHue(days) + ' 28%, transparent)',
+                        }}>{days === 0 ? 'Today' : days + 'd'}</span>
+                      </td>
+                      <td>
+                        <div className="bob-cell-client">
+                          <span className="name">{p.client_name || '—'}</span>
+                          <span className="phone">{p.phone ? <a href={'tel:' + p.phone.replace(/\D/g,'')}>{p.phone}</a> : '—'}</span>
+                        </div>
+                      </td>
+                      <td className="num">{fmtCurrency(parseFloat(p.annual_premium || 0))}</td>
+                      <td>{p.carrier || '—'}</td>
+                      <td style={{color:'var(--bob-ink-2)'}}>{p.product_type || '—'}</td>
+                      <td><span className="bob-policy-num">{p.policy_number || '—'}</span></td>
+                      <td><BobStatusBadge status={p.status} /></td>
+                      <td style={{textAlign:'right', paddingRight:18}}>
+                        <div className="bob-actions-cell">
+                          <button className="bob-button btn-sm ghost" onClick={() => setOpenPolicy(p)}>
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                            <span>Edit</span>
+                          </button>
+                          <button className="bob-button btn-sm" onClick={() => onAdvance(p)} style={{
+                            background: 'color-mix(in oklch, var(--rb-' + accent + ') 18%, var(--bob-surface))',
+                            borderColor: 'color-mix(in oklch, var(--rb-' + accent + ') 40%, transparent)',
+                            color: 'var(--bob-ink-1)',
+                          }}>
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                            <span>{advanceLabel}</span>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        );
+
+        return (
+          <div>
+            <header className="bob-hdr">
+              <div className="bob-hdr-l">
+                <div style={{display:'flex', alignItems:'center', gap:12}}>
+                  <div className="bob-hdr-title">Book of Business</div>
+                  {agentName && <span className="bob-hdr-sub">· {agentName}</span>}
+                </div>
+                <div className="bob-hdr-sub" style={{marginTop:6}}>
+                  Kairos Financial · Life &amp; Final Expense Division
+                </div>
+              </div>
+              <div className="bob-hdr-r">
+                <div className="bob-hdr-time"><b>{dateStr}</b></div>
+                <button className="bob-theme-toggle" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} aria-label="Toggle theme">
+                  {theme === 'dark'
+                    ? <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+                    : <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>}
+                </button>
+              </div>
+            </header>
+
+            {loading ? (
+              <div className="bob-loading">Loading book of business…</div>
+            ) : error ? (
+              <div className="bob-loading">{error}</div>
+            ) : (
+              <div>
+                {/* Needs Attention */}
+                <div className={'bob-attn-card yellow'}>
+                  <div className="bob-attn-hd">
+                    <span className="bob-attn-dot" style={{background:'var(--rb-yellow)'}}></span>
+                    <div className="bob-attn-title">Needs attention</div>
+                    <div className="bob-attn-count"><b>{needsAttention.length}</b> {needsAttention.length === 1 ? 'policy' : 'policies'}</div>
+                    <div className="bob-attn-sub">Currently in underwriting · sorted by oldest first</div>
+                  </div>
+                  {needsAttention.length === 0 ? (
+                    <div className="bob-attn-empty">No policies in underwriting. You're all caught up.</div>
+                  ) : (
+                    <AttentionTable
+                      rows={needsAttention}
+                      accent="yellow"
+                      onAdvance={(p) => setConfirmAdvance({
+                        policy: p,
+                        next: 'Approved',
+                        title: 'Mark policy as approved?',
+                        body: <>Move <b style={{color:'var(--bob-ink-1)'}}>{p.client_name || 'this policy'}</b> from Underwriting to <b style={{color:'var(--bob-ink-1)'}}>Approved</b>. You can change it back anytime from the edit modal.</>,
+                        confirmLabel: 'Mark approved',
+                        accent: 'green',
+                      })}
+                      advanceLabel="Mark approved"
+                    />
+                  )}
+                </div>
+
+                {/* Approved Not Issued — same criteria as the legacy effective-date reminder */}
+                <div className="bob-attn-card orange">
+                  <div className="bob-attn-hd">
+                    <span className="bob-attn-dot" style={{background:'var(--rb-orange)'}}></span>
+                    <div className="bob-attn-title">Approved but not issued</div>
+                    <div className="bob-attn-count"><b>{approvedNotIssued.length}</b> {approvedNotIssued.length === 1 ? 'policy' : 'policies'}</div>
+                    <div className="bob-attn-sub">Approved 5+ days ago · awaiting issue / first payment</div>
+                  </div>
+                  {approvedNotIssued.length === 0 ? (
+                    <div className="bob-attn-empty">Nothing waiting on issue. Nice.</div>
+                  ) : (
+                    <AttentionTable
+                      rows={approvedNotIssued}
+                      accent="orange"
+                      onAdvance={(p) => setConfirmAdvance({
+                        policy: p,
+                        next: 'Issue Paid',
+                        title: 'Mark policy as issue paid?',
+                        body: <>Move <b style={{color:'var(--bob-ink-1)'}}>{p.client_name || 'this policy'}</b> from Approved to <b style={{color:'var(--bob-ink-1)'}}>Issue Paid</b>. This is the final stage in the pipeline.</>,
+                        confirmLabel: 'Mark issue paid',
+                        accent: 'purple',
+                      })}
+                      advanceLabel="Mark issue paid"
+                    />
+                  )}
+                </div>
+
+                {/* Section divider */}
+                <div className="bob-section-rule">
+                  <span className="bob-section-rule-lbl">Full book of business</span>
+                </div>
+
+                {/* Filters */}
+                <div className="bob-filters">
+                  <BobDropdown label="Timeframe" value={filters.timeframe}
+                    onChange={v => setFilters(f => Object.assign({}, f, { timeframe: v }))}
+                    options={tfOpts} width={170} />
+                  <BobDropdown label="Status" value={filters.statuses} multi
+                    onChange={v => setFilters(f => Object.assign({}, f, { statuses: v }))}
+                    options={statusOpts} width={170} />
+                  <BobDropdown label="Carrier" value={filters.carriers} multi
+                    onChange={v => setFilters(f => Object.assign({}, f, { carriers: v }))}
+                    options={carrierOpts} width={200} />
+                  <div style={{flex:1}}></div>
+                  <div className="bob-filter-group">
+                    <span className="bob-filter-label-sm">&nbsp;</span>
+                    <div style={{display:'flex', gap:8, alignItems:'center'}}>
+                      {!isCleared && (
+                        <button className="bob-button ghost" onClick={() => setFilters({timeframe:'ytd', statuses: BOB_STATUSES.slice(), carriers: CARRIER_LIST.slice(), customFrom:'', customTo:''})}
+                          style={{padding:'8px 12px', fontSize:11, fontFamily:'var(--bob-mono)', textTransform:'uppercase', letterSpacing:'0.06em'}}>
+                          Reset filters
+                        </button>
+                      )}
+                      <button className="bob-button" onClick={exportCSV}>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        <span>Export CSV</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {filters.timeframe === 'custom' && (
+                  <div className="bob-date-range">
+                    <input type="date" value={filters.customFrom} onChange={e => setFilters(f => Object.assign({}, f, { customFrom: e.target.value }))} />
+                    <span style={{color:'var(--bob-ink-3)', fontFamily:'var(--bob-mono)', fontSize:11}}>to</span>
+                    <input type="date" value={filters.customTo} onChange={e => setFilters(f => Object.assign({}, f, { customTo: e.target.value }))} />
+                  </div>
+                )}
+
+                {pills.length > 0 && (
+                  <div style={{display:'flex', gap:8, flexWrap:'wrap', marginBottom:18, alignItems:'center'}}>
+                    <span className="bob-filter-label-sm" style={{marginRight:4}}>Active</span>
+                    {pills.map(p => (
+                      <span key={p.key} className="bob-filter-pill" style={{
+                        background: 'color-mix(in oklch, var(--rb-' + p.color + ') 14%, transparent)',
+                        border: '1px solid color-mix(in oklch, var(--rb-' + p.color + ') 32%, transparent)',
+                      }}>
+                        <b>{p.label}</b>
+                        <button className="x" onClick={p.clear}>×</button>
+                      </span>
+                    ))}
+                  </div>
+                )}
+
+                <div className="bob-card">
+                  <div className="bob-pt-hd">
+                    <div className="bob-pt-hd-l">
+                      <div className="bob-card-title">Policies</div>
+                      <div className="bob-pt-count">
+                        <b>{filtered.length.toLocaleString()}</b> of {policies.length.toLocaleString()}
+                        {filtered.length !== policies.length && <span style={{color:'var(--bob-ink-4)', marginLeft:6}}>(filtered)</span>}
+                      </div>
+                    </div>
+                    <div className="bob-pt-search">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                      <input placeholder="Search client, policy #, phone…" value={search} onChange={e => setSearch(e.target.value)} />
+                      {search && <button onClick={() => setSearch('')} style={{appearance:'none', border:0, background:'transparent', color:'var(--bob-ink-3)', cursor:'pointer', padding:0, display:'grid', placeItems:'center'}}>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                      </button>}
+                    </div>
+                  </div>
+
+                  <div className="bob-pt-scroll">
+                    <table className="bob-pt">
+                      <thead>
+                        <tr>
+                          <th onClick={() => onSort('policy_date')}>Date sold {arrow('policy_date')}</th>
+                          <th onClick={() => onSort('client_name')}>Client {arrow('client_name')}</th>
+                          <th className="num" onClick={() => onSort('annual_premium')}>Annual premium {arrow('annual_premium')}</th>
+                          <th onClick={() => onSort('carrier')}>Carrier {arrow('carrier')}</th>
+                          <th onClick={() => onSort('product_type')}>Product {arrow('product_type')}</th>
+                          <th onClick={() => onSort('policy_number')}>Policy # {arrow('policy_number')}</th>
+                          <th onClick={() => onSort('status')}>Status {arrow('status')}</th>
+                          <th onClick={() => onSort('effective_date')}>Effective {arrow('effective_date')}</th>
+                          <th style={{cursor:'default', textAlign:'right'}}>Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {slice.length === 0 ? (
+                          <tr><td colSpan="9" className="bob-pt-empty">No policies match the current filters.</td></tr>
+                        ) : slice.map(p => {
+                          const sold = parsePolicyDate(p.policy_date || p.created_at) || new Date();
+                          return (
+                            <tr key={p.id}>
+                              <td>
+                                <div className="bob-cell-date">
+                                  <span className="d">{(sold.getMonth()+1) + '/' + sold.getDate() + '/' + String(sold.getFullYear()).slice(-2)}</span>
+                                  <span className="day">{sold.toLocaleDateString('en-US', {weekday:'short'})} · {sold.getFullYear()}</span>
+                                </div>
+                              </td>
+                              <td>
+                                <div className="bob-cell-client">
+                                  <span className="name">{p.client_name || '—'}</span>
+                                  <span className="phone">{p.phone || '—'}</span>
+                                </div>
+                              </td>
+                              <td className="num">{fmtCurrency(parseFloat(p.annual_premium || 0))}</td>
+                              <td>{p.carrier || '—'}</td>
+                              <td style={{color:'var(--bob-ink-2)'}}>{p.product_type || '—'}</td>
+                              <td><span className="bob-policy-num">{p.policy_number || '—'}</span></td>
+                              <td><BobStatusBadge status={p.status} /></td>
+                              <td className="mono">{p.effective_date ? (() => { const e = parsePolicyDate(p.effective_date); return e ? (e.getMonth()+1)+'/'+e.getDate()+'/'+String(e.getFullYear()).slice(-2) : '—'; })() : '—'}</td>
+                              <td style={{textAlign:'right', paddingRight:18}}>
+                                <div className="bob-actions-cell">
+                                  <button className="bob-btn-icon" title="Edit policy" onClick={() => setOpenPolicy(p)}>
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <div className="bob-pt-foot">
+                    <div>
+                      Showing {filtered.length === 0 ? 0 : start + 1}–{Math.min(start + perPage, filtered.length)} of {filtered.length.toLocaleString()}
+                    </div>
+                    <div className="bob-pager">
+                      <button onClick={() => setPage(0)} disabled={page === 0}>« First</button>
+                      <button onClick={() => setPage(p => Math.max(0, p - 1))} disabled={page === 0}>‹ Prev</button>
+                      <span className="current">Page {page + 1} / {totalPages}</span>
+                      <button onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))} disabled={page >= totalPages - 1}>Next ›</button>
+                      <button onClick={() => setPage(totalPages - 1)} disabled={page >= totalPages - 1}>Last »</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <footer className="bob-foot">
+              <span>Kairos Financial · Internal · Confidential</span>
+              <span>Synced from Supabase · {today.toLocaleDateString('en-US', {month:'short', day:'numeric'})}</span>
+            </footer>
+
+            {openPolicy && <BobEditModal
+              policy={openPolicy}
+              theme={theme}
+              onClose={() => setOpenPolicy(null)}
+              onSave={handleSave}
+              onDelete={handleDelete} />}
+
+            {confirmAdvance && <BobConfirmModal
+              theme={theme}
+              title={confirmAdvance.title}
+              body={confirmAdvance.body}
+              confirmLabel={confirmAdvance.confirmLabel}
+              accent={confirmAdvance.accent}
+              onClose={() => setConfirmAdvance(null)}
+              onConfirm={() => {
+                advancePolicy(confirmAdvance.policy, confirmAdvance.next);
+                setConfirmAdvance(null);
+              }} />}
+          </div>
+        );
+      }
+
+      let bobBookRoot = null;
+      window.bobMountBookOfBusiness = function () {
+        const el = document.getElementById('bobBookRoot');
+        if (!el) return;
+        if (!bobBookRoot) bobBookRoot = ReactDOM.createRoot(el);
+        bobBookRoot.render(<BookOfBusinessView />);
       };
     })();
   </script>
