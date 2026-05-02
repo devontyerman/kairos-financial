@@ -18926,12 +18926,19 @@
     });
 
     async function markVideoComplete(slug) {
-      if (!currentUser || !accessToken) return;
-      completedVideoIds.add(slug);
-      updateVideoStates();
+      if (!currentUser || !accessToken) {
+        console.warn('[video] cannot mark complete — not signed in');
+        return;
+      }
 
+      // Save FIRST, then update local state only on a confirmed save. Earlier
+      // we optimistically added the slug to completedVideoIds before awaiting
+      // the POST — if the POST silently failed (401/403, RLS reject, network
+      // blip), the UI showed "complete" but the row never landed in
+      // video_progress, so reps had to rewatch on every refresh.
+      let saved = false;
       try {
-        await fetch(SUPABASE_URL + '/rest/v1/video_progress', {
+        const res = await fetch(SUPABASE_URL + '/rest/v1/video_progress', {
           method: 'POST',
           headers: {
             'apikey': SUPABASE_KEY,
@@ -18941,26 +18948,84 @@
           },
           body: JSON.stringify({ user_id: currentUser.id, video_id: slug })
         });
-      } catch (err) { console.error('Failed to save video progress:', err); }
+        if (res.ok || res.status === 409) {
+          saved = true;
+        } else {
+          // Try refreshing the access token once and re-posting before giving up.
+          let body = '';
+          try { body = await res.text(); } catch (_) {}
+          console.error('[video] POST /video_progress failed', res.status, body);
+          if (res.status === 401 && typeof refreshSession === 'function') {
+            try {
+              const ok = await refreshSession();
+              if (ok) {
+                const retry = await fetch(SUPABASE_URL + '/rest/v1/video_progress', {
+                  method: 'POST',
+                  headers: {
+                    'apikey': SUPABASE_KEY,
+                    'Authorization': 'Bearer ' + accessToken,
+                    'Content-Type': 'application/json',
+                    'Prefer': 'return=minimal,resolution=ignore-duplicates'
+                  },
+                  body: JSON.stringify({ user_id: currentUser.id, video_id: slug })
+                });
+                saved = retry.ok || retry.status === 409;
+              }
+            } catch (_) {}
+          }
+        }
+      } catch (err) {
+        console.error('[video] save threw:', err);
+      }
+
+      if (!saved) {
+        // Surface the failure so the rep doesn't think they're done when
+        // nothing actually persisted.
+        try {
+          alert('Could not save video completion. Check your connection and try again.');
+        } catch (_) {}
+        return;
+      }
+
+      completedVideoIds.add(slug);
+      updateVideoStates();
 
       // Mark overall training complete once every current video is done
       const allSlugs = getAllVideoSlugs();
       const allDone = allSlugs.length > 0 && allSlugs.every(s => completedVideoIds.has(s));
       if (allDone && !trainingComplete) {
-        trainingComplete = true;
-        applyTrainingGate();
+        let gateSaved = false;
         try {
-          await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?user_id=eq.' + currentUser.id, {
+          const r = await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?user_id=eq.' + currentUser.id, {
             method: 'PATCH',
             headers: {
               'apikey': SUPABASE_KEY,
               'Authorization': 'Bearer ' + accessToken,
               'Content-Type': 'application/json',
-              'Prefer': 'return=minimal'
+              'Prefer': 'return=representation'
             },
             body: JSON.stringify({ training_complete: true })
           });
-        } catch (err) { console.error('Failed to update training_complete:', err); }
+          gateSaved = r.ok;
+          if (!gateSaved) {
+            // Profile row may not exist yet — fall back to insert
+            const ins = await fetch(SUPABASE_URL + '/rest/v1/agent_profiles', {
+              method: 'POST',
+              headers: {
+                'apikey': SUPABASE_KEY,
+                'Authorization': 'Bearer ' + accessToken,
+                'Content-Type': 'application/json',
+                'Prefer': 'return=minimal'
+              },
+              body: JSON.stringify({ user_id: currentUser.id, training_complete: true })
+            });
+            gateSaved = ins.ok;
+          }
+        } catch (err) { console.error('[video] training_complete save threw:', err); }
+        if (gateSaved) {
+          trainingComplete = true;
+          applyTrainingGate();
+        }
       }
 
       // Auto-advance to next unlocked video
@@ -20746,10 +20811,10 @@
                             </td>
                             <td className="num">
                               <div className="tp-actions-cell">
-                                <button className="tp-btn primary" onClick={() => saveRow(p.user_id)}>
+                                <button type="button" className="tp-btn primary" onClick={() => saveRow(p.user_id)}>
                                   {justSaved ? 'Saved ✓' : 'Save'}
                                 </button>
-                                <button className={'tp-btn ' + (isComplete ? 'danger' : 'success')}
+                                <button type="button" className={'tp-btn ' + (isComplete ? 'danger' : 'success')}
                                   onClick={() => toggleAccess(p.user_id, isComplete)}>
                                   {isComplete ? 'Revoke' : 'Grant'}
                                 </button>
