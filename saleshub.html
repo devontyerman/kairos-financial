@@ -21899,8 +21899,20 @@
               });
               if (!insRes.ok) throw new Error('insert failed (' + insRes.status + ') ' + (await insRes.text().catch(() => '')));
             }
-            setToast({ kind: 'ok', msg: '✓ KPIs logged' });
-            setTimeout(() => { onSaved(); onClose(); }, 700);
+            // Refresh underlying data quietly. Keep the modal open so the
+            // user can knock out several days back-to-back without the page
+            // jumping. Advance the date one day backward (the most common
+            // backfill direction) and clear the fields.
+            onSaved();
+            const prev = new Date(date + 'T00:00:00');
+            prev.setDate(prev.getDate() - 1);
+            const prevYMD = prev.getFullYear() + '-' + String(prev.getMonth()+1).padStart(2,'0') + '-' + String(prev.getDate()).padStart(2,'0');
+            setDate(prevYMD);
+            setDials(''); setAnswers(''); setAppointments(''); setPresentations('');
+            setDeals(''); setLeadSpend(''); setDeposits('');
+            setToast({ kind: 'ok', msg: '✓ KPIs logged · entering ' + prevYMD });
+            setTimeout(() => setToast(null), 1800);
+            setSaving(false);
           } catch (e) {
             console.error('Submit KPI failed:', e);
             setToast({ kind: 'err', msg: 'Failed to submit — ' + (e.message || 'unknown error') });
@@ -22361,6 +22373,9 @@
         const [monthlyGoal, setMonthlyGoal] = useState(0);
         const [editingMonthlyGoal, setEditingMonthlyGoal] = useState(false);
         const [monthlyGoalDraft, setMonthlyGoalDraft] = useState('');
+        // Heatmap shows two months side-by-side. Offset 0 = [last month, this month].
+        // Negative offsets shift the pair backwards in time.
+        const [heatOffset, setHeatOffset] = useState(0);
         // Admin-only "view as" — when set, the dashboard renders that
         // agent's stats (read-only). Hidden for everyone else.
         const [viewAsUserId, setViewAsUserId] = useState('');
@@ -22848,6 +22863,11 @@
               </div>
 
               {/* Daily Activity Heatmap */}
+              {(() => {
+                const heatRightDate = new Date(today.getFullYear(), today.getMonth() + heatOffset, 1);
+                const heatLeftDate = new Date(heatRightDate.getFullYear(), heatRightDate.getMonth() - 1, 1);
+                const onHeatDay = (date, row) => { setKpiInitial({ date, dials: row?.dials, answers: row?.answers, appointments: row?.appointments, presentations: row?.presentations, deals: row?.deals, lead_spend: row?.lead_spend, deposits: row?.deposits }); setShowKpiModal(true); };
+                return (
               <div className="tk-card" style={{gridColumn:'span 12'}}>
                 <div className="tk-card-hd">
                   <div style={{display:'flex', alignItems:'baseline', gap:14}}>
@@ -22855,6 +22875,13 @@
                     <div className="tk-card-meta">Weighted: dials · presentations · sales</div>
                   </div>
                   <div style={{display:'flex', alignItems:'center', gap:16, flexWrap:'wrap'}}>
+                    <div style={{display:'flex', alignItems:'center', gap:6}}>
+                      <button type="button" className="tk-seg-btn" onClick={() => setHeatOffset(o => o - 1)} title="Previous month" aria-label="Previous month">‹</button>
+                      {heatOffset !== 0 && (
+                        <button type="button" className="tk-seg-btn" onClick={() => setHeatOffset(0)} title="Back to current month">Today</button>
+                      )}
+                      <button type="button" className="tk-seg-btn" onClick={() => setHeatOffset(o => Math.min(0, o + 1))} disabled={heatOffset >= 0} title="Next month" aria-label="Next month">›</button>
+                    </div>
                     <div style={{display:'flex', alignItems:'center', gap:8}}>
                       <span style={{fontFamily:'var(--tk-mono)', fontSize:10, color:'var(--tk-ink-4)', textTransform:'uppercase', letterSpacing:'0.06em'}}>Less</span>
                       <div style={{display:'flex', gap:3}}>
@@ -22872,8 +22899,8 @@
                   </div>
                 </div>
                 <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:32}}>
-                  <HeatmapMonth year={lastMonthStart.getFullYear()} month={lastMonthStart.getMonth()} kpis={kpis} policies={policies} today={today} viewingOther={viewingOther} onDayClick={(date, row) => { setKpiInitial({ date, dials: row?.dials, answers: row?.answers, appointments: row?.appointments, presentations: row?.presentations, deals: row?.deals, lead_spend: row?.lead_spend, deposits: row?.deposits }); setShowKpiModal(true); }} />
-                  <HeatmapMonth year={today.getFullYear()} month={today.getMonth()} kpis={kpis} policies={policies} today={today} viewingOther={viewingOther} onDayClick={(date, row) => { setKpiInitial({ date, dials: row?.dials, answers: row?.answers, appointments: row?.appointments, presentations: row?.presentations, deals: row?.deals, lead_spend: row?.lead_spend, deposits: row?.deposits }); setShowKpiModal(true); }} />
+                  <HeatmapMonth year={heatLeftDate.getFullYear()} month={heatLeftDate.getMonth()} kpis={kpis} policies={policies} today={today} viewingOther={viewingOther} onDayClick={onHeatDay} />
+                  <HeatmapMonth year={heatRightDate.getFullYear()} month={heatRightDate.getMonth()} kpis={kpis} policies={policies} today={today} viewingOther={viewingOther} onDayClick={onHeatDay} />
                 </div>
                 <div style={{marginTop:22, paddingTop:16, borderTop:'1px solid var(--tk-hairline)', display:'grid', gridTemplateColumns:'repeat(4, 1fr)', gap:24}}>
                   <div className="tk-stat"><div className="tk-kpi-lbl">Total Dials</div><div className="v">{fmtNum(heatTotals.dials)}</div><div className="tk-kpi-sub">across 2 months</div></div>
@@ -22882,6 +22909,8 @@
                   <div className="tk-stat"><div className="tk-kpi-lbl">Active Days</div><div className="v">{activeDays} / {totalHeatDays}</div><div className="tk-kpi-sub">{(activeDays/totalHeatDays*100).toFixed(0)}% activity rate</div></div>
                 </div>
               </div>
+                );
+              })()}
 
               {/* Deal Status pipeline */}
               <div className="tk-card" style={{gridColumn:'span 6'}}>
