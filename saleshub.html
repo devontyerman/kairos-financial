@@ -6629,9 +6629,11 @@
       z-index: 30;
       white-space: nowrap;
     }
-    #panel-goals .tk-heat-day:hover:not(.empty):not(.future) .tk-heat-tip {
-      opacity: 1; transform: translateX(-50%) scale(1);
+    #panel-goals .tk-heat-day:hover:not(.empty):not(.future) .tk-heat-tip,
+    #panel-goals .tk-heat-day.tk-heat-day-active .tk-heat-tip {
+      opacity: 1; transform: translateX(-50%) scale(1); pointer-events: auto;
     }
+    #panel-goals .tk-heat-day.tk-heat-day-active { z-index: 10; }
     #panel-goals .tk-heat-tip-date {
       font-family: var(--tk-sans);
       font-size: 12px; font-weight: 600;
@@ -6646,13 +6648,25 @@
     #panel-goals .tk-heat-tip-rows > div span { color: var(--tk-ink-3); }
     #panel-goals .tk-heat-tip-rows > div b { color: var(--tk-ink-1); font-weight: 500; }
     #panel-goals .tk-heat-tip-empty { color: var(--tk-ink-3); font-style: italic; }
+    /* CTA inside the heatmap tooltip — real button so mobile users can
+       tap it to open the edit modal after the first tap shows stats. */
     #panel-goals .tk-heat-tip-cta {
-      margin-top: 8px; padding-top: 8px;
-      border-top: 1px solid var(--tk-hairline);
+      display: block; width: 100%;
+      margin-top: 8px; padding: 8px 10px 0;
+      border: none; border-top: 1px solid var(--tk-hairline);
+      background: transparent;
       color: var(--rb-blue);
       font-family: var(--tk-mono); font-size: 10px;
-      letter-spacing: 0.06em; text-transform: uppercase;
-      text-align: center;
+      font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
+      text-align: center; cursor: pointer;
+      transition: color 120ms;
+    }
+    #panel-goals .tk-heat-tip-cta:hover,
+    #panel-goals .tk-heat-tip-cta:active { color: var(--tk-ink-1); }
+    @media (max-width: 768px) {
+      /* Larger tap target on phone */
+      #panel-goals .tk-heat-tip-cta { padding: 10px 10px 2px; font-size: 11px; }
+      #panel-goals .tk-heat-tip { min-width: 200px; }
     }
     #panel-goals .tk-heat-week-row {
       display: grid; grid-template-columns: repeat(7, 1fr);
@@ -21953,6 +21967,28 @@
         return 1;
       }
       function HeatmapMonth({ year, month, kpis, policies, today, onDayClick, viewingOther }) {
+        // On mobile, the cell click reveals the stats tooltip first; the
+        // user has to tap the CTA inside the tip to actually open the
+        // edit modal. On desktop, hover shows the tip and a click goes
+        // straight to edit.
+        const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(max-width: 768px)').matches);
+        const [activeDay, setActiveDay] = useState(null); // mobile-only: which day's tip is currently shown
+        useEffect(() => {
+          if (typeof window === 'undefined' || !window.matchMedia) return;
+          const mq = window.matchMedia('(max-width: 768px)');
+          const onChange = (e) => setIsMobile(e.matches);
+          mq.addEventListener ? mq.addEventListener('change', onChange) : mq.addListener(onChange);
+          return () => { mq.removeEventListener ? mq.removeEventListener('change', onChange) : mq.removeListener(onChange); };
+        }, []);
+        // Tap-outside closes the mobile tip
+        useEffect(() => {
+          if (!isMobile || activeDay == null) return;
+          const onDoc = (e) => {
+            if (!e.target.closest || !e.target.closest('.tk-heat-day')) setActiveDay(null);
+          };
+          document.addEventListener('click', onDoc);
+          return () => document.removeEventListener('click', onDoc);
+        }, [isMobile, activeDay]);
         // Build a Sun-anchored grid
         const first = new Date(year, month, 1);
         const last = new Date(year, month + 1, 0);
@@ -22017,13 +22053,24 @@
                   ? 'var(--tk-surface-3)'
                   : 'color-mix(in oklch, var(--rb-green) ' + c.bgPct + '%, var(--tk-surface-3))';
                 const clickable = !c.isFuture && !viewingOther && typeof onDayClick === 'function';
+                const showTip = isMobile && activeDay === c.day; // mobile: tip only shows for the tapped day
                 const cls = 'tk-heat-day' +
                   (c.isFuture ? ' future' : '') +
                   (c.isToday ? ' today' : '') +
-                  (clickable ? ' clickable' : '');
+                  (clickable ? ' clickable' : '') +
+                  (showTip ? ' tk-heat-day-active' : '');
                 const dateStr = year + '-' + String(month + 1).padStart(2, '0') + '-' + String(c.day).padStart(2, '0');
                 const dateLbl = new Date(year, month, c.day).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-                const onClick = clickable ? () => onDayClick(dateStr, rowByDay[c.day] || null) : undefined;
+                const openEdit = clickable ? () => onDayClick(dateStr, rowByDay[c.day] || null) : undefined;
+                const onCellClick = clickable ? (e) => {
+                  if (isMobile) {
+                    // Mobile: first tap toggles the stats tooltip; modal only opens via the CTA.
+                    e.stopPropagation();
+                    setActiveDay(prev => prev === c.day ? null : c.day);
+                  } else {
+                    openEdit();
+                  }
+                } : undefined;
                 return (
                   <div
                     key={i}
@@ -22031,11 +22078,11 @@
                     style={{background: bg, color: c.lvl >= 4 ? '#0d0e10' : 'var(--tk-ink-3)', cursor: clickable ? 'pointer' : 'default'}}
                     role={clickable ? 'button' : undefined}
                     tabIndex={clickable ? 0 : undefined}
-                    onClick={onClick}
-                    onKeyDown={clickable ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick(); } } : undefined}
+                    onClick={onCellClick}
+                    onKeyDown={clickable ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openEdit && openEdit(); } } : undefined}
                   >
                     {c.day}
-                    <div className="tk-heat-tip" role="tooltip">
+                    <div className="tk-heat-tip" role="tooltip" onClick={(e) => e.stopPropagation()}>
                       <div className="tk-heat-tip-date">{dateLbl}</div>
                       {c.data ? (
                         <div className="tk-heat-tip-rows">
@@ -22046,10 +22093,21 @@
                           <div><span>Deals</span><b>{c.data.deals}</b></div>
                           {(c.data.lead_spend || 0) > 0 && <div><span>Lead spend</span><b>${Math.round(c.data.lead_spend).toLocaleString()}</b></div>}
                           {(c.data.deposits || 0) > 0 && <div><span>Deposits</span><b>${Math.round(c.data.deposits).toLocaleString()}</b></div>}
-                          {clickable && <div className="tk-heat-tip-cta">Click to edit</div>}
+                          {clickable && (
+                            <button type="button" className="tk-heat-tip-cta" onClick={(e) => { e.stopPropagation(); openEdit(); }}>
+                              Click to edit
+                            </button>
+                          )}
                         </div>
                       ) : (
-                        <div className="tk-heat-tip-rows"><div className="tk-heat-tip-empty">No activity</div>{clickable && <div className="tk-heat-tip-cta">Click to log</div>}</div>
+                        <div className="tk-heat-tip-rows">
+                          <div className="tk-heat-tip-empty">No activity</div>
+                          {clickable && (
+                            <button type="button" className="tk-heat-tip-cta" onClick={(e) => { e.stopPropagation(); openEdit(); }}>
+                              Click to log
+                            </button>
+                          )}
+                        </div>
                       )}
                     </div>
                   </div>
