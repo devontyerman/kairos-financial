@@ -479,6 +479,86 @@
       background: var(--dt-c);
     }
 
+    /* Daily Breakdown card on the Sales Hub KPI form */
+    .kpi-daily-head {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      gap: 12px; flex-wrap: wrap;
+    }
+    .kpi-daily-title {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.95rem; font-weight: 800; color: #1a1a1a;
+      letter-spacing: -0.005em;
+    }
+    .kpi-daily-meta {
+      font-size: 0.72rem; color: #888;
+      font-family: 'Inter', sans-serif; margin-top: 2px;
+    }
+    .kpi-daily-toggle {
+      appearance: none; background: #f8f8fa;
+      border: 1px solid #e5e5ea; border-radius: 100px;
+      color: #1a1a1a; font-family: 'Inter', sans-serif;
+      font-size: 0.72rem; font-weight: 700;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      padding: 7px 14px; cursor: pointer;
+      display: inline-flex; align-items: center; gap: 6px;
+      transition: background 120ms, border-color 120ms, color 120ms;
+    }
+    .kpi-daily-toggle:hover { background: #f0f0f5; border-color: #b0b0b8; }
+    .kpi-daily-toggle svg { transition: transform 200ms ease; }
+    .kpi-daily-toggle[aria-expanded="true"] {
+      background: rgba(37,99,235,0.08); border-color: rgba(37,99,235,0.3); color: #2563eb;
+    }
+    .kpi-daily-toggle[aria-expanded="true"] svg { transform: rotate(180deg); }
+    .kpi-daily-wrap {
+      display: grid; grid-template-rows: 0fr;
+      transition: grid-template-rows 280ms cubic-bezier(0.2, 0, 0, 1);
+    }
+    .kpi-daily-wrap.open { grid-template-rows: 1fr; margin-top: 12px; }
+    .kpi-daily-wrap > * { overflow: hidden; min-height: 0; }
+    .kpi-daily-empty {
+      padding: 18px; text-align: center;
+      color: #888; font-size: 0.82rem;
+      border: 1px dashed #d8d8e0; border-radius: 10px;
+    }
+    .kpi-daily-scroll {
+      border: 1px solid #e5e5ea; border-radius: 10px;
+      overflow: auto; max-height: 360px; background: #ffffff;
+    }
+    .kpi-daily-table {
+      width: 100%; border-collapse: collapse;
+      font-family: 'Inter', sans-serif; font-size: 0.78rem;
+    }
+    .kpi-daily-table thead th {
+      position: sticky; top: 0;
+      background: #f5f5f8; color: #666;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.62rem; font-weight: 700;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      text-align: left; padding: 9px 12px;
+      border-bottom: 1px solid #e5e5ea; white-space: nowrap;
+    }
+    .kpi-daily-table thead th.num { text-align: right; }
+    .kpi-daily-table tbody td {
+      padding: 9px 12px;
+      border-bottom: 1px solid #ececf2;
+      color: #333; white-space: nowrap;
+    }
+    .kpi-daily-table tbody td.kdt-date { color: #1a1a1a; font-weight: 600; }
+    .kpi-daily-table tbody td.num {
+      text-align: right; font-variant-numeric: tabular-nums;
+    }
+    .kpi-daily-table tbody td.pos { color: #16a34a; font-weight: 700; }
+    .kpi-daily-table tbody tr:last-child td { border-bottom: 0; }
+    .kpi-daily-table tbody tr:hover td { background: #fafafc; }
+    @media (max-width: 768px) {
+      .kpi-daily-table thead th:nth-child(3),
+      .kpi-daily-table thead th:nth-child(4),
+      .kpi-daily-table thead th:nth-child(5),
+      .kpi-daily-table tbody td:nth-child(3),
+      .kpi-daily-table tbody td:nth-child(4),
+      .kpi-daily-table tbody td:nth-child(5) { display: none; }
+    }
+
     /* Submit KPIs panel — clean grid */
     .dt-submit-card {
       margin-top: 1.25rem;
@@ -6675,6 +6755,26 @@
       #panel-goals .tk-kpi-grid { grid-template-columns: repeat(3, 1fr) !important; }
     }
 
+    /* Daily Breakdown — attached to the bottom of the KPI Tracker card */
+    #panel-goals .tk-daily-attached {
+      border-top: 1px solid var(--tk-hairline);
+      padding: 16px 22px 20px;
+    }
+    #panel-goals .tk-daily-attached-hd {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px; flex-wrap: wrap;
+    }
+    #panel-goals .tk-daily-title {
+      font-family: var(--tk-sans);
+      font-size: 14px; font-weight: 600;
+      color: var(--tk-ink-1);
+      letter-spacing: -0.005em;
+    }
+    #panel-goals .tk-daily-meta {
+      font-family: var(--tk-mono);
+      font-size: 11px; color: var(--tk-ink-3);
+      margin-top: 2px;
+    }
     /* Daily Breakdown — collapsible per-day KPI table */
     #panel-goals .tk-daily-toggle {
       appearance: none;
@@ -9664,8 +9764,8 @@
         gap: 0.6rem;
         padding: 0.7rem 0.85rem;
         border-radius: 10px;
-        background: #f8f8fa;
-        border: 1px solid #e5e5ea;
+        background: transparent;
+        border: none;
         overflow: visible;
         width: 100%;
         text-align: left;
@@ -10283,6 +10383,40 @@
               <button type="submit" class="ss-submit" id="kpiSubmitBtn">Submit KPIs</button>
               <div id="kpiMsg" style="margin-top:0.5rem;font-size:0.8rem;text-align:center;display:none;"></div>
             </form>
+          </div>
+
+          <!-- Daily Breakdown — collapsible per-day KPI history -->
+          <div class="ss-form-card kpi-daily-card" style="margin-top:1.25rem;">
+            <div class="kpi-daily-head">
+              <div>
+                <div class="kpi-daily-title">Daily Breakdown</div>
+                <div class="kpi-daily-meta" id="kpiDailyMeta">— days logged</div>
+              </div>
+              <button type="button" class="kpi-daily-toggle" id="kpiDailyToggle" aria-expanded="false">
+                <span id="kpiDailyToggleLbl">Show</span>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+            </div>
+            <div class="kpi-daily-wrap" id="kpiDailyWrap">
+              <div class="kpi-daily-empty" id="kpiDailyEmpty">No KPI activity logged yet.</div>
+              <div class="kpi-daily-scroll" id="kpiDailyScroll" style="display:none;">
+                <table class="kpi-daily-table">
+                  <thead>
+                    <tr>
+                      <th class="kdt-date">Date</th>
+                      <th>Dials</th>
+                      <th>Answers</th>
+                      <th>Appts</th>
+                      <th>Pres.</th>
+                      <th>Deals</th>
+                      <th class="num">Lead spend</th>
+                      <th class="num">Deposits</th>
+                    </tr>
+                  </thead>
+                  <tbody id="kpiDailyTbody"></tbody>
+                </table>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -13428,7 +13562,80 @@
         msg.style.display = 'block';
       }
       btn.disabled = false;
+      // Refresh the Daily Breakdown card so the row the user just submitted
+      // shows up immediately (or replaces an earlier same-date entry).
+      try { window.refreshKpiDailyBreakdown && window.refreshKpiDailyBreakdown(); } catch (_) {}
     });
+
+    // ─── DAILY BREAKDOWN — collapsible per-day KPI history under the form
+    (function initKpiDailyBreakdown() {
+      const toggle = document.getElementById('kpiDailyToggle');
+      const wrap = document.getElementById('kpiDailyWrap');
+      const tbody = document.getElementById('kpiDailyTbody');
+      const empty = document.getElementById('kpiDailyEmpty');
+      const scroll = document.getElementById('kpiDailyScroll');
+      const meta = document.getElementById('kpiDailyMeta');
+      const lbl = document.getElementById('kpiDailyToggleLbl');
+      if (!toggle || !wrap || !tbody) return;
+      let loaded = false;
+      function fmt$(n) { return '$' + Math.round(parseFloat(n || 0)).toLocaleString('en-US'); }
+      function fmtN(n) { return Number(n || 0).toLocaleString('en-US', { maximumFractionDigits: 0 }); }
+      function fmtDate(d) {
+        try {
+          const dt = new Date(d + 'T00:00:00');
+          return dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        } catch (e) { return d || ''; }
+      }
+      async function load() {
+        if (!currentUser) {
+          empty.style.display = 'block'; scroll.style.display = 'none';
+          empty.textContent = 'Sign in to view your daily KPI history.';
+          meta.textContent = '0 days logged';
+          return;
+        }
+        try {
+          const token = accessToken || SUPABASE_KEY;
+          const res = await fetch(SUPABASE_URL + '/rest/v1/daily_kpis?user_id=eq.' + currentUser.id + '&select=kpi_date,dials,answers,appointments,presentations,deals,lead_spend,deposits&order=kpi_date.desc', {
+            headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + token }
+          });
+          const rows = res.ok ? await res.json() : [];
+          meta.textContent = rows.length + ' day' + (rows.length === 1 ? '' : 's') + ' logged';
+          if (!rows.length) {
+            empty.style.display = 'block'; scroll.style.display = 'none';
+            empty.textContent = 'No KPI activity logged yet.';
+            return;
+          }
+          empty.style.display = 'none'; scroll.style.display = 'block';
+          tbody.innerHTML = rows.map(r => {
+            const dealsCls = (r.deals || 0) > 0 ? ' class="pos"' : '';
+            return '<tr>' +
+              '<td class="kdt-date">' + fmtDate(r.kpi_date) + '</td>' +
+              '<td>' + fmtN(r.dials) + '</td>' +
+              '<td>' + fmtN(r.answers) + '</td>' +
+              '<td>' + fmtN(r.appointments) + '</td>' +
+              '<td>' + fmtN(r.presentations) + '</td>' +
+              '<td' + dealsCls + '>' + fmtN(r.deals) + '</td>' +
+              '<td class="num">' + fmt$(r.lead_spend) + '</td>' +
+              '<td class="num">' + fmt$(r.deposits) + '</td>' +
+            '</tr>';
+          }).join('');
+        } catch (e) {
+          console.error('Daily breakdown load failed:', e);
+          empty.style.display = 'block'; scroll.style.display = 'none';
+          empty.textContent = 'Failed to load — ' + (e.message || 'unknown error');
+        }
+      }
+      toggle.addEventListener('click', async () => {
+        const open = !wrap.classList.contains('open');
+        wrap.classList.toggle('open', open);
+        toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+        if (lbl) lbl.textContent = open ? 'Hide' : 'Show';
+        if (open && !loaded) { loaded = true; await load(); }
+      });
+      // Expose a refresher so the submit handler can repaint the table
+      // after a successful KPI save.
+      window.refreshKpiDailyBreakdown = function () { if (loaded) load(); };
+    })();
 
     // ─── CARRIER DIRECTORY ───
     (function() {
@@ -21748,7 +21955,14 @@
           setLoading(true);
           setError(null);
           try {
-            const u = window.currentUser;
+            // currentUser is populated asynchronously by Supabase auth on
+            // page load. Retry briefly so the panel doesn't flash the
+            // "Sign in" message during the initial auth resolution.
+            let u = window.currentUser;
+            for (let i = 0; (!u || !u.id) && i < 15; i++) {
+              await new Promise(r => setTimeout(r, 200));
+              u = window.currentUser;
+            }
             if (!u || !u.id) { setError('Sign in to view your tracker.'); setLoading(false); return; }
             // Effective viewing target: admin can override; everyone else is locked to themselves.
             const targetId = (isAdmin && viewAsUserId) ? viewAsUserId : u.id;
@@ -22020,7 +22234,7 @@
 
             <div className="tk-grid tk-grid-12">
               {/* Annual Premium Goal hero */}
-              <div className="tk-card tk-ap-hero" style={{gridColumn:'span 12'}}>
+              <div className="tk-card tk-ap-hero" style={{gridColumn:'span 12', maxWidth:1200, marginLeft:'auto', marginRight:'auto', width:'100%'}}>
                 <div className="tk-card-hd" style={{marginBottom:18}}>
                   <div style={{display:'flex', alignItems:'center', gap:14}}>
                     <div className="tk-card-title">Annual Premium Goal · {today.getFullYear()}</div>
@@ -22111,7 +22325,7 @@
               </div>
 
               {/* Daily Activity Heatmap */}
-              <div className="tk-card" style={{gridColumn:'span 12'}}>
+              <div className="tk-card" style={{gridColumn:'span 12', maxWidth:1200, marginLeft:'auto', marginRight:'auto', width:'100%'}}>
                 <div className="tk-card-hd">
                   <div style={{display:'flex', alignItems:'baseline', gap:14}}>
                     <div className="tk-card-title">Daily Activity Heatmap</div>
@@ -22146,68 +22360,6 @@
                 </div>
               </div>
 
-              {/* Daily Breakdown — collapsible per-day KPI table */}
-              {(() => {
-                const sortedKpis = (kpis || []).slice().sort((a, b) =>
-                  (a.kpi_date < b.kpi_date ? 1 : a.kpi_date > b.kpi_date ? -1 : 0)
-                );
-                const visible = showDaily ? sortedKpis : [];
-                return (
-                  <div className="tk-card tk-daily-card" style={{gridColumn:'span 12'}}>
-                    <div className="tk-card-hd">
-                      <div style={{display:'flex', alignItems:'baseline', gap:14}}>
-                        <div className="tk-card-title">Daily Breakdown</div>
-                        <div className="tk-card-meta">{sortedKpis.length} day{sortedKpis.length === 1 ? '' : 's'} logged</div>
-                      </div>
-                      <button type="button" className={'tk-daily-toggle' + (showDaily ? ' on' : '')} onClick={() => setShowDaily(v => !v)} aria-expanded={showDaily}>
-                        {showDaily ? 'Hide' : 'Show'}
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
-                      </button>
-                    </div>
-                    <div className={'tk-daily-wrap' + (showDaily ? ' open' : '')}>
-                      {sortedKpis.length === 0 ? (
-                        <div className="tk-daily-empty">No KPI activity logged yet.</div>
-                      ) : (
-                        <div className="tk-daily-scroll">
-                          <table className="tk-daily-table">
-                            <thead>
-                              <tr>
-                                <th className="dt-date">Date</th>
-                                <th>Dials</th>
-                                <th>Answers</th>
-                                <th>Appts</th>
-                                <th>Pres.</th>
-                                <th>Deals</th>
-                                <th className="num">Lead spend</th>
-                                <th className="num">Deposits</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {visible.map(r => {
-                                const d = parsePolicyDate(r.kpi_date);
-                                const lbl = d ? d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : (r.kpi_date || '');
-                                return (
-                                  <tr key={r.kpi_date}>
-                                    <td className="dt-date">{lbl}</td>
-                                    <td>{fmtNum(r.dials || 0)}</td>
-                                    <td>{fmtNum(r.answers || 0)}</td>
-                                    <td>{fmtNum(r.appointments || 0)}</td>
-                                    <td>{fmtNum(r.presentations || 0)}</td>
-                                    <td className={r.deals > 0 ? 'pos' : ''}>{fmtNum(r.deals || 0)}</td>
-                                    <td className="num">{fmtCurrency(r.lead_spend || 0)}</td>
-                                    <td className="num">{fmtCurrency(r.deposits || 0)}</td>
-                                  </tr>
-                                );
-                              })}
-                            </tbody>
-                          </table>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                );
-              })()}
-
               {/* Deal Status pipeline */}
               <div className="tk-card" style={{gridColumn:'span 6'}}>
                 <div className="tk-card-hd">
@@ -22235,33 +22387,8 @@
                 ))}
               </div>
 
-              {/* Monthly Trend */}
+              {/* Top Carriers YTD — sits next to Deal Status, same width */}
               <div className="tk-card" style={{gridColumn:'span 6'}}>
-                <div className="tk-card-hd">
-                  <div style={{display:'flex', alignItems:'baseline', gap:14}}>
-                    <div className="tk-card-title">Premium Sold · {today.getFullYear()} YTD</div>
-                    <div className="tk-card-meta">Through {today.toLocaleString('default',{month:'long'})}</div>
-                  </div>
-                  <div className="tk-card-meta" style={{fontFamily:'var(--tk-mono)'}}>
-                    Avg {fmtCurrency(apYTD / Math.max(today.getMonth() + 1, 1), {compact:true})}/mo
-                  </div>
-                </div>
-                <MonthlyBars
-                  labels={['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'].slice(0, today.getMonth() + 1)}
-                  primary={monthlyPremium.slice(0, today.getMonth() + 1)}
-                  primaryLabel="Premium"
-                  primaryColor="var(--rb-purple)"
-                  height={220}
-                />
-                <div style={{marginTop:14, paddingTop:14, borderTop:'1px solid var(--tk-hairline)', display:'grid', gridTemplateColumns:'repeat(3, 1fr)', gap:16}}>
-                  <div className="tk-stat"><div className="tk-kpi-lbl">YTD Total</div><div className="v">{fmtCurrency(apYTD, {compact:true})}</div><div className="tk-kpi-sub">{dealsYTD} deals closed</div></div>
-                  <div className="tk-stat"><div className="tk-kpi-lbl">Best Month</div><div className="v">{fmtCurrency(Math.max.apply(null, monthlyPremium.concat([0])), {compact:true})}</div><div className="tk-kpi-sub">{['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][monthlyPremium.indexOf(Math.max.apply(null, monthlyPremium.concat([0])))] || '—'}</div></div>
-                  <div className="tk-stat"><div className="tk-kpi-lbl">Last Full Mo.</div><div className="v">{fmtCurrency(monthlyPremium[Math.max(0, today.getMonth() - 1)] || 0, {compact:true})}</div><div className="tk-kpi-sub">{['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][Math.max(0, today.getMonth() - 1)]}</div></div>
-                </div>
-              </div>
-
-              {/* Top Carriers YTD */}
-              <div className="tk-card" style={{gridColumn:'span 12'}}>
                 <div className="tk-card-hd">
                   <div style={{display:'flex', alignItems:'baseline', gap:14}}>
                     <div className="tk-card-title">Top Carriers · YTD</div>
@@ -22316,6 +22443,67 @@
                   <div className="tk-kpi-cell"><div className="tk-kpi-lbl"><span className="swatch" style={{background:'var(--rb-purple)'}}></span>Conversion</div><div className="tk-kpi-val">{conversion.toFixed(2)}%</div><div className="tk-kpi-sub">{tfDeals > 0 ? Math.round(k.dials / tfDeals) : 0} <span style={{color:'var(--tk-ink-4)'}}>dials → 1 deal</span></div></div>
                   <div className="tk-kpi-cell"><div className="tk-kpi-lbl"><span className="swatch" style={{background:'var(--rb-orange)'}}></span>ROI</div><div className="tk-kpi-val" style={{color: roi >= 0 ? 'var(--tk-pos)' : 'var(--tk-neg)'}}>{roi >= 0 ? '+' : ''}{roi.toFixed(0)}%</div><div className="tk-kpi-sub">(deposits − spend) / spend</div></div>
                 </div>
+                {/* Daily Breakdown — connected to the KPI Tracker card above */}
+                {(() => {
+                  const sortedKpis = (kpis || []).slice().sort((a, b) =>
+                    (a.kpi_date < b.kpi_date ? 1 : a.kpi_date > b.kpi_date ? -1 : 0)
+                  );
+                  const visible = showDaily ? sortedKpis : [];
+                  return (
+                    <div className="tk-daily-attached">
+                      <div className="tk-daily-attached-hd">
+                        <div>
+                          <div className="tk-daily-title">Daily Breakdown</div>
+                          <div className="tk-daily-meta">{sortedKpis.length} day{sortedKpis.length === 1 ? '' : 's'} logged</div>
+                        </div>
+                        <button type="button" className={'tk-daily-toggle' + (showDaily ? ' on' : '')} onClick={() => setShowDaily(v => !v)} aria-expanded={showDaily}>
+                          {showDaily ? 'Hide' : 'Show'}
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+                        </button>
+                      </div>
+                      <div className={'tk-daily-wrap' + (showDaily ? ' open' : '')}>
+                        {sortedKpis.length === 0 ? (
+                          <div className="tk-daily-empty">No KPI activity logged yet.</div>
+                        ) : (
+                          <div className="tk-daily-scroll">
+                            <table className="tk-daily-table">
+                              <thead>
+                                <tr>
+                                  <th className="dt-date">Date</th>
+                                  <th>Dials</th>
+                                  <th>Answers</th>
+                                  <th>Appts</th>
+                                  <th>Pres.</th>
+                                  <th>Deals</th>
+                                  <th className="num">Lead spend</th>
+                                  <th className="num">Deposits</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {visible.map(r => {
+                                  const d = parsePolicyDate(r.kpi_date);
+                                  const lbl = d ? d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : (r.kpi_date || '');
+                                  return (
+                                    <tr key={r.kpi_date}>
+                                      <td className="dt-date">{lbl}</td>
+                                      <td>{fmtNum(r.dials || 0)}</td>
+                                      <td>{fmtNum(r.answers || 0)}</td>
+                                      <td>{fmtNum(r.appointments || 0)}</td>
+                                      <td>{fmtNum(r.presentations || 0)}</td>
+                                      <td className={r.deals > 0 ? 'pos' : ''}>{fmtNum(r.deals || 0)}</td>
+                                      <td className="num">{fmtCurrency(r.lead_spend || 0)}</td>
+                                      <td className="num">{fmtCurrency(r.deposits || 0)}</td>
+                                    </tr>
+                                  );
+                                })}
+                              </tbody>
+                            </table>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })()}
               </div>
             </div>
 
