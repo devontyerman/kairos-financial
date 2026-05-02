@@ -133,7 +133,7 @@
     /* ─── Sidebar Navigation ─── */
     .ss-dashboard { display: flex; min-height: calc(100vh - 80px); }
     .ss-sidebar {
-      width: 250px;
+      width: 220px;
       position: fixed;
       top: 0;
       left: 0;
@@ -243,12 +243,18 @@
     .ss-sidebar-grid {
       display: flex;
       flex-direction: column;
-      gap: 2px;
+      gap: 4px;
       width: 100%;
       padding: 0;
       background: transparent;
       border: none;
       border-radius: 0;
+    }
+    /* Match the spacing of the bottom nav links to the panel buttons so
+       the rail reads as one consistent column. */
+    .ss-nav-links {
+      display: flex; flex-direction: column;
+      gap: 4px;
     }
     .ss-sidebar-btn {
       display: flex;
@@ -1151,10 +1157,10 @@
 
     .ss-main {
       max-width: none;
-      width: calc(100vw - 250px);
+      width: calc(100vw - 220px);
       padding: 1.5rem 2rem 4rem;
       box-sizing: border-box;
-      margin-left: 250px;
+      margin-left: 220px;
       margin-right: 0;
       overflow-x: hidden;
     }
@@ -3014,8 +3020,11 @@
     #panel-calculator.active > div,
     #panel-profile.active > div {
       padding: 0 !important;
-      max-width: 1480px; margin: 0 auto;
+      max-width: 1200px; margin: 0 auto;
     }
+    /* Carrier Products (Field Guide) — cap content width to match the rest
+       of the dashboard so the page doesn't sprawl on wide monitors. */
+    #panel-products #cp-root { max-width: 1200px; margin: 0 auto; }
 
     /* Header bar — restyle the existing .ss-panel-head + add a flex row so
        the injected sun/moon toggle sits flush right. */
@@ -10310,7 +10319,7 @@
   <div class="ss-page-dark" style="position:relative;">
 
     <!-- Global auth gate (covers all panels when not signed in) -->
-    <div id="globalAuthGate" style="display:none; position:absolute; inset:0; z-index:60; background:rgba(245,245,247,0.95); backdrop-filter:blur(6px); display:flex; align-items:flex-start; justify-content:center; padding-top:6rem;">
+    <div id="globalAuthGate" style="display:none; position:absolute; inset:0; z-index:60; background:rgba(245,245,247,0.95); backdrop-filter:blur(6px); align-items:flex-start; justify-content:center; padding-top:6rem;">
       <div style="text-align:center; padding:2.5rem 2rem; background:#ffffff; border:1px solid rgba(168,85,247,0.28); border-radius:18px; box-shadow:0 8px 40px rgba(0,0,0,0.5); max-width:400px; width:90%;">
         <div style="width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;background:rgba(168,85,247,0.12);border:2px solid rgba(168,85,247,0.25);">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4a4a5a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
