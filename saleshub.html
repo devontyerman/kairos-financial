@@ -1040,8 +1040,12 @@
       position: relative;
     }
     .ss-panel { display: none; }
-    .ss-panel.active { display: block; animation: ssFadeIn 0.3s ease; }
-    @keyframes ssFadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .ss-panel.active { display: block; animation: ssFadeIn 0.16s ease; }
+    @keyframes ssFadeIn { from { opacity: 0; } to { opacity: 1; } }
+    /* Make .ss-main carry the active KF skin background so the brief fade-in
+       does not flash white. Toggled on <html> by activatePanel(). */
+    html[data-kf-active="true"] .ss-main { background: #0d0e10; transition: background 120ms ease; }
+    html[data-kf-active="true"][data-kf-theme="light"] .ss-main { background: #f6f5f1; }
 
     /* ─── Compensation (migrated from agent-compensation.html) ─── */
     /* Comp section — copied from agent-compensation.html standalone */
@@ -2798,6 +2802,1615 @@
     }
     @media (max-width: 520px) {
       #panel-policies .bob-filter-group { width: 100%; }
+    }
+
+    /* ─── Comp Grid / Carriers / Leads — Book-of-Business skin ─────────────
+       Pure visual skin: same Kairos editorial-financial design tokens as
+       Book of Business. Default dark with a light-mode flip via the panel's
+       data-kf-theme attribute. NO functionality changes — every existing
+       handler still wires up to the same DOM IDs. */
+    #panel-compgrid, #panel-carriers, #panel-leadvendors,
+    #panel-resources, #panel-training, #panel-calculator, #panel-dialtracker {
+      --rb-green:   oklch(0.72 0.16 145);
+      --rb-yellow:  oklch(0.82 0.14 90);
+      --rb-orange:  oklch(0.74 0.16 50);
+      --rb-red:     oklch(0.66 0.18 25);
+      --rb-purple:  oklch(0.62 0.15 305);
+      --rb-blue:    oklch(0.68 0.13 240);
+      --kf-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+      --kf-sans: "Geist", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+      --kf-radius: 10px;
+      /* Default dark palette */
+      --kf-bg:        #0d0e10;
+      --kf-bg-2:      #131418;
+      --kf-surface:   #16181d;
+      --kf-surface-2: #1c1f26;
+      --kf-surface-3: #232730;
+      --kf-hairline:  rgba(255,255,255,0.07);
+      --kf-hairline-strong: rgba(255,255,255,0.13);
+      --kf-ink-1:     #f3f3f1;
+      --kf-ink-2:     rgba(243,243,241,0.72);
+      --kf-ink-3:     rgba(243,243,241,0.45);
+      --kf-ink-4:     rgba(243,243,241,0.28);
+    }
+    #panel-compgrid[data-kf-theme="light"],
+    #panel-carriers[data-kf-theme="light"],
+    #panel-leadvendors[data-kf-theme="light"],
+    #panel-resources[data-kf-theme="light"],
+    #panel-training[data-kf-theme="light"],
+    #panel-calculator[data-kf-theme="light"],
+    #panel-dialtracker[data-kf-theme="light"] {
+      --kf-bg: #f6f5f1; --kf-bg-2: #efece5; --kf-surface: #ffffff;
+      --kf-surface-2: #fbfaf6; --kf-surface-3: #f1efe8;
+      --kf-hairline: rgba(15,12,8,0.08); --kf-hairline-strong: rgba(15,12,8,0.16);
+      --kf-ink-1: #14130f; --kf-ink-2: rgba(20,19,15,0.74);
+      --kf-ink-3: rgba(20,19,15,0.5); --kf-ink-4: rgba(20,19,15,0.32);
+    }
+    /* Full-bleed canvas mirrors Book of Business — negative margins cancel
+       .ss-main padding so the dark surface fills the entire content area. */
+    #panel-compgrid.active, #panel-carriers.active, #panel-leadvendors.active,
+    #panel-resources.active, #panel-calculator.active {
+      margin: -1.5rem -2rem -4rem;
+      padding: 28px 32px 40px;
+      background: var(--kf-bg);
+      color: var(--kf-ink-1);
+      font-family: var(--kf-sans);
+      -webkit-font-smoothing: antialiased;
+      min-height: calc(100vh - 1.5rem);
+      background-image:
+        radial-gradient(1100px 600px at 90% -10%, color-mix(in oklch, var(--rb-blue) 8%, transparent), transparent 60%),
+        radial-gradient(900px 500px at -10% 110%, color-mix(in oklch, var(--rb-purple) 7%, transparent), transparent 60%);
+      position: relative;
+    }
+    /* Constrain inner padding wrappers — the legacy markup nests every page
+       in a `<div style="padding: 2.5rem 1.5rem;">`, undo it so our canvas
+       owns the spacing. */
+    #panel-compgrid.active > div,
+    #panel-carriers.active > div,
+    #panel-leadvendors.active > div,
+    #panel-resources.active > div,
+    #panel-calculator.active > div {
+      padding: 0 !important;
+      max-width: 1480px; margin: 0 auto;
+    }
+
+    /* Header bar — restyle the existing .ss-panel-head + add a flex row so
+       the injected sun/moon toggle sits flush right. */
+    #panel-compgrid.active .ss-panel-head,
+    #panel-carriers.active .ss-panel-head,
+    #panel-leadvendors.active .ss-panel-head,
+    #panel-resources.active .ss-panel-head,
+    #panel-calculator.active .ss-panel-head {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 24px;
+      padding-bottom: 18px;
+      margin-bottom: 24px;
+      border-bottom: 1px solid var(--kf-hairline);
+      text-align: left;
+    }
+    #panel-compgrid.active .ss-panel-head > div:not(.kf-hdr-r),
+    #panel-carriers.active .ss-panel-head > div:not(.kf-hdr-r),
+    #panel-leadvendors.active .ss-panel-head > div:not(.kf-hdr-r),
+    #panel-resources.active .ss-panel-head > div:not(.kf-hdr-r),
+    #panel-calculator.active .ss-panel-head > div:not(.kf-hdr-r) { flex: 1; }
+    #panel-compgrid.active .ss-panel-head h2,
+    #panel-carriers.active .ss-panel-head h2,
+    #panel-leadvendors.active .ss-panel-head h2,
+    #panel-resources.active .ss-panel-head h2,
+    #panel-calculator.active .ss-panel-head h2,
+    #panel-training.active .ss-panel-head h2 {
+      font-family: var(--kf-sans) !important;
+      font-size: 20px !important;
+      font-weight: 600 !important;
+      letter-spacing: -0.01em !important;
+      color: var(--kf-ink-1) !important;
+      margin: 0 !important;
+      text-shadow: none !important;
+    }
+    #panel-compgrid.active .ss-panel-sub,
+    #panel-carriers.active .ss-panel-sub,
+    #panel-leadvendors.active .ss-panel-sub,
+    #panel-resources.active .ss-panel-sub,
+    #panel-calculator.active .ss-panel-sub {
+      font-family: var(--kf-mono) !important;
+      font-size: 11px !important;
+      color: var(--kf-ink-3) !important;
+      letter-spacing: 0.04em !important;
+      text-transform: uppercase !important;
+      margin: 6px 0 0 !important;
+    }
+
+    /* Theme toggle injected into each panel header */
+    #panel-compgrid.active .kf-hdr-r,
+    #panel-carriers.active .kf-hdr-r,
+    #panel-leadvendors.active .kf-hdr-r,
+    #panel-resources.active .kf-hdr-r,
+    #panel-calculator.active .kf-hdr-r,
+    #panel-training.active .kf-hdr-r {
+      display: flex; align-items: center; gap: 16px; flex-shrink: 0;
+    }
+    .kf-skin-theme-toggle {
+      appearance: none; cursor: pointer;
+      width: 34px; height: 34px; border-radius: 8px;
+      display: grid; place-items: center;
+      border: 1px solid var(--kf-hairline-strong);
+      background: var(--kf-surface);
+      color: var(--kf-ink-2);
+      transition: all 120ms;
+    }
+    .kf-skin-theme-toggle:hover { color: var(--kf-ink-1); border-color: var(--kf-ink-3); }
+
+    /* ─── Comp Grid (.pcg-*) ────────────────────────────────────────────── */
+    #panel-compgrid.active .pcg-level-selector {
+      background: var(--kf-surface) !important;
+      border: 1px solid var(--kf-hairline) !important;
+      border-radius: var(--kf-radius) !important;
+      box-shadow: none !important;
+      color: var(--kf-ink-1) !important;
+    }
+    #panel-compgrid.active .pcg-level-top { gap: 14px; }
+    #panel-compgrid.active .pcg-level-label {
+      font-family: var(--kf-mono) !important;
+      font-size: 11px !important;
+      text-transform: uppercase !important;
+      letter-spacing: 0.08em !important;
+      color: var(--kf-ink-3) !important;
+      font-weight: 500 !important;
+    }
+    #panel-compgrid.active .pcg-level-select {
+      background: var(--kf-surface-2) !important;
+      border: 1px solid var(--kf-hairline-strong) !important;
+      color: var(--kf-ink-1) !important;
+      border-radius: 8px !important;
+      font-family: var(--kf-sans) !important;
+      font-size: 13px !important;
+      box-shadow: none !important;
+    }
+    #panel-compgrid.active .pcg-level-select option { background: var(--kf-surface) !important; color: var(--kf-ink-1) !important; }
+    #panel-compgrid.active .pcg-level-hint {
+      font-family: var(--kf-mono) !important;
+      font-size: 11px !important;
+      color: var(--kf-ink-3) !important;
+    }
+    #panel-compgrid.active .pcg-condensed,
+    #panel-compgrid.active .pcg-condensed-grid > * {
+      background: var(--kf-surface-2) !important;
+      border: 1px solid var(--kf-hairline) !important;
+      color: var(--kf-ink-1) !important;
+      border-radius: 8px !important;
+    }
+    #panel-compgrid.active .pcg-condensed * { color: var(--kf-ink-1); }
+    #panel-compgrid.active .pcg-condensed .label,
+    #panel-compgrid.active .pcg-condensed [class*="-label"],
+    #panel-compgrid.active .pcg-condensed [class*="-sub"] { color: var(--kf-ink-3) !important; }
+
+    #panel-compgrid.active .pcg-pills {
+      background: transparent !important;
+      padding: 4px 0 !important;
+      gap: 6px !important;
+    }
+    #panel-compgrid.active .pcg-pill {
+      background: var(--kf-surface) !important;
+      border: 1px solid var(--kf-hairline) !important;
+      color: var(--kf-ink-2) !important;
+      border-radius: 99px !important;
+      font-family: var(--kf-mono) !important;
+      font-size: 11px !important;
+      letter-spacing: 0.04em !important;
+      text-transform: uppercase !important;
+      padding: 7px 12px !important;
+      box-shadow: none !important;
+      transition: all 120ms !important;
+    }
+    #panel-compgrid.active .pcg-pill:hover { color: var(--kf-ink-1) !important; border-color: var(--kf-hairline-strong) !important; }
+    #panel-compgrid.active .pcg-pill.active {
+      background: var(--kf-surface-3) !important;
+      color: var(--kf-ink-1) !important;
+      border-color: var(--kf-hairline-strong) !important;
+    }
+
+    #panel-compgrid.active .pcg-carrier {
+      background: var(--kf-surface) !important;
+      border: 1px solid var(--kf-hairline) !important;
+      border-radius: var(--kf-radius) !important;
+      box-shadow: none !important;
+    }
+    #panel-compgrid.active .pcg-carrier-header {
+      border-bottom: 1px solid var(--kf-hairline) !important;
+      background: var(--kf-surface) !important;
+    }
+    #panel-compgrid.active .pcg-carrier-name {
+      color: var(--kf-ink-1) !important;
+      font-family: var(--kf-sans) !important;
+    }
+    #panel-compgrid.active .pcg-table-wrap,
+    #panel-compgrid.active .pcg-table-scroll {
+      background: var(--kf-surface) !important;
+      border: 0 !important;
+    }
+    #panel-compgrid.active .pcg-table {
+      background: var(--kf-surface) !important;
+      color: var(--kf-ink-1) !important;
+    }
+    #panel-compgrid.active .pcg-table thead th {
+      background: var(--kf-surface-2) !important;
+      color: var(--kf-ink-3) !important;
+      border-bottom: 1px solid var(--kf-hairline) !important;
+      font-family: var(--kf-mono) !important;
+      font-size: 10px !important;
+      text-transform: uppercase !important;
+      letter-spacing: 0.08em !important;
+      font-weight: 500 !important;
+    }
+    #panel-compgrid.active .pcg-table tbody td {
+      color: var(--kf-ink-2) !important;
+      border-bottom: 1px solid var(--kf-hairline) !important;
+      font-family: var(--kf-mono) !important;
+      background: transparent !important;
+    }
+    #panel-compgrid.active .pcg-table thead th:first-child,
+    #panel-compgrid.active .pcg-table tbody td:first-child {
+      background: var(--kf-surface) !important;
+      color: var(--kf-ink-3) !important;
+    }
+    #panel-compgrid.active .pcg-table thead th:first-child { background: var(--kf-surface-2) !important; }
+    #panel-compgrid.active .pcg-table tbody tr:hover { background: var(--kf-surface-2) !important; }
+    #panel-compgrid.active .pcg-table tbody tr:hover td:first-child { background: var(--kf-surface-2) !important; }
+
+    /* ─── Carriers (.sh-carriers-grid + cards) ──────────────────────────── */
+    #panel-carriers.active .sh-carriers-grid > *,
+    #panel-carriers.active .sh-carrier-card {
+      background: var(--kf-surface) !important;
+      border: 1px solid var(--kf-hairline) !important;
+      border-radius: var(--kf-radius) !important;
+      color: var(--kf-ink-1) !important;
+      box-shadow: none !important;
+      transition: all 120ms !important;
+    }
+    #panel-carriers.active .sh-carrier-card:hover {
+      background: var(--kf-surface-2) !important;
+      border-color: var(--kf-hairline-strong) !important;
+      transform: translateY(-1px);
+    }
+    #panel-carriers.active .sh-carrier-card .name,
+    #panel-carriers.active .sh-carrier-card > .name {
+      color: var(--kf-ink-1) !important;
+      font-family: var(--kf-sans) !important;
+      font-weight: 600 !important;
+    }
+    #panel-carriers.active .sh-carrier-card .phone,
+    #panel-carriers.active .sh-carrier-card > .phone {
+      color: var(--kf-ink-3) !important;
+      font-family: var(--kf-mono) !important;
+    }
+
+    /* Carrier detail view */
+    #panel-carriers.active .sh-carrier-detail-card {
+      background: var(--kf-surface) !important;
+      border: 1px solid var(--kf-hairline) !important;
+      border-radius: var(--kf-radius) !important;
+      color: var(--kf-ink-1) !important;
+      box-shadow: none !important;
+    }
+    #panel-carriers.active .sh-carrier-detail-name {
+      color: var(--kf-ink-1) !important;
+      font-family: var(--kf-sans) !important;
+    }
+    #panel-carriers.active .sh-carrier-detail-divider {
+      background: var(--kf-hairline) !important;
+    }
+    #panel-carriers.active .sh-carrier-detail-label {
+      color: var(--kf-ink-3) !important;
+      font-family: var(--kf-mono) !important;
+      letter-spacing: 0.08em !important;
+      text-transform: uppercase !important;
+    }
+    #panel-carriers.active .sh-carrier-detail-value {
+      color: var(--kf-ink-1) !important;
+      font-family: var(--kf-mono) !important;
+    }
+    #panel-carriers.active .sh-carrier-detail-btn {
+      background: var(--kf-surface-2) !important;
+      border: 1px solid var(--kf-hairline-strong) !important;
+      color: var(--kf-ink-1) !important;
+      box-shadow: none !important;
+    }
+    #panel-carriers.active .sh-carrier-detail-btn.primary {
+      background: var(--kf-ink-1) !important;
+      color: var(--kf-bg) !important;
+      border-color: var(--kf-ink-1) !important;
+    }
+    #panel-carriers.active .sh-carrier-detail-btn.secondary {
+      background: transparent !important;
+      color: var(--kf-ink-2) !important;
+    }
+    #panel-carriers.active #cdEmail { color: var(--rb-blue) !important; }
+
+    /* ─── Lead Vendors (.sh-vendors-grid + cards) ───────────────────────── */
+    #panel-leadvendors.active .sh-vendors-grid > *,
+    #panel-leadvendors.active .sh-vendor-card {
+      background: var(--kf-surface) !important;
+      border: 1px solid var(--kf-hairline) !important;
+      border-radius: var(--kf-radius) !important;
+      color: var(--kf-ink-1) !important;
+      box-shadow: none !important;
+      transition: all 120ms !important;
+    }
+    #panel-leadvendors.active .sh-vendor-card:hover {
+      background: var(--kf-surface-2) !important;
+      border-color: var(--kf-hairline-strong) !important;
+      transform: translateY(-1px);
+    }
+    #panel-leadvendors.active .sh-vendor-name {
+      color: var(--kf-ink-1) !important;
+      font-family: var(--kf-sans) !important;
+      font-weight: 600 !important;
+    }
+    #panel-leadvendors.active .sh-vendor-desc,
+    #panel-leadvendors.active .sh-vendor-card .desc,
+    #panel-leadvendors.active .sh-vendor-card p {
+      color: var(--kf-ink-2) !important;
+    }
+    #panel-leadvendors.active .sh-vendor-badge {
+      background: color-mix(in oklch, var(--rb-green) 14%, transparent) !important;
+      color: var(--rb-green) !important;
+      border: 1px solid color-mix(in oklch, var(--rb-green) 32%, transparent) !important;
+      font-family: var(--kf-mono) !important;
+      font-size: 10px !important;
+      letter-spacing: 0.08em !important;
+      text-transform: uppercase !important;
+    }
+    #panel-leadvendors.active .sh-vendor-top { gap: 12px; }
+
+    /* Mobile + ultrawide */
+    @media (max-width: 768px) {
+      #panel-compgrid.active, #panel-carriers.active, #panel-leadvendors.active,
+      #panel-resources.active, #panel-calculator.active {
+        margin: -0.75rem -0.75rem -3rem;
+        padding: 16px 12px 24px;
+        min-height: calc(100vh - 0.75rem);
+      }
+      #panel-compgrid.active .ss-panel-head,
+      #panel-carriers.active .ss-panel-head,
+      #panel-leadvendors.active .ss-panel-head,
+      #panel-resources.active .ss-panel-head,
+      #panel-calculator.active .ss-panel-head { flex-direction: column; align-items: flex-start; gap: 12px; }
+    }
+
+    /* ─── Resources (.sh-resources-* + .sh-resource-card) ───────────────── */
+    #panel-resources.active .sh-resources-cat {
+      max-width: none !important;
+      margin-left: 0 !important;
+      margin-right: 0 !important;
+      margin-bottom: 28px !important;
+    }
+    #panel-resources.active .sh-resources-cat-title {
+      font-family: var(--kf-mono) !important;
+      font-size: 10px !important;
+      font-weight: 500 !important;
+      letter-spacing: 0.12em !important;
+      text-transform: uppercase !important;
+      color: var(--kf-ink-3) !important;
+      margin-bottom: 14px !important;
+      gap: 8px !important;
+    }
+    #panel-resources.active .sh-resources-cat-title svg {
+      stroke: var(--kf-ink-3) !important;
+    }
+    #panel-resources.active .sh-resources-grid {
+      gap: 14px !important;
+    }
+    #panel-resources.active .sh-resource-card {
+      background: var(--kf-surface) !important;
+      border: 1px solid var(--kf-hairline) !important;
+      border-radius: var(--kf-radius) !important;
+      color: var(--kf-ink-1) !important;
+      box-shadow: none !important;
+      transition: all 120ms !important;
+      gap: 14px !important;
+      padding: 16px 18px !important;
+    }
+    #panel-resources.active .sh-resource-card:hover {
+      background: var(--kf-surface-2) !important;
+      border-color: var(--kf-hairline-strong) !important;
+      transform: translateY(-1px);
+      box-shadow: none !important;
+    }
+    #panel-resources.active .sh-resource-icon {
+      background: var(--kf-surface-2) !important;
+      color: var(--kf-ink-2) !important;
+      border: 1px solid var(--kf-hairline) !important;
+      border-radius: 8px !important;
+    }
+    #panel-resources.active .sh-resource-title {
+      color: var(--kf-ink-1) !important;
+      font-family: var(--kf-sans) !important;
+      font-weight: 600 !important;
+      font-size: 14px !important;
+    }
+    #panel-resources.active .sh-resource-desc {
+      color: var(--kf-ink-3) !important;
+      font-family: var(--kf-sans) !important;
+      font-size: 12px !important;
+    }
+    #panel-resources.active .sh-resource-tag {
+      background: color-mix(in oklch, var(--rb-blue) 12%, transparent) !important;
+      color: var(--rb-blue) !important;
+      border: 1px solid color-mix(in oklch, var(--rb-blue) 28%, transparent) !important;
+      font-family: var(--kf-mono) !important;
+      font-size: 9px !important;
+      letter-spacing: 0.08em !important;
+      text-transform: uppercase !important;
+      font-weight: 500 !important;
+    }
+
+    /* ─── Pay / Commission (.ss-pipeline-*, .ss-pd-*, .ss-calc-*) ───────── */
+    #panel-calculator.active .ss-pipeline-card,
+    #panel-calculator.active .ss-pd-edit-modal,
+    #panel-calculator.active .ss-calc-card,
+    #panel-calculator.active .ss-pd-policy,
+    #panel-calculator.active .ss-calc-results,
+    #panel-calculator.active .ss-calc-result-main,
+    #panel-calculator.active .ss-calc-result-row,
+    #panel-calculator.active .ss-calc-roi-result,
+    #panel-calculator.active .ss-pipeline-details {
+      background: var(--kf-surface) !important;
+      border: 1px solid var(--kf-hairline) !important;
+      border-radius: var(--kf-radius) !important;
+      color: var(--kf-ink-1) !important;
+      box-shadow: none !important;
+    }
+    #panel-calculator.active .ss-calc-card::before { display: none !important; }
+    #panel-calculator.active .ss-pipeline-title,
+    #panel-calculator.active .ss-calc-title {
+      color: var(--kf-ink-1) !important;
+      font-family: var(--kf-sans) !important;
+      font-weight: 600 !important;
+    }
+    #panel-calculator.active .ss-pipeline-title svg,
+    #panel-calculator.active .ss-calc-title svg { color: var(--rb-green) !important; filter: none !important; }
+    #panel-calculator.active .ss-calc-sub {
+      color: var(--kf-ink-3) !important;
+      font-family: var(--kf-mono) !important;
+      font-size: 11px !important;
+      letter-spacing: 0.04em !important;
+      text-transform: uppercase !important;
+    }
+
+    #panel-calculator.active .ss-pipeline-range {
+      background: transparent !important;
+      border: none !important;
+      padding: 0 !important;
+      gap: 8px !important;
+      display: inline-flex !important;
+      flex-wrap: wrap !important;
+    }
+    #panel-calculator.active .ss-pipeline-range-btn {
+      color: var(--kf-ink-2) !important;
+      font-family: var(--kf-mono) !important;
+      font-size: 10px !important;
+      letter-spacing: 0.08em !important;
+      text-transform: uppercase !important;
+      background: var(--kf-surface-2) !important;
+      border: 1px solid var(--kf-hairline-strong) !important;
+      border-radius: 100px !important;
+      padding: 6px 14px !important;
+    }
+    #panel-calculator.active .ss-pipeline-range-btn:hover {
+      color: var(--kf-ink-1) !important;
+      background: var(--kf-surface-3) !important;
+    }
+    #panel-calculator.active .ss-pipeline-range-btn.active {
+      color: var(--kf-bg) !important;
+      background: var(--kf-ink-1) !important;
+      box-shadow: none !important;
+    }
+
+    #panel-calculator.active .ss-pipeline-stat {
+      background: var(--kf-surface-2) !important;
+      border: 1px solid var(--kf-hairline) !important;
+      border-radius: var(--kf-radius) !important;
+    }
+    #panel-calculator.active .ss-pipeline-stat-label,
+    #panel-calculator.active .ss-pd-summary-label {
+      color: var(--kf-ink-3) !important;
+      font-family: var(--kf-mono) !important;
+      font-size: 10px !important;
+      letter-spacing: 0.08em !important;
+      text-transform: uppercase !important;
+    }
+    #panel-calculator.active .ss-pipeline-stat-value,
+    #panel-calculator.active .ss-pd-summary-value {
+      color: var(--kf-ink-1) !important;
+      font-family: var(--kf-mono) !important;
+      font-feature-settings: "tnum" 1;
+    }
+    #panel-calculator.active .ss-pipeline-stat-value.green,
+    #panel-calculator.active .ss-pd-summary-value.green { color: var(--rb-green) !important; }
+    #panel-calculator.active .ss-pipeline-stat-value.pending-glow,
+    #panel-calculator.active .ss-pd-summary-value.pending-glow { color: var(--rb-yellow) !important; }
+    #panel-calculator.active .ss-pipeline-stat-sub {
+      color: var(--kf-ink-3) !important;
+    }
+    #panel-calculator.active .ss-pipeline-empty {
+      color: var(--kf-ink-3) !important;
+    }
+
+    #panel-calculator.active .ss-pipeline-btn {
+      background: var(--rb-green) !important;
+      color: var(--kf-bg) !important;
+      border: 1px solid var(--rb-green) !important;
+      box-shadow: none !important;
+      font-family: var(--kf-sans) !important;
+      font-weight: 600 !important;
+      border-radius: 100px !important;
+    }
+    #panel-calculator.active .ss-pipeline-btn:hover {
+      filter: brightness(1.08);
+      box-shadow: 0 2px 12px color-mix(in oklch, var(--rb-green) 30%, transparent) !important;
+    }
+    #panel-calculator.active .ss-pipeline-btn.secondary {
+      background: var(--kf-surface-2) !important;
+      color: var(--kf-ink-1) !important;
+      border-color: var(--kf-hairline-strong) !important;
+    }
+    #panel-calculator.active .ss-pipeline-btn.secondary:hover {
+      background: var(--kf-surface-3) !important;
+    }
+
+    /* Note callouts (yellow/blue inline boxes) */
+    #panel-calculator.active .ss-pipeline-card > div[style*="#fff8e6"] {
+      background: color-mix(in oklch, var(--rb-yellow) 12%, transparent) !important;
+      border: 1px solid color-mix(in oklch, var(--rb-yellow) 28%, transparent) !important;
+      color: var(--rb-yellow) !important;
+      border-radius: var(--kf-radius) !important;
+    }
+    #panel-calculator.active .ss-pd-edit-field > div[style*="#f0f7ff"] {
+      background: color-mix(in oklch, var(--rb-blue) 12%, transparent) !important;
+      border: 1px solid color-mix(in oklch, var(--rb-blue) 28%, transparent) !important;
+      color: var(--rb-blue) !important;
+      border-radius: var(--kf-radius) !important;
+    }
+
+    /* Pipeline details */
+    #panel-calculator.active .ss-pipeline-details > div h2 {
+      color: var(--kf-ink-1) !important;
+      font-family: var(--kf-sans) !important;
+    }
+    #panel-calculator.active .ss-pd-filters {
+      gap: 8px !important; flex-wrap: wrap !important;
+    }
+    #panel-calculator.active .ss-pd-filter {
+      background: var(--kf-surface) !important;
+      color: var(--kf-ink-2) !important;
+      border: 1px solid var(--kf-hairline-strong) !important;
+      font-family: var(--kf-mono) !important;
+      font-size: 10px !important;
+      letter-spacing: 0.08em !important;
+      text-transform: uppercase !important;
+      border-radius: 100px !important;
+    }
+    #panel-calculator.active .ss-pd-filter:hover {
+      background: var(--kf-surface-2) !important;
+      border-color: var(--kf-ink-3) !important;
+      color: var(--kf-ink-1) !important;
+    }
+    #panel-calculator.active .ss-pd-filter.active {
+      background: var(--kf-ink-1) !important;
+      color: var(--kf-bg) !important;
+      border-color: var(--kf-ink-1) !important;
+    }
+    #panel-calculator.active #pdCustomRange input[type="date"] {
+      background: var(--kf-surface) !important;
+      border: 1px solid var(--kf-hairline-strong) !important;
+      color: var(--kf-ink-1) !important;
+      color-scheme: dark;
+      font-family: var(--kf-mono) !important;
+      border-radius: 8px !important;
+    }
+    #panel-calculator[data-kf-theme="light"] #pdCustomRange input[type="date"] { color-scheme: light; }
+    #panel-calculator.active #pdCustomRange span { color: var(--kf-ink-3) !important; }
+
+    #panel-calculator.active .ss-pd-summary {
+      gap: 12px !important;
+    }
+    #panel-calculator.active .ss-pd-summary-item {
+      background: var(--kf-surface-2) !important;
+      border: 1px solid var(--kf-hairline) !important;
+      border-radius: var(--kf-radius) !important;
+      padding: 14px 16px !important;
+    }
+
+    /* Policy list rows */
+    #panel-calculator.active .ss-pd-policy {
+      background: var(--kf-surface) !important;
+      border: 1px solid var(--kf-hairline) !important;
+      border-radius: var(--kf-radius) !important;
+      color: var(--kf-ink-1) !important;
+    }
+    #panel-calculator.active .ss-pd-policy:hover {
+      background: var(--kf-surface-2) !important;
+      border-color: var(--kf-hairline-strong) !important;
+    }
+    #panel-calculator.active .ss-pd-policy .pd-client {
+      color: var(--kf-ink-1) !important;
+      font-family: var(--kf-sans) !important;
+      font-weight: 600 !important;
+    }
+    #panel-calculator.active .ss-pd-policy .pd-carrier,
+    #panel-calculator.active .ss-pd-policy .pd-product,
+    #panel-calculator.active .ss-pd-policy .pd-status {
+      color: var(--kf-ink-3) !important;
+      font-family: var(--kf-mono) !important;
+      font-size: 11px !important;
+    }
+    #panel-calculator.active .ss-pd-policy .pd-ap,
+    #panel-calculator.active .ss-pd-policy .pd-comp,
+    #panel-calculator.active .ss-pd-policy .pd-payout,
+    #panel-calculator.active .ss-pd-policy .pd-pending {
+      color: var(--kf-ink-1) !important;
+      font-family: var(--kf-mono) !important;
+    }
+    #panel-calculator.active .ss-pd-policy .pd-payout { color: var(--rb-green) !important; }
+    #panel-calculator.active .ss-pd-policy .pd-pending { color: var(--rb-yellow) !important; }
+
+    #panel-calculator.active .ss-pd-edit-btn {
+      background: var(--kf-surface-2) !important;
+      color: var(--kf-ink-2) !important;
+      border: 1px solid var(--kf-hairline-strong) !important;
+      border-radius: 8px !important;
+    }
+    #panel-calculator.active .ss-pd-edit-btn:hover {
+      background: var(--rb-blue) !important;
+      color: var(--kf-bg) !important;
+      border-color: var(--rb-blue) !important;
+    }
+
+    /* Edit modal */
+    #panel-calculator.active .ss-pd-edit-overlay {
+      background: rgba(8, 9, 11, 0.7) !important;
+      backdrop-filter: blur(6px);
+    }
+    #panel-calculator[data-kf-theme="light"] .ss-pd-edit-overlay {
+      background: rgba(40, 38, 30, 0.6) !important;
+    }
+    #panel-calculator.active .ss-pd-edit-modal h3 {
+      color: var(--kf-ink-1) !important;
+      font-family: var(--kf-sans) !important;
+      font-weight: 600 !important;
+    }
+    #panel-calculator.active .ss-pd-edit-field label {
+      color: var(--kf-ink-3) !important;
+      font-family: var(--kf-mono) !important;
+      font-size: 10px !important;
+      letter-spacing: 0.08em !important;
+      text-transform: uppercase !important;
+    }
+    #panel-calculator.active .ss-pd-edit-field input,
+    #panel-calculator.active .ss-pd-edit-field select {
+      background: var(--kf-surface-2) !important;
+      border: 1px solid var(--kf-hairline-strong) !important;
+      color: var(--kf-ink-1) !important;
+      font-family: var(--kf-mono) !important;
+      border-radius: 8px !important;
+    }
+    #panel-calculator.active .ss-pd-edit-field input[type="date"] { color-scheme: dark; }
+    #panel-calculator[data-kf-theme="light"] .ss-pd-edit-field input[type="date"] { color-scheme: light; }
+    #panel-calculator.active .ss-pd-edit-field input:focus,
+    #panel-calculator.active .ss-pd-edit-field select:focus {
+      outline: none !important;
+      border-color: var(--rb-blue) !important;
+    }
+
+    /* Commission Calculator card */
+    #panel-calculator.active .ss-calc-step {
+      background: var(--kf-surface-2) !important;
+      border: 1px solid var(--kf-hairline) !important;
+      border-radius: var(--kf-radius) !important;
+    }
+    #panel-calculator.active .ss-calc-step-num {
+      color: var(--kf-ink-3) !important;
+      font-family: var(--kf-mono) !important;
+      letter-spacing: 0.08em !important;
+    }
+    #panel-calculator.active .ss-calc-step-label {
+      color: var(--kf-ink-1) !important;
+      font-family: var(--kf-sans) !important;
+      font-weight: 500 !important;
+    }
+    #panel-calculator.active .ss-calc-input,
+    #panel-calculator.active .ss-calc-select {
+      background: var(--kf-surface) !important;
+      border: 1px solid var(--kf-hairline-strong) !important;
+      color: var(--kf-ink-1) !important;
+      font-family: var(--kf-mono) !important;
+      border-radius: 8px !important;
+    }
+    #panel-calculator.active .ss-calc-input::placeholder { color: var(--kf-ink-4) !important; }
+    #panel-calculator.active .ss-calc-input:focus,
+    #panel-calculator.active .ss-calc-select:focus {
+      outline: none !important;
+      border-color: var(--rb-blue) !important;
+      box-shadow: 0 0 0 3px color-mix(in oklch, var(--rb-blue) 18%, transparent) !important;
+    }
+    #panel-calculator.active .ss-calc-select option {
+      background: var(--kf-surface) !important;
+      color: var(--kf-ink-1) !important;
+    }
+
+    /* Calc results panel */
+    #panel-calculator.active .ss-calc-results { padding: 18px !important; }
+    #panel-calculator.active .ss-calc-result-main {
+      background: var(--kf-surface-2) !important;
+      border-color: var(--kf-hairline) !important;
+    }
+    #panel-calculator.active .ss-calc-result-main .lbl,
+    #panel-calculator.active .ss-calc-result-row .lbl {
+      color: var(--kf-ink-3) !important;
+      font-family: var(--kf-mono) !important;
+      letter-spacing: 0.06em !important;
+      text-transform: uppercase !important;
+    }
+    #panel-calculator.active .ss-calc-result-main .val,
+    #panel-calculator.active .ss-calc-result-row .val {
+      color: var(--kf-ink-1) !important;
+      font-family: var(--kf-mono) !important;
+    }
+    #panel-calculator.active .ss-calc-result-row .val.muted { color: var(--kf-ink-2) !important; }
+
+    @media (max-width: 768px) {
+      #panel-calculator.active .ss-panel-head { flex-direction: column; align-items: flex-start; gap: 12px; }
+    }
+
+    /* ─── Compensation pay scales (legacy .comp-* cards on the Pay panel) ─ */
+    #panel-calculator.active .comp-columns { gap: 18px !important; }
+    #panel-calculator.active .comp-card,
+    #panel-calculator.active .comp-bonus {
+      background: var(--kf-surface) !important;
+      border: 1px solid var(--kf-hairline) !important;
+      border-radius: var(--kf-radius) !important;
+      box-shadow: none !important;
+      overflow: hidden !important;
+    }
+    #panel-calculator.active .comp-card:hover,
+    #panel-calculator.active .comp-bonus:hover {
+      transform: none !important;
+      box-shadow: none !important;
+      border-color: var(--kf-hairline-strong) !important;
+    }
+    #panel-calculator.active .comp-card-header,
+    #panel-calculator.active .comp-bonus-header {
+      background: var(--kf-surface-2) !important;
+      padding: 18px 20px !important;
+      border-bottom: 1px solid var(--kf-hairline) !important;
+    }
+    #panel-calculator.active .comp-card-header::before,
+    #panel-calculator.active .comp-bonus-header::before { display: none !important; }
+    #panel-calculator.active .comp-card.producer .comp-card-header,
+    #panel-calculator.active .comp-card.builder .comp-card-header {
+      background: var(--kf-surface-2) !important;
+    }
+    #panel-calculator.active .comp-card-header h2,
+    #panel-calculator.active .comp-bonus-header h2 {
+      color: var(--kf-ink-1) !important;
+      font-family: var(--kf-sans) !important;
+      font-weight: 600 !important;
+      font-size: 16px !important;
+    }
+    #panel-calculator.active .comp-card-header p,
+    #panel-calculator.active .comp-bonus-header p {
+      color: var(--kf-ink-3) !important;
+      font-family: var(--kf-mono) !important;
+      font-size: 11px !important;
+      letter-spacing: 0.04em !important;
+      text-transform: uppercase !important;
+    }
+    #panel-calculator.active .comp-card-header-icon {
+      background: color-mix(in oklch, var(--rb-blue) 18%, transparent) !important;
+      color: var(--rb-blue) !important;
+    }
+    #panel-calculator.active .comp-card.builder .comp-card-header-icon {
+      background: color-mix(in oklch, var(--rb-yellow) 18%, transparent) !important;
+      color: var(--rb-yellow) !important;
+    }
+    #panel-calculator.active .comp-bonus-header-icon {
+      background: color-mix(in oklch, var(--rb-green) 18%, transparent) !important;
+      color: var(--rb-green) !important;
+    }
+    #panel-calculator.active .comp-top-level,
+    #panel-calculator.active .comp-bonus-watermark {
+      font-family: var(--kf-mono) !important;
+      font-weight: 600 !important;
+      font-size: 22px !important;
+      letter-spacing: -0.01em !important;
+    }
+    #panel-calculator.active .comp-card.producer .comp-top-level { color: var(--rb-blue) !important; }
+    #panel-calculator.active .comp-card.builder .comp-top-level { color: var(--rb-yellow) !important; }
+    #panel-calculator.active .comp-bonus-watermark { color: var(--rb-green) !important; }
+
+    #panel-calculator.active .comp-table {
+      background: transparent !important;
+    }
+    #panel-calculator.active .comp-table thead th {
+      background: var(--kf-surface) !important;
+      color: var(--kf-ink-3) !important;
+      border-bottom: 1px solid var(--kf-hairline) !important;
+      font-family: var(--kf-mono) !important;
+      font-size: 10px !important;
+      letter-spacing: 0.08em !important;
+      text-transform: uppercase !important;
+      padding: 10px 16px !important;
+    }
+    #panel-calculator.active .comp-table tbody td {
+      background: transparent !important;
+      color: var(--kf-ink-2) !important;
+      border-bottom: 1px solid var(--kf-hairline) !important;
+      font-family: var(--kf-mono) !important;
+      font-size: 13px !important;
+      padding: 9px 16px !important;
+    }
+    #panel-calculator.active .comp-table tbody tr:hover { background: var(--kf-surface-2) !important; }
+    #panel-calculator.active .comp-table tbody tr:first-child { background: transparent !important; }
+    #panel-calculator.active .comp-card.producer .comp-table tbody td:first-child { color: var(--rb-blue) !important; }
+    #panel-calculator.active .comp-card.builder .comp-table tbody td:first-child { color: var(--rb-yellow) !important; }
+    #panel-calculator.active .comp-bonus .comp-table tbody td:first-child { color: var(--rb-green) !important; }
+    #panel-calculator.active .comp-table tbody td:last-child { color: var(--kf-ink-1) !important; }
+
+    /* Carrier Bonuses + Manager Bonus cards — match Producer/Builder style */
+    #panel-calculator.active .comp-mgr-bonus {
+      background: var(--kf-surface) !important;
+      border: 1px solid var(--kf-hairline) !important;
+      border-radius: var(--kf-radius) !important;
+      box-shadow: none !important;
+      overflow: hidden !important;
+    }
+    #panel-calculator.active .comp-mgr-bonus-header,
+    #panel-calculator.active .comp-mgr-bonus-header[style] {
+      background: var(--kf-surface-2) !important;
+      padding: 18px 20px !important;
+      border-bottom: 1px solid var(--kf-hairline) !important;
+    }
+    #panel-calculator.active .comp-mgr-bonus-header::before { display: none !important; }
+    #panel-calculator.active .comp-mgr-bonus-header h2 {
+      color: var(--kf-ink-1) !important;
+      font-family: var(--kf-sans) !important;
+      font-weight: 600 !important;
+      font-size: 16px !important;
+    }
+    /* Carrier Bonuses (gold accent) */
+    #panel-calculator.active .comp-bonus-grid > .comp-mgr-bonus:nth-child(2) .comp-mgr-bonus-header-icon,
+    #panel-calculator.active .comp-mgr-bonus-header-icon[style*="220, 190, 100"] {
+      background: color-mix(in oklch, var(--rb-yellow) 18%, transparent) !important;
+      color: var(--rb-yellow) !important;
+    }
+    /* Manager Bonus (purple accent) */
+    #panel-calculator.active .comp-mgr-bonus:not(:has(.comp-mgr-bonus-header-icon[style])) .comp-mgr-bonus-header-icon {
+      background: color-mix(in oklch, var(--rb-purple) 18%, transparent) !important;
+      color: var(--rb-purple) !important;
+    }
+    #panel-calculator.active .comp-mgr-bonus-body {
+      padding: 20px !important;
+      color: var(--kf-ink-2) !important;
+    }
+    #panel-calculator.active .comp-mgr-bonus-body .mgr-threshold {
+      color: var(--rb-purple) !important;
+      font-family: var(--kf-mono) !important;
+      font-weight: 600 !important;
+      font-size: 28px !important;
+      letter-spacing: -0.01em !important;
+    }
+    #panel-calculator.active .comp-mgr-bonus-body .mgr-label {
+      color: var(--kf-ink-3) !important;
+      font-family: var(--kf-mono) !important;
+      font-size: 10px !important;
+      letter-spacing: 0.08em !important;
+      text-transform: uppercase !important;
+      font-weight: 500 !important;
+    }
+    #panel-calculator.active .comp-mgr-bonus-body .mgr-desc,
+    #panel-calculator.active .comp-mgr-bonus-body p {
+      color: var(--kf-ink-2) !important;
+      font-family: var(--kf-sans) !important;
+      font-size: 13px !important;
+      line-height: 1.55 !important;
+    }
+    /* Inline-styled rows in Carrier Bonuses */
+    #panel-calculator.active .comp-mgr-bonus-body div[style*="display: flex"][style*="align-items: center"] {
+      color: var(--kf-ink-2) !important;
+    }
+    #panel-calculator.active .comp-mgr-bonus-body span[style*="#c9a84c"] {
+      color: var(--rb-yellow) !important;
+      font-family: var(--kf-mono) !important;
+      font-weight: 600 !important;
+    }
+    #panel-calculator.active .comp-mgr-bonus-body span[style*="#555555"] {
+      color: var(--kf-ink-2) !important;
+      font-family: var(--kf-sans) !important;
+    }
+
+    /* Important Notes (.comp-notes) — surface card to match the rest */
+    #panel-calculator.active .comp-notes {
+      background: var(--kf-surface) !important;
+      border: 1px solid var(--kf-hairline) !important;
+      border-radius: var(--kf-radius) !important;
+      box-shadow: none !important;
+      padding: 20px 22px !important;
+    }
+    #panel-calculator.active #payCalcCompSection .comp-notes {
+      background: var(--kf-surface) !important;
+      border: 1px solid var(--kf-hairline) !important;
+      box-shadow: none !important;
+      color: var(--kf-ink-2) !important;
+    }
+    #panel-calculator.active #payCalcCompSection .comp-notes-title,
+    #panel-calculator.active .comp-notes-title {
+      color: var(--kf-ink-1) !important;
+      font-family: var(--kf-sans) !important;
+      font-weight: 600 !important;
+      font-size: 13px !important;
+      letter-spacing: 0.02em !important;
+      text-transform: none !important;
+    }
+    #panel-calculator.active #payCalcCompSection .comp-notes ul li,
+    #panel-calculator.active .comp-notes li {
+      color: var(--kf-ink-2) !important;
+      font-family: var(--kf-sans) !important;
+      font-size: 13px !important;
+    }
+    #panel-calculator.active .comp-notes li::before {
+      background: var(--rb-yellow) !important;
+    }
+    #panel-calculator.active .comp-notes-title svg {
+      color: var(--rb-yellow) !important;
+    }
+
+    /* Inline-styled AP input + result-main values */
+    #panel-calculator.active .ss-calc-result-main span[style*="#1a1a1a"],
+    #panel-calculator.active .ss-calc-result-main input[style*="#1a1a1a"] {
+      color: var(--kf-ink-1) !important;
+      background: transparent !important;
+    }
+    #panel-calculator.active #cc_outRequired {
+      background: var(--kf-surface) !important;
+      border: 1px solid var(--kf-hairline-strong) !important;
+      color: var(--kf-ink-1) !important;
+    }
+    #panel-calculator.active #cc_outRequired::placeholder { color: var(--kf-ink-4) !important; }
+
+    /* "Do you have a team?" — Yes/No segmented control with obvious active state */
+    #panel-calculator.active .ss-calc-team-btns {
+      background: var(--kf-surface-2) !important;
+      border: 1px solid var(--kf-hairline-strong) !important;
+      border-radius: 100px !important;
+      padding: 3px !important;
+      gap: 0 !important;
+      overflow: visible !important;
+    }
+    #panel-calculator.active .ss-calc-team-btn {
+      background: transparent !important;
+      color: var(--kf-ink-3) !important;
+      border: none !important;
+      font-family: var(--kf-sans) !important;
+      font-size: 12px !important;
+      font-weight: 600 !important;
+      letter-spacing: 0.04em !important;
+      text-transform: uppercase !important;
+      border-radius: 100px !important;
+      padding: 8px 22px !important;
+      transition: all 120ms !important;
+    }
+    #panel-calculator.active .ss-calc-team-btn:first-child { border-right: none !important; }
+    #panel-calculator.active .ss-calc-team-btn:hover {
+      color: var(--kf-ink-1) !important;
+      background: var(--kf-surface-3) !important;
+    }
+    #panel-calculator.active .ss-calc-team-btn.active {
+      background: var(--rb-blue) !important;
+      color: var(--kf-bg) !important;
+      box-shadow: 0 1px 6px color-mix(in oklch, var(--rb-blue) 35%, transparent) !important;
+    }
+    #panel-calculator.active .ss-calc-team-toggle .ss-calc-step-label {
+      color: var(--kf-ink-1) !important;
+      font-family: var(--kf-sans) !important;
+      font-weight: 500 !important;
+      margin-bottom: 8px !important;
+    }
+
+    /* Output blocks: ROI / bonus / longterm / leadership — all surface tones */
+    #panel-calculator.active #roi_output,
+    #panel-calculator.active #bonus_output,
+    #panel-calculator.active #longterm_output,
+    #panel-calculator.active #leadershipOutput,
+    #panel-calculator.active .ss-calc-roi-result,
+    #panel-calculator.active .ss-calc-bonus,
+    #panel-calculator.active .ss-calc-leadership {
+      background: var(--kf-surface) !important;
+      border: 1px solid var(--kf-hairline) !important;
+      border-radius: var(--kf-radius) !important;
+      color: var(--kf-ink-1) !important;
+      box-shadow: none !important;
+    }
+    #panel-calculator.active .ss-calc-roi-hero {
+      border-bottom: 1px solid var(--kf-hairline) !important;
+    }
+    #panel-calculator.active .ss-calc-roi-hero-label {
+      color: var(--kf-ink-3) !important;
+      font-family: var(--kf-mono) !important;
+      letter-spacing: 0.1em !important;
+    }
+    #panel-calculator.active .ss-calc-roi-hero-value {
+      color: var(--rb-green) !important;
+      font-family: var(--kf-mono) !important;
+      font-weight: 600 !important;
+    }
+    #panel-calculator.active .ss-calc-roi-result .msg,
+    #panel-calculator.active .ss-calc-roi-result .msg.placeholder { color: var(--kf-ink-2) !important; }
+    #panel-calculator.active .ss-calc-roi-result .msg strong { color: var(--kf-ink-1) !important; font-family: var(--kf-sans) !important; }
+    #panel-calculator.active .ss-calc-roi-breakdown {
+      background: var(--kf-surface-2) !important;
+      border: 1px solid var(--kf-hairline) !important;
+      border-radius: 8px !important;
+    }
+    #panel-calculator.active .ss-calc-roi-row .lbl {
+      color: var(--kf-ink-3) !important;
+      font-family: var(--kf-mono) !important;
+      font-size: 10px !important;
+      letter-spacing: 0.08em !important;
+    }
+    #panel-calculator.active .ss-calc-roi-row .val,
+    #panel-calculator.active .ss-calc-roi-row .val.weekly {
+      color: var(--kf-ink-1) !important;
+      font-family: var(--kf-mono) !important;
+    }
+
+    /* Bonus block — green amount + nextup pill */
+    #panel-calculator.active .ss-calc-bonus-title {
+      color: var(--kf-ink-3) !important;
+      font-family: var(--kf-mono) !important;
+      letter-spacing: 0.1em !important;
+    }
+    #panel-calculator.active .ss-calc-bonus-body {
+      color: var(--kf-ink-2) !important;
+    }
+    #panel-calculator.active .ss-calc-bonus-amount {
+      color: var(--rb-green) !important;
+      font-family: var(--kf-mono) !important;
+      font-weight: 600 !important;
+    }
+    #panel-calculator.active .ss-calc-bonus-note {
+      color: var(--kf-ink-3) !important;
+    }
+    #panel-calculator.active .ss-calc-bonus-nextup {
+      background: var(--kf-surface-2) !important;
+      color: var(--kf-ink-2) !important;
+      border: 1px solid var(--kf-hairline-strong) !important;
+      font-family: var(--kf-mono) !important;
+    }
+
+    /* Leadership / longterm block */
+    #panel-calculator.active .ss-calc-leadership {
+      border-color: color-mix(in oklch, var(--rb-blue) 28%, var(--kf-hairline)) !important;
+      box-shadow: none !important;
+    }
+    #panel-calculator.active .ss-calc-leadership-title {
+      color: var(--rb-blue) !important;
+      font-family: var(--kf-mono) !important;
+      letter-spacing: 0.1em !important;
+    }
+    #panel-calculator.active .ss-calc-leadership-body {
+      color: var(--kf-ink-2) !important;
+    }
+    #panel-calculator.active .ss-calc-leadership-body strong {
+      color: var(--rb-blue) !important;
+      font-family: var(--kf-sans) !important;
+    }
+    #panel-calculator.active .ss-calc-leadership-grid { gap: 10px !important; }
+    #panel-calculator.active .ss-calc-leadership-stat {
+      background: var(--kf-surface-2) !important;
+      border: 1px solid var(--kf-hairline) !important;
+      border-radius: 8px !important;
+    }
+    #panel-calculator.active .ss-calc-leadership-stat-label {
+      color: var(--kf-ink-3) !important;
+      font-family: var(--kf-mono) !important;
+      font-size: 10px !important;
+      letter-spacing: 0.08em !important;
+    }
+    #panel-calculator.active .ss-calc-leadership-stat-value {
+      color: var(--kf-ink-1) !important;
+      font-family: var(--kf-mono) !important;
+    }
+
+    /* ─── Calculator step / results layout polish (no overlap) ───────────── */
+    #panel-calculator.active .ss-calc-card { padding: 24px !important; }
+    #panel-calculator.active .ss-calc-steps {
+      gap: 14px !important;
+      margin-top: 18px !important;
+      margin-bottom: 18px !important;
+    }
+    #panel-calculator.active .ss-calc-step {
+      padding: 16px 16px 18px !important;
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 8px !important;
+      min-height: 0 !important;
+    }
+    #panel-calculator.active .ss-calc-step-num {
+      position: static !important;
+      font-size: 9px !important;
+      letter-spacing: 0.12em !important;
+      text-transform: uppercase !important;
+      padding: 0 !important;
+      background: transparent !important;
+      color: var(--kf-ink-3) !important;
+      border: none !important;
+      align-self: flex-start !important;
+      margin-bottom: 0 !important;
+    }
+    #panel-calculator.active .ss-calc-step-label {
+      font-size: 13px !important;
+      line-height: 1.35 !important;
+      min-height: 0 !important;
+      margin: 0 !important;
+    }
+    #panel-calculator.active .ss-calc-step .ss-calc-input,
+    #panel-calculator.active .ss-calc-step .ss-calc-select {
+      margin-top: auto !important;
+      width: 100% !important;
+      padding: 9px 12px !important;
+      height: auto !important;
+    }
+
+    /* Result main with the AP input — vertical layout, no overlap */
+    #panel-calculator.active .ss-calc-result-main {
+      flex-direction: column !important;
+      align-items: stretch !important;
+      gap: 8px !important;
+      padding: 14px 16px !important;
+      border: 1px solid var(--kf-hairline) !important;
+    }
+    #panel-calculator.active .ss-calc-result-main > div {
+      gap: 6px !important;
+    }
+    #panel-calculator.active #cc_outRequired {
+      max-width: none !important;
+      width: 100% !important;
+      font-size: 18px !important;
+      font-weight: 600 !important;
+      text-align: left !important;
+      padding: 9px 12px !important;
+    }
+
+    /* ─── Universal card uniformity for Carriers / Leads / Resources ────── */
+    #panel-carriers.active .sh-carriers-grid,
+    #panel-leadvendors.active .sh-vendors-grid,
+    #panel-resources.active .sh-resources-grid {
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)) !important;
+      gap: 14px !important;
+      max-width: none !important;
+      margin: 0 !important;
+    }
+    #panel-carriers.active .sh-carrier-card,
+    #panel-leadvendors.active .sh-vendor-card,
+    #panel-resources.active .sh-resource-card {
+      background: var(--kf-surface) !important;
+      border: 1px solid var(--kf-hairline) !important;
+      border-radius: var(--kf-radius) !important;
+      padding: 18px 20px !important;
+      min-height: 100px !important;
+      box-shadow: none !important;
+      transition: all 120ms !important;
+    }
+    #panel-carriers.active .sh-carrier-card:hover,
+    #panel-leadvendors.active .sh-vendor-card:hover,
+    #panel-resources.active .sh-resource-card:hover {
+      background: var(--kf-surface-2) !important;
+      border-color: var(--kf-hairline-strong) !important;
+      transform: translateY(-1px);
+      box-shadow: none !important;
+    }
+    /* Titles uniform: 14px Geist 600 */
+    #panel-carriers.active .sh-carrier-card .name,
+    #panel-leadvendors.active .sh-vendor-name,
+    #panel-resources.active .sh-resource-title {
+      font-family: var(--kf-sans) !important;
+      font-size: 14px !important;
+      font-weight: 600 !important;
+      color: var(--kf-ink-1) !important;
+      margin: 0 0 4px !important;
+      letter-spacing: -0.005em !important;
+    }
+    /* Subtitles uniform: 12px ink-3 */
+    #panel-carriers.active .sh-carrier-card .phone,
+    #panel-leadvendors.active .sh-vendor-desc,
+    #panel-resources.active .sh-resource-desc {
+      font-family: var(--kf-mono) !important;
+      font-size: 11px !important;
+      letter-spacing: 0.02em !important;
+      color: var(--kf-ink-3) !important;
+      line-height: 1.45 !important;
+    }
+    #panel-leadvendors.active .sh-vendor-desc,
+    #panel-resources.active .sh-resource-desc {
+      font-family: var(--kf-sans) !important;
+      font-size: 12px !important;
+      letter-spacing: 0 !important;
+    }
+
+    /* ─── Dial Tracker (.dt-*) — appearance only ────────────────────────── */
+    #panel-dialtracker.active {
+      margin: -1.5rem -2rem -4rem !important;
+      padding: 28px 32px 40px !important;
+      background: var(--kf-bg) !important;
+      color: var(--kf-ink-1) !important;
+      font-family: var(--kf-sans) !important;
+      min-height: calc(100vh - 1.5rem);
+      background-image:
+        radial-gradient(1100px 600px at 90% -10%, color-mix(in oklch, var(--rb-blue) 8%, transparent), transparent 60%),
+        radial-gradient(900px 500px at -10% 110%, color-mix(in oklch, var(--rb-purple) 7%, transparent), transparent 60%);
+      position: relative;
+    }
+    #panel-dialtracker.active > div {
+      padding: 0 !important;
+      max-width: 720px !important;
+      margin: 0 auto !important;
+    }
+    #panel-dialtracker.active .ss-panel-head {
+      display: flex; align-items: flex-end; justify-content: space-between;
+      gap: 24px; padding-bottom: 18px; margin-bottom: 24px;
+      border-bottom: 1px solid var(--kf-hairline);
+      text-align: left;
+    }
+    #panel-dialtracker.active .ss-panel-head > div:not(.kf-hdr-r) { flex: 1; }
+    #panel-dialtracker.active .ss-panel-head h2 {
+      font-family: var(--kf-sans) !important;
+      font-size: 20px !important; font-weight: 600 !important;
+      color: var(--kf-ink-1) !important; margin: 0 !important; text-shadow: none !important;
+    }
+    #panel-dialtracker.active .ss-panel-sub {
+      font-family: var(--kf-mono) !important;
+      font-size: 11px !important; color: var(--kf-ink-3) !important;
+      letter-spacing: 0.04em !important; text-transform: uppercase !important;
+      margin: 6px 0 0 !important;
+    }
+    #panel-dialtracker.active .kf-hdr-r {
+      display: flex; align-items: center; gap: 16px; flex-shrink: 0;
+    }
+    #panel-dialtracker.active .dt-grid { gap: 10px !important; }
+    #panel-dialtracker.active .dt-card {
+      background: var(--kf-surface) !important;
+      border: 1px solid var(--kf-hairline) !important;
+      border-left: 3px solid var(--dt-c) !important;
+      border-radius: var(--kf-radius) !important;
+      color: var(--kf-ink-1) !important;
+    }
+    #panel-dialtracker.active .dt-card:hover { box-shadow: none !important; border-color: var(--kf-hairline-strong) !important; border-left-color: var(--dt-c) !important; }
+    #panel-dialtracker.active .dt-card-label {
+      color: var(--kf-ink-1) !important;
+      font-family: var(--kf-sans) !important;
+      font-size: 13px !important;
+      font-weight: 600 !important;
+      letter-spacing: 0.04em !important;
+    }
+    #panel-dialtracker.active .dt-card-meta {
+      color: var(--kf-ink-3) !important;
+      font-family: var(--kf-mono) !important;
+      font-size: 11px !important;
+    }
+    #panel-dialtracker.active .dt-card-meta.no-goal { color: var(--kf-ink-4) !important; }
+    #panel-dialtracker.active .dt-count-input {
+      background: var(--kf-surface-2) !important;
+      border: 1px solid var(--kf-hairline-strong) !important;
+      color: var(--kf-ink-1) !important;
+      font-family: var(--kf-mono) !important;
+      border-radius: 8px !important;
+    }
+    #panel-dialtracker.active .dt-count-input:focus { border-color: var(--dt-c) !important; }
+    #panel-dialtracker.active .dt-card-bar { background: var(--kf-surface-3) !important; }
+    #panel-dialtracker.active .dt-btn {
+      background: var(--kf-surface-2) !important;
+      border: 1px solid var(--kf-hairline-strong) !important;
+      color: var(--kf-ink-2) !important;
+    }
+    #panel-dialtracker.active .dt-btn:hover {
+      background: color-mix(in oklch, var(--dt-c) 14%, var(--kf-surface-2)) !important;
+      border-color: var(--dt-c) !important;
+      color: var(--dt-c) !important;
+    }
+    #panel-dialtracker.active .dt-btn.dt-plus {
+      background: var(--dt-c) !important;
+      color: var(--kf-bg) !important;
+      border-color: var(--dt-c) !important;
+    }
+    #panel-dialtracker.active .dt-submit-card {
+      background: var(--kf-surface) !important;
+      border: 1px solid var(--kf-hairline) !important;
+      border-radius: var(--kf-radius) !important;
+    }
+    #panel-dialtracker.active .dt-submit-title {
+      color: var(--kf-ink-1) !important;
+      font-family: var(--kf-sans) !important;
+      font-weight: 600 !important;
+    }
+    #panel-dialtracker.active .dt-submit-title svg { color: var(--rb-green) !important; }
+    #panel-dialtracker.active .dt-submit-card .ss-label {
+      color: var(--kf-ink-3) !important;
+      font-family: var(--kf-mono) !important;
+      font-size: 10px !important;
+      letter-spacing: 0.08em !important;
+      text-transform: uppercase !important;
+    }
+    #panel-dialtracker.active .dt-submit-card .ss-input {
+      background: var(--kf-surface-2) !important;
+      border: 1px solid var(--kf-hairline-strong) !important;
+      color: var(--kf-ink-1) !important;
+      font-family: var(--kf-mono) !important;
+      border-radius: 8px !important;
+    }
+    #panel-dialtracker.active .dt-submit-card .ss-input[type="date"] { color-scheme: dark; }
+    #panel-dialtracker[data-kf-theme="light"] .dt-submit-card .ss-input[type="date"] { color-scheme: light; }
+    /* Buttons mirror the Pay panel primary/secondary pattern exactly. */
+    #panel-dialtracker.active .dt-submit-actions {
+      display: grid !important;
+      grid-template-columns: 1fr 1fr !important;
+      gap: 12px !important;
+      margin-top: 18px !important;
+    }
+    #panel-dialtracker.active .dt-submit-card .ss-submit {
+      width: 100% !important;
+      margin: 0 !important;
+      padding: 12px 24px !important;
+      font-family: var(--kf-sans) !important;
+      font-size: 13px !important;
+      font-weight: 600 !important;
+      letter-spacing: 0.01em !important;
+      border-radius: 100px !important;
+      box-shadow: none !important;
+      transition: all 120ms !important;
+      justify-content: center !important;
+      transform: none !important;
+    }
+    #panel-dialtracker.active .dt-submit-card #dtSubmitBtn {
+      background: var(--rb-green) !important;
+      color: var(--kf-bg) !important;
+      border: 1px solid var(--rb-green) !important;
+    }
+    #panel-dialtracker.active .dt-submit-card #dtSubmitBtn:hover {
+      filter: brightness(1.08);
+      transform: none !important;
+      box-shadow: 0 2px 12px color-mix(in oklch, var(--rb-green) 30%, transparent) !important;
+    }
+    #panel-dialtracker.active .dt-submit-card #dtResetBtn {
+      background: var(--kf-surface-2) !important;
+      color: var(--kf-ink-2) !important;
+      border: 1px solid var(--kf-hairline-strong) !important;
+    }
+    #panel-dialtracker.active .dt-submit-card #dtResetBtn:hover {
+      background: var(--kf-surface-3) !important;
+      color: var(--rb-red) !important;
+      border-color: color-mix(in oklch, var(--rb-red) 40%, var(--kf-hairline-strong)) !important;
+      transform: none !important;
+    }
+    #panel-dialtracker.active .dt-submit-card {
+      padding: 22px !important;
+    }
+    #panel-dialtracker.active .dt-submit-grid {
+      gap: 14px !important;
+      margin-bottom: 0 !important;
+    }
+    #panel-dialtracker.active .dt-submit-msg { color: var(--kf-ink-2) !important; }
+
+    @media (max-width: 768px) {
+      #panel-dialtracker.active {
+        margin: -0.75rem -0.75rem -3rem !important;
+        padding: 16px 12px 24px !important;
+      }
+      #panel-dialtracker.active .ss-panel-head { flex-direction: column; align-items: flex-start; gap: 12px; }
+    }
+
+    /* ─── Training (.ss-tv-*) — appearance only, NO functional changes ──── */
+    #panel-training.active {
+      margin: -1.5rem -2rem -4rem !important;
+      padding: 0 !important;
+      background: var(--kf-bg) !important;
+      color: var(--kf-ink-1) !important;
+      font-family: var(--kf-sans) !important;
+      min-height: calc(100vh + 2.5rem) !important;
+      position: relative;
+    }
+    #panel-training.active > .ss-training-layout {
+      height: auto !important;
+      min-height: calc(100vh + 2.5rem) !important;
+      background: var(--kf-bg) !important;
+    }
+    #panel-training.active .ss-tv-main {
+      min-height: calc(100vh + 2.5rem) !important;
+    }
+    #panel-training.active .ss-tv-sidebar {
+      background: var(--kf-bg-2) !important;
+      border-right: 1px solid var(--kf-hairline) !important;
+    }
+    #panel-training.active .ss-tv-sidebar::-webkit-scrollbar-thumb {
+      background: var(--kf-hairline-strong) !important;
+    }
+    #panel-training.active .ss-tv-progress {
+      background: var(--kf-bg-2) !important;
+      border-bottom: 1px solid var(--kf-hairline) !important;
+    }
+    #panel-training.active .ss-tv-progress-title {
+      color: var(--kf-ink-1) !important;
+      font-family: var(--kf-sans) !important;
+      font-weight: 600 !important;
+      font-size: 14px !important;
+    }
+    #panel-training.active .ss-tv-progress-bar-wrap {
+      background: var(--kf-surface-2) !important;
+    }
+    #panel-training.active .ss-tv-progress-bar {
+      background: linear-gradient(90deg, var(--rb-purple), var(--rb-blue)) !important;
+    }
+    #panel-training.active .ss-tv-progress-text {
+      color: var(--kf-ink-3) !important;
+      font-family: var(--kf-mono) !important;
+      font-size: 11px !important;
+      letter-spacing: 0.04em !important;
+    }
+    #panel-training.active .ss-tv-cat-label {
+      background: var(--kf-surface) !important;
+      border-bottom: 1px solid var(--kf-hairline) !important;
+      color: var(--kf-ink-3) !important;
+      font-family: var(--kf-mono) !important;
+      font-size: 10px !important;
+      letter-spacing: 0.12em !important;
+      font-weight: 500 !important;
+    }
+    #panel-training.active .ss-tv-item {
+      color: var(--kf-ink-2) !important;
+      font-family: var(--kf-sans) !important;
+      border-left-color: transparent !important;
+    }
+    #panel-training.active .ss-tv-item:hover:not(.locked) {
+      background: var(--kf-surface) !important;
+      color: var(--kf-ink-1) !important;
+    }
+    #panel-training.active .ss-tv-item.active {
+      background: color-mix(in oklch, var(--rb-purple) 14%, transparent) !important;
+      color: var(--kf-ink-1) !important;
+      border-left-color: var(--rb-purple) !important;
+    }
+    #panel-training.active .ss-tv-item .tv-status-icon {
+      width: 16px !important;
+      height: 16px !important;
+      border-radius: 0 !important;
+      background: transparent !important;
+      border: none !important;
+    }
+    #panel-training.active .ss-tv-item .tv-status-icon.completed {
+      background: transparent !important;
+      color: var(--rb-green) !important;
+    }
+    #panel-training.active .ss-tv-item .tv-status-icon.current {
+      background: transparent !important;
+      color: var(--kf-ink-2) !important;
+    }
+    #panel-training.active .ss-tv-item.active .tv-status-icon.current {
+      color: var(--rb-purple) !important;
+    }
+    #panel-training.active .ss-tv-item .tv-status-icon.locked-icon {
+      background: transparent !important;
+      color: var(--kf-ink-4) !important;
+    }
+    #panel-training.active .ss-tv-item .tv-status-icon svg {
+      width: 14px !important;
+      height: 14px !important;
+    }
+    #panel-training.active .ss-tv-main {
+      background: var(--kf-bg) !important;
+      color: var(--kf-ink-1) !important;
+      background-image:
+        radial-gradient(1100px 600px at 90% -10%, color-mix(in oklch, var(--rb-blue) 8%, transparent), transparent 60%),
+        radial-gradient(900px 500px at -10% 110%, color-mix(in oklch, var(--rb-purple) 7%, transparent), transparent 60%);
+    }
+    #panel-training.active .ss-tv-video-wrap {
+      border: 1px solid var(--kf-hairline) !important;
+      border-radius: var(--kf-radius) !important;
+    }
+    #panel-training.active .ss-tv-video-title {
+      color: var(--kf-ink-1) !important;
+      font-family: var(--kf-sans) !important;
+      font-weight: 600 !important;
+    }
+    #panel-training.active .ss-tv-resource-btn {
+      background: var(--kf-surface) !important;
+      color: var(--kf-ink-1) !important;
+      border: 1px solid var(--kf-hairline-strong) !important;
+      font-family: var(--kf-sans) !important;
+      border-radius: 8px !important;
+    }
+    #panel-training.active .ss-tv-resource-btn:hover {
+      background: var(--kf-surface-2) !important;
+      border-color: var(--kf-ink-3) !important;
+    }
+    #panel-training.active .ss-tv-resource-btn.discord {
+      background: #5865F2 !important; color: #fff !important; border-color: #5865F2 !important;
+    }
+    #panel-training.active .ss-tv-resource-btn.discord:hover { background: #4752c4 !important; }
+    #panel-training.active .ss-tv-email-list h3 {
+      color: var(--kf-ink-1) !important;
+      font-family: var(--kf-sans) !important;
+      font-weight: 600 !important;
+    }
+    #panel-training.active .ss-tv-email-card {
+      background: var(--kf-surface) !important;
+      border: 1px solid var(--kf-hairline) !important;
+      border-radius: var(--kf-radius) !important;
+    }
+    #panel-training.active .ss-tv-email-carrier {
+      color: var(--kf-ink-1) !important;
+      font-family: var(--kf-sans) !important;
+      font-weight: 600 !important;
+    }
+    #panel-training.active .ss-tv-email-card a {
+      color: var(--rb-blue) !important;
+      font-family: var(--kf-mono) !important;
+    }
+    #panel-training.active .ss-tv-edit-toggle {
+      background: var(--kf-surface) !important;
+      color: var(--kf-ink-2) !important;
+      border: 1px solid var(--kf-hairline-strong) !important;
+      font-family: var(--kf-mono) !important;
+      letter-spacing: 0.06em !important;
+      text-transform: uppercase !important;
+    }
+    #panel-training.active .ss-tv-edit-toggle:hover {
+      background: var(--kf-surface-2) !important;
+      color: var(--kf-ink-1) !important;
+    }
+    #panel-training.active .ss-tv-edit-toggle.active {
+      background: var(--rb-purple) !important;
+      color: var(--kf-bg) !important;
+      border-color: var(--rb-purple) !important;
+    }
+    /* Mark as Complete button — replace purple gradient with KF green pill */
+    #panel-training.active #ssTvMarkComplete {
+      background: var(--rb-green) !important;
+      color: var(--kf-bg) !important;
+      font-family: var(--kf-sans) !important;
+      font-weight: 600 !important;
+      border-radius: 100px !important;
+      box-shadow: none !important;
+    }
+    #panel-training.active #ssTvMarkComplete:hover { filter: brightness(1.08); }
+    /* Progress bar — drop the purple→pink gradient for a clean accent */
+    #panel-training.active .ss-tv-progress-bar {
+      background: var(--rb-green) !important;
+    }
+    #panel-training.active .ss-tv-add-btn {
+      background: var(--kf-surface) !important;
+      border: 1px dashed var(--kf-hairline-strong) !important;
+      color: var(--kf-ink-3) !important;
+      font-family: var(--kf-sans) !important;
+      border-radius: var(--kf-radius) !important;
+    }
+    #panel-training.active .ss-tv-add-btn:hover {
+      background: color-mix(in oklch, var(--rb-purple) 10%, var(--kf-surface)) !important;
+      border-color: var(--rb-purple) !important;
+      color: var(--rb-purple) !important;
+    }
+    /* Header bar inside training: training panel doesn't have a .ss-panel-head
+       wrapper, so inject the toggle into a stand-alone .kf-hdr-r container if
+       the JS shim adds one. Position it absolutely top-right of the canvas. */
+    #panel-training.active > .kf-hdr-r {
+      position: absolute; top: 14px; right: 18px; z-index: 30;
+    }
+
+    @media (max-width: 768px) {
+      #panel-training.active .ss-tv-sidebar {
+        border-right: none !important;
+        border-bottom: 1px solid var(--kf-hairline) !important;
+      }
     }
 
     /* ─── Leaderboard — claude.ai/design ───────────────────────────────────
@@ -7930,22 +9543,18 @@
           <a href="https://goatleads.com/" target="_blank" rel="noopener noreferrer" class="sh-vendor-card">
             <div class="sh-vendor-top"><div class="sh-vendor-name">Goat Leads</div><span class="sh-vendor-badge">Approved</span></div>
             <div class="sh-vendor-desc">High-quality insurance leads to help you build your pipeline and close more deals.</div>
-            <span class="sh-vendor-tag">Insurance Leads</span>
           </a>
           <a href="https://leads.integrity.com" target="_blank" rel="noopener noreferrer" class="sh-vendor-card">
             <div class="sh-vendor-top"><div class="sh-vendor-name">Integrity Marketing</div><span class="sh-vendor-badge">Approved</span></div>
             <div class="sh-vendor-desc">Lead solutions from one of the largest insurance distribution platforms in the country.</div>
-            <span class="sh-vendor-tag">Insurance Leads</span>
           </a>
           <a href="https://www.freedomlifeleads.com/" target="_blank" rel="noopener noreferrer" class="sh-vendor-card">
             <div class="sh-vendor-top"><div class="sh-vendor-name">Freedom Life Co</div><span class="sh-vendor-badge">Approved</span></div>
             <div class="sh-vendor-desc">Discount code for 10% off: "DISRUPTIONAGENTS"</div>
-            <span class="sh-vendor-tag">Insurance Leads</span>
           </a>
           <a href="https://caboomleads.com/" target="_blank" rel="noopener noreferrer" class="sh-vendor-card">
             <div class="sh-vendor-top"><div class="sh-vendor-name">Caboom Leads</div><span class="sh-vendor-badge">Approved</span></div>
             <div class="sh-vendor-desc">Contact your upline before ordering to get a first-time discount on leads.</div>
-            <span class="sh-vendor-tag">Insurance Leads</span>
           </a>
         </div>
       </div>
@@ -7989,10 +9598,6 @@
             <a href="state-license-costs.html" class="sh-resource-card">
               <div class="sh-resource-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l8-4v18"/><path d="M19 21V11l-6-4"/></svg></div>
               <div><div class="sh-resource-title">State License Costs</div><div class="sh-resource-desc">Licensing fees by state for insurance agent applications.</div><span class="sh-resource-tag">Reference</span></div>
-            </a>
-            <a href="https://omnisconn.com/" target="_blank" rel="noopener noreferrer" class="sh-resource-card">
-              <div class="sh-resource-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a4 4 0 014 4v1a1 1 0 001 1h1a4 4 0 010 8h-1a1 1 0 00-1 1v1a4 4 0 01-8 0v-1a1 1 0 00-1-1H6a4 4 0 010-8h1a1 1 0 001-1V6a4 4 0 014-4z"/></svg></div>
-              <div><div class="sh-resource-title">OmniSconn</div><div class="sh-resource-desc">AI-powered assistant to help answer insurance-related questions instantly.</div><span class="sh-resource-tag">AI Tool</span></div>
             </a>
             <a href="https://crm.kairos-financial.com" target="_blank" rel="noopener noreferrer" class="sh-resource-card">
               <div class="sh-resource-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div>
@@ -8976,6 +10581,13 @@
       }
       if (panelName === 'teamperf' && typeof window.loadTeamPerf === 'function') {
         try { window.loadTeamPerf(); } catch (e) { console.error('Team Performance load threw:', e); }
+      }
+      const KF_SKIN_PANELS = ['compgrid', 'carriers', 'leadvendors', 'resources', 'training', 'calculator', 'dialtracker'];
+      if (KF_SKIN_PANELS.indexOf(panelName) !== -1) {
+        document.documentElement.setAttribute('data-kf-active', 'true');
+        try { window.kfSkinInit && window.kfSkinInit(panelName); } catch (e) { console.error('kf-skin init failed:', e); }
+      } else {
+        document.documentElement.removeAttribute('data-kf-active');
       }
       try { history.replaceState(null, '', '#' + panelName); } catch (e) { /* ignore */ }
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -19668,6 +21280,52 @@
         if (!bobBookRoot) bobBookRoot = ReactDOM.createRoot(el);
         bobBookRoot.render(<BookOfBusinessView />);
       };
+
+      // ─── KF skin: light/dark toggle for Comp Grid / Carriers / Lead Vendors
+      const KF_SKIN_KEY = 'kf_skin_theme_v1';
+      const KF_SUN_SVG = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>';
+      const KF_MOON_SVG = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>';
+      function kfSkinGetTheme() {
+        try { return localStorage.getItem(KF_SKIN_KEY) || 'dark'; } catch (e) { return 'dark'; }
+      }
+      function kfSkinSetTheme(theme) {
+        try { localStorage.setItem(KF_SKIN_KEY, theme); } catch (e) { /* ignore */ }
+      }
+      function kfSkinApply(theme) {
+        document.documentElement.setAttribute('data-kf-theme', theme);
+        ['compgrid', 'carriers', 'leadvendors', 'resources', 'training', 'calculator', 'dialtracker'].forEach(name => {
+          const panel = document.getElementById('panel-' + name);
+          if (panel) panel.setAttribute('data-kf-theme', theme);
+        });
+        document.querySelectorAll('.kf-skin-theme-toggle').forEach(btn => {
+          btn.innerHTML = theme === 'dark' ? KF_SUN_SVG : KF_MOON_SVG;
+          btn.setAttribute('aria-label', theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
+        });
+      }
+      window.kfSkinInit = function (panelName) {
+        const panel = document.getElementById('panel-' + panelName);
+        if (!panel) return;
+        // Training panel has no .ss-panel-head — attach the toggle directly to the panel.
+        const host = panel.querySelector('.ss-panel-head') || panel;
+        if (!host.querySelector(':scope > .kf-hdr-r')) {
+          const wrap = document.createElement('div');
+          wrap.className = 'kf-hdr-r';
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'kf-skin-theme-toggle';
+          btn.addEventListener('click', () => {
+            const next = kfSkinGetTheme() === 'dark' ? 'light' : 'dark';
+            kfSkinSetTheme(next);
+            kfSkinApply(next);
+          });
+          wrap.appendChild(btn);
+          host.appendChild(wrap);
+        }
+        kfSkinApply(kfSkinGetTheme());
+      };
+      // Apply persisted theme on first paint so the html attribute is set even
+      // before the user navigates to a skinned panel — prevents bg flicker.
+      try { kfSkinApply(kfSkinGetTheme()); } catch (e) { /* ignore */ }
     })();
   </script>
 </body>
