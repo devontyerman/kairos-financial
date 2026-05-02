@@ -6373,7 +6373,10 @@
     /* Cap content width on ultrawide monitors so the heatmap and goal hero
        don't stretch into uncomfortably wide cards. The dark canvas still
        fills the entire .ss-main area; only the inner content is centered. */
-    #tkTrackerRoot > div { max-width: 1480px; margin-left: auto; margin-right: auto; }
+    /* Cap the outer Tracker wrapper so every card on the page (header,
+       Annual Goal hero, heatmap, Deal Status, Top Carriers, KPI Tracker)
+       shares the same max-width and stays visually anchored. */
+    #tkTrackerRoot > div { max-width: 1200px; margin-left: auto; margin-right: auto; }
 
     /* Header */
     #panel-goals .tk-hdr {
@@ -22265,7 +22268,7 @@
 
             <div className="tk-grid tk-grid-12">
               {/* Annual Premium Goal hero */}
-              <div className="tk-card tk-ap-hero" style={{gridColumn:'span 12', maxWidth:1200, marginLeft:'auto', marginRight:'auto', width:'100%'}}>
+              <div className="tk-card tk-ap-hero" style={{gridColumn:'span 12'}}>
                 <div className="tk-card-hd" style={{marginBottom:18}}>
                   <div style={{display:'flex', alignItems:'center', gap:14}}>
                     <div className="tk-card-title">Annual Premium Goal · {today.getFullYear()}</div>
@@ -22356,7 +22359,7 @@
               </div>
 
               {/* Daily Activity Heatmap */}
-              <div className="tk-card" style={{gridColumn:'span 12', maxWidth:1200, marginLeft:'auto', marginRight:'auto', width:'100%'}}>
+              <div className="tk-card" style={{gridColumn:'span 12'}}>
                 <div className="tk-card-hd">
                   <div style={{display:'flex', alignItems:'baseline', gap:14}}>
                     <div className="tk-card-title">Daily Activity Heatmap</div>
