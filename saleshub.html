@@ -20722,9 +20722,44 @@
         };
 
         const toggleAccess = async (uid, current) => {
-          await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?user_id=eq.' + uid, {
-            method: 'PATCH', headers: HDRS_WRITE, body: JSON.stringify({ training_complete: !current })
-          });
+          const next = !current;
+          try {
+            // PATCH the existing row. Ask for a representation back so we
+            // can see whether any rows actually matched — if zero, the
+            // agent doesn't have an agent_profiles row yet (was the silent
+            // bug where Grant kept showing because the PATCH no-op'd).
+            const patchHdrs = Object.assign({}, HDRS_WRITE, { Prefer: 'return=representation' });
+            const r = await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?user_id=eq.' + uid, {
+              method: 'PATCH', headers: patchHdrs, body: JSON.stringify({ training_complete: next })
+            });
+            const rows = r.ok ? await r.json().catch(() => []) : [];
+            if (!r.ok || !Array.isArray(rows) || rows.length === 0) {
+              // Fall back to insert when the row doesn't exist (or the PATCH
+              // 401'd). Use the existing draft data if we have any so we
+              // don't blow away comp_level / agent_name on insert.
+              const prof = profiles.find(p => p.user_id === uid) || {};
+              const ins = await fetch(SUPABASE_URL + '/rest/v1/agent_profiles', {
+                method: 'POST',
+                headers: Object.assign({}, HDRS_WRITE, { Prefer: 'resolution=merge-duplicates,return=minimal' }),
+                body: JSON.stringify({
+                  user_id: uid,
+                  agent_name: prof.agent_name || null,
+                  comp_level: prof.comp_level || null,
+                  training_complete: next
+                })
+              });
+              if (!ins.ok) {
+                const body = await ins.text().catch(() => '');
+                console.error('[grant] insert failed', ins.status, body);
+                try { alert('Could not update access (' + ins.status + '). Open DevTools console for details.'); } catch (_) {}
+                return;
+              }
+            }
+          } catch (err) {
+            console.error('[grant] toggle threw:', err);
+            try { alert('Could not update access — ' + (err.message || err)); } catch (_) {}
+            return;
+          }
           reload();
         };
 
