@@ -6589,7 +6589,52 @@
     #panel-goals .tk-heat-day.empty { background: transparent; }
     #panel-goals .tk-heat-day.future { opacity: 0.25; }
     #panel-goals .tk-heat-day.today { border-color: var(--rb-blue); }
-    #panel-goals .tk-heat-day:hover:not(.empty):not(.future) { transform: scale(1.06); border-color: var(--tk-hairline-strong); }
+    #panel-goals .tk-heat-day { position: relative; }
+    #panel-goals .tk-heat-day:hover:not(.empty):not(.future) { transform: scale(1.06); border-color: var(--tk-hairline-strong); z-index: 5; }
+    #panel-goals .tk-heat-day.clickable:hover:not(.empty):not(.future) { border-color: var(--rb-blue); }
+    #panel-goals .tk-heat-tip {
+      position: absolute; bottom: calc(100% + 8px); left: 50%;
+      transform: translateX(-50%) scale(0.96);
+      transform-origin: bottom center;
+      background: var(--tk-surface-2);
+      border: 1px solid var(--tk-hairline-strong);
+      border-radius: 8px;
+      padding: 10px 12px;
+      min-width: 180px;
+      font-family: var(--tk-mono);
+      font-size: 11px;
+      color: var(--tk-ink-2);
+      box-shadow: 0 12px 32px rgba(0,0,0,0.45);
+      opacity: 0; pointer-events: none;
+      transition: opacity 120ms ease, transform 120ms ease;
+      z-index: 30;
+      white-space: nowrap;
+    }
+    #panel-goals .tk-heat-day:hover:not(.empty):not(.future) .tk-heat-tip {
+      opacity: 1; transform: translateX(-50%) scale(1);
+    }
+    #panel-goals .tk-heat-tip-date {
+      font-family: var(--tk-sans);
+      font-size: 12px; font-weight: 600;
+      color: var(--tk-ink-1);
+      margin-bottom: 8px;
+      letter-spacing: -0.005em;
+    }
+    #panel-goals .tk-heat-tip-rows { display: flex; flex-direction: column; gap: 4px; }
+    #panel-goals .tk-heat-tip-rows > div {
+      display: flex; justify-content: space-between; gap: 14px;
+    }
+    #panel-goals .tk-heat-tip-rows > div span { color: var(--tk-ink-3); }
+    #panel-goals .tk-heat-tip-rows > div b { color: var(--tk-ink-1); font-weight: 500; }
+    #panel-goals .tk-heat-tip-empty { color: var(--tk-ink-3); font-style: italic; }
+    #panel-goals .tk-heat-tip-cta {
+      margin-top: 8px; padding-top: 8px;
+      border-top: 1px solid var(--tk-hairline);
+      color: var(--rb-blue);
+      font-family: var(--tk-mono); font-size: 10px;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      text-align: center;
+    }
     #panel-goals .tk-heat-week-row {
       display: grid; grid-template-columns: repeat(7, 1fr);
       gap: 6px;
@@ -10047,18 +10092,24 @@
       background: #1c1f26 !important;
     }
     .ss-nav-links a svg { color: rgba(243,243,241,0.72); opacity: 0.85; }
-    /* Mobile dropdown links inside the sidebar use the dark palette too */
+    /* Mobile dropdown links inside the sidebar — match the panel buttons
+       exactly so the rail reads as one column with no white pill boxes. */
     .ss-mobile-menu a {
-      background: #16181d !important;
-      border-color: rgba(255,255,255,0.07) !important;
-      color: #f3f3f1 !important;
+      background: transparent !important;
+      border: none !important;
+      color: rgba(243,243,241,0.72) !important;
+      padding: 7px 9px !important;
+      font-size: 16px !important;
+      font-weight: 600 !important;
+      line-height: 1.2 !important;
+      gap: 8px !important;
     }
     .ss-mobile-menu a:hover {
       background: #1c1f26 !important;
       color: #f3f3f1 !important;
-      border-color: rgba(255,255,255,0.13) !important;
+      border: none !important;
     }
-    .ss-mobile-menu a svg { color: rgba(243,243,241,0.72); opacity: 0.85; }
+    .ss-mobile-menu a svg { color: rgba(243,243,241,0.72); opacity: 0.85; width: 18px; height: 18px; }
 
     /* Light-mode flip — when the universal theme is set to light */
     html[data-kf-theme="light"] .ss-sidebar {
@@ -10102,14 +10153,14 @@
     }
     html[data-kf-theme="light"] .ss-nav-links a svg { color: rgba(20,19,15,0.72); opacity: 0.85; }
     html[data-kf-theme="light"] .ss-mobile-menu a {
-      background: #ffffff !important;
-      border-color: rgba(15,12,8,0.08) !important;
-      color: #0a1410 !important;
+      background: transparent !important;
+      border: none !important;
+      color: rgba(20,19,15,0.72) !important;
     }
     html[data-kf-theme="light"] .ss-mobile-menu a:hover {
-      background: rgba(15,12,8,0.04) !important;
+      background: rgba(15,12,8,0.06) !important;
       color: #0a1410 !important;
-      border-color: rgba(15,12,8,0.16) !important;
+      border: none !important;
     }
     html[data-kf-theme="light"] .ss-mobile-menu a svg { color: rgba(20,19,15,0.72); opacity: 0.85; }
   </style>
@@ -21523,17 +21574,19 @@
       }
 
       // ─── Submit KPI modal ──────────────────────────────────────────
-      function SubmitKpiModal({ theme, agentName, userId, onClose, onSaved }) {
+      function SubmitKpiModal({ theme, agentName, userId, onClose, onSaved, initial }) {
         const today = new Date();
         const todayYMD = today.getFullYear() + '-' + String(today.getMonth()+1).padStart(2,'0') + '-' + String(today.getDate()).padStart(2,'0');
-        const [date, setDate] = useState(todayYMD);
-        const [dials, setDials] = useState('');
-        const [answers, setAnswers] = useState('');
-        const [appointments, setAppointments] = useState('');
-        const [presentations, setPresentations] = useState('');
-        const [deals, setDeals] = useState('');
-        const [leadSpend, setLeadSpend] = useState('');
-        const [deposits, setDeposits] = useState('');
+        const init = initial || {};
+        const fld = (v) => (v == null || v === 0) ? '' : String(v);
+        const [date, setDate] = useState(init.date || todayYMD);
+        const [dials, setDials] = useState(fld(init.dials));
+        const [answers, setAnswers] = useState(fld(init.answers));
+        const [appointments, setAppointments] = useState(fld(init.appointments));
+        const [presentations, setPresentations] = useState(fld(init.presentations));
+        const [deals, setDeals] = useState(fld(init.deals));
+        const [leadSpend, setLeadSpend] = useState(fld(init.lead_spend));
+        const [deposits, setDeposits] = useState(fld(init.deposits));
         const [saving, setSaving] = useState(false);
         const [toast, setToast] = useState(null);
 
@@ -21865,7 +21918,7 @@
         if (score >= 125) return 2;
         return 1;
       }
-      function HeatmapMonth({ year, month, kpis, policies, today }) {
+      function HeatmapMonth({ year, month, kpis, policies, today, onDayClick, viewingOther }) {
         // Build a Sun-anchored grid
         const first = new Date(year, month, 1);
         const last = new Date(year, month + 1, 0);
@@ -21876,22 +21929,28 @@
         // BOTH daily_kpis.deals AND the policies table so a policy logged
         // without a matching KPI row still lights the cell up.
         const byDay = {};
+        const rowByDay = {}; // full kpi row per day for click-to-edit
         kpis.forEach(k => {
           if (!k.kpi_date) return;
           const d = parsePolicyDate(k.kpi_date);
           if (!d || d.getFullYear() !== year || d.getMonth() !== month) return;
           const day = d.getDate();
-          const cur = byDay[day] || { dials: 0, pres: 0, deals: 0 };
+          const cur = byDay[day] || { dials: 0, pres: 0, answers: 0, appointments: 0, deals: 0, lead_spend: 0, deposits: 0 };
           cur.dials += (k.dials || 0);
           cur.pres += (k.presentations || 0);
+          cur.answers += (k.answers || 0);
+          cur.appointments += (k.appointments || 0);
           cur.deals += (k.deals || 0);
+          cur.lead_spend += parseFloat(k.lead_spend || 0);
+          cur.deposits += parseFloat(k.deposits || 0);
           byDay[day] = cur;
+          rowByDay[day] = k; // keep raw row so click can pre-populate the modal
         });
         (policies || []).forEach(p => {
           const d = parsePolicyDate(p.policy_date || p.created_at);
           if (!d || d.getFullYear() !== year || d.getMonth() !== month) return;
           const day = d.getDate();
-          const cur = byDay[day] || { dials: 0, pres: 0, deals: 0 };
+          const cur = byDay[day] || { dials: 0, pres: 0, answers: 0, appointments: 0, deals: 0, lead_spend: 0, deposits: 0 };
           cur.deals += 1;
           byDay[day] = cur;
         });
@@ -21923,13 +21982,42 @@
                 const bg = c.lvl === 0
                   ? 'var(--tk-surface-3)'
                   : 'color-mix(in oklch, var(--rb-green) ' + c.bgPct + '%, var(--tk-surface-3))';
-                const cls = 'tk-heat-day' + (c.isFuture ? ' future' : '') + (c.isToday ? ' today' : '');
-                const tip = c.data
-                  ? c.data.dials + ' dials · ' + c.data.pres + ' pres · ' + c.data.deals + ' deals'
-                  : 'No activity';
+                const clickable = !c.isFuture && !viewingOther && typeof onDayClick === 'function';
+                const cls = 'tk-heat-day' +
+                  (c.isFuture ? ' future' : '') +
+                  (c.isToday ? ' today' : '') +
+                  (clickable ? ' clickable' : '');
+                const dateStr = year + '-' + String(month + 1).padStart(2, '0') + '-' + String(c.day).padStart(2, '0');
+                const dateLbl = new Date(year, month, c.day).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+                const onClick = clickable ? () => onDayClick(dateStr, rowByDay[c.day] || null) : undefined;
                 return (
-                  <div key={i} className={cls} style={{background: bg, color: c.lvl >= 4 ? '#0d0e10' : 'var(--tk-ink-3)'}} title={tip}>
+                  <div
+                    key={i}
+                    className={cls}
+                    style={{background: bg, color: c.lvl >= 4 ? '#0d0e10' : 'var(--tk-ink-3)', cursor: clickable ? 'pointer' : 'default'}}
+                    role={clickable ? 'button' : undefined}
+                    tabIndex={clickable ? 0 : undefined}
+                    onClick={onClick}
+                    onKeyDown={clickable ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick(); } } : undefined}
+                  >
                     {c.day}
+                    <div className="tk-heat-tip" role="tooltip">
+                      <div className="tk-heat-tip-date">{dateLbl}</div>
+                      {c.data ? (
+                        <div className="tk-heat-tip-rows">
+                          <div><span>Dials</span><b>{c.data.dials}</b></div>
+                          <div><span>Answers</span><b>{c.data.answers || 0}</b></div>
+                          <div><span>Appts</span><b>{c.data.appointments || 0}</b></div>
+                          <div><span>Pres.</span><b>{c.data.pres}</b></div>
+                          <div><span>Deals</span><b>{c.data.deals}</b></div>
+                          {(c.data.lead_spend || 0) > 0 && <div><span>Lead spend</span><b>${Math.round(c.data.lead_spend).toLocaleString()}</b></div>}
+                          {(c.data.deposits || 0) > 0 && <div><span>Deposits</span><b>${Math.round(c.data.deposits).toLocaleString()}</b></div>}
+                          {clickable && <div className="tk-heat-tip-cta">Click to edit</div>}
+                        </div>
+                      ) : (
+                        <div className="tk-heat-tip-rows"><div className="tk-heat-tip-empty">No activity</div>{clickable && <div className="tk-heat-tip-cta">Click to log</div>}</div>
+                      )}
+                    </div>
                   </div>
                 );
               })}
@@ -21950,6 +22038,7 @@
         const [tf, setTf] = useState('WTD');
         const [showDealModal, setShowDealModal] = useState(false);
         const [showKpiModal, setShowKpiModal] = useState(false);
+        const [kpiInitial, setKpiInitial] = useState(null);
         const [showDaily, setShowDaily] = useState(false);
         const [editingGoal, setEditingGoal] = useState(false);
         const [goalDraft, setGoalDraft] = useState('');
@@ -22383,8 +22472,8 @@
                   </div>
                 </div>
                 <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:32}}>
-                  <HeatmapMonth year={lastMonthStart.getFullYear()} month={lastMonthStart.getMonth()} kpis={kpis} policies={policies} today={today} />
-                  <HeatmapMonth year={today.getFullYear()} month={today.getMonth()} kpis={kpis} policies={policies} today={today} />
+                  <HeatmapMonth year={lastMonthStart.getFullYear()} month={lastMonthStart.getMonth()} kpis={kpis} policies={policies} today={today} viewingOther={viewingOther} onDayClick={(date, row) => { setKpiInitial({ date, dials: row?.dials, answers: row?.answers, appointments: row?.appointments, presentations: row?.presentations, deals: row?.deals, lead_spend: row?.lead_spend, deposits: row?.deposits }); setShowKpiModal(true); }} />
+                  <HeatmapMonth year={today.getFullYear()} month={today.getMonth()} kpis={kpis} policies={policies} today={today} viewingOther={viewingOther} onDayClick={(date, row) => { setKpiInitial({ date, dials: row?.dials, answers: row?.answers, appointments: row?.appointments, presentations: row?.presentations, deals: row?.deals, lead_spend: row?.lead_spend, deposits: row?.deposits }); setShowKpiModal(true); }} />
                 </div>
                 <div style={{marginTop:22, paddingTop:16, borderTop:'1px solid var(--tk-hairline)', display:'grid', gridTemplateColumns:'repeat(4, 1fr)', gap:24}}>
                   <div className="tk-stat"><div className="tk-kpi-lbl">Total Dials</div><div className="v">{fmtNum(heatTotals.dials)}</div><div className="tk-kpi-sub">across 2 months</div></div>
@@ -22560,7 +22649,8 @@
                 theme={theme}
                 agentName={agentProfile.agent_name}
                 userId={agentProfile.user_id}
-                onClose={() => setShowKpiModal(false)}
+                initial={kpiInitial}
+                onClose={() => { setShowKpiModal(false); setKpiInitial(null); }}
                 onSaved={() => reload()}
               />
             )}
