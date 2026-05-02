@@ -6,6 +6,48 @@
   <link rel="icon" type="image/png" href="/KF Transparent.png" />
   <meta name="robots" content="noindex, nofollow" />
   <title>Sales Hub — Kairos Financial</title>
+  <!-- KF skin theme: stamp <html data-kf-theme=…> ASAP and run a global
+       click delegate so every sun/moon toggle on every panel flips both the
+       panel CSS AND the sidebar/logo (driven off `html[data-kf-theme]`).
+       This runs synchronously, before Babel — guarantees the sidebar flips
+       even if the per-panel handler hasn't attached yet on a given panel. -->
+  <script>
+    (function () {
+      var KEY = 'kf_skin_theme_v1';
+      function getTheme() {
+        try { return localStorage.getItem(KEY) || 'dark'; } catch (e) { return 'dark'; }
+      }
+      function setTheme(t) {
+        try { localStorage.setItem(KEY, t); } catch (e) {}
+      }
+      function apply(t) {
+        document.documentElement.setAttribute('data-kf-theme', t);
+        ['compgrid','carriers','leadvendors','resources','training','calculator','dialtracker'].forEach(function (n) {
+          var p = document.getElementById('panel-' + n);
+          if (p) p.setAttribute('data-kf-theme', t);
+        });
+        var SUN = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>';
+        var MOON = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>';
+        document.querySelectorAll('.kf-skin-theme-toggle').forEach(function (b) {
+          b.innerHTML = t === 'dark' ? SUN : MOON;
+          b.setAttribute('aria-label', t === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
+        });
+      }
+      apply(getTheme());
+      document.addEventListener('click', function (e) {
+        var btn = e.target && e.target.closest && e.target.closest('.kf-skin-theme-toggle');
+        if (!btn) return;
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        var next = getTheme() === 'dark' ? 'light' : 'dark';
+        setTheme(next);
+        apply(next);
+      }, true); // capture phase — beats any per-button handler attached later
+      // Re-apply after DOMContentLoaded so toggles injected later get the
+      // correct icon/aria, and the panels (rendered later) get the attr.
+      document.addEventListener('DOMContentLoaded', function () { apply(getTheme()); });
+    })();
+  </script>
   <link rel="preconnect" href="https://esm.sh" crossorigin />
   <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -120,23 +162,26 @@
       text-align: center;
       user-select: none;
     }
-    .ss-sidebar-logo .logo-sales {
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: 26px;
-      font-weight: 900;
-      letter-spacing: 0.22em;
-      color: #1a1a1a;
-      text-shadow: none;
+    .kf-logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      font-weight: 700;
+      font-size: 22px;
+      letter-spacing: -0.02em;
+      line-height: 1;
     }
-    .ss-sidebar-logo .logo-hub {
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: 26px;
-      font-weight: 900;
-      letter-spacing: 0.38em;
-      color: #1a1a1a;
-      text-shadow: none;
-      margin-top: -2px;
-    }
+    .kf-logo-mark { width: 32px; height: 32px; flex-shrink: 0; display: block; }
+    .kf-logo-word { display: inline-flex; align-items: baseline; }
+    .kf-logo-light { display: none; }
+    /* When the global theme flips to light, swap which lockup is shown. */
+    html[data-kf-theme="light"] .kf-logo-dark { display: none; }
+    html[data-kf-theme="light"] .kf-logo-light { display: inline-flex; }
+    .kf-logo-dark .kf-logo-w1 { color: #e8f4ed; }
+    .kf-logo-dark .kf-logo-w2 { color: #5fe09a; }
+    .kf-logo-light .kf-logo-w1 { color: #0a1410; }
+    .kf-logo-light .kf-logo-w2 { color: #1f6e48; }
     .ss-sidebar-header {
       display: flex;
       align-items: center;
@@ -313,11 +358,10 @@
     /* Collapsed sidebar state — icons-only rail. Applies on desktop only;
        on mobile the sidebar is already a top bar and uses a different layout. */
     .ss-sidebar.collapsed { width: 64px; padding: 0 6px 8px; }
-    .ss-sidebar.collapsed .ss-sidebar-logo { padding: 1.4rem 0 1.2rem; }
-    .ss-sidebar.collapsed .ss-sidebar-logo .logo-sales,
-    .ss-sidebar.collapsed .ss-sidebar-logo .logo-hub {
-      font-size: 11px; letter-spacing: 0.16em;
-    }
+    .ss-sidebar.collapsed .ss-sidebar-logo { padding: 1.1rem 0 1rem; }
+    .ss-sidebar.collapsed .kf-logo-word { display: none; }
+    .ss-sidebar.collapsed .kf-logo { gap: 0; }
+    .ss-sidebar.collapsed .kf-logo-mark { width: 30px; height: 30px; }
     /* When collapsed: pull the chevron back into normal column flow so it
        sits between the SALES HUB logo and the settings cog instead of
        floating down beside the cog. */
@@ -4977,6 +5021,37 @@
     #panel-goals .tk-action-btn.blue  { border: 1px solid var(--rb-blue);  background: color-mix(in oklch, var(--rb-blue) 18%, transparent); }
     #panel-goals .tk-action-btn.blue:hover  { background: color-mix(in oklch, var(--rb-blue) 32%, transparent); }
 
+    /* Annual / MTD segmented control on the goal-line chart */
+    #panel-goals .tk-seg {
+      display: inline-flex;
+      background: var(--tk-surface-2);
+      border: 1px solid var(--tk-hairline-strong);
+      border-radius: 100px;
+      padding: 3px;
+      gap: 0;
+    }
+    #panel-goals .tk-seg-btn {
+      appearance: none;
+      background: transparent;
+      color: var(--tk-ink-3);
+      border: none;
+      padding: 6px 16px;
+      border-radius: 100px;
+      font-family: var(--tk-sans);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 120ms;
+    }
+    #panel-goals .tk-seg-btn:hover { color: var(--tk-ink-1); }
+    #panel-goals .tk-seg-btn.active {
+      background: var(--rb-blue);
+      color: var(--tk-bg);
+      box-shadow: 0 1px 6px color-mix(in oklch, var(--rb-blue) 35%, transparent);
+    }
+
     /* Chart wrap + tooltip */
     #panel-goals .tk-chart-wrap { position: relative; width: 100%; }
     #panel-goals .tk-chart-tip {
@@ -8083,11 +8158,8 @@
       .ss-sidebar-logo {
         padding: 0.75rem 0 0.7rem;
       }
-      .ss-sidebar-logo .logo-sales,
-      .ss-sidebar-logo .logo-hub {
-        font-size: 1.3rem;
-        text-shadow: none;
-      }
+      .kf-logo { font-size: 18px; gap: 8px; }
+      .kf-logo-mark { width: 26px; height: 26px; }
       .ss-sidebar-header { position: relative; }
       .ss-sidebar-hamburger { display: flex; }
       /* Collapse only makes sense on desktop — on mobile the sidebar is a
@@ -8095,8 +8167,7 @@
       .ss-sidebar-collapse { display: none; }
       .ss-sidebar.collapsed { width: 100%; padding: 0.5rem 0 0; }
       .ss-sidebar.collapsed .ss-sidebar-logo { padding: 0.75rem 0 0.7rem; }
-      .ss-sidebar.collapsed .ss-sidebar-logo .logo-sales,
-      .ss-sidebar.collapsed .ss-sidebar-logo .logo-hub { font-size: 1.3rem; letter-spacing: 0.22em; }
+      .ss-sidebar.collapsed .kf-logo-word { display: inline-flex; }
       body:has(.ss-sidebar.collapsed) .ss-main { width: 100% !important; margin-left: 0 !important; }
       body:has(.ss-sidebar.collapsed) #panel-teamperf.active { margin: -0.75rem -0.75rem -3rem; }
       .ss-nav-links { display: none; }
@@ -8342,18 +8413,12 @@
       .perf-agent-kpis { grid-template-columns: 1fr 1fr; }
     }
 
-    /* ─── Sidebar: permanent dark mode ──────────────────────────────────
-       Always renders in the same Kairos palette as Tracker / Leaderboard /
-       Team Dashboard so the navigation visually matches the dark dashboards.
-       Light mode for the rest of the page is unchanged. */
+    /* ─── Sidebar: theme-aware via html[data-kf-theme] ───────────────────
+       Default dark, flips to light when the global theme toggle is set. */
     .ss-sidebar {
       background: #0d0e10 !important;
       border-right-color: rgba(255,255,255,0.07) !important;
-    }
-    .ss-sidebar-logo .logo-sales,
-    .ss-sidebar-logo .logo-hub {
-      color: #f3f3f1 !important;
-      text-shadow: none !important;
+      transition: background 120ms ease, border-color 120ms ease;
     }
     .ss-sidebar-btn { color: rgba(243,243,241,0.72) !important; }
     .ss-sidebar-btn svg { color: rgba(243,243,241,0.72); opacity: 0.85; }
@@ -8401,6 +8466,55 @@
       border-color: rgba(255,255,255,0.13) !important;
     }
     .ss-mobile-menu a svg { color: rgba(243,243,241,0.72); opacity: 0.85; }
+
+    /* Light-mode flip — when the universal theme is set to light */
+    html[data-kf-theme="light"] .ss-sidebar {
+      background: #f0f5f2 !important;
+      border-right-color: rgba(15,12,8,0.08) !important;
+    }
+    html[data-kf-theme="light"] .ss-sidebar-btn { color: rgba(20,19,15,0.72) !important; }
+    html[data-kf-theme="light"] .ss-sidebar-btn svg { color: rgba(20,19,15,0.72); opacity: 0.85; }
+    html[data-kf-theme="light"] .ss-sidebar-btn:hover {
+      color: #0a1410 !important;
+      background: rgba(15,12,8,0.06) !important;
+    }
+    html[data-kf-theme="light"] .ss-sidebar-btn:hover svg { color: #0a1410; opacity: 1; }
+    html[data-kf-theme="light"] .ss-sidebar-btn.active {
+      color: #0a1410 !important;
+      background: rgba(15,12,8,0.10) !important;
+      box-shadow: 0 1px 0 rgba(15,12,8,0.05) inset !important;
+    }
+    html[data-kf-theme="light"] .ss-sidebar-btn.active svg { color: #0a1410; opacity: 1; }
+    html[data-kf-theme="light"] .ss-sidebar-user-name { color: #0a1410 !important; }
+    html[data-kf-theme="light"] .ss-sidebar-settings { color: rgba(20,19,15,0.5) !important; }
+    html[data-kf-theme="light"] .ss-sidebar-settings:hover {
+      background: rgba(15,12,8,0.06) !important;
+      color: #0a1410 !important;
+    }
+    html[data-kf-theme="light"] .ss-sidebar-collapse { color: rgba(20,19,15,0.5) !important; }
+    html[data-kf-theme="light"] .ss-sidebar-collapse:hover {
+      color: #0a1410 !important;
+      background: rgba(15,12,8,0.06) !important;
+      border-color: rgba(15,12,8,0.16) !important;
+    }
+    html[data-kf-theme="light"] .ss-sidebar-hamburger span { background: rgba(20,19,15,0.72) !important; }
+    html[data-kf-theme="light"] .ss-nav-links a { color: rgba(20,19,15,0.72) !important; }
+    html[data-kf-theme="light"] .ss-nav-links a:hover {
+      color: #0a1410 !important;
+      background: rgba(15,12,8,0.06) !important;
+    }
+    html[data-kf-theme="light"] .ss-nav-links a svg { color: rgba(20,19,15,0.72); opacity: 0.85; }
+    html[data-kf-theme="light"] .ss-mobile-menu a {
+      background: #ffffff !important;
+      border-color: rgba(15,12,8,0.08) !important;
+      color: #0a1410 !important;
+    }
+    html[data-kf-theme="light"] .ss-mobile-menu a:hover {
+      background: rgba(15,12,8,0.04) !important;
+      color: #0a1410 !important;
+      border-color: rgba(15,12,8,0.16) !important;
+    }
+    html[data-kf-theme="light"] .ss-mobile-menu a svg { color: rgba(20,19,15,0.72); opacity: 0.85; }
   </style>
 
   <!-- Team Performance dashboard — Geist + JetBrains Mono fonts (loaded once,
@@ -8466,8 +8580,32 @@
   <nav class="ss-sidebar" id="ssSidebar">
     <div class="ss-sidebar-header">
       <div class="ss-sidebar-logo">
-        <span class="logo-sales">SALES</span>
-        <span class="logo-hub">HUB</span>
+        <!-- Dark-mode wordmark -->
+        <span class="kf-logo kf-logo-dark" aria-label="Sales Hub">
+          <svg class="kf-logo-mark" viewBox="0 0 200 200" aria-hidden="true">
+            <circle cx="100" cy="100" r="84" fill="#06080a" stroke="#1f3a2c" stroke-width="4"/>
+            <rect x="44" y="118" width="14" height="12" fill="#1f3a2c"/>
+            <rect x="68" y="106" width="14" height="24" fill="#2a5a3e"/>
+            <rect x="92" y="92" width="14" height="38" fill="#2a5a3e"/>
+            <rect x="116" y="76" width="14" height="54" fill="#3a7a54"/>
+            <polyline points="44,118 75,100 100,82 130,60 158,38" fill="none" stroke="#5fe09a" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M 158 38 L 138 38 M 158 38 L 158 58" stroke="#5fe09a" stroke-width="6" stroke-linecap="round" fill="none"/>
+          </svg>
+          <span class="kf-logo-word"><span class="kf-logo-w1">Sales</span><span class="kf-logo-w2">Hub</span></span>
+        </span>
+        <!-- Light-mode wordmark -->
+        <span class="kf-logo kf-logo-light" aria-hidden="true">
+          <svg class="kf-logo-mark" viewBox="0 0 200 200" aria-hidden="true">
+            <circle cx="100" cy="100" r="84" fill="#f0f5f2" stroke="#cad6d0" stroke-width="4"/>
+            <rect x="44" y="118" width="14" height="12" fill="#cad6d0"/>
+            <rect x="68" y="106" width="14" height="24" fill="#a8c0b3"/>
+            <rect x="92" y="92" width="14" height="38" fill="#a8c0b3"/>
+            <rect x="116" y="76" width="14" height="54" fill="#7da890"/>
+            <polyline points="44,118 75,100 100,82 130,60 158,38" fill="none" stroke="#1f6e48" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M 158 38 L 138 38 M 158 38 L 158 58" stroke="#1f6e48" stroke-width="6" stroke-linecap="round" fill="none"/>
+          </svg>
+          <span class="kf-logo-word"><span class="kf-logo-w1">Sales</span><span class="kf-logo-w2">Hub</span></span>
+        </span>
       </div>
       <button class="ss-sidebar-collapse" id="ssCollapseBtn" type="button" aria-label="Collapse sidebar" title="Collapse sidebar">
         <svg class="ss-collapse-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
@@ -17214,7 +17352,7 @@
       // ─── Theme persistence ─────────────────────────────────────────────────
       const TP_THEME_KEY = 'tp_theme_v1';
       const initialTheme = (function () {
-        try { return localStorage.getItem(TP_THEME_KEY) || 'dark'; } catch (e) { return 'dark'; }
+        try { return localStorage.getItem('kf_skin_theme_v1') || localStorage.getItem(TP_THEME_KEY) || 'dark'; } catch (e) { return 'dark'; }
       })();
 
       // ─── Formatters ────────────────────────────────────────────────────────
@@ -18188,6 +18326,8 @@
           const root = document.getElementById('tpatab-performance');
           if (root) root.setAttribute('data-tp-theme', theme);
           try { localStorage.setItem(TP_THEME_KEY, theme); } catch (e) {}
+          document.documentElement.setAttribute('data-kf-theme', theme);
+          try { localStorage.setItem('kf_skin_theme_v1', theme); } catch (e) {}
         }, [theme]);
 
         useEffect(() => {
@@ -18286,6 +18426,8 @@
           const root = document.getElementById('tpatab-agents');
           if (root) root.setAttribute('data-tp-theme', theme);
           try { localStorage.setItem(TP_THEME_KEY, theme); } catch (e) {}
+          document.documentElement.setAttribute('data-kf-theme', theme);
+          try { localStorage.setItem('kf_skin_theme_v1', theme); } catch (e) {}
         }, [theme]);
 
         const reload = async () => {
@@ -18801,6 +18943,8 @@
           const root = document.getElementById('tpatab-policies');
           if (root) root.setAttribute('data-tp-theme', theme);
           try { localStorage.setItem(TP_THEME_KEY, theme); } catch (e) {}
+          document.documentElement.setAttribute('data-kf-theme', theme);
+          try { localStorage.setItem('kf_skin_theme_v1', theme); } catch (e) {}
         }, [theme]);
 
         const reload = async () => {
@@ -19177,7 +19321,7 @@
       const TK_PRODUCT_TYPES = ['Whole Life', 'Term', 'IUL', 'GIWL', 'Health/Accidental'];
 
       function tkInitialTheme() {
-        try { return localStorage.getItem(TK_THEME_KEY) || 'dark'; } catch (e) { return 'dark'; }
+        try { return localStorage.getItem('kf_skin_theme_v1') || localStorage.getItem(TK_THEME_KEY) || 'dark'; } catch (e) { return 'dark'; }
       }
 
       function startOfWeekTk(d) { const x = new Date(d.getFullYear(), d.getMonth(), d.getDate()); x.setDate(x.getDate() - x.getDay()); return x; }
@@ -19498,6 +19642,117 @@
         );
       }
 
+      // ─── MTD line chart (daily progression vs monthly goal) ─────────
+      function MtdLineChart({ policies, goal, color }) {
+        const ref = useRef(null);
+        const [w, setW] = useState(800);
+        const [hover, setHover] = useState(null);
+        const h = 280;
+        useEffect(() => {
+          if (!ref.current) return;
+          const ro = new ResizeObserver(([e]) => setW(e.contentRect.width));
+          ro.observe(ref.current);
+          return () => ro.disconnect();
+        }, []);
+        const today = new Date();
+        const yr = today.getFullYear();
+        const mo = today.getMonth();
+        const daysInMonth = new Date(yr, mo + 1, 0).getDate();
+        const todayDay = today.getDate();
+        // Sum AP per day in current month from policies
+        const dailyAP = new Array(daysInMonth).fill(0);
+        (policies || []).forEach(p => {
+          if (!p || !p.policy_date) return;
+          const d = parsePolicyDate(p.policy_date);
+          if (d.getFullYear() === yr && d.getMonth() === mo) {
+            dailyAP[d.getDate() - 1] += parseFloat(p.annual_premium) || 0;
+          }
+        });
+        // Cumulative through today; null after today (not yet)
+        const cumActual = [];
+        let running = 0;
+        for (let i = 0; i < daysInMonth; i++) {
+          if (i < todayDay) { running += dailyAP[i]; cumActual.push(running); }
+          else cumActual.push(null);
+        }
+        const apMTD = cumActual[todayDay - 1] || 0;
+        // Project the rest of the month based on daily run rate
+        const dailyAvg = todayDay > 0 ? apMTD / todayDay : 0;
+        const projection = cumActual.slice();
+        for (let i = todayDay; i < daysInMonth; i++) projection[i] = apMTD + dailyAvg * (i - todayDay + 1);
+        const pad = { top: 24, right: 16, bottom: 28, left: 64 };
+        const innerW = Math.max(100, w - pad.left - pad.right);
+        const innerH = h - pad.top - pad.bottom;
+        const max = Math.max(goal || 0, projection[daysInMonth - 1] || 0, apMTD, 1) * 1.1;
+        const xs = (i) => pad.left + (i / (daysInMonth - 1)) * innerW;
+        const ys = (v) => pad.top + (1 - v / max) * innerH;
+        const realPoints = cumActual.slice(0, todayDay).map((v, i) => [xs(i), ys(v || 0)]);
+        const projPoints = projection.slice(todayDay - 1).map((v, i) => [xs(i + todayDay - 1), ys(v || 0)]);
+        const realPath = smoothPath(realPoints, 0.5);
+        const projPath = projPoints.length >= 2 ? smoothPath(projPoints, 0.5) : '';
+        const areaPath = realPath ? realPath + ' L ' + xs(todayDay - 1) + ',' + (pad.top + innerH) + ' L ' + xs(0) + ',' + (pad.top + innerH) + ' Z' : '';
+        const grid = [0, 0.25, 0.5, 0.75, 1].map(t => ({ y: pad.top + t * innerH, v: max * (1 - t) }));
+        const goalY = ys(goal || 0);
+        // Axis labels — show ~6 evenly-spaced day numbers + the last day
+        const tickStride = Math.max(1, Math.round(daysInMonth / 6));
+        const tickIdx = [];
+        for (let i = 0; i < daysInMonth; i += tickStride) tickIdx.push(i);
+        if (tickIdx[tickIdx.length - 1] !== daysInMonth - 1) tickIdx.push(daysInMonth - 1);
+        const onMove = (e) => {
+          const rect = ref.current.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const idx = Math.round(((x - pad.left) / innerW) * (daysInMonth - 1));
+          if (idx >= 0 && idx <= daysInMonth - 1) setHover(idx);
+        };
+        return (
+          <div ref={ref} className="tk-chart-wrap" onMouseLeave={() => setHover(null)} onMouseMove={onMove}>
+            <svg width={w} height={h} style={{display:'block'}}>
+              <defs>
+                <linearGradient id="tkMtdGrad" x1="0" x2="0" y1="0" y2="1">
+                  <stop offset="0%" stopColor={color} stopOpacity="0.32" />
+                  <stop offset="100%" stopColor={color} stopOpacity="0" />
+                </linearGradient>
+              </defs>
+              {grid.map((g, i) => (
+                <g key={i}>
+                  <line x1={pad.left} x2={w - pad.right} y1={g.y} y2={g.y} stroke="var(--tk-hairline)" strokeDasharray={i === grid.length - 1 ? '0' : '2 4'} />
+                  <text x={pad.left - 10} y={g.y + 4} textAnchor="end" fill="var(--tk-ink-3)" fontSize="11" fontFamily="var(--tk-mono)">${(g.v / 1000).toFixed(0)}K</text>
+                </g>
+              ))}
+              {goal > 0 && goalY > pad.top && goalY < pad.top + innerH && (
+                <g>
+                  <line x1={pad.left} x2={w - pad.right} y1={goalY} y2={goalY} stroke="var(--tk-ink-2)" strokeDasharray="4 5" opacity="0.5" />
+                  <text x={w - pad.right} y={goalY - 4} textAnchor="end" fill="var(--tk-ink-2)" fontSize="10" fontFamily="var(--tk-mono)" letterSpacing="0.06em">MTD GOAL ${(goal/1000).toFixed(0)}K</text>
+                </g>
+              )}
+              <path d={areaPath} fill="url(#tkMtdGrad)" />
+              <path d={realPath} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              {projPath && <path d={projPath} fill="none" stroke="var(--rb-blue)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="4 5" opacity="0.7" />}
+              <line x1={xs(todayDay - 1)} x2={xs(todayDay - 1)} y1={pad.top} y2={pad.top + innerH} stroke="var(--tk-ink-4)" strokeDasharray="2 4" opacity="0.6" />
+              {tickIdx.map((i) => (
+                <text key={i} x={xs(i)} y={h - 8} textAnchor="middle" fill={(i + 1) === todayDay ? 'var(--tk-ink-1)' : 'var(--tk-ink-3)'} fontSize="11" fontFamily="var(--tk-mono)">{i + 1}</text>
+              ))}
+              {hover !== null && (
+                <g>
+                  <line x1={xs(hover)} x2={xs(hover)} y1={pad.top} y2={pad.top + innerH} stroke="var(--tk-ink-3)" strokeDasharray="2 3" />
+                  <circle cx={xs(hover)} cy={ys(projection[hover] || 0)} r="5" fill="var(--tk-surface)" stroke={hover < todayDay ? color : 'var(--rb-blue)'} strokeWidth="2" />
+                </g>
+              )}
+            </svg>
+            {hover !== null && (
+              <div className="tk-chart-tip" style={{
+                left: Math.min(w - 150, Math.max(0, xs(hover) - 70)),
+                top: ys(projection[hover] || 0) - 60,
+              }}>
+                <div className="tk-chart-tip-lbl">Day {hover + 1} {hover < todayDay ? '· actual' : '· projected'}</div>
+                <div className="tk-chart-tip-val">{fmtCurrency(projection[hover] || 0)}</div>
+                {goal > 0 && <div style={{fontSize:10, color:'var(--tk-ink-3)', marginTop:2}}>{(((projection[hover] || 0) / goal) * 100).toFixed(1)}% of monthly goal</div>}
+              </div>
+            )}
+          </div>
+        );
+      }
+
       // ─── Heatmap (one month) ────────────────────────────────────────
       // Activity scoring rules:
       //   * NOT active (level 0):  < 75 dials AND no presentations AND no sales
@@ -19610,6 +19865,11 @@
         const [showKpiModal, setShowKpiModal] = useState(false);
         const [editingGoal, setEditingGoal] = useState(false);
         const [goalDraft, setGoalDraft] = useState('');
+        // Goal-line chart mode: 'annual' shows the year-cumulative chart with
+        // the annual goal reference line. 'mtd' shows the current month's
+        // daily progression vs. the monthly goal pulled from Weekly Tracker.
+        const [chartMode, setChartMode] = useState('annual');
+        const [monthlyGoal, setMonthlyGoal] = useState(0);
         // Admin-only "view as" — when set, the dashboard renders that
         // agent's stats (read-only). Hidden for everyone else.
         const [viewAsUserId, setViewAsUserId] = useState('');
@@ -19620,6 +19880,8 @@
           const root = document.getElementById('panel-goals');
           if (root) root.setAttribute('data-tk-theme', theme);
           try { localStorage.setItem(TK_THEME_KEY, theme); } catch (e) {}
+          document.documentElement.setAttribute('data-kf-theme', theme);
+          try { localStorage.setItem('kf_skin_theme_v1', theme); } catch (e) {}
         }, [theme]);
 
         // Load the full agent roster once when the admin opens the panel
@@ -19657,9 +19919,22 @@
             // KPIs are keyed by sales_rep name (not user_id)
             const kpisRes2 = await fetch(SUPABASE_URL + '/rest/v1/daily_kpis?select=*&sales_rep=eq.' + encodeURIComponent(profile.agent_name) + '&order=kpi_date.desc&limit=2000', { headers: HDRS });
             const kpisData = kpisRes2.ok ? await kpisRes2.json() : [];
+            // Monthly AP goal — pulled from Weekly Tracker (wt_monthly_ap_goals).
+            // month_start is the first day of the current month, YYYY-MM-DD.
+            const now = new Date();
+            const monthStart = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-01';
+            let mGoal = 0;
+            try {
+              const mgRes = await fetch(SUPABASE_URL + '/rest/v1/wt_monthly_ap_goals?select=ap_goal&month_start=eq.' + monthStart + '&sales_rep=eq.' + encodeURIComponent(profile.agent_name) + '&limit=1', { headers: HDRS });
+              if (mgRes.ok) {
+                const rows = await mgRes.json();
+                if (rows && rows.length > 0 && rows[0].ap_goal != null) mGoal = parseFloat(rows[0].ap_goal) || 0;
+              }
+            } catch (e) { /* best-effort */ }
             setAgentProfile(profile);
             setPolicies(policiesData);
             setKpis(kpisData);
+            setMonthlyGoal(mGoal);
             setLoading(false);
           } catch (e) {
             console.error('Tracker load failed:', e);
@@ -19965,11 +20240,26 @@
                     {goal === 0 && <span>Set an annual premium goal to start tracking pace</span>}
                   </div>
                 </div>
-                <GoalLineChart monthlyValues={monthlyPremium} currentMonthIdx={today.getMonth()} goal={goal} color={paceColor} />
+                <div className="tk-chart-mode" style={{display:'flex', alignItems:'center', justifyContent:'space-between', gap:12, flexWrap:'wrap', marginBottom:10}}>
+                  <div className="tk-card-meta" style={{fontFamily:'var(--tk-mono)', fontSize:11, color:'var(--tk-ink-3)', letterSpacing:'0.06em', textTransform:'uppercase'}}>
+                    {chartMode === 'mtd'
+                      ? (monthlyGoal > 0
+                          ? <>MTD goal <b style={{color:'var(--tk-ink-1)'}}>{fmtCurrency(monthlyGoal, {compact:true})}</b> · pulled from Weekly Tracker</>
+                          : <>No monthly goal set in Weekly Tracker for this month</>)
+                      : <>Year cumulative · pace vs annual target</>}
+                  </div>
+                  <div className="tk-seg" role="tablist" aria-label="Chart goal mode">
+                    <button type="button" className={'tk-seg-btn' + (chartMode === 'annual' ? ' active' : '')} onClick={() => setChartMode('annual')}>Annual</button>
+                    <button type="button" className={'tk-seg-btn' + (chartMode === 'mtd' ? ' active' : '')} onClick={() => setChartMode('mtd')}>MTD</button>
+                  </div>
+                </div>
+                {chartMode === 'mtd'
+                  ? <MtdLineChart policies={policies} goal={monthlyGoal} color={paceColor} />
+                  : <GoalLineChart monthlyValues={monthlyPremium} currentMonthIdx={today.getMonth()} goal={goal} color={paceColor} />}
                 <div style={{marginTop:14, paddingTop:14, borderTop:'1px solid var(--tk-hairline)', display:'flex', alignItems:'center', gap:22, flexWrap:'wrap', fontFamily:'var(--tk-mono)', fontSize:11, color:'var(--tk-ink-3)'}}>
                   <span><span style={{display:'inline-block', width:18, height:2, background:paceColor, marginRight:6, verticalAlign:'middle', borderRadius:1}}></span>Cumulative actual</span>
-                  <span><span style={{display:'inline-block', width:18, height:2, background:'repeating-linear-gradient(to right, var(--rb-blue) 0 5px, transparent 5px 10px)', marginRight:6, verticalAlign:'middle'}}></span>Projected to year-end</span>
-                  {goal > 0 && <span><span style={{display:'inline-block', width:18, height:2, background:'repeating-linear-gradient(to right, var(--tk-ink-2) 0 4px, transparent 4px 9px)', marginRight:6, verticalAlign:'middle'}}></span>Annual goal</span>}
+                  <span><span style={{display:'inline-block', width:18, height:2, background:'repeating-linear-gradient(to right, var(--rb-blue) 0 5px, transparent 5px 10px)', marginRight:6, verticalAlign:'middle'}}></span>{chartMode === 'mtd' ? 'Projected to month-end' : 'Projected to year-end'}</span>
+                  {((chartMode === 'mtd' ? monthlyGoal : goal) > 0) && <span><span style={{display:'inline-block', width:18, height:2, background:'repeating-linear-gradient(to right, var(--tk-ink-2) 0 4px, transparent 4px 9px)', marginRight:6, verticalAlign:'middle'}}></span>{chartMode === 'mtd' ? 'Monthly goal' : 'Annual goal'}</span>}
                 </div>
               </div>
 
@@ -20158,7 +20448,7 @@
       // ─── LEADERBOARD (claude.ai/design — wired to Supabase) ──────────
       const LB_THEME_KEY = 'lb_theme_v1';
       function lbInitialTheme() {
-        try { return localStorage.getItem(LB_THEME_KEY) || 'dark'; } catch (e) { return 'dark'; }
+        try { return localStorage.getItem('kf_skin_theme_v1') || localStorage.getItem(LB_THEME_KEY) || 'dark'; } catch (e) { return 'dark'; }
       }
       const LB_PERIODS = [
         { key: 'TODAY',     label: 'Today' },
@@ -20230,6 +20520,8 @@
           const root = document.getElementById('panel-leaderboard');
           if (root) root.setAttribute('data-lb-theme', theme);
           try { localStorage.setItem(LB_THEME_KEY, theme); } catch (e) {}
+          document.documentElement.setAttribute('data-kf-theme', theme);
+          try { localStorage.setItem('kf_skin_theme_v1', theme); } catch (e) {}
         }, [theme]);
 
         const reload = async () => {
@@ -20498,7 +20790,7 @@
         { id: 'custom',    label: 'Custom range' },
       ];
       function bobInitialTheme() {
-        try { return localStorage.getItem(BOB_THEME_KEY) || 'dark'; } catch (e) { return 'dark'; }
+        try { return localStorage.getItem('kf_skin_theme_v1') || localStorage.getItem(BOB_THEME_KEY) || 'dark'; } catch (e) { return 'dark'; }
       }
       function bobInTimeframe(date, tf, customFrom, customTo) {
         if (tf === 'all' || !date) return true;
@@ -20760,6 +21052,8 @@
           const root = document.getElementById('panel-policies');
           if (root) root.setAttribute('data-bob-theme', theme);
           try { localStorage.setItem(BOB_THEME_KEY, theme); } catch (e) {}
+          document.documentElement.setAttribute('data-kf-theme', theme);
+          try { localStorage.setItem('kf_skin_theme_v1', theme); } catch (e) {}
         }, [theme]);
 
         const reload = async () => {
