@@ -4521,9 +4521,19 @@
       #panel-goals.active .tk-grid > [style*="span 3"] { grid-column: span 6 !important; }
     }
     @media (max-width: 768px) {
-      #panel-goals.active .tk-grid { grid-template-columns: 1fr !important; gap: 12px !important; }
-      #panel-goals.active .tk-grid > * { grid-column: 1 / -1 !important; }
-      #panel-goals.active .tk-card { padding: 16px 14px !important; }
+      /* Re-anchor the full-bleed margin so the canvas matches mobile .ss-main
+         padding (0.75rem) — desktop -2rem horizontal margin pulled the panel
+         offscreen to the left, leaving content un-centered. */
+      #panel-goals.active {
+        margin: -0.75rem -0.75rem -3rem !important;
+        padding: 18px 14px 32px !important;
+        min-height: calc(100vh - 0.75rem) !important;
+      }
+      #tkTrackerRoot { width: 100%; }
+      #tkTrackerRoot > div { max-width: 100% !important; margin: 0 !important; padding: 0 !important; }
+      #panel-goals.active .tk-grid { grid-template-columns: 1fr !important; gap: 12px !important; width: 100% !important; }
+      #panel-goals.active .tk-grid > * { grid-column: 1 / -1 !important; max-width: 100% !important; }
+      #panel-goals.active .tk-card { padding: 16px 14px !important; width: 100%; }
       #panel-goals.active .tk-card-hd { flex-direction: column; align-items: flex-start; gap: 8px; }
       #panel-goals.active .tk-hdr { flex-direction: column; align-items: flex-start; gap: 12px; }
       #panel-goals.active .tk-hdr-r { width: 100%; flex-wrap: wrap; }
@@ -4537,16 +4547,36 @@
       #panel-teamperf.active .tp-kpi-grid { grid-template-columns: 1fr 1fr !important; }
     }
     @media (max-width: 768px) {
+      /* Force every React-rendered child of the dashboard to fill the panel
+         width and ignore any inline `gridColumn: span N` that was sized for
+         the desktop 12-col grid (those would otherwise stay narrow). */
+      #panel-teamperf.active #tpDashboardRoot,
+      #panel-teamperf.active #tpAgentsRoot,
+      #panel-teamperf.active #tpPoliciesRoot { width: 100% !important; }
+      #panel-teamperf.active .tp-grid,
+      #panel-teamperf.active .tp-grid-12 {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+        width: 100% !important;
+        margin: 0 !important;
+      }
+      #panel-teamperf.active .tp-grid > *,
+      #panel-teamperf.active .tp-grid-12 > * {
+        grid-column: 1 / -1 !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+      }
       #panel-teamperf.active .tp-kpi-grid { grid-template-columns: 1fr !important; gap: 8px !important; }
       #panel-teamperf.active .tp-kpi-cell { padding: 14px !important; }
-      #panel-teamperf.active .tp-card { padding: 14px !important; }
+      #panel-teamperf.active .tp-card { padding: 14px !important; width: 100% !important; }
       #panel-teamperf.active .tp-admin-tabs,
       #panel-teamperf.active .tp-tabs { overflow-x: auto; flex-wrap: nowrap !important; -webkit-overflow-scrolling: touch; }
       #panel-teamperf.active .tp-admin-tab { flex-shrink: 0; white-space: nowrap; }
-      #panel-teamperf.active .tp-grid,
-      #panel-teamperf.active [class*="tp-policies"] table { display: block; }
+      #panel-teamperf.active [class*="tp-policies"] table { display: block; width: 100%; }
       /* Card-stack table rows */
       #panel-teamperf.active table.tp-policies-table thead { display: none; }
+      #panel-teamperf.active table.tp-policies-table tbody { display: block; width: 100%; }
       #panel-teamperf.active table.tp-policies-table tr { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 12px; padding: 12px 14px; border-top: 1px solid var(--kf-hairline); }
       #panel-teamperf.active table.tp-policies-table td { display: flex; justify-content: space-between; padding: 0 !important; border: none !important; font-size: 12px; }
       #panel-teamperf.active table.tp-policies-table td::before {
@@ -9694,6 +9724,13 @@
     }
     .ss-sidebar-btn { color: rgba(243,243,241,0.72) !important; }
     .ss-sidebar-btn svg { color: rgba(243,243,241,0.72); opacity: 0.85; }
+    /* Force the sidebar btn background to follow the dark theme so the
+       mobile-only `background: #f8f8fa` rule below 768px can't leave white
+       text sitting on a white pill. */
+    .ss-sidebar-btn {
+      background: transparent !important;
+      border-color: rgba(255,255,255,0.07) !important;
+    }
     .ss-sidebar-btn:hover {
       color: #f3f3f1 !important;
       background: #1c1f26 !important;
@@ -9744,7 +9781,11 @@
       background: #f0f5f2 !important;
       border-right-color: rgba(15,12,8,0.08) !important;
     }
-    html[data-kf-theme="light"] .ss-sidebar-btn { color: rgba(20,19,15,0.72) !important; }
+    html[data-kf-theme="light"] .ss-sidebar-btn {
+      color: rgba(20,19,15,0.72) !important;
+      background: transparent !important;
+      border-color: rgba(15,12,8,0.08) !important;
+    }
     html[data-kf-theme="light"] .ss-sidebar-btn svg { color: rgba(20,19,15,0.72); opacity: 0.85; }
     html[data-kf-theme="light"] .ss-sidebar-btn:hover {
       color: #0a1410 !important;
