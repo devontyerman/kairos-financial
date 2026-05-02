@@ -12186,6 +12186,7 @@
     let accessToken = null;
 
     // ─── CONFIRM MODAL HELPER ───
+    window.showConfirmModal = showConfirmModal; // expose for React IIFEs (Agent Profiles, etc.)
     function showConfirmModal({ title, message, confirmText = 'Confirm', cancelText = 'Cancel', variant = 'info', icon = '⚠️' }) {
       return new Promise((resolve) => {
         const overlay = document.getElementById('ssConfirmOverlay');
@@ -20755,6 +20756,21 @@
 
         const toggleAccess = async (uid, current) => {
           const next = !current;
+          const prof = profiles.find(p => p.user_id === uid) || {};
+          const who = prof.agent_name || 'this agent';
+          if (typeof window.showConfirmModal === 'function') {
+            const ok = await window.showConfirmModal({
+              title: next ? 'Grant access?' : 'Revoke access?',
+              message: next
+                ? 'Grant ' + who + ' full Sales Hub access? They\u2019ll be able to log deals, KPIs, and view all panels.'
+                : 'Revoke ' + who + '\u2019s access? They\u2019ll be locked back into the training gate until you grant again.',
+              confirmText: next ? 'Grant access' : 'Revoke access',
+              cancelText: 'Cancel',
+              variant: next ? 'info' : 'danger',
+              icon: next ? '\u2713' : '\u26A0\uFE0F'
+            });
+            if (!ok) return;
+          }
           try {
             // PATCH the existing row. Ask for a representation back so we
             // can see whether any rows actually matched — if zero, the
