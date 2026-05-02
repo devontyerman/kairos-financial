@@ -2184,7 +2184,9 @@
     #tpatab-performance .tp-lb-table tbody td:first-child, #tpatab-agents .tp-lb-table tbody td:first-child, #tpatab-policies .tp-lb-table tbody td:first-child { padding-left: 22px; }
     #tpatab-performance .tp-lb-table tbody td:last-child, #tpatab-agents .tp-lb-table tbody td:last-child, #tpatab-policies .tp-lb-table tbody td:last-child { padding-right: 22px; text-align: right; }
     #tpatab-performance .tp-lb-table tbody td.num, #tpatab-agents .tp-lb-table tbody td.num, #tpatab-policies .tp-lb-table tbody td.num { text-align: right; font-family: var(--tp-mono); }
-    #tpatab-performance .tp-agt-cell, #tpatab-agents .tp-agt-cell, #tpatab-policies .tp-agt-cell { display: flex; align-items: center; gap: 10px; }
+    #tpatab-performance .tp-agt-cell, #tpatab-agents .tp-agt-cell, #tpatab-policies .tp-agt-cell { display: flex; align-items: center; justify-content: flex-start; gap: 10px; text-align: left; }
+    #tpatab-performance .tp-lb-table tbody td:first-child, #tpatab-agents .tp-lb-table tbody td:first-child, #tpatab-policies .tp-lb-table tbody td:first-child { text-align: left !important; }
+    #tpatab-performance .tp-agt-name, #tpatab-agents .tp-agt-name, #tpatab-policies .tp-agt-name { text-align: left; }
     #tpatab-performance .tp-avatar, #tpatab-agents .tp-avatar, #tpatab-policies .tp-avatar {
       width: 28px; height: 28px; min-width: 28px; min-height: 28px;
       border-radius: 99px; flex-shrink: 0; aspect-ratio: 1 / 1;
@@ -20193,7 +20195,18 @@
           series = dayBuckets;
           labels = Array.from({length: totalDays}, (_, i) => String(i + 1));
           total = view.ap;
-          prior = (scope.monthly || [])[(scope.monthly || []).length - 2] || 0;
+          // Apples-to-apples comparison: prior = last month's AP through the same day-of-month.
+          // Comparing full-month last vs MTD this is misleading early in the month.
+          const dayOfMonthCur = today.getDate();
+          const lastMonthStart = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+          const lastMonthSameDayEnd = new Date(today.getFullYear(), today.getMonth() - 1, dayOfMonthCur, 23, 59, 59);
+          prior = 0;
+          (scope.policies || []).forEach(p => {
+            const d = parsePolicyDate(p.policy_date || p.created_at);
+            if (d && d >= lastMonthStart && d <= lastMonthSameDayEnd) {
+              prior += parseFloat(p.annual_premium || 0);
+            }
+          });
           label = 'Month-to-date';
         } else {
           // YTD: chart spans Jan → Dec of the current year. Past + current
@@ -20237,7 +20250,7 @@
           label = 'Year-to-date';
         }
         const delta = prior ? ((total - prior) / prior) * 100 : 0;
-        const deltaLabel = timeframe === 'WTD' ? 'vs last week' : timeframe === 'MTD' ? 'vs last month' : 'vs same point last year';
+        const deltaLabel = timeframe === 'WTD' ? 'vs last week' : timeframe === 'MTD' ? 'vs last month (same day)' : 'vs same point last year';
         const isTeam = scope.id === '__team__';
         return (
           <div className="tp-card tp-ap-hero">
@@ -22642,13 +22655,23 @@
               <div className="tk-card tk-ap-hero" style={{gridColumn:'span 12'}}>
                 <div className="tk-card-hd" style={{marginBottom:18}}>
                   <div style={{display:'flex', alignItems:'center', gap:14}}>
-                    <div className="tk-card-title">Annual Premium Goal · {today.getFullYear()}</div>
-                    <div className="tk-card-meta">{Math.round(expectedPct)}% of year elapsed</div>
+                    <div className="tk-card-title">
+                      {chartMode === 'mtd'
+                        ? 'Monthly Premium Goal · ' + today.toLocaleString('en-US', {month:'long'}) + ' ' + today.getFullYear()
+                        : 'Annual Premium Goal · ' + today.getFullYear()}
+                    </div>
+                    <div className="tk-card-meta">
+                      {chartMode === 'mtd'
+                        ? Math.round(expectedMonthPct) + '% of month elapsed'
+                        : Math.round(expectedPct) + '% of year elapsed'}
+                    </div>
                   </div>
                   <div style={{display:'flex', alignItems:'center', gap:12}}>
                     <div className="tk-card-meta" style={{display:'flex', alignItems:'center', gap:6}}>
-                      <span className="tk-dot" style={{background: paceColor}}></span>
-                      {pace >= -2 ? 'On pace' : pace >= -8 ? 'Slightly behind' : 'Behind'}
+                      <span className="tk-dot" style={{background: chartMode === 'mtd' ? monthlyPaceColor : paceColor}}></span>
+                      {chartMode === 'mtd'
+                        ? (monthlyPace >= -2 ? 'On pace' : monthlyPace >= -8 ? 'Slightly behind' : 'Behind')
+                        : (pace >= -2 ? 'On pace' : pace >= -8 ? 'Slightly behind' : 'Behind')}
                     </div>
                     {!viewingOther && (
                       <button className="tk-action-btn green" onClick={() => setShowDealModal(true)}>
@@ -22663,7 +22686,7 @@
                     <>
                       <div className="tk-ap-num">
                         {fmtCurrency(apMTD, {compact:true})}
-                        <span style={{color:'var(--tk-ink-4)', fontSize:22, marginLeft:10}}>
+                        <span style={{color:'var(--rb-green)', fontSize:'1em', marginLeft:10, fontWeight:'inherit'}}>
                           / {editingMonthlyGoal ? (
                             <input
                               autoFocus
@@ -22690,9 +22713,6 @@
                             </span>
                           )}
                         </span>
-                        <span style={{fontFamily:'var(--tk-mono)', fontSize:16, color:'var(--tk-ink-3)', marginLeft:14}}>
-                          {monthlyGoal > 0 ? monthlyGoalPct.toFixed(1) + '%' : ''}
-                        </span>
                       </div>
                       <div className="tk-ap-num-sub">
                         {monthlyGoal > 0 && (
@@ -22712,7 +22732,7 @@
                     <>
                       <div className="tk-ap-num">
                         {fmtCurrency(apYTD, {compact:true})}
-                        <span style={{color:'var(--tk-ink-4)', fontSize:22, marginLeft:10}}>
+                        <span style={{color:'var(--rb-green)', fontSize:'1em', marginLeft:10, fontWeight:'inherit'}}>
                           / {editingGoal ? (
                             <input
                               autoFocus
@@ -22739,9 +22759,6 @@
                             </span>
                           )}
                         </span>
-                        <span style={{fontFamily:'var(--tk-mono)', fontSize:16, color:'var(--tk-ink-3)', marginLeft:14}}>
-                          {goal > 0 ? goalPct.toFixed(1) + '%' : ''}
-                        </span>
                       </div>
                       <div className="tk-ap-num-sub">
                         {goal > 0 && (
@@ -22759,14 +22776,7 @@
                     </>
                   )}
                 </div>
-                <div className="tk-chart-mode" style={{display:'flex', alignItems:'center', justifyContent:'space-between', gap:12, flexWrap:'wrap', marginBottom:10}}>
-                  <div className="tk-card-meta" style={{fontFamily:'var(--tk-mono)', fontSize:11, color:'var(--tk-ink-3)', letterSpacing:'0.06em', textTransform:'uppercase'}}>
-                    {chartMode === 'mtd'
-                      ? (monthlyGoal > 0
-                          ? <>MTD goal <b style={{color:'var(--tk-ink-1)'}}>{fmtCurrency(monthlyGoal, {compact:true})}</b> · pulled from Weekly Tracker</>
-                          : <>No monthly goal set in Weekly Tracker for this month</>)
-                      : <>Year cumulative · pace vs annual target</>}
-                  </div>
+                <div className="tk-chart-mode" style={{display:'flex', alignItems:'center', justifyContent:'flex-end', gap:12, flexWrap:'wrap', marginBottom:10}}>
                   <div className="tk-seg" role="tablist" aria-label="Chart goal mode">
                     <button type="button" className={'tk-seg-btn' + (chartMode === 'annual' ? ' active' : '')} onClick={() => setChartMode('annual')}>Annual</button>
                     <button type="button" className={'tk-seg-btn' + (chartMode === 'mtd' ? ' active' : '')} onClick={() => setChartMode('mtd')}>MTD</button>
@@ -24057,7 +24067,7 @@
                               <td>
                                 <div className="bob-cell-client">
                                   <span className="name">{p.client_name || '—'}</span>
-                                  <span className="phone">{p.phone || '—'}</span>
+                                  <span className="phone">{p.phone ? <a href={'tel:' + p.phone.replace(/\D/g,'')}>{p.phone}</a> : '—'}</span>
                                 </div>
                               </td>
                               <td className="num">{fmtCurrency(parseFloat(p.annual_premium || 0))}</td>
