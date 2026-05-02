@@ -12389,6 +12389,10 @@
       // IIFE) can read the current user — `let currentUser` is module-scoped
       // and not visible across script tags.
       window.currentUser = currentUser;
+      // accessToken is also module-scoped; mirror it so admin write paths in
+      // the React IIFEs (Agent Profiles Grant/Save, etc.) authenticate as the
+      // signed-in user instead of falling back to the anon key.
+      window.accessToken = accessToken;
       if (currentUser) {
         const name = currentUser.user_metadata?.name || currentUser.email;
         authName.textContent = name;
