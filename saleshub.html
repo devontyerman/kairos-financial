@@ -6674,6 +6674,90 @@
     @media (max-width: 1100px) {
       #panel-goals .tk-kpi-grid { grid-template-columns: repeat(3, 1fr) !important; }
     }
+
+    /* Daily Breakdown — collapsible per-day KPI table */
+    #panel-goals .tk-daily-toggle {
+      appearance: none;
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 6px 12px;
+      background: var(--tk-surface-2);
+      border: 1px solid var(--tk-hairline-strong);
+      border-radius: 100px;
+      color: var(--tk-ink-2);
+      font-family: var(--tk-mono);
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: color 120ms, background 120ms, border-color 120ms;
+    }
+    #panel-goals .tk-daily-toggle:hover { color: var(--tk-ink-1); border-color: var(--tk-ink-3); }
+    #panel-goals .tk-daily-toggle svg { transition: transform 200ms ease; }
+    #panel-goals .tk-daily-toggle.on { color: var(--tk-ink-1); border-color: var(--rb-blue); background: color-mix(in oklch, var(--rb-blue) 14%, transparent); }
+    #panel-goals .tk-daily-toggle.on svg { transform: rotate(180deg); }
+    #panel-goals .tk-daily-wrap {
+      display: grid;
+      grid-template-rows: 0fr;
+      transition: grid-template-rows 280ms cubic-bezier(0.2, 0, 0, 1);
+    }
+    #panel-goals .tk-daily-wrap.open { grid-template-rows: 1fr; margin-top: 14px; }
+    #panel-goals .tk-daily-wrap > * { overflow: hidden; min-height: 0; }
+    #panel-goals .tk-daily-empty {
+      padding: 24px 16px;
+      text-align: center;
+      color: var(--tk-ink-3);
+      font-family: var(--tk-mono); font-size: 12px;
+      border: 1px dashed var(--tk-hairline-strong);
+      border-radius: var(--tk-radius);
+    }
+    #panel-goals .tk-daily-scroll {
+      border: 1px solid var(--tk-hairline);
+      border-radius: var(--tk-radius);
+      overflow: auto;
+      max-height: 440px;
+      background: var(--tk-bg);
+    }
+    #panel-goals .tk-daily-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: var(--tk-mono);
+      font-variant-numeric: tabular-nums;
+    }
+    #panel-goals .tk-daily-table thead th {
+      position: sticky; top: 0;
+      background: var(--tk-surface-2);
+      color: var(--tk-ink-3);
+      font-family: var(--tk-mono);
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      text-align: left;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--tk-hairline);
+      white-space: nowrap;
+    }
+    #panel-goals .tk-daily-table thead th.num { text-align: right; }
+    #panel-goals .tk-daily-table tbody td {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--tk-hairline);
+      color: var(--tk-ink-2);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+    #panel-goals .tk-daily-table tbody td.dt-date { color: var(--tk-ink-1); font-family: var(--tk-sans); font-weight: 500; }
+    #panel-goals .tk-daily-table tbody td.num { text-align: right; }
+    #panel-goals .tk-daily-table tbody td.pos { color: var(--rb-green); font-weight: 600; }
+    #panel-goals .tk-daily-table tbody tr:last-child td { border-bottom: 0; }
+    #panel-goals .tk-daily-table tbody tr:hover td { background: var(--tk-surface-2); }
+    @media (max-width: 768px) {
+      #panel-goals.active .tk-daily-table thead th:nth-child(3),
+      #panel-goals.active .tk-daily-table thead th:nth-child(4),
+      #panel-goals.active .tk-daily-table thead th:nth-child(5),
+      #panel-goals.active .tk-daily-table tbody td:nth-child(3),
+      #panel-goals.active .tk-daily-table tbody td:nth-child(4),
+      #panel-goals.active .tk-daily-table tbody td:nth-child(5) { display: none; }
+    }
     @media (max-width: 768px) {
       #panel-goals.active { margin: -0.75rem -0.75rem -3rem; padding: 16px 12px 24px; min-height: calc(100vh - 0.75rem); }
       #panel-goals .tk-hdr { flex-direction: column; align-items: flex-start; gap: 12px; }
@@ -15927,8 +16011,10 @@
       try {
         const kpiRes = await fetch(SUPABASE_URL + '/rest/v1/daily_kpis?user_id=eq.' + currentUser.id + '&select=kpi_date,deposits&order=kpi_date.desc', { headers: hdrs });
         const allKpis = await kpiRes.json() || [];
-        // Exclude the 15 most recent daily KPI entries from the Total Paid
-        pipelineAllDeposits = allKpis.slice(15);
+        // Total Paid sums every deposit the user has logged. (Previously
+        // sliced off the 15 most recent rows, which silently hid recent
+        // deposits from the dashboard.)
+        pipelineAllDeposits = allKpis;
 
         const polRes = await fetch(SUPABASE_URL + '/rest/v1/policies?user_id=eq.' + currentUser.id + '&select=*', { headers: hdrs });
         pipelineAllPolicies = await polRes.json() || [];
@@ -21214,11 +21300,14 @@
         const submit = async () => {
           setSaving(true);
           try {
-            // Upsert by (sales_rep, kpi_date) — same pattern as the existing
-            // Sales Hub KPI form. We POST with on_conflict resolution so a
-            // second log on the same day overwrites cleanly.
-            const body = {
-              user_id: userId || null,
+            // Match the existing Sales Hub KPI form: PATCH first by
+            // (user_id, kpi_date) — that's the actual unique constraint on
+            // daily_kpis. Fall back to POST when no row exists yet.
+            // The previous on_conflict=sales_rep,kpi_date upsert path was
+            // throwing 400 because that combo isn't the table's unique key.
+            if (!userId) throw new Error('not signed in');
+            const baseBody = {
+              user_id: userId,
               sales_rep: agentName,
               kpi_date: date,
               dials: num(dials),
@@ -21228,13 +21317,26 @@
               deals: num(deals),
               lead_spend: num(leadSpend),
               deposits: num(deposits),
+              updated_at: new Date().toISOString(),
             };
-            const res = await fetch(SUPABASE_URL + '/rest/v1/daily_kpis?on_conflict=sales_rep,kpi_date', {
-              method: 'POST',
-              headers: Object.assign({}, HDRS_WRITE, { Prefer: 'resolution=merge-duplicates,return=minimal' }),
-              body: JSON.stringify(body)
-            });
-            if (!res.ok) throw new Error('save failed (' + res.status + ')');
+            const patchRes = await fetch(
+              SUPABASE_URL + '/rest/v1/daily_kpis?user_id=eq.' + encodeURIComponent(userId) + '&kpi_date=eq.' + encodeURIComponent(date),
+              {
+                method: 'PATCH',
+                headers: Object.assign({}, HDRS_WRITE, { Prefer: 'return=representation' }),
+                body: JSON.stringify(baseBody)
+              }
+            );
+            if (!patchRes.ok) throw new Error('patch failed (' + patchRes.status + ') ' + (await patchRes.text().catch(() => '')));
+            const patchRows = await patchRes.json().catch(() => []);
+            if (!Array.isArray(patchRows) || patchRows.length === 0) {
+              const insRes = await fetch(SUPABASE_URL + '/rest/v1/daily_kpis', {
+                method: 'POST',
+                headers: Object.assign({}, HDRS_WRITE, { Prefer: 'return=minimal' }),
+                body: JSON.stringify(baseBody)
+              });
+              if (!insRes.ok) throw new Error('insert failed (' + insRes.status + ') ' + (await insRes.text().catch(() => '')));
+            }
             setToast({ kind: 'ok', msg: '✓ KPIs logged' });
             setTimeout(() => { onSaved(); onClose(); }, 700);
           } catch (e) {
@@ -21607,6 +21709,7 @@
         const [tf, setTf] = useState('WTD');
         const [showDealModal, setShowDealModal] = useState(false);
         const [showKpiModal, setShowKpiModal] = useState(false);
+        const [showDaily, setShowDaily] = useState(false);
         const [editingGoal, setEditingGoal] = useState(false);
         const [goalDraft, setGoalDraft] = useState('');
         // Goal-line chart mode: 'annual' shows the year-cumulative chart with
@@ -22042,6 +22145,68 @@
                   <div className="tk-stat"><div className="tk-kpi-lbl">Active Days</div><div className="v">{activeDays} / {totalHeatDays}</div><div className="tk-kpi-sub">{(activeDays/totalHeatDays*100).toFixed(0)}% activity rate</div></div>
                 </div>
               </div>
+
+              {/* Daily Breakdown — collapsible per-day KPI table */}
+              {(() => {
+                const sortedKpis = (kpis || []).slice().sort((a, b) =>
+                  (a.kpi_date < b.kpi_date ? 1 : a.kpi_date > b.kpi_date ? -1 : 0)
+                );
+                const visible = showDaily ? sortedKpis : [];
+                return (
+                  <div className="tk-card tk-daily-card" style={{gridColumn:'span 12'}}>
+                    <div className="tk-card-hd">
+                      <div style={{display:'flex', alignItems:'baseline', gap:14}}>
+                        <div className="tk-card-title">Daily Breakdown</div>
+                        <div className="tk-card-meta">{sortedKpis.length} day{sortedKpis.length === 1 ? '' : 's'} logged</div>
+                      </div>
+                      <button type="button" className={'tk-daily-toggle' + (showDaily ? ' on' : '')} onClick={() => setShowDaily(v => !v)} aria-expanded={showDaily}>
+                        {showDaily ? 'Hide' : 'Show'}
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+                      </button>
+                    </div>
+                    <div className={'tk-daily-wrap' + (showDaily ? ' open' : '')}>
+                      {sortedKpis.length === 0 ? (
+                        <div className="tk-daily-empty">No KPI activity logged yet.</div>
+                      ) : (
+                        <div className="tk-daily-scroll">
+                          <table className="tk-daily-table">
+                            <thead>
+                              <tr>
+                                <th className="dt-date">Date</th>
+                                <th>Dials</th>
+                                <th>Answers</th>
+                                <th>Appts</th>
+                                <th>Pres.</th>
+                                <th>Deals</th>
+                                <th className="num">Lead spend</th>
+                                <th className="num">Deposits</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {visible.map(r => {
+                                const d = parsePolicyDate(r.kpi_date);
+                                const lbl = d ? d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : (r.kpi_date || '');
+                                return (
+                                  <tr key={r.kpi_date}>
+                                    <td className="dt-date">{lbl}</td>
+                                    <td>{fmtNum(r.dials || 0)}</td>
+                                    <td>{fmtNum(r.answers || 0)}</td>
+                                    <td>{fmtNum(r.appointments || 0)}</td>
+                                    <td>{fmtNum(r.presentations || 0)}</td>
+                                    <td className={r.deals > 0 ? 'pos' : ''}>{fmtNum(r.deals || 0)}</td>
+                                    <td className="num">{fmtCurrency(r.lead_spend || 0)}</td>
+                                    <td className="num">{fmtCurrency(r.deposits || 0)}</td>
+                                  </tr>
+                                );
+                              })}
+                            </tbody>
+                          </table>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })()}
 
               {/* Deal Status pipeline */}
               <div className="tk-card" style={{gridColumn:'span 6'}}>
