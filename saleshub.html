@@ -2478,7 +2478,7 @@
         radial-gradient(900px 500px at -10% 110%, color-mix(in oklch, var(--rb-purple) 7%, transparent), transparent 60%);
     }
     #bobBookRoot { color: var(--bob-ink-1); font-family: var(--bob-sans); }
-    #bobBookRoot > div { max-width: 1480px; margin-left: auto; margin-right: auto; }
+    #bobBookRoot > div { max-width: 1200px; margin-left: auto; margin-right: auto; }
 
     #panel-policies .bob-hdr {
       display: flex; align-items: flex-end; justify-content: space-between;
@@ -9868,12 +9868,16 @@
         border-radius: 10px;
       }
       .ss-sidebar-btn.active svg { color: #ffffff; opacity: 1; }
-      /* Mobile dropdown links sit flush below the panel buttons */
+      /* Mobile dropdown links sit flush below the panel buttons — no
+         visual divider, no extra padding, so the bottom 4 read as the
+         same continuous list as the panel-button rail above. */
       .ss-sidebar.mobile-open .ss-mobile-menu {
-        border-top: 1px solid #ececf2;
-        margin-top: 0.25rem;
-        padding-top: 0.6rem;
-        padding-bottom: 0.85rem;
+        border-top: none;
+        margin-top: 0;
+        padding: 0 0.75rem 0.75rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.3rem;
       }
       .ss-main {
         margin-left: 0 !important;
