@@ -5973,7 +5973,12 @@
     #lbLeaderboardRoot { color: var(--lb-ink-1); font-family: var(--lb-sans); }
     /* Cap content width on ultrawide monitors — dark canvas still fills the
        entire .ss-main area, only the inner content is centered. */
-    #lbLeaderboardRoot > div { max-width: 1480px; margin-left: auto; margin-right: auto; }
+    #lbLeaderboardRoot > div { max-width: 1200px; margin-left: auto; margin-right: auto; }
+    /* Cap Team Dashboard sub-tabs at the same content width as Tracker so the
+       three pages share one consistent column. */
+    #tpDashboardRoot > div,
+    #tpAgentsRoot > div,
+    #tpPoliciesRoot > div { max-width: 1200px; margin-left: auto; margin-right: auto; }
 
     /* Header */
     #panel-leaderboard .lb-hdr {
@@ -6434,6 +6439,20 @@
       border-radius: var(--tk-radius);
       padding: 20px 22px; position: relative; overflow: hidden;
     }
+    /* Card containing the heatmap can't clip its overflow — the day-cell
+       hover tooltip extends above the top row and would otherwise be cut. */
+    #panel-goals .tk-card:has(.tk-heat-cal) { overflow: visible; }
+    /* Pulse-red signal when an agent hasn't set their annual or monthly
+       AP goal — pulses the editable text/prompt to draw the eye. */
+    @keyframes tkGoalPulse {
+      0%, 100% { color: var(--rb-red); text-shadow: 0 0 0 transparent; }
+      50% { color: oklch(0.78 0.21 25); text-shadow: 0 0 12px color-mix(in oklch, var(--rb-red) 60%, transparent); }
+    }
+    #panel-goals .tk-goal-pulse {
+      color: var(--rb-red);
+      animation: tkGoalPulse 1.6s ease-in-out infinite;
+    }
+    #panel-goals .tk-ap-num-sub .tk-goal-pulse { font-weight: 600; }
     #panel-goals .tk-card-hd { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
     #panel-goals .tk-card-title {
       font-size: 11px; font-family: var(--tk-mono);
@@ -22045,8 +22064,10 @@
         // Goal-line chart mode: 'annual' shows the year-cumulative chart with
         // the annual goal reference line. 'mtd' shows the current month's
         // daily progression vs. the monthly goal pulled from Weekly Tracker.
-        const [chartMode, setChartMode] = useState('annual');
+        const [chartMode, setChartMode] = useState('mtd');
         const [monthlyGoal, setMonthlyGoal] = useState(0);
+        const [editingMonthlyGoal, setEditingMonthlyGoal] = useState(false);
+        const [monthlyGoalDraft, setMonthlyGoalDraft] = useState('');
         // Admin-only "view as" — when set, the dashboard renders that
         // agent's stats (read-only). Hidden for everyone else.
         const [viewAsUserId, setViewAsUserId] = useState('');
@@ -22148,6 +22169,30 @@
           } catch (e) { console.error('Save goal failed:', e); }
         };
 
+        // Save the agent's monthly AP goal back into the same Supabase row the
+        // Weekly Tracker reads (wt_monthly_ap_goals). Upserts on
+        // (month_start, sales_rep) so the Weekly Tracker spreadsheet picks
+        // it up next time it loads, and the chart's MTD goal line refreshes.
+        const saveMonthlyGoal = async (newGoal) => {
+          if (!agentProfile || !agentProfile.agent_name) return;
+          try {
+            const now = new Date();
+            const monthStart = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-01';
+            const userEmail = (window.currentUser && window.currentUser.email) || null;
+            await fetch(SUPABASE_URL + '/rest/v1/wt_monthly_ap_goals?on_conflict=month_start,sales_rep', {
+              method: 'POST',
+              headers: Object.assign({}, HDRS_WRITE, { Prefer: 'resolution=merge-duplicates,return=minimal' }),
+              body: JSON.stringify({
+                month_start: monthStart,
+                sales_rep: agentProfile.agent_name,
+                ap_goal: newGoal,
+                updated_by: userEmail
+              })
+            });
+            setMonthlyGoal(newGoal);
+          } catch (e) { console.error('Save monthly goal failed:', e); }
+        };
+
         if (loading) {
           return (
             <div>
@@ -22195,6 +22240,18 @@
         const remaining = Math.max(0, goal - apYTD);
         const monthsLeft = 12 - today.getMonth();
         const neededPerMonth = monthsLeft > 0 ? remaining / monthsLeft : 0;
+
+        // ── Monthly equivalents (for the MTD chart-mode hero) ──
+        const apMTD = monthlyPremium[today.getMonth()] || 0;
+        const monthlyGoalPct = monthlyGoal > 0 ? (apMTD / monthlyGoal) * 100 : 0;
+        const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+        const dayOfMonth = today.getDate();
+        const expectedMonthPct = (dayOfMonth / daysInMonth) * 100;
+        const monthlyPace = monthlyGoalPct - expectedMonthPct;
+        const monthlyRemaining = Math.max(0, monthlyGoal - apMTD);
+        const daysLeftInMonth = Math.max(0, daysInMonth - dayOfMonth);
+        const neededPerDay = daysLeftInMonth > 0 ? monthlyRemaining / daysLeftInMonth : 0;
+        const monthlyPaceColor = monthlyPace >= -2 ? 'var(--rb-green)' : monthlyPace >= -8 ? 'var(--rb-yellow)' : 'var(--rb-red)';
 
         // Deal status pipeline (YTD)
         const ytdPolicies = policies.filter(p => { const d = policyDate(p); return d && d >= yearStart; });
@@ -22376,53 +22433,106 @@
                   </div>
                 </div>
                 <div style={{display:'flex', flexDirection:'column', gap:4, marginBottom:14}}>
-                  <div className="tk-card-title">Annual Premium</div>
-                  <div className="tk-ap-num">
-                    {fmtCurrency(apYTD, {compact:true})}
-                    <span style={{color:'var(--tk-ink-4)', fontSize:22, marginLeft:10}}>
-                      / {editingGoal ? (
-                        <input
-                          autoFocus
-                          className="tk-edit-input"
-                          value={goalDraft}
-                          onChange={e => setGoalDraft(e.target.value)}
-                          onBlur={() => {
-                            const n = parseInt(String(goalDraft).replace(/[^\d]/g, ''), 10);
-                            if (!isNaN(n) && n > 0) saveGoal(n);
-                            setEditingGoal(false);
-                          }}
-                          onKeyDown={e => {
-                            if (e.key === 'Enter') e.target.blur();
-                            if (e.key === 'Escape') { setGoalDraft(''); setEditingGoal(false); }
-                          }}
-                          style={{width:'8ch', fontSize:'inherit'}} />
-                      ) : (
-                        <span
-                          className={viewingOther ? '' : 'tk-editable'}
-                          onClick={viewingOther ? undefined : () => { setGoalDraft(String(goal || '')); setEditingGoal(true); }}
-                          title={viewingOther ? '' : 'Click to edit'}
-                          style={viewingOther ? {fontFamily:'var(--tk-mono)'} : null}>
-                          ${goal > 0 ? goal.toLocaleString() : '— set goal'}
+                  <div className="tk-card-title">{chartMode === 'mtd' ? 'Monthly Premium' : 'Annual Premium'}</div>
+                  {chartMode === 'mtd' ? (
+                    <>
+                      <div className="tk-ap-num">
+                        {fmtCurrency(apMTD, {compact:true})}
+                        <span style={{color:'var(--tk-ink-4)', fontSize:22, marginLeft:10}}>
+                          / {editingMonthlyGoal ? (
+                            <input
+                              autoFocus
+                              className="tk-edit-input"
+                              value={monthlyGoalDraft}
+                              onChange={e => setMonthlyGoalDraft(e.target.value)}
+                              onBlur={() => {
+                                const n = parseInt(String(monthlyGoalDraft).replace(/[^\d]/g, ''), 10);
+                                if (!isNaN(n) && n > 0) saveMonthlyGoal(n);
+                                setEditingMonthlyGoal(false);
+                              }}
+                              onKeyDown={e => {
+                                if (e.key === 'Enter') e.target.blur();
+                                if (e.key === 'Escape') { setMonthlyGoalDraft(''); setEditingMonthlyGoal(false); }
+                              }}
+                              style={{width:'8ch', fontSize:'inherit'}} />
+                          ) : (
+                            <span
+                              className={(viewingOther ? '' : 'tk-editable') + (monthlyGoal === 0 && !viewingOther ? ' tk-goal-pulse' : '')}
+                              onClick={viewingOther ? undefined : () => { setMonthlyGoalDraft(String(monthlyGoal || '')); setEditingMonthlyGoal(true); }}
+                              title={viewingOther ? '' : 'Click to edit — syncs to Weekly Tracker'}
+                              style={viewingOther ? {fontFamily:'var(--tk-mono)'} : null}>
+                              ${monthlyGoal > 0 ? monthlyGoal.toLocaleString() : '— set goal'}
+                            </span>
+                          )}
                         </span>
-                      )}
-                    </span>
-                    <span style={{fontFamily:'var(--tk-mono)', fontSize:16, color:'var(--tk-ink-3)', marginLeft:14}}>
-                      {goal > 0 ? goalPct.toFixed(1) + '%' : ''}
-                    </span>
-                  </div>
-                  <div className="tk-ap-num-sub">
-                    {goal > 0 && (
-                      <>
-                        <span className={'tk-ap-delta ' + (pace >= 0 ? 'pos' : 'neg')} style={{marginRight:8}}>
-                          {pace >= 0 ? '▲' : '▼'} {Math.abs(pace).toFixed(1)}%
+                        <span style={{fontFamily:'var(--tk-mono)', fontSize:16, color:'var(--tk-ink-3)', marginLeft:14}}>
+                          {monthlyGoal > 0 ? monthlyGoalPct.toFixed(1) + '%' : ''}
                         </span>
-                        {pace >= 0 ? 'ahead of' : 'behind'} pace ·{' '}
-                        <b style={{color:'var(--tk-ink-1)'}}>{fmtCurrency(remaining, {compact:true})}</b> to goal ·{' '}
-                        <b style={{color:'var(--tk-ink-1)'}}>{fmtCurrency(neededPerMonth, {compact:true})}/mo</b> needed
-                      </>
-                    )}
-                    {goal === 0 && <span>Set an annual premium goal to start tracking pace</span>}
-                  </div>
+                      </div>
+                      <div className="tk-ap-num-sub">
+                        {monthlyGoal > 0 && (
+                          <>
+                            <span className={'tk-ap-delta ' + (monthlyPace >= 0 ? 'pos' : 'neg')} style={{marginRight:8}}>
+                              {monthlyPace >= 0 ? '▲' : '▼'} {Math.abs(monthlyPace).toFixed(1)}%
+                            </span>
+                            {monthlyPace >= 0 ? 'ahead of' : 'behind'} pace ·{' '}
+                            <b style={{color:'var(--tk-ink-1)'}}>{fmtCurrency(monthlyRemaining, {compact:true})}</b> to goal ·{' '}
+                            <b style={{color:'var(--tk-ink-1)'}}>{fmtCurrency(neededPerDay, {compact:true})}/day</b> needed
+                          </>
+                        )}
+                        {monthlyGoal === 0 && <span className="tk-goal-pulse">Set a monthly premium goal to start tracking pace</span>}
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="tk-ap-num">
+                        {fmtCurrency(apYTD, {compact:true})}
+                        <span style={{color:'var(--tk-ink-4)', fontSize:22, marginLeft:10}}>
+                          / {editingGoal ? (
+                            <input
+                              autoFocus
+                              className="tk-edit-input"
+                              value={goalDraft}
+                              onChange={e => setGoalDraft(e.target.value)}
+                              onBlur={() => {
+                                const n = parseInt(String(goalDraft).replace(/[^\d]/g, ''), 10);
+                                if (!isNaN(n) && n > 0) saveGoal(n);
+                                setEditingGoal(false);
+                              }}
+                              onKeyDown={e => {
+                                if (e.key === 'Enter') e.target.blur();
+                                if (e.key === 'Escape') { setGoalDraft(''); setEditingGoal(false); }
+                              }}
+                              style={{width:'8ch', fontSize:'inherit'}} />
+                          ) : (
+                            <span
+                              className={(viewingOther ? '' : 'tk-editable') + (goal === 0 && !viewingOther ? ' tk-goal-pulse' : '')}
+                              onClick={viewingOther ? undefined : () => { setGoalDraft(String(goal || '')); setEditingGoal(true); }}
+                              title={viewingOther ? '' : 'Click to edit'}
+                              style={viewingOther ? {fontFamily:'var(--tk-mono)'} : null}>
+                              ${goal > 0 ? goal.toLocaleString() : '— set goal'}
+                            </span>
+                          )}
+                        </span>
+                        <span style={{fontFamily:'var(--tk-mono)', fontSize:16, color:'var(--tk-ink-3)', marginLeft:14}}>
+                          {goal > 0 ? goalPct.toFixed(1) + '%' : ''}
+                        </span>
+                      </div>
+                      <div className="tk-ap-num-sub">
+                        {goal > 0 && (
+                          <>
+                            <span className={'tk-ap-delta ' + (pace >= 0 ? 'pos' : 'neg')} style={{marginRight:8}}>
+                              {pace >= 0 ? '▲' : '▼'} {Math.abs(pace).toFixed(1)}%
+                            </span>
+                            {pace >= 0 ? 'ahead of' : 'behind'} pace ·{' '}
+                            <b style={{color:'var(--tk-ink-1)'}}>{fmtCurrency(remaining, {compact:true})}</b> to goal ·{' '}
+                            <b style={{color:'var(--tk-ink-1)'}}>{fmtCurrency(neededPerMonth, {compact:true})}/mo</b> needed
+                          </>
+                        )}
+                        {goal === 0 && <span className="tk-goal-pulse">Set an annual premium goal to start tracking pace</span>}
+                      </div>
+                    </>
+                  )}
                 </div>
                 <div className="tk-chart-mode" style={{display:'flex', alignItems:'center', justifyContent:'space-between', gap:12, flexWrap:'wrap', marginBottom:10}}>
                   <div className="tk-card-meta" style={{fontFamily:'var(--tk-mono)', fontSize:11, color:'var(--tk-ink-3)', letterSpacing:'0.06em', textTransform:'uppercase'}}>
