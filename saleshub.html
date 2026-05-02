@@ -4522,9 +4522,9 @@
     }
     @media (max-width: 768px) {
       /* Force the canvas to fill the full viewport width with symmetric
-         inner padding on mobile, regardless of whatever .ss-main padding
-         the page is using. */
-      #panel-goals.active {
+         inner padding on mobile. Use the doubled #id selector to win
+         specificity wars against the desktop CSS later in the file. */
+      #panel-goals#panel-goals.active {
         margin: -0.75rem -0.75rem -3rem !important;
         padding: 14px 14px 32px !important;
         min-height: calc(100vh - 0.75rem) !important;
@@ -4532,9 +4532,9 @@
         max-width: none !important;
         box-sizing: border-box !important;
         display: block !important;
+        overflow-x: hidden !important;
       }
-      /* Reset every wrapper inside #tkTrackerRoot so React's intrinsic
-         layout doesn't impose a max-width or asymmetric auto-margin. */
+      /* Reset every wrapper inside #tkTrackerRoot. */
       #panel-goals.active #tkTrackerRoot,
       #panel-goals.active #tkTrackerRoot > *,
       #panel-goals.active #tkTrackerRoot > * > * {
@@ -4546,19 +4546,64 @@
         padding-right: 0 !important;
         box-sizing: border-box !important;
       }
-      #panel-goals.active .tk-grid { grid-template-columns: 1fr !important; gap: 12px !important; width: 100% !important; }
-      #panel-goals.active .tk-grid > * { grid-column: 1 / -1 !important; max-width: 100% !important; min-width: 0 !important; }
-      #panel-goals.active .tk-card { padding: 16px 14px !important; width: 100% !important; box-sizing: border-box !important; }
+      /* Convert the 12-col grid into a flex column on mobile so that
+         every card lands edge-to-edge regardless of whatever `gridColumn:
+         span N` inline style React put on the child. */
+      #panel-goals.active .tk-grid,
+      #panel-goals.active .tk-grid-12 {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 12px !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+      #panel-goals.active .tk-grid > *,
+      #panel-goals.active .tk-grid-12 > * {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        margin: 0 !important;
+        flex: 0 0 auto !important;
+        /* Defang any inline gridColumn the React tree set for desktop */
+        grid-column: auto !important;
+      }
+      #panel-goals.active .tk-card {
+        padding: 16px 14px !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+      }
       #panel-goals.active .tk-card-hd { flex-direction: column; align-items: flex-start; gap: 8px; }
-      #panel-goals.active .tk-hdr { flex-direction: column; align-items: flex-start; gap: 12px; padding-bottom: 14px !important; margin-bottom: 18px !important; }
-      #panel-goals.active .tk-hdr-r { width: 100%; flex-wrap: wrap; }
-      #panel-goals.active .tk-stat-strip { grid-template-columns: 1fr 1fr !important; gap: 8px !important; width: 100% !important; }
-      #panel-goals.active .tk-ap-num { font-size: 28px !important; }
+      #panel-goals.active .tk-hdr {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 12px !important;
+        padding-bottom: 14px !important;
+        margin-bottom: 18px !important;
+        width: 100% !important;
+      }
+      #panel-goals.active .tk-hdr-r { width: 100% !important; flex-wrap: wrap !important; justify-content: space-between !important; }
+      #panel-goals.active .tk-filter-bar {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 10px !important;
+        width: 100% !important;
+        padding: 0 !important;
+      }
+      #panel-goals.active .tk-stat-strip {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 8px !important;
+        width: 100% !important;
+      }
+      #panel-goals.active .tk-ap-num { font-size: 28px !important; word-break: break-word; }
       #panel-goals.active .tk-card-title { font-size: 14px !important; }
       /* Charts use ResizeObserver — make sure their container can't
          overflow the panel and push content sideways. */
       #panel-goals.active .tk-chart-wrap,
-      #panel-goals.active svg { max-width: 100% !important; }
+      #panel-goals.active svg,
+      #panel-goals.active img,
+      #panel-goals.active canvas { max-width: 100% !important; }
     }
 
     /* Team Dashboard (#panel-teamperf) */
