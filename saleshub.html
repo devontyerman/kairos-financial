@@ -16240,14 +16240,28 @@
         renderCommissionPipeline();
 
         // Default the calculator's Monthly AP goal to the Weekly Tracker value
-        // (wt_monthly_ap_goals row for current month + agent_name). Fire-and-forget;
-        // doesn't block pipeline render. Skip if user has already typed in cc_outRequired.
+        // (wt_monthly_ap_goals row for current month + agent_name) AND apply the
+        // user's saved comp level so the auto net-income calc reflects their
+        // actual contract — not the default 90%.
         try {
           const reqEl = document.getElementById('cc_outRequired');
           if (reqEl && !reqEl.value) {
-            const profRes = await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?user_id=eq.' + currentUser.id + '&select=agent_name', { headers: hdrs });
+            const profRes = await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?user_id=eq.' + currentUser.id + '&select=agent_name,comp_level', { headers: hdrs });
             const profRows = profRes.ok ? await profRes.json() : [];
             const agentName = profRows[0]?.agent_name;
+            const userComp = profRows[0]?.comp_level ? parseInt(profRows[0].comp_level, 10) : null;
+            // Apply saved comp level → keeps slider, hidden select, and any
+            // bound mirror in sync. Persistency stays at default 80, ROI at
+            // default 200, per the calculator init defaults.
+            if (userComp && !isNaN(userComp)) {
+              const compSel = document.getElementById('cc_comp');
+              if (compSel) {
+                compSel.value = String(userComp);
+                if (typeof setSliderValue === 'function') {
+                  try { setSliderValue('comp', userComp, false); } catch (_) {}
+                }
+              }
+            }
             if (agentName) {
               const now = new Date();
               const monthStart = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-01';
@@ -16257,6 +16271,9 @@
                 const goal = rows && rows[0] && rows[0].ap_goal != null ? parseFloat(rows[0].ap_goal) : 0;
                 if (goal > 0 && !reqEl.value) {
                   reqEl.value = Math.round(goal).toLocaleString('en-US');
+                  // Trigger the reverse calc (AP → net income). Now that the
+                  // comp slider has the user's saved value, the computed net
+                  // matches their actual contract.
                   if (typeof recalcFromAP === 'function') recalcFromAP();
                   // Mark AP as the active driver in the bidir UI
                   const apField = document.querySelector('[data-cd-money="ap"]');
@@ -16269,6 +16286,10 @@
                   if (netTag) netTag.textContent = 'computed';
                 }
               }
+            } else if (userComp) {
+              // No AP goal set — still recalc with the user's comp + defaults
+              // so the panel reflects an honest baseline.
+              if (typeof recalcFromAP === 'function') recalcFromAP();
             }
           }
         } catch (e) { console.warn('Monthly AP goal default fetch failed:', e); }
@@ -16702,11 +16723,11 @@
         if (v === 80) o.selected = true;
         persSel.appendChild(o);
       }
-      // Populate ROI percentage (100% - 800%, step 25%), default 300%
+      // Populate ROI percentage (100% - 800%, step 25%), default 200%
       for (let v = 100; v <= 800; v += 25) {
         const o = document.createElement('option');
         o.value = v; o.textContent = v + '%';
-        if (v === 300) o.selected = true;
+        if (v === 200) o.selected = true;
         roiSel.appendChild(o);
       }
 
@@ -17105,6 +17126,7 @@
         if (name === 'teamSize') return String(v);
         return v + '%';
       }
+      window.setSliderValue = setSliderValue;
       function setSliderValue(name, v, fireHandler) {
         const t = sliderTargets[name];
         if (!t || !t.el) return;
