@@ -1084,10 +1084,15 @@
       position: relative;
     }
     .ss-panel { display: none; }
-    .ss-panel.active { display: block; animation: ssFadeIn 0.16s ease; }
-    @keyframes ssFadeIn { from { opacity: 0; } to { opacity: 1; } }
-    /* Make .ss-main carry the active KF skin background so the brief fade-in
-       does not flash white. Toggled on <html> by activatePanel(). */
+    .ss-panel.active { display: block; animation: ssFadeIn 0.18s ease; }
+    /* Use a tiny translate + near-opaque opacity so panels never reveal the
+       underlying .ss-main bg during transition (i.e. no white flash). */
+    @keyframes ssFadeIn {
+      from { opacity: 0.92; transform: translateY(2px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    /* Carry the active KF skin background on .ss-main so even a hard
+       display:none → block swap can't flash white. */
     html[data-kf-active="true"] .ss-main { background: #0d0e10; transition: background 120ms ease; }
     html[data-kf-active="true"][data-kf-theme="light"] .ss-main { background: #f6f5f1; }
 
@@ -3111,23 +3116,91 @@
       border-radius: var(--kf-radius) !important;
       color: var(--kf-ink-1) !important;
       box-shadow: none !important;
-      transition: all 120ms !important;
+      transition: transform 200ms ease, border-color 200ms ease, background 200ms ease, box-shadow 200ms ease !important;
+      position: relative;
+      overflow: hidden;
+      padding: 22px 24px !important;
+      min-height: 110px !important;
+    }
+    /* Diagonal accent gradient that scales on hover (purely decorative). */
+    #panel-carriers.active .sh-carrier-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 110% -10%, color-mix(in oklch, var(--rb-blue) 22%, transparent), transparent 55%);
+      opacity: 0.55;
+      pointer-events: none;
+      transition: opacity 240ms ease;
+    }
+    /* Chevron arrow that fades + shifts in on hover. */
+    #panel-carriers.active .sh-carrier-card::after {
+      content: '';
+      position: absolute;
+      right: 18px; top: 50%;
+      width: 10px; height: 10px;
+      border-right: 2px solid var(--kf-ink-3);
+      border-top: 2px solid var(--kf-ink-3);
+      transform: translateY(-50%) rotate(45deg) translateX(-6px);
+      opacity: 0;
+      transition: opacity 200ms ease, transform 200ms ease, border-color 200ms ease;
+      pointer-events: none;
     }
     #panel-carriers.active .sh-carrier-card:hover {
       background: var(--kf-surface-2) !important;
-      border-color: var(--kf-hairline-strong) !important;
-      transform: translateY(-1px);
+      border-color: color-mix(in oklch, var(--rb-blue) 32%, var(--kf-hairline-strong)) !important;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px -12px color-mix(in oklch, var(--rb-blue) 30%, transparent) !important;
+    }
+    #panel-carriers.active .sh-carrier-card:hover::before { opacity: 1; }
+    #panel-carriers.active .sh-carrier-card:hover::after {
+      opacity: 1;
+      transform: translateY(-50%) rotate(45deg) translateX(0);
+      border-color: var(--rb-blue);
+    }
+    /* Carrier-specific accent dot in the top-left corner — uses the same
+       color-coded list the comp grid table uses for visual consistency. */
+    #panel-carriers.active .sh-carrier-card[data-carrier-id]::before {
+      background:
+        radial-gradient(circle at 110% -10%, color-mix(in oklch, var(--rb-blue) 22%, transparent), transparent 55%),
+        linear-gradient(180deg, transparent 0, transparent calc(100% - 0px));
     }
     #panel-carriers.active .sh-carrier-card .name,
     #panel-carriers.active .sh-carrier-card > .name {
+      position: relative;
       color: var(--kf-ink-1) !important;
       font-family: var(--kf-sans) !important;
       font-weight: 600 !important;
+      font-size: 16px !important;
+      letter-spacing: -0.01em !important;
+      padding-right: 28px;
     }
+    /* Carrier brand dot before the name */
+    #panel-carriers.active .sh-carrier-card .name::before {
+      content: '';
+      display: inline-block;
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--rb-blue);
+      margin-right: 10px;
+      vertical-align: middle;
+      box-shadow: 0 0 0 3px color-mix(in oklch, var(--rb-blue) 18%, transparent);
+    }
+    #panel-carriers.active .sh-carrier-card[data-carrier-id="aetna"] .name::before { background: oklch(0.6 0.16 305); box-shadow: 0 0 0 3px color-mix(in oklch, oklch(0.6 0.16 305) 18%, transparent); }
+    #panel-carriers.active .sh-carrier-card[data-carrier-id="american-amicable"] .name::before { background: oklch(0.55 0.13 245); box-shadow: 0 0 0 3px color-mix(in oklch, oklch(0.55 0.13 245) 18%, transparent); }
+    #panel-carriers.active .sh-carrier-card[data-carrier-id="americo"] .name::before { background: var(--rb-red); box-shadow: 0 0 0 3px color-mix(in oklch, var(--rb-red) 18%, transparent); }
+    #panel-carriers.active .sh-carrier-card[data-carrier-id="corebridge"] .name::before { background: var(--rb-purple); box-shadow: 0 0 0 3px color-mix(in oklch, var(--rb-purple) 18%, transparent); }
+    #panel-carriers.active .sh-carrier-card[data-carrier-id="ethos"] .name::before { background: var(--rb-green); box-shadow: 0 0 0 3px color-mix(in oklch, var(--rb-green) 18%, transparent); }
+    #panel-carriers.active .sh-carrier-card[data-carrier-id="foresters"] .name::before { background: var(--rb-yellow); box-shadow: 0 0 0 3px color-mix(in oklch, var(--rb-yellow) 18%, transparent); }
+    #panel-carriers.active .sh-carrier-card[data-carrier-id="instabrain"] .name::before { background: var(--rb-orange); box-shadow: 0 0 0 3px color-mix(in oklch, var(--rb-orange) 18%, transparent); }
+    #panel-carriers.active .sh-carrier-card[data-carrier-id="mutual-of-omaha"] .name::before { background: oklch(0.55 0.16 245); box-shadow: 0 0 0 3px color-mix(in oklch, oklch(0.55 0.16 245) 18%, transparent); }
+    #panel-carriers.active .sh-carrier-card[data-carrier-id="transamerica"] .name::before { background: oklch(0.62 0.15 270); box-shadow: 0 0 0 3px color-mix(in oklch, oklch(0.62 0.15 270) 18%, transparent); }
+    #panel-carriers.active .sh-carrier-card[data-carrier-id="royal-neighbors"] .name::before { background: oklch(0.6 0.16 145); box-shadow: 0 0 0 3px color-mix(in oklch, oklch(0.6 0.16 145) 18%, transparent); }
     #panel-carriers.active .sh-carrier-card .phone,
     #panel-carriers.active .sh-carrier-card > .phone {
       color: var(--kf-ink-3) !important;
       font-family: var(--kf-mono) !important;
+      position: relative;
+      padding-left: 18px;
     }
 
     /* Carrier detail view */
@@ -3816,12 +3889,25 @@
       color: var(--kf-ink-1) !important;
       background: transparent !important;
     }
-    #panel-calculator.active #cc_outRequired {
-      background: var(--kf-surface) !important;
-      border: 1px solid var(--kf-hairline-strong) !important;
+    /* cc_outRequired now lives inside .cd-input-shell — strip any background
+       or border so it doesn't render a nested box. */
+    #panel-calculator.active #cc_outRequired,
+    #panel-calculator.active #cc_incomeGoal {
+      background: transparent !important;
+      border: 0 !important;
+      box-shadow: none !important;
       color: var(--kf-ink-1) !important;
+      max-width: none !important;
+      width: 100% !important;
+      padding: 0 4px !important;
+      text-align: left !important;
+      font-family: var(--kf-sans) !important;
+      font-size: 24px !important;
+      font-weight: 600 !important;
+      letter-spacing: -0.015em !important;
     }
-    #panel-calculator.active #cc_outRequired::placeholder { color: var(--kf-ink-4) !important; }
+    #panel-calculator.active #cc_outRequired::placeholder,
+    #panel-calculator.active #cc_incomeGoal::placeholder { color: var(--kf-ink-4) !important; }
 
     /* "Do you have a team?" — Yes/No segmented control with obvious active state */
     #panel-calculator.active .ss-calc-team-btns {
@@ -3967,6 +4053,901 @@
       font-family: var(--kf-mono) !important;
     }
 
+    /* ─── Commission Desk re-skin (cd-* classes) ─────────────────────────
+       New design implemented on top of the existing kf-* tokens already
+       defined for #panel-calculator. Hidden selects/inputs (cc_comp,
+       cc_persistency, roi_multiplier, teamAgentCount) preserve all the
+       legacy handlers; cd-* slider UI mirrors and writes back to them. */
+    #panel-calculator.active .cd-app {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 0 !important;
+    }
+    #panel-calculator.active .cd-hidden-select,
+    #panel-calculator.active .cd-hidden-btn { position: absolute; opacity: 0; pointer-events: none; height: 0; width: 0; padding: 0; border: 0; overflow: hidden; }
+
+    /* Section heads */
+    #panel-calculator.active .cd-section-head {
+      display: flex; align-items: baseline; justify-content: space-between;
+      margin: 48px 0 14px; gap: 16px; flex-wrap: wrap;
+    }
+    #panel-calculator.active .cd-section-head:first-of-type { margin-top: 16px; }
+    #panel-calculator.active .cd-eyebrow {
+      font-family: var(--kf-mono); font-size: 11px; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--kf-ink-3);
+      margin-bottom: 8px; display: flex; align-items: center; gap: 8px;
+    }
+    #panel-calculator.active .cd-eyebrow::before {
+      content: ''; width: 6px; height: 6px; border-radius: 2px;
+      background: var(--rb-green);
+    }
+    #panel-calculator.active .cd-section-title {
+      font-family: var(--kf-sans) !important; font-size: 22px; font-weight: 600;
+      letter-spacing: -0.01em; margin: 0; color: var(--kf-ink-1) !important;
+      text-shadow: none !important;
+    }
+    #panel-calculator.active .cd-section-sub {
+      font-size: 13px; color: var(--kf-ink-3); font-family: var(--kf-sans);
+    }
+
+    /* Pipeline range pills */
+    #panel-calculator.active .cd-pipeline-range {
+      display: inline-flex; gap: 6px; padding: 0 !important;
+      background: transparent !important; border: none !important;
+      margin-bottom: 14px;
+    }
+    #panel-calculator.active .cd-pipeline-range-btn {
+      background: var(--kf-surface-2) !important;
+      border: 1px solid var(--kf-hairline-strong) !important;
+      color: var(--kf-ink-2) !important;
+      font-family: var(--kf-mono) !important; font-size: 10px !important;
+      letter-spacing: 0.08em !important; text-transform: uppercase !important;
+      border-radius: 100px !important; padding: 6px 14px !important;
+      cursor: pointer; transition: all 120ms;
+    }
+    #panel-calculator.active .cd-pipeline-range-btn:hover { color: var(--kf-ink-1) !important; }
+    #panel-calculator.active .cd-pipeline-range-btn.active {
+      background: var(--kf-ink-1) !important; color: var(--kf-bg) !important;
+      border-color: var(--kf-ink-1) !important;
+    }
+
+    /* Pipeline stat cards */
+    #panel-calculator.active .cd-ytd-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+    }
+    #panel-calculator.active .cd-stat {
+      background: var(--kf-surface);
+      border: 1px solid var(--kf-hairline);
+      border-radius: var(--kf-radius);
+      padding: 22px 24px; position: relative; overflow: hidden;
+    }
+    #panel-calculator.active .cd-spark { position: absolute; right: 16px; top: 16px; width: 64px; height: 28px; color: var(--rb-green); }
+    #panel-calculator.active .cd-spark.cd-spark-warn { color: var(--rb-yellow); }
+    #panel-calculator.active .cd-stat-label {
+      font-family: var(--kf-mono); font-size: 11px; color: var(--kf-ink-3);
+      text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 14px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    #panel-calculator.active .cd-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--kf-ink-3); }
+    #panel-calculator.active .cd-dot.paid { background: var(--rb-green); box-shadow: 0 0 0 3px color-mix(in oklch, var(--rb-green) 18%, transparent); }
+    #panel-calculator.active .cd-dot.pending { background: var(--rb-yellow); box-shadow: 0 0 0 3px color-mix(in oklch, var(--rb-yellow) 14%, transparent); }
+    #panel-calculator.active .cd-stat-value {
+      font-family: var(--kf-sans); font-size: 38px; font-weight: 600;
+      letter-spacing: -0.02em; line-height: 1; color: var(--kf-ink-1);
+      font-variant-numeric: tabular-nums;
+    }
+    #panel-calculator.active .cd-stat-meta {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-top: 14px; font-size: 12px; color: var(--kf-ink-3);
+    }
+    #panel-calculator.active .cd-details-btn {
+      background: transparent !important; border: none !important;
+      color: var(--kf-ink-1) !important; font-family: var(--kf-sans) !important;
+      font-size: 12px !important; cursor: pointer; padding: 0 !important;
+      display: inline-flex; align-items: center; gap: 4px; font-weight: 500;
+      box-shadow: none !important; border-radius: 0 !important;
+    }
+    #panel-calculator.active .cd-details-btn:hover { color: var(--rb-green) !important; }
+    #panel-calculator.active .cd-details-btn svg { transition: transform 160ms; }
+    #panel-calculator.active .cd-details-btn.open svg { transform: rotate(90deg); }
+    #panel-calculator.active .cd-pipeline-note {
+      margin-top: 12px;
+      padding: 12px 16px;
+      background: color-mix(in oklch, var(--rb-yellow) 10%, transparent);
+      border: 1px solid color-mix(in oklch, var(--rb-yellow) 24%, transparent);
+      border-radius: var(--kf-radius);
+      font-family: var(--kf-mono); font-size: 11px;
+      color: color-mix(in oklch, var(--rb-yellow) 80%, var(--kf-ink-2));
+      line-height: 1.5;
+    }
+
+    /* Calculator grid (left inputs / right output) */
+    #panel-calculator.active .cd-calc-grid {
+      display: grid; grid-template-columns: 1fr 1.05fr; gap: 14px;
+    }
+    #panel-calculator.active .cd-calc-inputs,
+    #panel-calculator.active .cd-calc-output {
+      background: var(--kf-surface);
+      border: 1px solid var(--kf-hairline);
+      border-radius: var(--kf-radius);
+      padding: 24px;
+    }
+    #panel-calculator.active .cd-calc-inputs { display: flex; flex-direction: column; gap: 18px; }
+    #panel-calculator.active .cd-calc-output {
+      padding: 28px; display: flex; flex-direction: column; gap: 22px;
+      position: relative; overflow: hidden;
+    }
+    #panel-calculator.active .cd-calc-output::before {
+      content: ''; position: absolute; inset: 0; pointer-events: none;
+      background: radial-gradient(600px 200px at 100% 0%, color-mix(in oklch, var(--rb-green) 14%, transparent), transparent 60%);
+    }
+    #panel-calculator.active .cd-calc-output > * { position: relative; }
+
+    /* Field + slider */
+    #panel-calculator.active .cd-field { display: flex; flex-direction: column; gap: 8px; }
+    #panel-calculator.active .cd-field-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    #panel-calculator.active .cd-field-label { font-size: 12px; color: var(--kf-ink-2); font-weight: 500; font-family: var(--kf-sans); }
+    #panel-calculator.active .cd-field-value { font-family: var(--kf-mono); font-size: 13px; color: var(--kf-ink-1); font-variant-numeric: tabular-nums; }
+    #panel-calculator.active .cd-slider {
+      position: relative; height: 28px; width: 100%; margin: 6px 0 2px;
+      cursor: pointer; outline: none; user-select: none; touch-action: none;
+    }
+    #panel-calculator.active .cd-slider:focus-visible .cd-slider-thumb {
+      box-shadow: 0 0 0 4px color-mix(in oklch, var(--rb-green) 18%, transparent), 0 0 0 1px var(--rb-green);
+    }
+    #panel-calculator.active .cd-slider-track {
+      position: absolute; top: 50%; left: 0; right: 0; height: 4px;
+      background: var(--kf-surface-3); border: 1px solid var(--kf-hairline);
+      border-radius: 999px; transform: translateY(-50%);
+    }
+    #panel-calculator.active .cd-slider-fill {
+      position: absolute; top: 50%; left: 0; height: 4px;
+      background: var(--rb-green); border-radius: 999px;
+      transform: translateY(-50%); pointer-events: none;
+      transition: width 60ms linear;
+    }
+    #panel-calculator.active .cd-slider.dragging .cd-slider-fill { transition: none; }
+    #panel-calculator.active .cd-slider-thumb {
+      position: absolute; top: 50%; width: 18px; height: 18px;
+      border-radius: 50%; background: var(--kf-ink-1);
+      border: 3px solid var(--kf-surface);
+      box-shadow: 0 0 0 1px var(--kf-hairline-strong), 0 2px 6px rgba(0,0,0,0.3);
+      transform: translate(-50%, -50%); pointer-events: none;
+      transition: transform 120ms, background 160ms;
+    }
+    #panel-calculator.active .cd-slider:hover .cd-slider-thumb,
+    #panel-calculator.active .cd-slider.dragging .cd-slider-thumb {
+      background: var(--rb-green);
+      transform: translate(-50%, -50%) scale(1.1);
+    }
+    #panel-calculator.active .cd-slider-scale {
+      display: flex; justify-content: space-between;
+      font-family: var(--kf-mono); font-size: 10px;
+      color: var(--kf-ink-3); letter-spacing: 0.04em; margin-top: 2px;
+    }
+
+    /* Bidirectional money fields — cleaner card-style layout */
+    #panel-calculator.active .cd-bidir {
+      display: flex; flex-direction: column; gap: 12px;
+      padding: 18px;
+      background: var(--kf-bg);
+      border: 1px solid var(--kf-hairline);
+      border-radius: var(--kf-radius);
+    }
+    #panel-calculator.active .cd-bidir-label {
+      font-family: var(--kf-mono); font-size: 10px;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--kf-ink-3);
+      margin-bottom: 0;
+    }
+    #panel-calculator.active .cd-bidir-or {
+      position: relative;
+      display: flex; align-items: center; justify-content: center;
+      margin: 2px 0;
+      pointer-events: none;
+    }
+    #panel-calculator.active .cd-bidir-or::before {
+      content: ''; position: absolute; left: 0; right: 0; top: 50%;
+      height: 1px; background: var(--kf-hairline);
+    }
+    #panel-calculator.active .cd-bidir-or > span {
+      position: relative; padding: 0 12px;
+      background: var(--kf-bg);
+      font-family: var(--kf-mono); font-size: 10px;
+      color: var(--kf-ink-3); letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+    #panel-calculator.active .cd-money-field {
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    #panel-calculator.active .cd-money-field .cd-field-row {
+      padding: 0 2px;
+    }
+    #panel-calculator.active .cd-money-field .cd-field-label {
+      font-family: var(--kf-sans); font-size: 13px;
+      font-weight: 500; color: var(--kf-ink-2);
+    }
+    #panel-calculator.active .cd-money-tag {
+      font-family: var(--kf-mono); font-size: 10px;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--kf-ink-3);
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: var(--kf-surface-2);
+      border: 1px solid var(--kf-hairline);
+      transition: color 160ms, background 160ms, border-color 160ms;
+    }
+    #panel-calculator.active .cd-money-field.active .cd-money-tag {
+      color: var(--rb-green);
+      background: color-mix(in oklch, var(--rb-green) 14%, transparent);
+      border-color: color-mix(in oklch, var(--rb-green) 30%, transparent);
+    }
+    #panel-calculator.active .cd-input-shell {
+      display: flex; align-items: center;
+      background: var(--kf-surface);
+      border: 1px solid var(--kf-hairline-strong);
+      border-radius: 10px;
+      padding: 0 16px; height: 56px;
+      transition: border-color 160ms, box-shadow 160ms, background 160ms;
+    }
+    #panel-calculator.active .cd-input-shell:hover { border-color: var(--kf-ink-3); }
+    #panel-calculator.active .cd-money-field.active .cd-input-shell {
+      border-color: var(--rb-green);
+      box-shadow: 0 0 0 3px color-mix(in oklch, var(--rb-green) 18%, transparent);
+      background: color-mix(in oklch, var(--rb-green) 4%, var(--kf-surface));
+    }
+    #panel-calculator.active .cd-input-shell .cd-prefix {
+      font-size: 20px; font-weight: 500;
+      color: var(--kf-ink-3); font-family: var(--kf-sans);
+      margin-right: 4px;
+    }
+    #panel-calculator.active .cd-input-shell .cd-suffix {
+      font-size: 12px; color: var(--kf-ink-3);
+      font-family: var(--kf-mono);
+      letter-spacing: 0.04em; text-transform: uppercase;
+      margin-left: 8px;
+    }
+    #panel-calculator.active .cd-input-shell input {
+      flex: 1;
+      background: transparent; border: 0; outline: 0;
+      color: var(--kf-ink-1) !important;
+      padding: 0 4px; width: 100%; min-width: 0;
+      font-family: var(--kf-sans);
+      font-size: 24px; font-weight: 600;
+      letter-spacing: -0.015em;
+      font-variant-numeric: tabular-nums;
+    }
+    #panel-calculator.active .cd-input-shell input::placeholder { color: var(--kf-ink-4); font-weight: 500; }
+
+    /* Calculator output (headline + annual + flow + breakdown) */
+    #panel-calculator.active .cd-headline-label,
+    #panel-calculator.active .cd-flow-head > span:first-child {
+      font-size: 11px; font-family: var(--kf-mono);
+      letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--kf-ink-3); margin-bottom: 8px; display: block;
+    }
+    #panel-calculator.active .cd-headline-value {
+      font-family: var(--kf-sans); font-size: 56px; font-weight: 600;
+      letter-spacing: -0.03em; line-height: 1;
+      font-variant-numeric: tabular-nums; color: var(--kf-ink-1);
+      display: flex; align-items: baseline; gap: 4px;
+    }
+    #panel-calculator.active .cd-headline-value .cd-currency { font-size: 26px; color: var(--kf-ink-3); font-weight: 500; }
+    #panel-calculator.active .cd-headline-sub { margin-top: 10px; font-size: 13px; color: var(--kf-ink-2); font-family: var(--kf-sans); }
+    #panel-calculator.active .cd-headline-sub b { color: var(--kf-ink-1); font-weight: 500; }
+
+    #panel-calculator.active .cd-annual-projection {
+      position: relative; padding: 18px 22px;
+      background: linear-gradient(135deg, color-mix(in oklch, var(--rb-green) 14%, transparent), transparent 80%), var(--kf-bg);
+      border: 1px solid color-mix(in oklch, var(--rb-green) 30%, var(--kf-hairline-strong));
+      border-radius: 8px; overflow: hidden;
+    }
+    #panel-calculator.active .cd-annual-projection::before {
+      content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+      width: 3px; background: var(--rb-green);
+    }
+    #panel-calculator.active .cd-ap-label {
+      font-family: var(--kf-mono); font-size: 11px; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--rb-green);
+      font-weight: 600; margin-bottom: 6px;
+    }
+    #panel-calculator.active .cd-ap-value {
+      font-family: var(--kf-sans); font-size: 40px; font-weight: 600;
+      letter-spacing: -0.03em; font-variant-numeric: tabular-nums;
+      line-height: 1; color: var(--kf-ink-1);
+    }
+    #panel-calculator.active .cd-ap-meta {
+      font-size: 12px; color: var(--kf-ink-3); margin-top: 8px;
+      font-family: var(--kf-mono);
+    }
+
+    #panel-calculator.active .cd-flow-head { display: flex; justify-content: space-between; margin-bottom: 8px; }
+    #panel-calculator.active .cd-flow-head > span:last-child { font-size: 12px; color: var(--kf-ink-2); font-family: var(--kf-mono); }
+    #panel-calculator.active .cd-flow-bar {
+      height: 10px; background: var(--kf-bg);
+      border: 1px solid var(--kf-hairline);
+      border-radius: 999px; overflow: hidden;
+      display: flex;
+    }
+    #panel-calculator.active .cd-flow-bar .cd-flow-up { background: var(--rb-green); height: 100%; width: 75%; }
+    #panel-calculator.active .cd-flow-bar .cd-flow-back {
+      height: 100%; width: 25%;
+      background: repeating-linear-gradient(45deg, color-mix(in oklch, var(--rb-green) 18%, transparent), color-mix(in oklch, var(--rb-green) 18%, transparent) 4px, transparent 4px, transparent 8px), color-mix(in oklch, var(--rb-green) 12%, transparent);
+      border-left: 1px solid var(--kf-surface);
+    }
+    #panel-calculator.active .cd-flow-legend {
+      display: flex; justify-content: space-between;
+      margin-top: 6px; font-size: 11px; color: var(--kf-ink-3);
+      font-family: var(--kf-mono);
+    }
+
+    #panel-calculator.active .cd-breakdown {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+    }
+    #panel-calculator.active .cd-breakdown.cd-breakdown-3 { grid-template-columns: 1fr 1fr 1fr; }
+    @media (max-width: 720px) {
+      #panel-calculator.active .cd-breakdown.cd-breakdown-3 { grid-template-columns: 1fr; }
+    }
+    #panel-calculator.active .cd-breakdown-cell {
+      background: var(--kf-bg); border: 1px solid var(--kf-hairline);
+      border-radius: 8px; padding: 16px;
+    }
+    #panel-calculator.active .cd-bk-lbl {
+      font-size: 11px; font-family: var(--kf-mono); letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--kf-ink-3); margin-bottom: 6px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    #panel-calculator.active .cd-bk-lbl b { color: var(--kf-ink-1); font-weight: 500; }
+    #panel-calculator.active .cd-bk-v {
+      font-family: var(--kf-sans); font-size: 24px; font-weight: 600;
+      letter-spacing: -0.02em; font-variant-numeric: tabular-nums;
+      color: var(--kf-ink-1);
+    }
+    #panel-calculator.active .cd-bk-when {
+      font-size: 11px; color: var(--kf-ink-3); margin-top: 4px;
+      font-family: var(--kf-mono);
+    }
+
+    #panel-calculator.active .cd-msg-placeholder {
+      color: var(--kf-ink-3); font-family: var(--kf-mono); font-size: 12px;
+      padding: 24px 0; text-align: center;
+    }
+
+    /* Bonus section */
+    #panel-calculator.active .cd-bonus-earned {
+      position: relative; display: grid; grid-template-columns: 1.4fr 1fr;
+      gap: 24px; padding: 28px 32px;
+      background: linear-gradient(135deg, color-mix(in oklch, var(--rb-green) 14%, transparent), transparent 70%), var(--kf-surface);
+      border: 2px solid var(--rb-green);
+      border-radius: var(--kf-radius); margin-bottom: 14px;
+      box-shadow: 0 0 0 4px color-mix(in oklch, var(--rb-green) 12%, transparent);
+      overflow: hidden;
+    }
+    #panel-calculator.active .cd-bonus-earned-eyebrow {
+      font-family: var(--kf-mono); font-size: 11px;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--rb-green); font-weight: 700; margin-bottom: 10px;
+    }
+    #panel-calculator.active .cd-bonus-earned-value {
+      font-family: var(--kf-sans); font-size: 64px; font-weight: 700;
+      letter-spacing: -0.04em; line-height: 1; color: var(--rb-green);
+      font-variant-numeric: tabular-nums;
+    }
+    #panel-calculator.active .cd-bonus-earned-meta {
+      font-size: 14px; color: var(--kf-ink-2); margin-top: 12px;
+    }
+    #panel-calculator.active .cd-bonus-earned-meta b { color: var(--kf-ink-1); font-weight: 500; font-family: var(--kf-mono); }
+    #panel-calculator.active .cd-be-stats { display: flex; flex-direction: column; gap: 10px; justify-content: center; }
+    #panel-calculator.active .cd-be-stat {
+      padding: 12px 16px; background: var(--kf-bg);
+      border: 1px solid var(--kf-hairline); border-radius: 8px;
+    }
+    #panel-calculator.active .cd-be-stat-lbl {
+      font-family: var(--kf-mono); font-size: 10px;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--kf-ink-3); margin-bottom: 4px;
+    }
+    #panel-calculator.active .cd-be-stat-val {
+      font-family: var(--kf-sans); font-size: 20px; font-weight: 600;
+      letter-spacing: -0.01em; font-variant-numeric: tabular-nums;
+      color: var(--kf-ink-1);
+    }
+    #panel-calculator.active .cd-be-stat-sub {
+      font-size: 11px; color: var(--kf-ink-3);
+      font-family: var(--kf-mono); margin-top: 4px;
+    }
+    #panel-calculator.active .cd-bonus-empty {
+      padding: 28px 32px; background: var(--kf-surface);
+      border: 1px dashed var(--kf-hairline-strong);
+      border-radius: var(--kf-radius); margin-bottom: 14px; text-align: center;
+    }
+    #panel-calculator.active .cd-bonus-empty-eyebrow {
+      font-family: var(--kf-mono); font-size: 11px;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--kf-ink-3); margin-bottom: 8px;
+    }
+    #panel-calculator.active .cd-bonus-empty-value {
+      font-family: var(--kf-sans); font-size: 44px; font-weight: 600;
+      letter-spacing: -0.03em; color: var(--kf-ink-3); line-height: 1;
+    }
+    #panel-calculator.active .cd-bonus-empty-meta { font-size: 13px; color: var(--kf-ink-2); margin-top: 10px; }
+    #panel-calculator.active .cd-bonus-empty-meta b { color: var(--kf-ink-1); font-family: var(--kf-mono); font-weight: 500; }
+
+    #panel-calculator.active .cd-bonus-table {
+      background: var(--kf-surface); border: 1px solid var(--kf-hairline);
+      border-radius: var(--kf-radius); overflow: hidden;
+    }
+    #panel-calculator.active .cd-bonus-table-head,
+    #panel-calculator.active .cd-bonus-row {
+      display: grid; grid-template-columns: 1fr 1fr 1.2fr;
+      padding: 12px 24px;
+    }
+    #panel-calculator.active .cd-bonus-table-head {
+      background: var(--kf-surface-2);
+      border-bottom: 1px solid var(--kf-hairline);
+      font-family: var(--kf-mono); font-size: 11px;
+      letter-spacing: 0.06em; color: var(--kf-ink-3); font-weight: 500;
+    }
+    #panel-calculator.active .cd-bonus-row {
+      align-items: center; padding: 14px 24px;
+      border-bottom: 1px solid var(--kf-hairline);
+    }
+    #panel-calculator.active .cd-bonus-row:last-child { border-bottom: 0; }
+    #panel-calculator.active .cd-bonus-row .cd-b-ap {
+      font-family: var(--kf-mono); font-variant-numeric: tabular-nums;
+      font-weight: 500; font-size: 14px; color: var(--kf-ink-1);
+    }
+    #panel-calculator.active .cd-bonus-row .cd-b-bonus {
+      font-family: var(--kf-sans); font-weight: 600; font-size: 18px;
+      letter-spacing: -0.01em; font-variant-numeric: tabular-nums; color: var(--rb-green);
+    }
+    #panel-calculator.active .cd-bonus-row.match { background: color-mix(in oklch, var(--rb-green) 8%, transparent); }
+    #panel-calculator.active .cd-bonus-row.next { background: color-mix(in oklch, var(--rb-yellow) 8%, transparent); border-left: 3px solid var(--rb-yellow); padding-left: 21px; }
+    #panel-calculator.active .cd-bonus-row.past-earned .cd-b-bonus { color: var(--kf-ink-3); }
+    #panel-calculator.active .cd-b-pill {
+      display: inline-flex; align-items: center; padding: 3px 10px;
+      border-radius: 999px; font-family: var(--kf-mono); font-size: 11px;
+      border: 1px solid transparent; letter-spacing: 0.02em; white-space: nowrap;
+    }
+    #panel-calculator.active .cd-b-pill.hit { background: var(--rb-green); color: var(--kf-bg); font-weight: 600; }
+    #panel-calculator.active .cd-b-pill.close { background: color-mix(in oklch, var(--rb-yellow) 14%, transparent); color: var(--rb-yellow); border-color: color-mix(in oklch, var(--rb-yellow) 30%, transparent); }
+    #panel-calculator.active .cd-b-pill.below { background: var(--kf-surface-2); color: var(--kf-ink-3); border-color: var(--kf-hairline); }
+    #panel-calculator.active .cd-b-pill.above { background: transparent; color: var(--kf-ink-3); border-color: var(--kf-hairline); }
+
+    /* Long Game */
+    #panel-calculator.active .cd-longgame {
+      background: var(--kf-surface); border: 1px solid var(--kf-hairline);
+      border-radius: var(--kf-radius); padding: 28px;
+    }
+    #panel-calculator.active .cd-lg-header {
+      display: flex; justify-content: space-between; align-items: end;
+      margin-bottom: 28px; flex-wrap: wrap; gap: 16px;
+    }
+    #panel-calculator.active .cd-lg-totals { display: flex; gap: 32px; flex-wrap: wrap; }
+    #panel-calculator.active .cd-lg-total .lbl {
+      font-size: 11px; font-family: var(--kf-mono); letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--kf-ink-3); margin-bottom: 6px;
+    }
+    #panel-calculator.active .cd-lg-total .v {
+      font-family: var(--kf-sans); font-size: 30px; font-weight: 600;
+      letter-spacing: -0.02em; font-variant-numeric: tabular-nums;
+      color: var(--kf-ink-1);
+    }
+    #panel-calculator.active .cd-lg-meta { font-size: 11px; font-family: var(--kf-mono); color: var(--kf-ink-3); }
+    #panel-calculator.active .cd-timeline {
+      display: grid; grid-template-columns: 80px 1fr; gap: 16px; align-items: stretch;
+    }
+    #panel-calculator.active .cd-timeline-axis {
+      display: flex; flex-direction: column; justify-content: space-around;
+      font-family: var(--kf-mono); font-size: 11px; color: var(--kf-ink-3);
+      letter-spacing: 0.04em;
+    }
+    #panel-calculator.active .cd-timeline-axis div { height: 84px; display: flex; align-items: center; }
+    #panel-calculator.active .cd-track {
+      height: 84px; background: var(--kf-bg);
+      border: 1px solid var(--kf-hairline); border-radius: 8px;
+      padding: 14px 16px; display: flex; align-items: center; gap: 16px;
+      margin-bottom: 8px;
+    }
+    #panel-calculator.active .cd-track-label {
+      width: 200px; flex-shrink: 0;
+      display: flex; flex-direction: column; gap: 2px;
+    }
+    #panel-calculator.active .cd-track-label .yr {
+      font-family: var(--kf-sans); font-size: 18px; font-weight: 600;
+      letter-spacing: -0.01em; color: var(--kf-ink-1);
+    }
+    #panel-calculator.active .cd-track-label .desc {
+      font-size: 11px; color: var(--kf-ink-3); font-family: var(--kf-mono);
+    }
+    #panel-calculator.active .cd-track-bars { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+    #panel-calculator.active .cd-tbar-row { display: flex; align-items: center; gap: 10px; font-size: 12px; }
+    #panel-calculator.active .cd-tbar-row .name {
+      width: 80px; color: var(--kf-ink-3); font-size: 11px;
+      font-family: var(--kf-mono); text-transform: uppercase; letter-spacing: 0.04em;
+    }
+    #panel-calculator.active .cd-tbar { flex: 1; height: 12px; background: var(--kf-surface-2); border-radius: 3px; overflow: hidden; }
+    #panel-calculator.active .cd-tbar .fill {
+      height: 100%; background: var(--rb-green); border-radius: 3px;
+      transition: width 320ms ease;
+      display: flex; align-items: center; justify-content: flex-end;
+      padding-right: 6px; font-family: var(--kf-mono); font-size: 10px;
+      color: var(--kf-bg); font-weight: 600;
+    }
+    #panel-calculator.active .cd-tbar .fill.dim {
+      background: color-mix(in oklch, var(--rb-green) 14%, transparent);
+      color: var(--kf-ink-3); border: 1px solid color-mix(in oklch, var(--rb-green) 30%, transparent);
+    }
+    #panel-calculator.active .cd-tbar-row .total {
+      width: 100px; text-align: right; font-family: var(--kf-mono);
+      font-variant-numeric: tabular-nums; font-size: 12px; color: var(--kf-ink-1);
+    }
+
+    /* Team */
+    #panel-calculator.active .cd-team-card {
+      background: var(--kf-surface); border: 1px solid var(--kf-hairline);
+      border-radius: var(--kf-radius); padding: 28px;
+    }
+    #panel-calculator.active .cd-team-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 24px; flex-wrap: wrap; gap: 16px;
+    }
+    #panel-calculator.active .cd-team-h3 {
+      font-family: var(--kf-sans); font-size: 18px; font-weight: 600;
+      margin: 0 0 4px; letter-spacing: -0.01em; color: var(--kf-ink-1) !important;
+    }
+    #panel-calculator.active .cd-team-p { margin: 0; font-size: 13px; color: var(--kf-ink-3); }
+    #panel-calculator.active .cd-toggle {
+      position: relative; width: 44px; height: 24px;
+      background: var(--kf-surface-2);
+      border: 1px solid var(--kf-hairline-strong);
+      border-radius: 999px; cursor: pointer;
+      transition: background 200ms, border-color 200ms;
+      padding: 0; flex-shrink: 0;
+    }
+    #panel-calculator.active .cd-toggle .cd-toggle-handle {
+      position: absolute; width: 16px; height: 16px; border-radius: 50%;
+      background: var(--kf-ink-3); top: 3px; left: 3px;
+      transition: transform 240ms cubic-bezier(0.2, 0, 0, 1), background 200ms;
+    }
+    #panel-calculator.active .cd-toggle.on { background: var(--rb-green); border-color: var(--rb-green); }
+    #panel-calculator.active .cd-toggle.on .cd-toggle-handle { background: var(--kf-bg); transform: translateX(20px); }
+
+    #panel-calculator.active .cd-team-disabled {
+      text-align: center; padding: 40px 20px;
+      color: var(--kf-ink-3); font-size: 13px;
+      border: 1px dashed var(--kf-hairline);
+      border-radius: 8px; background: var(--kf-bg);
+    }
+    #panel-calculator.active .cd-team-disabled svg { display: block; margin: 0 auto 12px; color: var(--kf-ink-3); }
+
+    #panel-calculator.active .cd-team-body {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+    }
+    #panel-calculator.active .cd-team-inputs { display: flex; flex-direction: column; gap: 18px; }
+    #panel-calculator.active .cd-team-output {
+      background: var(--kf-bg); border: 1px solid var(--kf-hairline);
+      border-radius: 8px; padding: 22px;
+      display: flex; flex-direction: column; gap: 18px;
+    }
+    #panel-calculator.active .cd-rep-bars {
+      display: flex; gap: 3px; align-items: end; height: 40px;
+      padding: 8px; background: var(--kf-bg);
+      border: 1px solid var(--kf-hairline); border-radius: 8px;
+    }
+    #panel-calculator.active .cd-rep-bar {
+      flex: 1; background: var(--rb-green);
+      border-radius: 2px 2px 0 0; min-height: 4px; transition: height 240ms ease;
+    }
+
+    #panel-calculator.active .cd-team-out-block { color: var(--kf-ink-1); }
+    #panel-calculator.active .cd-team-out-eyebrow {
+      font-size: 11px; font-family: var(--kf-mono);
+      color: var(--kf-ink-3); letter-spacing: 0.06em;
+      text-transform: uppercase; margin-bottom: 8px;
+    }
+    #panel-calculator.active .cd-team-out-row {
+      display: flex; gap: 24px; align-items: baseline; flex-wrap: wrap;
+    }
+    #panel-calculator.active .cd-team-out-big {
+      font-family: var(--kf-sans); font-size: 28px; font-weight: 600;
+      letter-spacing: -0.02em; font-variant-numeric: tabular-nums;
+      color: var(--kf-ink-1);
+    }
+    #panel-calculator.active .cd-team-out-secondary {
+      font-family: var(--kf-sans); font-size: 20px; font-weight: 500;
+      letter-spacing: -0.01em; color: var(--kf-ink-3);
+      font-variant-numeric: tabular-nums;
+    }
+    #panel-calculator.active .cd-team-out-mini {
+      font-size: 11px; color: var(--kf-ink-3);
+      font-family: var(--kf-mono);
+    }
+    #panel-calculator.active .cd-override-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+    }
+    #panel-calculator.active .cd-override-cell {
+      padding: 14px 12px; background: var(--kf-surface);
+      border: 1px solid var(--kf-hairline); border-radius: 8px;
+    }
+    #panel-calculator.active .cd-override-cell .lbl {
+      font-size: 10px; font-family: var(--kf-mono);
+      text-transform: uppercase; letter-spacing: 0.06em;
+      color: var(--kf-ink-3); margin-bottom: 4px;
+    }
+    #panel-calculator.active .cd-override-cell .v {
+      font-family: var(--kf-sans); font-size: 18px; font-weight: 600;
+      letter-spacing: -0.01em; font-variant-numeric: tabular-nums;
+      color: var(--kf-ink-1);
+    }
+    #panel-calculator.active .cd-override-annual {
+      display: flex; justify-content: space-between; align-items: end;
+      padding: 16px; background: var(--kf-surface);
+      border: 1px solid color-mix(in oklch, var(--rb-green) 30%, var(--kf-hairline-strong));
+      border-radius: 8px; flex-wrap: wrap; gap: 12px;
+    }
+    #panel-calculator.active .cd-override-annual .lbl {
+      font-size: 11px; font-family: var(--kf-mono);
+      text-transform: uppercase; letter-spacing: 0.06em;
+      color: var(--kf-ink-3); margin-bottom: 6px;
+    }
+    #panel-calculator.active .cd-override-annual .v {
+      font-family: var(--kf-sans); font-size: 26px; font-weight: 600;
+      letter-spacing: -0.02em; font-variant-numeric: tabular-nums;
+      color: var(--rb-green);
+    }
+    #panel-calculator.active .cd-grand {
+      display: flex; justify-content: space-between; align-items: end;
+      padding-top: 16px; border-top: 1px dashed var(--kf-hairline);
+      flex-wrap: wrap; gap: 12px;
+    }
+    #panel-calculator.active .cd-grand .lbl {
+      font-size: 12px; color: var(--kf-ink-3); font-family: var(--kf-mono);
+      text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px;
+    }
+    #panel-calculator.active .cd-grand .v {
+      font-family: var(--kf-sans); font-size: 32px; font-weight: 600;
+      letter-spacing: -0.02em; font-variant-numeric: tabular-nums;
+      color: var(--kf-ink-1); line-height: 1;
+    }
+    #panel-calculator.active .cd-grand-annual {
+      padding: 12px 18px;
+      background: color-mix(in oklch, var(--rb-green) 12%, transparent);
+      border: 1px solid color-mix(in oklch, var(--rb-green) 30%, transparent);
+      border-radius: 8px;
+    }
+    #panel-calculator.active .cd-grand-annual .v { font-size: 36px !important; color: var(--rb-green) !important; }
+
+    @media (max-width: 980px) {
+      #panel-calculator.active .cd-calc-grid,
+      #panel-calculator.active .cd-team-body,
+      #panel-calculator.active .cd-ytd-grid { grid-template-columns: 1fr !important; }
+    }
+
+    /* See Details — inline drawer that expands directly under the stat cards.
+       Uses grid-template-rows trick for a smooth height-based animation
+       without needing JS to measure content height. */
+    #panel-calculator.active .cd-pd-drawer {
+      margin-top: 14px;
+      background: var(--kf-surface);
+      border: 1px solid var(--kf-hairline);
+      border-radius: var(--kf-radius);
+      overflow: hidden;
+      display: grid;
+      grid-template-rows: 0fr;
+      transition: grid-template-rows 320ms cubic-bezier(0.2, 0, 0, 1), border-color 240ms;
+    }
+    #panel-calculator.active .cd-pd-drawer.open { grid-template-rows: 1fr; }
+    #panel-calculator.active .cd-pd-drawer-inner { overflow: hidden; min-height: 0; }
+    #panel-calculator.active .cd-pd-drawer-head {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 16px; flex-wrap: wrap;
+      padding: 18px 22px;
+      border-bottom: 1px solid var(--kf-hairline);
+    }
+    #panel-calculator.active .cd-pd-drawer-head h3 {
+      margin: 0;
+      font-family: var(--kf-sans);
+      font-size: 14px; font-weight: 600;
+      color: var(--kf-ink-1) !important;
+      letter-spacing: -0.01em;
+    }
+
+    /* Segmented filter pill (container with internal active button) */
+    #panel-calculator.active .cd-pd-filters {
+      display: inline-flex !important;
+      gap: 4px !important;
+      background: var(--kf-bg) !important;
+      border: 1px solid var(--kf-hairline) !important;
+      border-radius: 8px !important;
+      padding: 3px !important;
+      flex-wrap: wrap !important;
+      margin: 0 !important;
+    }
+    #panel-calculator.active .cd-pd-filters .ss-pd-filter {
+      background: transparent !important;
+      color: var(--kf-ink-3) !important;
+      border: none !important;
+      font-family: var(--kf-sans) !important;
+      font-size: 12px !important;
+      font-weight: 500 !important;
+      letter-spacing: 0 !important;
+      text-transform: none !important;
+      padding: 4px 10px !important;
+      border-radius: 6px !important;
+      cursor: pointer;
+      transition: color 160ms, background 160ms;
+    }
+    #panel-calculator.active .cd-pd-filters .ss-pd-filter:hover { color: var(--kf-ink-1) !important; background: transparent !important; }
+    #panel-calculator.active .cd-pd-filters .ss-pd-filter.active {
+      background: var(--kf-surface-2) !important;
+      color: var(--kf-ink-1) !important;
+      box-shadow: 0 1px 0 rgba(255,255,255,0.04) inset !important;
+      border-color: transparent !important;
+    }
+    #panel-calculator[data-kf-theme="light"] .cd-pd-filters .ss-pd-filter.active {
+      background: var(--kf-surface) !important;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.04) !important;
+    }
+
+    /* See-details toggle button rotates its chevron when open */
+    #panel-calculator.active .cd-details-btn.open svg { transform: rotate(90deg); }
+
+    #panel-calculator.active .cd-pd-list {
+      background: var(--kf-surface);
+      border: 1px solid var(--kf-hairline);
+      border-radius: var(--kf-radius);
+      overflow: hidden;
+      display: flex; flex-direction: column;
+    }
+    #panel-calculator.active .cd-pd-list .ss-pd-policy {
+      background: transparent !important;
+      border: none !important;
+      border-bottom: 1px solid var(--kf-hairline) !important;
+      border-radius: 0 !important;
+      padding: 14px 22px !important;
+      display: grid !important;
+      grid-template-columns: 1.6fr 1fr 1fr 1fr auto !important;
+      gap: 12px !important;
+      align-items: center !important;
+    }
+    #panel-calculator.active .cd-pd-list .ss-pd-policy:last-child { border-bottom: none !important; }
+    #panel-calculator.active .cd-pd-list .ss-pd-policy:hover { background: var(--kf-surface-2) !important; }
+    /* Policy table inside the See Details list */
+    #panel-calculator.active .cd-pd-thead {
+      display: grid;
+      grid-template-columns: 1.5fr minmax(110px, 1fr) 1fr 1.5fr 0.7fr 0.9fr 32px;
+      gap: 12px; align-items: center;
+      padding: 12px 22px; background: var(--kf-surface-2);
+      border-bottom: 1px solid var(--kf-hairline);
+      font-family: var(--kf-mono); font-size: 11px;
+      letter-spacing: 0.06em; text-transform: uppercase; color: var(--kf-ink-3);
+    }
+    #panel-calculator.active .cd-pd-thead .num { text-align: right; }
+    #panel-calculator.active .cd-pd-tbody { display: flex; flex-direction: column; }
+    #panel-calculator.active .cd-pd-list .ss-pd-policy.cd-pd-row {
+      grid-template-columns: 1.5fr minmax(110px, 1fr) 1fr 1.5fr 0.7fr 0.9fr 32px !important;
+      align-items: center !important; gap: 12px !important;
+      padding: 14px 22px !important;
+    }
+    /* Allow the type pill to wrap or truncate gracefully */
+    #panel-calculator.active .cd-pd-row .pd-product { min-width: 0; }
+    #panel-calculator.active .cd-pd-pill {
+      max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    #panel-calculator.active .cd-pd-row .num { text-align: right; }
+    #panel-calculator.active .cd-pd-row .pd-ap,
+    #panel-calculator.active .cd-pd-row .pd-pending {
+      font-family: var(--kf-mono) !important;
+      font-variant-numeric: tabular-nums;
+    }
+    #panel-calculator.active .cd-pd-client {
+      display: flex !important; flex-direction: column !important; gap: 2px !important;
+      font-weight: 500 !important; font-family: var(--kf-sans) !important;
+      color: var(--kf-ink-1) !important;
+    }
+    #panel-calculator.active .cd-pd-client small {
+      color: var(--kf-ink-3); font-size: 11px;
+      font-family: var(--kf-mono); font-weight: 400;
+    }
+    #panel-calculator.active .cd-pd-muted { color: var(--kf-ink-2) !important; }
+    #panel-calculator.active .cd-pd-pill {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 3px 9px; border-radius: 999px;
+      font-size: 11px; font-family: var(--kf-mono);
+      border: 1px solid transparent; white-space: nowrap;
+    }
+    #panel-calculator.active .cd-pd-pill::before {
+      content: ''; width: 5px; height: 5px; border-radius: 50%;
+    }
+    #panel-calculator.active .cd-pd-pill-iul {
+      background: color-mix(in oklch, var(--rb-green) 12%, transparent);
+      color: var(--rb-green);
+      border-color: color-mix(in oklch, var(--rb-green) 28%, transparent);
+    }
+    #panel-calculator.active .cd-pd-pill-iul::before { background: var(--rb-green); }
+    #panel-calculator.active .cd-pd-pill-term {
+      background: var(--kf-surface-2); color: var(--kf-ink-2);
+      border-color: var(--kf-hairline-strong);
+    }
+    #panel-calculator.active .cd-pd-pill-term::before { background: var(--kf-ink-2); }
+    #panel-calculator.active .cd-pd-pill-whole {
+      background: color-mix(in oklch, var(--rb-yellow) 12%, transparent);
+      color: var(--rb-yellow);
+      border-color: color-mix(in oklch, var(--rb-yellow) 30%, transparent);
+    }
+    #panel-calculator.active .cd-pd-pill-whole::before { background: var(--rb-yellow); }
+    #panel-calculator.active .cd-pd-pill-other {
+      background: color-mix(in oklch, var(--rb-blue) 12%, transparent);
+      color: var(--rb-blue);
+      border-color: color-mix(in oklch, var(--rb-blue) 28%, transparent);
+    }
+    #panel-calculator.active .cd-pd-pill-other::before { background: var(--rb-blue); }
+
+    /* Status progress bar — track + green fill, status label alongside */
+    #panel-calculator.active .cd-pd-statbar {
+      display: inline-flex !important; align-items: center !important; gap: 8px !important;
+    }
+    #panel-calculator.active .cd-pd-statbar-track {
+      width: 64px; height: 4px;
+      background: var(--kf-surface-2);
+      border-radius: 2px; overflow: hidden;
+      flex-shrink: 0;
+    }
+    #panel-calculator.active .cd-pd-statbar-fill {
+      height: 100%; background: var(--rb-green);
+      border-radius: 2px;
+      transition: width 240ms ease;
+    }
+    #panel-calculator.active .cd-pd-statbar-label {
+      font-family: var(--kf-mono); font-size: 11px;
+      color: var(--kf-ink-2); white-space: nowrap;
+    }
+
+    #panel-calculator.active .cd-pd-edit-btn {
+      width: 32px !important; height: 32px !important;
+      padding: 0 !important; display: grid !important; place-items: center;
+      background: var(--kf-surface-2) !important;
+      border: 1px solid var(--kf-hairline-strong) !important;
+      color: var(--kf-ink-2) !important;
+      border-radius: 8px !important;
+    }
+    #panel-calculator.active .cd-pd-edit-btn:hover {
+      background: var(--rb-blue) !important;
+      color: var(--kf-bg) !important;
+      border-color: var(--rb-blue) !important;
+    }
+
+    #panel-calculator.active .cd-pd-tfoot {
+      padding: 14px 22px;
+      display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px;
+      font-size: 12px; color: var(--kf-ink-3);
+      border-top: 1px solid var(--kf-hairline);
+      background: var(--kf-surface-2);
+      font-family: var(--kf-mono);
+    }
+    #panel-calculator.active .cd-pd-tfoot b { color: var(--kf-ink-1); font-weight: 500; }
+
+    #panel-calculator.active .ss-pd-empty {
+      padding: 40px 22px; text-align: center;
+      color: var(--kf-ink-3); font-family: var(--kf-mono); font-size: 13px;
+    }
+
+    /* Drawer-style expand animation when toggled open */
+    #panel-calculator.active .ss-pipeline-details {
+      transition: opacity 240ms ease;
+    }
+
+    @media (max-width: 980px) {
+      #panel-calculator.active .cd-pd-thead { display: none; }
+      #panel-calculator.active .cd-pd-list .ss-pd-policy.cd-pd-row { grid-template-columns: 1fr !important; gap: 6px !important; }
+      #panel-calculator.active .cd-pd-row .num { text-align: left; }
+    }
+    @media (max-width: 768px) {
+      #panel-calculator.active .cd-pd-summary { grid-template-columns: 1fr; }
+      #panel-calculator.active .cd-pd-list .ss-pd-policy { grid-template-columns: 1fr; gap: 6px; }
+    }
+
     /* ─── Calculator step / results layout polish (no overlap) ───────────── */
     #panel-calculator.active .ss-calc-card { padding: 24px !important; }
     #panel-calculator.active .ss-calc-steps {
@@ -4018,14 +4999,7 @@
     #panel-calculator.active .ss-calc-result-main > div {
       gap: 6px !important;
     }
-    #panel-calculator.active #cc_outRequired {
-      max-width: none !important;
-      width: 100% !important;
-      font-size: 18px !important;
-      font-weight: 600 !important;
-      text-align: left !important;
-      padding: 9px 12px !important;
-    }
+    /* (cc_outRequired styling now lives near the cd-input-shell rules.) */
 
     /* ─── Universal card uniformity for Carriers / Leads / Resources ────── */
     #panel-carriers.active .sh-carriers-grid,
@@ -9099,90 +10073,76 @@
 
     <!-- ═══ COMMISSION CALCULATOR PANEL ═══ -->
     <div class="ss-panel" id="panel-calculator">
-      <div style="padding: 2.5rem 1.5rem;">
+      <div class="cd-app">
 
         <div class="ss-panel-head">
-          <h2>Commission</h2>
-          <p class="ss-panel-sub">Track your paid and pending commission across every policy.</p>
+          <h2>Commission Desk</h2>
+          <p class="ss-panel-sub">Track paid and pending commission, model your monthly target, and project income.</p>
         </div>
 
-        <!-- ═══ COMMISSION PIPELINE ═══ -->
-        <div class="ss-pipeline-card" id="commissionPipeline">
-          <div class="ss-pipeline-title">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
-            Commission Pipeline
+        <!-- ═══ COMMISSION PIPELINE — section + two stat cards ═══ -->
+        <div class="cd-section-head">
+          <div>
+            <div class="cd-eyebrow">Commission Pipeline</div>
+            <h2 class="cd-section-title">Where you stand right now</h2>
           </div>
-          <div class="ss-pipeline-range" id="pipelineRangeBtns">
-            <button class="ss-pipeline-range-btn" data-pipeline-range="mtd">MTD</button>
-            <button class="ss-pipeline-range-btn" data-pipeline-range="lastmonth">Last Month</button>
-            <button class="ss-pipeline-range-btn active" data-pipeline-range="ytd">YTD</button>
-          </div>
-          <div class="ss-pipeline-grid">
-            <div class="ss-pipeline-stat">
-              <div class="ss-pipeline-stat-label">Total Paid</div>
-              <div class="ss-pipeline-stat-value green" id="pipelinePaid">—</div>
-              <div class="ss-pipeline-stat-sub" id="pipelinePaidSub">Sum of deposits entered</div>
-            </div>
-            <div class="ss-pipeline-stat">
-              <div class="ss-pipeline-stat-label">Pending Commission</div>
-              <div class="ss-pipeline-stat-value pending-glow" id="pipelinePending">—</div>
-              <div class="ss-pipeline-stat-sub" id="pipelinePendingSub">Unpaid commission owed</div>
-            </div>
-          </div>
-          <div style="text-align:center;margin-top:1.25rem;">
-            <button id="pipelineDetailsBtn" class="ss-pipeline-btn">See Details</button>
-          </div>
-          <div style="margin-top:1rem;padding:0.7rem 0.9rem;background:#fff8e6;border:1px solid #f5d76e;border-radius:8px;font-size:0.72rem;color:#7a5a00;line-height:1.5;text-align:center;">
-            <strong>Note:</strong> This is a rough estimate and your actual payout may vary based on the client's age, term length, carrier chargebacks, persistency, and other factors.
-          </div>
-          <div class="ss-pipeline-empty" id="pipelineEmpty" style="display:none;">Sign in to view your commission pipeline.</div>
+          <span class="cd-section-sub" id="pipelineEmpty" style="display:none;">Sign in to view your commission pipeline.</span>
         </div>
 
-        <!-- ═══ COMMISSION PIPELINE DETAILS (replaces calculator when open) ═══ -->
-        <div class="ss-pipeline-details" id="pipelineDetails" style="display:none;">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:0.75rem;">
-            <div style="display:flex;align-items:center;gap:0.75rem;">
-              <button id="pipelineBackBtn" class="ss-pipeline-btn secondary">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
-                Back
+        <div class="cd-pipeline-range" id="pipelineRangeBtns">
+          <button class="cd-pipeline-range-btn ss-pipeline-range-btn" data-pipeline-range="mtd">MTD</button>
+          <button class="cd-pipeline-range-btn ss-pipeline-range-btn" data-pipeline-range="lastmonth">Last Month</button>
+          <button class="cd-pipeline-range-btn ss-pipeline-range-btn active" data-pipeline-range="ytd">YTD</button>
+        </div>
+
+        <div class="cd-ytd-grid" id="commissionPipeline">
+          <div class="cd-stat">
+            <svg class="cd-spark" viewBox="0 0 64 28" preserveAspectRatio="none">
+              <path d="M0,22 L8,18 L16,20 L24,14 L32,16 L40,8 L48,10 L56,4 L64,6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            <div class="cd-stat-label"><span class="cd-dot paid"></span> Total Paid</div>
+            <div class="cd-stat-value" id="pipelinePaid">$0</div>
+            <div class="cd-stat-meta">
+              <span id="pipelinePaidSub">Sum of deposits entered</span>
+            </div>
+          </div>
+          <div class="cd-stat">
+            <svg class="cd-spark cd-spark-warn" viewBox="0 0 64 28" preserveAspectRatio="none">
+              <path d="M0,18 L8,20 L16,16 L24,18 L32,12 L40,14 L48,8 L56,10 L64,6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            <div class="cd-stat-label"><span class="cd-dot pending"></span> Pending Commission</div>
+            <div class="cd-stat-value" id="pipelinePending">$0</div>
+            <div class="cd-stat-meta">
+              <span id="pipelinePendingSub">Unpaid commission owed</span>
+              <button id="pipelineDetailsBtn" class="cd-details-btn ss-pipeline-btn">See details
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
               </button>
-              <h2 style="font-family:'Plus Jakarta Sans',sans-serif;font-size:1.2rem;font-weight:900;color:#1a1a1a;margin:0;">Pipeline Details</h2>
             </div>
           </div>
+        </div>
 
-          <!-- Range filter -->
-          <div class="ss-pd-filters">
-            <button class="ss-pd-filter active" data-pd-range="mtd">MTD</button>
-            <button class="ss-pd-filter" data-pd-range="lastmonth">Last Month</button>
-            <button class="ss-pd-filter" data-pd-range="ytd">YTD</button>
-            <button class="ss-pd-filter" data-pd-range="all">All Time</button>
-            <button class="ss-pd-filter" data-pd-range="custom">Custom</button>
-          </div>
-          <div id="pdCustomRange" style="display:none;gap:0.5rem;align-items:center;margin-bottom:1rem;flex-wrap:wrap;">
-            <input type="date" id="pdDateFrom" style="padding:0.4rem 0.7rem;font-size:0.82rem;background:#fff;border:1px solid #ddd;border-radius:8px;color:#1a1a1a;" />
-            <span style="color:#555;font-size:0.82rem;">to</span>
-            <input type="date" id="pdDateTo" style="padding:0.4rem 0.7rem;font-size:0.82rem;background:#fff;border:1px solid #ddd;border-radius:8px;color:#1a1a1a;" />
-            <button id="pdCustomApply" class="ss-pipeline-btn" style="padding:0.45rem 1.1rem;font-size:0.8rem;">Apply</button>
-          </div>
+        <div class="cd-pipeline-note">
+          <strong>Note:</strong> This is a rough estimate; your actual payout may vary based on age, term, chargebacks, persistency, and other factors.
+        </div>
 
-          <!-- Summary row -->
-          <div class="ss-pd-summary">
-            <div class="ss-pd-summary-item">
-              <div class="ss-pd-summary-label">Sold AP</div>
-              <div class="ss-pd-summary-value" id="pdSoldAP">—</div>
+        <!-- ═══ COMMISSION PIPELINE DETAILS — inline drawer ═══ -->
+        <div class="cd-pd-drawer" id="pipelineDetails">
+          <div class="cd-pd-drawer-inner">
+            <div class="cd-pd-drawer-head">
+              <h3>Pending policies · awaiting issue or pay</h3>
+              <div class="ss-pd-filters cd-pd-filters" role="tablist" aria-label="Date range">
+                <button class="ss-pd-filter active" data-pd-range="mtd">MTD</button>
+                <button class="ss-pd-filter" data-pd-range="lastmonth">Last Month</button>
+                <button class="ss-pd-filter" data-pd-range="ytd">YTD</button>
+                <button class="ss-pd-filter" data-pd-range="all">All Time</button>
+              </div>
             </div>
-            <div class="ss-pd-summary-item">
-              <div class="ss-pd-summary-label">Paid (Deposits)</div>
-              <div class="ss-pd-summary-value green" id="pdPaid">—</div>
-            </div>
-            <div class="ss-pd-summary-item">
-              <div class="ss-pd-summary-label">Pending Commission</div>
-              <div class="ss-pd-summary-value pending-glow" id="pdPending">—</div>
-            </div>
+            <!-- Hidden values still required by the renderer (it writes summary stats here even though the boxes are hidden) -->
+            <span id="pdSoldAP" hidden></span><span id="pdPaid" hidden></span><span id="pdPending" hidden></span>
+            <!-- Hidden custom range plumbing kept for handler compat (not surfaced) -->
+            <span id="pdCustomRange" hidden><input type="date" id="pdDateFrom"/><input type="date" id="pdDateTo"/><button id="pdCustomApply" hidden></button></span>
+            <div id="pdPolicyList" class="cd-pd-list"></div>
           </div>
-
-          <!-- Policy list -->
-          <div id="pdPolicyList" class="ss-pd-list"></div>
         </div>
 
         <!-- EDIT POLICY MODAL -->
@@ -9216,73 +10176,197 @@
           </div>
         </div>
 
-        <div class="ss-calc-wrap">
-          <div class="ss-calc-card" id="commissionCalc">
-            <div class="ss-calc-title">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
-              Commission Calculator
-            </div>
-            <div class="ss-calc-sub">Enter your take-home goal and we'll back out the AP to sell and lead spend required — factoring in your comp, persistency, and lead ROI.</div>
+        <!-- ═══ MONTHLY PRODUCTION CALCULATOR ═══ -->
+        <div class="cd-section-head">
+          <div>
+            <div class="cd-eyebrow">Monthly Production Calculator</div>
+            <h2 class="cd-section-title">Reverse-engineer your monthly AP target</h2>
+          </div>
+          <span class="cd-section-sub">Edit either money field — the other field solves automatically</span>
+        </div>
 
-            <div class="ss-calc-steps ss-calc-steps-4">
-              <div class="ss-calc-step">
-                <span class="ss-calc-step-num">STEP 1</span>
-                <label class="ss-calc-step-label">Your Compensation Level</label>
-                <select class="ss-calc-select" id="cc_comp"></select>
+        <div class="cd-calc-grid">
+          <!-- Left: inputs -->
+          <div class="cd-calc-inputs">
+            <!-- Hidden selects keep the existing init/handlers intact -->
+            <select id="cc_comp" class="cd-hidden-select"></select>
+            <select id="cc_persistency" class="cd-hidden-select"></select>
+            <select id="roi_multiplier" class="cd-hidden-select"></select>
+
+            <div class="cd-field" data-cd-slider-field="comp">
+              <div class="cd-field-row">
+                <label class="cd-field-label">Comp percentage</label>
+                <span class="cd-field-value" data-cd-slider-display="comp">90%</span>
               </div>
-              <div class="ss-calc-step">
-                <span class="ss-calc-step-num">STEP 2</span>
-                <label class="ss-calc-step-label">Your Persistency Rate</label>
-                <select class="ss-calc-select" id="cc_persistency"></select>
+              <div class="cd-slider" tabindex="0" role="slider" data-cd-slider="comp" data-min="65" data-max="145" data-step="5">
+                <div class="cd-slider-track"></div>
+                <div class="cd-slider-fill"></div>
+                <div class="cd-slider-thumb"></div>
               </div>
-              <div class="ss-calc-step">
-                <span class="ss-calc-step-num">STEP 3</span>
-                <label class="ss-calc-step-label">Expected ROI on Lead Spend</label>
-                <select class="ss-calc-select" id="roi_multiplier"></select>
-              </div>
-              <div class="ss-calc-step">
-                <span class="ss-calc-step-num">STEP 4</span>
-                <label class="ss-calc-step-label">How much do you want to NET this month (after lead costs)?</label>
-                <input class="ss-calc-input" type="text" id="cc_incomeGoal" inputmode="numeric" placeholder="" />
-              </div>
+              <div class="cd-slider-scale"><span>65%</span><span>145%</span></div>
             </div>
 
-            <div class="ss-calc-results">
-              <div class="ss-calc-result-main">
-                <span class="lbl">Annual Premium You Need to Sell</span>
-                <div style="display:flex;align-items:center;gap:0.25rem;">
-                  <span style="font-size:1.4rem;font-weight:900;color:#1a1a1a;">$</span>
-                  <input class="ss-calc-input" type="text" id="cc_outRequired" inputmode="numeric" placeholder="—" style="max-width:200px;font-size:1.4rem;font-weight:900;text-align:right;color:#1a1a1a;padding:0.4rem 0.7rem;" />
+            <div class="cd-field" data-cd-slider-field="persistency">
+              <div class="cd-field-row">
+                <label class="cd-field-label">Persistency rate</label>
+                <span class="cd-field-value" data-cd-slider-display="persistency">80%</span>
+              </div>
+              <div class="cd-slider" tabindex="0" role="slider" data-cd-slider="persistency" data-min="60" data-max="90" data-step="1">
+                <div class="cd-slider-track"></div>
+                <div class="cd-slider-fill"></div>
+                <div class="cd-slider-thumb"></div>
+              </div>
+              <div class="cd-slider-scale"><span>60%</span><span>90%</span></div>
+            </div>
+
+            <div class="cd-field" data-cd-slider-field="roi">
+              <div class="cd-field-row">
+                <label class="cd-field-label">Expected lead ROI</label>
+                <span class="cd-field-value" data-cd-slider-display="roi">300%</span>
+              </div>
+              <div class="cd-slider" tabindex="0" role="slider" data-cd-slider="roi" data-min="100" data-max="800" data-step="25">
+                <div class="cd-slider-track"></div>
+                <div class="cd-slider-fill"></div>
+                <div class="cd-slider-thumb"></div>
+              </div>
+              <div class="cd-slider-scale"><span>100%</span><span>800%</span></div>
+            </div>
+
+            <div class="cd-bidir">
+              <div class="cd-bidir-label">Either — enter what you know</div>
+
+              <div class="cd-money-field" data-cd-money="ap">
+                <div class="cd-field-row">
+                  <label class="cd-field-label">Monthly AP goal</label>
+                  <span class="cd-money-tag" data-cd-money-tag="ap">computed</span>
+                </div>
+                <div class="cd-input-shell">
+                  <span class="cd-prefix">$</span>
+                  <input id="cc_outRequired" type="text" inputmode="numeric" placeholder="0" />
+                  <span class="cd-suffix">AP / mo</span>
+                </div>
+              </div>
+
+              <div class="cd-bidir-or"><span>or</span></div>
+
+              <div class="cd-money-field" data-cd-money="net">
+                <div class="cd-field-row">
+                  <label class="cd-field-label">Monthly net target</label>
+                  <span class="cd-money-tag" data-cd-money-tag="net">computed</span>
+                </div>
+                <div class="cd-input-shell">
+                  <span class="cd-prefix">$</span>
+                  <input id="cc_incomeGoal" type="text" inputmode="numeric" placeholder="0" />
+                  <span class="cd-suffix">/ mo</span>
                 </div>
               </div>
             </div>
+          </div>
 
-            <div class="ss-calc-roi-result" id="roi_output">
-              <div class="msg placeholder">Enter your upfront commission goal above to see your recommended lead budget.</div>
+          <!-- Right: output (driven by computeCommission via roi_output) -->
+          <div class="cd-calc-output" id="roi_output">
+            <div class="cd-msg-placeholder">Enter your inputs to see your AP target.</div>
+          </div>
+        </div>
+
+        <!-- ═══ SHOP BONUS ═══ -->
+        <div class="cd-section-head">
+          <div>
+            <div class="cd-eyebrow">Shop Bonus · Monthly Issued Paid</div>
+            <h2 class="cd-section-title">Production bonuses on top</h2>
+          </div>
+          <span class="cd-section-sub" id="cdBonusSub">Sell $20,000+ AP this month to start earning</span>
+        </div>
+
+        <div id="bonus_output"></div>
+
+        <!-- ═══ LONG GAME ═══ -->
+        <div class="cd-section-head">
+          <div>
+            <div class="cd-eyebrow">The Long Game</div>
+            <h2 class="cd-section-title">What this looks like over 2 years</h2>
+          </div>
+          <span class="cd-section-sub">Same monthly production · backends compound</span>
+        </div>
+
+        <div id="longterm_output"></div>
+
+        <!-- ═══ TEAM OVERRIDES ═══ -->
+        <div class="cd-section-head">
+          <div>
+            <div class="cd-eyebrow">Build a Team</div>
+            <h2 class="cd-section-title">Layer overrides on top</h2>
+          </div>
+          <span class="cd-section-sub" id="cdTeamSub">Toggle on to model agency income</span>
+        </div>
+
+        <div class="cd-team-card">
+          <div class="cd-team-header">
+            <div>
+              <h3 class="cd-team-h3">Team override calculator</h3>
+              <p class="cd-team-p">Earn a percentage on every dollar of monthly AP your downline sells.</p>
             </div>
+            <button type="button" class="cd-toggle" id="cdTeamToggle" aria-pressed="false">
+              <span class="cd-toggle-handle"></span>
+            </button>
+            <!-- Legacy buttons kept for handler compatibility -->
+            <button type="button" id="teamNo" data-team="no" class="cd-hidden-btn"></button>
+            <button type="button" id="teamYes" data-team="yes" class="cd-hidden-btn"></button>
+          </div>
 
-            <div class="ss-calc-bonus" id="bonus_output"></div>
+          <div class="cd-team-disabled" id="cdTeamDisabled">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <div>Solo for now. Flip the switch to model overrides on a downline.</div>
+          </div>
 
-            <div class="ss-calc-longterm" id="longterm_output"></div>
-
-            <!-- LEADERSHIP OVERRIDE SECTION -->
-            <div class="ss-calc-team-toggle" style="margin-top: 1rem;">
-              <label class="ss-calc-step-label" style="min-height:auto; margin-bottom:0.5rem;">Do you have a team?</label>
-              <div class="ss-calc-team-btns">
-                <button type="button" class="ss-calc-team-btn active" id="teamNo" data-team="no">No</button>
-                <button type="button" class="ss-calc-team-btn" id="teamYes" data-team="yes">Yes</button>
+          <div class="cd-team-body" id="teamConfig" style="display:none;">
+            <div class="cd-team-inputs">
+              <div class="cd-field" data-cd-slider-field="teamSize">
+                <div class="cd-field-row">
+                  <label class="cd-field-label">Reps on your team</label>
+                  <span class="cd-field-value" data-cd-slider-display="teamSize">5</span>
+                </div>
+                <input id="teamAgentCount" type="number" min="1" max="50" value="5" class="cd-hidden-select" />
+                <div class="cd-slider" tabindex="0" role="slider" data-cd-slider="teamSize" data-min="1" data-max="50" data-step="1">
+                  <div class="cd-slider-track"></div>
+                  <div class="cd-slider-fill"></div>
+                  <div class="cd-slider-thumb"></div>
+                </div>
+                <div class="cd-slider-scale"><span>1</span><span>50</span></div>
               </div>
-            </div>
 
-            <div class="ss-calc-team-config" id="teamConfig" style="display:none;">
-              <div class="ss-calc-step" style="max-width:220px; margin-bottom:1rem;">
-                <span class="ss-calc-step-num">TEAM</span>
-                <label class="ss-calc-step-label" style="min-height:auto;">How many agents on your team?</label>
-                <input class="ss-calc-input" type="number" id="teamAgentCount" min="1" placeholder="e.g. 5" />
+              <div class="cd-field" data-cd-slider-field="avgRepAP">
+                <div class="cd-field-row">
+                  <label class="cd-field-label">Avg AP per rep · monthly</label>
+                  <span class="cd-field-value" data-cd-slider-display="avgRepAP">$10,000/mo</span>
+                </div>
+                <input id="cdAvgRepAP" type="hidden" value="10000" />
+                <div class="cd-slider" tabindex="0" role="slider" data-cd-slider="avgRepAP" data-min="5000" data-max="30000" data-step="500">
+                  <div class="cd-slider-track"></div>
+                  <div class="cd-slider-fill"></div>
+                  <div class="cd-slider-thumb"></div>
+                </div>
+                <div class="cd-slider-scale"><span>$5,000</span><span>$30,000</span></div>
               </div>
+
+              <div class="cd-field" data-cd-slider-field="overridePct">
+                <div class="cd-field-row">
+                  <label class="cd-field-label">Your override %</label>
+                  <span class="cd-field-value" data-cd-slider-display="overridePct">10%</span>
+                </div>
+                <input id="cdOverridePct" type="hidden" value="10" />
+                <div class="cd-slider" tabindex="0" role="slider" data-cd-slider="overridePct" data-min="5" data-max="40" data-step="1">
+                  <div class="cd-slider-track"></div>
+                  <div class="cd-slider-fill"></div>
+                  <div class="cd-slider-thumb"></div>
+                </div>
+                <div class="cd-slider-scale"><span>5%</span><span>40%</span></div>
+              </div>
+
+              <div class="cd-rep-bars" id="cdRepBars"></div>
             </div>
 
-            <div class="ss-calc-leadership" id="leadershipOutput"></div>
+            <div class="cd-team-output" id="leadershipOutput"></div>
           </div>
         </div>
 
@@ -14430,6 +15514,40 @@
         pipelineAllPolicies = await polRes.json() || [];
 
         renderCommissionPipeline();
+
+        // Default the calculator's Monthly AP goal to the Weekly Tracker value
+        // (wt_monthly_ap_goals row for current month + agent_name). Fire-and-forget;
+        // doesn't block pipeline render. Skip if user has already typed in cc_outRequired.
+        try {
+          const reqEl = document.getElementById('cc_outRequired');
+          if (reqEl && !reqEl.value) {
+            const profRes = await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?user_id=eq.' + currentUser.id + '&select=agent_name', { headers: hdrs });
+            const profRows = profRes.ok ? await profRes.json() : [];
+            const agentName = profRows[0]?.agent_name;
+            if (agentName) {
+              const now = new Date();
+              const monthStart = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-01';
+              const mgRes = await fetch(SUPABASE_URL + '/rest/v1/wt_monthly_ap_goals?select=ap_goal&month_start=eq.' + monthStart + '&sales_rep=eq.' + encodeURIComponent(agentName) + '&limit=1', { headers: hdrs });
+              if (mgRes.ok) {
+                const rows = await mgRes.json();
+                const goal = rows && rows[0] && rows[0].ap_goal != null ? parseFloat(rows[0].ap_goal) : 0;
+                if (goal > 0 && !reqEl.value) {
+                  reqEl.value = Math.round(goal).toLocaleString('en-US');
+                  if (typeof recalcFromAP === 'function') recalcFromAP();
+                  // Mark AP as the active driver in the bidir UI
+                  const apField = document.querySelector('[data-cd-money="ap"]');
+                  const netField = document.querySelector('[data-cd-money="net"]');
+                  const apTag = document.querySelector('[data-cd-money-tag="ap"]');
+                  const netTag = document.querySelector('[data-cd-money-tag="net"]');
+                  if (apField) apField.classList.add('active');
+                  if (netField) netField.classList.remove('active');
+                  if (apTag) apTag.textContent = '\u270f Editing';
+                  if (netTag) netTag.textContent = 'computed';
+                }
+              }
+            }
+          }
+        } catch (e) { console.warn('Monthly AP goal default fetch failed:', e); }
       } catch (e) {
         console.error('Pipeline load failed:', e);
         paidEl.textContent = '—';
@@ -14515,34 +15633,61 @@
       }
 
       const esc = (s) => (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-      // Header row
-      let html = '<div class="ss-pd-row ss-pd-header">';
-      html += '<div>Client</div>';
-      html += '<div>Carrier</div>';
-      html += '<div>Product</div>';
-      html += '<div>AP</div>';
-      html += '<div>Comp</div>';
-      html += '<div>Status</div>';
-      html += '<div>Payout Schedule</div>';
-      html += '<div>Pending</div>';
-      html += '<div></div>';
+      // Map product type → simple type bucket for the pill color
+      function productBucket(pt) {
+        const s = (pt || '').toLowerCase();
+        if (s.includes('iul')) return 'iul';
+        if (s.includes('term')) return 'term';
+        if (s.includes('whole') || s.includes('wl')) return 'whole';
+        return 'other';
+      }
+      // Map status → progress percentage so the green progress bar reflects
+      // how close the policy is to being paid out.
+      function statusProgress(st) {
+        const s = (st || '').toLowerCase();
+        if (s.includes('issue') || s.includes('paid')) return 100;
+        if (s.includes('approved')) return 85;
+        if (s.includes('underwriting') || s.includes('uw')) return 55;
+        return 40;
+      }
+      // Table header — Client / Type / Carrier / Status / Submitted / AP / edit
+      let html = '<div class="cd-pd-thead">';
+      html += '<span>Policy</span>';
+      html += '<span>Type</span>';
+      html += '<span>Carrier</span>';
+      html += '<span>Status</span>';
+      html += '<span class="num">Submitted</span>';
+      html += '<span class="num">Annual Premium</span>';
+      html += '<span></span>';
       html += '</div>';
+      html += '<div class="cd-pd-tbody">';
       withPending.forEach(({ p, pending }) => {
         const ap = parseFloat(p.annual_premium || 0);
-        const dealComp = parseFloat(p.deal_comp || 0) || (userCompLevel ? lookupDealComp(p.carrier, p.product_type, userCompLevel) : 0);
-        const payoutInfo = payoutScheduleLabel(p);
-        html += '<div class="ss-pd-row ss-pd-policy">';
-        html += '<div class="pd-client">' + esc(p.client_name || 'Unknown') + '</div>';
-        html += '<div class="pd-carrier">' + esc(p.carrier || '—') + '</div>';
-        html += '<div class="pd-product">' + esc(p.product_type || '—') + '</div>';
-        html += '<div class="pd-ap">' + fmt(ap) + '</div>';
-        html += '<div class="pd-comp">' + (dealComp ? dealComp + '%' : '—') + '</div>';
-        html += '<div class="pd-status">' + esc(p.status || 'Underwriting') + '</div>';
-        html += '<div class="pd-payout">' + payoutInfo + '</div>';
-        html += '<div class="pd-pending">' + fmt(pending) + '</div>';
-        html += '<button class="ss-pd-edit-btn" data-pd-edit-id="' + p.id + '">Edit</button>';
+        const bucket = productBucket(p.product_type);
+        const progress = statusProgress(p.status);
+        const sold = p.policy_date ? new Date(p.policy_date + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
+        html += '<div class="ss-pd-row ss-pd-policy cd-pd-row">';
+        html += '<div class="pd-client cd-pd-client">' + esc(p.client_name || 'Unknown') + '<small>' + (p.policy_number ? '#' + esc(p.policy_number) : '') + (p.policy_number && sold ? ' \u00b7 ' : '') + (sold ? 'Sold ' + sold : '') + '</small></div>';
+        html += '<div class="pd-product"><span class="cd-pd-pill cd-pd-pill-' + bucket + '">' + esc(p.product_type || 'Other') + '</span></div>';
+        html += '<div class="pd-carrier cd-pd-muted">' + esc(p.carrier || '\u2014') + '</div>';
+        html += '<div class="pd-status cd-pd-statbar">' +
+          '<div class="cd-pd-statbar-track"><div class="cd-pd-statbar-fill" style="width:' + progress + '%"></div></div>' +
+          '<span class="cd-pd-statbar-label">' + esc(p.status || 'Underwriting') + '</span>' +
+        '</div>';
+        html += '<div class="pd-submitted num cd-pd-muted">' + esc(sold || '\u2014') + '</div>';
+        html += '<div class="pd-ap num">' + fmt(ap) + '</div>';
+        html += '<button class="ss-pd-edit-btn cd-pd-edit-btn" data-pd-edit-id="' + p.id + '" aria-label="Edit policy">' +
+          '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>' +
+        '</button>';
         html += '</div>';
       });
+      html += '</div>';
+      // Footer summary
+      const totalAP = withPending.reduce((s, x) => s + parseFloat(x.p.annual_premium || 0), 0);
+      html += '<div class="cd-pd-tfoot">' +
+        '<span>' + withPending.length + ' polic' + (withPending.length === 1 ? 'y' : 'ies') + '</span>' +
+        '<span>Total AP <b>' + fmt(totalAP) + '</b></span>' +
+      '</div>';
       listEl.innerHTML = html;
 
       // Wire up edit buttons
@@ -14632,45 +15777,38 @@
       }
     }
 
-    // Wire up details toggle & filter buttons
+    // Wire up details toggle & filter buttons. The drawer now opens INLINE
+    // (right under the Total Paid / Pending stat cards) and the button text
+    // flips between "See details" and "Hide details".
     (function initPipelineDetails() {
       const detailsBtn = document.getElementById('pipelineDetailsBtn');
-      const backBtn = document.getElementById('pipelineBackBtn');
-      const pipelineCard = document.getElementById('commissionPipeline');
       const detailsPanel = document.getElementById('pipelineDetails');
-      const calcWrap = document.querySelector('#panel-calculator .ss-calc-wrap');
-
-      const compSection = document.getElementById('payCalcCompSection');
+      function setDetailsBtnLabel(open) {
+        if (!detailsBtn) return;
+        // Replace the text node, leave the chevron SVG untouched
+        const svg = detailsBtn.querySelector('svg');
+        detailsBtn.textContent = open ? 'Hide details ' : 'See details ';
+        if (svg) detailsBtn.appendChild(svg);
+        detailsBtn.classList.toggle('open', open);
+      }
       if (detailsBtn) {
         detailsBtn.addEventListener('click', () => {
-          pipelineCard.style.display = 'none';
-          if (calcWrap) calcWrap.style.display = 'none';
-          if (compSection) compSection.style.display = 'none';
-          detailsPanel.style.display = 'block';
-          renderPipelineDetails();
-        });
-      }
-      if (backBtn) {
-        backBtn.addEventListener('click', () => {
-          detailsPanel.style.display = 'none';
-          pipelineCard.style.display = 'block';
-          if (calcWrap) calcWrap.style.display = 'flex';
-          if (compSection) compSection.style.display = 'block';
+          const open = !detailsPanel.classList.contains('open');
+          detailsPanel.classList.toggle('open', open);
+          setDetailsBtnLabel(open);
+          if (open) renderPipelineDetails();
         });
       }
 
-      // Filter buttons
+      // Filter buttons (segmented control)
       document.querySelectorAll('.ss-pd-filter').forEach(btn => {
         btn.addEventListener('click', () => {
           document.querySelectorAll('.ss-pd-filter').forEach(b => b.classList.remove('active'));
           btn.classList.add('active');
           pdRange = btn.dataset.pdRange;
-          document.getElementById('pdCustomRange').style.display = pdRange === 'custom' ? 'flex' : 'none';
-          if (pdRange !== 'custom') renderPipelineDetails();
+          renderPipelineDetails();
         });
       });
-      const pdApply = document.getElementById('pdCustomApply');
-      if (pdApply) pdApply.addEventListener('click', renderPipelineDetails);
 
       // Edit modal
       const pdEditOverlay = document.getElementById('pdEditOverlay');
@@ -14833,18 +15971,18 @@
         if (v === 90) o.selected = true;
         compSel.appendChild(o);
       }
-      // Populate persistency (50 - 90, step 5), default 80
-      for (let v = 50; v <= 90; v += 5) {
+      // Populate persistency (60 - 90, step 1), default 80
+      for (let v = 60; v <= 90; v += 1) {
         const o = document.createElement('option');
         o.value = v; o.textContent = v + '%';
         if (v === 80) o.selected = true;
         persSel.appendChild(o);
       }
-      // Populate ROI percentage (50% - 500%, step 50%), default 150%
-      for (let v = 50; v <= 500; v += 50) {
+      // Populate ROI percentage (100% - 800%, step 25%), default 300%
+      for (let v = 100; v <= 800; v += 25) {
         const o = document.createElement('option');
         o.value = v; o.textContent = v + '%';
-        if (v === 150) o.selected = true;
+        if (v === 300) o.selected = true;
         roiSel.appendChild(o);
       }
 
@@ -14917,10 +16055,8 @@
 
         if (netGoal <= 0) {
           reqEl.value = '';
-          roiOut.innerHTML = '<div class="msg placeholder">Enter your net income goal above to see your results.</div>';
-          longTermOut.classList.remove('visible');
+          roiOut.innerHTML = '<div class="cd-msg-placeholder">Enter your net income goal above to see your results.</div>';
           longTermOut.innerHTML = '';
-          bonusOut.classList.remove('visible');
           bonusOut.innerHTML = '';
           return;
         }
@@ -14928,44 +16064,78 @@
         if (!apOverride) reqEl.value = fmtCommas(Math.round(requiredAP));
 
         if (roiPct <= 0) {
-          roiOut.innerHTML = '<div class="msg placeholder">Select your expected ROI to see your lead budget.</div>';
-          longTermOut.classList.remove('visible');
+          roiOut.innerHTML = '<div class="cd-msg-placeholder">Select your expected ROI to see your lead budget.</div>';
           longTermOut.innerHTML = '';
-          bonusOut.classList.remove('visible');
           bonusOut.innerHTML = '';
           return;
         }
 
         // ── BONUS TIER LOOKUP ──
-        // Highest tier whose AP threshold is met by the required AP
+        // Highest tier whose AP threshold is met by the required AP (earned-or-above)
         let currentBonus = null;
         let nextBonus = null;
         for (let i = 0; i < BONUS_TIERS.length; i++) {
           if (requiredAP >= BONUS_TIERS[i].ap) currentBonus = BONUS_TIERS[i];
           else { nextBonus = BONUS_TIERS[i]; break; }
         }
+        const apRounded = Math.round(requiredAP);
+        const cdBonusSubEl = document.getElementById('cdBonusSub');
+        if (cdBonusSubEl) {
+          cdBonusSubEl.textContent = currentBonus
+            ? 'Earned at $' + currentBonus.ap.toLocaleString() + ' AP/mo'
+            : 'Sell $20,000+ AP this month to start earning';
+        }
+        let bonusHtml = '';
         if (currentBonus) {
-          const nextUpHtml = nextBonus
-            ? '<span class="ss-calc-bonus-nextup">Next tier: ' + fmt(nextBonus.ap) + ' AP &rarr; ' + fmt(nextBonus.bonus) + '</span>'
-            : '';
-          bonusOut.classList.add('visible');
-          bonusOut.innerHTML =
-            '<div class="ss-calc-bonus-title">\ud83c\udf89 Cash Bonus Unlocked' + nextUpHtml + '</div>' +
-            '<div class="ss-calc-bonus-body">' +
-              'Congrats \u2014 if you sell <strong>' + fmt(currentBonus.ap) + ' AP</strong> this month, you also earn a ' +
-              '<span class="ss-calc-bonus-amount">' + fmt(currentBonus.bonus) + '</span> cash bonus on top of your commission.' +
-            '</div>';
+          bonusHtml += '<div class="cd-bonus-earned">' +
+            '<div>' +
+              '<div class="cd-bonus-earned-eyebrow">\u2713 Bonus earned this month</div>' +
+              '<div class="cd-bonus-earned-value">+' + fmt(currentBonus.bonus) + '</div>' +
+              '<div class="cd-bonus-earned-meta">At <b>' + fmt(currentBonus.ap) + '</b> issued-paid AP \u00b7 paid on top of commission</div>' +
+            '</div>' +
+            '<div class="cd-be-stats">' +
+              '<div class="cd-be-stat">' +
+                '<div class="cd-be-stat-lbl">Your AP</div>' +
+                '<div class="cd-be-stat-val">' + fmt(apRounded) + '</div>' +
+              '</div>' +
+              (nextBonus
+                ? '<div class="cd-be-stat">' +
+                    '<div class="cd-be-stat-lbl">Next tier</div>' +
+                    '<div class="cd-be-stat-val">+' + fmt(nextBonus.bonus - currentBonus.bonus) + '</div>' +
+                    '<div class="cd-be-stat-sub">' + fmt(nextBonus.ap - apRounded) + ' more to unlock</div>' +
+                  '</div>'
+                : '') +
+            '</div>' +
+          '</div>';
         } else {
           const firstTier = BONUS_TIERS[0];
-          const apAway = firstTier.ap - requiredAP;
-          bonusOut.classList.add('visible');
-          bonusOut.innerHTML =
-            '<div class="ss-calc-bonus-title">\ud83c\udf81 Cash Bonus</div>' +
-            '<div class="ss-calc-bonus-body">' +
-              'Sell <strong>' + fmt(firstTier.ap) + ' AP</strong> this month (another <strong>' + fmt(apAway) + '</strong>) to unlock a ' +
-              '<span class="ss-calc-bonus-amount">' + fmt(firstTier.bonus) + '</span> cash bonus on top of your commission.' +
-            '</div>';
+          bonusHtml += '<div class="cd-bonus-empty">' +
+            '<div class="cd-bonus-empty-eyebrow">No bonus yet</div>' +
+            '<div class="cd-bonus-empty-value">$0</div>' +
+            '<div class="cd-bonus-empty-meta">You\u2019re at <b>' + fmt(apRounded) + '</b>/mo \u00b7 need <b>' + fmt(firstTier.ap - apRounded) + '</b> more to hit the first tier (' + fmt(firstTier.ap) + ' \u2192 +' + fmt(firstTier.bonus) + ')</div>' +
+          '</div>';
         }
+        // Tier table — show every tier with status pill
+        bonusHtml += '<div class="cd-bonus-table">' +
+          '<div class="cd-bonus-table-head"><span>Issued-paid AP</span><span>Bonus</span><span>Status</span></div>';
+        for (let i = 0; i < BONUS_TIERS.length; i++) {
+          const t = BONUS_TIERS[i];
+          const isCurrentEarned = currentBonus && currentBonus.ap === t.ap;
+          const isPast = apRounded >= t.ap && !isCurrentEarned;
+          const isNext = nextBonus && nextBonus.ap === t.ap;
+          let cls = 'cd-bonus-row';
+          if (isCurrentEarned) cls += ' match';
+          if (isPast) cls += ' past-earned';
+          if (isNext) cls += ' next';
+          let pill;
+          if (isCurrentEarned) pill = '<span class="cd-b-pill hit">\u2713 Earned</span>';
+          else if (isPast) pill = '<span class="cd-b-pill above">\u2713 Passed</span>';
+          else if (isNext) pill = '<span class="cd-b-pill close">' + fmt(t.ap - apRounded) + ' away</span>';
+          else pill = '<span class="cd-b-pill below">' + fmt(t.ap - apRounded) + ' away</span>';
+          bonusHtml += '<div class="' + cls + '"><span class="cd-b-ap">' + fmt(t.ap) + '</span><span class="cd-b-bonus">' + fmt(t.bonus) + '</span><span>' + pill + '</span></div>';
+        }
+        bonusHtml += '</div>';
+        bonusOut.innerHTML = bonusHtml;
 
         // ── LONG-TERM STACK ──
         // Monthly renewal income from this month's AP block once renewals start
@@ -14990,57 +16160,89 @@
 
         const bonusNote = annualCashBonus > 0 ? ' + ' + fmt(annualCashBonus) + ' cash bonus' : '';
 
-        longTermOut.classList.add('visible');
+        // Build the long-game timeline rendering. Math is unchanged — only the
+        // surrounding HTML structure adapts to the new visual.
+        const twoYearTotal = year1Total + year2Total;
+        const lgMax = Math.max(year1UpfrontTotal, year2UpfrontTotal, year1BackendTotal + year2BackendTotal, year2RenewalTotal, 1);
+        function lgBar(name, value, dim) {
+          const pct = Math.max(8, Math.round((value / lgMax) * 100));
+          return '<div class="cd-tbar-row">' +
+            '<span class="name">' + name + '</span>' +
+            '<div class="cd-tbar"><div class="fill' + (dim ? ' dim' : '') + '" style="width:' + pct + '%">' + (value > lgMax * 0.18 ? fmt(value) : '') + '</div></div>' +
+            '<span class="total">' + fmt(value) + '</span>' +
+          '</div>';
+        }
         longTermOut.innerHTML =
-          '<div class="ss-calc-longterm-title">\ud83d\udcb0 The Long Game</div>' +
-          '<div class="ss-calc-longterm-body">' +
-            '<p>Don\u2019t forget \u2014 you still have <strong>' + fmt(backend) + '</strong> in backend commission coming <strong>9 months</strong> from now on this month\u2019s production.</p>' +
-            '<p>If you hold this pace every month, in <strong>9 months</strong> you\u2019ll have an additional <strong>' + fmt(backend) + '/month</strong> in income rolling in from stacked backend payments. Then at <strong>12 months</strong>, renewals kick in at an average of <strong>4% of AP per year</strong> \u2014 that\u2019s another <strong>' + fmt(monthlyRenewalFromBlock) + '/month</strong> from this month\u2019s block alone, and it grows every month after as more blocks hit their 12-month mark.</p>' +
-          '</div>' +
-          '<div class="ss-calc-longterm-projections">' +
-            '<div class="ss-calc-longterm-proj">' +
-              '<div class="ss-calc-longterm-proj-label">Year 1 Total Income</div>' +
-              '<div class="ss-calc-longterm-proj-value">' + fmt(year1Total) + '</div>' +
-              '<div class="ss-calc-longterm-proj-detail">' + fmt(year1UpfrontTotal) + ' net upfront + ' + fmt(year1BackendTotal) + ' backend (last 3 months)' + bonusNote + '</div>' +
+          '<div class="cd-longgame">' +
+            '<div class="cd-lg-header">' +
+              '<div class="cd-lg-totals">' +
+                '<div class="cd-lg-total"><div class="lbl">Yr 1 Cash</div><div class="v">' + fmt(year1Total) + '</div></div>' +
+                '<div class="cd-lg-total"><div class="lbl">Yr 2 Cash</div><div class="v" style="color:var(--rb-green);">' + fmt(year2Total) + '</div></div>' +
+                '<div class="cd-lg-total"><div class="lbl">2-Yr Total</div><div class="v">' + fmt(twoYearTotal) + '</div></div>' +
+              '</div>' +
+              '<span class="cd-lg-meta">' + fmt(netGoal) + '/mo net \u00b7 ' + (compSel.value || '0') + '% comp \u00b7 ' + (persSel.value || '0') + '% pers' + bonusNote + '</span>' +
             '</div>' +
-            '<div class="ss-calc-longterm-proj">' +
-              '<div class="ss-calc-longterm-proj-label">Year 2 Total Income</div>' +
-              '<div class="ss-calc-longterm-proj-value year2">' + fmt(year2Total) + '</div>' +
-              '<div class="ss-calc-longterm-proj-detail">' + fmt(year2UpfrontTotal) + ' net upfront + ' + fmt(year2BackendTotal) + ' backend (all 12 months) + ' + fmt(year2RenewalTotal) + ' renewals' + bonusNote + '</div>' +
+            '<div class="cd-timeline">' +
+              '<div class="cd-timeline-axis"><div>Year 1</div><div>Year 2</div></div>' +
+              '<div>' +
+                '<div class="cd-track">' +
+                  '<div class="cd-track-label"><span class="yr">Year 1</span><span class="desc">Selling + upfronts</span></div>' +
+                  '<div class="cd-track-bars">' +
+                    lgBar('Upfront', year1UpfrontTotal) +
+                    lgBar('Backend', year1BackendTotal, true) +
+                  '</div>' +
+                '</div>' +
+                '<div class="cd-track">' +
+                  '<div class="cd-track-label"><span class="yr">Year 2</span><span class="desc">Upfronts + Y1 backends + renewals</span></div>' +
+                  '<div class="cd-track-bars">' +
+                    lgBar('Upfront', year2UpfrontTotal) +
+                    lgBar('Backends', year2BackendTotal, true) +
+                    lgBar('Renewals', year2RenewalTotal, true) +
+                  '</div>' +
+                '</div>' +
+              '</div>' +
             '</div>' +
           '</div>';
 
+        // Math:
+        //   total earnings = AP × comp × pers
+        //   upfront = total × 0.75 (paid on issue)
+        //   backend = total × 0.25 (paid month 9)
+        //   net = upfront − leadSpend; leadSpend = net / (ROI/100)
+        // The existing forward calc gives requiredAP as MONTHLY AP because
+        // upfront, netGoal, and leadSpend are all monthly. Don't divide by 12.
         var totalComm = upfront + backend;
+        const monthlyAP = requiredAP;
+        const annualNet = netGoal * 12;
+        const annualGross = totalComm * 12;
+        const policiesPerMonth = Math.max(1, Math.ceil(monthlyAP / 1800));
+
         roiOut.innerHTML =
-          '<div class="ss-calc-roi-hero" style="margin-bottom:0;">' +
-            '<span class="ss-calc-roi-hero-label">Total Earned Commission</span>' +
-            '<span class="ss-calc-roi-hero-value" style="color:#1a1a1a;">' + fmt(totalComm) + '</span>' +
+          '<div>' +
+            '<div class="cd-headline-label">You need to sell \u00b7 monthly AP</div>' +
+            '<div class="cd-headline-value"><span class="cd-currency">$</span>' + Math.round(monthlyAP).toLocaleString('en-US') + '</div>' +
+            '<div class="cd-headline-sub">Roughly <b>' + policiesPerMonth + ' policies</b> at $1,800 avg AP \u00b7 <b>' + fmt(monthlyLeadSpend) + '</b>/mo lead spend at <b>' + roiPct + '% ROI</b>.</div>' +
           '</div>' +
-          '<div class="ss-calc-roi-breakdown" style="margin-top:1rem;">' +
-            '<div class="ss-calc-roi-row">' +
-              '<span class="lbl">Upfront commission (75%)</span>' +
-              '<span class="val" style="color:#16a34a;">' + fmt(upfront) + '</span>' +
-            '</div>' +
-            '<div class="ss-calc-roi-row">' +
-              '<span class="lbl">Backend at 9 months (25%)</span>' +
-              '<span class="val" style="color:#22c55e;">' + fmt(backend) + '</span>' +
-            '</div>' +
+          '<div class="cd-annual-projection">' +
+            '<div class="cd-ap-label">Monthly net take-home</div>' +
+            '<div class="cd-ap-value">' + fmt(netGoal) + '</div>' +
+            '<div class="cd-ap-meta">After ' + fmt(monthlyLeadSpend) + ' lead spend \u00b7 ' + fmt(weeklyLeadSpend) + ' / week</div>' +
           '</div>' +
-          '<div class="ss-calc-roi-breakdown" style="margin-top:1rem;">' +
-            '<div class="ss-calc-roi-row">' +
-              '<span class="lbl">Lead spend \u2014 monthly</span>' +
-              '<span class="val">' + fmt(monthlyLeadSpend) + '</span>' +
-            '</div>' +
-            '<div class="ss-calc-roi-row">' +
-              '<span class="lbl">Lead spend \u2014 weekly</span>' +
-              '<span class="val weekly">' + fmt(weeklyLeadSpend) + '</span>' +
-            '</div>' +
+          '<div class="cd-annual-projection">' +
+            '<div class="cd-ap-label">If you do this every month \u00b7 annual take-home</div>' +
+            '<div class="cd-ap-value">' + fmt(annualNet) + '</div>' +
+            '<div class="cd-ap-meta">' + fmt(netGoal) + '/mo \u00d7 12 \u00b7 gross commission ' + fmt(annualGross) + '/yr</div>' +
           '</div>' +
-          '<div class="ss-calc-roi-hero" style="margin-top:1rem;">' +
-            '<span class="ss-calc-roi-hero-label">Net Income <strong>(After Lead Costs)</strong></span>' +
-            '<span class="ss-calc-roi-hero-value">' + fmt(netGoal) + '</span>' +
+          '<div>' +
+            '<div class="cd-flow-head"><span>Monthly gross commission flow</span><span>' + fmt(totalComm) + '</span></div>' +
+            '<div class="cd-flow-bar"><div class="cd-flow-up"></div><div class="cd-flow-back"></div></div>' +
+            '<div class="cd-flow-legend"><span>\u25CF 75% upfront</span><span>\u25D0 25% backend \u00b7 mo 9</span></div>' +
           '</div>' +
-          '<div class="msg" style="margin-top:1rem;">At <strong>' + roiPct + '% ROI</strong>, a <strong>' + fmt(monthlyLeadSpend) + '</strong> lead budget produces <strong>' + fmt(upfront) + '</strong> in upfront commission \u2014 leaving <strong>' + fmt(netGoal) + '</strong> net after paying leads.</div>';
+          '<div class="cd-breakdown cd-breakdown-3">' +
+            '<div class="cd-breakdown-cell"><div class="cd-bk-lbl"><span>Upfront</span><b>75%</b></div><div class="cd-bk-v">' + fmt(upfront) + '</div><div class="cd-bk-when">Paid on issue</div></div>' +
+            '<div class="cd-breakdown-cell"><div class="cd-bk-lbl"><span>Backend</span><b>25%</b></div><div class="cd-bk-v">' + fmt(backend) + '</div><div class="cd-bk-when">Paid month 9</div></div>' +
+            '<div class="cd-breakdown-cell"><div class="cd-bk-lbl"><span>Lead spend</span><b>Monthly</b></div><div class="cd-bk-v">' + fmt(monthlyLeadSpend) + '</div><div class="cd-bk-when">' + fmt(weeklyLeadSpend) + ' / week</div></div>' +
+          '</div>';
       }
 
         // Keep leadership in sync whenever commission recalculates
@@ -15097,72 +16299,194 @@
 
       function computeLeadership() {
         if (!hasTeam) return;
-        const compPct = parseFloat(compSel.value);
         const agents = parseInt(teamAgentSel.value) || 1;
-        const agentAPperMonth = 10000;
+        const avgRepEl = document.getElementById('cdAvgRepAP');
+        const overrideEl = document.getElementById('cdOverridePct');
+        const avgRepAP = avgRepEl ? (parseFloat(avgRepEl.value) || 10000) : 10000;
+        const overridePct = overrideEl ? (parseFloat(overrideEl.value) || 10) : 10;
+        const overrideRate = overridePct / 100;
 
-        // Override rate = comp% - 90%
-        const overrideRate = Math.max((compPct - 90) / 100, 0);
-        const totalTeamAP = agentAPperMonth * agents;
+        const teamMonthlyAP = avgRepAP * agents;
+        const teamAnnualAP = teamMonthlyAP * 12;
+        const overrideMonthly = teamMonthlyAP * overrideRate;
+        const overrideAnnual = overrideMonthly * 12;
+        const upfrontMonthly = overrideMonthly * 0.75;
+        const backendMonthly = overrideMonthly * 0.25;
 
-        // No persistency on leadership — flat $10K per agent
-        const grossOverride = totalTeamAP * overrideRate;
-        const upfrontOverride = grossOverride * 0.75;
-        const backendOverride = grossOverride * 0.25;
-        const annualUpfront = upfrontOverride * 12;
-        const annualBackend = backendOverride * 12;
-        const annualTotal = annualUpfront + annualBackend;
+        const grandMonthly = (personalAnnualIncome / 12) + overrideMonthly;
+        const grandAnnual = personalAnnualIncome + overrideAnnual;
+        const lift = personalAnnualIncome > 0 ? Math.round((overrideAnnual / personalAnnualIncome) * 100) : 0;
 
-        // Team bonus: 1.5% of team production when total volume ≥ $150,000/mo
-        const teamBonusThreshold = 150000;
-        const teamBonusRate = 0.015;
-        const teamBonusQualified = totalTeamAP >= teamBonusThreshold;
-        const monthlyTeamBonus = teamBonusQualified ? totalTeamAP * teamBonusRate : 0;
-        const annualTeamBonus = monthlyTeamBonus * 12;
-        const annualTotalWithBonus = annualTotal + annualTeamBonus;
+        // Render rep bars (visualises team size)
+        const repBarsEl = document.getElementById('cdRepBars');
+        if (repBarsEl) {
+          const visible = Math.min(agents, 12);
+          let bars = '';
+          for (let i = 0; i < visible; i++) {
+            bars += '<div class="cd-rep-bar" style="height:' + (40 + (i % 5) * 8) + '%"></div>';
+          }
+          if (agents > 12) bars += '<div style="display:grid;place-items:center;padding-left:8px;font-family:var(--kf-mono);font-size:11px;color:var(--kf-ink-3);">+' + (agents - 12) + '</div>';
+          repBarsEl.innerHTML = bars;
+        }
 
-        leadershipOut.classList.add('visible');
         leadershipOut.innerHTML =
-          '<div class="ss-calc-leadership-title">\ud83d\udc65 Leadership Override</div>' +
-          '<div class="ss-calc-leadership-grid">' +
-            '<div class="ss-calc-leadership-stat">' +
-              '<div class="ss-calc-leadership-stat-label">Monthly Upfront (75%)</div>' +
-              '<div class="ss-calc-leadership-stat-value">' + fmt(upfrontOverride) + '</div>' +
+          '<div class="cd-team-out-block">' +
+            '<div class="cd-team-out-eyebrow">Team AP produced</div>' +
+            '<div class="cd-team-out-row">' +
+              '<div><div class="cd-team-out-big">' + fmt(teamMonthlyAP) + '</div><div class="cd-team-out-mini">Monthly</div></div>' +
+              '<div><div class="cd-team-out-secondary">' + fmt(teamAnnualAP) + '</div><div class="cd-team-out-mini">Annual</div></div>' +
             '</div>' +
-            '<div class="ss-calc-leadership-stat">' +
-              '<div class="ss-calc-leadership-stat-label">Monthly Backend (25%)</div>' +
-              '<div class="ss-calc-leadership-stat-value">' + fmt(backendOverride) + '</div>' +
+            '<div class="cd-team-out-mini" style="margin-top:6px;">' + agents + ' reps \u00d7 ' + fmt(avgRepAP) + '/mo avg</div>' +
+          '</div>' +
+          '<div class="cd-override-grid">' +
+            '<div class="cd-override-cell"><div class="lbl">Override / mo</div><div class="v">' + fmt(overrideMonthly) + '</div></div>' +
+            '<div class="cd-override-cell"><div class="lbl">Upfront 75%</div><div class="v">' + fmt(upfrontMonthly) + '</div></div>' +
+            '<div class="cd-override-cell"><div class="lbl">Backend 25%</div><div class="v">' + fmt(backendMonthly) + '</div></div>' +
+          '</div>' +
+          '<div class="cd-override-annual">' +
+            '<div><div class="lbl">Override income \u00b7 annual</div><div class="v">' + fmt(overrideAnnual) + '</div></div>' +
+            '<div class="cd-team-out-mini" style="text-align:right;">' + fmt(overrideMonthly) + ' \u00d7 12 mo<br>before taxes \u00b7 before bonuses</div>' +
+          '</div>' +
+          '<div class="cd-grand">' +
+            '<div>' +
+              '<div class="lbl">Total income \u00b7 with team</div>' +
+              '<div style="display:flex;gap:24px;align-items:baseline;flex-wrap:wrap;margin-top:4px;">' +
+                '<div><div class="v">' + fmt(grandMonthly) + '</div><div class="cd-team-out-mini" style="margin-top:4px;">Per month</div></div>' +
+                '<div class="cd-grand-annual"><div class="v">' + fmt(grandAnnual) + '</div><div class="cd-team-out-mini" style="margin-top:4px;color:var(--rb-green);font-weight:600;">Per year \u2605</div></div>' +
+              '</div>' +
+              (personalAnnualIncome > 0 ? '<div class="cd-team-out-mini" style="margin-top:8px;color:var(--rb-green);">\u2191 +' + lift + '% vs solo production</div>' : '') +
             '</div>' +
-            '<div class="ss-calc-leadership-stat">' +
-              '<div class="ss-calc-leadership-stat-label">Team Bonus (1.5%)</div>' +
-              '<div class="ss-calc-leadership-stat-value">' + (teamBonusQualified ? fmt(monthlyTeamBonus) + '/mo' : 'Not yet') + '</div>' +
-            '</div>' +
-          '</div>' +
-          (teamBonusQualified
-            ? '<div class="ss-calc-leadership-body" style="margin-top:0.75rem;">' +
-                '<p>Your team\u2019s total volume of <strong>' + fmt(totalTeamAP) + '/month</strong> qualifies for the <strong>1.5% team bonus</strong> \u2014 an additional <strong>' + fmt(monthlyTeamBonus) + '/month</strong> (' + fmt(annualTeamBonus) + '/year).</p>' +
-              '</div>'
-            : '<div class="ss-calc-leadership-body" style="margin-top:0.75rem;">' +
-                '<p>The <strong>1.5% team bonus</strong> kicks in once your team\u2019s total volume reaches <strong>' + fmt(teamBonusThreshold) + '/month</strong> (about 15 agents). You\u2019re currently at <strong>' + fmt(totalTeamAP) + '/month</strong> \u2014 ' + fmt(teamBonusThreshold - totalTeamAP) + ' to go.</p>' +
-              '</div>'
-          ) +
-          '<div class="ss-calc-leadership-body" style="margin-top:0.5rem;">' +
-            '<p>The 25% leadership backend is paid at 9 months on each agent\u2019s production, just like your personal deals. As your team grows, these stacked backends become a significant recurring income stream on top of your personal earnings.</p>' +
-          '</div>' +
-          '<div class="ss-calc-leadership-grid" style="grid-template-columns:1fr; margin-top:1rem;">' +
-            '<div class="ss-calc-leadership-stat">' +
-              '<div class="ss-calc-leadership-stat-label">Annual Leadership Total</div>' +
-              '<div class="ss-calc-leadership-stat-value" style="font-size:1.6rem;">' + fmt(annualTotalWithBonus) + '</div>' +
-              '<div style="font-size:0.72rem; color:#777; margin-top:0.25rem;">Overrides' + (teamBonusQualified ? ' + Team Bonus' : '') + '</div>' +
-            '</div>' +
-          '</div>' +
-          '<div style="margin-top:1.25rem; padding:1.15rem; background:#f5f5f8; border:1px solid #ddd; border-radius:12px; text-align:center;">' +
-            '<div style="font-family:\'Plus Jakarta Sans\',sans-serif; font-size:0.66rem; font-weight:800; letter-spacing:0.14em; text-transform:uppercase; color:#1a1a1a; margin-bottom:0.5rem;">Combined Annual Income</div>' +
-            '<div style="font-family:\'Plus Jakarta Sans\',sans-serif; font-size:2.2rem; font-weight:900; color:#16a34a; letter-spacing:-0.02em;">' + fmt(personalAnnualIncome + annualTotalWithBonus) + '</div>' +
-            '<div style="font-size:0.75rem; color:#555; margin-top:0.35rem;">Personal earnings + Leadership overrides' + (teamBonusQualified ? ' + Team bonus' : '') + '</div>' +
-          '</div>' +
-          '<p style="font-size:0.68rem; color:#888; margin-top:0.75rem; line-height:1.5; text-align:center;">These numbers are based on agency averages analyzed from thousands of agent data points. Your own results may vary, but this is a good estimate of what to expect.</p>';
+            '<div class="cd-team-out-mini" style="text-align:right;line-height:1.7;">Personal \u00b7 ' + fmt(personalAnnualIncome / 12) + '/mo<br>Override \u00b7 ' + fmt(overrideMonthly) + '/mo</div>' +
+          '</div>';
       }
+
+      // ─── Custom drag sliders + bidirectional money fields + team toggle
+      // Each cd-slider element drives a hidden control by data-cd-slider name:
+      //   comp        → cc_comp <select>
+      //   persistency → cc_persistency <select>
+      //   roi         → roi_multiplier <select>
+      //   teamSize    → teamAgentCount <input>
+      //   avgRepAP    → cdAvgRepAP <input> (then computeLeadership)
+      //   overridePct → cdOverridePct <input> (then computeLeadership)
+      const sliderTargets = {
+        comp: { el: document.getElementById('cc_comp'), evt: 'change' },
+        persistency: { el: document.getElementById('cc_persistency'), evt: 'change' },
+        roi: { el: document.getElementById('roi_multiplier'), evt: 'change' },
+        teamSize: { el: document.getElementById('teamAgentCount'), evt: 'input' },
+        avgRepAP: { el: document.getElementById('cdAvgRepAP'), evt: null },
+        overridePct: { el: document.getElementById('cdOverridePct'), evt: null }
+      };
+      function fmtSliderVal(name, v) {
+        if (name === 'avgRepAP') return '$' + v.toLocaleString('en-US') + '/mo';
+        if (name === 'teamSize') return String(v);
+        return v + '%';
+      }
+      function setSliderValue(name, v, fireHandler) {
+        const t = sliderTargets[name];
+        if (!t || !t.el) return;
+        t.el.value = v;
+        const sliderEl = document.querySelector('.cd-slider[data-cd-slider="' + name + '"]');
+        if (sliderEl) {
+          const min = parseFloat(sliderEl.dataset.min);
+          const max = parseFloat(sliderEl.dataset.max);
+          const pct = ((v - min) / (max - min)) * 100;
+          sliderEl.querySelector('.cd-slider-fill').style.width = pct + '%';
+          sliderEl.querySelector('.cd-slider-thumb').style.left = pct + '%';
+        }
+        const disp = document.querySelector('[data-cd-slider-display="' + name + '"]');
+        if (disp) disp.textContent = fmtSliderVal(name, v);
+        if (fireHandler) {
+          if (t.evt) t.el.dispatchEvent(new Event(t.evt, { bubbles: true }));
+          if (name === 'avgRepAP' || name === 'overridePct') {
+            if (typeof computeLeadership === 'function' && hasTeam) computeLeadership();
+          }
+        }
+      }
+      function attachSlider(sliderEl) {
+        const name = sliderEl.dataset.cdSlider;
+        const min = parseFloat(sliderEl.dataset.min);
+        const max = parseFloat(sliderEl.dataset.max);
+        const step = parseFloat(sliderEl.dataset.step);
+        function valueFromX(clientX) {
+          const r = sliderEl.getBoundingClientRect();
+          const ratio = Math.max(0, Math.min(1, (clientX - r.left) / r.width));
+          const raw = min + ratio * (max - min);
+          return Math.max(min, Math.min(max, Math.round(raw / step) * step));
+        }
+        let dragging = false;
+        function onMove(e) {
+          const x = e.touches ? e.touches[0].clientX : e.clientX;
+          setSliderValue(name, valueFromX(x), true);
+        }
+        function onUp() {
+          dragging = false;
+          sliderEl.classList.remove('dragging');
+          window.removeEventListener('mousemove', onMove);
+          window.removeEventListener('mouseup', onUp);
+          window.removeEventListener('touchmove', onMove);
+          window.removeEventListener('touchend', onUp);
+        }
+        sliderEl.addEventListener('mousedown', function(e) {
+          e.preventDefault();
+          dragging = true;
+          sliderEl.classList.add('dragging');
+          setSliderValue(name, valueFromX(e.clientX), true);
+          window.addEventListener('mousemove', onMove);
+          window.addEventListener('mouseup', onUp);
+        });
+        sliderEl.addEventListener('touchstart', function(e) {
+          dragging = true;
+          sliderEl.classList.add('dragging');
+          setSliderValue(name, valueFromX(e.touches[0].clientX), true);
+          window.addEventListener('touchmove', onMove);
+          window.addEventListener('touchend', onUp);
+        });
+        sliderEl.addEventListener('keydown', function(e) {
+          const cur = parseFloat(sliderTargets[name].el.value) || min;
+          if (e.key === 'ArrowRight' || e.key === 'ArrowUp') { e.preventDefault(); setSliderValue(name, Math.min(max, cur + step), true); }
+          else if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') { e.preventDefault(); setSliderValue(name, Math.max(min, cur - step), true); }
+          else if (e.key === 'Home') { e.preventDefault(); setSliderValue(name, min, true); }
+          else if (e.key === 'End') { e.preventDefault(); setSliderValue(name, max, true); }
+        });
+        // Initialize visual from current target value
+        const startVal = parseFloat(sliderTargets[name].el.value) || min;
+        setSliderValue(name, startVal, false);
+      }
+      document.querySelectorAll('#panel-calculator .cd-slider').forEach(attachSlider);
+
+      // Bidirectional money field active state
+      const netField = document.querySelector('[data-cd-money="net"]');
+      const apField = document.querySelector('[data-cd-money="ap"]');
+      const netTag = document.querySelector('[data-cd-money-tag="net"]');
+      const apTag = document.querySelector('[data-cd-money-tag="ap"]');
+      function setMoneyMode(mode) {
+        if (netField) netField.classList.toggle('active', mode === 'net');
+        if (apField) apField.classList.toggle('active', mode === 'ap');
+        if (netTag) netTag.textContent = mode === 'net' ? '\u270f Editing' : 'computed';
+        if (apTag) apTag.textContent = mode === 'ap' ? '\u270f Editing' : 'computed';
+      }
+      if (incomeEl) incomeEl.addEventListener('focus', () => setMoneyMode('net'));
+      if (reqEl) reqEl.addEventListener('focus', () => setMoneyMode('ap'));
+      setMoneyMode('net');
+
+      // Team toggle (cdTeamToggle) drives the legacy teamYes/teamNo handlers
+      const cdToggle = document.getElementById('cdTeamToggle');
+      const cdTeamDisabled = document.getElementById('cdTeamDisabled');
+      function syncTeamToggleVisual(on) {
+        if (cdToggle) {
+          cdToggle.classList.toggle('on', on);
+          cdToggle.setAttribute('aria-pressed', on ? 'true' : 'false');
+        }
+        if (cdTeamDisabled) cdTeamDisabled.style.display = on ? 'none' : '';
+      }
+      if (cdToggle) {
+        cdToggle.addEventListener('click', function() {
+          const next = !cdToggle.classList.contains('on');
+          syncTeamToggleVisual(next);
+          (next ? teamYesBtn : teamNoBtn).click();
+        });
+      }
+      syncTeamToggleVisual(false);
 
       computeCommission();
     })();
