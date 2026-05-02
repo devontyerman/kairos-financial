@@ -2186,7 +2186,8 @@
     #tpatab-performance .tp-lb-table tbody td.num, #tpatab-agents .tp-lb-table tbody td.num, #tpatab-policies .tp-lb-table tbody td.num { text-align: right; font-family: var(--tp-mono); }
     #tpatab-performance .tp-agt-cell, #tpatab-agents .tp-agt-cell, #tpatab-policies .tp-agt-cell { display: flex; align-items: center; gap: 10px; }
     #tpatab-performance .tp-avatar, #tpatab-agents .tp-avatar, #tpatab-policies .tp-avatar {
-      width: 28px; height: 28px; border-radius: 99px;
+      width: 28px; height: 28px; min-width: 28px; min-height: 28px;
+      border-radius: 99px; flex-shrink: 0; aspect-ratio: 1 / 1;
       display: grid; place-items: center;
       font-family: var(--tp-mono); font-size: 10px; font-weight: 500;
       color: var(--tp-ink-1); border: 1px solid var(--tp-hairline-strong);
@@ -4734,6 +4735,17 @@
       #panel-teamperf.active .tp-tabs { overflow-x: auto; flex-wrap: nowrap !important; -webkit-overflow-scrolling: touch; }
       #panel-teamperf.active .tp-admin-tab { flex-shrink: 0; white-space: nowrap; }
       #panel-teamperf.active [class*="tp-policies"] table { display: block; width: 100%; }
+      /* Leaderboard table — keep desktop columns and let it scroll
+         horizontally so avatars stay circular and names sit flush left
+         instead of getting squeezed and wrapped. */
+      #panel-teamperf.active .tp-lb { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+      #panel-teamperf.active .tp-lb-table { min-width: 560px; width: 100%; }
+      #panel-teamperf.active .tp-lb-table tbody td { white-space: nowrap; }
+      #panel-teamperf.active .tp-lb-table .tp-agt-cell {
+        justify-content: flex-start !important;
+        min-width: 0;
+      }
+      #panel-teamperf.active .tp-lb-table .tp-agt-name { text-align: left; min-width: 0; }
       /* Card-stack table rows */
       #panel-teamperf.active table.tp-policies-table thead { display: none; }
       #panel-teamperf.active table.tp-policies-table tbody { display: block; width: 100%; }
