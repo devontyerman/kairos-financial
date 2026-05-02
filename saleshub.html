@@ -1901,8 +1901,19 @@
     #panel-teamperf .tp-admin-tabs {
       display: flex; gap: 0.25rem;
       padding: 14px 32px 0 32px;
-      background: #0d0e10;
-      border-bottom: 1px solid rgba(255,255,255,0.07);
+      background: var(--tp-bg, #0d0e10);
+      border-bottom: 1px solid var(--tp-hairline, rgba(255,255,255,0.07));
+    }
+    #tpatab-performance[data-tp-theme="light"] ~ * .tp-admin-tabs,
+    #panel-teamperf:has([data-tp-theme="light"]) .tp-admin-tabs {
+      background: #f6f5f1;
+      border-bottom-color: rgba(15,12,8,0.08);
+    }
+    #panel-teamperf:has([data-tp-theme="light"]) .tp-admin-tab { color: rgba(20,19,15,0.5); }
+    #panel-teamperf:has([data-tp-theme="light"]) .tp-admin-tab:hover { color: rgba(20,19,15,0.85); }
+    #panel-teamperf:has([data-tp-theme="light"]) .tp-admin-tab.active {
+      color: #14130f;
+      border-bottom-color: oklch(0.55 0.16 145);
     }
     #panel-teamperf .tp-admin-tab {
       appearance: none; border: 0; background: transparent; cursor: pointer;
@@ -9994,7 +10005,7 @@
        text sitting on a white pill. */
     .ss-sidebar-btn {
       background: transparent !important;
-      border-color: rgba(255,255,255,0.07) !important;
+      border: none !important;
     }
     .ss-sidebar-btn:hover {
       color: #f3f3f1 !important;
@@ -10049,7 +10060,7 @@
     html[data-kf-theme="light"] .ss-sidebar-btn {
       color: rgba(20,19,15,0.72) !important;
       background: transparent !important;
-      border-color: rgba(15,12,8,0.08) !important;
+      border: none !important;
     }
     html[data-kf-theme="light"] .ss-sidebar-btn svg { color: rgba(20,19,15,0.72); opacity: 0.85; }
     html[data-kf-theme="light"] .ss-sidebar-btn:hover {
@@ -19918,7 +19929,6 @@
           <header className="tp-hdr">
             <div className="tp-hdr-l">
               <div className="tp-hdr-brand">
-                <div className="tp-hdr-mark"></div>
                 <div className="tp-hdr-title">Kairos Financial</div>
                 <span className="tp-hdr-sub">· {subtitle}</span>
               </div>
@@ -20106,7 +20116,6 @@
                   <th className="num" onClick={() => setSort('_deals')}>Deals {arrow('_deals')}</th>
                   <th className="num" onClick={() => setSort('_dialToDeal')}>D→D % {arrow('_dialToDeal')}</th>
                   <th className="num" onClick={() => setSort('_roi')}>ROI {arrow('_roi')}</th>
-                  <th className="num">Trend (12mo)</th>
                 </tr>
               </thead>
               <tbody>
@@ -20132,11 +20141,6 @@
                       <td className="num"><span className="tp-dial-pct">{a._dialToDeal.toFixed(2)}%</span></td>
                       <td className="num" style={{color: a._roi >= 0 ? 'var(--tp-pos)' : 'var(--tp-neg)'}}>
                         {a._roi >= 0 ? '+' : ''}{a._roi.toFixed(0)}%
-                      </td>
-                      <td className="num" style={{paddingRight: 22}}>
-                        <div style={{display:'flex', justifyContent:'flex-end'}}>
-                          <Sparkline data={a.monthly} color={sparkColor} />
-                        </div>
                       </td>
                     </tr>
                   );
