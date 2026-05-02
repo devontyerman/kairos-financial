@@ -20162,7 +20162,7 @@
       // ─── AP Hero ────────────────────────────────────────────────────────
       function APHero({ scope, view, timeframe, setTimeframe }) {
         const today = new Date();
-        let series, labels, total, prior, label, projectionFromIdx;
+        let series, labels, total, prior, label, projectionFromIdx, mtdProjectedTotal;
         if (timeframe === 'WTD') {
           const weekStart = startOfWeek(today);
           const dayBuckets = [0,0,0,0,0,0,0];
@@ -20195,18 +20195,25 @@
           series = dayBuckets;
           labels = Array.from({length: totalDays}, (_, i) => String(i + 1));
           total = view.ap;
-          // Apples-to-apples comparison: prior = last month's AP through the same day-of-month.
-          // Comparing full-month last vs MTD this is misleading early in the month.
+          // Project current month to end-of-month based on day-of-month pace,
+          // then compare projection vs last month's FULL total. That gives an
+          // honest "if you keep this pace" delta instead of a mid-month MTD
+          // vs full-month-last comparison.
           const dayOfMonthCur = today.getDate();
+          const projectedTotal = dayOfMonthCur > 0 && total > 0
+            ? (total / dayOfMonthCur) * totalDays
+            : total;
           const lastMonthStart = new Date(today.getFullYear(), today.getMonth() - 1, 1);
-          const lastMonthSameDayEnd = new Date(today.getFullYear(), today.getMonth() - 1, dayOfMonthCur, 23, 59, 59);
+          const lastMonthEnd = new Date(today.getFullYear(), today.getMonth(), 0, 23, 59, 59);
           prior = 0;
           (scope.policies || []).forEach(p => {
             const d = parsePolicyDate(p.policy_date || p.created_at);
-            if (d && d >= lastMonthStart && d <= lastMonthSameDayEnd) {
+            if (d && d >= lastMonthStart && d <= lastMonthEnd) {
               prior += parseFloat(p.annual_premium || 0);
             }
           });
+          // Override the delta basis: projected EOM vs last month full total.
+          mtdProjectedTotal = projectedTotal;
           label = 'Month-to-date';
         } else {
           // YTD: chart spans Jan → Dec of the current year. Past + current
@@ -20249,8 +20256,9 @@
           });
           label = 'Year-to-date';
         }
-        const delta = prior ? ((total - prior) / prior) * 100 : 0;
-        const deltaLabel = timeframe === 'WTD' ? 'vs last week' : timeframe === 'MTD' ? 'vs last month (same day)' : 'vs same point last year';
+        const deltaBasis = timeframe === 'MTD' && mtdProjectedTotal != null ? mtdProjectedTotal : total;
+        const delta = prior ? ((deltaBasis - prior) / prior) * 100 : 0;
+        const deltaLabel = timeframe === 'WTD' ? 'vs last week' : timeframe === 'MTD' ? 'projected vs last month' : 'vs same point last year';
         const isTeam = scope.id === '__team__';
         return (
           <div className="tp-card tp-ap-hero">
