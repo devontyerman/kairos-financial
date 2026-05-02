@@ -4521,25 +4521,44 @@
       #panel-goals.active .tk-grid > [style*="span 3"] { grid-column: span 6 !important; }
     }
     @media (max-width: 768px) {
-      /* Re-anchor the full-bleed margin so the canvas matches mobile .ss-main
-         padding (0.75rem) — desktop -2rem horizontal margin pulled the panel
-         offscreen to the left, leaving content un-centered. */
+      /* Force the canvas to fill the full viewport width with symmetric
+         inner padding on mobile, regardless of whatever .ss-main padding
+         the page is using. */
       #panel-goals.active {
         margin: -0.75rem -0.75rem -3rem !important;
-        padding: 18px 14px 32px !important;
+        padding: 14px 14px 32px !important;
         min-height: calc(100vh - 0.75rem) !important;
+        width: auto !important;
+        max-width: none !important;
+        box-sizing: border-box !important;
+        display: block !important;
       }
-      #tkTrackerRoot { width: 100%; }
-      #tkTrackerRoot > div { max-width: 100% !important; margin: 0 !important; padding: 0 !important; }
+      /* Reset every wrapper inside #tkTrackerRoot so React's intrinsic
+         layout doesn't impose a max-width or asymmetric auto-margin. */
+      #panel-goals.active #tkTrackerRoot,
+      #panel-goals.active #tkTrackerRoot > *,
+      #panel-goals.active #tkTrackerRoot > * > * {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        box-sizing: border-box !important;
+      }
       #panel-goals.active .tk-grid { grid-template-columns: 1fr !important; gap: 12px !important; width: 100% !important; }
-      #panel-goals.active .tk-grid > * { grid-column: 1 / -1 !important; max-width: 100% !important; }
-      #panel-goals.active .tk-card { padding: 16px 14px !important; width: 100%; }
+      #panel-goals.active .tk-grid > * { grid-column: 1 / -1 !important; max-width: 100% !important; min-width: 0 !important; }
+      #panel-goals.active .tk-card { padding: 16px 14px !important; width: 100% !important; box-sizing: border-box !important; }
       #panel-goals.active .tk-card-hd { flex-direction: column; align-items: flex-start; gap: 8px; }
-      #panel-goals.active .tk-hdr { flex-direction: column; align-items: flex-start; gap: 12px; }
+      #panel-goals.active .tk-hdr { flex-direction: column; align-items: flex-start; gap: 12px; padding-bottom: 14px !important; margin-bottom: 18px !important; }
       #panel-goals.active .tk-hdr-r { width: 100%; flex-wrap: wrap; }
-      #panel-goals.active .tk-stat-strip { grid-template-columns: 1fr 1fr !important; gap: 8px !important; }
+      #panel-goals.active .tk-stat-strip { grid-template-columns: 1fr 1fr !important; gap: 8px !important; width: 100% !important; }
       #panel-goals.active .tk-ap-num { font-size: 28px !important; }
       #panel-goals.active .tk-card-title { font-size: 14px !important; }
+      /* Charts use ResizeObserver — make sure their container can't
+         overflow the panel and push content sideways. */
+      #panel-goals.active .tk-chart-wrap,
+      #panel-goals.active svg { max-width: 100% !important; }
     }
 
     /* Team Dashboard (#panel-teamperf) */
@@ -6618,6 +6637,23 @@
       #panel-goals .tk-grid-12 > * { grid-column: span 12 !important; }
       #panel-goals .tk-kpi-grid { grid-template-columns: repeat(2, 1fr) !important; }
       .tk-mod-grid, .tk-mod-grid.cols-3, .tk-mod-grid.cols-4 { grid-template-columns: 1fr !important; }
+      /* Submit Deal / Submit KPI modals — fit within the viewport so the
+         action bar (Cancel / Submit) is reachable on small phones. */
+      .tk-modal-layer { padding: 8px !important; align-items: flex-start !important; }
+      .tk-modal {
+        width: 100% !important;
+        max-width: 100% !important;
+        max-height: calc(100vh - 16px) !important;
+        max-height: calc(100dvh - 16px) !important;
+        margin: 0 !important;
+        border-radius: 12px !important;
+      }
+      .tk-mod-hd { padding: 14px 16px 12px !important; }
+      .tk-mod-body { padding: 14px 16px !important; gap: 10px !important; }
+      .tk-mod-foot { padding: 12px 16px !important; }
+      .tk-mod-field input,
+      .tk-mod-field select,
+      .tk-mod-field textarea { width: 100% !important; min-width: 0 !important; box-sizing: border-box !important; }
     }
 
     /* ─── Policy Management — design-specific styles (claude.ai/design) ─── */
