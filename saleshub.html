@@ -10376,147 +10376,73 @@
     }
     #effectiveDateAlert .ss-alert-close:hover { background: var(--kfp-surface-3) !important; }
 
-    /* Sign-up / Sign-in overlay — KF skin */
-    #signupOverlay.ss-signup-overlay {
-      background: rgba(8,9,12,0.62) !important; backdrop-filter: blur(6px) !important;
-    }
-    #signupOverlay .ss-signup-modal {
+    /* Sign-up / Sign-in overlay */
+    #signupOverlay.ss-signup-overlay .ss-signup-box,
+    #signupOverlay.ss-signup-overlay .ss-signup-card {
       background: var(--kfp-bg-2) !important;
       border: 1px solid var(--kfp-hairline-strong) !important;
       border-radius: 12px !important;
       box-shadow: 0 32px 80px rgba(0,0,0,0.5), 0 8px 24px rgba(0,0,0,0.3) !important;
       color: var(--kfp-ink-1) !important;
       font-family: 'Geist','Inter',system-ui,sans-serif !important;
-      padding: 28px 26px 24px !important;
       animation: kfpPop 180ms cubic-bezier(0.2,0.7,0.2,1.05) !important;
-    }
-    #signupOverlay .ss-signup-close {
-      background: var(--kfp-surface-2) !important;
-      color: var(--kfp-ink-2) !important;
-      border: 1px solid var(--kfp-hairline) !important;
-    }
-    #signupOverlay .ss-signup-close:hover {
-      background: var(--kfp-surface-3) !important; color: var(--kfp-ink-1) !important;
-    }
-    #signupOverlay .ss-auth-tabs {
-      border-bottom: 1px solid var(--kfp-hairline) !important;
-      margin-bottom: 18px !important;
-    }
-    #signupOverlay .ss-auth-tab {
-      font-family: inherit !important;
-      color: var(--kfp-ink-3) !important;
-      background: transparent !important;
-      font-weight: 600 !important; font-size: 13px !important;
-      padding: 10px 14px !important; border: none !important;
-      border-bottom: 2px solid transparent !important;
-      cursor: pointer !important; letter-spacing: -0.01em !important;
-    }
-    #signupOverlay .ss-auth-tab:hover { color: var(--kfp-ink-1) !important; }
-    #signupOverlay .ss-auth-tab.active {
-      color: var(--kfp-ink-1) !important;
-      border-bottom-color: var(--kfp-blue) !important;
     }
     #signupOverlay h2, #signupOverlay h3 {
       color: var(--kfp-ink-1) !important;
       font-weight: 600 !important; letter-spacing: -0.01em !important;
     }
-    #signupOverlay .ss-signup-field { margin-bottom: 14px !important; }
-    #signupOverlay .ss-signup-field label,
     #signupOverlay label {
       font-family: 'JetBrains Mono', ui-monospace, monospace !important;
       font-size: 10px !important; text-transform: uppercase !important;
       letter-spacing: 0.08em !important; color: var(--kfp-ink-4) !important;
-      font-weight: 500 !important; display: block !important; margin-bottom: 6px !important;
     }
     #signupOverlay input, #signupOverlay select {
-      width: 100% !important; box-sizing: border-box !important;
       background: var(--kfp-surface) !important;
       border: 1px solid var(--kfp-hairline-strong) !important;
       border-radius: 6px !important; color: var(--kfp-ink-1) !important;
-      font-family: inherit !important; padding: 10px 12px !important; font-size: 13px !important;
-      box-shadow: none !important;
+      font-family: inherit !important; padding: 9px 12px !important; font-size: 13px !important;
     }
-    #signupOverlay input::placeholder { color: var(--kfp-ink-4) !important; }
     #signupOverlay input:focus, #signupOverlay select:focus {
       outline: none !important;
       border-color: color-mix(in oklch, var(--kfp-blue) 60%, var(--kfp-hairline-strong)) !important;
-      box-shadow: 0 0 0 3px color-mix(in oklch, var(--kfp-blue) 18%, transparent) !important;
     }
-    #signupOverlay button[type="submit"],
-    #signupOverlay .ss-signup-submit {
-      width: 100% !important;
+    #signupOverlay button[type="submit"], #signupOverlay .ss-signup-btn {
       background: var(--kfp-blue) !important;
-      border: 1px solid color-mix(in oklch, var(--kfp-blue) 65%, #fff) !important;
+      border: 1px solid color-mix(in oklch, var(--kfp-blue) 65%, var(--kfp-ink-1)) !important;
       color: #fff !important;
       font-family: inherit !important; font-weight: 600 !important; font-size: 13px !important;
-      padding: 11px 18px !important; border-radius: 6px !important; cursor: pointer !important;
-      transition: filter 120ms ease !important; margin-top: 4px !important;
+      padding: 10px 18px !important; border-radius: 6px !important; cursor: pointer !important;
+      transition: filter 120ms ease !important;
     }
-    #signupOverlay button[type="submit"]:hover,
-    #signupOverlay .ss-signup-submit:hover { filter: brightness(1.08); }
-    #signupOverlay .ss-signup-msg {
-      margin-top: 10px !important; font-size: 12px !important;
-      color: var(--kfp-ink-3) !important; text-align: center !important;
-    }
-    /* Helper paragraphs + links inside auth forms — neutralize the inline
-       blue/grey text colors that the legacy markup hard-codes. */
-    #signupOverlay p,
-    #signupOverlay form p {
-      color: var(--kfp-ink-3) !important; font-size: 12px !important;
-    }
-    #signupOverlay a,
-    #signupOverlay a[id="forgotPasswordLink"],
-    #signupOverlay a[id="forgotBack"],
-    #signupOverlay a[id="discordIdHelp"] {
-      color: var(--kfp-blue) !important; text-decoration: none !important;
-      font-weight: 500 !important;
-    }
-    #signupOverlay small { color: var(--kfp-ink-4) !important; }
+    #signupOverlay button[type="submit"]:hover { filter: brightness(1.08); }
 
-    /* Discord ID help modal — KF skin */
-    #discordHelpOverlay { background: rgba(8,9,12,0.62) !important; backdrop-filter: blur(6px) !important; }
-    #discordHelpOverlay .kfp-discord-help {
-      background: var(--kfp-bg-2);
-      border: 1px solid var(--kfp-hairline-strong);
-      border-radius: 12px;
-      box-shadow: 0 32px 80px rgba(0,0,0,0.5), 0 8px 24px rgba(0,0,0,0.3);
-      color: var(--kfp-ink-1);
-      font-family: 'Geist','Inter',system-ui,sans-serif;
-      padding: 26px 26px 22px; max-width: 460px; width: 92%;
-      position: relative;
-      animation: kfpPop 180ms cubic-bezier(0.2,0.7,0.2,1.05);
+    /* Discord ID help modal */
+    #discordHelpOverlay > div,
+    #discordHelpOverlay .ss-discord-help-box {
+      background: var(--kfp-bg-2) !important;
+      border: 1px solid var(--kfp-hairline-strong) !important;
+      border-radius: 12px !important;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.5), 0 8px 24px rgba(0,0,0,0.3) !important;
+      color: var(--kfp-ink-1) !important;
+      font-family: 'Geist','Inter',system-ui,sans-serif !important;
+      padding: 22px !important;
+      animation: kfpPop 180ms cubic-bezier(0.2,0.7,0.2,1.05) !important;
     }
-    #discordHelpOverlay .kfp-discord-help h3 {
-      margin: 0 0 14px; font-size: 16px; font-weight: 600;
-      letter-spacing: -0.01em; color: var(--kfp-ink-1);
+    #discordHelpOverlay h3 {
+      font-family: inherit !important;
+      font-size: 16px !important; font-weight: 600 !important;
+      color: var(--kfp-ink-1) !important; margin: 0 0 12px !important;
     }
-    #discordHelpOverlay .kfp-discord-help ol {
-      margin: 0; padding: 0 0 0 1.2em;
-      color: var(--kfp-ink-2); font-size: 13px; line-height: 1.7;
+    #discordHelpOverlay ol, #discordHelpOverlay ul {
+      color: var(--kfp-ink-2) !important; font-size: 13px !important;
+      line-height: 1.6 !important;
     }
-    #discordHelpOverlay .kfp-discord-help li { margin-bottom: 4px; }
-    #discordHelpOverlay .kfp-discord-help strong { color: var(--kfp-ink-1); font-weight: 600; }
-    #discordHelpOverlay .kfp-discord-help code {
-      background: var(--kfp-surface);
-      border: 1px solid var(--kfp-hairline);
-      color: var(--kfp-ink-1);
-      font-family: 'JetBrains Mono', ui-monospace, monospace;
-      font-size: 12px; padding: 2px 7px; border-radius: 4px;
-    }
-    #discordHelpOverlay .kfp-discord-help p {
-      margin: 14px 0 0; font-size: 12px; color: var(--kfp-ink-3);
-    }
+    #discordHelpOverlay strong { color: var(--kfp-ink-1) !important; }
     #discordHelpOverlay #discordHelpClose {
-      position: absolute; top: 12px; right: 14px;
-      background: var(--kfp-surface-2); border: 1px solid var(--kfp-hairline);
-      width: 28px; height: 28px; border-radius: 999px;
-      display: grid; place-items: center;
-      color: var(--kfp-ink-3); font-size: 18px; line-height: 1; cursor: pointer;
-      transition: background 120ms ease, color 120ms ease;
+      color: var(--kfp-ink-3) !important;
+      transition: color 120ms ease !important;
     }
-    #discordHelpOverlay #discordHelpClose:hover {
-      background: var(--kfp-surface-3); color: var(--kfp-ink-1);
-    }
+    #discordHelpOverlay #discordHelpClose:hover { color: var(--kfp-ink-1) !important; }
 
     /* Submit-Sale form modal — re-skin the chrome (form internals stay) */
     #submitOverlay.ss-submit-overlay {
@@ -10783,6 +10709,186 @@
           <button onclick="document.querySelector('.ss-signup-overlay').classList.add('open');switchAuthTab('signup');" style="padding:0.6rem 1.5rem;font-family:'Plus Jakarta Sans',sans-serif;font-size:0.85rem;font-weight:700;color:#555;background:#f0f0f3;border:1px solid #d0d0d5;border-radius:100px;cursor:pointer;">Sign Up</button>
         </div>
       </div>
+    </div>
+
+    <!-- SUBMIT FORM -->
+    <div class="ss-submit-overlay" id="submitOverlay" role="dialog" aria-modal="true">
+     <div class="ss-submit-overlay-inner">
+      <button class="ss-submit-overlay-close" id="submitOverlayClose" aria-label="Close">×</button>
+      <div style="padding: 2.5rem 1.5rem 2rem;">
+
+        <div class="ss-panel-head">
+          <h2 id="submitModalTitle">Submit</h2>
+          <p class="ss-panel-sub" id="submitModalSub">Log your activity.</p>
+        </div>
+
+        <!-- Auth bar (shown when logged in) -->
+        <div class="ss-auth-bar" id="authBar" style="display:none;">
+          <div class="ss-auth-user">Submitting as <span id="authName"></span></div>
+        </div>
+
+        <!-- Auth prompt (shown when not logged in) -->
+        <div class="ss-auth-prompt" id="authPrompt" style="display:none;">
+          <p>You must be signed in to submit a sale.</p>
+          <div class="ss-auth-prompt-btns">
+            <button class="ss-auth-prompt-btn login" id="promptLogin">Log In</button>
+            <button class="ss-auth-prompt-btn signup" id="promptSignup">Sign Up</button>
+          </div>
+        </div>
+
+        <!-- DAILY KPI FORM (above sale form) -->
+        <div class="ss-form-wrap" id="kpiFormWrap" style="display:none;margin-bottom:2.5rem;">
+          <div class="ss-form-card">
+            <div class="ss-form-title" style="color:#2563eb;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+              Daily KPIs
+            </div>
+            <form id="kpiForm">
+              <div class="kpi-form-grid">
+                <div class="ss-field">
+                  <label class="ss-label">Date</label>
+                  <input type="date" class="ss-input" id="kpiDate" required />
+                </div>
+                <div class="ss-field">
+                  <label class="ss-label">Dials</label>
+                  <input type="number" class="ss-input" id="kpiDials" min="0" placeholder="0" />
+                </div>
+                <div class="ss-field">
+                  <label class="ss-label">Answers</label>
+                  <input type="number" class="ss-input" id="kpiAnswers" min="0" placeholder="0" />
+                </div>
+                <div class="ss-field">
+                  <label class="ss-label">Appointments</label>
+                  <input type="number" class="ss-input" id="kpiAppointments" min="0" placeholder="0" />
+                </div>
+                <div class="ss-field">
+                  <label class="ss-label">Presentations</label>
+                  <input type="number" class="ss-input" id="kpiPresentations" min="0" placeholder="0" />
+                </div>
+                <div class="ss-field">
+                  <label class="ss-label">Deals</label>
+                  <input type="number" class="ss-input" id="kpiDeals" min="0" placeholder="0" />
+                </div>
+                <div class="ss-field">
+                  <label class="ss-label">Lead Spend ($)</label>
+                  <input type="number" class="ss-input" id="kpiLeadSpend" min="0" step="0.01" placeholder="0.00" />
+                </div>
+                <div class="ss-field">
+                  <label class="ss-label">Deposits ($)</label>
+                  <input type="number" class="ss-input" id="kpiDeposits" min="0" step="0.01" placeholder="0.00" />
+                </div>
+              </div>
+              <button type="submit" class="ss-submit" id="kpiSubmitBtn">Submit KPIs</button>
+              <div id="kpiMsg" style="margin-top:0.5rem;font-size:0.8rem;text-align:center;display:none;"></div>
+            </form>
+          </div>
+
+          <!-- Daily Breakdown — collapsible per-day KPI history -->
+          <div class="ss-form-card kpi-daily-card" style="margin-top:1.25rem;">
+            <div class="kpi-daily-head">
+              <div>
+                <div class="kpi-daily-title">Daily Breakdown</div>
+                <div class="kpi-daily-meta" id="kpiDailyMeta">— days logged</div>
+              </div>
+              <button type="button" class="kpi-daily-toggle" id="kpiDailyToggle" aria-expanded="false">
+                <span id="kpiDailyToggleLbl">Show</span>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+            </div>
+            <div class="kpi-daily-wrap" id="kpiDailyWrap">
+              <div class="kpi-daily-empty" id="kpiDailyEmpty">No KPI activity logged yet.</div>
+              <div class="kpi-daily-scroll" id="kpiDailyScroll" style="display:none;">
+                <table class="kpi-daily-table">
+                  <thead>
+                    <tr>
+                      <th class="kdt-date">Date</th>
+                      <th>Dials</th>
+                      <th>Answers</th>
+                      <th>Appts</th>
+                      <th>Pres.</th>
+                      <th>Deals</th>
+                      <th class="num">Lead spend</th>
+                      <th class="num">Deposits</th>
+                    </tr>
+                  </thead>
+                  <tbody id="kpiDailyTbody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sale form -->
+        <div class="ss-form-wrap">
+        <form class="ss-form-card" id="saleForm">
+          <div class="ss-form-title" style="color:#15803d;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+            New Sale
+          </div>
+          <div class="ss-form-grid">
+            <div class="ss-field">
+              <label class="ss-label">Client Name</label>
+              <input class="ss-input" type="text" id="clientName" required />
+            </div>
+            <div class="ss-field">
+              <label class="ss-label">Client Phone Number</label>
+              <input class="ss-input" type="tel" id="clientPhone" placeholder="(123) 456-7890" inputmode="numeric" autocomplete="tel" maxlength="14" required />
+            </div>
+            <div class="ss-field">
+              <label class="ss-label">Annual Premium (AP)</label>
+              <input class="ss-input" type="number" id="annualPremium" min="0" step="0.01" required />
+            </div>
+            <div class="ss-field">
+              <label class="ss-label">Policy Number</label>
+              <input class="ss-input" type="text" id="policyNumber" required />
+            </div>
+            <div class="ss-field">
+              <label class="ss-label">Carrier</label>
+              <select class="ss-select" id="carrier" required><option value="">Select carrier...</option></select>
+            </div>
+            <div class="ss-field">
+              <label class="ss-label">Product Type</label>
+              <select class="ss-select" id="productType" required><option value="">Select product...</option></select>
+            </div>
+            <div class="ss-field">
+              <label class="ss-label">Sold Date</label>
+              <input class="ss-input" type="date" id="policyDate" required />
+            </div>
+            <div class="ss-field">
+              <label class="ss-label">Effective Date</label>
+              <input class="ss-input" type="date" id="effectiveDate" required onclick="this.showPicker()" style="cursor:pointer;" />
+            </div>
+            <div class="ss-field">
+              <label class="ss-label">Status</label>
+              <select class="ss-select" id="policyStatus">
+                <option value="Underwriting">Underwriting</option>
+                <option value="Approved">Approved</option>
+              </select>
+            </div>
+            <div class="ss-field full">
+              <button class="ss-submit" type="submit" id="submitBtn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                Submit Sale
+              </button>
+            </div>
+          </div>
+          <div class="ss-signup-link">
+            First deal? <a id="openSignup">Sign up here.</a>
+          </div>
+
+          <!-- Discord notify toggle (lower right, default ON) -->
+          <div class="ss-discord-toggle-wrap" title="When off, this sale won't post to Discord. Resets to ON after submit.">
+            <span class="ss-discord-toggle-label">Post to Discord</span>
+            <label class="ss-discord-toggle-switch">
+              <input type="checkbox" id="discordNotifyToggle" checked />
+              <span class="ss-discord-toggle-slider"></span>
+            </label>
+          </div>
+        </form>
+        </div>
+
+      </div>
+     </div>
     </div>
 
     <!-- ═══ TRACKER PANEL — claude.ai/design Agent Dashboard, React-rendered ═══ -->
@@ -12058,6 +12164,17 @@
   </div><!-- end ss-main -->
   </div><!-- end ss-dashboard -->
 
+  <!-- Effective Date Reminder -->
+  <div class="ss-alert-overlay" id="effectiveDateAlert">
+    <div class="ss-alert-box warning" style="max-width: 550px;">
+      <div class="ss-alert-icon">📅</div>
+      <h3>Policies Going Into Effect Tomorrow</h3>
+      <p>Remind these clients their policy is going into effect tomorrow.</p>
+      <div class="ss-uw-list" id="effectiveDateList"></div>
+      <button class="ss-alert-close" id="effectiveDateClose">Got It</button>
+    </div>
+  </div>
+
   <!-- Edit Policy Modal -->
   <div class="mp-edit-overlay" id="mpEditOverlay">
     <div class="mp-edit-modal">
@@ -12162,21 +12279,21 @@
     </div>
   </div>
 
-  <!-- Discord ID Help Modal (KF skin) -->
-  <div class="ss-discord-help-overlay" id="discordHelpOverlay" style="display:none;position:fixed;inset:0;z-index:10001;align-items:center;justify-content:center;">
-    <div class="kfp-discord-help">
-      <button id="discordHelpClose" aria-label="Close">&times;</button>
-      <h3>How to Find Your Discord User ID</h3>
-      <ol>
+  <!-- Discord ID Help Modal -->
+  <div class="ss-discord-help-overlay" id="discordHelpOverlay" style="display:none;position:fixed;inset:0;z-index:10001;background:rgba(0,0,0,0.25);backdrop-filter:blur(6px);align-items:center;justify-content:center;">
+    <div style="background:#fff;border-radius:16px;max-width:480px;width:90%;padding:2rem;position:relative;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
+      <button id="discordHelpClose" style="position:absolute;top:12px;right:14px;background:none;border:none;font-size:1.4rem;cursor:pointer;color:#999;">&times;</button>
+      <h3 style="margin:0 0 1rem;font-size:1.15rem;color:#111;">How to Find Your Discord User ID</h3>
+      <ol style="margin:0;padding:0 0 0 1.2rem;color:#444;font-size:0.9rem;line-height:1.7;">
         <li>Open <strong>Discord</strong> (desktop or mobile)</li>
         <li>Go to <strong>Settings</strong> (gear icon ⚙️)</li>
         <li>Scroll down to <strong>Advanced</strong></li>
         <li>Toggle on <strong>Developer Mode</strong></li>
         <li>Go back and tap/right-click <strong>your own name</strong></li>
         <li>Select <strong>Copy User ID</strong></li>
-        <li>Paste it into the field — it'll look like <code>123456789012345678</code></li>
+        <li>Paste it into the field — it'll look like <code style="background:#f3f4f6;padding:2px 6px;border-radius:4px;font-size:0.85rem;">123456789012345678</code></li>
       </ol>
-      <p>You can always add this later from your profile settings.</p>
+      <p style="margin:1rem 0 0;font-size:0.8rem;color:#999;">You can always add this later from your profile settings.</p>
     </div>
   </div>
 
@@ -12510,11 +12627,9 @@
         if (sidebarUser) sidebarUser.classList.add('visible');
         authBar.style.display = 'flex';
         authPrompt.style.display = 'none';
-        // saleForm + kpiFormWrap were the legacy submitOverlay forms,
-        // now removed in favor of the Tracker's React modals.
-        if (saleForm) { saleForm.style.opacity = '1'; saleForm.style.pointerEvents = 'auto'; }
-        const _kpiWrap1 = document.getElementById('kpiFormWrap');
-        if (_kpiWrap1) _kpiWrap1.style.display = 'block';
+        saleForm.style.opacity = '1';
+        saleForm.style.pointerEvents = 'auto';
+        document.getElementById('kpiFormWrap').style.display = 'block';
         // Legacy leaderboard auth gate elements were removed when the new
         // React leaderboard took over — guard prevents null-deref that was
         // crashing updateAuthUI() and blocking the login flow.
@@ -12543,9 +12658,9 @@
         if (sidebarUserName) sidebarUserName.textContent = '';
         authBar.style.display = 'none';
         authPrompt.style.display = 'none';
-        if (saleForm) { saleForm.style.opacity = '0.35'; saleForm.style.pointerEvents = 'none'; }
-        const _kpiWrap2 = document.getElementById('kpiFormWrap');
-        if (_kpiWrap2) _kpiWrap2.style.display = 'none';
+        saleForm.style.opacity = '0.35';
+        saleForm.style.pointerEvents = 'none';
+        document.getElementById('kpiFormWrap').style.display = 'none';
         const _lbNotAuth2 = document.getElementById('lbNotAuth');
         const _lbAuthWrap2 = document.getElementById('lbAuthWrap');
         if (_lbNotAuth2) _lbNotAuth2.style.display = 'block';
@@ -13414,8 +13529,8 @@
       }
     });
 
-    // ─── FORM SUBMIT ─── (legacy; #saleForm removed — guard for null)
-    if (document.getElementById('saleForm')) document.getElementById('saleForm').addEventListener('submit', async (e) => {
+    // ─── FORM SUBMIT ───
+    document.getElementById('saleForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const btn = document.getElementById('submitBtn');
       btn.disabled = true;
@@ -13647,7 +13762,7 @@
       });
     }
 
-    if (document.getElementById('kpiForm')) document.getElementById('kpiForm').addEventListener('submit', async (e) => {
+    document.getElementById('kpiForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const btn = document.getElementById('kpiSubmitBtn');
       const msg = document.getElementById('kpiMsg');
@@ -15604,11 +15719,61 @@
     }
 
 
-    // Mount the React Tracker once auth resolves.
+    // ── Effective Date Reminder ──
+    async function checkEffectiveDateReminders() {
+      if (!currentUser) return;
+      const token = accessToken || SUPABASE_KEY;
+      // Get tomorrow's date
+      var now = new Date();
+      var tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+      var tomorrowYmd = tomorrow.getFullYear() + '-' + String(tomorrow.getMonth() + 1).padStart(2, '0') + '-' + String(tomorrow.getDate()).padStart(2, '0');
+      try {
+        var res = await fetch(SUPABASE_URL + '/rest/v1/policies?select=*&user_id=eq.' + currentUser.id + '&effective_date=eq.' + tomorrowYmd, {
+          headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + token }
+        });
+        var data = await res.json();
+        // Only include policies where effective_date was 3+ days after policy_date (sold date)
+        var eligible = data.filter(function(p) {
+          if (!p.policy_date || !p.effective_date) return false;
+          var sold = new Date(p.policy_date + 'T00:00:00');
+          var eff = new Date(p.effective_date + 'T00:00:00');
+          return (eff - sold) >= 3 * 24 * 60 * 60 * 1000;
+        });
+        if (!eligible.length) return;
+        // Only show once per day
+        var lastShown = localStorage.getItem('eff_reminder_date');
+        var todayStr = now.toISOString().split('T')[0];
+        if (lastShown === todayStr) return;
+        localStorage.setItem('eff_reminder_date', todayStr);
+        var listEl = document.getElementById('effectiveDateList');
+        var html = '';
+        eligible.forEach(function(p) {
+          var phone = '';
+          if (p.phone) {
+            var digits = p.phone.replace(/\D/g, '');
+            phone = ' · <a href="tel:' + digits + '" style="color:#088395;text-decoration:none;font-weight:600;">' + esc(p.phone) + '</a>';
+          }
+          html += '<div class="ss-uw-item">';
+          html += '<div class="ss-uw-item-info"><div class="ss-uw-item-name">' + esc(p.client_name) + '</div>';
+          html += '<div class="ss-uw-item-meta">' + esc(p.carrier) + ' · $' + parseFloat(p.annual_premium).toLocaleString() + phone + '</div></div>';
+          html += '</div>';
+        });
+        listEl.innerHTML = html;
+        document.getElementById('effectiveDateAlert').classList.add('open');
+      } catch (e) { console.error('Effective date reminder check failed:', e); }
+    }
+    document.getElementById('effectiveDateClose').addEventListener('click', function() { document.getElementById('effectiveDateAlert').classList.remove('open'); });
+    document.getElementById('effectiveDateAlert').addEventListener('click', function(e) { if (e.target.id === 'effectiveDateAlert') e.target.classList.remove('open'); });
+
+
+    // Trigger reminder check after auth is confirmed
     const origUpdateAuthUI = updateAuthUI;
     updateAuthUI = function() {
       origUpdateAuthUI();
       if (currentUser) {
+        setTimeout(checkEffectiveDateReminders, 2500);
+        // The Tracker panel is now React-rendered (see KairosTracker IIFE).
+        // Mount it on auth so the dashboard fills with the user's data.
         if (window.tkMountTracker) { try { window.tkMountTracker(); } catch (e) { console.error('Tracker mount failed:', e); } }
       }
     };
@@ -19900,26 +20065,17 @@
               dayBuckets[d.getDate() - 1] += parseFloat(p.annual_premium || 0);
             }
           });
-          // Build a cumulative-through-today + linear-projection-to-EOM
-          // series so the chart can render a single smooth curve and show
-          // the projection band the same way the YTD view does.
-          const dayOfMonthCur = today.getDate();
-          const cumDaily = [];
-          let runMtd = 0;
-          for (let i = 0; i < totalDays; i++) {
-            if (i < dayOfMonthCur) { runMtd += dayBuckets[i]; cumDaily.push(runMtd); }
-            else cumDaily.push(null);
-          }
-          const apMTDsoFar = cumDaily[dayOfMonthCur - 1] || 0;
-          const dailyAvg = dayOfMonthCur > 0 ? apMTDsoFar / dayOfMonthCur : 0;
-          for (let i = dayOfMonthCur; i < totalDays; i++) {
-            cumDaily[i] = apMTDsoFar + dailyAvg * (i - dayOfMonthCur + 1);
-          }
-          series = cumDaily;
+          series = dayBuckets;
           labels = Array.from({length: totalDays}, (_, i) => String(i + 1));
           total = view.ap;
-          projectionFromIdx = Math.max(0, Math.min(totalDays - 1, dayOfMonthCur - 1));
-          const projectedTotal = cumDaily[totalDays - 1] || total;
+          // Project current month to end-of-month based on day-of-month pace,
+          // then compare projection vs last month's FULL total. That gives an
+          // honest "if you keep this pace" delta instead of a mid-month MTD
+          // vs full-month-last comparison.
+          const dayOfMonthCur = today.getDate();
+          const projectedTotal = dayOfMonthCur > 0 && total > 0
+            ? (total / dayOfMonthCur) * totalDays
+            : total;
           const lastMonthStart = new Date(today.getFullYear(), today.getMonth() - 1, 1);
           const lastMonthEnd = new Date(today.getFullYear(), today.getMonth(), 0, 23, 59, 59);
           prior = 0;
