@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Popup Gallery — Sales Hub</title>
+  <meta name="robots" content="noindex,nofollow" />
+  <style>
+    body { margin:0; font-family: system-ui, -apple-system, sans-serif; background:#0d1117; color:#e7e9ee; }
+    #toolbar {
+      position:fixed; top:0; left:0; right:0; z-index:99999;
+      background:#11151c; border-bottom:1px solid #2a3140;
+      padding:10px 14px; display:flex; flex-wrap:wrap; gap:6px; align-items:center;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+    }
+    #toolbar h1 { font-size:13px; margin:0 12px 0 0; font-weight:800; letter-spacing:0.04em; text-transform:uppercase; color:#90a8ff; }
+    #toolbar button {
+      background:#1f2733; color:#e7e9ee; border:1px solid #2f3947; padding:6px 10px;
+      border-radius:6px; font-size:11px; font-weight:600; cursor:pointer; font-family:inherit;
+    }
+    #toolbar button:hover { background:#2a3340; border-color:#3a4555; }
+    #toolbar button.danger { color:#fca5a5; border-color:#553030; }
+    #toolbar button.warn { color:#fbbf24; border-color:#5b4a1f; }
+    #toolbar button.green { color:#86efac; border-color:#2f5a3d; }
+    #toolbar .sep { width:1px; height:20px; background:#2a3140; margin:0 4px; }
+    iframe { display:block; width:100vw; height:calc(100vh - 56px); border:none; margin-top:56px; background:#fff; }
+    #status { font-size:11px; color:#7d8694; margin-left:auto; padding-right:8px; }
+  </style>
+</head>
+<body>
+  <div id="toolbar">
+    <h1>Popup Gallery</h1>
+    <button id="btnSaleSuccess" class="green">Sale Submitted ✓</button>
+    <button data-popup="signupOverlay">Sign In / Sign Up</button>
+    <button data-popup="discordHelpOverlay">Discord ID Help</button>
+    <button id="btnError" class="danger">Error Modal</button>
+    <button id="btnConfirm">Confirm Modal</button>
+    <span class="sep"></span>
+    <button id="btnSubmitDeal" class="green">Tracker · Submit Deal</button>
+    <button id="btnSubmitKpi">Tracker · Submit KPI</button>
+    <span id="status">Loading saleshub.html…</span>
+  </div>
+  <iframe id="frame" src="saleshub.html"></iframe>
+
+  <script>
+    const frame = document.getElementById('frame');
+    const statusEl = document.getElementById('status');
+
+    function fdoc() { return frame.contentDocument; }
+    function fwin() { return frame.contentWindow; }
+    function setStatus(msg) { statusEl.textContent = msg; console.log('[gallery]', msg); }
+
+    function showOverlay(id) {
+      const el = fdoc() && fdoc().getElementById(id);
+      if (!el) { setStatus('✗ #' + id + ' not in DOM — page not loaded yet?'); return; }
+      // Wipe any inline display:none baked into the markup, then apply
+      // both the canonical .open class AND a hard inline display so we
+      // win regardless of which CSS variant the overlay uses.
+      el.style.removeProperty('display');
+      el.classList.add('open');
+      el.style.display = 'flex';
+      // Scroll to top so a fixed-position overlay is centered in view.
+      try { fwin().scrollTo({top:0, behavior:'instant'}); } catch (e) {}
+      setStatus('✓ opened #' + id);
+    }
+
+    document.querySelectorAll('#toolbar button[data-popup]').forEach(b => {
+      b.addEventListener('click', () => showOverlay(b.dataset.popup));
+    });
+
+    document.getElementById('btnSaleSuccess').addEventListener('click', () => {
+      const fn = fwin() && fwin().showSuccessModal;
+      if (typeof fn !== 'function') { setStatus('✗ showSuccessModal not on window — saleshub.html still loading?'); return; }
+      try { fn(4800); setStatus('✓ showSuccessModal(4800)'); }
+      catch (e) { setStatus('✗ ' + e.message); }
+    });
+
+    document.getElementById('btnError').addEventListener('click', () => {
+      const fn = fwin() && fwin().showErrorModal;
+      if (typeof fn !== 'function') { setStatus('✗ showErrorModal not on window'); return; }
+      try { fn('This is a sample error message — e.g. "Annual Premium must be a positive number."'); setStatus('✓ showErrorModal()'); }
+      catch (e) { setStatus('✗ ' + e.message); }
+    });
+
+    document.getElementById('btnConfirm').addEventListener('click', () => {
+      const fn = fwin() && fwin().showConfirmModal;
+      if (typeof fn !== 'function') {
+        setStatus('✗ showConfirmModal not exposed — sign in so the Tracker panel mounts, then try again');
+        return;
+      }
+      try {
+        fn({
+          title: 'Confirm action',
+          message: 'Are you sure you want to do this thing? It cannot be undone.',
+          confirmText: 'Yes, do it',
+          cancelText: 'Cancel',
+          variant: 'danger',
+          icon: '🗑️',
+        });
+        setStatus('✓ showConfirmModal()');
+      } catch (e) { setStatus('✗ ' + e.message); }
+    });
+
+    document.getElementById('btnSubmitDeal').addEventListener('click', () => {
+      const buttons = [...fdoc().querySelectorAll('button')].filter(b => /Submit Deal/i.test(b.textContent));
+      if (!buttons.length) { setStatus('✗ Submit Deal button not in DOM — sign in first to mount the Tracker'); return; }
+      buttons[0].click();
+      setStatus('✓ Submit Deal modal opened');
+    });
+
+    document.getElementById('btnSubmitKpi').addEventListener('click', () => {
+      const buttons = [...fdoc().querySelectorAll('button')].filter(b => /Submit KPI/i.test(b.textContent));
+      if (!buttons.length) { setStatus('✗ Submit KPI button not in DOM — sign in first to mount the Tracker'); return; }
+      buttons[0].click();
+      setStatus('✓ Submit KPI modal opened');
+    });
+
+    frame.addEventListener('load', () => {
+      setStatus('Ready · sign in for Confirm + Tracker modals');
+    });
+  </script>
+</body>
+</html>
