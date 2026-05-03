@@ -1655,6 +1655,30 @@
     #panel-weeklytracker .wt-tab .wt-tab-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--wt-blue-400); }
     #panel-weeklytracker .wt-tab.setup .wt-tab-dot { background: var(--wt-green-500); }
     #panel-weeklytracker .wt-tab.current::after { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--wt-green-500); box-shadow: 0 0 0 2px var(--wt-green-100); margin-left: 2px; }
+    /* Month tabs: same shape as week tabs but a slightly bolder treatment so
+       they read as a separate group. */
+    #panel-weeklytracker .wt-tab.month { color: var(--wt-blue-700); font-weight: 600; }
+    #panel-weeklytracker .wt-tab.month .wt-tab-dot { background: var(--wt-blue-600); }
+    #panel-weeklytracker .wt-tab.month.active { color: var(--wt-blue-700); border-top-color: var(--wt-blue-600); }
+    /* Visual separator between the 12 month tabs and the weekly tabs */
+    #panel-weeklytracker .wt-tab-sep { display: inline-block; width: 1px; align-self: center; height: 22px; background: var(--wt-gray-300); margin: 0 8px; flex-shrink: 0; }
+    /* Month-sheet day cells — narrower than weekly day cells since there can
+       be 28-31 of them. AP > 0 gets the green tint, empty days are subtle. */
+    #panel-weeklytracker .wt-month-day-h { background: linear-gradient(180deg, var(--wt-blue-600), var(--wt-blue-700)); color: white; font-weight: 600; font-size: 11px; padding: 8px 4px; border-right: 1px solid rgba(255,255,255,0.18); text-align: center; min-width: 44px; width: 44px; }
+    #panel-weeklytracker .wt-month-day-h.today { background: linear-gradient(180deg, var(--wt-green-600), var(--wt-green-700)); }
+    #panel-weeklytracker .wt-month-day-cell { font-family: 'JetBrains Mono', monospace; font-size: 11px; text-align: right; padding: 0 6px; height: 36px; min-width: 44px; width: 44px; border-bottom: 1px solid var(--wt-gray-100); border-right: 1px solid var(--wt-gray-100); color: var(--wt-gray-700); font-weight: 500; }
+    #panel-weeklytracker .wt-month-day-cell.over { background: var(--wt-green-50); color: var(--wt-green-700); font-weight: 700; }
+    #panel-weeklytracker .wt-month-day-cell.empty { color: var(--wt-gray-400); text-align: center; }
+    /* Dark-mode versions */
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-month-day-h { background: linear-gradient(180deg, var(--wt-blue-700), #0f2966); border-right-color: rgba(255,255,255,0.18); }
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-month-day-h.today { background: linear-gradient(180deg, var(--wt-green-600), var(--wt-green-700)); }
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-month-day-cell { background: var(--wt-gray-50); color: var(--wt-gray-700); border-bottom: 1px solid #1c2438; border-right: 1px solid #1c2438; }
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-month-day-cell.over { background: var(--wt-green-50); color: var(--wt-green-300); }
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-month-day-cell.empty { color: var(--wt-gray-400); }
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-tab-sep { background: var(--wt-gray-300); }
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-tab.month { color: #8db4ff; }
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-tab.month .wt-tab-dot { background: var(--wt-blue-400); }
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-tab.month.active { color: #8db4ff; border-top-color: var(--wt-blue-500); }
     #panel-weeklytracker .wt-setup-wrap { padding: 20px 32px 40px; }
     #panel-weeklytracker .wt-setup-card { background: white; border: 1px solid var(--wt-gray-200); border-radius: 12px; overflow: hidden; box-shadow: 0 1px 2px rgba(16,24,40,0.04); }
     #panel-weeklytracker .wt-setup-banner { background: linear-gradient(135deg, var(--wt-green-50), var(--wt-blue-50)); padding: 18px 22px; border-bottom: 1px solid var(--wt-gray-200); display: flex; align-items: center; gap: 14px; }
@@ -18004,12 +18028,31 @@
         } catch (e) { console.error('[WT] hide/show rep save threw:', e); }
       }
 
-      // Month key = first day of the week's month, formatted YYYY-MM-DD.
-      // Anchored on the week's Monday so a week that crosses months is bucketed
-      // with its start month — matches the MTD calculation in getMTDAtWeek().
+      // Anchor month for a week sheet — DYNAMIC so border weeks behave like a
+      // daily meeting expects:
+      //   • If today falls inside this week → today's calendar month wins.
+      //     (Standing on May 3 inside the Apr 28→May 3 week shows May MTD.)
+      //   • Otherwise → the week's END (Saturday) month, so historical
+      //     border weeks show the month the bulk of the week sat in.
+      function anchorMonthForWeek(weekKey) {
+        const weekStart = new Date(weekKey + 'T00:00:00');
+        const weekEnd = new Date(weekStart);
+        weekEnd.setDate(weekEnd.getDate() + 5);
+        const weekStartKey = ymdLocal(weekStart);
+        const weekEndKey = ymdLocal(weekEnd);
+        const todayKey = ymdLocal(new Date());
+        if (todayKey >= weekStartKey && todayKey <= weekEndKey) {
+          const t = new Date();
+          return { year: t.getFullYear(), monthIdx: t.getMonth() };
+        }
+        return { year: weekEnd.getFullYear(), monthIdx: weekEnd.getMonth() };
+      }
+      // Month key = first day of the resolved anchor month, YYYY-MM-DD.
+      // Used so Monthly-Goal edits on a week sheet write to the correct
+      // wt_monthly_ap_goals row (and the same row a month sheet would edit).
       function monthKeyForWeek(weekKey) {
-        const d = new Date(weekKey + 'T00:00:00');
-        return ymdLocal(new Date(d.getFullYear(), d.getMonth(), 1));
+        const a = anchorMonthForWeek(weekKey);
+        return ymdLocal(new Date(a.year, a.monthIdx, 1));
       }
       function getMonthlyApGoal(monthKey, rep) {
         const m = goals._monthlyAp && goals._monthlyAp[monthKey];
@@ -18180,17 +18223,18 @@
         return result;
       }
 
-      // MTD totals as of end of given week. Month is anchored on the week's
-      // Monday so a week that crosses months reports MTD for the start month.
+      // MTD totals as of end of given week. Anchor month resolved by
+      // anchorMonthForWeek (dynamic to today during the live week). Capped at
+      // month-end + today so the number stays a pure calendar-month figure.
       function getMTDAtWeek(weekKey) {
-        const weekStart = new Date(weekKey + 'T00:00:00');
-        const weekEnd = new Date(weekStart);
-        weekEnd.setDate(weekEnd.getDate() + 5);
-        const weekEndKey = ymdLocal(weekEnd);
-        const todayKey = ymdLocal(new Date());
-        const upperBound = weekEndKey < todayKey ? weekEndKey : todayKey;
-        const monthStart = new Date(weekStart.getFullYear(), weekStart.getMonth(), 1);
+        const a = anchorMonthForWeek(weekKey);
+        const monthStart = new Date(a.year, a.monthIdx, 1);
+        const monthEnd   = new Date(a.year, a.monthIdx + 1, 0);
         const monthStartKey = ymdLocal(monthStart);
+        const monthEndKey   = ymdLocal(monthEnd);
+        const todayKey      = ymdLocal(new Date());
+        // Live MTD = month-start → min(today, month-end)
+        const upperBound = todayKey < monthEndKey ? todayKey : monthEndKey;
         const result = {};
         reps.forEach(r => { result[r] = 0; });
         allPolicies.forEach(p => {
@@ -18198,6 +18242,49 @@
           if (p.policy_date >= monthStartKey && p.policy_date <= upperBound) {
             result[p.rep_key] = (result[p.rep_key] || 0) + parseFloat(p.annual_premium || 0);
           }
+        });
+        return result;
+      }
+
+      // MTD totals for a calendar-month sheet. Month-anchored, optionally
+      // capped at "today" so the current month shows MTD-as-of-today and
+      // past months show their full final number. Reps argument lets the
+      // month sheet include hidden reps if we ever want; for now we use
+      // the visible-reps list to match weekly sheets.
+      function getMTDForMonth(year, monthIdx) {
+        const monthStart = new Date(year, monthIdx, 1);
+        const monthEnd   = new Date(year, monthIdx + 1, 0);
+        const todayKey   = ymdLocal(new Date());
+        const monthStartKey = ymdLocal(monthStart);
+        const monthEndKey   = ymdLocal(monthEnd);
+        const upperBound = todayKey < monthEndKey ? todayKey : monthEndKey;
+        const result = {};
+        reps.forEach(r => { result[r] = 0; });
+        allPolicies.forEach(p => {
+          if (!p.rep_key || !p.policy_date) return;
+          if (p.policy_date >= monthStartKey && p.policy_date <= upperBound) {
+            result[p.rep_key] = (result[p.rep_key] || 0) + parseFloat(p.annual_premium || 0);
+          }
+        });
+        return result;
+      }
+
+      // Per-day AP per rep for a given calendar month (used by month sheets).
+      function getMonthDailyActuals(year, monthIdx) {
+        const daysInMonth = new Date(year, monthIdx + 1, 0).getDate();
+        const monthStart = new Date(year, monthIdx, 1);
+        const monthEnd   = new Date(year, monthIdx + 1, 0);
+        const monthStartKey = ymdLocal(monthStart);
+        const monthEndKey   = ymdLocal(monthEnd);
+        const result = {};
+        reps.forEach(r => { result[r] = new Array(daysInMonth).fill(0); });
+        allPolicies.forEach(p => {
+          if (!p.rep_key || !p.policy_date) return;
+          if (p.policy_date < monthStartKey || p.policy_date > monthEndKey) return;
+          const d = new Date(p.policy_date + 'T00:00:00');
+          const idx = d.getDate() - 1;
+          if (!result[p.rep_key]) result[p.rep_key] = new Array(daysInMonth).fill(0);
+          result[p.rep_key][idx] += parseFloat(p.annual_premium || 0);
         });
         return result;
       }
@@ -18553,8 +18640,8 @@
                 '<tr class="wt-day-row">' +
                   '<th class="wt-rank-h" rowspan="2">#</th>' +
                   '<th class="wt-name-h" rowspan="2">Sales Rep</th>' +
-                  '<th class="wt-monthly-h" rowspan="2">MTD Goal</th>' +
-                  '<th class="wt-mtd-h" rowspan="2">MTD Total</th>' +
+                  '<th class="wt-monthly-h" rowspan="2">MTD Goal · ' + escHtml(MONTHS_SHORT[anchorMonthForWeek(weekKey).monthIdx]) + '</th>' +
+                  '<th class="wt-mtd-h" rowspan="2">MTD Total · ' + escHtml(MONTHS_SHORT[anchorMonthForWeek(weekKey).monthIdx]) + '</th>' +
                   '<th class="wt-weekly-h" rowspan="2">WTD Goal</th>' +
                   '<th class="wt-wtd-h" rowspan="2">WTD Total</th>' +
                   dayHeaderHtml +
@@ -18579,9 +18666,170 @@
         return { head: headerHtml, grid: gridHtml };
       }
 
+      // ── Month-sheet helpers ─────────────────────────────────────────
+      // Tab keys for month sheets are "month:YYYY-MM" so the dispatcher can
+      // tell them apart from week keys (which are bare YYYY-MM-DD).
+      const WT_YEAR = 2026;
+      function monthTabKey(monthIdx) {
+        return 'month:' + WT_YEAR + '-' + String(monthIdx + 1).padStart(2, '0');
+      }
+      function currentMonthTabKey() {
+        const now = new Date();
+        return now.getFullYear() === WT_YEAR ? monthTabKey(now.getMonth()) : monthTabKey(0);
+      }
+      function parseMonthTabKey(key) {
+        if (!key || key.indexOf('month:') !== 0) return null;
+        const parts = key.slice(6).split('-');
+        const yr = parseInt(parts[0], 10);
+        const mo = parseInt(parts[1], 10) - 1;
+        if (isNaN(yr) || isNaN(mo) || mo < 0 || mo > 11) return null;
+        return { year: yr, monthIdx: mo };
+      }
+
+      // Calendar-month sheet: pure month MTD + per-day breakdown for every
+      // visible rep. Goal column edits the same wt_monthly_ap_goals row that
+      // weekly sheets read, so the two views stay in sync.
+      function renderMonthSheet(year, monthIdx) {
+        const monthKey = ymdLocal(new Date(year, monthIdx, 1));
+        const daysInMonth = new Date(year, monthIdx + 1, 0).getDate();
+        const monthLabel = MONTHS_FULL[monthIdx] + ' ' + year;
+        const today = new Date();
+        const isCurrentMonth = (today.getFullYear() === year && today.getMonth() === monthIdx);
+        const isPastMonth = (year < today.getFullYear()) || (year === today.getFullYear() && monthIdx < today.getMonth());
+        const isFutureMonth = !isCurrentMonth && !isPastMonth;
+        const mtdSnap = getMTDForMonth(year, monthIdx);
+        const dailyActuals = getMonthDailyActuals(year, monthIdx);
+        // YTD as of this month-end (frozen for past, live for current)
+        const ytdSnap = (function () {
+          const monthEndKey = ymdLocal(new Date(year, monthIdx + 1, 0));
+          const upper = isPastMonth ? monthEndKey
+                       : (isCurrentMonth ? ymdLocal(today) : monthEndKey);
+          const yearStartKey = WT_YEAR + '-01-01';
+          const result = {};
+          reps.forEach(r => { result[r] = ytdSeed[r] || 0; });
+          allPolicies.forEach(p => {
+            if (!p.rep_key || !p.policy_date) return;
+            if (p.policy_date >= yearStartKey && p.policy_date <= upper) {
+              result[p.rep_key] = (result[p.rep_key] || 0) + parseFloat(p.annual_premium || 0);
+            }
+          });
+          return result;
+        })();
+
+        // Build sorted rows by MTD desc, YTD tiebreaker
+        const rows = reps.map(rep => {
+          const dArr = dailyActuals[rep] || new Array(daysInMonth).fill(0);
+          return {
+            rep,
+            daily: dArr,
+            mtd: mtdSnap[rep] || 0,
+            ytd: ytdSnap[rep] || 0,
+            monthlyGoal: getMonthlyApGoal(monthKey, rep),
+          };
+        }).sort((a, b) => (b.mtd - a.mtd) || (b.ytd - a.ytd));
+
+        // Header row: Day 1..N
+        let dayHeaderHtml = '';
+        for (let d = 1; d <= daysInMonth; d++) {
+          const isToday = isCurrentMonth && d === today.getDate();
+          dayHeaderHtml += '<th class="wt-month-day-h' + (isToday ? ' today' : '') + '">' + d + '</th>';
+        }
+
+        // Body rows
+        let bodyHtml = '';
+        rows.forEach((row, idx) => {
+          const rank = idx + 1;
+          const medal = rank === 1 ? 'gold' : rank === 2 ? 'silver' : rank === 3 ? 'bronze' : null;
+          const rankCell = medal ? '<span class="wt-medal ' + medal + '">' + rank + '</span>' : String(rank);
+          const monthlyGoalDisplay = (row.monthlyGoal != null) ? '$' + Number(row.monthlyGoal).toLocaleString() : '';
+          const goalPct = (row.monthlyGoal && row.monthlyGoal > 0) ? Math.round((row.mtd / row.monthlyGoal) * 100) : null;
+          let dayCellsHtml = '';
+          for (let i = 0; i < daysInMonth; i++) {
+            const v = row.daily[i] || 0;
+            const cls = v > 0 ? 'wt-month-day-cell over' : 'wt-month-day-cell empty';
+            const display = v > 0 ? '$' + Math.round(v).toLocaleString() : '·';
+            dayCellsHtml += '<td class="' + cls + '">' + escHtml(display) + '</td>';
+          }
+          bodyHtml += '<tr>' +
+            '<td class="wt-rank-cell">' + rankCell + '</td>' +
+            '<td class="wt-name-cell" title="' + escHtml(row.rep) + '">' + escHtml(shortName(row.rep)) + '</td>' +
+            '<td class="wt-day-cell goal wt-monthly-cell">' +
+              '<input type="text" inputmode="decimal" data-wt-monthly-goal-month="' + escHtml(monthKey) + '" data-wt-monthly-goal-rep="' + escHtml(row.rep) + '" value="' + escHtml(monthlyGoalDisplay) + '" placeholder="$0" />' +
+            '</td>' +
+            '<td class="wt-mtd-cell">' + escHtml(fmtMoney(row.mtd)) +
+              (goalPct != null ? ' <span class="wt-pct">' + goalPct + '%</span>' : '') +
+            '</td>' +
+            dayCellsHtml +
+            '<td class="wt-ytd-cell">' + escHtml(fmtMoney(row.ytd)) + '</td>' +
+          '</tr>';
+        });
+
+        // Footer totals
+        const totalMTD = rows.reduce((s, r) => s + r.mtd, 0);
+        const totalGoal = rows.reduce((s, r) => s + (r.monthlyGoal || 0), 0);
+        const totalYTD = rows.reduce((s, r) => s + r.ytd, 0);
+        const dayTotals = new Array(daysInMonth).fill(0);
+        rows.forEach(r => { for (let i = 0; i < daysInMonth; i++) dayTotals[i] += (r.daily[i] || 0); });
+        let footDayHtml = '';
+        dayTotals.forEach(v => {
+          footDayHtml += '<td>' + (v > 0 ? escHtml(fmtMoneyShort(v)) : '—') + '</td>';
+        });
+
+        const colCount = 4 + daysInMonth + 1; // rank, name, monthly-goal, mtd, days, ytd
+
+        const headerHtml =
+          '<div class="wt-sheet-header">' +
+            '<div class="wt-sheet-title-row">' +
+              '<div class="wt-sheet-title">' + escHtml(monthLabel) + '</div>' +
+              (isCurrentMonth ? '<span class="wt-sheet-pill">● Current Month</span>'
+                : isPastMonth ? '<span class="wt-sheet-pill" style="background:var(--wt-gray-100);color:var(--wt-gray-600);border-color:var(--wt-gray-200);">Past · final</span>'
+                : '<span class="wt-sheet-pill" style="background:var(--wt-gray-100);color:var(--wt-gray-600);border-color:var(--wt-gray-200);">Upcoming</span>') +
+            '</div>' +
+          '</div>';
+
+        const gridHtml =
+          '<div class="wt-grid-wrap">' +
+            '<table class="wt-grid-table wt-month-table">' +
+              '<thead>' +
+                '<tr class="wt-day-row">' +
+                  '<th class="wt-rank-h">#</th>' +
+                  '<th class="wt-name-h">Sales Rep</th>' +
+                  '<th class="wt-monthly-h">Monthly Goal · ' + escHtml(MONTHS_SHORT[monthIdx]) + '</th>' +
+                  '<th class="wt-mtd-h">' + (isPastMonth ? 'Final · ' : 'MTD · ') + escHtml(MONTHS_SHORT[monthIdx]) + '</th>' +
+                  dayHeaderHtml +
+                  '<th class="wt-ytd-h">YTD Total</th>' +
+                '</tr>' +
+              '</thead>' +
+              '<tbody>' + (bodyHtml || ('<tr><td colspan="' + colCount + '" class="wt-loading">No data for this month yet.</td></tr>')) + '</tbody>' +
+              (rows.length ? ('<tfoot><tr>' +
+                '<td class="wt-foot-rank"></td>' +
+                '<td class="wt-foot-name">Team Totals</td>' +
+                '<td class="wt-foot-monthly">' + escHtml(fmtMoney(totalGoal)) + '</td>' +
+                '<td class="wt-foot-mtd">' + escHtml(fmtMoney(totalMTD)) + '</td>' +
+                footDayHtml +
+                '<td class="wt-ytd-foot">' + escHtml(fmtMoney(totalYTD)) + '</td>' +
+              '</tr></tfoot>') : '') +
+            '</table>' +
+          '</div>';
+
+        return { head: headerHtml, grid: gridHtml };
+      }
+
       function renderTabs() {
         let html = '<div class="wt-tabs-bar">' +
           '<button class="wt-tab setup' + (activeSheet === 'ytd-setup' ? ' active' : '') + '" data-wt-tab="ytd-setup"><span class="wt-tab-dot"></span>Sales Reps</button>';
+        // 12 month tabs first
+        const curMonthKey = currentMonthTabKey();
+        for (let m = 0; m < 12; m++) {
+          const key = monthTabKey(m);
+          const isActive = activeSheet === key;
+          const isCurrent = key === curMonthKey;
+          html += '<button class="wt-tab month' + (isActive ? ' active' : '') + (isCurrent ? ' current' : '') + '" data-wt-tab="' + escHtml(key) + '" title="' + escHtml(MONTHS_FULL[m] + ' ' + WT_YEAR) + '">' +
+            '<span class="wt-tab-dot"></span>' + escHtml(MONTHS_SHORT[m]) +
+          '</button>';
+        }
+        html += '<span class="wt-tab-sep" aria-hidden="true"></span>';
+        // Then weekly tabs
         const curKey = currentWeekKey();
         WEEKS.forEach(w => {
           const isActive = activeSheet === w.key;
@@ -18619,9 +18867,16 @@
         if (activeSheet === 'ytd-setup') {
           scrollBody = renderYTDSetup();
         } else {
-          const wk = renderWeekSheet(activeSheet);
-          outerHead = wk.head;
-          scrollBody = wk.grid;
+          const monthInfo = parseMonthTabKey(activeSheet);
+          if (monthInfo) {
+            const ms = renderMonthSheet(monthInfo.year, monthInfo.monthIdx);
+            outerHead = ms.head;
+            scrollBody = ms.grid;
+          } else {
+            const wk = renderWeekSheet(activeSheet);
+            outerHead = wk.head;
+            scrollBody = wk.grid;
+          }
         }
 
         panel.innerHTML =
@@ -18807,11 +19062,15 @@
             fetchGoalsFromSupabase()
           ]);
           processData(policyRows, repNames, kpiRows);
-          if (stored && (stored === 'ytd-setup' || WEEKS.some(w => w.key === stored))) {
-            activeSheet = stored;
-          } else {
-            activeSheet = currentWeekKey();
-          }
+          // Restore stored tab if it's still valid (ytd-setup, a week, or a month).
+          // Default landing for fresh sessions = current month sheet (matches the
+          // daily-meeting workflow).
+          const isValidStored = stored && (
+            stored === 'ytd-setup' ||
+            WEEKS.some(w => w.key === stored) ||
+            parseMonthTabKey(stored) != null
+          );
+          activeSheet = isValidStored ? stored : currentMonthTabKey();
           loaded = true;
         } catch (e) {
           console.error('Weekly tracker load failed:', e);
