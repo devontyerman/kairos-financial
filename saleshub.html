@@ -10225,6 +10225,272 @@
       border: none !important;
     }
     html[data-kf-theme="light"] .ss-mobile-menu a svg { color: rgba(20,19,15,0.72); opacity: 0.85; }
+
+    /* ─────────────────────────────────────────────────────────────────
+       KF popup re-skin — overrides legacy ss-* and mp-edit-* modal looks
+       so every popup matches the Tracker / Book of Business aesthetic
+       (dark elevated surface, hairline border, mono labels, accent CTA).
+       ───────────────────────────────────────────────────────────────── */
+    :root {
+      --kfp-bg-1: #0d0e10; --kfp-bg-2: #131418;
+      --kfp-surface: #16181d; --kfp-surface-2: #1c1f26; --kfp-surface-3: #232730;
+      --kfp-hairline: rgba(255,255,255,0.07); --kfp-hairline-strong: rgba(255,255,255,0.14);
+      --kfp-ink-1: #f3f3f1; --kfp-ink-2: rgba(243,243,241,0.72); --kfp-ink-3: rgba(243,243,241,0.5); --kfp-ink-4: rgba(243,243,241,0.32);
+      --kfp-blue: oklch(0.68 0.13 240); --kfp-green: oklch(0.72 0.16 145); --kfp-red: oklch(0.7 0.18 25); --kfp-amber: oklch(0.78 0.13 75);
+    }
+    html[data-kf-theme="light"] {
+      --kfp-bg-1: #f6f5f1; --kfp-bg-2: #efece5;
+      --kfp-surface: #ffffff; --kfp-surface-2: #fbfaf6; --kfp-surface-3: #f1efe8;
+      --kfp-hairline: rgba(15,12,8,0.08); --kfp-hairline-strong: rgba(15,12,8,0.16);
+      --kfp-ink-1: #14130f; --kfp-ink-2: rgba(20,19,15,0.74); --kfp-ink-3: rgba(20,19,15,0.5); --kfp-ink-4: rgba(20,19,15,0.32);
+      --kfp-blue: oklch(0.55 0.13 240); --kfp-green: oklch(0.55 0.15 145); --kfp-red: oklch(0.6 0.16 25); --kfp-amber: oklch(0.68 0.12 75);
+    }
+    @keyframes kfpFade { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes kfpPop { from { opacity: 0; transform: scale(0.96) translateY(4px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+
+    /* Shared overlay treatment for ALL legacy modal types */
+    #saleModal.ss-modal-overlay,
+    #effectiveDateAlert.ss-alert-overlay,
+    #signupOverlay.ss-signup-overlay,
+    #discordHelpOverlay.ss-discord-help-overlay {
+      background: rgba(0,0,0,0.55) !important;
+      backdrop-filter: blur(3px) !important;
+      align-items: center !important; justify-content: center !important;
+    }
+    #saleModal.ss-modal-overlay.open,
+    #effectiveDateAlert.ss-alert-overlay.open,
+    #signupOverlay.ss-signup-overlay.open,
+    #discordHelpOverlay.ss-discord-help-overlay {
+      animation: kfpFade 140ms ease-out;
+    }
+
+    /* Sale-Submitted success modal */
+    #saleModal .ss-modal {
+      background: var(--kfp-bg-2) !important;
+      border: 1px solid var(--kfp-hairline-strong) !important;
+      border-radius: 12px !important;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.5), 0 8px 24px rgba(0,0,0,0.3) !important;
+      color: var(--kfp-ink-1) !important;
+      padding: 28px 28px 22px !important;
+      max-width: 420px !important; width: 92% !important;
+      font-family: 'Geist','Inter',system-ui,sans-serif !important;
+      animation: kfpPop 180ms cubic-bezier(0.2,0.7,0.2,1.05) !important;
+      text-align: center !important;
+    }
+    #saleModal .ss-modal-icon {
+      width: 44px !important; height: 44px !important; border-radius: 999px !important;
+      display: grid !important; place-items: center !important;
+      margin: 0 auto 14px !important; font-size: 22px !important;
+      background: color-mix(in oklch, var(--kfp-green) 18%, transparent) !important;
+      color: var(--kfp-green) !important;
+      border: 1px solid color-mix(in oklch, var(--kfp-green) 42%, transparent) !important;
+    }
+    #saleModal h3 {
+      font-family: inherit !important;
+      font-size: 17px !important; font-weight: 600 !important;
+      letter-spacing: -0.01em !important; color: var(--kfp-ink-1) !important;
+      margin: 0 0 6px !important;
+    }
+    #saleModal .ss-modal-ap {
+      font-family: 'JetBrains Mono', ui-monospace, monospace !important;
+      font-size: 24px !important; font-weight: 500 !important;
+      color: var(--kfp-ink-1) !important; margin: 4px 0 !important;
+      font-variant-numeric: tabular-nums !important;
+    }
+    #saleModal .ss-modal-sub {
+      font-size: 13px !important; line-height: 1.5 !important;
+      color: var(--kfp-ink-3) !important; margin: 6px 0 18px !important;
+    }
+    #saleModal .ss-modal-btns { display: flex !important; gap: 8px !important; justify-content: center !important; }
+    #saleModal .ss-modal-btn {
+      font-family: inherit !important;
+      padding: 9px 16px !important; border-radius: 6px !important;
+      font-size: 13px !important; font-weight: 500 !important;
+      cursor: pointer !important; transition: background 120ms ease, border-color 120ms ease !important;
+      background: var(--kfp-surface-2) !important;
+      color: var(--kfp-ink-1) !important;
+      border: 1px solid var(--kfp-hairline-strong) !important;
+    }
+    #saleModal .ss-modal-btn:hover { background: var(--kfp-surface-3) !important; }
+    #saleModal .ss-modal-btn.primary {
+      background: var(--kfp-green) !important;
+      border-color: color-mix(in oklch, var(--kfp-green) 65%, var(--kfp-ink-1)) !important;
+      color: #08110b !important;
+    }
+    #saleModal .ss-modal-btn.primary:hover { filter: brightness(1.08); }
+
+    /* Effective-date reminder + any remaining ss-alert-overlay content */
+    #effectiveDateAlert.ss-alert-overlay .ss-alert-box {
+      background: var(--kfp-bg-2) !important;
+      border: 1px solid var(--kfp-hairline-strong) !important;
+      border-radius: 12px !important;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.5), 0 8px 24px rgba(0,0,0,0.3) !important;
+      color: var(--kfp-ink-1) !important;
+      padding: 24px !important;
+      max-width: 540px !important; width: 92% !important;
+      font-family: 'Geist','Inter',system-ui,sans-serif !important;
+      animation: kfpPop 180ms cubic-bezier(0.2,0.7,0.2,1.05) !important;
+    }
+    #effectiveDateAlert .ss-alert-icon {
+      width: 44px !important; height: 44px !important; border-radius: 999px !important;
+      display: grid !important; place-items: center !important;
+      margin: 0 auto 12px !important; font-size: 22px !important;
+      background: color-mix(in oklch, var(--kfp-amber) 18%, transparent) !important;
+      color: var(--kfp-amber) !important;
+      border: 1px solid color-mix(in oklch, var(--kfp-amber) 42%, transparent) !important;
+    }
+    #effectiveDateAlert h3 {
+      font-family: inherit !important;
+      font-size: 16px !important; font-weight: 600 !important;
+      color: var(--kfp-ink-1) !important; text-align: center !important;
+      margin: 0 0 6px !important;
+    }
+    #effectiveDateAlert p {
+      font-size: 13px !important; line-height: 1.5 !important;
+      color: var(--kfp-ink-3) !important; text-align: center !important;
+      margin: 0 0 14px !important;
+    }
+    #effectiveDateAlert .ss-uw-list {
+      max-height: 280px; overflow-y: auto;
+      background: var(--kfp-surface) !important;
+      border: 1px solid var(--kfp-hairline) !important;
+      border-radius: 8px !important;
+      margin-bottom: 14px !important;
+    }
+    #effectiveDateAlert .ss-uw-item {
+      display: flex !important; align-items: center !important; justify-content: space-between !important;
+      padding: 10px 14px !important;
+      border-bottom: 1px solid var(--kfp-hairline) !important;
+      gap: 10px !important; flex-wrap: wrap !important;
+    }
+    #effectiveDateAlert .ss-uw-item:last-child { border-bottom: none !important; }
+    #effectiveDateAlert .ss-uw-item-name { font-size: 13px !important; font-weight: 500 !important; color: var(--kfp-ink-1) !important; }
+    #effectiveDateAlert .ss-uw-item-meta { font-family: 'JetBrains Mono', ui-monospace, monospace !important; font-size: 11px !important; color: var(--kfp-ink-3) !important; margin-top: 2px !important; }
+    #effectiveDateAlert .ss-alert-close {
+      display: block !important; margin: 0 auto !important;
+      padding: 9px 20px !important; border-radius: 6px !important;
+      font-family: inherit !important; font-size: 13px !important; font-weight: 500 !important;
+      background: var(--kfp-surface-2) !important; color: var(--kfp-ink-1) !important;
+      border: 1px solid var(--kfp-hairline-strong) !important;
+      cursor: pointer !important; transition: background 120ms ease !important;
+    }
+    #effectiveDateAlert .ss-alert-close:hover { background: var(--kfp-surface-3) !important; }
+
+    /* Sign-up / Sign-in overlay */
+    #signupOverlay.ss-signup-overlay .ss-signup-box,
+    #signupOverlay.ss-signup-overlay .ss-signup-card {
+      background: var(--kfp-bg-2) !important;
+      border: 1px solid var(--kfp-hairline-strong) !important;
+      border-radius: 12px !important;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.5), 0 8px 24px rgba(0,0,0,0.3) !important;
+      color: var(--kfp-ink-1) !important;
+      font-family: 'Geist','Inter',system-ui,sans-serif !important;
+      animation: kfpPop 180ms cubic-bezier(0.2,0.7,0.2,1.05) !important;
+    }
+    #signupOverlay h2, #signupOverlay h3 {
+      color: var(--kfp-ink-1) !important;
+      font-weight: 600 !important; letter-spacing: -0.01em !important;
+    }
+    #signupOverlay label {
+      font-family: 'JetBrains Mono', ui-monospace, monospace !important;
+      font-size: 10px !important; text-transform: uppercase !important;
+      letter-spacing: 0.08em !important; color: var(--kfp-ink-4) !important;
+    }
+    #signupOverlay input, #signupOverlay select {
+      background: var(--kfp-surface) !important;
+      border: 1px solid var(--kfp-hairline-strong) !important;
+      border-radius: 6px !important; color: var(--kfp-ink-1) !important;
+      font-family: inherit !important; padding: 9px 12px !important; font-size: 13px !important;
+    }
+    #signupOverlay input:focus, #signupOverlay select:focus {
+      outline: none !important;
+      border-color: color-mix(in oklch, var(--kfp-blue) 60%, var(--kfp-hairline-strong)) !important;
+    }
+    #signupOverlay button[type="submit"], #signupOverlay .ss-signup-btn {
+      background: var(--kfp-blue) !important;
+      border: 1px solid color-mix(in oklch, var(--kfp-blue) 65%, var(--kfp-ink-1)) !important;
+      color: #fff !important;
+      font-family: inherit !important; font-weight: 600 !important; font-size: 13px !important;
+      padding: 10px 18px !important; border-radius: 6px !important; cursor: pointer !important;
+      transition: filter 120ms ease !important;
+    }
+    #signupOverlay button[type="submit"]:hover { filter: brightness(1.08); }
+
+    /* Discord ID help modal */
+    #discordHelpOverlay > div,
+    #discordHelpOverlay .ss-discord-help-box {
+      background: var(--kfp-bg-2) !important;
+      border: 1px solid var(--kfp-hairline-strong) !important;
+      border-radius: 12px !important;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.5), 0 8px 24px rgba(0,0,0,0.3) !important;
+      color: var(--kfp-ink-1) !important;
+      font-family: 'Geist','Inter',system-ui,sans-serif !important;
+      padding: 22px !important;
+      animation: kfpPop 180ms cubic-bezier(0.2,0.7,0.2,1.05) !important;
+    }
+    #discordHelpOverlay h3 {
+      font-family: inherit !important;
+      font-size: 16px !important; font-weight: 600 !important;
+      color: var(--kfp-ink-1) !important; margin: 0 0 12px !important;
+    }
+    #discordHelpOverlay ol, #discordHelpOverlay ul {
+      color: var(--kfp-ink-2) !important; font-size: 13px !important;
+      line-height: 1.6 !important;
+    }
+    #discordHelpOverlay strong { color: var(--kfp-ink-1) !important; }
+    #discordHelpOverlay #discordHelpClose {
+      color: var(--kfp-ink-3) !important;
+      transition: color 120ms ease !important;
+    }
+    #discordHelpOverlay #discordHelpClose:hover { color: var(--kfp-ink-1) !important; }
+
+    /* Submit-Sale form modal — re-skin the chrome (form internals stay) */
+    #submitOverlay.ss-submit-overlay {
+      background: rgba(0,0,0,0.55) !important;
+      backdrop-filter: blur(3px) !important;
+    }
+    #submitOverlay .ss-submit-overlay-inner {
+      background: var(--kfp-bg-2) !important;
+      border: 1px solid var(--kfp-hairline-strong) !important;
+      border-radius: 12px !important;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.5), 0 8px 24px rgba(0,0,0,0.3) !important;
+      color: var(--kfp-ink-1) !important;
+      font-family: 'Geist','Inter',system-ui,sans-serif !important;
+      animation: kfpPop 180ms cubic-bezier(0.2,0.7,0.2,1.05) !important;
+    }
+    #submitOverlay .ss-submit-overlay-close {
+      color: var(--kfp-ink-3) !important;
+      background: transparent !important; border: none !important;
+      font-size: 22px !important; transition: color 120ms ease !important;
+    }
+    #submitOverlay .ss-submit-overlay-close:hover { color: var(--kfp-ink-1) !important; }
+    #submitOverlay h2, #submitOverlay h3 {
+      color: var(--kfp-ink-1) !important; font-weight: 600 !important; letter-spacing: -0.01em !important;
+    }
+    #submitOverlay label {
+      font-family: 'JetBrains Mono', ui-monospace, monospace !important;
+      font-size: 10px !important; text-transform: uppercase !important;
+      letter-spacing: 0.08em !important; color: var(--kfp-ink-4) !important;
+    }
+    #submitOverlay input, #submitOverlay select, #submitOverlay textarea {
+      background: var(--kfp-surface) !important;
+      border: 1px solid var(--kfp-hairline-strong) !important;
+      border-radius: 6px !important; color: var(--kfp-ink-1) !important;
+      font-family: inherit !important; padding: 9px 12px !important; font-size: 13px !important;
+    }
+    #submitOverlay input:focus, #submitOverlay select:focus, #submitOverlay textarea:focus {
+      outline: none !important;
+      border-color: color-mix(in oklch, var(--kfp-blue) 60%, var(--kfp-hairline-strong)) !important;
+    }
+    #submitOverlay .ss-submit, #submitOverlay button[type="submit"] {
+      background: var(--kfp-green) !important;
+      border: 1px solid color-mix(in oklch, var(--kfp-green) 65%, var(--kfp-ink-1)) !important;
+      color: #08110b !important;
+      font-family: inherit !important; font-weight: 600 !important; font-size: 13px !important;
+      padding: 10px 18px !important; border-radius: 6px !important;
+      transition: filter 120ms ease !important;
+    }
+    #submitOverlay .ss-submit:hover, #submitOverlay button[type="submit"]:hover { filter: brightness(1.08); }
   </style>
 
   <!-- Team Performance dashboard — Geist + JetBrains Mono fonts (loaded once,
@@ -11282,27 +11548,6 @@
       </div>
     </div>
 
-    <!-- GOAL TRACKER POPUP (shown after deal submit) -->
-    <div class="ss-goal-overlay" id="goalOverlay">
-      <div class="ss-goal-overlay-inner">
-        <div id="goalPopupContent"></div>
-        <button class="ss-goal-overlay-close" id="goalOverlayClose">Close</button>
-      </div>
-    </div>
-
-    <!-- MILESTONE CELEBRATION MODAL -->
-    <div class="ss-milestone-overlay" id="milestoneOverlay">
-      <div class="ss-milestone-box" id="milestoneBox">
-        <div class="ss-milestone-glow"></div>
-        <div class="ss-milestone-emoji" id="milestoneEmoji">🎉</div>
-        <div class="ss-milestone-tier" id="milestoneTier">MILESTONE</div>
-        <div class="ss-milestone-title" id="milestoneTitle">Congratulations!</div>
-        <div class="ss-milestone-amount" id="milestoneAmount"></div>
-        <div class="ss-milestone-msg" id="milestoneMsg"></div>
-        <button type="button" class="ss-milestone-btn" id="milestoneClose">Keep Going</button>
-      </div>
-    </div>
-
     <!-- LEADERBOARD -->
     <!-- ═══ LEADERBOARD PANEL — claude.ai/design Leaderboard, React-rendered ═══ -->
     <div class="ss-panel" id="panel-leaderboard">
@@ -11918,27 +12163,6 @@
   </div><!-- end ss-page-dark -->
   </div><!-- end ss-main -->
   </div><!-- end ss-dashboard -->
-
-  <!-- Overload Alert -->
-  <div class="ss-alert-overlay" id="overloadAlert">
-    <div class="ss-alert-box warning" id="overloadBox">
-      <div class="ss-alert-icon">⚠️</div>
-      <h3 id="overloadTitle"></h3>
-      <p id="overloadMsg"></p>
-      <button class="ss-alert-close" id="overloadClose">Got It</button>
-    </div>
-  </div>
-
-  <!-- Underwriting Reminder -->
-  <div class="ss-alert-overlay" id="uwReminderAlert">
-    <div class="ss-alert-box warning" style="max-width: 550px;">
-      <div class="ss-alert-icon">📋</div>
-      <h3>Underwriting Check-In</h3>
-      <p>These policies have been in underwriting for a while. Update their status or remove them.</p>
-      <div class="ss-uw-list" id="uwReminderList"></div>
-      <button class="ss-alert-close" id="uwReminderClose">Close</button>
-    </div>
-  </div>
 
   <!-- Effective Date Reminder -->
   <div class="ss-alert-overlay" id="effectiveDateAlert">
@@ -13276,22 +13500,14 @@
     function showSuccessModal(ap) {
       modalIcon.className = 'ss-modal-icon success';
       modalIcon.innerHTML = '<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
-      modalTitle.textContent = 'Congratulations!';
+      modalTitle.textContent = 'Sale submitted';
       modalAP.textContent = '$' + ap.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
       modalAP.style.display = 'block';
-      modalSub.textContent = 'Another deal closed. Keep up the momentum!';
-      modalBtns.innerHTML = '<button class="ss-modal-btn primary" id="modalNewSale">Submit Another Sale</button><button class="ss-modal-btn secondary" id="modalToLB">View Leaderboard</button>';
+      modalSub.textContent = 'Logged to your pipeline.';
+      modalBtns.innerHTML = '<button class="ss-modal-btn primary" id="modalNewSale">Done</button>';
       modal.classList.add('open');
 
       document.getElementById('modalNewSale').addEventListener('click', () => { modal.classList.remove('open'); });
-      document.getElementById('modalToLB').addEventListener('click', () => {
-        modal.classList.remove('open');
-        document.querySelectorAll('.ss-sidebar-btn').forEach(b => b.classList.remove('active'));
-        document.querySelectorAll('.ss-panel').forEach(p => p.classList.remove('active'));
-        document.querySelector('.ss-sidebar-btn[data-panel="leaderboard"]').classList.add('active');
-        document.getElementById('panel-leaderboard').classList.add('active');
-        loadLeaderboard();
-      });
     }
 
     function showErrorModal(errMsg) {
@@ -13521,6 +13737,8 @@
         if (overlay && overlay.classList.contains('open')) closeSubmitModal();
         // Refresh the tracker so the new sale shows in the heatmap immediately
         if (typeof loadAgentPerformance === 'function') loadAgentPerformance();
+        // Single neutral success confirmation
+        showSuccessModal(apValue);
       } else {
         showErrorModal(result.error || 'Unknown error. Check your connection and try again.');
       }
@@ -13628,63 +13846,11 @@
         // Reset fields but keep date
         ['kpiDials','kpiAnswers','kpiAppointments','kpiPresentations','kpiDeals','kpiLeadSpend','kpiDeposits'].forEach(id => document.getElementById(id).value = '');
 
-        // ── KPI Feedback Popup ──
-        const kpiDow = new Date(kpiData.kpi_date + 'T12:00:00').getDay(); // 0=Sun, 6=Sat
-        const hasDials = kpiData.dials > 0;
-        const hasDeals = kpiData.deals > 0;
-        const preCount = kpiData.presentations || 0;
-        const dialCount = kpiData.dials || 0;
+        // Quiet inline success confirmation — no celebration popup.
+        msg.textContent = '✓ KPIs saved for ' + kpiData.kpi_date;
+        msg.style.color = 'var(--rb-green, #4ade80)';
+        msg.style.display = 'block';
 
-        if (kpiDow === 6 && hasDials) {
-          // Saturday — always props
-          await showConfirmModal({
-            title: 'Separation Saturday!',
-            message: 'Most people are sleeping in — you\'re out here putting in work. This is what separates the top producers from the rest. Keep grinding!',
-            confirmText: 'Let\'s Go',
-            cancelText: '',
-            variant: 'info',
-            icon: '🔥'
-          });
-        } else if (kpiDow === 0 && hasDials) {
-          // Sunday — props for working
-          await showConfirmModal({
-            title: 'Sunday Grind!',
-            message: 'Working on a Sunday? That\'s elite-level dedication. While everyone else is resting, you\'re building your future. Respect.',
-            confirmText: 'Let\'s Go',
-            cancelText: '',
-            variant: 'info',
-            icon: '💪'
-          });
-        } else if (hasDeals) {
-          const dealCount = kpiData.deals;
-          const dealMsgs = {
-            1: { title: 'Deal Closed!', msg: 'Congrats!', icon: '🎯' },
-            2: { title: 'Double Deal!', msg: '', icon: '🔥' },
-            3: { title: 'Triple Deal!', msg: '', icon: '🔥' },
-            4: { title: 'Overkill!', msg: '', icon: '💀' },
-            5: { title: 'Dealtacular!', msg: '', icon: '☠️' },
-            6: { title: 'Dealimanjaro!', msg: '', icon: '⚡' },
-            7: { title: 'Dealpocalypse!', msg: '', icon: '💥' }
-          };
-          const dm = dealMsgs[dealCount] || { title: 'UNFRIGGINBELIEVABLE!', msg: dealCount + ' deals.', icon: '👑' };
-          await showConfirmModal({
-            title: dm.title,
-            message: dm.msg,
-            confirmText: 'On to the Next',
-            cancelText: '',
-            variant: 'info',
-            icon: dm.icon
-          });
-        } else if (preCount >= 3) {
-          // 3+ presentations, no deal — say nothing, just confirm
-          msg.textContent = 'KPIs submitted for ' + kpiData.kpi_date + '!';
-          msg.style.color = '#4ade80';
-          msg.style.display = 'block';
-        } else {
-          msg.textContent = 'KPIs submitted for ' + kpiData.kpi_date + '!';
-          msg.style.color = '#4ade80';
-          msg.style.display = 'block';
-        }
         // Successful save — close the submit modal (if open) and refresh tracker
         const overlay = document.getElementById('submitOverlay');
         if (overlay && overlay.classList.contains('open')) closeSubmitModal();
@@ -14442,192 +14608,6 @@
       contentEl.innerHTML = html;
     }
 
-    // ─── MILESTONE CELEBRATIONS ───
-    const MILESTONE_CONFIG = {
-      first_sale: {
-        tier: 'tier-first', emoji: '🎉', label: 'FIRST DEAL',
-        title: 'Your First Sale is in the Books!',
-        amount: '',
-        msg: 'This is the one you\u2019ll always remember. The first of many. You just proved to yourself you can do this — now keep the momentum rolling.',
-        button: 'Let\u2019s Get the Next One'
-      },
-      week_5k: {
-        tier: 'tier-week5k', emoji: '💪', label: '$5K WEEK',
-        title: 'Five Stacks in a Week!',
-        amount: '$5,000',
-        msg: 'You just crossed $5K in submitted AP this week. Solid work — this is what a closer\u2019s week looks like. Don\u2019t slow down.',
-        button: 'Keep Closing'
-      },
-      week_10k: {
-        tier: 'tier-week10k', emoji: '🔥', label: '$10K WEEK \u2022 ELITE',
-        title: '$10K Week — Elite Territory',
-        amount: '$10,000',
-        msg: 'Ten thousand in a single week is where the top performers live. You\u2019re officially in elite company — this is not average, and neither are you.',
-        button: 'Stay In the Zone'
-      },
-      month_10k: {
-        tier: 'tier-month10k', emoji: '🏆', label: '$10K MONTH',
-        title: '$10K Month Locked In',
-        amount: '$10,000',
-        msg: 'Five-figure month achieved. You\u2019re building a real business now — consistency at this level is what turns agents into career producers.',
-        button: 'On to the Next Goal'
-      },
-      month_20k: {
-        tier: 'tier-month20k', emoji: '🚀', label: '$20K MONTH',
-        title: 'Twenty Grand Month!',
-        amount: '$20,000',
-        msg: 'You just doubled the five-figure club. $20K months are where serious income lives — this is a major benchmark. Absolutely crushing it.',
-        button: 'Fuel the Fire'
-      },
-      month_30k: {
-        tier: 'tier-month30k', emoji: '👑', label: 'LEGEND TIER',
-        title: '$30K MONTH — LEGEND STATUS',
-        amount: '$30,000',
-        msg: 'Thirty thousand in a single month. This is top-of-the-board, career-defining production. Very few ever see this number — you just put your name on the list.',
-        button: 'Take a Bow'
-      }
-    };
-
-    function getMilestoneStorageKey() {
-      return 'kairos_milestones_' + (currentUser?.id || 'anon');
-    }
-    function getShownMilestones() {
-      try { return JSON.parse(localStorage.getItem(getMilestoneStorageKey()) || '{}'); } catch (e) { return {}; }
-    }
-    function markMilestoneShown(key) {
-      const all = getShownMilestones();
-      all[key] = true;
-      localStorage.setItem(getMilestoneStorageKey(), JSON.stringify(all));
-    }
-
-    async function checkAndShowMilestone() {
-      if (!currentUser) return false;
-      const token = accessToken || SUPABASE_KEY;
-      const repName = currentUser.user_metadata?.name || currentUser.email;
-
-      // Pull this user's policies (by user_id when available, fall back to sales_rep for older rows)
-      let rows = [];
-      try {
-        const res = await fetch(SUPABASE_URL + '/rest/v1/policies?select=annual_premium,policy_date,user_id,sales_rep&or=(user_id.eq.' + currentUser.id + ',sales_rep.eq.' + encodeURIComponent(repName) + ')', {
-          headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + token }
-        });
-        if (res.ok) rows = await res.json();
-      } catch (e) { console.error('Milestone fetch failed:', e); return false; }
-
-      if (!rows || rows.length === 0) return false;
-
-      const shown = getShownMilestones();
-
-      // 1. First ever sale
-      if (rows.length === 1 && !shown.first_sale) {
-        markMilestoneShown('first_sale');
-        showMilestoneModal('first_sale');
-        return true;
-      }
-
-      // Compute current week + month totals based on POLICY DATE
-      const now = new Date();
-      const todayYmd = ymd(now);
-      const wKey = weekKeyFromYMD(todayYmd);
-      const mKey = monthKeyFromYMD(todayYmd);
-
-      let weekTotal = 0, monthTotal = 0;
-      rows.forEach(r => {
-        if (!r.policy_date) return;
-        const ap = parseFloat(r.annual_premium || 0);
-        if (weekKeyFromYMD(r.policy_date) === wKey) weekTotal += ap;
-        if (monthKeyFromYMD(r.policy_date) === mKey) monthTotal += ap;
-      });
-
-      // 2. Weekly thresholds (highest newly crossed wins)
-      const weekTiers = [
-        { threshold: 10000, key: 'week_10k:' + wKey, type: 'week_10k' },
-        { threshold: 5000,  key: 'week_5k:' + wKey,  type: 'week_5k' }
-      ];
-      for (const t of weekTiers) {
-        if (weekTotal >= t.threshold && !shown[t.key]) {
-          markMilestoneShown(t.key);
-          showMilestoneModal(t.type);
-          return true;
-        }
-      }
-
-      // 3. Monthly thresholds (highest newly crossed wins)
-      const monthTiers = [
-        { threshold: 30000, key: 'month_30k:' + mKey, type: 'month_30k' },
-        { threshold: 20000, key: 'month_20k:' + mKey, type: 'month_20k' },
-        { threshold: 10000, key: 'month_10k:' + mKey, type: 'month_10k' }
-      ];
-      for (const t of monthTiers) {
-        if (monthTotal >= t.threshold && !shown[t.key]) {
-          markMilestoneShown(t.key);
-          showMilestoneModal(t.type);
-          return true;
-        }
-      }
-
-      return false;
-    }
-
-    function showMilestoneModal(type) {
-      const cfg = MILESTONE_CONFIG[type];
-      if (!cfg) return;
-      const overlay = document.getElementById('milestoneOverlay');
-      const box = document.getElementById('milestoneBox');
-      box.className = 'ss-milestone-box ' + cfg.tier;
-      document.getElementById('milestoneEmoji').textContent = cfg.emoji;
-      document.getElementById('milestoneTier').textContent = cfg.label;
-      document.getElementById('milestoneTitle').textContent = cfg.title;
-      document.getElementById('milestoneAmount').textContent = cfg.amount || '';
-      document.getElementById('milestoneAmount').style.display = cfg.amount ? 'block' : 'none';
-      document.getElementById('milestoneMsg').textContent = cfg.msg;
-      document.getElementById('milestoneClose').textContent = cfg.button;
-      overlay.classList.add('open');
-      fireConfetti();
-    }
-
-    document.getElementById('milestoneClose').addEventListener('click', () => {
-      document.getElementById('milestoneOverlay').classList.remove('open');
-    });
-    document.getElementById('milestoneOverlay').addEventListener('click', (e) => {
-      if (e.target.id === 'milestoneOverlay') e.target.classList.remove('open');
-    });
-
-    // Goal tracker popup close — move tracker back, kill animations
-    var goalAnimCancelled = false;
-    function closeGoalOverlay() {
-      goalAnimCancelled = true;
-      document.getElementById('goalOverlay').classList.remove('open');
-      // Remove any lingering particles
-      document.querySelectorAll('.firework-particle, .money-particle').forEach(function(p) { p.remove(); });
-      const gt = document.getElementById('goalTracker');
-      if (gt && gt._originalParent) {
-        gt._originalParent.appendChild(gt);
-        gt.style.margin = '';
-        delete gt._originalParent;
-      }
-    }
-    document.getElementById('goalOverlayClose').addEventListener('click', closeGoalOverlay);
-    document.getElementById('goalOverlay').addEventListener('click', (e) => {
-      if (e.target.id === 'goalOverlay') closeGoalOverlay();
-    });
-
-    function fireConfetti() {
-      const colors = ['#3b82f6', '#60a5fa', '#22c55e', '#4ade80', '#f0d878', '#c9a84c', '#a855f7', '#f97316', '#ef4444'];
-      const count = 70;
-      for (let i = 0; i < count; i++) {
-        const p = document.createElement('div');
-        p.className = 'ss-confetti-piece';
-        const startX = window.innerWidth / 2 + (Math.random() - 0.5) * 200;
-        const startY = window.innerHeight / 2 - 100;
-        const endX = (Math.random() - 0.5) * window.innerWidth * 1.2;
-        const endY = window.innerHeight * 0.8 + Math.random() * 200;
-        const rot = (Math.random() - 0.5) * 1080;
-        p.style.cssText = 'left:' + startX + 'px;top:' + startY + 'px;background:' + colors[Math.floor(Math.random() * colors.length)] + ';--cx:' + endX + 'px;--cy:' + endY + 'px;--cr:' + rot + 'deg;';
-        document.body.appendChild(p);
-        setTimeout(() => p.remove(), 3000);
-      }
-    }
 
     // ─── LEADERBOARD ───
     let currentRange = 'monthly';
@@ -15738,80 +15718,6 @@
       }
     }
 
-    // ─── OVERLOAD CHECK ───
-    async function checkUnderwritingOverload() {
-      if (!currentUser) return;
-      const repName = currentUser.user_metadata?.name || currentUser.email;
-      const token = accessToken || SUPABASE_KEY;
-      try {
-        const res = await fetch(SUPABASE_URL + '/rest/v1/policies?select=id&sales_rep=eq.' + encodeURIComponent(repName) + '&status=eq.Underwriting', {
-          headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + token }
-        });
-        const data = await res.json();
-        const count = data.length;
-        const alertEl = document.getElementById('overloadAlert');
-        const boxEl = document.getElementById('overloadBox');
-        const titleEl = document.getElementById('overloadTitle');
-        const msgEl = document.getElementById('overloadMsg');
-
-        if (count >= 10) {
-          boxEl.className = 'ss-alert-box danger';
-          titleEl.textContent = '10 Policies in Underwriting';
-          msgEl.textContent = 'You have ' + count + ' policies currently in underwriting. Schedule a time with your leader to prioritize simplified issue policies to avoid commission delays.';
-          alertEl.classList.add('open');
-        } else if (count >= 5) {
-          boxEl.className = 'ss-alert-box warning';
-          titleEl.textContent = 'Heads Up — ' + count + ' in Underwriting';
-          msgEl.textContent = 'Great job on the sale! But you have ' + count + ' policies currently in underwriting. Try to prioritize simplified issue policies to maximize your earnings.';
-          alertEl.classList.add('open');
-        }
-      } catch (e) { console.error('Overload check failed:', e); }
-    }
-    document.getElementById('overloadClose').addEventListener('click', () => document.getElementById('overloadAlert').classList.remove('open'));
-    document.getElementById('overloadAlert').addEventListener('click', (e) => { if (e.target.id === 'overloadAlert') e.target.classList.remove('open'); });
-
-    // ─── UNDERWRITING REMINDERS ───
-    async function checkUnderwritingReminders() {
-      if (!currentUser) return;
-      const repName = currentUser.user_metadata?.name || currentUser.email;
-      const token = accessToken || SUPABASE_KEY;
-      try {
-        const res = await fetch(SUPABASE_URL + '/rest/v1/policies?select=*&sales_rep=eq.' + encodeURIComponent(repName) + '&status=eq.Underwriting&order=policy_date.asc', {
-          headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + token }
-        });
-        const data = await res.json();
-        const now = new Date();
-        const oneWeekMs = 7 * 24 * 60 * 60 * 1000;
-        // Show policies whose policy_date is 1+ weeks old
-        const stale = data.filter(p => {
-          if (!p.policy_date) return false;
-          const pd = parsePolicyDate(p.policy_date);
-          if (!pd) return false;
-          return (now - pd) >= oneWeekMs;
-        });
-        if (!stale.length) return;
-
-        // Check if we already showed this reminder today
-        const lastShown = localStorage.getItem('uw_reminder_date');
-        const todayStr = now.toISOString().split('T')[0];
-        if (lastShown === todayStr) return;
-        localStorage.setItem('uw_reminder_date', todayStr);
-
-        const listEl = document.getElementById('uwReminderList');
-        let html = '';
-        stale.forEach(p => {
-          const pd = parsePolicyDate(p.policy_date);
-          const dayCount = Math.floor((now - pd) / (1000 * 60 * 60 * 24));
-          const daysLabel = dayCount + ' day' + (dayCount !== 1 ? 's' : '') + ' in underwriting';
-          html += '<div class="ss-uw-item" data-id="' + p.id + '">';
-          html += '<div class="ss-uw-item-info"><div class="ss-uw-item-name">' + esc(p.client_name) + '</div><div class="ss-uw-item-meta">' + esc(p.carrier) + ' · $' + parseFloat(p.annual_premium).toLocaleString() + ' · ' + daysLabel + '</div></div>';
-          html += '<div class="ss-uw-item-actions"><button class="ss-uw-btn approve" onclick="uwApprove(\'' + p.id + '\',this)">Approve</button><button class="ss-uw-btn delete" onclick="uwDelete(\'' + p.id + '\',this)">Delete</button></div>';
-          html += '</div>';
-        });
-        listEl.innerHTML = html;
-        document.getElementById('uwReminderAlert').classList.add('open');
-      } catch (e) { console.error('UW reminder check failed:', e); }
-    }
 
     // ── Effective Date Reminder ──
     async function checkEffectiveDateReminders() {
@@ -15859,38 +15765,6 @@
     document.getElementById('effectiveDateClose').addEventListener('click', function() { document.getElementById('effectiveDateAlert').classList.remove('open'); });
     document.getElementById('effectiveDateAlert').addEventListener('click', function(e) { if (e.target.id === 'effectiveDateAlert') e.target.classList.remove('open'); });
 
-    document.getElementById('uwReminderClose').addEventListener('click', () => document.getElementById('uwReminderAlert').classList.remove('open'));
-    document.getElementById('uwReminderAlert').addEventListener('click', (e) => { if (e.target.id === 'uwReminderAlert') e.target.classList.remove('open'); });
-
-    async function uwApprove(id, btn) {
-      const token = accessToken || SUPABASE_KEY;
-      await fetch(SUPABASE_URL + '/rest/v1/policies?id=eq.' + id, {
-        method: 'PATCH',
-        headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
-        body: JSON.stringify({ status: 'Approved' })
-      });
-      const item = btn.closest('.ss-uw-item');
-      item.style.opacity = '0.3';
-      item.innerHTML = '<div class="ss-uw-item-info"><div class="ss-uw-item-name" style="color:#4ade80;">✓ Approved</div></div>';
-    }
-
-    async function uwDelete(id, btn) {
-      const ok = await showConfirmModal({
-        title: 'Delete this policy?',
-        message: 'Are you sure you want to delete this policy? This action cannot be undone.',
-        confirmText: 'Delete Policy',
-        cancelText: 'Cancel',
-        variant: 'danger',
-        icon: '🗑️'
-      });
-      if (!ok) return;
-      const token = accessToken || SUPABASE_KEY;
-      await fetch(SUPABASE_URL + '/rest/v1/policies?id=eq.' + id, {
-        method: 'DELETE',
-        headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' }
-      });
-      btn.closest('.ss-uw-item').remove();
-    }
 
     // Trigger reminder check after auth is confirmed
     const origUpdateAuthUI = updateAuthUI;
@@ -19909,14 +19783,14 @@
         const points = series.map((v, i) => [xs(i), ys(v)]);
         const hasProjection = (typeof projectionFromIdx === 'number')
           && projectionFromIdx >= 0 && projectionFromIdx < points.length - 1;
-        const realPoints      = hasProjection ? points.slice(0, projectionFromIdx + 1) : points;
-        const projectedPoints = hasProjection ? points.slice(projectionFromIdx)         : [];
-        const realPath        = smoothPath(realPoints, 0.5);
-        const projectedPath   = projectedPoints.length >= 2 ? smoothPath(projectedPoints, 0.5) : '';
-        // Gradient fill follows only the real portion so the projection feels
-        // visually "lighter" — a future estimate, not booked AP.
-        const areaEndIdx = hasProjection ? projectionFromIdx : labels.length - 1;
-        const areaPath = realPath + ' L ' + xs(areaEndIdx) + ',' + (pad.top + innerH) + ' L ' + xs(0) + ',' + (pad.top + innerH) + ' Z';
+        // One smooth curve through the entire series — color shift handled
+        // by horizontal stroke / fill gradients so the seam is invisible.
+        const linePath = smoothPath(points, 0.5);
+        const areaPath = linePath + ' L ' + xs(labels.length - 1) + ',' + (pad.top + innerH) + ' L ' + xs(0) + ',' + (pad.top + innerH) + ' Z';
+        const boundaryPct = hasProjection ? projectionFromIdx / Math.max(1, labels.length - 1) : 1;
+        const fadeBand = 0.04;
+        const fadeStart = Math.max(0, boundaryPct - fadeBand);
+        const fadeEnd = Math.min(1, boundaryPct + fadeBand);
         const grid = [0, 0.25, 0.5, 0.75, 1].map(t => ({ y: pad.top + t * innerH, v: max * (1 - t) }));
         const onMove = (e) => {
           const rect = ref.current.getBoundingClientRect();
@@ -19928,9 +19802,18 @@
           <div ref={ref} className="tp-chart-wrap" onMouseLeave={() => setHover(null)} onMouseMove={onMove}>
             <svg width={w} height={h} style={{display:'block'}}>
               <defs>
-                <linearGradient id="tpApGrad" x1="0" x2="0" y1="0" y2="1">
-                  <stop offset="0%" stopColor={c} stopOpacity="0.32" />
-                  <stop offset="100%" stopColor={c} stopOpacity="0" />
+                <linearGradient id="tpApFadeV" x1="0" x2="0" y1={pad.top} y2={pad.top + innerH} gradientUnits="userSpaceOnUse">
+                  <stop offset="0%" stopColor="#fff" stopOpacity="1" />
+                  <stop offset="100%" stopColor="#fff" stopOpacity="0" />
+                </linearGradient>
+                <mask id="tpApMaskV"><rect x="0" y="0" width={w} height={h} fill="url(#tpApFadeV)" /></mask>
+                <linearGradient id="tpApLineGrad" x1={pad.left} x2={pad.left + innerW} y1="0" y2="0" gradientUnits="userSpaceOnUse">
+                  <stop offset={fadeStart} stopColor={c} />
+                  <stop offset={fadeEnd} stopColor="var(--rb-blue)" />
+                </linearGradient>
+                <linearGradient id="tpApAreaGrad" x1={pad.left} x2={pad.left + innerW} y1="0" y2="0" gradientUnits="userSpaceOnUse">
+                  <stop offset={fadeStart} stopColor={c} stopOpacity="0.34" />
+                  <stop offset={fadeEnd} stopColor="var(--rb-blue)" stopOpacity="0.22" />
                 </linearGradient>
               </defs>
               {grid.map((g, i) => (
@@ -19943,17 +19826,12 @@
                   </text>
                 </g>
               ))}
-              <path d={areaPath} fill="url(#tpApGrad)" />
-              <path d={realPath} fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              {projectedPath && (
-                <path d={projectedPath} fill="none" stroke={c} strokeWidth="2"
-                  strokeLinecap="round" strokeLinejoin="round"
-                  strokeDasharray="4 5" opacity="0.55" />
-              )}
+              <path d={areaPath} fill="url(#tpApAreaGrad)" mask="url(#tpApMaskV)" />
+              <path d={linePath} fill="none" stroke="url(#tpApLineGrad)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               {hasProjection && (
                 <line x1={xs(projectionFromIdx)} x2={xs(projectionFromIdx)}
                   y1={pad.top} y2={pad.top + innerH}
-                  stroke="var(--tp-ink-4)" strokeDasharray="2 4" opacity="0.5" />
+                  stroke="var(--tp-ink-4)" strokeDasharray="2 4" opacity="0.4" />
               )}
               {labels.map((lbl, i) => {
                 const step = Math.max(1, Math.floor(labels.length / 8));
@@ -20290,7 +20168,7 @@
                   Booked
                 </span>
                 <span style={{display:'inline-flex', alignItems:'center', gap:6}}>
-                  <span style={{display:'inline-block', width:14, height:2, background:'repeating-linear-gradient(90deg, var(--rb-green) 0 4px, transparent 4px 9px)', opacity:0.7}}></span>
+                  <span style={{display:'inline-block', width:14, height:2, background:'var(--rb-blue)', borderRadius:2}}></span>
                   Projected · {fmtCurrency(series[series.length-1] || 0, {compact:true})} year-end pace
                 </span>
               </div>
@@ -21994,11 +21872,17 @@
         const max = Math.max(goal, cumProjected[11] || 0, 1) * 1.1;
         const xs = (i) => pad.left + (i / 11) * innerW;
         const ys = (v) => pad.top + (1 - v / max) * innerH;
-        const realPoints = cumActual.slice(0, currentMonthIdx + 1).map((v, i) => [xs(i), ys(v || 0)]);
-        const projPoints = cumProjected.slice(currentMonthIdx).map((v, i) => [xs(i + currentMonthIdx), ys(v || 0)]);
-        const realPath = smoothPath(realPoints, 0.5);
-        const projPath = projPoints.length >= 2 ? smoothPath(projPoints, 0.5) : '';
-        const areaPath = realPath ? realPath + ' L ' + xs(currentMonthIdx) + ',' + (pad.top + innerH) + ' L ' + xs(0) + ',' + (pad.top + innerH) + ' Z' : '';
+        // Single smooth curve through real + projected so the line is
+        // continuous at the seam. Color transition is done in the stroke
+        // gradient (real color → projection blue).
+        const allPoints = cumProjected.map((v, i) => [xs(i), ys(v || 0)]);
+        const linePath = smoothPath(allPoints, 0.5);
+        const areaPath = linePath ? linePath + ' L ' + xs(11) + ',' + (pad.top + innerH) + ' L ' + xs(0) + ',' + (pad.top + innerH) + ' Z' : '';
+        const hasProj = currentMonthIdx < 11;
+        const boundaryPct = hasProj ? currentMonthIdx / 11 : 1;
+        const fadeBand = 0.04; // ±4% of width = soft hand-off, no hard edge
+        const fadeStart = Math.max(0, boundaryPct - fadeBand);
+        const fadeEnd = Math.min(1, boundaryPct + fadeBand);
         const grid = [0, 0.25, 0.5, 0.75, 1].map(t => ({ y: pad.top + t * innerH, v: max * (1 - t) }));
         const goalY = ys(goal);
         const onMove = (e) => {
@@ -22011,9 +21895,20 @@
           <div ref={ref} className="tk-chart-wrap" onMouseLeave={() => setHover(null)} onMouseMove={onMove}>
             <svg width={w} height={h} style={{display:'block'}}>
               <defs>
-                <linearGradient id="tkApGrad" x1="0" x2="0" y1="0" y2="1">
-                  <stop offset="0%" stopColor={color} stopOpacity="0.32" />
-                  <stop offset="100%" stopColor={color} stopOpacity="0" />
+                {/* Vertical opacity fade for the area fill (top→bottom). */}
+                <linearGradient id="tkApFadeV" x1="0" x2="0" y1={pad.top} y2={pad.top + innerH} gradientUnits="userSpaceOnUse">
+                  <stop offset="0%" stopColor="#fff" stopOpacity="1" />
+                  <stop offset="100%" stopColor="#fff" stopOpacity="0" />
+                </linearGradient>
+                <mask id="tkApMaskV"><rect x="0" y="0" width={w} height={h} fill="url(#tkApFadeV)" /></mask>
+                {/* Horizontal color shift: green → blue across the seam. */}
+                <linearGradient id="tkApLineGrad" x1={pad.left} x2={pad.left + innerW} y1="0" y2="0" gradientUnits="userSpaceOnUse">
+                  <stop offset={fadeStart} stopColor={color} />
+                  <stop offset={fadeEnd} stopColor="var(--rb-blue)" />
+                </linearGradient>
+                <linearGradient id="tkApAreaGrad" x1={pad.left} x2={pad.left + innerW} y1="0" y2="0" gradientUnits="userSpaceOnUse">
+                  <stop offset={fadeStart} stopColor={color} stopOpacity="0.34" />
+                  <stop offset={fadeEnd} stopColor="var(--rb-blue)" stopOpacity="0.22" />
                 </linearGradient>
               </defs>
               {grid.map((g, i) => (
@@ -22029,10 +21924,11 @@
                   <text x={w - pad.right} y={goalY - 4} textAnchor="end" fill="var(--tk-ink-2)" fontSize="10" fontFamily="var(--tk-mono)" letterSpacing="0.06em">GOAL ${(goal/1000).toFixed(0)}K</text>
                 </g>
               )}
-              <path d={areaPath} fill="url(#tkApGrad)" />
-              <path d={realPath} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              {projPath && <path d={projPath} fill="none" stroke="var(--rb-blue)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="4 5" opacity="0.7" />}
-              <line x1={xs(currentMonthIdx)} x2={xs(currentMonthIdx)} y1={pad.top} y2={pad.top + innerH} stroke="var(--tk-ink-4)" strokeDasharray="2 4" opacity="0.6" />
+              <path d={areaPath} fill="url(#tkApAreaGrad)" mask="url(#tkApMaskV)" />
+              <path d={linePath} fill="none" stroke="url(#tkApLineGrad)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              {hasProj && (
+                <line x1={xs(currentMonthIdx)} x2={xs(currentMonthIdx)} y1={pad.top} y2={pad.top + innerH} stroke="var(--tk-ink-4)" strokeDasharray="2 4" opacity="0.4" />
+              )}
               {labels.map((lbl, i) => (
                 <text key={i} x={xs(i)} y={h - 8} textAnchor="middle" fill={i === currentMonthIdx ? 'var(--tk-ink-1)' : 'var(--tk-ink-3)'} fontSize="11" fontFamily="var(--tk-mono)">{lbl}</text>
               ))}
@@ -22101,11 +21997,17 @@
         const max = Math.max(goal || 0, projection[daysInMonth - 1] || 0, apMTD, 1) * 1.1;
         const xs = (i) => pad.left + (i / (daysInMonth - 1)) * innerW;
         const ys = (v) => pad.top + (1 - v / max) * innerH;
-        const realPoints = cumActual.slice(0, todayDay).map((v, i) => [xs(i), ys(v || 0)]);
-        const projPoints = projection.slice(todayDay - 1).map((v, i) => [xs(i + todayDay - 1), ys(v || 0)]);
-        const realPath = smoothPath(realPoints, 0.5);
-        const projPath = projPoints.length >= 2 ? smoothPath(projPoints, 0.5) : '';
-        const areaPath = realPath ? realPath + ' L ' + xs(todayDay - 1) + ',' + (pad.top + innerH) + ' L ' + xs(0) + ',' + (pad.top + innerH) + ' Z' : '';
+        // Single smooth curve for actual + projected so the line stays
+        // continuous through "today" — color shift handled by the stroke
+        // gradient.
+        const allPoints = projection.map((v, i) => [xs(i), ys(v || 0)]);
+        const linePath = smoothPath(allPoints, 0.5);
+        const areaPath = linePath ? linePath + ' L ' + xs(daysInMonth - 1) + ',' + (pad.top + innerH) + ' L ' + xs(0) + ',' + (pad.top + innerH) + ' Z' : '';
+        const hasProj = todayDay < daysInMonth;
+        const boundaryPct = hasProj ? (todayDay - 1) / Math.max(1, daysInMonth - 1) : 1;
+        const fadeBand = 0.04;
+        const fadeStart = Math.max(0, boundaryPct - fadeBand);
+        const fadeEnd = Math.min(1, boundaryPct + fadeBand);
         const grid = [0, 0.25, 0.5, 0.75, 1].map(t => ({ y: pad.top + t * innerH, v: max * (1 - t) }));
         const goalY = ys(goal || 0);
         // Axis labels — show ~6 evenly-spaced day numbers + the last day
@@ -22123,9 +22025,18 @@
           <div ref={ref} className="tk-chart-wrap" onMouseLeave={() => setHover(null)} onMouseMove={onMove}>
             <svg width={w} height={h} style={{display:'block'}}>
               <defs>
-                <linearGradient id="tkMtdGrad" x1="0" x2="0" y1="0" y2="1">
-                  <stop offset="0%" stopColor={color} stopOpacity="0.32" />
-                  <stop offset="100%" stopColor={color} stopOpacity="0" />
+                <linearGradient id="tkMtdFadeV" x1="0" x2="0" y1={pad.top} y2={pad.top + innerH} gradientUnits="userSpaceOnUse">
+                  <stop offset="0%" stopColor="#fff" stopOpacity="1" />
+                  <stop offset="100%" stopColor="#fff" stopOpacity="0" />
+                </linearGradient>
+                <mask id="tkMtdMaskV"><rect x="0" y="0" width={w} height={h} fill="url(#tkMtdFadeV)" /></mask>
+                <linearGradient id="tkMtdLineGrad" x1={pad.left} x2={pad.left + innerW} y1="0" y2="0" gradientUnits="userSpaceOnUse">
+                  <stop offset={fadeStart} stopColor={color} />
+                  <stop offset={fadeEnd} stopColor="var(--rb-blue)" />
+                </linearGradient>
+                <linearGradient id="tkMtdAreaGrad" x1={pad.left} x2={pad.left + innerW} y1="0" y2="0" gradientUnits="userSpaceOnUse">
+                  <stop offset={fadeStart} stopColor={color} stopOpacity="0.34" />
+                  <stop offset={fadeEnd} stopColor="var(--rb-blue)" stopOpacity="0.22" />
                 </linearGradient>
               </defs>
               {grid.map((g, i) => (
@@ -22140,10 +22051,11 @@
                   <text x={w - pad.right} y={goalY - 4} textAnchor="end" fill="var(--tk-ink-2)" fontSize="10" fontFamily="var(--tk-mono)" letterSpacing="0.06em">MTD GOAL ${(goal/1000).toFixed(0)}K</text>
                 </g>
               )}
-              <path d={areaPath} fill="url(#tkMtdGrad)" />
-              <path d={realPath} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              {projPath && <path d={projPath} fill="none" stroke="var(--rb-blue)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="4 5" opacity="0.7" />}
-              <line x1={xs(todayDay - 1)} x2={xs(todayDay - 1)} y1={pad.top} y2={pad.top + innerH} stroke="var(--tk-ink-4)" strokeDasharray="2 4" opacity="0.6" />
+              <path d={areaPath} fill="url(#tkMtdAreaGrad)" mask="url(#tkMtdMaskV)" />
+              <path d={linePath} fill="none" stroke="url(#tkMtdLineGrad)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              {hasProj && (
+                <line x1={xs(todayDay - 1)} x2={xs(todayDay - 1)} y1={pad.top} y2={pad.top + innerH} stroke="var(--tk-ink-4)" strokeDasharray="2 4" opacity="0.4" />
+              )}
               {tickIdx.map((i) => (
                 <text key={i} x={xs(i)} y={h - 8} textAnchor="middle" fill={(i + 1) === todayDay ? 'var(--tk-ink-1)' : 'var(--tk-ink-3)'} fontSize="11" fontFamily="var(--tk-mono)">{i + 1}</text>
               ))}
@@ -22853,7 +22765,7 @@
                   : <GoalLineChart monthlyValues={monthlyPremium} currentMonthIdx={today.getMonth()} goal={goal} color={paceColor} />}
                 <div style={{marginTop:14, paddingTop:14, borderTop:'1px solid var(--tk-hairline)', display:'flex', alignItems:'center', gap:22, flexWrap:'wrap', fontFamily:'var(--tk-mono)', fontSize:11, color:'var(--tk-ink-3)'}}>
                   <span><span style={{display:'inline-block', width:18, height:2, background:paceColor, marginRight:6, verticalAlign:'middle', borderRadius:1}}></span>Cumulative actual</span>
-                  <span><span style={{display:'inline-block', width:18, height:2, background:'repeating-linear-gradient(to right, var(--rb-blue) 0 5px, transparent 5px 10px)', marginRight:6, verticalAlign:'middle'}}></span>{chartMode === 'mtd' ? 'Projected to month-end' : 'Projected to year-end'}</span>
+                  <span><span style={{display:'inline-block', width:18, height:2, background:'var(--rb-blue)', marginRight:6, verticalAlign:'middle', borderRadius:1}}></span>{chartMode === 'mtd' ? 'Projected to month-end' : 'Projected to year-end'}</span>
                   {((chartMode === 'mtd' ? monthlyGoal : goal) > 0) && <span><span style={{display:'inline-block', width:18, height:2, background:'repeating-linear-gradient(to right, var(--tk-ink-2) 0 4px, transparent 4px 9px)', marginRight:6, verticalAlign:'middle'}}></span>{chartMode === 'mtd' ? 'Monthly goal' : 'Annual goal'}</span>}
                 </div>
               </div>
