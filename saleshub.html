@@ -22,7 +22,7 @@
       }
       function apply(t) {
         document.documentElement.setAttribute('data-kf-theme', t);
-        ['compgrid','carriers','leadvendors','resources','training','calculator','dialtracker','profile'].forEach(function (n) {
+        ['compgrid','carriers','leadvendors','resources','training','calculator','dialtracker','profile','weeklytracker'].forEach(function (n) {
           var p = document.getElementById('panel-' + n);
           if (p) p.setAttribute('data-kf-theme', t);
         });
@@ -143,7 +143,9 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 0 8px 8px;
+      /* Extra bottom padding reserves clearance for the absolute-positioned
+         collapse chevron pinned at bottom:12px. */
+      padding: 0 8px 44px;
       transition: width 180ms ease;
       gap: 0;
       z-index: 1000;
@@ -250,45 +252,46 @@
       border: none;
       border-radius: 0;
     }
+    /* Sidebar nav button — typography aligned with the rest of the KF UI
+       (Geist/Inter body weight, slightly tighter spacing, subtle hover). */
     .ss-sidebar-btn {
       display: flex;
       flex-direction: row;
       align-items: center;
       justify-content: flex-start;
-      gap: 8px;
+      gap: 10px;
       background: transparent;
       border: 1px solid transparent;
-      border-radius: 8px;
+      border-radius: 6px;
       cursor: pointer;
-      transition: all 0.15s ease;
-      padding: 7px 9px;
-      color: #444444;
+      transition: background 0.12s ease, color 0.12s ease;
+      padding: 8px 10px;
+      color: #555c66;
       flex-shrink: 0;
       width: 100%;
       text-align: left;
     }
-    .ss-sidebar-btn svg { width: 18px; height: 18px; flex-shrink: 0; opacity: 0.7; }
+    .ss-sidebar-btn svg { width: 16px; height: 16px; flex-shrink: 0; opacity: 0.78; }
     .ss-sidebar-btn span {
-      font-family: 'Inter', sans-serif;
-      font-size: 16px;
-      font-weight: 600;
+      font-family: 'Geist','Inter',system-ui,sans-serif;
+      font-size: 13px;
+      font-weight: 500;
       text-transform: none;
-      letter-spacing: normal;
-      line-height: 1.2;
+      letter-spacing: -0.005em;
+      line-height: 1.25;
       text-align: left;
       white-space: nowrap;
     }
     .ss-sidebar-btn:hover {
-      color: #1a1a1a;
-      background: #f0f0f5;
-      border-color: transparent;
+      color: #14130f;
+      background: rgba(15,12,8,0.04);
     }
     .ss-sidebar-btn.active {
-      color: #1a1a1a;
-      background: #ececf2;
-      border-color: transparent;
-      box-shadow: none;
+      color: #14130f;
+      background: rgba(15,12,8,0.07);
+      font-weight: 600;
     }
+    .ss-sidebar-btn.active span { font-weight: 600; }
     .ss-sidebar-btn.active svg { opacity: 1; }
 
     /* User header (name + settings cogwheel) */
@@ -329,27 +332,28 @@
     .ss-sidebar-settings:hover { background: #f0f0f5; color: #1a1a1a; }
     .ss-sidebar-settings svg { width: 18px; height: 18px; }
 
-    /* Collapse button — desktop-only chevron at the top-right of the sidebar
-       header. Tap to shrink the sidebar to icons-only; tap again to expand. */
+    /* Collapse button — desktop-only chevron pinned to the BOTTOM of the
+       sidebar (clears the logo entirely). Same right-edge offset in both
+       expanded + collapsed states so the button doesn't visibly jump. */
     .ss-sidebar-collapse {
       position: absolute;
-      right: 0.4rem;
-      top: 0.65rem;
-      width: 26px;
-      height: 26px;
+      bottom: 12px;
+      right: 12px;
+      width: 24px;
+      height: 24px;
       display: grid; place-items: center;
       cursor: pointer;
       background: transparent;
       border: 1px solid transparent;
       border-radius: 6px;
-      color: #888;
-      transition: all 0.15s ease;
+      color: rgba(243,243,241,0.45);
+      transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
       z-index: 11;
     }
     .ss-sidebar-collapse:hover {
-      color: #1a1a1a;
-      background: #f0f0f5;
-      border-color: #e5e5ea;
+      color: rgba(243,243,241,0.92);
+      background: rgba(255,255,255,0.06);
+      border-color: rgba(255,255,255,0.10);
     }
     .ss-sidebar.collapsed .ss-sidebar-collapse .ss-collapse-icon {
       transform: rotate(180deg);
@@ -362,14 +366,12 @@
     .ss-sidebar.collapsed .kf-logo-word { display: none; }
     .ss-sidebar.collapsed .kf-logo { gap: 0; }
     .ss-sidebar.collapsed .kf-logo-mark { width: 30px; height: 30px; }
-    /* When collapsed: pull the chevron back into normal column flow so it
-       sits between the SALES HUB logo and the settings cog instead of
-       floating down beside the cog. */
+    /* In collapsed state the rail is 64px wide; pull the chevron to the
+       horizontal center of the rail so it doesn't crash into anything. */
     .ss-sidebar.collapsed .ss-sidebar-collapse {
-      position: relative;
-      right: auto; top: auto; bottom: auto;
-      transform: none;
-      margin: 0 auto 4px;
+      right: auto;
+      left: 50%;
+      transform: translateX(-50%);
     }
     .ss-sidebar.collapsed .ss-sidebar-header { flex-direction: column; gap: 8px; padding-bottom: 6px; }
     .ss-sidebar.collapsed .ss-sidebar-user { padding: 6px; justify-content: center; }
@@ -874,19 +876,20 @@
     .ss-nav-links a {
       display: flex;
       align-items: center;
-      gap: 8px;
-      padding: 7px 9px;
-      font-family: 'Inter', sans-serif;
-      font-size: 16px;
-      font-weight: 600;
-      line-height: 1.2;
-      color: #444444;
+      gap: 10px;
+      padding: 8px 10px;
+      font-family: 'Geist','Inter',system-ui,sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: -0.005em;
+      line-height: 1.25;
+      color: #555c66;
       text-decoration: none;
-      border-radius: 8px;
-      transition: all 0.15s ease;
+      border-radius: 6px;
+      transition: background 0.12s ease, color 0.12s ease;
     }
-    .ss-nav-links a:hover { color: #1a1a1a; background: #f0f0f5; }
-    .ss-nav-links a svg { width: 18px; height: 18px; flex-shrink: 0; opacity: 0.7; }
+    .ss-nav-links a:hover { color: #14130f; background: rgba(15,12,8,0.04); }
+    .ss-nav-links a svg { width: 16px; height: 16px; flex-shrink: 0; opacity: 0.78; }
 
     /* ─── TRAINING PANEL ─── */
     #panel-training { padding: 0 !important; }
@@ -1539,7 +1542,7 @@
     #panel-weeklytracker .wt-grid-wrap { padding: 14px 4px 22px; }
     /* No overflow:hidden / border-radius on the table itself — those break
        position:sticky on the rank/name/MTD/WTD cells. */
-    #panel-weeklytracker .wt-grid-table { width: 100%; border-collapse: separate; border-spacing: 0; background: white; border: 1px solid var(--wt-gray-200); box-shadow: 0 1px 2px rgba(16,24,40,0.04); font-size: 14px; }
+    #panel-weeklytracker .wt-grid-table { width: 100%; border-collapse: separate; border-spacing: 0; background: white; border: 1px solid var(--wt-gray-200); border-radius: 10px; overflow: hidden; box-shadow: 0 1px 2px rgba(16,24,40,0.04); font-size: 14px; }
     #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th { background: linear-gradient(180deg, var(--wt-blue-600), var(--wt-blue-700)); color: white; font-weight: 600; font-size: 13px; text-transform: uppercase; letter-spacing: 0.04em; padding: 8px 4px; border-right: 1px solid rgba(255,255,255,0.18); text-align: center; }
     #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th.wt-rank-h,
     #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th.wt-name-h,
@@ -1549,8 +1552,11 @@
     #panel-weeklytracker .wt-grid-table thead tr.wt-sub-row th { font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; padding: 5px 2px; border-bottom: 1px solid var(--wt-blue-100); border-right: 1px solid var(--wt-blue-100); text-align: center; }
     /* Goal sub-headers: gray. Actual sub-headers: yellow — matches the body tint
        so the entire actuals column reads as one continuous yellow stripe. */
-    #panel-weeklytracker .wt-grid-table thead tr.wt-sub-row th.wt-sub-goal   { background: var(--wt-gray-100); color: var(--wt-gray-700); border-right-color: var(--wt-gray-200); }
-    #panel-weeklytracker .wt-grid-table thead tr.wt-sub-row th.wt-sub-actual { background: #fef3c7; color: #854d0e; border-right-color: #fde68a; }
+    /* Sub-header strips — both Goal and Actual use the design's blue
+       sub-head pair (--blue-50 bg, --blue-700 text) so the header reads
+       as one cohesive band instead of yellow vs gray. */
+    #panel-weeklytracker .wt-grid-table thead tr.wt-sub-row th.wt-sub-goal,
+    #panel-weeklytracker .wt-grid-table thead tr.wt-sub-row th.wt-sub-actual { background: var(--wt-blue-50); color: var(--wt-blue-700); border-right-color: var(--wt-blue-100); border-bottom: 1px solid var(--wt-blue-100); }
     #panel-weeklytracker .wt-grid-table thead tr.wt-sub-row th.wt-empty { background: white; border-bottom: 1px solid var(--wt-gray-200); }
     #panel-weeklytracker .wt-grid-table tbody td { padding: 0; border-bottom: 1px solid var(--wt-gray-100); border-right: 1px solid var(--wt-gray-100); vertical-align: middle; height: 36px; }
     #panel-weeklytracker .wt-grid-table tbody tr:last-child td { border-bottom: none; }
@@ -1581,17 +1587,23 @@
     /* All actual cells share a very soft yellow tint (matches the actual
        sub-headers) so the entire actuals column reads as one continuous
        highlighted stripe. State (over/met/miss) shows via text color only. */
-    #panel-weeklytracker .wt-day-cell.actual { padding: 0 2px !important; font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 500; color: var(--wt-gray-700); text-align: right; position: relative; background: #fef3c7; }
+    /* Actuals cell — neutral base (matches the rest of the columns); state
+       (over/met/miss) is shown only when conditions are met. No yellow
+       default tint anymore. */
+    #panel-weeklytracker .wt-day-cell.actual { padding: 0 2px !important; font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 500; color: var(--wt-gray-700); text-align: right; position: relative; background: transparent; }
     /* Personal-best crown — pins to the top-right corner of an actuals/MTD/WTD cell */
     #panel-weeklytracker .wt-crown { position: absolute; top: -1px; right: 1px; font-size: 11px; line-height: 1; pointer-events: none; filter: drop-shadow(0 0 1px rgba(0,0,0,0.25)); }
-    /* Goal-hit / AP-sold = green bg + green text. */
-    #panel-weeklytracker .wt-day-cell.actual.over       { background: #d1fadf; color: var(--wt-green-700); font-weight: 700; }
-    #panel-weeklytracker .wt-day-cell.actual.met        { background: #d1fadf; color: var(--wt-green-700); font-weight: 600; }
-    /* Three tiers of red for a missed dial goal with NO AP that day. */
-    #panel-weeklytracker .wt-day-cell.actual.miss-light { background: #fee2e2; color: #b91c1c; font-weight: 600; }
-    #panel-weeklytracker .wt-day-cell.actual.miss-med   { background: #fca5a5; color: #7f1d1d; font-weight: 700; }
-    #panel-weeklytracker .wt-day-cell.actual.miss-dark  { background: #ef4444; color: #ffffff;  font-weight: 700; }
-    /* AP sold but dial below goal: yellow base shows, neutral text. */
+    /* Goal-hit / AP-sold — single green tier, modeled after the design's
+       --over-bg / --over-text pair. */
+    #panel-weeklytracker .wt-day-cell.actual.over       { background: var(--wt-green-50); color: var(--wt-green-700); font-weight: 700; }
+    #panel-weeklytracker .wt-day-cell.actual.met        { background: var(--wt-green-50); color: var(--wt-green-700); font-weight: 600; }
+    /* Missed-goal — single red tier mirroring the green pair above. The old
+       miss-light / miss-med / miss-dark all collapse to the same look. */
+    #panel-weeklytracker .wt-day-cell.actual.miss,
+    #panel-weeklytracker .wt-day-cell.actual.miss-light,
+    #panel-weeklytracker .wt-day-cell.actual.miss-med,
+    #panel-weeklytracker .wt-day-cell.actual.miss-dark { background: var(--wt-red-50); color: var(--wt-red-600); font-weight: 700; }
+    /* AP sold but dial below goal: neutral text on neutral bg. */
     #panel-weeklytracker .wt-day-cell.actual.under      { color: var(--wt-gray-700); }
     #panel-weeklytracker .wt-day-cell.actual.empty      { color: var(--wt-gray-400); }
     #panel-weeklytracker .wt-day-cell.first-of-day { border-left: 1px solid var(--wt-blue-100); }
@@ -1613,9 +1625,10 @@
     #panel-weeklytracker .wt-day-cell .wt-pct { display: block; font-size: 9px; color: var(--wt-gray-400); text-align: right; padding-right: 0; margin-top: -2px; font-weight: 500; }
     #panel-weeklytracker .wt-day-cell.actual.over .wt-pct       { color: var(--wt-green-600); }
     #panel-weeklytracker .wt-day-cell.actual.met .wt-pct        { color: var(--wt-green-600); }
-    #panel-weeklytracker .wt-day-cell.actual.miss-light .wt-pct { color: #b91c1c; }
-    #panel-weeklytracker .wt-day-cell.actual.miss-med .wt-pct   { color: #7f1d1d; }
-    #panel-weeklytracker .wt-day-cell.actual.miss-dark .wt-pct  { color: #ffffff; }
+    #panel-weeklytracker .wt-day-cell.actual.miss .wt-pct,
+    #panel-weeklytracker .wt-day-cell.actual.miss-light .wt-pct,
+    #panel-weeklytracker .wt-day-cell.actual.miss-med .wt-pct,
+    #panel-weeklytracker .wt-day-cell.actual.miss-dark .wt-pct  { color: var(--wt-red-500); }
     #panel-weeklytracker .wt-grid-table tfoot td { background: var(--wt-blue-900); color: white; font-weight: 800; padding: 8px 6px; font-family: 'JetBrains Mono', monospace; font-size: 13px; text-align: right; border-right: 1px solid rgba(255,255,255,0.12); }
     #panel-weeklytracker .wt-grid-table tfoot td.wt-foot-label { text-align: left; text-transform: uppercase; letter-spacing: 0.04em; font-size: 12px; font-family: 'Inter', sans-serif; font-weight: 700; }
     #panel-weeklytracker .wt-grid-table tfoot td.wt-foot-empty { background: var(--wt-blue-900); }
@@ -1831,6 +1844,382 @@
       #panel-weeklytracker .wt-setup-table .wt-goal-col { width: 130px; padding: 0 8px; }
       #panel-weeklytracker .wt-setup-table .wt-goal-col input { padding: 6px 8px; font-size: 12px; }
       #panel-weeklytracker .wt-setup-footer { padding: 12px 14px; font-size: 12px; }
+    }
+
+    /* ─── Weekly Tracker — DARK theme ─────────────────────────────────────
+       Direct port of the Claude Design "Team Weekly Numbers" dark palette.
+       Navy-tinted dark canvas (not gray-black), bright blue + green
+       accents that pop against deep navy backgrounds. The original WT
+       light tokens already match that design's light palette — this
+       block remaps each one to the design's dark equivalent so the
+       existing CSS keeps working without restructuring.
+       ──────────────────────────────────────────────────────────────────── */
+    html[data-kf-theme="dark"] #panel-weeklytracker {
+      /* Surface scale (light → dark navy mapping) */
+      --wt-gray-25:  #0a0f1c;  /* app canvas */
+      --wt-gray-50:  #131a2a;  /* primary surface */
+      --wt-gray-100: #1a2236;  /* elevated surface / hover */
+      --wt-gray-200: #232c44;  /* hairline-strong / sticky surface */
+      --wt-gray-300: #2c3650;  /* heavier border accent */
+      --wt-gray-400: #5d6478;  /* faint text */
+      --wt-gray-500: #8a94ad;  /* muted text */
+      --wt-gray-600: #a8b1c6;  /* secondary text */
+      --wt-gray-700: #c5cee0;  /* default text */
+      --wt-gray-800: #dde4ef;  /* near-strong text */
+      --wt-gray-900: #f1f5fb;  /* strong text */
+      /* Blue scale stays vivid in dark — accents must pop on navy */
+      --wt-blue-50:  #15203b;
+      --wt-blue-100: #1a2747;
+      --wt-blue-200: #1a3056;
+      --wt-blue-400: #5b8def;
+      --wt-blue-500: #2f6fed;
+      --wt-blue-600: #1e54d3;
+      --wt-blue-700: #1842a8;
+      --wt-blue-900: #0a1430;
+      /* Green scale — used for YTD success states */
+      --wt-green-50:  #0f2920;
+      --wt-green-100: #1a3d2c;
+      --wt-green-300: #6ce9a6;
+      --wt-green-500: #12b76a;
+      --wt-green-600: #039855;
+      --wt-green-700: #064e36;
+      /* Red / amber */
+      --wt-red-50:   #2a1517;
+      --wt-red-500:  #f87171;
+      --wt-red-600:  #ef4444;
+      --wt-amber-50: #2a1f0a;
+      --wt-amber-500: #f79009;
+      color: var(--wt-gray-900);
+      background: var(--wt-gray-25);
+    }
+    /* Outer shell */
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-shell {
+      background: var(--wt-gray-50);
+      border-color: var(--wt-gray-200);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.5), 0 8px 32px rgba(0,0,0,0.4);
+    }
+
+    /* Topbar — keep the navy gradient (deep night), white text */
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-topbar {
+      background: linear-gradient(90deg, #0a1430, #112150);
+      color: #ffffff;
+      border-bottom: 1px solid var(--wt-gray-200);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.45);
+    }
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-topbar .wt-logo {
+      background: var(--wt-blue-900);
+      color: var(--wt-blue-400);
+      border: 1px solid var(--wt-blue-700);
+    }
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-topbar .wt-title { color: #ffffff; }
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-topbar .wt-sub { color: rgba(255,255,255,0.72); opacity: 1; }
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-topbar .wt-stat { border-left-color: rgba(255,255,255,0.18); }
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-topbar .wt-stat-label { color: rgba(255,255,255,0.7); opacity: 1; }
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-topbar .wt-stat-value { color: #ffffff; }
+
+    /* Theme toggle button */
+    #panel-weeklytracker .wt-theme-toggle {
+      width: 32px; height: 32px; margin-left: 14px; border-radius: 6px;
+      display: grid; place-items: center; cursor: pointer;
+      background: rgba(255,255,255,0.10);
+      border: 1px solid rgba(255,255,255,0.16);
+      color: rgba(255,255,255,0.86);
+      transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
+      flex-shrink: 0;
+    }
+    #panel-weeklytracker .wt-theme-toggle:hover {
+      background: rgba(255,255,255,0.18); border-color: rgba(255,255,255,0.24);
+      color: #ffffff;
+    }
+    #panel-weeklytracker .wt-theme-toggle svg { width: 16px; height: 16px; }
+
+    /* Toolbar */
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-toolbar {
+      background: var(--wt-gray-50);
+      border-bottom: 1px solid var(--wt-gray-200);
+      color: var(--wt-gray-500);
+    }
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-cell-ref {
+      background: var(--wt-gray-100);
+      border-color: var(--wt-gray-200);
+      color: var(--wt-gray-700);
+    }
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-formula { color: var(--wt-gray-500); }
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-tbtn {
+      background: var(--wt-gray-100);
+      border: 1px solid var(--wt-gray-200);
+      color: var(--wt-gray-700);
+    }
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-tbtn:hover {
+      background: var(--wt-gray-200); color: var(--wt-gray-900);
+      border-color: var(--wt-gray-300);
+    }
+
+    /* Sheet header */
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-sheet-header {
+      background: var(--wt-gray-50);
+      border-bottom: 1px solid var(--wt-gray-200);
+    }
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-sheet-title { color: var(--wt-gray-900); }
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-sheet-sub { color: var(--wt-gray-500); }
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-sheet-pill {
+      background: var(--wt-blue-50);
+      color: #8db4ff;
+      border: 1px solid var(--wt-gray-200);
+    }
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-sheet-pill.green {
+      background: var(--wt-green-50);
+      color: var(--wt-green-300);
+      border-color: var(--wt-green-100);
+    }
+
+    /* Summary strip */
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-summary-strip {
+      background: var(--wt-gray-50);
+      border-bottom: 1px solid var(--wt-gray-200);
+    }
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-summary-card,
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-kpi-card {
+      background: var(--wt-gray-100);
+      border: 1px solid var(--wt-gray-200);
+      color: var(--wt-gray-900);
+    }
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-summary-card .wt-summary-label,
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-kpi-card .wt-kpi-label { color: var(--wt-gray-500); }
+
+    /* Tabs bar */
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-tabs-bar {
+      background: #0f1525;
+      border-top: 1px solid var(--wt-gray-200);
+    }
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-tab {
+      color: var(--wt-gray-500);
+      background: transparent;
+    }
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-tab:hover {
+      color: var(--wt-gray-700);
+      background: var(--wt-gray-100);
+    }
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-tab.active {
+      background: var(--wt-gray-50);
+      color: #8db4ff;
+      border-top-color: var(--wt-blue-500);
+    }
+
+    /* Spreadsheet grid */
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-grid,
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-table,
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-setup-table,
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-grid-table {
+      background: var(--wt-gray-50);
+      color: var(--wt-gray-900);
+    }
+    /* Day-row header: keep the bright blue gradient — that's the design's
+       signature look in both light and dark modes. */
+    html[data-kf-theme="dark"] #panel-weeklytracker thead tr.day-row th,
+    html[data-kf-theme="dark"] #panel-weeklytracker thead tr.wt-day-row th {
+      background: linear-gradient(180deg, var(--wt-blue-700), #0f2966);
+      color: #ffffff;
+      border-right: 1px solid rgba(255,255,255,0.18);
+    }
+    /* Corner header cells (rank/name/wtd/ytd headers) get the deep navy */
+    html[data-kf-theme="dark"] #panel-weeklytracker thead tr.day-row th.rank-h,
+    html[data-kf-theme="dark"] #panel-weeklytracker thead tr.day-row th.name-h,
+    html[data-kf-theme="dark"] #panel-weeklytracker thead tr.day-row th.wtd-h,
+    html[data-kf-theme="dark"] #panel-weeklytracker thead tr.day-row th.ytd-h {
+      background: var(--wt-blue-900);
+    }
+    /* Sub-row: subtle navy band with bright blue text */
+    html[data-kf-theme="dark"] #panel-weeklytracker thead tr.sub-row th,
+    html[data-kf-theme="dark"] #panel-weeklytracker thead tr.wt-sub-row th,
+    html[data-kf-theme="dark"] #panel-weeklytracker thead tr.wt-sub-row th.wt-sub-goal,
+    html[data-kf-theme="dark"] #panel-weeklytracker thead tr.wt-sub-row th.wt-sub-actual {
+      background: var(--wt-blue-50);
+      color: #8db4ff;
+      border-bottom: 1px solid var(--wt-gray-200);
+      border-right: 1px solid var(--wt-gray-200);
+    }
+    html[data-kf-theme="dark"] #panel-weeklytracker thead tr.sub-row th.empty,
+    html[data-kf-theme="dark"] #panel-weeklytracker thead tr.wt-sub-row th.wt-empty {
+      background: var(--wt-gray-50);
+      border-bottom: 1px solid var(--wt-gray-200);
+    }
+    html[data-kf-theme="dark"] #panel-weeklytracker thead th,
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-grid-header,
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-col-header {
+      color: var(--wt-gray-500);
+    }
+    html[data-kf-theme="dark"] #panel-weeklytracker tbody td,
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-cell {
+      background: var(--wt-gray-50);
+      color: var(--wt-gray-900);
+      border-bottom: 1px solid #1c2438;
+      border-right: 1px solid #1c2438;
+    }
+    html[data-kf-theme="dark"] #panel-weeklytracker tbody tr:hover td,
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-cell:hover {
+      background: #1a2747;
+    }
+
+    /* Rank cell */
+    html[data-kf-theme="dark"] #panel-weeklytracker .rank-cell,
+    html[data-kf-theme="dark"] #panel-weeklytracker td.wt-rank-cell {
+      background: #161e30;
+      color: var(--wt-gray-500);
+    }
+
+    /* Sticky / name / WTD / YTD cells get themed surfaces */
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-sticky,
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-name-col,
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-rep-name,
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-cell.sticky,
+    html[data-kf-theme="dark"] #panel-weeklytracker tbody td.wt-sticky,
+    html[data-kf-theme="dark"] #panel-weeklytracker .name-cell {
+      background: var(--wt-gray-50);
+      color: var(--wt-gray-900);
+      border-right: 1px solid var(--wt-gray-200) !important;
+    }
+    html[data-kf-theme="dark"] #panel-weeklytracker .wtd-cell,
+    html[data-kf-theme="dark"] #panel-weeklytracker td.wt-wtd-cell {
+      background: var(--wt-blue-50);
+      color: #8db4ff;
+    }
+    html[data-kf-theme="dark"] #panel-weeklytracker .ytd-cell,
+    html[data-kf-theme="dark"] #panel-weeklytracker td.wt-ytd-cell {
+      background: var(--wt-green-50);
+      color: var(--wt-green-300);
+      border-left: 1px solid var(--wt-green-100);
+    }
+    html[data-kf-theme="dark"] #panel-weeklytracker tbody tr:hover td.ytd-cell,
+    html[data-kf-theme="dark"] #panel-weeklytracker tbody tr:hover td.wt-ytd-cell {
+      background: var(--wt-green-50);
+    }
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-avatar,
+    html[data-kf-theme="dark"] #panel-weeklytracker .name-cell .avatar {
+      background: var(--wt-blue-200);
+      color: #8db4ff;
+      border: 1px solid var(--wt-blue-700);
+    }
+
+    /* Footer total row — deep navy (matches design) */
+    html[data-kf-theme="dark"] #panel-weeklytracker tfoot td,
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-foot-cell {
+      background: var(--wt-blue-900);
+      color: #ffffff;
+      border-right: 1px solid rgba(255,255,255,0.12);
+    }
+    html[data-kf-theme="dark"] #panel-weeklytracker tfoot td.ytd-foot,
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-foot-cell.ytd {
+      background: var(--wt-green-700);
+    }
+
+    /* Inputs inside cells */
+    html[data-kf-theme="dark"] #panel-weeklytracker input[type="text"],
+    html[data-kf-theme="dark"] #panel-weeklytracker input[type="number"],
+    html[data-kf-theme="dark"] #panel-weeklytracker textarea,
+    html[data-kf-theme="dark"] #panel-weeklytracker select {
+      background: transparent;
+      color: var(--wt-gray-700);
+      border: 1px solid transparent;
+    }
+    html[data-kf-theme="dark"] #panel-weeklytracker input::placeholder,
+    html[data-kf-theme="dark"] #panel-weeklytracker textarea::placeholder { color: var(--wt-gray-400); }
+    html[data-kf-theme="dark"] #panel-weeklytracker input:focus,
+    html[data-kf-theme="dark"] #panel-weeklytracker textarea:focus,
+    html[data-kf-theme="dark"] #panel-weeklytracker select:focus {
+      outline: none;
+      background: var(--wt-gray-100);
+      box-shadow: inset 0 0 0 2px var(--wt-blue-500);
+      color: var(--wt-gray-900);
+    }
+    /* Goal-cell inputs sit on the elevated surface in light mode — port that */
+    html[data-kf-theme="dark"] #panel-weeklytracker .day-cell.goal,
+    html[data-kf-theme="dark"] #panel-weeklytracker td.wt-day-cell.goal {
+      background: var(--wt-gray-100);
+    }
+    html[data-kf-theme="dark"] #panel-weeklytracker .day-cell.goal input { color: var(--wt-gray-500); }
+    html[data-kf-theme="dark"] #panel-weeklytracker .day-cell.actual.over,
+    html[data-kf-theme="dark"] #panel-weeklytracker .day-cell.actual.met,
+    html[data-kf-theme="dark"] #panel-weeklytracker td.wt-day-cell.actual.over,
+    html[data-kf-theme="dark"] #panel-weeklytracker td.wt-day-cell.actual.met {
+      background: var(--wt-green-50);
+      color: var(--wt-green-300);
+    }
+    html[data-kf-theme="dark"] #panel-weeklytracker .day-cell.actual.over input,
+    html[data-kf-theme="dark"] #panel-weeklytracker .day-cell.actual.met input { color: var(--wt-green-300); }
+    /* Single red miss tier mirroring the green pair */
+    html[data-kf-theme="dark"] #panel-weeklytracker .day-cell.actual.miss,
+    html[data-kf-theme="dark"] #panel-weeklytracker .day-cell.actual.miss-light,
+    html[data-kf-theme="dark"] #panel-weeklytracker .day-cell.actual.miss-med,
+    html[data-kf-theme="dark"] #panel-weeklytracker .day-cell.actual.miss-dark,
+    html[data-kf-theme="dark"] #panel-weeklytracker td.wt-day-cell.actual.miss,
+    html[data-kf-theme="dark"] #panel-weeklytracker td.wt-day-cell.actual.miss-light,
+    html[data-kf-theme="dark"] #panel-weeklytracker td.wt-day-cell.actual.miss-med,
+    html[data-kf-theme="dark"] #panel-weeklytracker td.wt-day-cell.actual.miss-dark {
+      background: var(--wt-red-50);
+      color: var(--wt-red-500);
+    }
+    html[data-kf-theme="dark"] #panel-weeklytracker .day-cell.actual.miss input,
+    html[data-kf-theme="dark"] #panel-weeklytracker .day-cell.actual.miss-light input,
+    html[data-kf-theme="dark"] #panel-weeklytracker .day-cell.actual.miss-med input,
+    html[data-kf-theme="dark"] #panel-weeklytracker .day-cell.actual.miss-dark input { color: var(--wt-red-500); }
+    /* Inline white styling overrides */
+    html[data-kf-theme="dark"] #panel-weeklytracker [style*="background:#fff"],
+    html[data-kf-theme="dark"] #panel-weeklytracker [style*="background: #fff"],
+    html[data-kf-theme="dark"] #panel-weeklytracker [style*="background:#ffffff"] {
+      background: var(--wt-gray-100) !important;
+      color: var(--wt-gray-900) !important;
+    }
+
+    /* Status bar (deep navy) */
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-statusbar {
+      background: #0a1430;
+      color: rgba(255,255,255,0.7);
+      border-top: 1px solid var(--wt-gray-200);
+    }
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-status-pill {
+      background: var(--wt-gray-100);
+      border: 1px solid var(--wt-gray-200);
+      color: var(--wt-gray-700);
+    }
+
+    /* Setup table (YTD seed view) */
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-setup-wrap,
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-setup-card {
+      background: var(--wt-gray-50);
+      border: 1px solid var(--wt-gray-200);
+    }
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-setup-banner,
+    html[data-kf-theme="dark"] #panel-weeklytracker .setup-banner {
+      background: linear-gradient(135deg, var(--wt-green-50), var(--wt-blue-50));
+      border-bottom: 1px solid var(--wt-gray-200);
+    }
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-setup-footer,
+    html[data-kf-theme="dark"] #panel-weeklytracker .setup-footer {
+      background: var(--wt-gray-100);
+      color: var(--wt-gray-700);
+      border-top: 1px solid var(--wt-gray-200);
+    }
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-setup-table th,
+    html[data-kf-theme="dark"] #panel-weeklytracker .setup-table th {
+      background: var(--wt-gray-100);
+      color: var(--wt-gray-500);
+      border-bottom: 1px solid var(--wt-gray-200);
+    }
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-toggle-track {
+      background: var(--wt-gray-200);
+      border: 1px solid var(--wt-gray-300);
+    }
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-toggle input:checked + .wt-toggle-track {
+      background: var(--wt-blue-500);
+      border-color: var(--wt-blue-400);
+    }
+
+    /* Fullscreen close */
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-shell.wt-fullsize .wt-fs-close {
+      background: var(--wt-gray-200);
+      color: var(--wt-gray-900);
+      border: 1px solid var(--wt-gray-300);
     }
 
     /* ─── Team Performance panel (admin-only — moved from admin-sales.html) ─── */
@@ -10317,11 +10706,6 @@
           <span class="kf-logo-word"><span class="kf-logo-w1">Sales</span><span class="kf-logo-w2">Hub</span></span>
         </span>
       </div>
-      <button class="ss-sidebar-collapse" id="ssCollapseBtn" type="button" aria-label="Collapse sidebar" title="Collapse sidebar">
-        <svg class="ss-collapse-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
-          <polyline points="15 18 9 12 15 6"/>
-        </svg>
-      </button>
       <button class="ss-sidebar-hamburger" id="ssHamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
     </div>
     <div class="ss-sidebar-user" id="sidebarUser">
@@ -10331,13 +10715,16 @@
       </button>
     </div>
     <div class="ss-sidebar-grid">
-    <button class="ss-sidebar-btn active" data-panel="goals">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
-      <span>Tracker</span>
-    </button>
+    <!-- Admin-only Team Dashboard pinned to the top of the rail; visibility is
+         flipped by updateAuthUI() for the admin email only — every other user
+         never sees it. -->
     <button class="ss-sidebar-btn" data-panel="teamperf" id="teamPerfSidebarBtn" style="display:none;">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 4 4 5-5"/></svg>
       <span>Team Dashboard</span>
+    </button>
+    <button class="ss-sidebar-btn active" data-panel="goals">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+      <span>Tracker</span>
     </button>
     <button class="ss-sidebar-btn" data-panel="dialtracker">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.13.96.37 1.9.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.91.33 1.85.57 2.81.7A2 2 0 0122 16.92z"/></svg>
@@ -10424,6 +10811,11 @@
         Toolkit
       </a>
     </div>
+    <button class="ss-sidebar-collapse" id="ssCollapseBtn" type="button" aria-label="Collapse sidebar" title="Collapse sidebar">
+      <svg class="ss-collapse-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
+    </button>
   </nav>
 
   <!-- MAIN CONTENT -->
@@ -12420,6 +12812,21 @@
         const isWtAdmin = WT_ADMIN_EMAILS.includes((currentUser.email || '').toLowerCase());
         if (wtBtn) wtBtn.style.display = isWtAdmin ? '' : 'none';
         if (tpBtn) tpBtn.style.display = isWtAdmin ? '' : 'none';
+        // Admin-only landing: when the admin signs in for the first time
+        // this session, snap them to Team Dashboard. Everyone else stays
+        // on the default Tracker. Tracked in sessionStorage so navigating
+        // away in the same tab doesn't keep yanking them back.
+        if (isWtAdmin && !sessionStorage.getItem('kf_admin_landed_v1')) {
+          sessionStorage.setItem('kf_admin_landed_v1', '1');
+          const tpPanel = document.getElementById('panel-teamperf');
+          const goalsPanel = document.getElementById('panel-goals');
+          if (tpPanel && tpBtn && goalsPanel) {
+            document.querySelectorAll('.ss-sidebar-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.ss-panel').forEach(p => p.classList.remove('active'));
+            tpBtn.classList.add('active');
+            tpPanel.classList.add('active');
+          }
+        }
         // If WT panel is currently active and we just got auth, reload so goals fetch with the user bearer
         if (isWtAdmin) {
           const activePanel = document.querySelector('.ss-panel.active');
@@ -17852,32 +18259,18 @@
         const weekActual = reps.reduce((s, r) => s + (curActuals[r] || []).reduce((a, v) => a + (v || 0), 0), 0);
         return '' +
           '<div class="wt-topbar">' +
-            '<div class="wt-logo">WT</div>' +
-            '<div>' +
-              '<div class="wt-title">Team Weekly Numbers</div>' +
-              '<div class="wt-sub">2026 Sales Tracker · ' + reps.length + ' rep' + (reps.length === 1 ? '' : 's') + '</div>' +
-            '</div>' +
+            '<div class="wt-title">Team Weekly Numbers</div>' +
             '<div class="wt-spacer"></div>' +
-            '<div class="wt-stat"><div class="wt-stat-label">Team YTD</div><div class="wt-stat-value">' + escHtml(fmtMoneyShort(teamYTD)) + '</div></div>' +
-            '<div class="wt-stat"><div class="wt-stat-label">This Week</div><div class="wt-stat-value">' + escHtml(fmtMoneyShort(weekActual)) + '</div></div>' +
+            '<button type="button" class="wt-theme-toggle kf-skin-theme-toggle" aria-label="Toggle theme" title="Toggle theme"></button>' +
           '</div>';
       }
 
       function renderToolbar() {
-        let cellRef = '—', formula = 'Ready';
-        if (activeSheet === 'ytd-setup') {
-          cellRef = 'Reps';
-          formula = 'Default daily goals (manual) · YTD pulled from policies before Apr 27, 2026';
-        } else {
-          const wk = WEEKS.find(w => w.key === activeSheet);
-          if (wk) { cellRef = wk.label; formula = '= SUM(Mon:Sat actuals) per rep · ranked by YTD descending · actuals from policies'; }
-        }
         const isFs = !!document.fullscreenElement;
         const isYTD = (activeSheet === 'ytd-setup');
         return '' +
           '<div class="wt-toolbar">' +
-            '<div class="wt-cell-ref">' + escHtml(cellRef) + '</div>' +
-            '<div class="wt-formula">' + escHtml(formula) + '</div>' +
+            '<div class="wt-spacer" style="flex:1;"></div>' +
             '<div style="display:flex;gap:6px;align-items:center;">' +
               (isYTD ? '' :
                 '<button type="button" class="wt-tbtn wt-totals-toggle" id="wtTotalsToggleBtn" title="Hide totals to see day columns">' +
@@ -17886,7 +18279,6 @@
               '<button type="button" class="wt-tbtn" id="wtFullscreenBtn" title="Fullscreen (Esc to exit)">' +
                 (isFs ? '⤢ Exit Fullscreen' : '⛶ Fullscreen') +
               '</button>' +
-              '<span class="wt-tbtn">↻ Auto-saved</span>' +
             '</div>' +
           '</div>';
       }
@@ -17919,14 +18311,8 @@
                 '<div class="wt-sheet-title">Sales Reps</div>' +
                 '<span class="wt-sheet-pill green">● Setup</span>' +
               '</div>' +
-              '<div class="wt-sheet-sub">YTD totals are pulled from each rep\'s submitted policies dated before Apr 27, 2026. Toggle a rep off to remove them from every weekly sheet.</div>' +
             '</div>' +
             '<div class="wt-setup-card">' +
-              '<div class="wt-setup-banner">' +
-                '<div class="wt-icon">$</div>' +
-                '<div><h3>Default daily goals · YTD source · weekly visibility</h3>' +
-                '<p>YTD is read-only and reflects submitted business through Apr 26, 2026. Use the toggle to hide a rep from weekly sheets without deleting their data.</p></div>' +
-              '</div>' +
               '<table class="wt-setup-table">' +
                 '<thead><tr>' +
                   '<th style="width:64px;">Show</th>' +
@@ -18147,12 +18533,6 @@
               '<div class="wt-sheet-title">' + escHtml(week.full) + '</div>' +
               (isCurrent ? '<span class="wt-sheet-pill">● Current Week</span>' : '') +
             '</div>' +
-            '<div class="wt-sheet-sub">Reps ranked by Month-to-Date · AP actuals pull from submitted policies · dial actuals pull from daily KPIs · Rank/Name/MTD Goal/MTD/WTD Goal/WTD pinned while you scroll horizontally</div>' +
-          '</div>' +
-          '<div class="wt-summary-strip" style="grid-template-columns: repeat(3, 1fr);">' +
-            '<div class="wt-summary-card"><div class="wt-lbl">Team WTD</div><div class="wt-val">' + escHtml(fmtMoney(totalWTD)) + '</div><div class="wt-delta">of ' + escHtml(fmtMoneyShort(totalWeeklyGoal)) + ' weekly goal</div></div>' +
-            '<div class="wt-summary-card amber"><div class="wt-lbl">Team MTD</div><div class="wt-val">' + escHtml(fmtMoney(totalMTD)) + '</div><div class="wt-delta up">↑ ' + escHtml(fmtMoneyShort(totalWTD)) + ' added this week</div></div>' +
-            '<div class="wt-summary-card deep"><div class="wt-lbl">Team YTD</div><div class="wt-val">' + escHtml(fmtMoney(totalYTD)) + '</div><div class="wt-delta up">↑ ' + escHtml(fmtMoneyShort(totalMTD)) + ' added this month</div></div>' +
           '</div>';
 
         const gridHtml =
