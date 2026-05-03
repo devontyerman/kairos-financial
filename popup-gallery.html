@@ -43,78 +43,79 @@
 
   <script>
     const frame = document.getElementById('frame');
-    const status = document.getElementById('status');
+    const statusEl = document.getElementById('status');
 
     function fdoc() { return frame.contentDocument; }
     function fwin() { return frame.contentWindow; }
+    function setStatus(msg) { statusEl.textContent = msg; console.log('[gallery]', msg); }
 
-    function open(id) {
-      const el = fdoc().getElementById(id);
-      if (!el) { status.textContent = '✗ #' + id + ' not in DOM'; return; }
+    function showOverlay(id) {
+      const el = fdoc() && fdoc().getElementById(id);
+      if (!el) { setStatus('✗ #' + id + ' not in DOM — page not loaded yet?'); return; }
+      // Wipe any inline display:none baked into the markup, then apply
+      // both the canonical .open class AND a hard inline display so we
+      // win regardless of which CSS variant the overlay uses.
+      el.style.removeProperty('display');
       el.classList.add('open');
-      // Some overlays use inline display:none — force them visible too.
       el.style.display = 'flex';
-      status.textContent = '✓ opened #' + id;
+      // Scroll to top so a fixed-position overlay is centered in view.
+      try { fwin().scrollTo({top:0, behavior:'instant'}); } catch (e) {}
+      setStatus('✓ opened #' + id);
     }
 
     document.querySelectorAll('#toolbar button[data-popup]').forEach(b => {
-      b.addEventListener('click', () => open(b.dataset.popup));
+      b.addEventListener('click', () => showOverlay(b.dataset.popup));
     });
 
     document.getElementById('btnSaleSuccess').addEventListener('click', () => {
-      try {
-        fwin().showSuccessModal(4800);
-        status.textContent = '✓ showSuccessModal(4800)';
-      } catch (e) { status.textContent = '✗ ' + e.message; }
+      const fn = fwin() && fwin().showSuccessModal;
+      if (typeof fn !== 'function') { setStatus('✗ showSuccessModal not on window — saleshub.html still loading?'); return; }
+      try { fn(4800); setStatus('✓ showSuccessModal(4800)'); }
+      catch (e) { setStatus('✗ ' + e.message); }
     });
 
     document.getElementById('btnError').addEventListener('click', () => {
-      try {
-        fwin().showErrorModal('This is a sample error message — e.g. "Annual Premium must be a positive number."');
-        status.textContent = '✓ showErrorModal()';
-      } catch (e) { status.textContent = '✗ ' + e.message; }
+      const fn = fwin() && fwin().showErrorModal;
+      if (typeof fn !== 'function') { setStatus('✗ showErrorModal not on window'); return; }
+      try { fn('This is a sample error message — e.g. "Annual Premium must be a positive number."'); setStatus('✓ showErrorModal()'); }
+      catch (e) { setStatus('✗ ' + e.message); }
     });
 
     document.getElementById('btnConfirm').addEventListener('click', () => {
+      const fn = fwin() && fwin().showConfirmModal;
+      if (typeof fn !== 'function') {
+        setStatus('✗ showConfirmModal not exposed — sign in so the Tracker panel mounts, then try again');
+        return;
+      }
       try {
-        const fn = fwin().showConfirmModal;
-        if (!fn) { status.textContent = '✗ window.showConfirmModal not exposed yet — open Tracker panel first'; return; }
         fn({
           title: 'Confirm action',
-          body: 'Are you sure you want to do this thing? It cannot be undone.',
-          confirmLabel: 'Yes, do it',
-          cancelLabel: 'Cancel',
-          danger: true,
-          onConfirm: () => { status.textContent = '✓ confirmed'; }
+          message: 'Are you sure you want to do this thing? It cannot be undone.',
+          confirmText: 'Yes, do it',
+          cancelText: 'Cancel',
+          variant: 'danger',
+          icon: '🗑️',
         });
-        status.textContent = '✓ showConfirmModal()';
-      } catch (e) { status.textContent = '✗ ' + e.message; }
+        setStatus('✓ showConfirmModal()');
+      } catch (e) { setStatus('✗ ' + e.message); }
     });
 
-    function clickInFrame(selector) {
-      const el = fdoc().querySelector(selector);
-      if (!el) { status.textContent = '✗ ' + selector + ' not on page — navigate to Tracker first'; return; }
-      el.click();
-      status.textContent = '✓ clicked ' + selector;
-    }
-
     document.getElementById('btnSubmitDeal').addEventListener('click', () => {
-      // Match any "+ Submit Deal" button on Tracker
       const buttons = [...fdoc().querySelectorAll('button')].filter(b => /Submit Deal/i.test(b.textContent));
-      if (!buttons.length) { status.textContent = '✗ Open the Tracker panel first'; return; }
+      if (!buttons.length) { setStatus('✗ Submit Deal button not in DOM — sign in first to mount the Tracker'); return; }
       buttons[0].click();
-      status.textContent = '✓ Submit Deal modal opened';
+      setStatus('✓ Submit Deal modal opened');
     });
 
     document.getElementById('btnSubmitKpi').addEventListener('click', () => {
       const buttons = [...fdoc().querySelectorAll('button')].filter(b => /Submit KPI/i.test(b.textContent));
-      if (!buttons.length) { status.textContent = '✗ Open the Tracker panel first'; return; }
+      if (!buttons.length) { setStatus('✗ Submit KPI button not in DOM — sign in first to mount the Tracker'); return; }
       buttons[0].click();
-      status.textContent = '✓ Submit KPI modal opened';
+      setStatus('✓ Submit KPI modal opened');
     });
 
     frame.addEventListener('load', () => {
-      status.textContent = 'Ready · sign in to enable Tracker modals';
+      setStatus('Ready · sign in for Confirm + Tracker modals');
     });
   </script>
 </body>
