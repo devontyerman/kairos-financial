@@ -13521,10 +13521,6 @@
         if (overlay && overlay.classList.contains('open')) closeSubmitModal();
         // Refresh the tracker so the new sale shows in the heatmap immediately
         if (typeof loadAgentPerformance === 'function') loadAgentPerformance();
-        // Check milestones (celebration modal for big milestones)
-        await checkAndShowMilestone();
-        // Check underwriting overload
-        if (data.status === 'Underwriting') checkUnderwritingOverload();
       } else {
         showErrorModal(result.error || 'Unknown error. Check your connection and try again.');
       }
@@ -15901,7 +15897,6 @@
     updateAuthUI = function() {
       origUpdateAuthUI();
       if (currentUser) {
-        setTimeout(checkUnderwritingReminders, 1500);
         setTimeout(checkEffectiveDateReminders, 2500);
         // The Tracker panel is now React-rendered (see KairosTracker IIFE).
         // Mount it on auth so the dashboard fills with the user's data.
