@@ -10288,7 +10288,32 @@
         border-radius: 0;
       }
       .ss-sidebar.mobile-open .ss-sidebar-grid { display: flex; }
+      /* Default: hide the desktop user/cogwheel row on mobile when the
+         sidebar is collapsed. Show it when the user opens the menu so
+         the cogwheel (Profile + Log out) is reachable on phones. */
       .ss-sidebar-user { display: none !important; }
+      .ss-sidebar.mobile-open .ss-sidebar-user.visible {
+        display: flex !important;
+        order: -1;
+        margin: 0 0.5rem 0.5rem;
+        padding: 0.55rem 0.75rem;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.06);
+        border-radius: 8px;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.5rem;
+      }
+      .ss-sidebar.mobile-open .ss-sidebar-user .ss-sidebar-user-name {
+        font-size: 0.82rem;
+        font-weight: 500;
+        flex: 1; min-width: 0;
+        overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+      }
+      .ss-sidebar.mobile-open .ss-sidebar-user .ss-sidebar-settings {
+        width: 32px; height: 32px;
+        flex-shrink: 0;
+      }
       .ss-sidebar-btn {
         aspect-ratio: auto;
         flex-shrink: 0;
@@ -13656,6 +13681,10 @@
       sidebarSettingsBtn.addEventListener('click', (e) => {
         e.preventDefault();
         activatePanel('profile');
+        // Close the mobile dropdown so the user immediately sees Profile.
+        document.getElementById('ssHamburger')?.classList.remove('open');
+        document.getElementById('ssMobileMenu')?.classList.remove('open');
+        document.getElementById('ssSidebar')?.classList.remove('mobile-open');
       });
     }
 
