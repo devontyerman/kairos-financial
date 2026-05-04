@@ -1670,6 +1670,18 @@
     #panel-weeklytracker .wt-day-cell.actual.miss-med .wt-pct,
     #panel-weeklytracker .wt-day-cell.actual.miss-dark .wt-pct  { color: var(--wt-red-500); }
     #panel-weeklytracker .wt-grid-table tfoot td { background: var(--wt-blue-900); color: white; font-weight: 800; padding: 8px 6px; font-family: 'JetBrains Mono', monospace; font-size: 13px; text-align: right; border-right: 1px solid rgba(255,255,255,0.12); }
+    /* Team-totals projection chip pinned under the main number */
+    #panel-weeklytracker .wt-grid-table tfoot td .wt-foot-val { display: block; line-height: 1.1; }
+    #panel-weeklytracker .wt-grid-table tfoot td .wt-foot-proj {
+      display: block;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.62);
+      letter-spacing: 0.04em;
+      text-transform: lowercase;
+      margin-top: 2px;
+    }
     #panel-weeklytracker .wt-grid-table tfoot td.wt-foot-label { text-align: left; text-transform: uppercase; letter-spacing: 0.04em; font-size: 12px; font-family: 'Inter', sans-serif; font-weight: 700; }
     #panel-weeklytracker .wt-grid-table tfoot td.wt-foot-empty { background: var(--wt-blue-900); }
     #panel-weeklytracker .wt-grid-table tfoot td.wt-ytd-foot { background: var(--wt-green-700); }
@@ -10726,6 +10738,20 @@
       --kfa-blue-soft: color-mix(in oklch, oklch(0.55 0.13 240) 16%, transparent);
     }
     @keyframes kfaPop { from { opacity: 0; transform: scale(0.96) translateY(4px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+    /* Pulsing "you are here" dot — used by chart components on the boundary
+       between actual + projected. Two layers: a soft expanding ring + a
+       solid dot that breathes. */
+    @keyframes kfPulseRing {
+      0%   { r: 5;  opacity: 0.55; }
+      80%  { r: 14; opacity: 0;    }
+      100% { r: 14; opacity: 0;    }
+    }
+    @keyframes kfPulseDot {
+      0%, 100% { opacity: 1; }
+      50%      { opacity: 0.55; }
+    }
+    .kf-pulse-ring { animation: kfPulseRing 1.6s ease-out infinite; transform-origin: center; }
+    .kf-pulse-dot  { animation: kfPulseDot 1.6s ease-in-out infinite; }
 
     /* Overlay backdrop */
     #signupOverlay.ss-signup-overlay {
@@ -18741,6 +18767,23 @@
         return result;
       }
 
+      // Pace-projection helper. Given a current cumulative total and
+      // (elapsed, total) day counts, returns the linear projection — or
+      // null when projection would be a no-op (already at end, no days
+      // elapsed yet, or total === 0).
+      function projectPace(totalSoFar, elapsedDays, totalDays) {
+        if (!elapsedDays || elapsedDays <= 0) return null;
+        if (!totalDays   || totalDays   <= 0) return null;
+        if (elapsedDays >= totalDays)         return null; // full window done
+        return (totalSoFar / elapsedDays) * totalDays;
+      }
+      // Compose the small "proj $X" chip we tack under team totals in the
+      // footer. Returns '' when there's nothing to project.
+      function projectionChip(value) {
+        if (value == null || isNaN(value) || !isFinite(value)) return '';
+        return '<span class="wt-foot-proj" title="Projected end-of-period pace">proj ' + escHtml(fmtMoneyShort(value)) + '</span>';
+      }
+
       function fmtMoney(n) {
         if (!n || isNaN(n)) return '$0';
         return '$' + Math.round(n).toLocaleString();
@@ -19033,6 +19076,30 @@
         const totalWeeklyGoal = rows.reduce((s, r) => s + (r.weeklyGoal || 0), 0);
         const totalMonthlyGoal = rows.reduce((s, r) => s + (r.monthlyGoal || 0), 0);
         const totalYTD = rows.reduce((s, r) => s + r.ytd, 0);
+        // Pace projections — only meaningful for the live week (today inside
+        // it) and the live MTD anchor month. Past + future weeks render
+        // their final/$0 numbers without a projection chip.
+        const _today = new Date();
+        const _todayKey = ymdLocal(_today);
+        const _weekStart = new Date(weekKey + 'T00:00:00');
+        const _weekEnd = new Date(_weekStart); _weekEnd.setDate(_weekEnd.getDate() + 5);
+        const _weekStartKey = ymdLocal(_weekStart);
+        const _weekEndKey   = ymdLocal(_weekEnd);
+        const _todayInWeek  = (_todayKey >= _weekStartKey && _todayKey <= _weekEndKey);
+        let _wtdProj = null;
+        if (_todayInWeek) {
+          const _msPerDay = 86400000;
+          const _elapsed = Math.min(6, Math.max(1, Math.floor((_today - _weekStart) / _msPerDay) + 1));
+          _wtdProj = projectPace(totalWTD, _elapsed, 6);
+        }
+        let _mtdProj = null;
+        const _anchor = anchorMonthForWeek(weekKey);
+        const _todayAnchor = (_today.getFullYear() === _anchor.year && _today.getMonth() === _anchor.monthIdx);
+        if (_todayAnchor) {
+          const _daysInMonth = new Date(_anchor.year, _anchor.monthIdx + 1, 0).getDate();
+          const _dayOfMonth = _today.getDate();
+          _mtdProj = projectPace(totalMTD, _dayOfMonth, _daysInMonth);
+        }
 
         // Header rows: each day spans 4 sub-cols (AP Goal/Actual, Dial Goal/Actual)
         let dayHeaderHtml = '';
@@ -19085,9 +19152,9 @@
                 '<td class="wt-foot-rank"></td>' +
                 '<td class="wt-foot-name">Team Totals</td>' +
                 '<td class="wt-foot-monthly">' + escHtml(fmtMoney(totalMonthlyGoal)) + '</td>' +
-                '<td class="wt-foot-mtd">' + escHtml(fmtMoney(totalMTD)) + '</td>' +
+                '<td class="wt-foot-mtd"><span class="wt-foot-val">' + escHtml(fmtMoney(totalMTD)) + '</span>' + projectionChip(_mtdProj) + '</td>' +
                 '<td class="wt-foot-weekly">' + escHtml(fmtMoney(totalWeeklyGoal)) + '</td>' +
-                '<td class="wt-foot-wtd">' + escHtml(fmtMoney(totalWTD)) + '</td>' +
+                '<td class="wt-foot-wtd"><span class="wt-foot-val">' + escHtml(fmtMoney(totalWTD)) + '</span>' + projectionChip(_wtdProj) + '</td>' +
                 footDayHtml +
                 '<td class="wt-ytd-foot">' + escHtml(fmtMoney(totalYTD)) + '</td>' +
               '</tr></tfoot>') : '') +
@@ -19199,6 +19266,13 @@
         const totalMTD = rows.reduce((s, r) => s + r.mtd, 0);
         const totalGoal = rows.reduce((s, r) => s + (r.monthlyGoal || 0), 0);
         const totalYTD = rows.reduce((s, r) => s + r.ytd, 0);
+        // Team MTD projection — only meaningful for the live current month.
+        // Past months show their final number, future months show $0.
+        let _msMtdProj = null;
+        if (isCurrentMonth) {
+          const _dayOfMonth = today.getDate();
+          _msMtdProj = projectPace(totalMTD, _dayOfMonth, daysInMonth);
+        }
         const dayTotals = new Array(daysInMonth).fill(0);
         rows.forEach(r => { for (let i = 0; i < daysInMonth; i++) dayTotals[i] += (r.daily[i] || 0); });
         let footDayHtml = '';
@@ -19236,7 +19310,7 @@
                 '<td class="wt-foot-rank"></td>' +
                 '<td class="wt-foot-name">Team Totals</td>' +
                 '<td class="wt-foot-monthly">' + escHtml(fmtMoney(totalGoal)) + '</td>' +
-                '<td class="wt-foot-mtd">' + escHtml(fmtMoney(totalMTD)) + '</td>' +
+                '<td class="wt-foot-mtd"><span class="wt-foot-val">' + escHtml(fmtMoney(totalMTD)) + '</span>' + projectionChip(_msMtdProj) + '</td>' +
                 footDayHtml +
                 '<td class="wt-ytd-foot">' + escHtml(fmtMoney(totalYTD)) + '</td>' +
               '</tr></tfoot>') : '') +
@@ -21034,6 +21108,15 @@
         // visually "lighter" — a future estimate, not booked AP.
         const areaEndIdx = hasProjection ? projectionFromIdx : labels.length - 1;
         const areaPath = realPath + ' L ' + xs(areaEndIdx) + ',' + (pad.top + innerH) + ' L ' + xs(0) + ',' + (pad.top + innerH) + ' Z';
+        // Separate projection area (lighter green tint) — closes the
+        // projected path down to the baseline so we can fill it under the
+        // continuation curve without double-painting the actuals.
+        const projAreaPath = projectedPath
+          ? projectedPath + ' L ' + xs(labels.length - 1) + ',' + (pad.top + innerH) + ' L ' + xs(projectionFromIdx) + ',' + (pad.top + innerH) + ' Z'
+          : '';
+        // "You are here" coordinates: where actual ends + projection begins.
+        const boundaryX = hasProjection ? xs(projectionFromIdx) : xs(realPoints.length - 1);
+        const boundaryY = hasProjection ? ys(series[projectionFromIdx]) : ys(series[series.length - 1]);
         const grid = [0, 0.25, 0.5, 0.75, 1].map(t => ({ y: pad.top + t * innerH, v: max * (1 - t) }));
         const onMove = (e) => {
           const rect = ref.current.getBoundingClientRect();
@@ -21049,6 +21132,10 @@
                   <stop offset="0%" stopColor={c} stopOpacity="0.32" />
                   <stop offset="100%" stopColor={c} stopOpacity="0" />
                 </linearGradient>
+                <linearGradient id="tpApProjGrad" x1="0" x2="0" y1="0" y2="1">
+                  <stop offset="0%" stopColor="oklch(0.86 0.13 145)" stopOpacity="0.22" />
+                  <stop offset="100%" stopColor="oklch(0.86 0.13 145)" stopOpacity="0" />
+                </linearGradient>
               </defs>
               {grid.map((g, i) => (
                 <g key={i}>
@@ -21061,17 +21148,22 @@
                 </g>
               ))}
               <path d={areaPath} fill="url(#tpApGrad)" />
+              {projAreaPath && <path d={projAreaPath} fill="url(#tpApProjGrad)" />}
               <path d={realPath} fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               {projectedPath && (
-                <path d={projectedPath} fill="none" stroke={c} strokeWidth="2"
-                  strokeLinecap="round" strokeLinejoin="round"
-                  strokeDasharray="4 5" opacity="0.55" />
+                <path d={projectedPath} fill="none" stroke="oklch(0.86 0.13 145)" strokeWidth="2"
+                  strokeLinecap="round" strokeLinejoin="round" />
               )}
               {hasProjection && (
                 <line x1={xs(projectionFromIdx)} x2={xs(projectionFromIdx)}
                   y1={pad.top} y2={pad.top + innerH}
-                  stroke="var(--tp-ink-4)" strokeDasharray="2 4" opacity="0.5" />
+                  stroke="var(--tp-ink-4)" strokeDasharray="2 4" opacity="0.4" />
               )}
+              {/* "You are here" pulsing dot at the actual/projection boundary */}
+              <circle className="kf-pulse-ring" cx={boundaryX} cy={boundaryY} r="5"
+                fill="var(--rb-green)" />
+              <circle className="kf-pulse-dot" cx={boundaryX} cy={boundaryY} r="4"
+                fill="var(--rb-green)" stroke="#ffffff" strokeWidth="1.5" />
               {labels.map((lbl, i) => {
                 const step = Math.max(1, Math.floor(labels.length / 8));
                 if (i % step !== 0 && i !== labels.length - 1) return null;
@@ -21272,28 +21364,61 @@
       }
 
       // ─── AP Hero ────────────────────────────────────────────────────────
+      // Deterministic "organic-looking" jitter for projection lines so the
+      // forecast curve isn't a perfectly straight ramp. Output is in
+      // (-0.5, 0.5); callers scale by an appropriate fraction of the step.
+      function projectionJitter(seed) {
+        const x = Math.sin(seed * 12.9898 + 78.233) * 43758.5453;
+        return (x - Math.floor(x)) - 0.5;
+      }
       function APHero({ scope, view, timeframe, setTimeframe }) {
         const today = new Date();
         let series, labels, total, prior, label, projectionFromIdx, mtdProjectedTotal;
         if (timeframe === 'WTD') {
+          // Build a cumulative Mon→Sun series so the chart can show a real
+          // line that builds up day-by-day, plus a projection band for the
+          // rest of the week. Mon = 0, Sun = 6 in our indexing.
           const weekStart = startOfWeek(today);
-          const dayBuckets = [0,0,0,0,0,0,0];
+          const dayBucketsByDow = [0,0,0,0,0,0,0]; // by date.getDay()
           (scope.policies || []).forEach(p => {
             const d = parsePolicyDate(p.policy_date || p.created_at);
             if (d >= weekStart) {
-              const idx = d.getDay();
-              dayBuckets[idx] += parseFloat(p.annual_premium || 0);
+              dayBucketsByDow[d.getDay()] += parseFloat(p.annual_premium || 0);
             }
           });
-          series = [dayBuckets[1], dayBuckets[2], dayBuckets[3], dayBuckets[4], dayBuckets[5], dayBuckets[6], dayBuckets[0]];
+          // Reorder Mon..Sun
+          const dailyMonSun = [
+            dayBucketsByDow[1], dayBucketsByDow[2], dayBucketsByDow[3],
+            dayBucketsByDow[4], dayBucketsByDow[5], dayBucketsByDow[6],
+            dayBucketsByDow[0],
+          ];
+          // Today's index in Mon..Sun
+          const todayDow = today.getDay();
+          const todayIdx = todayDow === 0 ? 6 : todayDow - 1;
+          // Cumulative through today
+          const cum = [];
+          let run = 0;
+          for (let i = 0; i <= todayIdx; i++) { run += dailyMonSun[i]; cum.push(run); }
+          const curWtd = cum[todayIdx] || 0;
+          const dailyAvg = (todayIdx + 1) > 0 ? curWtd / (todayIdx + 1) : 0;
+          // Project remaining days with slight organic noise so the line
+          // doesn't read as a perfectly straight ramp.
+          for (let i = todayIdx + 1; i < 7; i++) {
+            const linear = curWtd + dailyAvg * (i - todayIdx);
+            const noise = projectionJitter(i + 41) * dailyAvg * 0.22;
+            cum.push(Math.max(curWtd, linear + noise));
+          }
+          series = cum;
           labels = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
           total = view.ap;
+          projectionFromIdx = Math.max(0, Math.min(6, todayIdx));
           prior = (scope.weekly || [])[(scope.weekly || []).length - 2] || 0;
           label = 'Week-to-date';
         } else if (timeframe === 'MTD') {
-          // Render the full month (e.g. days 1-31) so the line chart always
-          // has enough data points to draw a smooth curve, even on day 1 of
-          // the month. Past + today carry real values; future days are 0.
+          // Cumulative through today + linear-projection-to-EOM so the chart
+          // shows the same "actual + forecast" shape as YTD. With small
+          // organic noise on the projection so it's not a perfect straight
+          // line.
           const monthStart = startOfMonth(today);
           const monthEnd = new Date(today.getFullYear(), today.getMonth() + 1, 0);
           const totalDays = monthEnd.getDate();
@@ -21304,17 +21429,26 @@
               dayBuckets[d.getDate() - 1] += parseFloat(p.annual_premium || 0);
             }
           });
-          series = dayBuckets;
+          const dayOfMonthCur = today.getDate();
+          const cumDaily = [];
+          let runMtd = 0;
+          for (let i = 0; i < totalDays; i++) {
+            if (i < dayOfMonthCur) { runMtd += dayBuckets[i]; cumDaily.push(runMtd); }
+            else cumDaily.push(null);
+          }
+          const apMTDsoFar = cumDaily[dayOfMonthCur - 1] || 0;
+          const dailyAvg = dayOfMonthCur > 0 ? apMTDsoFar / dayOfMonthCur : 0;
+          for (let i = dayOfMonthCur; i < totalDays; i++) {
+            const linear = apMTDsoFar + dailyAvg * (i - dayOfMonthCur + 1);
+            const noise = projectionJitter(i + 17) * dailyAvg * 0.22;
+            cumDaily[i] = Math.max(apMTDsoFar, linear + noise);
+          }
+          series = cumDaily;
           labels = Array.from({length: totalDays}, (_, i) => String(i + 1));
           total = view.ap;
-          // Project current month to end-of-month based on day-of-month pace,
-          // then compare projection vs last month's FULL total. That gives an
-          // honest "if you keep this pace" delta instead of a mid-month MTD
-          // vs full-month-last comparison.
-          const dayOfMonthCur = today.getDate();
-          const projectedTotal = dayOfMonthCur > 0 && total > 0
-            ? (total / dayOfMonthCur) * totalDays
-            : total;
+          projectionFromIdx = Math.max(0, Math.min(totalDays - 1, dayOfMonthCur - 1));
+          const projectedTotal = cumDaily[totalDays - 1] || total;
+          // Compare projection vs last month full total
           const lastMonthStart = new Date(today.getFullYear(), today.getMonth() - 1, 1);
           const lastMonthEnd = new Date(today.getFullYear(), today.getMonth(), 0, 23, 59, 59);
           prior = 0;
@@ -21324,7 +21458,6 @@
               prior += parseFloat(p.annual_premium || 0);
             }
           });
-          // Override the delta basis: projected EOM vs last month full total.
           mtdProjectedTotal = projectedTotal;
           label = 'Month-to-date';
         } else {
@@ -21349,7 +21482,9 @@
             const monthsRemaining = 11 - currentMonthIdx;
             const step = (yearEndProjection - apYTD) / monthsRemaining;
             for (let i = currentMonthIdx + 1; i <= 11; i++) {
-              projected[i] = apYTD + step * (i - currentMonthIdx);
+              const linear = apYTD + step * (i - currentMonthIdx);
+              const noise  = projectionJitter(i + 7) * step * 0.18;
+              projected[i] = Math.max(apYTD, linear + noise);
             }
           }
           series = projected;
@@ -23100,7 +23235,11 @@
           const monthsRemaining = 11 - currentMonthIdx;
           const step = (yearEndProjection - apYTD) / monthsRemaining;
           for (let i = currentMonthIdx + 1; i <= 11; i++) {
-            cumProjected[i] = apYTD + step * (i - currentMonthIdx);
+            const linear = apYTD + step * (i - currentMonthIdx);
+            // Slight organic noise so the projection isn't a dead-straight ramp
+            const x = Math.sin((i + 7) * 12.9898 + 78.233) * 43758.5453;
+            const j = (x - Math.floor(x)) - 0.5;
+            cumProjected[i] = Math.max(apYTD, linear + j * step * 0.18);
           }
         } else {
           for (let i = currentMonthIdx + 1; i <= 11; i++) cumProjected[i] = apYTD;
@@ -23116,8 +23255,14 @@
         const realPath = smoothPath(realPoints, 0.5);
         const projPath = projPoints.length >= 2 ? smoothPath(projPoints, 0.5) : '';
         const areaPath = realPath ? realPath + ' L ' + xs(currentMonthIdx) + ',' + (pad.top + innerH) + ' L ' + xs(0) + ',' + (pad.top + innerH) + ' Z' : '';
+        const projAreaPath = projPath
+          ? projPath + ' L ' + xs(11) + ',' + (pad.top + innerH) + ' L ' + xs(currentMonthIdx) + ',' + (pad.top + innerH) + ' Z'
+          : '';
         const grid = [0, 0.25, 0.5, 0.75, 1].map(t => ({ y: pad.top + t * innerH, v: max * (1 - t) }));
         const goalY = ys(goal);
+        // Boundary point — where actual cumulative ends + projection starts
+        const boundaryX = xs(currentMonthIdx);
+        const boundaryY = ys(apYTD);
         const onMove = (e) => {
           const rect = ref.current.getBoundingClientRect();
           const x = e.clientX - rect.left;
@@ -23131,6 +23276,10 @@
                 <linearGradient id="tkApGrad" x1="0" x2="0" y1="0" y2="1">
                   <stop offset="0%" stopColor={color} stopOpacity="0.32" />
                   <stop offset="100%" stopColor={color} stopOpacity="0" />
+                </linearGradient>
+                <linearGradient id="tkApProjGrad" x1="0" x2="0" y1="0" y2="1">
+                  <stop offset="0%" stopColor="oklch(0.86 0.13 145)" stopOpacity="0.22" />
+                  <stop offset="100%" stopColor="oklch(0.86 0.13 145)" stopOpacity="0" />
                 </linearGradient>
               </defs>
               {grid.map((g, i) => (
@@ -23147,16 +23296,20 @@
                 </g>
               )}
               <path d={areaPath} fill="url(#tkApGrad)" />
+              {projAreaPath && <path d={projAreaPath} fill="url(#tkApProjGrad)" />}
               <path d={realPath} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              {projPath && <path d={projPath} fill="none" stroke="var(--rb-blue)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="4 5" opacity="0.7" />}
-              <line x1={xs(currentMonthIdx)} x2={xs(currentMonthIdx)} y1={pad.top} y2={pad.top + innerH} stroke="var(--tk-ink-4)" strokeDasharray="2 4" opacity="0.6" />
+              {projPath && <path d={projPath} fill="none" stroke="oklch(0.86 0.13 145)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />}
+              <line x1={xs(currentMonthIdx)} x2={xs(currentMonthIdx)} y1={pad.top} y2={pad.top + innerH} stroke="var(--tk-ink-4)" strokeDasharray="2 4" opacity="0.4" />
+              {/* "You are here" pulsing dot at the boundary */}
+              <circle className="kf-pulse-ring" cx={boundaryX} cy={boundaryY} r="5" fill="var(--rb-green)" />
+              <circle className="kf-pulse-dot" cx={boundaryX} cy={boundaryY} r="4" fill="var(--rb-green)" stroke="var(--tk-surface)" strokeWidth="1.5" />
               {labels.map((lbl, i) => (
                 <text key={i} x={xs(i)} y={h - 8} textAnchor="middle" fill={i === currentMonthIdx ? 'var(--tk-ink-1)' : 'var(--tk-ink-3)'} fontSize="11" fontFamily="var(--tk-mono)">{lbl}</text>
               ))}
               {hover !== null && (
                 <g>
                   <line x1={xs(hover)} x2={xs(hover)} y1={pad.top} y2={pad.top + innerH} stroke="var(--tk-ink-3)" strokeDasharray="2 3" />
-                  <circle cx={xs(hover)} cy={ys(cumProjected[hover] || 0)} r="5" fill="var(--tk-surface)" stroke={hover <= currentMonthIdx ? color : 'var(--rb-blue)'} strokeWidth="2" />
+                  <circle cx={xs(hover)} cy={ys(cumProjected[hover] || 0)} r="5" fill="var(--tk-surface)" stroke={hover <= currentMonthIdx ? color : 'oklch(0.86 0.13 145)'} strokeWidth="2" />
                 </g>
               )}
             </svg>
@@ -23208,10 +23361,17 @@
           else cumActual.push(null);
         }
         const apMTD = cumActual[todayDay - 1] || 0;
-        // Project the rest of the month based on daily run rate
+        // Project the rest of the month based on daily run rate, with a
+        // touch of organic noise so the curve doesn't read as perfectly
+        // straight.
         const dailyAvg = todayDay > 0 ? apMTD / todayDay : 0;
         const projection = cumActual.slice();
-        for (let i = todayDay; i < daysInMonth; i++) projection[i] = apMTD + dailyAvg * (i - todayDay + 1);
+        for (let i = todayDay; i < daysInMonth; i++) {
+          const linear = apMTD + dailyAvg * (i - todayDay + 1);
+          const x = Math.sin((i + 17) * 12.9898 + 78.233) * 43758.5453;
+          const j = (x - Math.floor(x)) - 0.5;
+          projection[i] = Math.max(apMTD, linear + j * dailyAvg * 0.22);
+        }
         const pad = { top: 24, right: 16, bottom: 28, left: 64 };
         const innerW = Math.max(100, w - pad.left - pad.right);
         const innerH = h - pad.top - pad.bottom;
@@ -23223,6 +23383,12 @@
         const realPath = smoothPath(realPoints, 0.5);
         const projPath = projPoints.length >= 2 ? smoothPath(projPoints, 0.5) : '';
         const areaPath = realPath ? realPath + ' L ' + xs(todayDay - 1) + ',' + (pad.top + innerH) + ' L ' + xs(0) + ',' + (pad.top + innerH) + ' Z' : '';
+        const projAreaPath = projPath
+          ? projPath + ' L ' + xs(daysInMonth - 1) + ',' + (pad.top + innerH) + ' L ' + xs(todayDay - 1) + ',' + (pad.top + innerH) + ' Z'
+          : '';
+        // Pulsing dot at "today" — actual ends here, projection picks up
+        const boundaryX = xs(todayDay - 1);
+        const boundaryY = ys(apMTD);
         const grid = [0, 0.25, 0.5, 0.75, 1].map(t => ({ y: pad.top + t * innerH, v: max * (1 - t) }));
         const goalY = ys(goal || 0);
         // Axis labels — show ~6 evenly-spaced day numbers + the last day
@@ -23244,6 +23410,10 @@
                   <stop offset="0%" stopColor={color} stopOpacity="0.32" />
                   <stop offset="100%" stopColor={color} stopOpacity="0" />
                 </linearGradient>
+                <linearGradient id="tkMtdProjGrad" x1="0" x2="0" y1="0" y2="1">
+                  <stop offset="0%" stopColor="oklch(0.86 0.13 145)" stopOpacity="0.22" />
+                  <stop offset="100%" stopColor="oklch(0.86 0.13 145)" stopOpacity="0" />
+                </linearGradient>
               </defs>
               {grid.map((g, i) => (
                 <g key={i}>
@@ -23258,16 +23428,20 @@
                 </g>
               )}
               <path d={areaPath} fill="url(#tkMtdGrad)" />
+              {projAreaPath && <path d={projAreaPath} fill="url(#tkMtdProjGrad)" />}
               <path d={realPath} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              {projPath && <path d={projPath} fill="none" stroke="var(--rb-blue)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="4 5" opacity="0.7" />}
-              <line x1={xs(todayDay - 1)} x2={xs(todayDay - 1)} y1={pad.top} y2={pad.top + innerH} stroke="var(--tk-ink-4)" strokeDasharray="2 4" opacity="0.6" />
+              {projPath && <path d={projPath} fill="none" stroke="oklch(0.86 0.13 145)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />}
+              <line x1={xs(todayDay - 1)} x2={xs(todayDay - 1)} y1={pad.top} y2={pad.top + innerH} stroke="var(--tk-ink-4)" strokeDasharray="2 4" opacity="0.4" />
+              {/* "You are here" pulsing dot at today */}
+              <circle className="kf-pulse-ring" cx={boundaryX} cy={boundaryY} r="5" fill="var(--rb-green)" />
+              <circle className="kf-pulse-dot" cx={boundaryX} cy={boundaryY} r="4" fill="var(--rb-green)" stroke="var(--tk-surface)" strokeWidth="1.5" />
               {tickIdx.map((i) => (
                 <text key={i} x={xs(i)} y={h - 8} textAnchor="middle" fill={(i + 1) === todayDay ? 'var(--tk-ink-1)' : 'var(--tk-ink-3)'} fontSize="11" fontFamily="var(--tk-mono)">{i + 1}</text>
               ))}
               {hover !== null && (
                 <g>
                   <line x1={xs(hover)} x2={xs(hover)} y1={pad.top} y2={pad.top + innerH} stroke="var(--tk-ink-3)" strokeDasharray="2 3" />
-                  <circle cx={xs(hover)} cy={ys(projection[hover] || 0)} r="5" fill="var(--tk-surface)" stroke={hover < todayDay ? color : 'var(--rb-blue)'} strokeWidth="2" />
+                  <circle cx={xs(hover)} cy={ys(projection[hover] || 0)} r="5" fill="var(--tk-surface)" stroke={hover < todayDay ? color : 'oklch(0.86 0.13 145)'} strokeWidth="2" />
                 </g>
               )}
             </svg>
