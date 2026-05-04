@@ -10674,6 +10674,185 @@
       border: none !important;
     }
     html[data-kf-theme="light"] .ss-mobile-menu a svg { color: rgba(20,19,15,0.72); opacity: 0.85; }
+
+    /* ─────────────────────────────────────────────────────────────────
+       KF Auth re-skin — Sign In / Sign Up / Forgot / Reset overlay.
+       Functionality (forms, IDs, JS handlers) is unchanged; this block
+       just reskins #signupOverlay to match the rest of the site (dark
+       elevated surface, hairline border, mono uppercase labels, blue
+       accent CTAs, KF font stack). Light theme follows data-kf-theme.
+       ───────────────────────────────────────────────────────────────── */
+    :root {
+      --kfa-bg: #0d0e10; --kfa-surface: #16181d; --kfa-surface-2: #1c1f26; --kfa-surface-3: #232730;
+      --kfa-hairline: rgba(255,255,255,0.07); --kfa-hairline-strong: rgba(255,255,255,0.14);
+      --kfa-ink-1: #f3f3f1; --kfa-ink-2: rgba(243,243,241,0.72); --kfa-ink-3: rgba(243,243,241,0.5); --kfa-ink-4: rgba(243,243,241,0.32);
+      --kfa-blue: oklch(0.68 0.13 240);
+      --kfa-blue-soft: color-mix(in oklch, oklch(0.68 0.13 240) 20%, transparent);
+    }
+    html[data-kf-theme="light"] {
+      --kfa-bg: #f6f5f1; --kfa-surface: #ffffff; --kfa-surface-2: #fbfaf6; --kfa-surface-3: #f1efe8;
+      --kfa-hairline: rgba(15,12,8,0.08); --kfa-hairline-strong: rgba(15,12,8,0.16);
+      --kfa-ink-1: #14130f; --kfa-ink-2: rgba(20,19,15,0.74); --kfa-ink-3: rgba(20,19,15,0.5); --kfa-ink-4: rgba(20,19,15,0.32);
+      --kfa-blue: oklch(0.55 0.13 240);
+      --kfa-blue-soft: color-mix(in oklch, oklch(0.55 0.13 240) 16%, transparent);
+    }
+    @keyframes kfaPop { from { opacity: 0; transform: scale(0.96) translateY(4px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+
+    /* Overlay backdrop */
+    #signupOverlay.ss-signup-overlay {
+      background: rgba(8,9,12,0.62) !important;
+      backdrop-filter: blur(6px) !important;
+    }
+    /* Modal card */
+    #signupOverlay .ss-signup-modal {
+      background: var(--kfa-surface) !important;
+      border: 1px solid var(--kfa-hairline-strong) !important;
+      border-radius: 12px !important;
+      padding: 28px 26px 24px !important;
+      max-width: 420px !important;
+      width: 92% !important;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.5), 0 8px 24px rgba(0,0,0,0.3) !important;
+      color: var(--kfa-ink-1) !important;
+      font-family: 'Geist','Inter',system-ui,sans-serif !important;
+      animation: kfaPop 180ms cubic-bezier(0.2,0.7,0.2,1.05) !important;
+    }
+    /* Close button */
+    #signupOverlay .ss-signup-close {
+      width: 28px !important; height: 28px !important;
+      top: 14px !important; right: 14px !important;
+      background: var(--kfa-surface-2) !important;
+      border: 1px solid var(--kfa-hairline) !important;
+      color: var(--kfa-ink-3) !important;
+      font-size: 18px !important; line-height: 1 !important;
+      transition: background 0.12s, color 0.12s !important;
+    }
+    #signupOverlay .ss-signup-close:hover {
+      background: var(--kfa-surface-3) !important;
+      color: var(--kfa-ink-1) !important;
+    }
+    /* Tab bar */
+    #signupOverlay .ss-auth-tabs {
+      border-bottom: 1px solid var(--kfa-hairline) !important;
+      margin-bottom: 18px !important;
+      gap: 0 !important;
+    }
+    #signupOverlay .ss-auth-tab {
+      font-family: inherit !important;
+      color: var(--kfa-ink-3) !important;
+      background: transparent !important;
+      font-size: 13px !important;
+      font-weight: 600 !important;
+      letter-spacing: -0.01em !important;
+      padding: 10px 14px !important;
+      border: none !important;
+      border-bottom: 2px solid transparent !important;
+      cursor: pointer !important;
+      transition: color 0.12s, border-color 0.12s !important;
+    }
+    #signupOverlay .ss-auth-tab:hover { color: var(--kfa-ink-1) !important; }
+    #signupOverlay .ss-auth-tab.active {
+      color: var(--kfa-ink-1) !important;
+      border-bottom-color: var(--kfa-blue) !important;
+    }
+    /* Headings + inline paragraphs (Forgot/Reset blurbs) */
+    #signupOverlay h2, #signupOverlay h3 {
+      color: var(--kfa-ink-1) !important;
+      font-family: inherit !important;
+      font-weight: 600 !important;
+      letter-spacing: -0.01em !important;
+    }
+    #signupOverlay p, #signupOverlay form p {
+      color: var(--kfa-ink-3) !important;
+      font-size: 12px !important;
+      line-height: 1.5 !important;
+    }
+    /* Field labels */
+    #signupOverlay .ss-signup-field { margin-bottom: 14px !important; }
+    #signupOverlay .ss-signup-field label,
+    #signupOverlay label {
+      font-family: 'JetBrains Mono', ui-monospace, monospace !important;
+      font-size: 10px !important;
+      text-transform: uppercase !important;
+      letter-spacing: 0.08em !important;
+      color: var(--kfa-ink-4) !important;
+      font-weight: 500 !important;
+      display: block !important;
+      margin-bottom: 6px !important;
+    }
+    /* Inputs */
+    #signupOverlay input[type="text"],
+    #signupOverlay input[type="email"],
+    #signupOverlay input[type="password"] {
+      width: 100% !important;
+      box-sizing: border-box !important;
+      background: var(--kfa-surface-2) !important;
+      border: 1px solid var(--kfa-hairline-strong) !important;
+      border-radius: 6px !important;
+      color: var(--kfa-ink-1) !important;
+      font-family: inherit !important;
+      font-size: 13px !important;
+      padding: 10px 12px !important;
+      box-shadow: none !important;
+      transition: border-color 0.12s, box-shadow 0.12s !important;
+    }
+    #signupOverlay input::placeholder { color: var(--kfa-ink-4) !important; }
+    #signupOverlay input:focus {
+      outline: none !important;
+      border-color: var(--kfa-blue) !important;
+      box-shadow: 0 0 0 3px var(--kfa-blue-soft) !important;
+    }
+    /* Primary submit */
+    #signupOverlay .ss-signup-submit,
+    #signupOverlay button[type="submit"] {
+      width: 100% !important;
+      background: var(--kfa-blue) !important;
+      border: 1px solid color-mix(in oklch, var(--kfa-blue) 65%, #fff) !important;
+      color: #ffffff !important;
+      font-family: inherit !important;
+      font-weight: 600 !important;
+      font-size: 13px !important;
+      padding: 11px 18px !important;
+      border-radius: 6px !important;
+      cursor: pointer !important;
+      transition: filter 0.12s !important;
+      margin-top: 4px !important;
+      box-shadow: none !important;
+      transform: none !important;
+    }
+    #signupOverlay .ss-signup-submit:hover,
+    #signupOverlay button[type="submit"]:hover { filter: brightness(1.08); transform: none !important; box-shadow: none !important; }
+    #signupOverlay .ss-signup-submit:disabled,
+    #signupOverlay button[type="submit"]:disabled { opacity: 0.5 !important; cursor: not-allowed !important; }
+    /* Inline links (Forgot password, Back to sign in, Discord help) — neutralize the inline blue */
+    #signupOverlay a,
+    #signupOverlay #forgotPasswordLink,
+    #signupOverlay #forgotBack,
+    #signupOverlay #discordIdHelp {
+      color: var(--kfa-blue) !important;
+      text-decoration: none !important;
+      font-weight: 500 !important;
+      font-size: 12px !important;
+    }
+    #signupOverlay a:hover { filter: brightness(1.08); }
+    #signupOverlay small { color: var(--kfa-ink-4) !important; font-size: 11px !important; }
+    /* Status messages (success / error) */
+    #signupOverlay .ss-signup-msg {
+      margin-top: 10px !important;
+      padding: 8px 12px !important;
+      font-size: 12px !important;
+      border-radius: 6px !important;
+      font-weight: 500 !important;
+    }
+    #signupOverlay .ss-signup-msg.success {
+      background: color-mix(in oklch, oklch(0.72 0.16 145) 14%, transparent) !important;
+      border: 1px solid color-mix(in oklch, oklch(0.72 0.16 145) 30%, transparent) !important;
+      color: oklch(0.72 0.16 145) !important;
+    }
+    #signupOverlay .ss-signup-msg.error {
+      background: color-mix(in oklch, oklch(0.7 0.18 25) 14%, transparent) !important;
+      border: 1px solid color-mix(in oklch, oklch(0.7 0.18 25) 30%, transparent) !important;
+      color: oklch(0.72 0.18 25) !important;
+    }
   </style>
 
   <!-- Team Performance dashboard — Geist + JetBrains Mono fonts (loaded once,
