@@ -10909,6 +10909,161 @@
       color: oklch(0.72 0.18 25) !important;
     }
 
+    /* ─── KF skin override for legacy .ss-alert-overlay popups ──────────
+       Covers the Underwriting Check-In, Effective Date Reminder, and
+       Overload alerts. Functionality + IDs untouched; just re-skin to
+       match the rest of the site (dark surface + light variant). */
+    .ss-alert-overlay {
+      background: rgba(8,9,12,0.78) !important;
+      backdrop-filter: blur(8px) !important;
+    }
+    html[data-kf-theme="light"] .ss-alert-overlay { background: rgba(246,245,241,0.86) !important; }
+    .ss-alert-box {
+      background: var(--kfa-surface) !important;
+      border: 1px solid var(--kfa-hairline-strong) !important;
+      border-radius: 12px !important;
+      padding: 28px 30px 24px !important;
+      max-width: 520px !important;
+      width: 92% !important;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.5), 0 8px 24px rgba(0,0,0,0.3) !important;
+      color: var(--kfa-ink-1) !important;
+      font-family: 'Geist','Inter',system-ui,sans-serif !important;
+      animation: kfaPop 180ms cubic-bezier(0.2,0.7,0.2,1.05) !important;
+    }
+    .ss-alert-box.warning, .ss-alert-box.danger {
+      border-color: var(--kfa-hairline-strong) !important;
+    }
+    .ss-alert-icon {
+      width: 48px !important; height: 48px !important;
+      border-radius: 999px !important;
+      margin: 0 auto 14px !important;
+      font-size: 22px !important;
+      background: color-mix(in oklch, oklch(0.78 0.13 75) 14%, transparent) !important;
+      border: 1px solid color-mix(in oklch, oklch(0.78 0.13 75) 32%, transparent) !important;
+      color: oklch(0.78 0.13 75) !important;
+    }
+    .ss-alert-box.danger .ss-alert-icon {
+      background: color-mix(in oklch, oklch(0.7 0.18 25) 14%, transparent) !important;
+      border-color: color-mix(in oklch, oklch(0.7 0.18 25) 32%, transparent) !important;
+      color: oklch(0.7 0.18 25) !important;
+    }
+    .ss-alert-box h3 {
+      font-family: inherit !important;
+      font-size: 17px !important;
+      font-weight: 600 !important;
+      letter-spacing: -0.01em !important;
+      color: var(--kfa-ink-1) !important;
+      text-align: center !important;
+      margin: 0 0 6px !important;
+    }
+    .ss-alert-box p {
+      font-size: 13px !important;
+      line-height: 1.5 !important;
+      color: var(--kfa-ink-3) !important;
+      text-align: center !important;
+      margin: 0 0 16px !important;
+    }
+    /* List of policies inside the underwriting / effective-date popups */
+    .ss-alert-box .ss-uw-list {
+      max-height: 280px;
+      overflow-y: auto;
+      background: var(--kfa-surface-2) !important;
+      border: 1px solid var(--kfa-hairline) !important;
+      border-radius: 8px !important;
+      margin-bottom: 14px !important;
+    }
+    .ss-alert-box .ss-uw-item {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      padding: 10px 14px !important;
+      border-bottom: 1px solid var(--kfa-hairline) !important;
+      gap: 10px !important;
+      flex-wrap: wrap !important;
+    }
+    .ss-alert-box .ss-uw-item:last-child { border-bottom: none !important; }
+    .ss-alert-box .ss-uw-item-name {
+      font-size: 13px !important;
+      font-weight: 500 !important;
+      color: var(--kfa-ink-1) !important;
+    }
+    .ss-alert-box .ss-uw-item-meta {
+      font-family: 'JetBrains Mono', ui-monospace, monospace !important;
+      font-size: 11px !important;
+      color: var(--kfa-ink-3) !important;
+      margin-top: 2px !important;
+    }
+    /* Inline action buttons inside list items (Approve / Delete) */
+    .ss-alert-box .ss-uw-btn {
+      font-family: inherit !important;
+      font-size: 11px !important;
+      font-weight: 600 !important;
+      padding: 5px 10px !important;
+      border-radius: 5px !important;
+      cursor: pointer !important;
+      border: 1px solid transparent !important;
+      transition: filter 0.12s, background 0.12s !important;
+    }
+    .ss-alert-box .ss-uw-btn.approve {
+      background: color-mix(in oklch, oklch(0.72 0.16 145) 16%, transparent) !important;
+      border-color: color-mix(in oklch, oklch(0.72 0.16 145) 30%, transparent) !important;
+      color: oklch(0.72 0.16 145) !important;
+    }
+    .ss-alert-box .ss-uw-btn.delete {
+      background: color-mix(in oklch, oklch(0.7 0.18 25) 12%, transparent) !important;
+      border-color: color-mix(in oklch, oklch(0.7 0.18 25) 28%, transparent) !important;
+      color: oklch(0.72 0.18 25) !important;
+    }
+    .ss-alert-box .ss-uw-btn:hover { filter: brightness(1.12); }
+    /* "Got It" / "Close" footer button */
+    .ss-alert-box .ss-alert-close {
+      display: block !important;
+      margin: 0 auto !important;
+      padding: 10px 22px !important;
+      border-radius: 6px !important;
+      font-family: inherit !important;
+      font-size: 13px !important;
+      font-weight: 600 !important;
+      background: var(--kfa-blue) !important;
+      border: 1px solid color-mix(in oklch, var(--kfa-blue) 65%, #fff) !important;
+      color: #ffffff !important;
+      cursor: pointer !important;
+      transition: filter 0.12s !important;
+    }
+    .ss-alert-box .ss-alert-close:hover { filter: brightness(1.08); background: var(--kfa-blue) !important; }
+    /* Tel-link inside meta line stays accent-blue, not the legacy teal */
+    .ss-alert-box .ss-uw-item-meta a { color: var(--kfa-blue) !important; text-decoration: none !important; font-weight: 500 !important; }
+    /* Days-in-underwriting badge: amber by default, red+pulsing at 10+ days */
+    .ss-alert-box .ss-uw-days {
+      display: inline-block;
+      font-family: 'JetBrains Mono', ui-monospace, monospace;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: color-mix(in oklch, oklch(0.78 0.13 75) 18%, transparent);
+      border: 1px solid color-mix(in oklch, oklch(0.78 0.13 75) 38%, transparent);
+      color: oklch(0.82 0.13 75);
+      letter-spacing: 0.02em;
+      vertical-align: 1px;
+    }
+    .ss-alert-box .ss-uw-days.kf-pulse-stale {
+      background: color-mix(in oklch, oklch(0.7 0.18 25) 22%, transparent);
+      border-color: color-mix(in oklch, oklch(0.7 0.18 25) 50%, transparent);
+      color: oklch(0.82 0.18 25);
+      animation: kfPulseStale 1.4s ease-in-out infinite;
+    }
+    @keyframes kfPulseStale {
+      0%, 100% {
+        box-shadow: 0 0 0 0 color-mix(in oklch, oklch(0.7 0.18 25) 60%, transparent);
+        background: color-mix(in oklch, oklch(0.7 0.18 25) 22%, transparent);
+      }
+      50% {
+        box-shadow: 0 0 0 6px color-mix(in oklch, oklch(0.7 0.18 25) 0%, transparent);
+        background: color-mix(in oklch, oklch(0.7 0.18 25) 35%, transparent);
+      }
+    }
+
     /* ─── KF Auth gate (logged-out state) ─────────────────────────────── */
     /* Fixed full-viewport so the gate covers the sidebar too — prevents
        clicks on nav items / sidebar chrome bleeding through, and the
@@ -16705,9 +16860,12 @@
         stale.forEach(p => {
           const pd = parsePolicyDate(p.policy_date);
           const dayCount = Math.floor((now - pd) / (1000 * 60 * 60 * 24));
-          const daysLabel = dayCount + ' day' + (dayCount !== 1 ? 's' : '') + ' in underwriting';
+          // Days-in-underwriting badge: amber chip by default, pulsing red
+          // chip once it crosses 10 days so reps notice it immediately.
+          const stalePulse = dayCount >= 10 ? ' kf-pulse-stale' : '';
+          const daysBadge = '<span class="ss-uw-days' + stalePulse + '">' + dayCount + ' day' + (dayCount !== 1 ? 's' : '') + ' in UW</span>';
           html += '<div class="ss-uw-item" data-id="' + p.id + '">';
-          html += '<div class="ss-uw-item-info"><div class="ss-uw-item-name">' + esc(p.client_name) + '</div><div class="ss-uw-item-meta">' + esc(p.carrier) + ' · $' + parseFloat(p.annual_premium).toLocaleString() + ' · ' + daysLabel + '</div></div>';
+          html += '<div class="ss-uw-item-info"><div class="ss-uw-item-name">' + esc(p.client_name) + '</div><div class="ss-uw-item-meta">' + esc(p.carrier) + ' · $' + parseFloat(p.annual_premium).toLocaleString() + ' · ' + daysBadge + '</div></div>';
           html += '<div class="ss-uw-item-actions"><button class="ss-uw-btn approve" onclick="uwApprove(\'' + p.id + '\',this)">Approve</button><button class="ss-uw-btn delete" onclick="uwDelete(\'' + p.id + '\',this)">Delete</button></div>';
           html += '</div>';
         });
