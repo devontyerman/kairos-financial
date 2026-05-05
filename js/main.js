@@ -103,67 +103,9 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /* -------------------------------------------------------
-     SITE-WIDE PASSWORD GATE
+     The site-wide password gate was removed. The access code
+     now only gates new account creation in the Sales Hub
+     sign-up form (saleshub.html).
   ------------------------------------------------------- */
-  const AUTH_KEY = 'kairos_site_auth';
-  const CORRECT_PASSWORD = 'soriak2026';
-
-  // On non-index pages, redirect to index if not authenticated (except careers page)
-  const isIndex = !!document.getElementById('passwordGate');
-  const isCareers = window.location.pathname.includes('careers');
-  const isApply = window.location.pathname.includes('apply');
-  if (!isIndex && !isCareers && !isApply && localStorage.getItem(AUTH_KEY) !== 'true') {
-    const base = window.location.pathname.includes('/carriers/') ? '../index.html' : 'index.html';
-    window.location.href = base;
-    return;
-  }
-
-  // On index page, handle the gate
-  const passwordGate = document.getElementById('passwordGate');
-  const siteContent = document.getElementById('siteContent');
-  const passwordInput = document.getElementById('passwordInput');
-  const passwordSubmit = document.getElementById('passwordSubmit');
-  const passwordError = document.getElementById('passwordError');
-
-  if (passwordGate && siteContent) {
-    if (localStorage.getItem(AUTH_KEY) === 'true') {
-      unlockSite();
-    }
-
-    const checkPassword = () => {
-      const val = passwordInput.value.trim();
-      if (val === CORRECT_PASSWORD) {
-        localStorage.setItem(AUTH_KEY, 'true');
-        passwordError.textContent = '';
-        unlockSite();
-      } else {
-        passwordInput.classList.add('error');
-        passwordError.textContent = 'Incorrect access code. Please try again.';
-        setTimeout(() => passwordInput.classList.remove('error'), 500);
-      }
-    };
-
-    if (passwordSubmit) {
-      passwordSubmit.addEventListener('click', checkPassword);
-    }
-
-    if (passwordInput) {
-      passwordInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') checkPassword();
-        if (passwordInput.classList.contains('error')) {
-          passwordInput.classList.remove('error');
-          passwordError.textContent = '';
-        }
-      });
-    }
-  }
-
-  function unlockSite() {
-    if (passwordGate) passwordGate.classList.add('hidden');
-    if (siteContent) {
-      siteContent.classList.remove('hidden');
-      siteContent.style.display = 'block';
-    }
-  }
 
 });

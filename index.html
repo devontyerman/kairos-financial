@@ -83,55 +83,10 @@
 </head>
 <body>
 
-  <!-- PASSWORD GATE — site-wide -->
-  <div class="password-gate" id="passwordGate">
-    <!-- Background image (same as hero) -->
-    <div class="gate-video-wrapper">
-      <div class="hero-video-fallback"></div>
-      <img src="assets/hero-bg.jpg" alt="" class="hero-video" />
-    </div>
-    <div class="gate-overlay"></div>
-
-    <!-- Big title + definition (outside the card) -->
-    <div class="gate-content">
-      <h1 class="gate-hero-title">Welcome to <span class="hero-title-gold">Kairos</span></h1>
-      <p class="gate-definition">
-        <em>Kairos</em> (καιρός) — Greek: the perfect, decisive moment; the opportune time to act.
-      </p>
-
-      <!-- Small card with just the access form -->
-      <div class="password-gate-card">
-        <p class="password-gate-subtitle">Agent Access</p>
-
-        <div class="password-input-wrap">
-          <input
-            type="password"
-            id="passwordInput"
-            class="password-input"
-            placeholder="Enter access code"
-            autocomplete="current-password"
-          />
-        </div>
-
-        <p class="password-error" id="passwordError"></p>
-
-        <button class="btn btn-primary" id="passwordSubmit" style="width:100%;">
-          Enter
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="5" y1="12" x2="19" y2="12"/>
-            <polyline points="12 5 19 12 12 19"/>
-          </svg>
-        </button>
-
-        <p class="password-hint">
-          Don't have the access code?<br />Contact your sales manager.
-        </p>
-      </div>
-    </div>
-  </div>
-
-  <!-- SITE CONTENT (hidden until authenticated) -->
-  <div id="siteContent" class="hidden" style="display:none;">
+  <!-- Site content (the agent-side gate now lives on the Sales Hub
+       sign-up form: the access code is required to register, not to
+       browse the marketing pages). -->
+  <div id="siteContent">
 
   <!-- ============================================================
        NAVIGATION

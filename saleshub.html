@@ -12784,11 +12784,35 @@
             </a>
           </div>
 
-          <!-- Script -->
+          <!-- Product Selection — opens the Products panel directly.
+               This whole panel is also the trigger that unlocks the
+               Products sidebar button on completion of this video. -->
+          <div class="ss-tv-resource-btns" id="ssTvProducts">
+            <a href="#products" class="ss-tv-resource-btn" data-wt-open-panel="products">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              Open Product Selection
+            </a>
+          </div>
+
+          <!-- Script + Objection Responses (route through the same PDF
+               viewer the Resources tab uses, so reps can view inline or
+               download right from the sidebar). -->
           <div class="ss-tv-resource-btns" id="ssTvScript">
-            <a href="https://docs.google.com/document/d/1Q4EL7aJAeZmBuJWzg09pMmjT_AA21Wg6aZADOBTqDEg/edit?usp=sharing" target="_blank" rel="noopener noreferrer" class="ss-tv-resource-btn">
+            <a href="assets/Documents/Sales%20Call%20Script.pdf" target="_blank" rel="noopener noreferrer"
+               class="ss-tv-resource-btn"
+               data-pdf-viewer
+               data-pdf-title="Sales Call Script"
+               data-pdf-filename="Sales Call Script.pdf">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
               View Script
+            </a>
+            <a href="assets/Documents/Objection%20Responses.pdf" target="_blank" rel="noopener noreferrer"
+               class="ss-tv-resource-btn"
+               data-pdf-viewer
+               data-pdf-title="Objection Responses"
+               data-pdf-filename="Objection Responses.pdf">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="14" x2="15" y2="14"/><line x1="9" y1="18" x2="13" y2="18"/></svg>
+              Objection Responses
             </a>
           </div>
 
@@ -13083,6 +13107,10 @@
           <label>Discord User ID</label>
           <input type="text" id="signupDiscordId" placeholder="e.g. 123456789012345678" required />
           <small style="color:#999;font-size:0.75rem;margin-top:2px;display:block;"><a href="#" id="discordIdHelp" style="color:#2563eb;text-decoration:none;">Don't know it? Click here to find out</a></small>
+        </div>
+        <div class="ss-signup-field">
+          <label>Agent Access Code</label>
+          <input type="password" id="signupAccessCode" placeholder="Provided by your sales manager" autocomplete="off" required />
         </div>
         <button class="ss-signup-submit" type="submit" id="signupBtn">Sign Up</button>
         <div class="ss-signup-msg" id="signupMsg"></div>
@@ -16070,6 +16098,11 @@
       signupMsg.style.display = 'block';
     }
 
+    // Agent-only signup gate: a new account can't be created without
+    // entering this code. Random visitors hitting the public signup form
+    // get bounced. Update this string when you want to rotate the code
+    // (also tell the team).
+    const AGENT_SIGNUP_CODE = 'soriak2026';
     document.getElementById('signupForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const btn = document.getElementById('signupBtn');
@@ -16083,9 +16116,15 @@
       const email = (document.getElementById('signupEmail').value || '').trim();
       const password = document.getElementById('signupPassword').value || '';
       const discordId = (document.getElementById('signupDiscordId').value || '').trim();
+      const accessCode = (document.getElementById('signupAccessCode').value || '').trim();
 
-      if (!rawName || !email || !password || !discordId) {
-        showSignupMsg('Please fill out all fields, including your Discord User ID.', 'error');
+      if (!rawName || !email || !password || !discordId || !accessCode) {
+        showSignupMsg('Please fill out all fields, including your access code.', 'error');
+        btn.disabled = false;
+        return;
+      }
+      if (accessCode !== AGENT_SIGNUP_CODE) {
+        showSignupMsg('Invalid access code. Contact your sales manager to get the right one.', 'error');
         btn.disabled = false;
         return;
       }
@@ -19887,7 +19926,8 @@
       a2p:          document.getElementById('ssTvA2p'),
       underwriting: document.getElementById('ssTvUnderwriting'),
       script:       document.getElementById('ssTvScript'),
-      licensing:    document.getElementById('ssTvLicensing')
+      licensing:    document.getElementById('ssTvLicensing'),
+      products:     document.getElementById('ssTvProducts')
     };
     const SLUG_EXTRAS = {
       'discord-walkthrough': 'discord',
@@ -19896,8 +19936,27 @@
       'next-steps-licenses': 'licensing',
       'a2p-texting': 'a2p',
       'setting-up-wavv': 'wavv',
-      'insurance-toolkits-underwriting': 'underwriting'
+      'insurance-toolkits-underwriting': 'underwriting',
+      'product-selection': 'products'
     };
+    // Progressive panel unlocks — when a rep completes the video on the
+    // left, the matching sidebar panel on the right is freed up even if
+    // their overall training_complete flag is still false. This lets reps
+    // start using critical reference panels (e.g. Product Selection) the
+    // moment they finish the relevant video.
+    const PROGRESSIVE_UNLOCKS = {
+      'product-selection': 'products'
+    };
+    // Wire any [data-wt-open-panel] anchor inside the training resource
+    // panels so it activates the named panel instead of doing a plain hash
+    // navigation. Used by the "Open Product Selection" button.
+    document.querySelectorAll('[data-wt-open-panel]').forEach(el => {
+      el.addEventListener('click', e => {
+        e.preventDefault();
+        const target = el.getAttribute('data-wt-open-panel');
+        if (target && typeof activatePanel === 'function') activatePanel(target);
+      });
+    });
 
     // Modal refs
     const tvModal = document.getElementById('ssTvModal');
@@ -20383,8 +20442,19 @@
         sidebarBtns.forEach(b => b.classList.remove('training-locked'));
         externalLinks.forEach(a => a.classList.remove('training-locked'));
       } else {
+        // Compute progressive unlocks: a panel becomes accessible the moment
+        // the rep completes its trigger video, even if overall training is
+        // still incomplete.
+        const unlockedPanels = new Set(['training', 'profile']);
+        Object.keys(PROGRESSIVE_UNLOCKS).forEach(slug => {
+          if (completedVideoIds && completedVideoIds.has(slug)) {
+            unlockedPanels.add(PROGRESSIVE_UNLOCKS[slug]);
+          }
+        });
         sidebarBtns.forEach(b => {
-          if (b.dataset.panel !== 'training' && b.dataset.panel !== 'profile') {
+          if (unlockedPanels.has(b.dataset.panel)) {
+            b.classList.remove('training-locked');
+          } else {
             b.classList.add('training-locked');
           }
         });
@@ -20476,7 +20546,12 @@
     // Hook into activatePanel to re-check gate
     const _originalActivatePanel = activatePanel;
     activatePanel = function(panelName) {
-      if (!trainingComplete && panelName !== 'training' && panelName !== 'profile' && currentUser) {
+      // Progressive unlocks let specific panels open before overall training
+      // is done (e.g. Product Selection unlocks once that video is watched).
+      const progressivelyUnlocked = Object.keys(PROGRESSIVE_UNLOCKS).some(slug =>
+        PROGRESSIVE_UNLOCKS[slug] === panelName && completedVideoIds && completedVideoIds.has(slug)
+      );
+      if (!trainingComplete && panelName !== 'training' && panelName !== 'profile' && !progressivelyUnlocked && currentUser) {
         const done = completedVideoIds.size;
         const total = tvVideos.length;
         showConfirmModal({
