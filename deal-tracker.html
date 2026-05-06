@@ -1,0 +1,2306 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="icon" type="image/png" href="/KF Transparent.png" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Deal Tracker — Kairos Financial</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ============================================================================
+   Deal Tracker — editorial, dark/light, rainbow accents
+   Adapted from the v3 design (claude.ai/design Setter Tracker v3)
+   ============================================================================ */
+
+:root {
+  --rb-green:   oklch(0.72 0.16 145);
+  --rb-yellow:  oklch(0.82 0.14 90);
+  --rb-orange:  oklch(0.74 0.16 50);
+  --rb-red:     oklch(0.66 0.18 25);
+  --rb-purple:  oklch(0.62 0.15 305);
+  --rb-blue:    oklch(0.68 0.13 240);
+
+  --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --sans: "Geist", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+
+  --radius: 10px;
+  --radius-sm: 6px;
+}
+
+/* Dark default */
+:root, [data-theme="dark"] {
+  --bg:        #0d0e10;
+  --bg-2:      #131418;
+  --surface:   #16181d;
+  --surface-2: #1c1f26;
+  --surface-3: #232730;
+  --hairline:  rgba(255, 255, 255, 0.07);
+  --hairline-strong: rgba(255, 255, 255, 0.13);
+  --ink-1:     #f3f3f1;
+  --ink-2:     rgba(243, 243, 241, 0.72);
+  --ink-3:     rgba(243, 243, 241, 0.45);
+  --ink-4:     rgba(243, 243, 241, 0.28);
+  --pos:       oklch(0.78 0.16 145);
+  --neg:       oklch(0.7 0.18 25);
+  --grain:     rgba(255, 255, 255, 0.012);
+  --shadow-lg: 0 24px 60px rgba(0,0,0,0.5);
+}
+
+[data-theme="light"] {
+  --bg:        #f6f5f1;
+  --bg-2:      #efece5;
+  --surface:   #ffffff;
+  --surface-2: #fbfaf6;
+  --surface-3: #f1efe8;
+  --hairline:  rgba(15, 12, 8, 0.08);
+  --hairline-strong: rgba(15, 12, 8, 0.16);
+  --ink-1:     #14130f;
+  --ink-2:     rgba(20, 19, 15, 0.74);
+  --ink-3:     rgba(20, 19, 15, 0.5);
+  --ink-4:     rgba(20, 19, 15, 0.32);
+  --pos:       oklch(0.55 0.14 145);
+  --neg:       oklch(0.55 0.18 25);
+  --grain:     rgba(0, 0, 0, 0.012);
+  --shadow-lg: 0 18px 48px rgba(15, 12, 8, 0.18);
+
+  --rb-green:  oklch(0.55 0.15 145);
+  --rb-yellow: oklch(0.7 0.14 85);
+  --rb-orange: oklch(0.62 0.16 50);
+  --rb-red:    oklch(0.55 0.17 25);
+  --rb-purple: oklch(0.5 0.15 305);
+  --rb-blue:   oklch(0.55 0.13 240);
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--ink-1);
+  font-family: var(--sans);
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: "ss01", "cv11";
+  min-height: 100vh;
+  background-image:
+    radial-gradient(1100px 600px at 90% -10%, color-mix(in oklch, var(--rb-blue) 8%, transparent), transparent 60%),
+    radial-gradient(900px 500px at -10% 110%, color-mix(in oklch, var(--rb-purple) 7%, transparent), transparent 60%);
+}
+
+button { font-family: inherit; cursor: pointer; }
+input, select { font-family: inherit; font-size: inherit; color: var(--ink-1); }
+
+.app {
+  max-width: 1480px;
+  margin: 0 auto;
+  padding: 28px 32px 80px;
+  position: relative;
+}
+.app::before {
+  content: ""; position: fixed; inset: 0; pointer-events: none;
+  background-image:
+    radial-gradient(circle at 25% 20%, var(--grain) 0.5px, transparent 1px),
+    radial-gradient(circle at 75% 60%, var(--grain) 0.5px, transparent 1px);
+  background-size: 3px 3px, 4px 4px;
+  z-index: 0;
+}
+.app > * { position: relative; z-index: 1; }
+
+.mono { font-family: var(--mono); }
+
+/* ─── Gate (access code / admin login) ─── */
+.gate-wrap {
+  min-height: 100vh;
+  display: grid; place-items: center;
+  padding: 32px 16px;
+}
+.gate-card {
+  width: 100%; max-width: 420px;
+  background: var(--surface);
+  border: 1px solid var(--hairline-strong);
+  border-radius: 14px;
+  padding: 28px 26px 24px;
+  box-shadow: var(--shadow-lg);
+}
+.gate-mark {
+  width: 38px; height: 38px; border-radius: 9px;
+  background:
+    linear-gradient(180deg,
+      var(--rb-green) 0 16.66%,
+      var(--rb-yellow) 16.66% 33.33%,
+      var(--rb-orange) 33.33% 50%,
+      var(--rb-red) 50% 66.66%,
+      var(--rb-purple) 66.66% 83.33%,
+      var(--rb-blue) 83.33% 100%);
+  box-shadow: 0 0 0 1px var(--hairline-strong);
+  margin-bottom: 14px;
+}
+.gate-eyebrow {
+  font-family: var(--mono); font-size: 11px;
+  text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--ink-3); margin-bottom: 6px;
+}
+.gate-title {
+  font-size: 22px; font-weight: 600; letter-spacing: -0.01em;
+  margin: 0 0 4px;
+}
+.gate-sub {
+  font-size: 13px; color: var(--ink-2); margin-bottom: 22px;
+}
+.gate-input {
+  width: 100%;
+  border: 1px solid var(--hairline-strong);
+  background: var(--bg);
+  color: var(--ink-1);
+  padding: 11px 13px;
+  border-radius: 8px;
+  outline: none;
+  font-size: 14px;
+  margin-bottom: 10px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.gate-input:focus {
+  border-color: var(--rb-blue);
+  box-shadow: 0 0 0 3px color-mix(in oklch, var(--rb-blue) 18%, transparent);
+}
+.gate-btn {
+  width: 100%;
+  background: var(--ink-1); color: var(--bg);
+  border: none; padding: 11px;
+  border-radius: 8px;
+  font-size: 13px; font-weight: 500;
+  margin-top: 4px;
+}
+.gate-btn:hover { opacity: 0.92; }
+.gate-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.gate-error {
+  margin-top: 10px;
+  padding: 9px 11px;
+  background: color-mix(in oklch, var(--neg) 10%, transparent);
+  border: 1px solid color-mix(in oklch, var(--neg) 30%, transparent);
+  border-radius: 7px;
+  color: var(--neg);
+  font-size: 12px;
+}
+.gate-foot {
+  margin-top: 20px; padding-top: 16px;
+  border-top: 1px solid var(--hairline);
+  text-align: center;
+}
+.gate-link {
+  background: transparent; border: none;
+  color: var(--ink-3);
+  font-family: var(--mono); font-size: 11px;
+  text-transform: uppercase; letter-spacing: 0.08em;
+  padding: 4px 8px;
+}
+.gate-link:hover { color: var(--ink-1); }
+
+/* ─── Header ─── */
+.hdr {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 28px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--hairline);
+  position: relative;
+  z-index: 60; /* above .main (z-index: 1) so dropdowns aren't covered */
+}
+.hdr-l { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.hdr-brand { display: flex; align-items: center; gap: 12px; }
+.hdr-mark {
+  width: 22px; height: 22px; border-radius: 5px;
+  background:
+    linear-gradient(180deg,
+      var(--rb-green) 0 16.66%,
+      var(--rb-yellow) 16.66% 33.33%,
+      var(--rb-orange) 33.33% 50%,
+      var(--rb-red) 50% 66.66%,
+      var(--rb-purple) 66.66% 83.33%,
+      var(--rb-blue) 83.33% 100%);
+  box-shadow: 0 0 0 1px var(--hairline-strong);
+  flex-shrink: 0;
+}
+.hdr-title { font-size: 20px; font-weight: 600; letter-spacing: -0.01em; }
+.hdr-sub {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--ink-3);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.hdr-r { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+.theme-toggle {
+  appearance: none; border: 1px solid var(--hairline-strong);
+  background: var(--surface); color: var(--ink-2);
+  width: 34px; height: 34px; border-radius: 8px;
+  display: grid; place-items: center; cursor: pointer;
+  transition: all 120ms;
+}
+.theme-toggle:hover { color: var(--ink-1); border-color: var(--ink-3); }
+
+.role-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 5px 10px;
+  border-radius: 99px;
+  background: var(--surface);
+  border: 1px solid var(--hairline-strong);
+  font-family: var(--mono); font-size: 10px;
+  text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--ink-2);
+  height: 34px;
+}
+.role-badge.admin { color: var(--rb-purple); border-color: color-mix(in oklch, var(--rb-purple) 35%, transparent); }
+.role-badge.rep { color: var(--rb-blue); border-color: color-mix(in oklch, var(--rb-blue) 35%, transparent); }
+.role-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+
+/* Setter picker (admin only) */
+.setter-picker { position: relative; }
+.setter-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--surface);
+  border: 1px solid var(--hairline-strong);
+  color: var(--ink-1);
+  padding: 5px 10px 5px 5px;
+  border-radius: 8px;
+  height: 34px;
+  transition: all 120ms;
+}
+.setter-trigger:hover { border-color: var(--ink-3); }
+.setter-trigger-text {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 0; line-height: 1.1;
+}
+.setter-trigger-label {
+  font-family: var(--mono); font-size: 9px;
+  color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.08em;
+}
+.setter-trigger-name { font-size: 12px; font-weight: 500; }
+
+.setter-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  width: 280px;
+  background: var(--surface);
+  border: 1px solid var(--hairline-strong);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  z-index: 50;
+  overflow: hidden;
+}
+.setter-menu-hd {
+  font-family: var(--mono); font-size: 10px;
+  text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--ink-3);
+  padding: 12px 14px 8px;
+  border-bottom: 1px solid var(--hairline);
+}
+.setter-list {
+  list-style: none; margin: 0; padding: 4px;
+  max-height: 280px; overflow-y: auto;
+}
+.setter-item {
+  display: flex; align-items: center;
+  border-radius: 6px;
+  position: relative;
+}
+.setter-item:hover { background: var(--surface-2); }
+.setter-item:hover .setter-actions { opacity: 1; }
+.setter-item.active { background: color-mix(in oklch, var(--rb-blue) 15%, transparent); }
+.setter-item.active .setter-actions { opacity: 1; }
+
+.setter-btn {
+  flex: 1;
+  display: flex; align-items: center; gap: 10px;
+  background: transparent; border: none;
+  padding: 8px 10px;
+  text-align: left;
+  border-radius: 6px;
+  color: var(--ink-1);
+  min-width: 0;
+}
+.avatar {
+  width: 26px; height: 26px; border-radius: 99px;
+  display: grid; place-items: center;
+  font-family: var(--mono); font-size: 10px; font-weight: 500;
+  color: var(--ink-1);
+  background: linear-gradient(135deg,
+    color-mix(in oklch, var(--rb-purple) 35%, var(--surface-2)),
+    color-mix(in oklch, var(--rb-blue) 35%, var(--surface-2)));
+  border: 1px solid var(--hairline-strong);
+  flex-shrink: 0;
+}
+.avatar.mini { width: 24px; height: 24px; font-size: 10px; }
+.setter-name {
+  font-size: 13px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.setter-code-mini {
+  display: block;
+  font-family: var(--mono); font-size: 10px;
+  color: var(--ink-3);
+  margin-top: 2px;
+}
+
+.setter-actions {
+  display: flex; gap: 2px; padding-right: 6px;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.setter-add, .setter-add-row {
+  width: 100%;
+  border-top: 1px solid var(--hairline);
+}
+.setter-add {
+  background: transparent; border: none; border-top: 1px solid var(--hairline);
+  text-align: left;
+  font-family: var(--mono); font-size: 11px;
+  color: var(--ink-3);
+  padding: 10px 14px;
+  text-transform: uppercase; letter-spacing: 0.08em;
+}
+.setter-add:hover { color: var(--ink-1); background: var(--surface-2); }
+
+.setter-add-row {
+  display: flex; flex-direction: column; gap: 6px;
+  padding: 10px;
+}
+.setter-add-row .row { display: flex; gap: 6px; }
+.btn-mini {
+  background: var(--ink-1); color: var(--bg);
+  border: none; padding: 7px 12px; border-radius: 6px;
+  font-size: 11px; font-weight: 500;
+}
+.btn-mini.ghost {
+  background: transparent; color: var(--ink-3);
+  border: 1px solid var(--hairline-strong);
+}
+.btn-mini.ghost:hover { color: var(--ink-1); }
+
+.inline-input {
+  flex: 1;
+  border: 1px solid var(--hairline-strong);
+  background: var(--bg);
+  color: var(--ink-1);
+  padding: 7px 10px;
+  border-radius: 6px;
+  outline: none;
+  font-size: 12px;
+  min-width: 0;
+}
+.inline-input:focus {
+  border-color: var(--rb-blue);
+  box-shadow: 0 0 0 3px color-mix(in oklch, var(--rb-blue) 18%, transparent);
+}
+
+/* ─── Main / topbar ─── */
+.main { display: flex; flex-direction: column; gap: 22px; }
+
+.topbar {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px; flex-wrap: wrap;
+}
+.eyebrow {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--ink-3);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 6px;
+}
+.title {
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+.title-sub {
+  font-family: var(--mono); font-size: 11px;
+  color: var(--ink-3); margin-top: 4px;
+  text-transform: uppercase; letter-spacing: 0.08em;
+}
+
+/* ─── Buttons ─── */
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 9px 14px;
+  border-radius: 8px;
+  font-size: 12.5px; font-weight: 500;
+  border: 1px solid var(--hairline-strong);
+  background: var(--surface);
+  color: var(--ink-1);
+  transition: all 0.15s;
+}
+.btn:hover { border-color: var(--ink-3); }
+.btn.primary {
+  background: var(--ink-1);
+  color: var(--bg);
+  border-color: var(--ink-1);
+}
+.btn.primary:hover { opacity: 0.9; }
+.btn.primary:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn.ghost { border-color: transparent; background: transparent; color: var(--ink-2); }
+.btn.ghost:hover { background: var(--surface-2); color: var(--ink-1); }
+
+.icon-btn {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  width: 24px; height: 24px;
+  display: grid; place-items: center;
+  color: var(--ink-3);
+  padding: 0;
+  transition: all 0.15s;
+}
+.icon-btn:hover { background: var(--surface-2); color: var(--ink-1); border-color: var(--hairline-strong); }
+.icon-btn.danger:hover { color: var(--neg); border-color: color-mix(in oklch, var(--neg) 40%, transparent); background: color-mix(in oklch, var(--neg) 12%, transparent); }
+
+/* ─── Cards & KPIs ─── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius);
+}
+
+.kpi-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px;
+  background: var(--hairline);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.kpi-cell {
+  background: var(--surface);
+  padding: 18px 20px 20px;
+  display: flex; flex-direction: column; gap: 8px;
+  position: relative;
+  min-height: 116px;
+}
+.kpi-cell.featured { background: var(--surface-2); }
+
+.kpi-lbl {
+  font-family: var(--mono); font-size: 10px;
+  text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--ink-3); display: flex; align-items: center; gap: 6px;
+}
+.kpi-lbl .swatch { width: 6px; height: 6px; border-radius: 2px; display: inline-block; }
+.kpi-val {
+  font-family: var(--mono); font-size: 28px; font-weight: 500;
+  color: var(--ink-1); letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums; line-height: 1;
+  margin-top: 4px;
+}
+.kpi-cell.featured .kpi-val { font-size: 32px; color: var(--pos); }
+.kpi-cell.tone-neg .kpi-val { color: var(--neg); }
+.kpi-sub { font-family: var(--mono); font-size: 11px; color: var(--ink-3); }
+
+/* ─── Filter row ─── */
+.deals-section { display: flex; flex-direction: column; gap: 14px; }
+.filter-row {
+  display: flex; gap: 6px; flex-wrap: wrap; align-items: center;
+}
+.filter-sep { width: 1px; background: var(--hairline-strong); align-self: stretch; margin: 4px; }
+
+.chip {
+  display: inline-flex; align-items: center; gap: 7px;
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  border-radius: 99px;
+  padding: 6px 11px 6px 10px;
+  font-size: 12px; font-weight: 500;
+  color: var(--ink-2);
+  transition: all 0.15s;
+}
+.chip:hover { border-color: var(--hairline-strong); color: var(--ink-1); }
+.chip.on { background: var(--ink-1); color: var(--bg); border-color: var(--ink-1); }
+.chip.on .chip-count { background: color-mix(in oklch, var(--bg) 20%, transparent); color: var(--bg); }
+
+.chip-dot { width: 7px; height: 7px; border-radius: 50%; }
+.chip-count {
+  font-family: var(--mono); font-size: 10px;
+  background: var(--surface-3);
+  color: var(--ink-3);
+  padding: 1px 6px; border-radius: 99px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ─── Table ─── */
+.table-card { padding: 0; overflow-x: auto; }
+.deals-table {
+  width: 100%; border-collapse: collapse;
+}
+.deals-table th {
+  text-align: left;
+  padding: 12px 14px;
+  font-family: var(--mono);
+  font-size: 10px; font-weight: 500;
+  color: var(--ink-3);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border-bottom: 1px solid var(--hairline);
+  white-space: nowrap;
+}
+.deals-table th:first-child { padding-left: 22px; }
+.deals-table th:last-child { padding-right: 22px; }
+.deals-table td {
+  padding: 13px 14px;
+  border-bottom: 1px solid var(--hairline);
+  vertical-align: middle;
+  font-size: 13px;
+}
+.deals-table td:first-child { padding-left: 22px; }
+.deals-table td:last-child { padding-right: 22px; }
+.deals-table tr:last-child td { border-bottom: none; }
+.deals-table tr:hover td { background: var(--surface-2); }
+.deals-table .num { text-align: right; font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.deals-table th.num { text-align: right; }
+.deals-table .strong { color: var(--ink-1); font-weight: 500; }
+.deals-table .muted { color: var(--ink-3); }
+
+.cb-row td { background: color-mix(in oklch, var(--rb-red) 8%, transparent); }
+.cb-row:hover td { background: color-mix(in oklch, var(--rb-red) 14%, var(--surface-2)); }
+.paid-row td { background: color-mix(in oklch, var(--rb-blue) 5%, transparent); }
+.paid-row:hover td { background: color-mix(in oklch, var(--rb-blue) 10%, var(--surface-2)); }
+
+.client-cell { display: flex; align-items: center; gap: 10px; }
+.client-name { font-weight: 500; color: var(--ink-1); }
+
+/* ─── Status pill + dropdown ─── */
+.status-cell {
+  display: inline-flex; align-items: center; gap: 8px;
+  position: relative; flex-wrap: wrap;
+}
+.status-pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  border: 1px solid color-mix(in oklch, var(--c) 35%, transparent);
+  background: color-mix(in oklch, var(--c) 14%, transparent);
+  color: var(--ink-1);
+  padding: 4px 9px;
+  border-radius: 99px;
+  font-size: 11.5px; font-weight: 500;
+  transition: all 0.15s;
+}
+.status-pill:hover:not(:disabled) { background: color-mix(in oklch, var(--c) 22%, transparent); }
+.status-pill:disabled { cursor: default; }
+.pill-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+
+.status-menu {
+  position: absolute;
+  top: calc(100% + 4px); left: 0;
+  background: var(--surface);
+  border: 1px solid var(--hairline-strong);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-lg);
+  padding: 4px;
+  z-index: 20;
+  min-width: 200px;
+}
+.status-option {
+  width: 100%;
+  display: flex; align-items: center; gap: 8px;
+  background: transparent; border: none;
+  padding: 8px 10px; border-radius: 4px;
+  font-size: 12.5px; text-align: left;
+  color: var(--ink-2);
+}
+.status-option:hover { background: var(--surface-2); color: var(--ink-1); }
+.status-option.selected { background: color-mix(in oklch, var(--rb-blue) 15%, transparent); color: var(--ink-1); font-weight: 500; }
+
+/* ─── Payout toggles ─── */
+.payout-cell {
+  display: inline-flex; gap: 6px; align-items: center; flex-wrap: wrap;
+}
+.toggle-pill {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: transparent;
+  border: 1px dashed var(--hairline-strong);
+  color: var(--ink-3);
+  padding: 4px 9px;
+  border-radius: 99px;
+  font-family: var(--mono); font-size: 10.5px; font-weight: 500;
+  letter-spacing: 0.04em;
+  transition: all 0.15s;
+}
+.toggle-pill:hover:not(:disabled):not(.on) { color: var(--ink-1); border-color: var(--ink-3); }
+.toggle-pill .dot-empty {
+  width: 8px; height: 8px; border-radius: 50%;
+  border: 1.5px solid currentColor;
+  opacity: 0.5;
+}
+.toggle-pill.paid.on {
+  background: color-mix(in oklch, var(--rb-blue) 18%, transparent);
+  color: var(--ink-1);
+  border: 1px solid color-mix(in oklch, var(--rb-blue) 50%, transparent);
+}
+.toggle-pill.paid.on svg { color: var(--rb-blue); }
+.toggle-pill.cb:disabled { opacity: 0.35; cursor: not-allowed; }
+.toggle-pill.cb.on {
+  background: color-mix(in oklch, var(--rb-red) 18%, transparent);
+  color: var(--ink-1);
+  border: 1px solid color-mix(in oklch, var(--rb-red) 50%, transparent);
+}
+.cb-pulse { width: 6px; height: 6px; border-radius: 50%; background: currentColor; opacity: 0.4; }
+.cb-pulse.active { background: var(--neg); opacity: 1; animation: pulse 1.6s ease-in-out infinite; }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+
+/* ─── Inline money ─── */
+.inline-money {
+  background: transparent;
+  border: 1px dashed transparent;
+  padding: 3px 8px;
+  border-radius: 5px;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-1);
+}
+.inline-money:hover:not(:disabled) { border-color: var(--hairline-strong); background: var(--surface-2); }
+.inline-money:disabled { cursor: default; }
+.inline-money .muted { color: var(--ink-4); font-family: var(--sans); }
+.inline-money.has-value { color: var(--pos); }
+
+.inline-money-edit {
+  display: inline-flex; align-items: center;
+  background: var(--bg);
+  border: 1px solid var(--rb-blue);
+  border-radius: 5px;
+  padding: 0 4px 0 8px;
+  box-shadow: 0 0 0 3px color-mix(in oklch, var(--rb-blue) 18%, transparent);
+}
+.inline-money-edit .dollar { color: var(--ink-3); font-family: var(--mono); font-size: 11px; }
+.inline-money-edit input {
+  border: none; outline: none;
+  width: 80px; padding: 4px;
+  text-align: right;
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+  background: transparent;
+  color: var(--ink-1);
+}
+
+.row-actions { text-align: right; white-space: nowrap; }
+.row-actions .icon-btn { display: inline-grid; }
+
+/* ─── Empty / loading ─── */
+.empty {
+  padding: 56px 24px;
+  text-align: center;
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+}
+.empty-mark {
+  width: 48px; height: 48px; border-radius: 12px;
+  background: var(--surface-2);
+  color: var(--ink-3);
+  display: grid; place-items: center;
+  margin-bottom: 4px;
+  border: 1px solid var(--hairline);
+}
+.empty-title { font-weight: 600; font-size: 15px; }
+.empty-sub { font-family: var(--mono); font-size: 12px; color: var(--ink-3); margin-bottom: 6px; }
+
+.loading-bar {
+  height: 2px; width: 100%;
+  background: var(--surface-2);
+  border-radius: 99px;
+  overflow: hidden;
+  position: relative;
+}
+.loading-bar::after {
+  content: ""; position: absolute; inset: 0;
+  width: 30%;
+  background: linear-gradient(90deg, transparent, var(--rb-blue), transparent);
+  animation: slide 1.2s ease-in-out infinite;
+}
+@keyframes slide { 0% { transform: translateX(-100%); } 100% { transform: translateX(400%); } }
+
+/* ─── Modal ─── */
+.modal-backdrop {
+  position: fixed; inset: 0;
+  background: color-mix(in oklch, var(--bg) 70%, black);
+  backdrop-filter: blur(6px);
+  display: grid; place-items: center;
+  z-index: 100;
+  animation: fade 0.15s;
+}
+.modal {
+  background: var(--surface);
+  border: 1px solid var(--hairline-strong);
+  border-radius: var(--radius);
+  width: 500px;
+  max-width: calc(100vw - 32px);
+  max-height: calc(100vh - 32px);
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+  display: flex; flex-direction: column;
+  animation: pop 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes pop {
+  from { opacity: 0; transform: translateY(8px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.modal-head {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 18px 22px;
+  border-bottom: 1px solid var(--hairline);
+}
+.modal-head h2 {
+  margin: 0;
+  font-size: 15px; font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.modal-body {
+  padding: 20px 22px;
+  overflow-y: auto;
+  display: flex; flex-direction: column; gap: 16px;
+}
+.modal-foot {
+  display: flex; justify-content: flex-end; gap: 8px;
+  padding: 14px 22px;
+  background: var(--surface-2);
+  border-top: 1px solid var(--hairline);
+}
+
+/* ─── Fields ─── */
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field-label {
+  font-family: var(--mono); font-size: 10px; font-weight: 500;
+  color: var(--ink-3);
+  text-transform: uppercase; letter-spacing: 0.08em;
+}
+.field-hint {
+  font-family: var(--mono); font-size: 10px;
+  color: var(--ink-4);
+}
+.field input[type="text"],
+.field input[type="number"],
+.field input[type="date"],
+.field input[type="email"],
+.field input[type="password"],
+.field input:not([type]) {
+  border: 1px solid var(--hairline-strong);
+  border-radius: 6px;
+  padding: 9px 12px;
+  outline: none;
+  background: var(--bg);
+  color: var(--ink-1);
+  font-size: 13px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.field input:focus {
+  border-color: var(--rb-blue);
+  box-shadow: 0 0 0 3px color-mix(in oklch, var(--rb-blue) 18%, transparent);
+}
+
+.row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+.money-input {
+  display: flex; align-items: center;
+  border: 1px solid var(--hairline-strong);
+  border-radius: 6px;
+  background: var(--bg);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.money-input:focus-within {
+  border-color: var(--rb-blue);
+  box-shadow: 0 0 0 3px color-mix(in oklch, var(--rb-blue) 18%, transparent);
+}
+.money-input span { padding: 0 4px 0 12px; color: var(--ink-3); font-family: var(--mono); }
+.money-input input {
+  border: none !important; flex: 1; background: transparent;
+  outline: none !important; box-shadow: none !important;
+  padding: 9px 12px 9px 4px !important;
+  font-family: var(--mono);
+}
+
+/* Status grid */
+.status-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.status-card {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 12px;
+  border: 1px solid var(--hairline-strong);
+  border-radius: 6px;
+  background: var(--bg);
+  font-size: 12.5px; font-weight: 500;
+  color: var(--ink-2);
+  text-align: left;
+  transition: all 0.15s;
+}
+.status-card:hover { border-color: var(--ink-3); color: var(--ink-1); }
+.status-card.selected { color: var(--ink-1); }
+
+/* Payout switches in modal */
+.payout-grid { display: flex; flex-direction: column; gap: 8px; }
+.switch-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px;
+  background: var(--bg);
+  border: 1px solid var(--hairline-strong);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.switch-row:hover:not(.disabled) { border-color: var(--ink-3); }
+.switch-row input { display: none; }
+.switch-row.disabled { opacity: 0.45; cursor: not-allowed; }
+
+.switch {
+  width: 32px; height: 18px;
+  border-radius: 99px;
+  background: var(--hairline-strong);
+  position: relative;
+  flex-shrink: 0;
+  transition: background 0.2s;
+}
+.switch::after {
+  content: '';
+  position: absolute; top: 2px; left: 2px;
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: var(--ink-1);
+  transition: transform 0.2s;
+}
+.switch-row.paid.active { border-color: color-mix(in oklch, var(--rb-blue) 50%, transparent); background: color-mix(in oklch, var(--rb-blue) 8%, var(--bg)); }
+.switch-row.paid input:checked + .switch { background: var(--rb-blue); }
+.switch-row.cb.active { border-color: color-mix(in oklch, var(--rb-red) 50%, transparent); background: color-mix(in oklch, var(--rb-red) 8%, var(--bg)); }
+.switch-row.cb input:checked + .switch { background: var(--rb-red); }
+.switch-row input:checked + .switch::after { transform: translateX(14px); background: white; }
+
+.switch-label strong { display: block; font-size: 13px; color: var(--ink-1); }
+.hint-sm { display: block; font-family: var(--mono); font-size: 10px; color: var(--ink-3); margin-top: 2px; }
+
+/* ─── Rep manager modal ─── */
+.manage-section {
+  display: flex; flex-direction: column; gap: 10px;
+}
+.manage-section + .manage-section {
+  padding-top: 8px;
+  border-top: 1px solid var(--hairline);
+}
+.manage-section-title {
+  margin: 0;
+  font-family: var(--mono); font-size: 10px; font-weight: 500;
+  text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--ink-3);
+}
+.manage-hint {
+  margin: 2px 0 0;
+  font-family: var(--mono); font-size: 10.5px;
+  color: var(--ink-4);
+}
+
+.rep-list {
+  display: flex; flex-direction: column; gap: 4px;
+  max-height: 260px; overflow-y: auto;
+  border: 1px solid var(--hairline);
+  border-radius: 8px;
+  background: var(--bg);
+  padding: 6px;
+}
+.rep-list-empty {
+  padding: 28px 16px; text-align: center;
+  font-family: var(--mono); font-size: 12px;
+  color: var(--ink-3);
+}
+.rep-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 12px;
+  border-radius: 6px;
+  background: transparent;
+  border: 1px solid transparent;
+  transition: background 0.15s, border-color 0.15s;
+}
+.rep-row:hover { background: var(--surface-2); border-color: var(--hairline); }
+.rep-row.active {
+  background: color-mix(in oklch, var(--rb-blue) 10%, transparent);
+  border-color: color-mix(in oklch, var(--rb-blue) 28%, transparent);
+}
+.rep-row-body {
+  flex: 1; min-width: 0;
+  display: flex; flex-direction: column; gap: 4px;
+  align-items: flex-start;
+}
+.rep-row-name {
+  max-width: 100%;
+  background: transparent;
+  border: 1px dashed transparent;
+  color: var(--ink-1);
+  font-weight: 500; font-size: 13.5px;
+  text-align: left;
+  padding: 3px 7px;
+  border-radius: 5px;
+  line-height: 1.25;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.rep-row-name:hover {
+  border-color: var(--hairline-strong);
+  background: var(--surface-2);
+}
+.rep-row-code {
+  max-width: 100%;
+  background: transparent;
+  border: 1px dashed transparent;
+  color: var(--ink-3);
+  font-size: 11.5px;
+  text-align: left;
+  padding: 3px 7px;
+  border-radius: 5px;
+  line-height: 1.25;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.rep-row-code:hover {
+  border-color: var(--hairline-strong);
+  background: var(--surface-2);
+  color: var(--ink-1);
+}
+.rep-row-code .mono { font-family: var(--mono); color: var(--ink-2); }
+
+/* Higher specificity to win against ".field input" rules */
+.modal .rep-row-input {
+  border: 1px solid var(--rb-blue);
+  background: var(--bg);
+  color: var(--ink-1);
+  padding: 5px 9px;
+  border-radius: 5px;
+  outline: none;
+  font-size: 12.5px;
+  width: 100%;
+  max-width: 240px;
+  box-shadow: 0 0 0 3px color-mix(in oklch, var(--rb-blue) 18%, transparent);
+}
+.modal .rep-row-input.mono { font-family: var(--mono); font-size: 12px; }
+
+.rep-add-form {
+  display: flex; flex-direction: column; gap: 14px;
+}
+.rep-add-foot {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 14px; flex-wrap: wrap;
+  margin-top: 4px;
+}
+.rep-add-foot .manage-hint { margin: 0; flex: 1; min-width: 180px; }
+
+/* ─── Toast ─── */
+.toast {
+  position: fixed; bottom: 24px; left: 50%;
+  transform: translateX(-50%);
+  background: var(--surface);
+  border: 1px solid var(--hairline-strong);
+  color: var(--ink-1);
+  padding: 11px 16px;
+  border-radius: 8px;
+  box-shadow: var(--shadow-lg);
+  font-size: 13px;
+  z-index: 200;
+  animation: toast-in 0.2s;
+}
+.toast.err { border-color: color-mix(in oklch, var(--neg) 40%, transparent); color: var(--neg); }
+@keyframes toast-in { from { opacity: 0; transform: translate(-50%, 8px); } to { opacity: 1; transform: translate(-50%, 0); } }
+
+/* ─── Responsive ─── */
+@media (max-width: 1100px) {
+  .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 700px) {
+  .app { padding: 20px 16px 60px; }
+  .kpi-grid { grid-template-columns: 1fr; }
+  .title { font-size: 22px; }
+  .hdr { flex-direction: column; align-items: flex-start; }
+  .hdr-r { width: 100%; justify-content: space-between; }
+}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
+<script type="text/babel" data-presets="env,react">
+const { useState, useEffect, useMemo, useRef, useCallback } = React;
+
+// ============== SUPABASE CONFIG ==============
+const SUPABASE_URL = 'https://mrjlbpyqvfvmegjyovzq.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_V4kzfIHC-GRTtdoJwJRZMA__2j-DUh-';
+const ADMIN_EMAIL = 'dev@kairos-financial.com';
+
+const THEME_KEY = 'deal-tracker-theme';
+const REP_CODE_KEY = 'deal-tracker-rep-code';
+const ADMIN_TOKEN_KEY = 'deal-tracker-admin-token';
+const ADMIN_EMAIL_KEY = 'deal-tracker-admin-email';
+const ADMIN_LAST_SETTER_KEY = 'deal-tracker-admin-last-setter';
+
+// ============== HTTP HELPERS ==============
+async function supaRest(path, { method = 'GET', body, token } = {}) {
+  const headers = {
+    apikey: SUPABASE_KEY,
+    Authorization: 'Bearer ' + (token || SUPABASE_KEY),
+    'Content-Type': 'application/json',
+  };
+  if (method !== 'GET') headers.Prefer = 'return=representation';
+  const res = await fetch(SUPABASE_URL + '/rest/v1' + path, {
+    method,
+    headers,
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  const text = await res.text();
+  let data;
+  try { data = text ? JSON.parse(text) : null; } catch (_) { data = text; }
+  if (!res.ok) {
+    const msg = (data && data.message) || (data && data.error_description) || res.statusText;
+    throw new Error(msg);
+  }
+  return data;
+}
+
+async function supaRpc(fn, params, token) {
+  return supaRest('/rpc/' + fn, { method: 'POST', body: params, token });
+}
+
+// ============== STATUS CONFIG ==============
+const STATUSES = [
+  { id: 'uw_submitted',  label: 'Underwriting / Submitted', short: 'UW / Submitted', color: 'var(--rb-yellow)' },
+  { id: 'approved',      label: 'Approved',                 short: 'Approved',       color: 'var(--rb-green)' },
+  { id: 'issued',        label: 'Issued',                   short: 'Issued',         color: 'var(--rb-purple)' },
+  { id: 'pending_lapse', label: 'Pending Lapse',            short: 'Pending Lapse',  color: 'var(--rb-orange)' },
+];
+const statusMeta = (id) => STATUSES.find(s => s.id === id) || STATUSES[0];
+// Chargeback allowed on any status (still requires the deal be marked Paid first).
+const canChargeback = (_status) => true;
+
+// ============== HELPERS ==============
+const fmt = (n) => '$' + (Number(n) || 0).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+const todayISO = () => new Date().toISOString().slice(0, 10);
+const fmtDate = (iso) => {
+  if (!iso) return '—';
+  const d = new Date(iso + 'T00:00:00');
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+};
+
+// Map a snake_case row from DB to the shape used by the dashboard.
+const dealFromRow = (r) => ({
+  id: r.id,
+  setterId: r.setter_id,
+  client: r.client,
+  ap: Number(r.ap),
+  commission: Number(r.commission),
+  date: r.deal_date,
+  status: r.status,
+  paid: !!r.paid,
+  chargeback: !!r.chargeback,
+});
+
+// ============== ROOT ==============
+function App() {
+  // Modes: 'gate-rep' | 'gate-admin' | 'rep' | 'admin'
+  const [mode, setMode] = useState('gate-rep');
+  const [theme, setTheme] = useState(() => localStorage.getItem(THEME_KEY) || 'dark');
+  const [toast, setToast] = useState(null);
+
+  // Rep state
+  const [repCode, setRepCode] = useState('');
+  const [repSetter, setRepSetter] = useState(null); // {id, name}
+  const [repDeals, setRepDeals] = useState([]);
+  const [repLoading, setRepLoading] = useState(false);
+
+  // Admin state
+  const [adminToken, setAdminToken] = useState(null);
+  const [adminEmail, setAdminEmail] = useState(null);
+  const [setters, setSetters] = useState([]);
+  const [activeSetterId, setActiveSetterId] = useState(null);
+  const [adminDeals, setAdminDeals] = useState([]);
+  const [adminLoading, setAdminLoading] = useState(false);
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    try { localStorage.setItem(THEME_KEY, theme); } catch (e) {}
+  }, [theme]);
+
+  const showToast = useCallback((msg, err = false) => {
+    setToast({ msg, err });
+    setTimeout(() => setToast(null), err ? 8000 : 2600);
+  }, []);
+
+  // ── Restore session on mount ──
+  useEffect(() => {
+    (async () => {
+      const savedAdminToken = sessionStorage.getItem(ADMIN_TOKEN_KEY);
+      const savedAdminEmail = sessionStorage.getItem(ADMIN_EMAIL_KEY);
+      if (savedAdminToken && savedAdminEmail === ADMIN_EMAIL) {
+        try {
+          const verify = await fetch(SUPABASE_URL + '/auth/v1/user', {
+            headers: { apikey: SUPABASE_KEY, Authorization: 'Bearer ' + savedAdminToken },
+          });
+          if (verify.ok) {
+            setAdminToken(savedAdminToken);
+            setAdminEmail(savedAdminEmail);
+            setMode('admin');
+            return;
+          }
+        } catch (_) {}
+        sessionStorage.removeItem(ADMIN_TOKEN_KEY);
+        sessionStorage.removeItem(ADMIN_EMAIL_KEY);
+      }
+      const savedRepCode = sessionStorage.getItem(REP_CODE_KEY);
+      if (savedRepCode) {
+        await tryRepCode(savedRepCode, true);
+      }
+    })();
+    // eslint-disable-next-line
+  }, []);
+
+  // ── Rep flow ──
+  async function tryRepCode(code, silent = false) {
+    if (!code.trim()) return false;
+    setRepLoading(true);
+    try {
+      const setterRows = await supaRpc('verify_setter_code', { p_code: code.trim() });
+      if (!Array.isArray(setterRows) || setterRows.length === 0) {
+        if (!silent) showToast('Invalid access code.', true);
+        sessionStorage.removeItem(REP_CODE_KEY);
+        setRepLoading(false);
+        return false;
+      }
+      const dealRows = await supaRpc('get_setter_deals', { p_code: code.trim() });
+      setRepCode(code.trim());
+      setRepSetter({ id: setterRows[0].id, name: setterRows[0].name });
+      setRepDeals((dealRows || []).map(dealFromRow));
+      setMode('rep');
+      try { sessionStorage.setItem(REP_CODE_KEY, code.trim()); } catch (_) {}
+      setRepLoading(false);
+      return true;
+    } catch (e) {
+      if (!silent) showToast(e.message || 'Could not verify code.', true);
+      setRepLoading(false);
+      return false;
+    }
+  }
+
+  function repSignOut() {
+    setRepCode('');
+    setRepSetter(null);
+    setRepDeals([]);
+    sessionStorage.removeItem(REP_CODE_KEY);
+    setMode('gate-rep');
+  }
+
+  // ── Admin flow ──
+  async function tryAdminLogin(email, password) {
+    if (email !== ADMIN_EMAIL) {
+      showToast('This account does not have admin access.', true);
+      return false;
+    }
+    try {
+      const res = await fetch(SUPABASE_URL + '/auth/v1/token?grant_type=password', {
+        method: 'POST',
+        headers: { apikey: SUPABASE_KEY, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.access_token) {
+        showToast(data.error_description || 'Invalid email or password.', true);
+        return false;
+      }
+      sessionStorage.setItem(ADMIN_TOKEN_KEY, data.access_token);
+      sessionStorage.setItem(ADMIN_EMAIL_KEY, email);
+      setAdminToken(data.access_token);
+      setAdminEmail(email);
+      setMode('admin');
+      return true;
+    } catch (e) {
+      showToast('Connection error. Try again.', true);
+      return false;
+    }
+  }
+
+  function adminSignOut() {
+    sessionStorage.removeItem(ADMIN_TOKEN_KEY);
+    sessionStorage.removeItem(ADMIN_EMAIL_KEY);
+    setAdminToken(null);
+    setAdminEmail(null);
+    setSetters([]);
+    setActiveSetterId(null);
+    setAdminDeals([]);
+    setMode('gate-rep');
+  }
+
+  // Load all setters + deals for admin
+  const loadAdmin = useCallback(async () => {
+    if (!adminToken) return;
+    setAdminLoading(true);
+    try {
+      const [s, d] = await Promise.all([
+        supaRest('/deal_tracker_setters?select=*&order=name.asc', { token: adminToken }),
+        supaRest('/deal_tracker_deals?select=*&order=deal_date.desc', { token: adminToken }),
+      ]);
+      setSetters(s || []);
+      setAdminDeals((d || []).map(dealFromRow));
+      // pick active setter
+      let pick = localStorage.getItem(ADMIN_LAST_SETTER_KEY);
+      if (!pick || !(s || []).some(x => x.id === pick)) pick = (s && s[0] && s[0].id) || null;
+      setActiveSetterId(pick);
+    } catch (e) {
+      showToast(e.message || 'Failed to load.', true);
+      if ((e.message || '').toLowerCase().includes('jwt')) adminSignOut();
+    } finally {
+      setAdminLoading(false);
+    }
+  }, [adminToken, showToast]);
+
+  useEffect(() => { if (mode === 'admin') loadAdmin(); }, [mode, loadAdmin]);
+
+  useEffect(() => {
+    if (activeSetterId) try { localStorage.setItem(ADMIN_LAST_SETTER_KEY, activeSetterId); } catch (_) {}
+  }, [activeSetterId]);
+
+  // ── Admin: setter mgmt ──
+  async function adminAddSetter(name, code) {
+    try {
+      const rows = await supaRest('/deal_tracker_setters', {
+        method: 'POST', token: adminToken,
+        body: { name: name.trim(), access_code: code.trim() },
+      });
+      const newRow = Array.isArray(rows) ? rows[0] : rows;
+      setSetters(s => [...s, newRow].sort((a, b) => a.name.localeCompare(b.name)));
+      setActiveSetterId(newRow.id);
+      showToast('Sales rep added.');
+      return true;
+    } catch (e) {
+      console.error('[deal-tracker] adminAddSetter failed:', e);
+      showToast('Add rep failed: ' + (e.message || 'unknown error'), true);
+      return false;
+    }
+  }
+  async function adminUpdateSetter(id, patch) {
+    try {
+      const rows = await supaRest('/deal_tracker_setters?id=eq.' + id, {
+        method: 'PATCH', token: adminToken, body: patch,
+      });
+      const newRow = Array.isArray(rows) ? rows[0] : rows;
+      setSetters(s => s.map(x => x.id === id ? newRow : x));
+      showToast('Sales rep updated.');
+      return true;
+    } catch (e) {
+      showToast(e.message || 'Could not update rep.', true);
+      return false;
+    }
+  }
+  async function adminRemoveSetter(id) {
+    try {
+      await supaRest('/deal_tracker_setters?id=eq.' + id, { method: 'DELETE', token: adminToken });
+      setSetters(s => s.filter(x => x.id !== id));
+      setAdminDeals(d => d.filter(x => x.setterId !== id));
+      if (activeSetterId === id) {
+        const remaining = setters.filter(x => x.id !== id);
+        setActiveSetterId(remaining[0] ? remaining[0].id : null);
+      }
+      showToast('Sales rep removed.');
+    } catch (e) {
+      showToast(e.message || 'Could not remove rep.', true);
+    }
+  }
+
+  // ── Admin: deal mgmt ──
+  async function adminAddDeal(deal) {
+    try {
+      const body = {
+        setter_id: activeSetterId,
+        client: deal.client,
+        ap: deal.ap,
+        commission: deal.commission,
+        deal_date: deal.date,
+        status: deal.status,
+        paid: !!deal.paid,
+        chargeback: !!deal.chargeback,
+      };
+      const rows = await supaRest('/deal_tracker_deals', {
+        method: 'POST', token: adminToken, body,
+      });
+      const newRow = Array.isArray(rows) ? rows[0] : rows;
+      setAdminDeals(d => [dealFromRow(newRow), ...d]);
+      showToast('Deal added.');
+    } catch (e) {
+      showToast(e.message || 'Could not add deal.', true);
+    }
+  }
+  async function adminUpdateDeal(id, patch) {
+    const body = {};
+    if ('client' in patch) body.client = patch.client;
+    if ('ap' in patch) body.ap = patch.ap;
+    if ('commission' in patch) body.commission = patch.commission;
+    if ('date' in patch) body.deal_date = patch.date;
+    if ('status' in patch) body.status = patch.status;
+    if ('paid' in patch) body.paid = patch.paid;
+    if ('chargeback' in patch) body.chargeback = patch.chargeback;
+    // Optimistic update
+    setAdminDeals(d => d.map(x => x.id === id ? { ...x, ...patch } : x));
+    try {
+      const rows = await supaRest('/deal_tracker_deals?id=eq.' + id, {
+        method: 'PATCH', token: adminToken, body,
+      });
+      const updated = Array.isArray(rows) ? rows[0] : rows;
+      if (updated) setAdminDeals(d => d.map(x => x.id === id ? dealFromRow(updated) : x));
+    } catch (e) {
+      showToast(e.message || 'Update failed; reloading.', true);
+      loadAdmin();
+    }
+  }
+  async function adminRemoveDeal(id) {
+    try {
+      await supaRest('/deal_tracker_deals?id=eq.' + id, { method: 'DELETE', token: adminToken });
+      setAdminDeals(d => d.filter(x => x.id !== id));
+      showToast('Deal removed.');
+    } catch (e) {
+      showToast(e.message || 'Could not remove deal.', true);
+    }
+  }
+
+  // ── Render gates ──
+  if (mode === 'gate-rep') {
+    return (
+      <>
+        <RepGate
+          onSubmit={tryRepCode}
+          loading={repLoading}
+          theme={theme}
+          onToggleTheme={() => setTheme(t => t === 'dark' ? 'light' : 'dark')}
+          onAdminClick={() => setMode('gate-admin')}
+        />
+        <Toast t={toast} />
+      </>
+    );
+  }
+  if (mode === 'gate-admin') {
+    return (
+      <>
+        <AdminGate
+          onSubmit={tryAdminLogin}
+          theme={theme}
+          onToggleTheme={() => setTheme(t => t === 'dark' ? 'light' : 'dark')}
+          onBack={() => setMode('gate-rep')}
+        />
+        <Toast t={toast} />
+      </>
+    );
+  }
+
+  // ── Render dashboards ──
+  const isAdmin = mode === 'admin';
+  const activeSetter = isAdmin
+    ? setters.find(s => s.id === activeSetterId) || null
+    : repSetter;
+  const visibleDeals = isAdmin
+    ? adminDeals.filter(d => d.setterId === activeSetterId)
+    : repDeals;
+  const loading = isAdmin ? adminLoading : repLoading;
+
+  return (
+    <div className="app">
+      <Header
+        isAdmin={isAdmin}
+        setters={setters}
+        activeSetter={activeSetter}
+        onSelectSetter={setActiveSetterId}
+        onAddSetter={adminAddSetter}
+        onRenameSetter={(id, name) => adminUpdateSetter(id, { name })}
+        onChangeCode={(id, access_code) => adminUpdateSetter(id, { access_code })}
+        onRemoveSetter={adminRemoveSetter}
+        theme={theme}
+        onToggleTheme={() => setTheme(t => t === 'dark' ? 'light' : 'dark')}
+        onSignOut={isAdmin ? adminSignOut : repSignOut}
+      />
+      <Dashboard
+        isAdmin={isAdmin}
+        setter={activeSetter}
+        deals={visibleDeals}
+        loading={loading}
+        onAddDeal={adminAddDeal}
+        onUpdateDeal={adminUpdateDeal}
+        onRemoveDeal={adminRemoveDeal}
+      />
+      <Toast t={toast} />
+    </div>
+  );
+}
+
+// ============== GATES ==============
+function GateChrome({ theme, onToggleTheme, children }) {
+  return (
+    <div className="gate-wrap">
+      <div style={{ position: 'fixed', top: 16, right: 16 }}>
+        <button className="theme-toggle" onClick={onToggleTheme} title="Toggle theme">
+          {theme === 'dark' ? (
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+          ) : (
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+          )}
+        </button>
+      </div>
+      {children}
+    </div>
+  );
+}
+
+function RepGate({ onSubmit, loading, theme, onToggleTheme, onAdminClick }) {
+  const [code, setCode] = useState('');
+  const submit = (e) => { e?.preventDefault?.(); if (code.trim()) onSubmit(code); };
+  return (
+    <GateChrome theme={theme} onToggleTheme={onToggleTheme}>
+      <form className="gate-card" onSubmit={submit}>
+        <div className="gate-mark" />
+        <div className="gate-eyebrow">Kairos Financial · Deal Tracker</div>
+        <h1 className="gate-title">Enter your access code</h1>
+        <p className="gate-sub">Your manager shared an access code with you. Enter it to view your deals.</p>
+        <input
+          autoFocus
+          className="gate-input"
+          placeholder="Access code"
+          value={code}
+          onChange={e => setCode(e.target.value)}
+        />
+        <button type="submit" className="gate-btn" disabled={!code.trim() || loading}>
+          {loading ? 'Checking…' : 'View my deals'}
+        </button>
+        <div className="gate-foot">
+          <button type="button" className="gate-link" onClick={onAdminClick}>Admin login →</button>
+        </div>
+      </form>
+    </GateChrome>
+  );
+}
+
+function AdminGate({ onSubmit, theme, onToggleTheme, onBack }) {
+  const [email, setEmail] = useState(ADMIN_EMAIL);
+  const [pw, setPw] = useState('');
+  const [busy, setBusy] = useState(false);
+  const submit = async (e) => {
+    e?.preventDefault?.();
+    if (!email || !pw) return;
+    setBusy(true);
+    await onSubmit(email, pw);
+    setBusy(false);
+  };
+  return (
+    <GateChrome theme={theme} onToggleTheme={onToggleTheme}>
+      <form className="gate-card" onSubmit={submit}>
+        <div className="gate-mark" />
+        <div className="gate-eyebrow">Kairos Financial · Admin</div>
+        <h1 className="gate-title">Admin login</h1>
+        <p className="gate-sub">Sign in with the same account you use for the Sales Hub.</p>
+        <input
+          className="gate-input"
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={e => setEmail(e.target.value)}
+        />
+        <input
+          className="gate-input"
+          type="password"
+          placeholder="Password"
+          value={pw}
+          onChange={e => setPw(e.target.value)}
+        />
+        <button type="submit" className="gate-btn" disabled={!email || !pw || busy}>
+          {busy ? 'Signing in…' : 'Sign in'}
+        </button>
+        <div className="gate-foot">
+          <button type="button" className="gate-link" onClick={onBack}>← Back to access code</button>
+        </div>
+      </form>
+    </GateChrome>
+  );
+}
+
+// ============== HEADER ==============
+function Header({ isAdmin, setters, activeSetter, onSelectSetter, onAddSetter, onRenameSetter, onChangeCode, onRemoveSetter, theme, onToggleTheme, onSignOut }) {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [manageOpen, setManageOpen] = useState(false);
+
+  // Close on Escape only — no outside-click handling (causes more bugs than it solves).
+  // Dropdown closes via: clicking trigger again, selecting a rep, or pressing Escape.
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onKey = (e) => { if (e.key === 'Escape') setMenuOpen(false); };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [menuOpen]);
+
+  return (
+    <header className="hdr">
+      <div className="hdr-l">
+        <div className="hdr-brand">
+          <div className="hdr-mark"></div>
+          <div>
+            <div className="hdr-title">Deal Tracker</div>
+            <div className="hdr-sub">Pipeline · Commissions · Chargebacks</div>
+          </div>
+        </div>
+      </div>
+
+      <div className="hdr-r">
+        <span className={'role-badge ' + (isAdmin ? 'admin' : 'rep')}>
+          <span className="role-dot"></span>
+          {isAdmin ? 'Admin · Edit mode' : 'Sales rep · View only'}
+        </span>
+
+        {isAdmin && (
+          <>
+            <div className="setter-picker">
+              <button className="setter-trigger" onClick={() => setMenuOpen(o => !o)}>
+                <span className="avatar mini">{(activeSetter?.name || '?').slice(0,1).toUpperCase()}</span>
+                <div className="setter-trigger-text">
+                  <span className="setter-trigger-label">Sales rep</span>
+                  <span className="setter-trigger-name">{activeSetter?.name || 'No reps yet'}</span>
+                </div>
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M6 9l6 6 6-6"/></svg>
+              </button>
+              {menuOpen && (
+                <div className="setter-menu">
+                  <div className="setter-menu-hd">Switch rep</div>
+                  <ul className="setter-list">
+                    {setters.length === 0 ? (
+                      <li style={{ padding: '14px', fontSize: 12, color: 'var(--ink-3)', fontFamily: 'var(--mono)' }}>
+                        No reps yet. Click "Manage reps" to add one.
+                      </li>
+                    ) : (
+                      setters.map(s => (
+                        <li key={s.id} className={'setter-item' + (s.id === activeSetter?.id ? ' active' : '')}>
+                          <button className="setter-btn" onClick={() => { onSelectSetter(s.id); setMenuOpen(false); }}>
+                            <span className="avatar">{s.name.slice(0,1).toUpperCase()}</span>
+                            <div style={{ minWidth: 0 }}>
+                              <span className="setter-name">{s.name}</span>
+                              <span className="setter-code-mini">code: {s.access_code}</span>
+                            </div>
+                          </button>
+                        </li>
+                      ))
+                    )}
+                  </ul>
+                </div>
+              )}
+            </div>
+
+            <button className="btn ghost" onClick={() => setManageOpen(true)} style={{ height: 34 }}>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 113 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>
+              Manage reps
+            </button>
+          </>
+        )}
+
+        <button className="theme-toggle" onClick={onToggleTheme} title="Toggle theme">
+          {theme === 'dark' ? (
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+          ) : (
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+          )}
+        </button>
+
+        <button className="btn ghost" onClick={onSignOut} title="Sign out" style={{ height: 34 }}>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+          Sign out
+        </button>
+      </div>
+
+      {manageOpen && (
+        <ManageRepsModal
+          setters={setters}
+          activeId={activeSetter?.id}
+          onAdd={onAddSetter}
+          onRename={onRenameSetter}
+          onChangeCode={onChangeCode}
+          onRemove={onRemoveSetter}
+          onClose={() => setManageOpen(false)}
+        />
+      )}
+    </header>
+  );
+}
+
+// ============== MANAGE REPS MODAL ==============
+function ManageRepsModal({ setters, activeId, onAdd, onRename, onChangeCode, onRemove, onClose }) {
+  const [name, setName] = useState('');
+  const [code, setCode] = useState('');
+  const [busy, setBusy] = useState(false);
+
+  const submit = async (e) => {
+    e?.preventDefault?.();
+    if (!name.trim() || !code.trim() || busy) return;
+    setBusy(true);
+    const ok = await onAdd(name.trim(), code.trim());
+    setBusy(false);
+    if (ok) { setName(''); setCode(''); }
+  };
+
+  return ReactDOM.createPortal(
+    <div className="modal-backdrop" onClick={onClose}>
+      <div className="modal" onClick={e => e.stopPropagation()} style={{ width: 580 }}>
+        <div className="modal-head">
+          <h2>Manage sales reps</h2>
+          <button className="icon-btn" onClick={onClose}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+          </button>
+        </div>
+
+        <div className="modal-body">
+          <section className="manage-section">
+            <h3 className="manage-section-title">Existing reps · {setters.length}</h3>
+            <div className="rep-list">
+              {setters.length === 0 ? (
+                <div className="rep-list-empty">No reps yet — add your first one below.</div>
+              ) : (
+                setters.map(s => (
+                  <RepRow
+                    key={s.id}
+                    setter={s}
+                    active={s.id === activeId}
+                    onRename={(n) => onRename(s.id, n)}
+                    onChangeCode={(c) => onChangeCode(s.id, c)}
+                    onRemove={() => onRemove(s.id)}
+                  />
+                ))
+              )}
+            </div>
+            {setters.length > 0 && (
+              <p className="manage-hint">Click a name or code to edit it inline.</p>
+            )}
+          </section>
+
+          <section className="manage-section">
+            <h3 className="manage-section-title">Add a new rep</h3>
+            <form onSubmit={submit} className="rep-add-form">
+              <Field label="Name">
+                <input
+                  autoFocus
+                  type="text"
+                  value={name}
+                  onChange={e => setName(e.target.value)}
+                  placeholder="Marcus Reed"
+                />
+              </Field>
+              <Field label="Access code">
+                <input
+                  type="text"
+                  value={code}
+                  onChange={e => setCode(e.target.value)}
+                  placeholder="marcus2026"
+                />
+              </Field>
+              <div className="rep-add-foot">
+                <span className="manage-hint">The rep types this on the deal tracker page.</span>
+                <button
+                  type="submit"
+                  className="btn primary"
+                  disabled={!name.trim() || !code.trim() || busy}
+                >
+                  {busy ? 'Adding…' : '+ Add sales rep'}
+                </button>
+              </div>
+            </form>
+          </section>
+        </div>
+
+        <div className="modal-foot">
+          <button className="btn ghost" onClick={onClose}>Done</button>
+        </div>
+      </div>
+    </div>,
+    document.body
+  );
+}
+
+function RepRow({ setter, active, onRename, onChangeCode, onRemove }) {
+  const [editingName, setEditingName] = useState(false);
+  const [editingCode, setEditingCode] = useState(false);
+  const [name, setName] = useState(setter.name);
+  const [code, setCode] = useState(setter.access_code);
+
+  useEffect(() => { setName(setter.name); }, [setter.name]);
+  useEffect(() => { setCode(setter.access_code); }, [setter.access_code]);
+
+  const submitName = async () => {
+    if (name.trim() && name.trim() !== setter.name) await onRename(name.trim());
+    else setName(setter.name);
+    setEditingName(false);
+  };
+  const submitCode = async () => {
+    if (code.trim() && code.trim() !== setter.access_code) await onChangeCode(code.trim());
+    else setCode(setter.access_code);
+    setEditingCode(false);
+  };
+
+  return (
+    <div className={'rep-row' + (active ? ' active' : '')}>
+      <span className="avatar">{setter.name.slice(0,1).toUpperCase()}</span>
+      <div className="rep-row-body">
+        {editingName ? (
+          <input
+            autoFocus
+            className="rep-row-input"
+            value={name}
+            onChange={e => setName(e.target.value)}
+            onBlur={submitName}
+            onKeyDown={e => {
+              if (e.key === 'Enter') submitName();
+              if (e.key === 'Escape') { setName(setter.name); setEditingName(false); }
+            }}
+          />
+        ) : (
+          <button className="rep-row-name" onClick={() => setEditingName(true)} title="Click to rename">
+            {setter.name}
+          </button>
+        )}
+        {editingCode ? (
+          <input
+            autoFocus
+            className="rep-row-input mono"
+            value={code}
+            onChange={e => setCode(e.target.value)}
+            onBlur={submitCode}
+            onKeyDown={e => {
+              if (e.key === 'Enter') submitCode();
+              if (e.key === 'Escape') { setCode(setter.access_code); setEditingCode(false); }
+            }}
+          />
+        ) : (
+          <button className="rep-row-code" onClick={() => setEditingCode(true)} title="Click to change access code">
+            code: <span className="mono">{setter.access_code}</span>
+          </button>
+        )}
+      </div>
+      <button
+        className="icon-btn danger"
+        title="Remove rep"
+        onClick={() => { if (confirm('Remove ' + setter.name + ' and all their deals? This cannot be undone.')) onRemove(); }}
+      >
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 6h18"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+      </button>
+    </div>
+  );
+}
+
+// ============== DASHBOARD ==============
+function Dashboard({ isAdmin, setter, deals, loading, onAddDeal, onUpdateDeal, onRemoveDeal }) {
+  const [filterStatus, setFilterStatus] = useState('all');
+  const [showForm, setShowForm] = useState(false);
+  const [editingDeal, setEditingDeal] = useState(null);
+
+  const stats = useMemo(() => {
+    let pipeline = 0, paidOut = 0, chargeback = 0;
+    let issuedTotal = 0;
+    const counts = { uw_submitted: 0, approved: 0, issued: 0, pending_lapse: 0, chargeback: 0, paid: 0, pipeline: 0 };
+
+    for (const d of deals) {
+      counts[d.status] = (counts[d.status] || 0) + 1;
+      const com = Number(d.commission) || 0;
+      const cb = !!d.chargeback && !!d.paid;
+
+      if (cb) { counts.chargeback++; chargeback += com; }
+      if (d.paid) { paidOut += com; if (!cb) counts.paid++; }
+      if (!d.paid && !cb) { pipeline += com; counts.pipeline++; }
+      if (d.status === 'issued' || d.status === 'pending_lapse') issuedTotal += com;
+    }
+    // Net earned = commissions on Issued/Pending Lapse minus all chargebacks.
+    const netEarned = issuedTotal - chargeback;
+    return { pipeline, paidOut, chargeback, netEarned, counts };
+  }, [deals]);
+
+  const filtered = useMemo(() => {
+    let list = deals;
+    if (filterStatus === 'chargeback') list = list.filter(d => d.chargeback && d.paid);
+    else if (filterStatus === 'paid') list = list.filter(d => d.paid && !d.chargeback);
+    else if (filterStatus === 'pipeline') list = list.filter(d => !d.paid && !d.chargeback);
+    else if (filterStatus !== 'all') list = list.filter(d => d.status === filterStatus);
+    return [...list].sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+  }, [deals, filterStatus]);
+
+  return (
+    <main className="main">
+      <section className="topbar">
+        <div>
+          <div className="eyebrow">Dashboard</div>
+          <h1 className="title">{setter?.name || (isAdmin ? 'Add a sales rep to start' : '—')}</h1>
+          {!isAdmin && <div className="title-sub">View only — contact your manager to update</div>}
+        </div>
+        {isAdmin && setter && (
+          <button className="btn primary" onClick={() => { setEditingDeal(null); setShowForm(true); }}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 5v14M5 12h14"/></svg>
+            New deal
+          </button>
+        )}
+      </section>
+
+      <section className="kpi-grid">
+        <KpiCell label="Pipeline" value={fmt(stats.pipeline)} sub={stats.counts.pipeline + ' awaiting payout'} swatch="var(--rb-yellow)" />
+        <KpiCell label="Paid out" value={fmt(stats.paidOut)} sub={stats.counts.paid + ' deals paid'} swatch="var(--rb-blue)" />
+        <KpiCell label="Chargebacks" value={fmt(stats.chargeback)} sub={stats.counts.chargeback + ' owed back'} swatch="var(--rb-red)" tone="neg" />
+        <KpiCell label="Net earned" value={fmt(stats.netEarned)} sub="Issued − chargebacks" swatch="var(--rb-green)" tone="pos" featured />
+      </section>
+
+      <section className="deals-section">
+        {loading ? (
+          <div className="loading-bar" />
+        ) : (
+          <>
+            <div className="filter-row">
+              <FilterChip active={filterStatus === 'all'} onClick={() => setFilterStatus('all')} count={deals.length}>All</FilterChip>
+              {STATUSES.map(s => (
+                <FilterChip key={s.id} active={filterStatus === s.id} onClick={() => setFilterStatus(s.id)} count={stats.counts[s.id] || 0} dot={s.color}>
+                  {s.short}
+                </FilterChip>
+              ))}
+              <span className="filter-sep"></span>
+              <FilterChip active={filterStatus === 'pipeline'} onClick={() => setFilterStatus('pipeline')} count={stats.counts.pipeline} dot="var(--rb-yellow)">Pipeline</FilterChip>
+              <FilterChip active={filterStatus === 'paid'} onClick={() => setFilterStatus('paid')} count={stats.counts.paid} dot="var(--rb-blue)">Paid</FilterChip>
+              <FilterChip active={filterStatus === 'chargeback'} onClick={() => setFilterStatus('chargeback')} count={stats.counts.chargeback} dot="var(--rb-red)">Chargeback</FilterChip>
+            </div>
+
+            {filtered.length === 0 ? (
+              <EmptyState isAdmin={isAdmin} hasSetter={!!setter} onAdd={() => { setEditingDeal(null); setShowForm(true); }} />
+            ) : (
+              <div className="card table-card">
+                <table className="deals-table">
+                  <thead>
+                    <tr>
+                      <th>Client</th>
+                      <th>Date</th>
+                      <th className="num">AP</th>
+                      <th className="num">Commission</th>
+                      <th>Status</th>
+                      <th>Payout</th>
+                      {isAdmin && <th></th>}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filtered.map(d => (
+                      <DealRow
+                        key={d.id}
+                        deal={d}
+                        isAdmin={isAdmin}
+                        onUpdate={(patch) => onUpdateDeal(d.id, patch)}
+                        onEdit={() => { setEditingDeal(d); setShowForm(true); }}
+                        onRemove={() => { if (confirm('Delete deal for ' + d.client + '?')) onRemoveDeal(d.id); }}
+                      />
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </>
+        )}
+      </section>
+
+      {showForm && (
+        <DealFormModal
+          deal={editingDeal}
+          onClose={() => { setShowForm(false); setEditingDeal(null); }}
+          onSave={(d) => {
+            if (editingDeal) onUpdateDeal(editingDeal.id, d);
+            else onAddDeal(d);
+            setShowForm(false);
+            setEditingDeal(null);
+          }}
+        />
+      )}
+    </main>
+  );
+}
+
+// ============== KPI CELL ==============
+function KpiCell({ label, value, sub, swatch, tone, featured }) {
+  return (
+    <div className={'kpi-cell' + (featured ? ' featured' : '') + (tone ? ' tone-' + tone : '')}>
+      <div className="kpi-lbl">
+        <span className="swatch" style={{ background: swatch }}></span>
+        {label}
+      </div>
+      <div className="kpi-val">{value}</div>
+      <div className="kpi-sub">{sub}</div>
+    </div>
+  );
+}
+
+// ============== FILTER CHIP ==============
+function FilterChip({ active, onClick, count, dot, children }) {
+  return (
+    <button className={'chip' + (active ? ' on' : '')} onClick={onClick}>
+      {dot && <span className="chip-dot" style={{ background: dot }}></span>}
+      <span>{children}</span>
+      <span className="chip-count">{count}</span>
+    </button>
+  );
+}
+
+// ============== DEAL ROW ==============
+function DealRow({ deal, isAdmin, onUpdate, onEdit, onRemove }) {
+  const meta = statusMeta(deal.status);
+  const [statusOpen, setStatusOpen] = useState(false);
+  const [menuPos, setMenuPos] = useState({ top: 0, left: 0 });
+  const triggerRef = useRef(null);
+
+  const openMenu = () => {
+    if (!isAdmin) return;
+    if (statusOpen) { setStatusOpen(false); return; }
+    if (triggerRef.current) {
+      const r = triggerRef.current.getBoundingClientRect();
+      setMenuPos({ top: r.bottom + 4, left: r.left });
+    }
+    setStatusOpen(true);
+  };
+
+  useEffect(() => {
+    if (!statusOpen) return;
+    const onKey = (e) => { if (e.key === 'Escape') setStatusOpen(false); };
+    const onScrollOrResize = () => setStatusOpen(false);
+    const onClick = (e) => {
+      if (e.target.closest && (e.target.closest('.status-menu') || e.target.closest('.status-pill'))) return;
+      setStatusOpen(false);
+    };
+    document.addEventListener('keydown', onKey);
+    window.addEventListener('scroll', onScrollOrResize, true);
+    window.addEventListener('resize', onScrollOrResize);
+    const t = setTimeout(() => document.addEventListener('click', onClick), 0);
+    return () => {
+      clearTimeout(t);
+      document.removeEventListener('keydown', onKey);
+      document.removeEventListener('click', onClick);
+      window.removeEventListener('scroll', onScrollOrResize, true);
+      window.removeEventListener('resize', onScrollOrResize);
+    };
+  }, [statusOpen]);
+
+  const togglePaid = () => {
+    if (!isAdmin) return;
+    onUpdate({ paid: !deal.paid, chargeback: !deal.paid ? deal.chargeback : false });
+  };
+  const toggleCB = () => {
+    if (!isAdmin) return;
+    if (!deal.paid || !canChargeback(deal.status)) return;
+    onUpdate({ chargeback: !deal.chargeback });
+  };
+
+  return (
+    <tr className={(deal.chargeback && deal.paid) ? 'cb-row' : (deal.paid ? 'paid-row' : '')}>
+      <td>
+        <div className="client-cell">
+          <span className="avatar">{deal.client.slice(0,1).toUpperCase()}</span>
+          <span className="client-name">{deal.client}</span>
+        </div>
+      </td>
+      <td className="muted mono">{fmtDate(deal.date)}</td>
+      <td className="num strong">{fmt(deal.ap)}</td>
+      <td className="num">
+        <InlineMoney
+          value={deal.commission || 0}
+          editable={isAdmin}
+          onChange={(v) => onUpdate({ commission: v })}
+        />
+      </td>
+      <td>
+        <div className="status-cell">
+          <button
+            ref={triggerRef}
+            className="status-pill"
+            style={{ '--c': meta.color }}
+            onClick={openMenu}
+            disabled={!isAdmin}
+          >
+            <span className="pill-dot" style={{ background: meta.color }}></span>
+            {meta.short}
+            {isAdmin && <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M6 9l6 6 6-6"/></svg>}
+          </button>
+          {statusOpen && ReactDOM.createPortal(
+            <div className="status-menu" style={{ position: 'fixed', top: menuPos.top, left: menuPos.left }}>
+              {STATUSES.map(s => (
+                <button
+                  key={s.id}
+                  className={'status-option' + (s.id === deal.status ? ' selected' : '')}
+                  onClick={() => {
+                    onUpdate({ status: s.id });
+                    setStatusOpen(false);
+                  }}
+                >
+                  <span className="pill-dot" style={{ background: s.color }}></span>
+                  {s.label}
+                </button>
+              ))}
+            </div>,
+            document.body
+          )}
+        </div>
+      </td>
+      <td>
+        <div className="payout-cell">
+          <button
+            className={'toggle-pill paid' + (deal.paid ? ' on' : '')}
+            onClick={togglePaid}
+            disabled={!isAdmin}
+            title={deal.paid ? 'Marked paid' : 'Not yet paid'}
+          >
+            {deal.paid ? (
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M5 12l5 5L20 7"/></svg>
+            ) : <span className="dot-empty"></span>}
+            Paid
+          </button>
+          <button
+            className={'toggle-pill cb' + (deal.chargeback && deal.paid ? ' on' : '')}
+            onClick={toggleCB}
+            disabled={!isAdmin || !deal.paid}
+            title={
+              !isAdmin ? 'View only' :
+              !deal.paid ? 'Mark Paid first — chargebacks only apply to deals already paid' :
+              deal.chargeback ? 'Click to clear chargeback' : 'Click to mark as chargeback (owed back)'
+            }
+          >
+            <span className={'cb-pulse' + (deal.chargeback && deal.paid ? ' active' : '')}></span>
+            Chargeback
+          </button>
+        </div>
+      </td>
+      {isAdmin && (
+        <td className="row-actions">
+          <button className="icon-btn" title="Edit" onClick={onEdit}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 113 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>
+          </button>
+          <button className="icon-btn danger" title="Delete" onClick={onRemove}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 6h18"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+          </button>
+        </td>
+      )}
+    </tr>
+  );
+}
+
+// ============== INLINE MONEY ==============
+function InlineMoney({ value, editable, onChange }) {
+  const [editing, setEditing] = useState(false);
+  const [v, setV] = useState(String(value));
+  useEffect(() => { setV(String(value)); }, [value]);
+
+  if (!editing) {
+    return (
+      <button
+        className={'inline-money' + (value > 0 ? ' has-value' : '')}
+        onClick={() => editable && setEditing(true)}
+        disabled={!editable}
+      >
+        {value > 0 ? fmt(value) : <span className="muted">{editable ? '+ add' : '—'}</span>}
+      </button>
+    );
+  }
+  const commit = () => {
+    const n = parseFloat(v);
+    onChange(isFinite(n) && n >= 0 ? n : 0);
+    setEditing(false);
+  };
+  return (
+    <div className="inline-money-edit">
+      <span className="dollar">$</span>
+      <input
+        autoFocus
+        type="number"
+        step="0.01"
+        value={v}
+        onChange={e => setV(e.target.value)}
+        onBlur={commit}
+        onKeyDown={e => {
+          if (e.key === 'Enter') commit();
+          if (e.key === 'Escape') { setV(String(value)); setEditing(false); }
+        }}
+      />
+    </div>
+  );
+}
+
+// ============== DEAL FORM ==============
+function DealFormModal({ deal, onClose, onSave }) {
+  const [form, setForm] = useState({
+    client: deal?.client || '',
+    ap: deal?.ap ?? '',
+    commission: deal?.commission ?? '',
+    date: deal?.date || todayISO(),
+    status: deal?.status || 'uw_submitted',
+    paid: deal?.paid || false,
+    chargeback: deal?.chargeback || false,
+  });
+
+  const valid = form.client.trim() && Number(form.ap) > 0 && form.date;
+
+  const submit = () => {
+    if (!valid) return;
+    onSave({
+      client: form.client.trim(),
+      ap: Number(form.ap),
+      commission: Number(form.commission) || 0,
+      date: form.date,
+      status: form.status,
+      paid: !!form.paid,
+      chargeback: form.paid && canChargeback(form.status) ? !!form.chargeback : false,
+    });
+  };
+
+  return ReactDOM.createPortal(
+    <div className="modal-backdrop" onClick={onClose}>
+      <div className="modal" onClick={e => e.stopPropagation()}>
+        <div className="modal-head">
+          <h2>{deal ? 'Edit deal' : 'New deal'}</h2>
+          <button className="icon-btn" onClick={onClose}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+          </button>
+        </div>
+
+        <div className="modal-body">
+          <Field label="Client name">
+            <input
+              autoFocus
+              value={form.client}
+              onChange={e => setForm(f => ({ ...f, client: e.target.value }))}
+              placeholder="Jane Smith"
+            />
+          </Field>
+
+          <div className="row-2">
+            <Field label="AP (annual premium)">
+              <div className="money-input">
+                <span>$</span>
+                <input type="number" step="0.01" value={form.ap}
+                  onChange={e => setForm(f => ({ ...f, ap: e.target.value }))}
+                  placeholder="0.00" />
+              </div>
+            </Field>
+            <Field label="Commission">
+              <div className="money-input">
+                <span>$</span>
+                <input type="number" step="0.01" value={form.commission}
+                  onChange={e => setForm(f => ({ ...f, commission: e.target.value }))}
+                  placeholder="0.00" />
+              </div>
+            </Field>
+          </div>
+
+          <Field label="Date entered">
+            <input type="date" value={form.date}
+              onChange={e => setForm(f => ({ ...f, date: e.target.value }))} />
+          </Field>
+
+          <Field label="Status">
+            <div className="status-grid">
+              {STATUSES.map(s => (
+                <button
+                  key={s.id}
+                  type="button"
+                  className={'status-card' + (form.status === s.id ? ' selected' : '')}
+                  style={form.status === s.id ? { borderColor: s.color, background: 'color-mix(in oklch, ' + s.color + ' 12%, transparent)' } : {}}
+                  onClick={() => setForm(f => ({
+                    ...f, status: s.id,
+                    chargeback: canChargeback(s.id) ? f.chargeback : false,
+                  }))}
+                >
+                  <span className="pill-dot" style={{ background: s.color }}></span>
+                  <span>{s.label}</span>
+                </button>
+              ))}
+            </div>
+          </Field>
+
+          <Field label="Payout">
+            <div className="payout-grid">
+              <label className={'switch-row paid' + (form.paid ? ' active' : '')}>
+                <input type="checkbox" checked={form.paid}
+                  onChange={e => setForm(f => ({ ...f, paid: e.target.checked, chargeback: e.target.checked ? f.chargeback : false }))} />
+                <span className="switch"></span>
+                <span className="switch-label">
+                  <strong>Paid to setter</strong>
+                  <span className="hint-sm">{form.paid ? 'Counts toward Paid out total' : 'Counts toward Pipeline'}</span>
+                </span>
+              </label>
+
+              <label className={'switch-row cb' + (!form.paid || !canChargeback(form.status) ? ' disabled' : '') + (form.chargeback && form.paid && canChargeback(form.status) ? ' active' : '')}>
+                <input type="checkbox"
+                  disabled={!form.paid || !canChargeback(form.status)}
+                  checked={form.chargeback && form.paid && canChargeback(form.status)}
+                  onChange={e => setForm(f => ({ ...f, chargeback: e.target.checked }))} />
+                <span className="switch"></span>
+                <span className="switch-label">
+                  <strong>Chargeback</strong>
+                  <span className="hint-sm">
+                    {!form.paid ? 'Available after marking paid' :
+                      !canChargeback(form.status) ? 'Available on Issued or Pending Lapse' :
+                      form.chargeback ? 'Owed back to you' : 'No chargeback'}
+                  </span>
+                </span>
+              </label>
+            </div>
+          </Field>
+        </div>
+
+        <div className="modal-foot">
+          <button className="btn ghost" onClick={onClose}>Cancel</button>
+          <button className="btn primary" disabled={!valid} onClick={submit}>
+            {deal ? 'Save changes' : 'Add deal'}
+          </button>
+        </div>
+      </div>
+    </div>,
+    document.body
+  );
+}
+
+function Field({ label, hint, children }) {
+  return (
+    <label className="field">
+      <span className="field-label">{label}</span>
+      {children}
+      {hint && <span className="field-hint">{hint}</span>}
+    </label>
+  );
+}
+
+// ============== EMPTY STATE ==============
+function EmptyState({ isAdmin, hasSetter, onAdd }) {
+  if (isAdmin && !hasSetter) {
+    return (
+      <div className="card empty">
+        <div className="empty-mark">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a4 4 0 014-4h8a4 4 0 014 4v2"/></svg>
+        </div>
+        <div className="empty-title">No sales reps yet</div>
+        <div className="empty-sub">Open the rep menu in the header to add your first one.</div>
+      </div>
+    );
+  }
+  return (
+    <div className="card empty">
+      <div className="empty-mark">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M8 4v4M16 4v4"/></svg>
+      </div>
+      <div className="empty-title">No deals match this filter</div>
+      <div className="empty-sub">{isAdmin ? 'Add a new deal or change the filter above.' : 'No deals here yet.'}</div>
+      {isAdmin && <button className="btn primary" onClick={onAdd}>+ New deal</button>}
+    </div>
+  );
+}
+
+// ============== TOAST ==============
+function Toast({ t }) {
+  if (!t) return null;
+  return <div className={'toast' + (t.err ? ' err' : '')}>{t.msg}</div>;
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
