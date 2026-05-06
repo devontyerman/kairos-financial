@@ -2119,7 +2119,7 @@ function Dashboard({ isAdmin, setter, deals, loading, onAddDeal, onUpdateDeal, o
       </section>
 
       <section className="kpi-grid">
-        <KpiCell label="Pipeline" value={fmt(stats.pipeline)} sub={stats.counts.pipeline + ' awaiting payout'} swatch="var(--rb-yellow)" />
+        <KpiCell label="Pipeline" value={fmt(stats.pipeline)} sub={stats.counts.pipeline + ' awaiting payout'} swatch="var(--rb-green)" tone="pos" />
         <KpiCell label="Paid out" value={fmt(stats.paidOut)} sub={stats.counts.paid + ' deals paid'} swatch="var(--rb-blue)" />
         <KpiCell label="Chargebacks" value={fmt(stats.chargeback)} sub={stats.counts.chargeback + ' owed back'} swatch="var(--rb-red)" tone="neg" />
         <KpiCell label="Net earned" value={fmt(stats.netEarned)} sub="Issued − chargebacks" swatch="var(--rb-green)" tone="pos" featured />
