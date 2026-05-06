@@ -87,8 +87,8 @@ body {
   font-feature-settings: "ss01", "cv11";
   min-height: 100vh;
   background-image:
-    radial-gradient(1100px 600px at 90% -10%, color-mix(in oklch, var(--rb-blue) 8%, transparent), transparent 60%),
-    radial-gradient(900px 500px at -10% 110%, color-mix(in oklch, var(--rb-purple) 7%, transparent), transparent 60%);
+    radial-gradient(1100px 600px at 90% -10%, color-mix(in srgb, var(--rb-blue) 8%, transparent), transparent 60%),
+    radial-gradient(900px 500px at -10% 110%, color-mix(in srgb, var(--rb-purple) 7%, transparent), transparent 60%);
 }
 
 button { font-family: inherit; cursor: pointer; }
@@ -165,7 +165,7 @@ input, select { font-family: inherit; font-size: inherit; color: var(--ink-1); }
 }
 .gate-input:focus {
   border-color: var(--rb-blue);
-  box-shadow: 0 0 0 3px color-mix(in oklch, var(--rb-blue) 18%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--rb-blue) 18%, transparent);
 }
 .gate-btn {
   width: 100%;
@@ -180,8 +180,8 @@ input, select { font-family: inherit; font-size: inherit; color: var(--ink-1); }
 .gate-error {
   margin-top: 10px;
   padding: 9px 11px;
-  background: color-mix(in oklch, var(--neg) 10%, transparent);
-  border: 1px solid color-mix(in oklch, var(--neg) 30%, transparent);
+  background: color-mix(in srgb, var(--neg) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--neg) 30%, transparent);
   border-radius: 7px;
   color: var(--neg);
   font-size: 12px;
@@ -257,8 +257,8 @@ input, select { font-family: inherit; font-size: inherit; color: var(--ink-1); }
   color: var(--ink-2);
   height: 34px;
 }
-.role-badge.admin { color: var(--rb-purple); border-color: color-mix(in oklch, var(--rb-purple) 35%, transparent); }
-.role-badge.rep { color: var(--rb-blue); border-color: color-mix(in oklch, var(--rb-blue) 35%, transparent); }
+.role-badge.admin { color: var(--rb-purple); border-color: color-mix(in srgb, var(--rb-purple) 35%, transparent); }
+.role-badge.rep { color: var(--rb-blue); border-color: color-mix(in srgb, var(--rb-blue) 35%, transparent); }
 .role-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
 
 /* Setter picker (admin only) */
@@ -315,7 +315,7 @@ input, select { font-family: inherit; font-size: inherit; color: var(--ink-1); }
 }
 .setter-item:hover { background: var(--surface-2); }
 .setter-item:hover .setter-actions { opacity: 1; }
-.setter-item.active { background: color-mix(in oklch, var(--rb-blue) 15%, transparent); }
+.setter-item.active { background: color-mix(in srgb, var(--rb-blue) 15%, transparent); }
 .setter-item.active .setter-actions { opacity: 1; }
 
 .setter-btn {
@@ -400,7 +400,7 @@ input, select { font-family: inherit; font-size: inherit; color: var(--ink-1); }
 }
 .inline-input:focus {
   border-color: var(--rb-blue);
-  box-shadow: 0 0 0 3px color-mix(in oklch, var(--rb-blue) 18%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--rb-blue) 18%, transparent);
 }
 
 /* ─── Main / topbar ─── */
@@ -466,7 +466,7 @@ input, select { font-family: inherit; font-size: inherit; color: var(--ink-1); }
   transition: all 0.15s;
 }
 .icon-btn:hover { background: var(--surface-2); color: var(--ink-1); border-color: var(--hairline-strong); }
-.icon-btn.danger:hover { color: var(--neg); border-color: color-mix(in oklch, var(--neg) 40%, transparent); background: color-mix(in oklch, var(--neg) 12%, transparent); }
+.icon-btn.danger:hover { color: var(--neg); border-color: color-mix(in srgb, var(--neg) 40%, transparent); background: color-mix(in srgb, var(--neg) 12%, transparent); }
 
 /* ─── Cards & KPIs ─── */
 .card {
@@ -533,7 +533,7 @@ input, select { font-family: inherit; font-size: inherit; color: var(--ink-1); }
 }
 .search-input:focus {
   border-color: var(--rb-blue);
-  box-shadow: 0 0 0 3px color-mix(in oklch, var(--rb-blue) 18%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--rb-blue) 18%, transparent);
 }
 .search-input::placeholder { color: var(--ink-4); }
 .search-clear {
@@ -564,7 +564,7 @@ input, select { font-family: inherit; font-size: inherit; color: var(--ink-1); }
 .date-filter-select:hover { border-color: var(--ink-3); }
 .date-filter-select:focus {
   border-color: var(--rb-blue);
-  box-shadow: 0 0 0 3px color-mix(in oklch, var(--rb-blue) 18%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--rb-blue) 18%, transparent);
 }
 
 .filter-row {
@@ -606,7 +606,7 @@ th .sort-btn { font-family: var(--mono); font-size: 10px; font-weight: 500; colo
   color: var(--ink-2);
 }
 .more-item:hover { background: var(--surface-2); color: var(--ink-1); }
-.more-item.danger:hover { background: color-mix(in oklch, var(--neg) 12%, transparent); color: var(--neg); }
+.more-item.danger:hover { background: color-mix(in srgb, var(--neg) 12%, transparent); color: var(--neg); }
 
 /* Carrier select in form modal */
 .carrier-select {
@@ -628,7 +628,7 @@ th .sort-btn { font-family: var(--mono); font-size: 10px; font-weight: 500; colo
 }
 .carrier-select:focus {
   border-color: var(--rb-blue);
-  box-shadow: 0 0 0 3px color-mix(in oklch, var(--rb-blue) 18%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--rb-blue) 18%, transparent);
 }
 .carrier-add-row { display: flex; gap: 8px; align-items: stretch; }
 .carrier-add-row input { flex: 1; }
@@ -646,7 +646,7 @@ th .sort-btn { font-family: var(--mono); font-size: 10px; font-weight: 500; colo
 }
 .chip:hover { border-color: var(--hairline-strong); color: var(--ink-1); }
 .chip.on { background: var(--ink-1); color: var(--bg); border-color: var(--ink-1); }
-.chip.on .chip-count { background: color-mix(in oklch, var(--bg) 20%, transparent); color: var(--bg); }
+.chip.on .chip-count { background: color-mix(in srgb, var(--bg) 20%, transparent); color: var(--bg); }
 
 .chip-dot { width: 7px; height: 7px; border-radius: 50%; }
 .chip-count {
@@ -684,25 +684,20 @@ th .sort-btn { font-family: var(--mono); font-size: 10px; font-weight: 500; colo
 .deals-table td:first-child { padding-left: 22px; }
 .deals-table td:last-child { padding-right: 22px; }
 .deals-table tr:last-child td { border-bottom: none; }
-.deals-table tr:hover td { background: var(--surface-2); }
 .deals-table .num { text-align: right; font-family: var(--mono); font-variant-numeric: tabular-nums; }
 .deals-table th.num { text-align: right; }
 .deals-table .strong { color: var(--ink-1); font-weight: 500; }
 .deals-table .muted { color: var(--ink-3); }
 
 /* Chargeback: dark, muted grey — reads as "closed / written off" */
-.cb-row td { background: color-mix(in oklch, oklch(0.45 0 0) 22%, transparent); }
-.cb-row:hover td { background: color-mix(in oklch, oklch(0.45 0 0) 32%, var(--surface-2)); }
+.cb-row td { background: color-mix(in srgb, oklch(0.45 0 0) 22%, transparent); }
 .cb-row .client-name { color: var(--ink-2); }
 
-.paid-row td { background: color-mix(in oklch, var(--rb-blue) 5%, transparent); }
-.paid-row:hover td { background: color-mix(in oklch, var(--rb-blue) 10%, var(--surface-2)); }
-.issued-row td { background: color-mix(in oklch, var(--rb-green) 8%, transparent); }
-.issued-row:hover td { background: color-mix(in oklch, var(--rb-green) 14%, var(--surface-2)); }
+.paid-row td { background: color-mix(in srgb, var(--rb-blue) 5%, transparent); }
+.issued-row td { background: color-mix(in srgb, var(--rb-green) 8%, transparent); }
 
 /* Pending Lapse: solid red highlight — these need attention */
-.lapse-row td { background: color-mix(in oklch, var(--rb-red) 8%, transparent); }
-.lapse-row:hover td { background: color-mix(in oklch, var(--rb-red) 14%, var(--surface-2)); }
+.lapse-row td { background: color-mix(in srgb, var(--rb-red) 8%, transparent); }
 
 .client-cell { display: flex; align-items: center; gap: 10px; }
 .client-name { font-weight: 500; color: var(--ink-1); }
@@ -714,15 +709,15 @@ th .sort-btn { font-family: var(--mono); font-size: 10px; font-weight: 500; colo
 }
 .status-pill {
   display: inline-flex; align-items: center; gap: 6px;
-  border: 1px solid color-mix(in oklch, var(--c) 35%, transparent);
-  background: color-mix(in oklch, var(--c) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--c) 35%, transparent);
+  background: color-mix(in srgb, var(--c) 14%, transparent);
   color: var(--ink-1);
   padding: 4px 9px;
   border-radius: 99px;
   font-size: 11.5px; font-weight: 500;
   transition: all 0.15s;
 }
-.status-pill:hover:not(:disabled) { background: color-mix(in oklch, var(--c) 22%, transparent); }
+.status-pill:hover:not(:disabled) { background: color-mix(in srgb, var(--c) 22%, transparent); }
 .status-pill:disabled { cursor: default; }
 .pill-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
 
@@ -746,7 +741,7 @@ th .sort-btn { font-family: var(--mono); font-size: 10px; font-weight: 500; colo
   color: var(--ink-2);
 }
 .status-option:hover { background: var(--surface-2); color: var(--ink-1); }
-.status-option.selected { background: color-mix(in oklch, var(--rb-blue) 15%, transparent); color: var(--ink-1); font-weight: 500; }
+.status-option.selected { background: color-mix(in srgb, var(--rb-blue) 15%, transparent); color: var(--ink-1); font-weight: 500; }
 
 /* ─── Payout toggles ─── */
 .payout-cell {
@@ -770,16 +765,16 @@ th .sort-btn { font-family: var(--mono); font-size: 10px; font-weight: 500; colo
   opacity: 0.5;
 }
 .toggle-pill.paid.on {
-  background: color-mix(in oklch, var(--rb-blue) 18%, transparent);
+  background: color-mix(in srgb, var(--rb-blue) 18%, transparent);
   color: var(--ink-1);
-  border: 1px solid color-mix(in oklch, var(--rb-blue) 50%, transparent);
+  border: 1px solid color-mix(in srgb, var(--rb-blue) 50%, transparent);
 }
 .toggle-pill.paid.on svg { color: var(--rb-blue); }
 .toggle-pill.cb:disabled { opacity: 0.35; cursor: not-allowed; }
 .toggle-pill.cb.on {
-  background: color-mix(in oklch, var(--rb-red) 18%, transparent);
+  background: color-mix(in srgb, var(--rb-red) 18%, transparent);
   color: var(--ink-1);
-  border: 1px solid color-mix(in oklch, var(--rb-red) 50%, transparent);
+  border: 1px solid color-mix(in srgb, var(--rb-red) 50%, transparent);
 }
 .cb-pulse { width: 6px; height: 6px; border-radius: 50%; background: currentColor; opacity: 0.4; }
 .cb-pulse.active { background: var(--neg); opacity: 1; animation: pulse 1.6s ease-in-out infinite; }
@@ -807,7 +802,7 @@ th .sort-btn { font-family: var(--mono); font-size: 10px; font-weight: 500; colo
   border: 1px solid var(--rb-blue);
   border-radius: 5px;
   padding: 0 4px 0 8px;
-  box-shadow: 0 0 0 3px color-mix(in oklch, var(--rb-blue) 18%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--rb-blue) 18%, transparent);
 }
 .inline-money-edit .dollar { color: var(--ink-3); font-family: var(--mono); font-size: 11px; }
 .inline-money-edit input {
@@ -847,7 +842,7 @@ th .sort-btn { font-family: var(--mono); font-size: 10px; font-weight: 500; colo
   outline: none;
   font-size: 12.5px;
   width: 160px;
-  box-shadow: 0 0 0 3px color-mix(in oklch, var(--rb-blue) 18%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--rb-blue) 18%, transparent);
 }
 
 /* ─── Empty / loading ─── */
@@ -959,7 +954,7 @@ th .sort-btn { font-family: var(--mono); font-size: 10px; font-weight: 500; colo
 }
 .field input:focus {
   border-color: var(--rb-blue);
-  box-shadow: 0 0 0 3px color-mix(in oklch, var(--rb-blue) 18%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--rb-blue) 18%, transparent);
 }
 
 .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -973,7 +968,7 @@ th .sort-btn { font-family: var(--mono); font-size: 10px; font-weight: 500; colo
 }
 .money-input:focus-within {
   border-color: var(--rb-blue);
-  box-shadow: 0 0 0 3px color-mix(in oklch, var(--rb-blue) 18%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--rb-blue) 18%, transparent);
 }
 .money-input span { padding: 0 4px 0 12px; color: var(--ink-3); font-family: var(--mono); }
 .money-input input {
@@ -1030,9 +1025,9 @@ th .sort-btn { font-family: var(--mono); font-size: 10px; font-weight: 500; colo
   background: var(--ink-1);
   transition: transform 0.2s;
 }
-.switch-row.paid.active { border-color: color-mix(in oklch, var(--rb-blue) 50%, transparent); background: color-mix(in oklch, var(--rb-blue) 8%, var(--bg)); }
+.switch-row.paid.active { border-color: color-mix(in srgb, var(--rb-blue) 50%, transparent); background: color-mix(in srgb, var(--rb-blue) 8%, var(--bg)); }
 .switch-row.paid input:checked + .switch { background: var(--rb-blue); }
-.switch-row.cb.active { border-color: color-mix(in oklch, var(--rb-red) 50%, transparent); background: color-mix(in oklch, var(--rb-red) 8%, var(--bg)); }
+.switch-row.cb.active { border-color: color-mix(in srgb, var(--rb-red) 50%, transparent); background: color-mix(in srgb, var(--rb-red) 8%, var(--bg)); }
 .switch-row.cb input:checked + .switch { background: var(--rb-red); }
 .switch-row input:checked + .switch::after { transform: translateX(14px); background: white; }
 
@@ -1082,8 +1077,8 @@ th .sort-btn { font-family: var(--mono); font-size: 10px; font-weight: 500; colo
 }
 .rep-row:hover { background: var(--surface-2); border-color: var(--hairline); }
 .rep-row.active {
-  background: color-mix(in oklch, var(--rb-blue) 10%, transparent);
-  border-color: color-mix(in oklch, var(--rb-blue) 28%, transparent);
+  background: color-mix(in srgb, var(--rb-blue) 10%, transparent);
+  border-color: color-mix(in srgb, var(--rb-blue) 28%, transparent);
 }
 .rep-row-body {
   flex: 1; min-width: 0;
@@ -1136,7 +1131,7 @@ th .sort-btn { font-family: var(--mono); font-size: 10px; font-weight: 500; colo
   font-size: 12.5px;
   width: 100%;
   max-width: 240px;
-  box-shadow: 0 0 0 3px color-mix(in oklch, var(--rb-blue) 18%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--rb-blue) 18%, transparent);
 }
 .modal .rep-row-input.mono { font-family: var(--mono); font-size: 12px; }
 
@@ -1164,7 +1159,7 @@ th .sort-btn { font-family: var(--mono); font-size: 10px; font-weight: 500; colo
   z-index: 200;
   animation: toast-in 0.2s;
 }
-.toast.err { border-color: color-mix(in oklch, var(--neg) 40%, transparent); color: var(--neg); }
+.toast.err { border-color: color-mix(in srgb, var(--neg) 40%, transparent); color: var(--neg); }
 @keyframes toast-in { from { opacity: 0; transform: translate(-50%, 8px); } to { opacity: 1; transform: translate(-50%, 0); } }
 
 /* ─── Responsive ─── */
@@ -1282,7 +1277,21 @@ function dateRange(filter) {
     default: return null;
   }
 }
+// Sort priority for status: pending lapse first (most urgent), issued last.
+const STATUS_PRIORITY = { pending_lapse: 0, uw_submitted: 1, approved: 2, issued: 3 };
+
 function compareDeals(a, b, key, dir) {
+  // Status column has a custom workflow ordering, and chargebacks sink to the
+  // bottom regardless of sort direction.
+  if (key === 'status') {
+    const aCB = !!a.chargeback && !!a.paid;
+    const bCB = !!b.chargeback && !!b.paid;
+    if (aCB !== bCB) return aCB ? 1 : -1;
+    const aP = STATUS_PRIORITY[a.status] ?? 99;
+    const bP = STATUS_PRIORITY[b.status] ?? 99;
+    return (aP - bP) * (dir === 'asc' ? 1 : -1);
+  }
+
   const flip = dir === 'asc' ? 1 : -1;
   const av = a[key];
   const bv = b[key];
@@ -2661,7 +2670,7 @@ function DealFormModal({ deal, carriers, onClose, onSave }) {
                   key={s.id}
                   type="button"
                   className={'status-card' + (form.status === s.id ? ' selected' : '')}
-                  style={form.status === s.id ? { borderColor: s.color, background: 'color-mix(in oklch, ' + s.color + ' 12%, transparent)' } : {}}
+                  style={form.status === s.id ? { borderColor: s.color, background: 'color-mix(in srgb, ' + s.color + ' 12%, transparent)' } : {}}
                   onClick={() => setForm(f => ({
                     ...f, status: s.id,
                     chargeback: canChargeback(s.id) ? f.chargeback : false,
