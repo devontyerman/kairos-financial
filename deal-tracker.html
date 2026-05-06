@@ -690,29 +690,19 @@ th .sort-btn { font-family: var(--mono); font-size: 10px; font-weight: 500; colo
 .deals-table .strong { color: var(--ink-1); font-weight: 500; }
 .deals-table .muted { color: var(--ink-3); }
 
-.cb-row td { background: color-mix(in oklch, var(--rb-red) 8%, transparent); }
-.cb-row:hover td { background: color-mix(in oklch, var(--rb-red) 14%, var(--surface-2)); }
+/* Chargeback: dark, muted grey — reads as "closed / written off" */
+.cb-row td { background: color-mix(in oklch, oklch(0.45 0 0) 22%, transparent); }
+.cb-row:hover td { background: color-mix(in oklch, oklch(0.45 0 0) 32%, var(--surface-2)); }
+.cb-row .client-name { color: var(--ink-2); }
+
 .paid-row td { background: color-mix(in oklch, var(--rb-blue) 5%, transparent); }
 .paid-row:hover td { background: color-mix(in oklch, var(--rb-blue) 10%, var(--surface-2)); }
 .issued-row td { background: color-mix(in oklch, var(--rb-green) 8%, transparent); }
 .issued-row:hover td { background: color-mix(in oklch, var(--rb-green) 14%, var(--surface-2)); }
 
-/* Pending Lapse: subtle slow red pulse — drawing your eye without screaming */
-.lapse-row td {
-  background: color-mix(in oklch, var(--rb-red) 4%, transparent);
-  animation: lapseGlow 3.4s ease-in-out infinite;
-}
-.lapse-row:hover td {
-  background: color-mix(in oklch, var(--rb-red) 14%, var(--surface-2));
-  animation: none;
-}
-@keyframes lapseGlow {
-  0%, 100% { background: color-mix(in oklch, var(--rb-red) 3%, transparent); }
-  50%      { background: color-mix(in oklch, var(--rb-red) 12%, transparent); }
-}
-@media (prefers-reduced-motion: reduce) {
-  .lapse-row td { animation: none; background: color-mix(in oklch, var(--rb-red) 6%, transparent); }
-}
+/* Pending Lapse: solid red highlight — these need attention */
+.lapse-row td { background: color-mix(in oklch, var(--rb-red) 8%, transparent); }
+.lapse-row:hover td { background: color-mix(in oklch, var(--rb-red) 14%, var(--surface-2)); }
 
 .client-cell { display: flex; align-items: center; gap: 10px; }
 .client-name { font-weight: 500; color: var(--ink-1); }
@@ -1240,8 +1230,8 @@ async function supaRpc(fn, params, token) {
 const STATUSES = [
   { id: 'uw_submitted',  label: 'Underwriting / Submitted', short: 'UW / Submitted', color: 'var(--rb-yellow)' },
   { id: 'approved',      label: 'Approved',                 short: 'Approved',       color: 'var(--rb-purple)' },
-  { id: 'issued',        label: 'Issued',                   short: 'Issued',         color: 'var(--rb-green)' },
   { id: 'pending_lapse', label: 'Pending Lapse',            short: 'Pending Lapse',  color: 'var(--rb-orange)' },
+  { id: 'issued',        label: 'Issued',                   short: 'Issued',         color: 'var(--rb-green)' },
 ];
 const statusMeta = (id) => STATUSES.find(s => s.id === id) || STATUSES[0];
 // Chargeback allowed on any status (still requires the deal be marked Paid first).
