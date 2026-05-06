@@ -1098,6 +1098,7 @@ const dealFromRow = (r) => ({
   ap: Number(r.ap),
   commission: Number(r.commission),
   date: r.deal_date,
+  effectiveDate: r.effective_date,
   status: r.status,
   paid: !!r.paid,
   chargeback: !!r.chargeback,
@@ -1321,7 +1322,8 @@ function App() {
         client: deal.client,
         ap: deal.ap,
         commission: deal.commission,
-        deal_date: deal.date,
+        deal_date: deal.date || null,
+        effective_date: deal.effectiveDate || null,
         status: deal.status,
         paid: !!deal.paid,
         chargeback: !!deal.chargeback,
@@ -1341,7 +1343,8 @@ function App() {
     if ('client' in patch) body.client = patch.client;
     if ('ap' in patch) body.ap = patch.ap;
     if ('commission' in patch) body.commission = patch.commission;
-    if ('date' in patch) body.deal_date = patch.date;
+    if ('date' in patch) body.deal_date = patch.date || null;
+    if ('effectiveDate' in patch) body.effective_date = patch.effectiveDate || null;
     if ('status' in patch) body.status = patch.status;
     if ('paid' in patch) body.paid = patch.paid;
     if ('chargeback' in patch) body.chargeback = patch.chargeback;
@@ -1876,7 +1879,8 @@ function Dashboard({ isAdmin, setter, deals, loading, onAddDeal, onUpdateDeal, o
                   <thead>
                     <tr>
                       <th>Client</th>
-                      <th>Date</th>
+                      <th>Date sold</th>
+                      <th>Eff. date</th>
                       <th className="num">AP</th>
                       <th className="num">Commission</th>
                       <th>Status</th>
@@ -2001,6 +2005,7 @@ function DealRow({ deal, isAdmin, onUpdate, onEdit, onRemove }) {
         </div>
       </td>
       <td className="muted mono">{fmtDate(deal.date)}</td>
+      <td className="muted mono">{fmtDate(deal.effectiveDate)}</td>
       <td className="num strong">{fmt(deal.ap)}</td>
       <td className="num">
         <InlineMoney
@@ -2132,12 +2137,13 @@ function DealFormModal({ deal, onClose, onSave }) {
     ap: deal?.ap ?? '',
     commission: deal?.commission ?? '',
     date: deal?.date || todayISO(),
+    effectiveDate: deal?.effectiveDate || '',
     status: deal?.status || 'uw_submitted',
     paid: deal?.paid || false,
     chargeback: deal?.chargeback || false,
   });
 
-  const valid = form.client.trim() && Number(form.ap) > 0 && form.date;
+  const valid = form.client.trim() && Number(form.ap) > 0;
 
   const submit = () => {
     if (!valid) return;
@@ -2145,7 +2151,8 @@ function DealFormModal({ deal, onClose, onSave }) {
       client: form.client.trim(),
       ap: Number(form.ap),
       commission: Number(form.commission) || 0,
-      date: form.date,
+      date: form.date || null,
+      effectiveDate: form.effectiveDate || null,
       status: form.status,
       paid: !!form.paid,
       chargeback: form.paid && canChargeback(form.status) ? !!form.chargeback : false,
@@ -2191,10 +2198,16 @@ function DealFormModal({ deal, onClose, onSave }) {
             </Field>
           </div>
 
-          <Field label="Date entered">
-            <input type="date" value={form.date}
-              onChange={e => setForm(f => ({ ...f, date: e.target.value }))} />
-          </Field>
+          <div className="row-2">
+            <Field label="Date sold">
+              <input type="date" value={form.date || ''}
+                onChange={e => setForm(f => ({ ...f, date: e.target.value }))} />
+            </Field>
+            <Field label="Effective date">
+              <input type="date" value={form.effectiveDate || ''}
+                onChange={e => setForm(f => ({ ...f, effectiveDate: e.target.value }))} />
+            </Field>
+          </div>
 
           <Field label="Status">
             <div className="status-grid">
