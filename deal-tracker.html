@@ -694,6 +694,25 @@ th .sort-btn { font-family: var(--mono); font-size: 10px; font-weight: 500; colo
 .cb-row:hover td { background: color-mix(in oklch, var(--rb-red) 14%, var(--surface-2)); }
 .paid-row td { background: color-mix(in oklch, var(--rb-blue) 5%, transparent); }
 .paid-row:hover td { background: color-mix(in oklch, var(--rb-blue) 10%, var(--surface-2)); }
+.issued-row td { background: color-mix(in oklch, var(--rb-green) 8%, transparent); }
+.issued-row:hover td { background: color-mix(in oklch, var(--rb-green) 14%, var(--surface-2)); }
+
+/* Pending Lapse: subtle slow red pulse — drawing your eye without screaming */
+.lapse-row td {
+  background: color-mix(in oklch, var(--rb-red) 4%, transparent);
+  animation: lapseGlow 3.4s ease-in-out infinite;
+}
+.lapse-row:hover td {
+  background: color-mix(in oklch, var(--rb-red) 14%, var(--surface-2));
+  animation: none;
+}
+@keyframes lapseGlow {
+  0%, 100% { background: color-mix(in oklch, var(--rb-red) 3%, transparent); }
+  50%      { background: color-mix(in oklch, var(--rb-red) 12%, transparent); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lapse-row td { animation: none; background: color-mix(in oklch, var(--rb-red) 6%, transparent); }
+}
 
 .client-cell { display: flex; align-items: center; gap: 10px; }
 .client-name { font-weight: 500; color: var(--ink-1); }
@@ -2019,7 +2038,7 @@ function Dashboard({ isAdmin, setter, deals, loading, onAddDeal, onUpdateDeal, o
     for (const d of deals) {
       counts[d.status] = (counts[d.status] || 0) + 1;
       const com = Number(d.commission) || 0;
-      const cb = !!d.chargeback;
+      const cb = !!d.chargeback && !!d.paid;
 
       if (cb) { counts.chargeback++; chargeback += com; }
       if (d.paid) { paidOut += com; if (!cb) counts.paid++; }
@@ -2035,7 +2054,7 @@ function Dashboard({ isAdmin, setter, deals, loading, onAddDeal, onUpdateDeal, o
     let list = deals;
 
     // Status filter
-    if (filterStatus === 'chargeback') list = list.filter(d => d.chargeback);
+    if (filterStatus === 'chargeback') list = list.filter(d => d.chargeback && d.paid);
     else if (filterStatus === 'paid') list = list.filter(d => d.paid && !d.chargeback);
     else if (filterStatus === 'pipeline') list = list.filter(d => !d.paid && !d.chargeback);
     else if (filterStatus !== 'all') list = list.filter(d => d.status === filterStatus);
@@ -2308,11 +2327,17 @@ function DealRow({ deal, isAdmin, onUpdate, onEdit, onRemove }) {
   };
   const toggleCB = () => {
     if (!isAdmin) return;
+    if (!deal.paid) return;
     onUpdate({ chargeback: !deal.chargeback });
   };
 
   return (
-    <tr className={deal.chargeback ? 'cb-row' : (deal.paid ? 'paid-row' : '')}>
+    <tr className={
+      (deal.chargeback && deal.paid) ? 'cb-row' :
+      deal.status === 'pending_lapse' ? 'lapse-row' :
+      deal.status === 'issued' ? 'issued-row' :
+      deal.paid ? 'paid-row' : ''
+    }>
       <td>
         <div className="client-cell">
           <span className="avatar">{deal.client.slice(0,1).toUpperCase()}</span>
@@ -2385,9 +2410,10 @@ function DealRow({ deal, isAdmin, onUpdate, onEdit, onRemove }) {
           <button
             className={'toggle-pill cb' + (deal.chargeback ? ' on' : '')}
             onClick={toggleCB}
-            disabled={!isAdmin}
+            disabled={!isAdmin || !deal.paid}
             title={
               !isAdmin ? 'View only' :
+              !deal.paid ? 'Mark Paid first — chargebacks only apply to deals already paid' :
               deal.chargeback ? 'Click to clear chargeback' : 'Click to mark as chargeback'
             }
           >
@@ -2576,7 +2602,7 @@ function DealFormModal({ deal, carriers, onClose, onSave }) {
       effectiveDate: form.effectiveDate || null,
       status: form.status,
       paid: !!form.paid,
-      chargeback: !!form.chargeback,
+      chargeback: form.paid ? !!form.chargeback : false,
     });
   };
 
@@ -2670,15 +2696,17 @@ function DealFormModal({ deal, carriers, onClose, onSave }) {
                 </span>
               </label>
 
-              <label className={'switch-row cb' + (form.chargeback ? ' active' : '')}>
+              <label className={'switch-row cb' + (!form.paid ? ' disabled' : '') + (form.chargeback && form.paid ? ' active' : '')}>
                 <input type="checkbox"
-                  checked={form.chargeback}
+                  disabled={!form.paid}
+                  checked={form.chargeback && form.paid}
                   onChange={e => setForm(f => ({ ...f, chargeback: e.target.checked }))} />
                 <span className="switch"></span>
                 <span className="switch-label">
                   <strong>Chargeback</strong>
                   <span className="hint-sm">
-                    {form.chargeback ? 'Counts in Chargebacks total' : 'Mark if owed back to you'}
+                    {!form.paid ? 'Available after marking paid' :
+                      form.chargeback ? 'Owed back to you' : 'No chargeback'}
                   </span>
                 </span>
               </label>
