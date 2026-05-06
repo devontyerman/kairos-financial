@@ -509,10 +509,130 @@ input, select { font-family: inherit; font-size: inherit; color: var(--ink-1); }
 
 /* ─── Filter row ─── */
 .deals-section { display: flex; flex-direction: column; gap: 14px; }
+
+.search-row {
+  display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
+}
+.search-input-wrap {
+  position: relative; flex: 1; min-width: 220px; max-width: 380px;
+}
+.search-icon {
+  position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+  color: var(--ink-3); pointer-events: none;
+}
+.search-input {
+  width: 100%;
+  padding: 9px 34px 9px 34px;
+  border: 1px solid var(--hairline-strong);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--ink-1);
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.search-input:focus {
+  border-color: var(--rb-blue);
+  box-shadow: 0 0 0 3px color-mix(in oklch, var(--rb-blue) 18%, transparent);
+}
+.search-input::placeholder { color: var(--ink-4); }
+.search-clear {
+  position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+  background: transparent; border: none; padding: 4px;
+  border-radius: 4px;
+  color: var(--ink-3); cursor: pointer;
+  display: grid; place-items: center;
+}
+.search-clear:hover { background: var(--surface-2); color: var(--ink-1); }
+
+.date-filter-select {
+  appearance: none; -webkit-appearance: none;
+  background: var(--surface);
+  border: 1px solid var(--hairline-strong);
+  color: var(--ink-1);
+  padding: 9px 32px 9px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><path d='M6 9l6 6 6-6'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.date-filter-select:hover { border-color: var(--ink-3); }
+.date-filter-select:focus {
+  border-color: var(--rb-blue);
+  box-shadow: 0 0 0 3px color-mix(in oklch, var(--rb-blue) 18%, transparent);
+}
+
 .filter-row {
   display: flex; gap: 6px; flex-wrap: wrap; align-items: center;
 }
 .filter-sep { width: 1px; background: var(--hairline-strong); align-self: stretch; margin: 4px; }
+
+/* Sortable column header buttons */
+.sort-btn {
+  display: inline-flex; align-items: center; gap: 4px;
+  background: transparent; border: none; padding: 0;
+  font: inherit; color: inherit;
+  text-transform: inherit; letter-spacing: inherit;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+.sort-btn:hover { color: var(--ink-1); }
+.sort-btn.num { display: inline-flex; }
+th .sort-btn { font-family: var(--mono); font-size: 10px; font-weight: 500; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.08em; }
+
+/* More-actions menu (Edit / Delete) */
+.more-btn { color: var(--ink-3); }
+.more-btn:hover { color: var(--ink-1); }
+.more-menu {
+  background: var(--surface);
+  border: 1px solid var(--hairline-strong);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-lg);
+  padding: 4px;
+  z-index: 200;
+  min-width: 140px;
+}
+.more-item {
+  width: 100%;
+  display: flex; align-items: center; gap: 8px;
+  background: transparent; border: none;
+  padding: 8px 10px; border-radius: 4px;
+  font-size: 12.5px; text-align: left;
+  color: var(--ink-2);
+}
+.more-item:hover { background: var(--surface-2); color: var(--ink-1); }
+.more-item.danger:hover { background: color-mix(in oklch, var(--neg) 12%, transparent); color: var(--neg); }
+
+/* Carrier select in form modal */
+.carrier-select {
+  appearance: none; -webkit-appearance: none;
+  width: 100%;
+  padding: 9px 34px 9px 12px;
+  border: 1px solid var(--hairline-strong);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--ink-1);
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><path d='M6 9l6 6 6-6'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.carrier-select:focus {
+  border-color: var(--rb-blue);
+  box-shadow: 0 0 0 3px color-mix(in oklch, var(--rb-blue) 18%, transparent);
+}
+.carrier-add-row { display: flex; gap: 8px; align-items: stretch; }
+.carrier-add-row input { flex: 1; }
+.carrier-add-row .btn { white-space: nowrap; }
 
 .chip {
   display: inline-flex; align-items: center; gap: 7px;
@@ -1116,6 +1236,56 @@ const fmtDate = (iso) => {
   const d = new Date(iso + 'T00:00:00');
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 };
+
+// Date range presets used by the date filter dropdown.
+const DATE_FILTER_OPTIONS = [
+  { id: 'all',        label: 'All time' },
+  { id: 'mtd',        label: 'Month to date' },
+  { id: 'last_month', label: 'Last month' },
+  { id: 'ytd',        label: 'Year to date' },
+  { id: 'last_year',  label: 'Last year' },
+  { id: 'last_30',    label: 'Last 30 days' },
+  { id: 'last_90',    label: 'Last 90 days' },
+];
+function dateRange(filter) {
+  const now = new Date();
+  const startOfDay = (d) => { const x = new Date(d); x.setHours(0,0,0,0); return x; };
+  const endOfDay   = (d) => { const x = new Date(d); x.setHours(23,59,59,999); return x; };
+  switch (filter) {
+    case 'mtd':        return [startOfDay(new Date(now.getFullYear(), now.getMonth(), 1)), endOfDay(now)];
+    case 'last_month': return [
+      startOfDay(new Date(now.getFullYear(), now.getMonth() - 1, 1)),
+      endOfDay(new Date(now.getFullYear(), now.getMonth(), 0)),
+    ];
+    case 'ytd':        return [startOfDay(new Date(now.getFullYear(), 0, 1)), endOfDay(now)];
+    case 'last_year':  return [
+      startOfDay(new Date(now.getFullYear() - 1, 0, 1)),
+      endOfDay(new Date(now.getFullYear() - 1, 11, 31)),
+    ];
+    case 'last_30': {
+      const s = new Date(now); s.setDate(s.getDate() - 30);
+      return [startOfDay(s), endOfDay(now)];
+    }
+    case 'last_90': {
+      const s = new Date(now); s.setDate(s.getDate() - 90);
+      return [startOfDay(s), endOfDay(now)];
+    }
+    default: return null;
+  }
+}
+function compareDeals(a, b, key, dir) {
+  const flip = dir === 'asc' ? 1 : -1;
+  const av = a[key];
+  const bv = b[key];
+  // Push nulls to the bottom regardless of direction
+  const aN = av == null || av === '';
+  const bN = bv == null || bv === '';
+  if (aN && bN) return 0;
+  if (aN) return 1;
+  if (bN) return -1;
+  if (typeof av === 'number' && typeof bv === 'number') return (av - bv) * flip;
+  return String(av).localeCompare(String(bv)) * flip;
+}
 
 // Map a snake_case row from DB to the shape used by the dashboard.
 const dealFromRow = (r) => ({
@@ -1828,8 +1998,18 @@ function RepRow({ setter, active, onRename, onChangeCode, onRemove }) {
 // ============== DASHBOARD ==============
 function Dashboard({ isAdmin, setter, deals, loading, onAddDeal, onUpdateDeal, onRemoveDeal }) {
   const [filterStatus, setFilterStatus] = useState('all');
+  const [dateFilter, setDateFilter] = useState('all');
+  const [search, setSearch] = useState('');
+  const [sortKey, setSortKey] = useState(null);   // 'client' | 'date' | 'effectiveDate' | 'ap' | 'commission' | 'carrier' | 'status' | null
+  const [sortDir, setSortDir] = useState('desc'); // 'asc' | 'desc'
   const [showForm, setShowForm] = useState(false);
   const [editingDeal, setEditingDeal] = useState(null);
+
+  const carriers = useMemo(() => {
+    const s = new Set();
+    for (const d of deals) if (d.carrier) s.add(d.carrier.trim());
+    return Array.from(s).sort((a, b) => a.localeCompare(b));
+  }, [deals]);
 
   const stats = useMemo(() => {
     let pipeline = 0, paidOut = 0, chargeback = 0;
@@ -1853,12 +2033,46 @@ function Dashboard({ isAdmin, setter, deals, loading, onAddDeal, onUpdateDeal, o
 
   const filtered = useMemo(() => {
     let list = deals;
+
+    // Status filter
     if (filterStatus === 'chargeback') list = list.filter(d => d.chargeback);
     else if (filterStatus === 'paid') list = list.filter(d => d.paid && !d.chargeback);
     else if (filterStatus === 'pipeline') list = list.filter(d => !d.paid && !d.chargeback);
     else if (filterStatus !== 'all') list = list.filter(d => d.status === filterStatus);
-    return [...list].sort((a, b) => (b.date || '').localeCompare(a.date || ''));
-  }, [deals, filterStatus]);
+
+    // Search by client name
+    const q = search.trim().toLowerCase();
+    if (q) list = list.filter(d => d.client.toLowerCase().includes(q));
+
+    // Date range filter — uses date sold if present, else effective date
+    const range = dateRange(dateFilter);
+    if (range) {
+      const [start, end] = range;
+      list = list.filter(d => {
+        const iso = d.date || d.effectiveDate;
+        if (!iso) return false;
+        const t = new Date(iso + 'T00:00:00').getTime();
+        return t >= start.getTime() && t <= end.getTime();
+      });
+    }
+
+    // Sort
+    if (sortKey) {
+      list = [...list].sort((a, b) => compareDeals(a, b, sortKey, sortDir));
+    } else {
+      list = [...list].sort((a, b) =>
+        (b.date || b.effectiveDate || '').localeCompare(a.date || a.effectiveDate || '')
+      );
+    }
+    return list;
+  }, [deals, filterStatus, search, dateFilter, sortKey, sortDir]);
+
+  const toggleSort = (key) => {
+    if (sortKey !== key) { setSortKey(key); setSortDir('asc'); return; }
+    if (sortDir === 'asc') { setSortDir('desc'); return; }
+    setSortKey(null); // third click — clear sort, back to default order
+  };
+  const sortIcon = (key) => sortKey === key ? (sortDir === 'asc' ? ' ↑' : ' ↓') : '';
 
   return (
     <main className="main">
@@ -1888,6 +2102,33 @@ function Dashboard({ isAdmin, setter, deals, loading, onAddDeal, onUpdateDeal, o
           <div className="loading-bar" />
         ) : (
           <>
+            <div className="search-row">
+              <div className="search-input-wrap">
+                <svg className="search-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+                <input
+                  className="search-input"
+                  type="text"
+                  placeholder="Search by client name…"
+                  value={search}
+                  onChange={e => setSearch(e.target.value)}
+                />
+                {search && (
+                  <button className="search-clear" onClick={() => setSearch('')} title="Clear search">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                  </button>
+                )}
+              </div>
+              <select
+                className="date-filter-select"
+                value={dateFilter}
+                onChange={e => setDateFilter(e.target.value)}
+              >
+                {DATE_FILTER_OPTIONS.map(o => (
+                  <option key={o.id} value={o.id}>{o.label}</option>
+                ))}
+              </select>
+            </div>
+
             <div className="filter-row">
               <FilterChip active={filterStatus === 'all'} onClick={() => setFilterStatus('all')} count={deals.length}>All</FilterChip>
               {STATUSES.map(s => (
@@ -1908,13 +2149,13 @@ function Dashboard({ isAdmin, setter, deals, loading, onAddDeal, onUpdateDeal, o
                 <table className="deals-table">
                   <thead>
                     <tr>
-                      <th>Client</th>
-                      <th>Date sold</th>
-                      <th>Eff. date</th>
-                      <th className="num">AP</th>
-                      <th className="num">Commission</th>
-                      <th>Carrier</th>
-                      <th>Status</th>
+                      <th><button className="sort-btn" onClick={() => toggleSort('client')}>Client{sortIcon('client')}</button></th>
+                      <th><button className="sort-btn" onClick={() => toggleSort('date')}>Date sold{sortIcon('date')}</button></th>
+                      <th><button className="sort-btn" onClick={() => toggleSort('effectiveDate')}>Eff. date{sortIcon('effectiveDate')}</button></th>
+                      <th className="num"><button className="sort-btn num" onClick={() => toggleSort('ap')}>AP{sortIcon('ap')}</button></th>
+                      <th className="num"><button className="sort-btn num" onClick={() => toggleSort('commission')}>Commission{sortIcon('commission')}</button></th>
+                      <th><button className="sort-btn" onClick={() => toggleSort('carrier')}>Carrier{sortIcon('carrier')}</button></th>
+                      <th><button className="sort-btn" onClick={() => toggleSort('status')}>Status{sortIcon('status')}</button></th>
                       <th>Payout</th>
                       {isAdmin && <th></th>}
                     </tr>
@@ -1941,6 +2182,7 @@ function Dashboard({ isAdmin, setter, deals, loading, onAddDeal, onUpdateDeal, o
       {showForm && (
         <DealFormModal
           deal={editingDeal}
+          carriers={carriers}
           onClose={() => { setShowForm(false); setEditingDeal(null); }}
           onSave={(d) => {
             if (editingDeal) onUpdateDeal(editingDeal.id, d);
@@ -1986,15 +2228,58 @@ function DealRow({ deal, isAdmin, onUpdate, onEdit, onRemove }) {
   const [menuPos, setMenuPos] = useState({ top: 0, left: 0 });
   const triggerRef = useRef(null);
 
+  const [moreOpen, setMoreOpen] = useState(false);
+  const [morePos, setMorePos] = useState({ top: 0, right: 0 });
+  const moreTriggerRef = useRef(null);
+
   const openMenu = () => {
     if (!isAdmin) return;
     if (statusOpen) { setStatusOpen(false); return; }
     if (triggerRef.current) {
       const r = triggerRef.current.getBoundingClientRect();
-      setMenuPos({ top: r.bottom + 4, left: r.left });
+      const menuH = 180; // approx 4 options
+      const top = (window.innerHeight - r.bottom < menuH + 12)
+        ? r.top - menuH - 4
+        : r.bottom + 4;
+      setMenuPos({ top, left: r.left });
     }
     setStatusOpen(true);
   };
+
+  const openMore = () => {
+    if (!isAdmin) return;
+    if (moreOpen) { setMoreOpen(false); return; }
+    if (moreTriggerRef.current) {
+      const r = moreTriggerRef.current.getBoundingClientRect();
+      const menuH = 90; // 2 items
+      const top = (window.innerHeight - r.bottom < menuH + 12)
+        ? r.top - menuH - 4
+        : r.bottom + 4;
+      setMorePos({ top, right: window.innerWidth - r.right });
+    }
+    setMoreOpen(true);
+  };
+
+  useEffect(() => {
+    if (!moreOpen) return;
+    const onKey = (e) => { if (e.key === 'Escape') setMoreOpen(false); };
+    const onScrollOrResize = () => setMoreOpen(false);
+    const onClick = (e) => {
+      if (e.target.closest && (e.target.closest('.more-menu') || e.target.closest('.more-btn'))) return;
+      setMoreOpen(false);
+    };
+    document.addEventListener('keydown', onKey);
+    window.addEventListener('scroll', onScrollOrResize, true);
+    window.addEventListener('resize', onScrollOrResize);
+    const t = setTimeout(() => document.addEventListener('click', onClick), 0);
+    return () => {
+      clearTimeout(t);
+      document.removeEventListener('keydown', onKey);
+      document.removeEventListener('click', onClick);
+      window.removeEventListener('scroll', onScrollOrResize, true);
+      window.removeEventListener('resize', onScrollOrResize);
+    };
+  }, [moreOpen]);
 
   useEffect(() => {
     if (!statusOpen) return;
@@ -2113,12 +2398,28 @@ function DealRow({ deal, isAdmin, onUpdate, onEdit, onRemove }) {
       </td>
       {isAdmin && (
         <td className="row-actions">
-          <button className="icon-btn" title="Edit" onClick={onEdit}>
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 113 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>
+          <button
+            ref={moreTriggerRef}
+            className="icon-btn more-btn"
+            title="Actions"
+            onClick={openMore}
+            aria-label="More actions"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/></svg>
           </button>
-          <button className="icon-btn danger" title="Delete" onClick={onRemove}>
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 6h18"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
-          </button>
+          {moreOpen && ReactDOM.createPortal(
+            <div className="more-menu" style={{ position: 'fixed', top: morePos.top, right: morePos.right }}>
+              <button className="more-item" onClick={() => { setMoreOpen(false); onEdit(); }}>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 113 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>
+                Edit
+              </button>
+              <button className="more-item danger" onClick={() => { setMoreOpen(false); onRemove(); }}>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 6h18"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+                Delete
+              </button>
+            </div>,
+            document.body
+          )}
         </td>
       )}
     </tr>
@@ -2203,7 +2504,53 @@ function InlineMoney({ value, editable, onChange }) {
 }
 
 // ============== DEAL FORM ==============
-function DealFormModal({ deal, onClose, onSave }) {
+// ============== CARRIER SELECT ==============
+// Dropdown of existing carriers + "+ Add new carrier" option that swaps to a text input.
+function CarrierSelect({ value, carriers, onChange }) {
+  const isInList = !value || carriers.includes(value);
+  const [adding, setAdding] = useState(!isInList);
+
+  if (adding) {
+    return (
+      <div className="carrier-add-row">
+        <input
+          autoFocus
+          type="text"
+          value={value}
+          onChange={e => onChange(e.target.value)}
+          placeholder="New carrier name"
+        />
+        {carriers.length > 0 && (
+          <button
+            type="button"
+            className="btn ghost"
+            onClick={() => { onChange(''); setAdding(false); }}
+            title="Pick from existing carriers"
+          >
+            ← Pick existing
+          </button>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <select
+      className="carrier-select"
+      value={value || ''}
+      onChange={e => {
+        if (e.target.value === '__new__') { onChange(''); setAdding(true); return; }
+        onChange(e.target.value);
+      }}
+    >
+      <option value="">— Select carrier —</option>
+      {carriers.map(c => <option key={c} value={c}>{c}</option>)}
+      <option value="__new__">+ Add new carrier…</option>
+    </select>
+  );
+}
+
+function DealFormModal({ deal, carriers, onClose, onSave }) {
   const [form, setForm] = useState({
     client: deal?.client || '',
     ap: deal?.ap ?? '',
@@ -2273,9 +2620,11 @@ function DealFormModal({ deal, onClose, onSave }) {
           </div>
 
           <Field label="Carrier">
-            <input type="text" value={form.carrier}
-              onChange={e => setForm(f => ({ ...f, carrier: e.target.value }))}
-              placeholder="e.g. CICA, Ethos, TransAmerica" />
+            <CarrierSelect
+              value={form.carrier}
+              carriers={carriers || []}
+              onChange={(v) => setForm(f => ({ ...f, carrier: v }))}
+            />
           </Field>
 
           <div className="row-2">
