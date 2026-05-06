@@ -2078,9 +2078,19 @@ function Dashboard({ isAdmin, setter, deals, loading, onAddDeal, onUpdateDeal, o
     if (sortKey) {
       list = [...list].sort((a, b) => compareDeals(a, b, sortKey, sortDir));
     } else {
-      list = [...list].sort((a, b) =>
-        (b.date || b.effectiveDate || '').localeCompare(a.date || a.effectiveDate || '')
-      );
+      // Default: chargebacks at bottom, then by status priority (Pending Lapse
+      // first), and within each status by date descending (newest first).
+      list = [...list].sort((a, b) => {
+        const aCB = !!a.chargeback && !!a.paid;
+        const bCB = !!b.chargeback && !!b.paid;
+        if (aCB !== bCB) return aCB ? 1 : -1;
+        const aP = STATUS_PRIORITY[a.status] ?? 99;
+        const bP = STATUS_PRIORITY[b.status] ?? 99;
+        if (aP !== bP) return aP - bP;
+        const ad = a.date || a.effectiveDate || '';
+        const bd = b.date || b.effectiveDate || '';
+        return bd.localeCompare(ad);
+      });
     }
     return list;
   }, [deals, filterStatus, search, dateFilter, sortKey, sortDir]);
@@ -2322,11 +2332,13 @@ function DealRow({ deal, isAdmin, onUpdate, onEdit, onRemove }) {
 
   const togglePaid = () => {
     if (!isAdmin) return;
+    if (!deal.paid && !confirm('Mark this deal for ' + deal.client + ' as PAID?')) return;
     onUpdate({ paid: !deal.paid, chargeback: !deal.paid ? deal.chargeback : false });
   };
   const toggleCB = () => {
     if (!isAdmin) return;
     if (!deal.paid) return;
+    if (!deal.chargeback && !confirm('Mark this deal for ' + deal.client + ' as CHARGEBACK?')) return;
     onUpdate({ chargeback: !deal.chargeback });
   };
 
