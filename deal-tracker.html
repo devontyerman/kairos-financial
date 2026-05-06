@@ -1220,8 +1220,8 @@ async function supaRpc(fn, params, token) {
 // ============== STATUS CONFIG ==============
 const STATUSES = [
   { id: 'uw_submitted',  label: 'Underwriting / Submitted', short: 'UW / Submitted', color: 'var(--rb-yellow)' },
-  { id: 'approved',      label: 'Approved',                 short: 'Approved',       color: 'var(--rb-green)' },
-  { id: 'issued',        label: 'Issued',                   short: 'Issued',         color: 'var(--rb-purple)' },
+  { id: 'approved',      label: 'Approved',                 short: 'Approved',       color: 'var(--rb-purple)' },
+  { id: 'issued',        label: 'Issued',                   short: 'Issued',         color: 'var(--rb-green)' },
   { id: 'pending_lapse', label: 'Pending Lapse',            short: 'Pending Lapse',  color: 'var(--rb-orange)' },
 ];
 const statusMeta = (id) => STATUSES.find(s => s.id === id) || STATUSES[0];
