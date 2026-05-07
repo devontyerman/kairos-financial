@@ -1300,6 +1300,57 @@
     .pcg-table tbody td:first-child { text-align: left; padding-left: 1.1rem; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; color: #4a4a5a; position: sticky; left: 0; background: #ffffff; z-index: 1; }
     .pcg-table tbody tr:hover td:first-child { background: #f0f0f5; }
     .pcg-table tbody tr:last-child td { border-bottom: none; }
+    /* Expandable column groups (per-column toggles attached to default header) */
+    .pcg-table .pcg-col-extra { display: none; }
+    .pcg-table.show-term .pcg-col-term { display: table-cell; }
+    .pcg-table.show-fe .pcg-col-fe { display: table-cell; }
+    .pcg-table.show-gi .pcg-col-gi { display: table-cell; }
+    .pcg-table .pcg-th-toggles th {
+      padding: 0.35rem 0.6rem;
+      background: #fafafa;
+      border-bottom: 1px solid #e5e5ea;
+      text-transform: none;
+      letter-spacing: 0;
+      text-align: center;
+    }
+    /* Override the global thead th:first-child sticky/white background for the toggle row */
+    .pcg-table .pcg-th-toggles th:first-child {
+      background: #fafafa;
+      position: static;
+      padding-left: 0.6rem;
+      z-index: auto;
+    }
+    /* Highlight the active group's columns so it's clear which extras belong to which product */
+    .pcg-table.show-term thead .pcg-col-term,
+    .pcg-table.show-fe   thead .pcg-col-fe,
+    .pcg-table.show-gi   thead .pcg-col-gi {
+      background-color: rgba(168, 85, 247, 0.12) !important;
+      color: #1a1a1a !important;
+    }
+    .pcg-table.show-term tbody .pcg-col-term,
+    .pcg-table.show-fe   tbody .pcg-col-fe,
+    .pcg-table.show-gi   tbody .pcg-col-gi {
+      background-color: rgba(168, 85, 247, 0.06);
+    }
+    .pcg-col-toggle {
+      display: inline-flex;
+      align-items: center;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.66rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      padding: 0.28rem 0.6rem;
+      border: 1px solid #ddd;
+      background: #ffffff;
+      color: #4a4a5a;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+      text-transform: none;
+    }
+    .pcg-col-toggle:hover { border-color: #a855f7; color: #1a1a1a; }
+    .pcg-col-toggle.active { background: #1a1a1a; color: #ffffff; border-color: #4a4a5a; }
     .pcg-level-selector { background: #ffffff; border: 1px solid #ddd; border-radius: 12px; padding: 1.25rem; margin-bottom: 1.5rem; }
     .pcg-level-top { display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap; }
     .pcg-level-label { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.85rem; font-weight: 700; color: #1a1a1a; }
@@ -3679,6 +3730,48 @@
     #panel-compgrid.active .pcg-table thead th:first-child { background: var(--kf-surface-2) !important; }
     #panel-compgrid.active .pcg-table tbody tr:hover { background: var(--kf-surface-2) !important; }
     #panel-compgrid.active .pcg-table tbody tr:hover td:first-child { background: var(--kf-surface-2) !important; }
+    #panel-compgrid.active .pcg-table .pcg-th-toggles th {
+      background: var(--kf-surface) !important;
+      border-bottom: 1px solid var(--kf-hairline) !important;
+      padding: 6px 8px !important;
+    }
+    /* Uniform background across the toggle row in dark mode */
+    #panel-compgrid.active .pcg-table .pcg-th-toggles th:first-child {
+      background: var(--kf-surface) !important;
+      position: static !important;
+    }
+    /* Active-group highlight in dark mode */
+    #panel-compgrid.active .pcg-table.show-term thead .pcg-col-term,
+    #panel-compgrid.active .pcg-table.show-fe   thead .pcg-col-fe,
+    #panel-compgrid.active .pcg-table.show-gi   thead .pcg-col-gi {
+      background-color: var(--kf-surface-3) !important;
+      color: var(--kf-ink-1) !important;
+    }
+    #panel-compgrid.active .pcg-table.show-term tbody .pcg-col-term,
+    #panel-compgrid.active .pcg-table.show-fe   tbody .pcg-col-fe,
+    #panel-compgrid.active .pcg-table.show-gi   tbody .pcg-col-gi {
+      background-color: var(--kf-surface-2) !important;
+    }
+    #panel-compgrid.active .pcg-col-toggle {
+      background: var(--kf-surface-2) !important;
+      color: var(--kf-ink-2) !important;
+      border: 1px solid var(--kf-hairline) !important;
+      font-family: var(--kf-mono) !important;
+      font-size: 10px !important;
+      letter-spacing: 0.04em !important;
+      text-transform: uppercase !important;
+      padding: 5px 10px !important;
+      border-radius: 99px !important;
+    }
+    #panel-compgrid.active .pcg-col-toggle:hover {
+      color: var(--kf-ink-1) !important;
+      border-color: var(--kf-hairline-strong) !important;
+    }
+    #panel-compgrid.active .pcg-col-toggle.active {
+      background: var(--kf-surface-3) !important;
+      color: var(--kf-ink-1) !important;
+      border-color: var(--kf-hairline-strong) !important;
+    }
 
     /* ─── Carriers (.sh-carriers-grid + cards) ──────────────────────────── */
     #panel-carriers.active .sh-carriers-grid > *,
@@ -12465,9 +12558,61 @@
         <!-- INSTABRAIN -->
         <div class="pcg-carrier" data-pcg="instabrain">
           <div class="pcg-carrier-header"><div class="pcg-carrier-dot" style="background:#e05a2b"></div><div class="pcg-carrier-name">InstaBrain</div></div>
-          <div class="pcg-table-wrap"><div class="pcg-table-scroll"><table class="pcg-table"><thead><tr><th>Level</th><th>Term (Life Term)</th><th>Senior Life Term/WL</th><th>Final Expense WL</th><th>Guaranteed Issue WL</th><th>Accidental</th></tr></thead><tbody>
-            <tr><td>145</td><td>130%</td><td>90%</td><td>128%</td><td>73%</td><td>90%</td></tr><tr><td>140</td><td>125%</td><td>85%</td><td>125%</td><td>70%</td><td>85%</td></tr><tr><td>135</td><td>120%</td><td>80%</td><td>123%</td><td>68%</td><td>80%</td></tr><tr><td>130</td><td>115%</td><td>75%</td><td>120%</td><td>65%</td><td>75%</td></tr><tr><td>125</td><td>110%</td><td>70%</td><td>118%</td><td>63%</td><td>70%</td></tr><tr><td>120</td><td>105%</td><td>65%</td><td>115%</td><td>60%</td><td>65%</td></tr><tr><td>115</td><td>100%</td><td>60%</td><td>113%</td><td>58%</td><td>60%</td></tr><tr><td>110</td><td>95%</td><td>55%</td><td>110%</td><td>55%</td><td>55%</td></tr><tr><td>105</td><td>90%</td><td>50%</td><td>108%</td><td>53%</td><td>50%</td></tr><tr><td>100</td><td>85%</td><td>45%</td><td>103%</td><td>50%</td><td>45%</td></tr><tr><td>95</td><td>80%</td><td>40%</td><td>100%</td><td>48%</td><td>40%</td></tr><tr><td>90</td><td>75%</td><td>35%</td><td>100%</td><td>45%</td><td>35%</td></tr><tr><td>85</td><td>70%</td><td>30%</td><td>98%</td><td>43%</td><td>30%</td></tr><tr><td>80</td><td>65%</td><td>25%</td><td>95%</td><td>40%</td><td>25%</td></tr><tr><td>75</td><td>60%</td><td>20%</td><td>93%</td><td>38%</td><td>20%</td></tr><tr><td>70</td><td>55%</td><td>15%</td><td>90%</td><td>35%</td><td>15%</td></tr><tr><td>65</td><td>55%</td><td>15%</td><td>90%</td><td>35%</td><td>15%</td></tr>
-          </tbody></table></div></div>
+          <div class="pcg-table-wrap"><div class="pcg-table-scroll"><table class="pcg-table">
+            <thead>
+              <tr>
+                <th rowspan="2">Level</th>
+                <th class="pcg-col-term">Term — 30yr</th>
+                <th class="pcg-col-extra pcg-col-term">Term — 20yr</th>
+                <th class="pcg-col-extra pcg-col-term">Term — 15yr</th>
+                <th class="pcg-col-extra pcg-col-term">Term — 10yr</th>
+                <th class="pcg-col-fe">Final Expense WL (50–69)</th>
+                <th class="pcg-col-extra pcg-col-fe">Final Expense WL (70–79)</th>
+                <th class="pcg-col-extra pcg-col-fe">Final Expense WL (80+)</th>
+                <th class="pcg-col-gi">Guaranteed Issue WL (50–69)</th>
+                <th class="pcg-col-extra pcg-col-gi">Guaranteed Issue WL (70–79)</th>
+                <th class="pcg-col-extra pcg-col-gi">Guaranteed Issue WL (80+)</th>
+                <th rowspan="2">Accidental</th>
+              </tr>
+              <tr class="pcg-th-toggles">
+                <th class="pcg-col-term"><button type="button" class="pcg-col-toggle" data-target="term"
+                            data-label-inactive="+ Other Term Lengths"
+                            data-label-active="− Hide Other Term Lengths">+ Other Term Lengths</button></th>
+                <th class="pcg-col-extra pcg-col-term"></th>
+                <th class="pcg-col-extra pcg-col-term"></th>
+                <th class="pcg-col-extra pcg-col-term"></th>
+                <th class="pcg-col-fe"><button type="button" class="pcg-col-toggle" data-target="fe"
+                            data-label-inactive="+ Other Ages"
+                            data-label-active="− Hide Other Ages">+ Other Ages</button></th>
+                <th class="pcg-col-extra pcg-col-fe"></th>
+                <th class="pcg-col-extra pcg-col-fe"></th>
+                <th class="pcg-col-gi"><button type="button" class="pcg-col-toggle" data-target="gi"
+                            data-label-inactive="+ Other Ages"
+                            data-label-active="− Hide Other Ages">+ Other Ages</button></th>
+                <th class="pcg-col-extra pcg-col-gi"></th>
+                <th class="pcg-col-extra pcg-col-gi"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>145</td><td class="pcg-col-term">130.00%</td><td class="pcg-col-extra pcg-col-term">130.00%</td><td class="pcg-col-extra pcg-col-term">125.00%</td><td class="pcg-col-extra pcg-col-term">120.00%</td><td class="pcg-col-fe">127.50%</td><td class="pcg-col-extra pcg-col-fe">102.50%</td><td class="pcg-col-extra pcg-col-fe">87.50%</td><td class="pcg-col-gi">72.50%</td><td class="pcg-col-extra pcg-col-gi">52.50%</td><td class="pcg-col-extra pcg-col-gi">42.50%</td><td>90%</td></tr>
+              <tr><td>140</td><td class="pcg-col-term">125.00%</td><td class="pcg-col-extra pcg-col-term">125.00%</td><td class="pcg-col-extra pcg-col-term">120.00%</td><td class="pcg-col-extra pcg-col-term">115.00%</td><td class="pcg-col-fe">125.00%</td><td class="pcg-col-extra pcg-col-fe">100.00%</td><td class="pcg-col-extra pcg-col-fe">85.00%</td><td class="pcg-col-gi">70.00%</td><td class="pcg-col-extra pcg-col-gi">50.00%</td><td class="pcg-col-extra pcg-col-gi">40.00%</td><td>85%</td></tr>
+              <tr><td>135</td><td class="pcg-col-term">120.00%</td><td class="pcg-col-extra pcg-col-term">120.00%</td><td class="pcg-col-extra pcg-col-term">115.00%</td><td class="pcg-col-extra pcg-col-term">110.00%</td><td class="pcg-col-fe">122.50%</td><td class="pcg-col-extra pcg-col-fe">97.50%</td><td class="pcg-col-extra pcg-col-fe">82.50%</td><td class="pcg-col-gi">67.50%</td><td class="pcg-col-extra pcg-col-gi">47.50%</td><td class="pcg-col-extra pcg-col-gi">37.50%</td><td>80%</td></tr>
+              <tr><td>130</td><td class="pcg-col-term">115.00%</td><td class="pcg-col-extra pcg-col-term">115.00%</td><td class="pcg-col-extra pcg-col-term">110.00%</td><td class="pcg-col-extra pcg-col-term">105.00%</td><td class="pcg-col-fe">120.00%</td><td class="pcg-col-extra pcg-col-fe">95.00%</td><td class="pcg-col-extra pcg-col-fe">80.00%</td><td class="pcg-col-gi">65.00%</td><td class="pcg-col-extra pcg-col-gi">45.00%</td><td class="pcg-col-extra pcg-col-gi">35.00%</td><td>75%</td></tr>
+              <tr><td>125</td><td class="pcg-col-term">110.00%</td><td class="pcg-col-extra pcg-col-term">110.00%</td><td class="pcg-col-extra pcg-col-term">105.00%</td><td class="pcg-col-extra pcg-col-term">100.00%</td><td class="pcg-col-fe">117.50%</td><td class="pcg-col-extra pcg-col-fe">92.50%</td><td class="pcg-col-extra pcg-col-fe">77.50%</td><td class="pcg-col-gi">62.50%</td><td class="pcg-col-extra pcg-col-gi">42.50%</td><td class="pcg-col-extra pcg-col-gi">32.50%</td><td>70%</td></tr>
+              <tr><td>120</td><td class="pcg-col-term">105.00%</td><td class="pcg-col-extra pcg-col-term">105.00%</td><td class="pcg-col-extra pcg-col-term">100.00%</td><td class="pcg-col-extra pcg-col-term">95.00%</td><td class="pcg-col-fe">115.00%</td><td class="pcg-col-extra pcg-col-fe">90.00%</td><td class="pcg-col-extra pcg-col-fe">75.00%</td><td class="pcg-col-gi">60.00%</td><td class="pcg-col-extra pcg-col-gi">40.00%</td><td class="pcg-col-extra pcg-col-gi">30.00%</td><td>65%</td></tr>
+              <tr><td>115</td><td class="pcg-col-term">100.00%</td><td class="pcg-col-extra pcg-col-term">100.00%</td><td class="pcg-col-extra pcg-col-term">95.00%</td><td class="pcg-col-extra pcg-col-term">90.00%</td><td class="pcg-col-fe">112.50%</td><td class="pcg-col-extra pcg-col-fe">87.50%</td><td class="pcg-col-extra pcg-col-fe">72.50%</td><td class="pcg-col-gi">57.50%</td><td class="pcg-col-extra pcg-col-gi">37.50%</td><td class="pcg-col-extra pcg-col-gi">27.50%</td><td>60%</td></tr>
+              <tr><td>110</td><td class="pcg-col-term">95.00%</td><td class="pcg-col-extra pcg-col-term">95.00%</td><td class="pcg-col-extra pcg-col-term">90.00%</td><td class="pcg-col-extra pcg-col-term">85.00%</td><td class="pcg-col-fe">110.00%</td><td class="pcg-col-extra pcg-col-fe">85.00%</td><td class="pcg-col-extra pcg-col-fe">70.00%</td><td class="pcg-col-gi">55.00%</td><td class="pcg-col-extra pcg-col-gi">35.00%</td><td class="pcg-col-extra pcg-col-gi">25.00%</td><td>55%</td></tr>
+              <tr><td>105</td><td class="pcg-col-term">90.00%</td><td class="pcg-col-extra pcg-col-term">90.00%</td><td class="pcg-col-extra pcg-col-term">85.00%</td><td class="pcg-col-extra pcg-col-term">80.00%</td><td class="pcg-col-fe">107.50%</td><td class="pcg-col-extra pcg-col-fe">82.50%</td><td class="pcg-col-extra pcg-col-fe">67.50%</td><td class="pcg-col-gi">52.50%</td><td class="pcg-col-extra pcg-col-gi">32.50%</td><td class="pcg-col-extra pcg-col-gi">22.50%</td><td>50%</td></tr>
+              <tr><td>100</td><td class="pcg-col-term">85.00%</td><td class="pcg-col-extra pcg-col-term">85.00%</td><td class="pcg-col-extra pcg-col-term">80.00%</td><td class="pcg-col-extra pcg-col-term">75.00%</td><td class="pcg-col-fe">105.00%</td><td class="pcg-col-extra pcg-col-fe">80.00%</td><td class="pcg-col-extra pcg-col-fe">65.00%</td><td class="pcg-col-gi">50.00%</td><td class="pcg-col-extra pcg-col-gi">30.00%</td><td class="pcg-col-extra pcg-col-gi">20.00%</td><td>45%</td></tr>
+              <tr><td>95</td><td class="pcg-col-term">80.00%</td><td class="pcg-col-extra pcg-col-term">80.00%</td><td class="pcg-col-extra pcg-col-term">75.00%</td><td class="pcg-col-extra pcg-col-term">70.00%</td><td class="pcg-col-fe">102.50%</td><td class="pcg-col-extra pcg-col-fe">77.50%</td><td class="pcg-col-extra pcg-col-fe">62.50%</td><td class="pcg-col-gi">47.50%</td><td class="pcg-col-extra pcg-col-gi">27.50%</td><td class="pcg-col-extra pcg-col-gi">17.50%</td><td>40%</td></tr>
+              <tr><td>90</td><td class="pcg-col-term">75.00%</td><td class="pcg-col-extra pcg-col-term">75.00%</td><td class="pcg-col-extra pcg-col-term">70.00%</td><td class="pcg-col-extra pcg-col-term">65.00%</td><td class="pcg-col-fe">100.00%</td><td class="pcg-col-extra pcg-col-fe">75.00%</td><td class="pcg-col-extra pcg-col-fe">60.00%</td><td class="pcg-col-gi">45.00%</td><td class="pcg-col-extra pcg-col-gi">25.00%</td><td class="pcg-col-extra pcg-col-gi">15.00%</td><td>35%</td></tr>
+              <tr><td>85</td><td class="pcg-col-term">70.00%</td><td class="pcg-col-extra pcg-col-term">70.00%</td><td class="pcg-col-extra pcg-col-term">65.00%</td><td class="pcg-col-extra pcg-col-term">60.00%</td><td class="pcg-col-fe">97.50%</td><td class="pcg-col-extra pcg-col-fe">72.50%</td><td class="pcg-col-extra pcg-col-fe">57.50%</td><td class="pcg-col-gi">42.50%</td><td class="pcg-col-extra pcg-col-gi">22.50%</td><td class="pcg-col-extra pcg-col-gi">12.50%</td><td>30%</td></tr>
+              <tr><td>80</td><td class="pcg-col-term">65.00%</td><td class="pcg-col-extra pcg-col-term">65.00%</td><td class="pcg-col-extra pcg-col-term">60.00%</td><td class="pcg-col-extra pcg-col-term">55.00%</td><td class="pcg-col-fe">95.00%</td><td class="pcg-col-extra pcg-col-fe">70.00%</td><td class="pcg-col-extra pcg-col-fe">55.00%</td><td class="pcg-col-gi">40.00%</td><td class="pcg-col-extra pcg-col-gi">20.00%</td><td class="pcg-col-extra pcg-col-gi">10.00%</td><td>25%</td></tr>
+              <tr><td>75</td><td class="pcg-col-term">60.00%</td><td class="pcg-col-extra pcg-col-term">60.00%</td><td class="pcg-col-extra pcg-col-term">55.00%</td><td class="pcg-col-extra pcg-col-term">50.00%</td><td class="pcg-col-fe">92.50%</td><td class="pcg-col-extra pcg-col-fe">67.50%</td><td class="pcg-col-extra pcg-col-fe">52.50%</td><td class="pcg-col-gi">37.50%</td><td class="pcg-col-extra pcg-col-gi">17.50%</td><td class="pcg-col-extra pcg-col-gi">7.50%</td><td>20%</td></tr>
+              <tr><td>70</td><td class="pcg-col-term">55.00%</td><td class="pcg-col-extra pcg-col-term">55.00%</td><td class="pcg-col-extra pcg-col-term">50.00%</td><td class="pcg-col-extra pcg-col-term">45.00%</td><td class="pcg-col-fe">90.00%</td><td class="pcg-col-extra pcg-col-fe">65.00%</td><td class="pcg-col-extra pcg-col-fe">50.00%</td><td class="pcg-col-gi">35.00%</td><td class="pcg-col-extra pcg-col-gi">15.00%</td><td class="pcg-col-extra pcg-col-gi">5.00%</td><td>15%</td></tr>
+              <tr><td>65</td><td class="pcg-col-term">55.00%</td><td class="pcg-col-extra pcg-col-term">55.00%</td><td class="pcg-col-extra pcg-col-term">50.00%</td><td class="pcg-col-extra pcg-col-term">45.00%</td><td class="pcg-col-fe">90.00%</td><td class="pcg-col-extra pcg-col-fe">65.00%</td><td class="pcg-col-extra pcg-col-fe">50.00%</td><td class="pcg-col-gi">35.00%</td><td class="pcg-col-extra pcg-col-gi">15.00%</td><td class="pcg-col-extra pcg-col-gi">5.00%</td><td>15%</td></tr>
+            </tbody>
+          </table></div></div>
         </div>
 
         <!-- MUTUAL OF OMAHA -->
@@ -13195,7 +13340,7 @@
       'corebridge':       { 'Whole Life': 'Whole Life', 'GIWL': 'GIWL' },
       'ethos':            { 'Whole Life': 'Whole Life (TruStage TAWL)', 'GIWL': 'GIWL (TruStage GAWL)', 'IUL': 'IUL (Ameritas)', 'Term': 'LGA Prime (Term)' },
       'foresters':        { 'Whole Life': 'Whole Life (PlanRight)', 'Term': 'Term (Strong Foundation)' },
-      'instabrain':       { 'Term': 'Term (Life Term)' },
+      'instabrain':       { 'Term': 'Term — 30yr' },
       'mutual-of-omaha':  { 'Whole Life': 'Whole Life', 'Term': 'Term (Term Life Express)', 'IUL': 'IUL' },
       'nlg':              { 'IUL': 'IUL (Universal Life)' },
       'royal-neighbors':  { 'Whole Life': 'Whole Life', 'Term': 'Term', 'IUL': 'Secure Life IUL' },
@@ -13221,7 +13366,7 @@
       // Read the rate from the rendered comp grid table
       const carrierEl = document.querySelector('.pcg-carrier[data-pcg="' + pcgId + '"]');
       if (!carrierEl) return profileComp;
-      const headers = Array.from(carrierEl.querySelectorAll('thead th')).map(th => th.textContent.trim());
+      const headers = Array.from(carrierEl.querySelectorAll('thead tr:first-child th')).map(th => th.textContent.trim());
       const colIdx = headers.indexOf(columnName);
       if (colIdx === -1) return profileComp;
       // Find the row for this level (walk down if current level has no rate)
@@ -14922,6 +15067,20 @@
         });
       });
 
+      // Per-column expand/collapse toggles (extra columns appear adjacent to default)
+      document.querySelectorAll('.pcg-col-toggle').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const table = btn.closest('.pcg-table');
+          if (!table) return;
+          const target = btn.dataset.target;
+          const isActive = table.classList.toggle('show-' + target);
+          btn.classList.toggle('active', isActive);
+          const inactive = btn.dataset.labelInactive;
+          const active = btn.dataset.labelActive;
+          if (inactive && active) btn.textContent = isActive ? active : inactive;
+        });
+      });
+
       const pcgSelect = document.getElementById('pcgLevelSelect');
       const pcgCondensed = document.getElementById('pcgCondensedView');
       const pcgData = [];
@@ -14932,7 +15091,7 @@
         const table = carrier.querySelector('.pcg-table');
         if (!table) return;
         const headers = [];
-        table.querySelectorAll('thead th').forEach(th => headers.push(th.textContent.trim()));
+        table.querySelectorAll('thead tr:first-child th').forEach(th => headers.push(th.textContent.trim()));
         const products = headers.slice(1);
         const rows = {};
         table.querySelectorAll('tbody tr').forEach(tr => {
