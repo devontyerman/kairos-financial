@@ -2469,7 +2469,7 @@
        Apple-rainbow accents (modern muted, lower chroma than the original).
        Scoped to all three Team Performance tabs (Performance, Policies, Agents)
        so the rest of the Sales Hub keeps its existing look. */
-    #tpatab-performance, #tpatab-agents, #tpatab-policies {
+    #tpatab-performance, #tpatab-agents, #tpatab-policies, #tpatab-hierarchy {
       --rb-green:   oklch(0.72 0.16 145);
       --rb-yellow:  oklch(0.82 0.14 90);
       --rb-orange:  oklch(0.74 0.16 50);
@@ -2514,7 +2514,7 @@
       position: relative;
       overflow: hidden;
     }
-    #tpatab-performance[data-tp-theme="light"], #tpatab-agents[data-tp-theme="light"], #tpatab-policies[data-tp-theme="light"] {
+    #tpatab-performance[data-tp-theme="light"], #tpatab-agents[data-tp-theme="light"], #tpatab-policies[data-tp-theme="light"], #tpatab-hierarchy[data-tp-theme="light"] {
       --tp-bg:        #f6f5f1;
       --tp-bg-2:      #efece5;
       --tp-surface:   #ffffff;
@@ -2819,6 +2819,416 @@
     #tpatab-performance .tp-ring-wrap { display: flex; align-items: center; gap: 14px; }
     #tpatab-performance .tp-ring-text { display: flex; flex-direction: column; gap: 2px; }
 
+    /* ─── Agent Hierarchy tab ──────────────────────────────────────────
+       Ported from the Claude design bundle. Scoped to #tpatab-hierarchy
+       and uses the existing --tp-* variables so dark/light themes work
+       the same way as the rest of the Performance tab. */
+    #tpatab-hierarchy .hv-app {
+      height: calc(100vh - 200px); min-height: 560px;
+      display: flex; flex-direction: column; gap: 14px;
+      position: relative; padding: 4px 0 12px;
+    }
+    #tpatab-hierarchy .hv-hdr {
+      display: flex; align-items: flex-end; justify-content: space-between;
+      gap: 24px; padding-bottom: 14px;
+      border-bottom: 1px solid var(--tp-hairline);
+      flex-wrap: wrap;
+    }
+    #tpatab-hierarchy .hv-hdr-l { display: flex; flex-direction: column; gap: 4px; }
+    #tpatab-hierarchy .hv-hdr-brand { display: flex; align-items: center; gap: 12px; }
+    #tpatab-hierarchy .hv-hdr-mark {
+      width: 22px; height: 22px; border-radius: 5px;
+      background:
+        linear-gradient(180deg,
+          var(--rb-green) 0 16.66%, var(--rb-yellow) 16.66% 33.33%,
+          var(--rb-orange) 33.33% 50%, var(--rb-red) 50% 66.66%,
+          var(--rb-purple) 66.66% 83.33%, var(--rb-blue) 83.33% 100%);
+      box-shadow: 0 0 0 1px var(--tp-hairline-strong);
+    }
+    #tpatab-hierarchy .hv-hdr-title { font-size: 20px; font-weight: 600; letter-spacing: -0.01em; color: var(--tp-ink-1); }
+    #tpatab-hierarchy .hv-hdr-sub {
+      font-family: var(--tp-mono); font-size: 11px; color: var(--tp-ink-3);
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    #tpatab-hierarchy .hv-hdr-r { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+    #tpatab-hierarchy .hv-hdr-stat {
+      display: flex; flex-direction: column; gap: 2px; align-items: flex-end;
+      padding-right: 14px; border-right: 1px solid var(--tp-hairline);
+    }
+    #tpatab-hierarchy .hv-hdr-stat:last-of-type { border-right: 0; padding-right: 0; }
+    #tpatab-hierarchy .hv-hdr-stat-lbl {
+      font-family: var(--tp-mono); font-size: 10px; color: var(--tp-ink-3);
+      text-transform: uppercase; letter-spacing: 0.08em;
+    }
+    #tpatab-hierarchy .hv-hdr-stat-val {
+      font-family: var(--tp-mono); font-size: 15px; color: var(--tp-ink-1);
+      font-variant-numeric: tabular-nums; font-weight: 500;
+    }
+    #tpatab-hierarchy .hv-theme-toggle {
+      appearance: none; border: 1px solid var(--tp-hairline-strong);
+      background: var(--tp-surface); color: var(--tp-ink-2);
+      width: 30px; height: 30px; border-radius: 8px;
+      display: grid; place-items: center; cursor: pointer;
+      transition: all 120ms;
+    }
+    #tpatab-hierarchy .hv-theme-toggle:hover { color: var(--tp-ink-1); border-color: var(--tp-ink-3); }
+
+    /* Toolbar */
+    #tpatab-hierarchy .hv-toolbar {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px; flex-wrap: wrap;
+    }
+    #tpatab-hierarchy .hv-toolbar-l, #tpatab-hierarchy .hv-toolbar-r {
+      display: flex; align-items: center; gap: 10px;
+    }
+    #tpatab-hierarchy .hv-search { position: relative; display: flex; align-items: center; }
+    #tpatab-hierarchy .hv-search input {
+      appearance: none; border: 1px solid var(--tp-hairline-strong);
+      background: var(--tp-surface); color: var(--tp-ink-1);
+      padding: 8px 12px 8px 32px; border-radius: 8px;
+      font-family: var(--tp-sans); font-size: 13px;
+      width: 240px; outline: none;
+      transition: border-color 120ms;
+    }
+    #tpatab-hierarchy .hv-search input::placeholder { color: var(--tp-ink-4); }
+    #tpatab-hierarchy .hv-search input:focus {
+      border-color: color-mix(in oklch, var(--rb-blue) 60%, var(--tp-hairline-strong));
+    }
+    #tpatab-hierarchy .hv-search svg {
+      position: absolute; left: 10px; pointer-events: none; color: var(--tp-ink-4);
+    }
+    #tpatab-hierarchy .hv-viewonly-badge {
+      font-family: var(--tp-mono); font-size: 10px;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--tp-ink-3);
+      background: var(--tp-surface-2); border: 1px solid var(--tp-hairline-strong);
+      padding: 6px 10px; border-radius: 100px;
+    }
+    #tpatab-hierarchy .hv-btn {
+      appearance: none; cursor: pointer;
+      background: var(--tp-surface); border: 1px solid var(--tp-hairline-strong);
+      color: var(--tp-ink-2);
+      padding: 8px 12px; border-radius: 8px;
+      font-family: var(--tp-mono); font-size: 11px; letter-spacing: 0.06em;
+      text-transform: uppercase;
+      display: inline-flex; align-items: center; gap: 8px;
+      transition: all 120ms;
+    }
+    #tpatab-hierarchy .hv-btn:hover { border-color: var(--tp-ink-3); color: var(--tp-ink-1); background: var(--tp-surface-2); }
+    #tpatab-hierarchy .hv-btn.primary {
+      background: color-mix(in oklch, var(--rb-blue) 22%, var(--tp-surface));
+      border-color: color-mix(in oklch, var(--rb-blue) 60%, transparent);
+      color: var(--tp-ink-1);
+    }
+    #tpatab-hierarchy .hv-btn.primary:hover { background: color-mix(in oklch, var(--rb-blue) 32%, var(--tp-surface)); }
+    #tpatab-hierarchy .hv-btn.danger {
+      background: color-mix(in oklch, var(--rb-red) 18%, var(--tp-surface));
+      border-color: color-mix(in oklch, var(--rb-red) 50%, transparent);
+      color: var(--tp-ink-1);
+    }
+    #tpatab-hierarchy .hv-zoom-cluster {
+      display: inline-flex; background: var(--tp-surface);
+      border: 1px solid var(--tp-hairline-strong); border-radius: 8px; overflow: hidden;
+    }
+    #tpatab-hierarchy .hv-zoom-cluster button {
+      appearance: none; cursor: pointer; background: transparent; border: 0;
+      color: var(--tp-ink-2); width: 30px; height: 30px;
+      display: grid; place-items: center;
+      font-family: var(--tp-mono); font-size: 13px;
+      transition: all 120ms; border-right: 1px solid var(--tp-hairline);
+    }
+    #tpatab-hierarchy .hv-zoom-cluster button:last-child { border-right: 0; }
+    #tpatab-hierarchy .hv-zoom-cluster button:hover { background: var(--tp-surface-2); color: var(--tp-ink-1); }
+    #tpatab-hierarchy .hv-zoom-val {
+      display: grid; place-items: center;
+      font-family: var(--tp-mono); font-size: 11px; color: var(--tp-ink-2);
+      min-width: 52px; border-right: 1px solid var(--tp-hairline);
+    }
+
+    /* Canvas */
+    #tpatab-hierarchy .hv-canvas-wrap {
+      flex: 1; position: relative;
+      background: var(--tp-surface);
+      border: 1px solid var(--tp-hairline);
+      border-radius: 10px;
+      overflow: hidden; min-height: 0;
+    }
+    #tpatab-hierarchy .hv-canvas-bg {
+      position: absolute; inset: 0;
+      background-image: radial-gradient(circle at 1px 1px, var(--tp-hairline-strong) 1px, transparent 1px);
+      background-size: 24px 24px; background-position: 0 0;
+      opacity: 0.5; pointer-events: none;
+    }
+    #tpatab-hierarchy .hv-canvas {
+      position: absolute; inset: 0; cursor: grab; user-select: none;
+    }
+    #tpatab-hierarchy .hv-canvas.panning { cursor: grabbing; }
+    #tpatab-hierarchy .hv-canvas-inner {
+      position: absolute; top: 0; left: 0; transform-origin: 0 0;
+    }
+    #tpatab-hierarchy .hv-edge-layer {
+      position: absolute; pointer-events: none; top: 0; left: 0; overflow: visible;
+    }
+    #tpatab-hierarchy .hv-edge {
+      fill: none; stroke: var(--tp-hairline-strong); stroke-width: 1.5;
+    }
+
+    /* Node card */
+    #tpatab-hierarchy .hv-node {
+      position: absolute; width: 240px;
+      background: var(--tp-surface-2);
+      border: 1px solid var(--tp-hairline-strong);
+      border-radius: 10px;
+      cursor: grab;
+      transition: transform 220ms cubic-bezier(.2,.7,.2,1),
+                  box-shadow 160ms, border-color 160ms, opacity 160ms;
+      display: flex; overflow: hidden;
+    }
+    #tpatab-hierarchy .hv-node:hover { border-color: var(--tp-ink-4); box-shadow: 0 6px 24px rgba(0,0,0,0.35); }
+    #tpatab-hierarchy .hv-node.dragging {
+      cursor: grabbing; z-index: 100;
+      box-shadow: 0 18px 48px rgba(0,0,0,0.5);
+      border-color: var(--tp-ink-3); transition: none;
+    }
+    #tpatab-hierarchy .hv-node.selected {
+      border-color: color-mix(in oklch, var(--rb-blue) 70%, var(--tp-hairline-strong));
+      box-shadow: 0 0 0 1px color-mix(in oklch, var(--rb-blue) 70%, transparent),
+                  0 8px 28px rgba(0,0,0,0.4);
+    }
+    #tpatab-hierarchy .hv-node.drop-valid {
+      border-color: var(--rb-green);
+      box-shadow: 0 0 0 2px color-mix(in oklch, var(--rb-green) 50%, transparent),
+                  0 6px 24px rgba(0,0,0,0.4);
+    }
+    #tpatab-hierarchy .hv-node.drop-invalid { border-color: var(--rb-red); opacity: 0.45; }
+    #tpatab-hierarchy .hv-node.search-dim { opacity: 0.18; }
+    #tpatab-hierarchy .hv-node.search-hit {
+      border-color: color-mix(in oklch, var(--rb-yellow) 70%, var(--tp-hairline-strong));
+      box-shadow: 0 0 0 1px color-mix(in oklch, var(--rb-yellow) 70%, transparent);
+    }
+    #tpatab-hierarchy .hv-node-stripe {
+      width: 4px; flex-shrink: 0; background: var(--rank-color, var(--rb-blue));
+    }
+    #tpatab-hierarchy .hv-node-body {
+      flex: 1; padding: 12px 14px;
+      display: flex; flex-direction: column; gap: 8px; min-width: 0;
+    }
+    #tpatab-hierarchy .hv-node-row { display: flex; align-items: center; gap: 10px; }
+    #tpatab-hierarchy .hv-node-avatar {
+      width: 32px; height: 32px; border-radius: 99px;
+      display: grid; place-items: center; flex-shrink: 0;
+      font-family: var(--tp-mono); font-size: 11px; font-weight: 500;
+      color: var(--tp-ink-1);
+      border: 1px solid var(--tp-hairline-strong);
+      background: var(--tp-surface);
+    }
+    #tpatab-hierarchy .hv-node-id { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+    #tpatab-hierarchy .hv-node-name {
+      font-size: 13px; font-weight: 500; color: var(--tp-ink-1);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      letter-spacing: -0.01em;
+    }
+    #tpatab-hierarchy .hv-node-rank {
+      font-family: var(--tp-mono); font-size: 10px;
+      color: var(--tp-ink-3); text-transform: uppercase; letter-spacing: 0.06em;
+      display: flex; align-items: center; gap: 6px;
+    }
+    #tpatab-hierarchy .hv-node-rank .hv-rank-dot {
+      width: 5px; height: 5px; border-radius: 99px;
+      background: var(--rank-color, var(--rb-blue));
+      display: inline-block;
+    }
+    #tpatab-hierarchy .hv-node-stats {
+      display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;
+      padding-top: 8px; border-top: 1px solid var(--tp-hairline);
+    }
+    #tpatab-hierarchy .hv-node-stat { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+    #tpatab-hierarchy .hv-node-stat-val {
+      font-family: var(--tp-mono); font-size: 12px; color: var(--tp-ink-1);
+      font-variant-numeric: tabular-nums; font-weight: 500;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    #tpatab-hierarchy .hv-node-stat-lbl {
+      font-family: var(--tp-mono); font-size: 9px; color: var(--tp-ink-4);
+      text-transform: uppercase; letter-spacing: 0.06em;
+    }
+    #tpatab-hierarchy .hv-downline-badge {
+      position: absolute; bottom: -8px; right: 10px;
+      font-family: var(--tp-mono); font-size: 10px; color: var(--tp-ink-2);
+      background: var(--tp-surface-3);
+      border: 1px solid var(--tp-hairline-strong);
+      padding: 2px 7px; border-radius: 99px;
+      display: inline-flex; align-items: center; gap: 4px;
+      pointer-events: none;
+    }
+    #tpatab-hierarchy .hv-downline-badge svg { color: var(--tp-ink-3); }
+
+    /* Detail panel */
+    #tpatab-hierarchy .hv-detail {
+      position: absolute; right: 16px; top: 70px; bottom: 16px;
+      width: 340px;
+      background: var(--tp-surface);
+      border: 1px solid var(--tp-hairline-strong);
+      border-radius: 10px;
+      padding: 20px 22px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+      display: flex; flex-direction: column; gap: 18px;
+      overflow-y: auto; z-index: 50;
+    }
+    #tpatab-hierarchy .hv-detail-hd { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+    #tpatab-hierarchy .hv-detail-close {
+      appearance: none; cursor: pointer; background: transparent;
+      border: 1px solid transparent; color: var(--tp-ink-3);
+      width: 26px; height: 26px; border-radius: 6px;
+      display: grid; place-items: center; transition: all 100ms;
+      font-size: 18px; line-height: 1;
+    }
+    #tpatab-hierarchy .hv-detail-close:hover { color: var(--tp-ink-1); background: var(--tp-surface-2); border-color: var(--tp-hairline); }
+    #tpatab-hierarchy .hv-detail-title { display: flex; align-items: center; gap: 12px; }
+    #tpatab-hierarchy .hv-detail-avatar {
+      width: 44px; height: 44px; border-radius: 99px;
+      display: grid; place-items: center; flex-shrink: 0;
+      font-family: var(--tp-mono); font-size: 13px; font-weight: 500;
+      color: var(--tp-ink-1);
+      border: 1px solid var(--tp-hairline-strong);
+      background: var(--tp-surface-2);
+    }
+    #tpatab-hierarchy .hv-detail-name-block { display: flex; flex-direction: column; gap: 3px; }
+    #tpatab-hierarchy .hv-detail-name { font-size: 16px; font-weight: 600; letter-spacing: -0.01em; color: var(--tp-ink-1); }
+    #tpatab-hierarchy .hv-detail-rank-sub {
+      font-family: var(--tp-mono); font-size: 10px; color: var(--tp-ink-3);
+      text-transform: uppercase; letter-spacing: 0.06em;
+      display: flex; align-items: center; gap: 6px;
+    }
+    #tpatab-hierarchy .hv-detail-rank-sub b { color: var(--tp-ink-2); font-weight: 500; }
+    #tpatab-hierarchy .hv-rank-dot { width: 6px; height: 6px; border-radius: 99px; display: inline-block; }
+    #tpatab-hierarchy .hv-field { display: flex; flex-direction: column; gap: 6px; }
+    #tpatab-hierarchy .hv-field-lbl {
+      font-family: var(--tp-mono); font-size: 10px; color: var(--tp-ink-3);
+      text-transform: uppercase; letter-spacing: 0.08em;
+    }
+    #tpatab-hierarchy .hv-field input, #tpatab-hierarchy .hv-field select {
+      appearance: none; background: var(--tp-surface-2);
+      border: 1px solid var(--tp-hairline-strong); color: var(--tp-ink-1);
+      padding: 9px 12px; border-radius: 7px;
+      font-family: var(--tp-sans); font-size: 13px;
+      outline: none; transition: border-color 120ms; width: 100%;
+    }
+    #tpatab-hierarchy .hv-field select {
+      font-family: var(--tp-mono); font-size: 12px; cursor: pointer;
+    }
+    #tpatab-hierarchy .hv-field input:focus, #tpatab-hierarchy .hv-field select:focus {
+      border-color: color-mix(in oklch, var(--rb-blue) 60%, var(--tp-hairline-strong));
+    }
+    #tpatab-hierarchy .hv-block { display: flex; flex-direction: column; gap: 8px; }
+    #tpatab-hierarchy .hv-sec-hd { display: flex; align-items: baseline; justify-content: space-between; }
+    #tpatab-hierarchy .hv-sec-lbl {
+      font-family: var(--tp-mono); font-size: 10px; color: var(--tp-ink-3);
+      text-transform: uppercase; letter-spacing: 0.08em;
+    }
+    #tpatab-hierarchy .hv-sec-meta { font-family: var(--tp-mono); font-size: 10px; color: var(--tp-ink-4); }
+    #tpatab-hierarchy .hv-kpi-mini-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 1px;
+      background: var(--tp-hairline);
+      border: 1px solid var(--tp-hairline);
+      border-radius: 8px; overflow: hidden;
+    }
+    #tpatab-hierarchy .hv-kpi-mini {
+      background: var(--tp-surface-2); padding: 10px 12px;
+      display: flex; flex-direction: column; gap: 4px;
+    }
+    #tpatab-hierarchy .hv-kpi-mini-lbl {
+      font-family: var(--tp-mono); font-size: 9px;
+      color: var(--tp-ink-3); text-transform: uppercase; letter-spacing: 0.08em;
+      display: flex; align-items: center; gap: 5px;
+    }
+    #tpatab-hierarchy .hv-kpi-mini-lbl .swatch { width: 5px; height: 5px; border-radius: 1px; }
+    #tpatab-hierarchy .hv-kpi-mini-val {
+      font-family: var(--tp-mono); font-size: 16px; font-weight: 500;
+      font-variant-numeric: tabular-nums; letter-spacing: -0.01em;
+      color: var(--tp-ink-1);
+    }
+    #tpatab-hierarchy .hv-kpi-mini-sub { font-family: var(--tp-mono); font-size: 10px; color: var(--tp-ink-3); }
+    #tpatab-hierarchy .hv-direct-list {
+      display: flex; flex-direction: column;
+      border: 1px solid var(--tp-hairline);
+      border-radius: 8px; overflow: hidden;
+    }
+    #tpatab-hierarchy .hv-direct-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 12px; background: var(--tp-surface-2);
+      border-bottom: 1px solid var(--tp-hairline);
+    }
+    #tpatab-hierarchy .hv-direct-row:last-child { border-bottom: 0; }
+    #tpatab-hierarchy .hv-direct-avatar {
+      width: 22px; height: 22px; border-radius: 99px;
+      display: grid; place-items: center; flex-shrink: 0;
+      font-family: var(--tp-mono); font-size: 9px; font-weight: 500;
+      border: 1px solid var(--tp-hairline-strong);
+      background: var(--tp-surface);
+    }
+    #tpatab-hierarchy .hv-direct-nm { flex: 1; min-width: 0; }
+    #tpatab-hierarchy .hv-direct-nm-name { font-size: 12px; color: var(--tp-ink-1); }
+    #tpatab-hierarchy .hv-direct-nm-rank {
+      font-family: var(--tp-mono); font-size: 9px;
+      color: var(--tp-ink-3); text-transform: uppercase; letter-spacing: 0.06em;
+    }
+    #tpatab-hierarchy .hv-direct-ap {
+      font-family: var(--tp-mono); font-size: 11px; color: var(--tp-ink-2);
+      font-variant-numeric: tabular-nums;
+    }
+    #tpatab-hierarchy .hv-actions { display: flex; gap: 8px; margin-top: auto; }
+    #tpatab-hierarchy .hv-actions .hv-btn { flex: 1; justify-content: center; }
+
+    /* Overlay messages (loading / error / empty) */
+    #tpatab-hierarchy .hv-overlay-msg {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: var(--tp-mono); font-size: 12px;
+      color: var(--tp-ink-3); padding: 10px 16px;
+      background: var(--tp-surface); border: 1px solid var(--tp-hairline-strong);
+      border-radius: 8px; z-index: 10;
+    }
+
+    /* Confirm modal */
+    #tpatab-hierarchy .hv-modal-layer {
+      position: fixed; inset: 0; z-index: 9999;
+      background: rgba(0,0,0,0.55);
+      display: grid; place-items: center;
+      backdrop-filter: blur(4px);
+    }
+    #tpatab-hierarchy .hv-modal {
+      width: min(440px, calc(100vw - 40px));
+      background: var(--tp-surface);
+      border: 1px solid var(--tp-hairline-strong);
+      border-radius: 12px;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+      display: flex; flex-direction: column;
+    }
+    #tpatab-hierarchy .hv-modal-hd {
+      padding: 18px 22px;
+      border-bottom: 1px solid var(--tp-hairline);
+      font-family: var(--tp-sans); font-size: 16px; font-weight: 600;
+      color: var(--tp-ink-1);
+    }
+    #tpatab-hierarchy .hv-modal-body {
+      padding: 18px 22px; color: var(--tp-ink-2);
+      font-size: 13px; line-height: 1.5;
+    }
+    #tpatab-hierarchy .hv-modal-body b { color: var(--tp-ink-1); font-weight: 600; }
+    #tpatab-hierarchy .hv-modal-foot {
+      display: flex; justify-content: flex-end; gap: 8px;
+      padding: 14px 18px; border-top: 1px solid var(--tp-hairline);
+    }
+
+    @media (max-width: 768px) {
+      #tpatab-hierarchy .hv-app { height: calc(100vh - 160px); }
+      #tpatab-hierarchy .hv-detail { left: 12px; right: 12px; width: auto; top: 90px; }
+      #tpatab-hierarchy .hv-search input { width: 160px; }
+      #tpatab-hierarchy .hv-hdr-stat { padding-right: 10px; }
+      #tpatab-hierarchy .hv-hdr-stat-val { font-size: 13px; }
+    }
+
     /* Footer */
     #tpatab-performance .tp-foot, #tpatab-agents .tp-foot, #tpatab-policies .tp-foot {
       margin-top: 36px; padding-top: 16px;
@@ -2948,7 +3358,7 @@
       }
       #panel-teamperf .tp-admin-tabs::-webkit-scrollbar { display: none; }
       #panel-teamperf .tp-admin-tab { padding: 10px 12px; font-size: 11px; flex-shrink: 0; white-space: nowrap; }
-      #tpatab-performance, #tpatab-agents, #tpatab-policies { padding: 16px 12px 24px; margin: 0; }
+      #tpatab-performance, #tpatab-agents, #tpatab-policies, #tpatab-hierarchy { padding: 16px 12px 24px; margin: 0; }
       #tpatab-performance .tp-grid-12, #tpatab-agents .tp-grid-12, #tpatab-policies .tp-grid-12 { grid-template-columns: 1fr; }
       #tpatab-performance .tp-lb, #tpatab-performance .tp-carriers, #tpatab-performance .tp-compare, #tpatab-performance .tp-kpi-panel,
       #tpatab-agents .tp-lb,
@@ -12922,7 +13332,8 @@
           <div class="tp-admin-tabs">
             <button class="tp-admin-tab active" data-tpatab="performance">Performance Dashboard</button>
             <button class="tp-admin-tab" data-tpatab="policies">Policies</button>
-            <button class="tp-admin-tab" data-tpatab="agents">Agent Profiles</button>
+            <button class="tp-admin-tab" data-tpatab="hierarchy">Agent Hierarchy</button>
+            <button class="tp-admin-tab" data-tpatab="agents" data-admin-only="true">Agent Profiles</button>
           </div>
 
           <!-- Policies tab — rendered by the React app at #tpPoliciesRoot -->
@@ -12935,8 +13346,13 @@
             <div id="tpDashboardRoot"></div>
           </div>
 
-          <!-- Agent Profiles tab — same Kairos design system, separate React mount -->
-          <div class="tp-admin-panel" id="tpatab-agents">
+          <!-- Agent Hierarchy tab — tree + drag-to-reparent + manager grants -->
+          <div class="tp-admin-panel" id="tpatab-hierarchy">
+            <div id="tpHierarchyRoot"></div>
+          </div>
+
+          <!-- Agent Profiles tab — admin-only, hidden for managers -->
+          <div class="tp-admin-panel" id="tpatab-agents" data-admin-only="true">
             <div id="tpAgentsRoot"></div>
           </div>
         </div>
@@ -13728,6 +14144,23 @@
         const isWtAdmin = WT_ADMIN_EMAILS.includes((currentUser.email || '').toLowerCase());
         if (wtBtn) wtBtn.style.display = isWtAdmin ? '' : 'none';
         if (tpBtn) tpBtn.style.display = isWtAdmin ? '' : 'none';
+        // Managers (agent_profiles.is_manager === true) also get the Team
+        // Dashboard sidebar button, but NOT the Weekly Tracker. Async because
+        // it needs a profile fetch — reveal once we know.
+        if (!isWtAdmin && tpBtn && currentUser.id) {
+          (async () => {
+            try {
+              const r = await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?select=is_manager&user_id=eq.' + encodeURIComponent(currentUser.id) + '&limit=1', {
+                headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + (accessToken || SUPABASE_KEY) }
+              });
+              if (!r.ok) return;
+              const rows = await r.json();
+              if (rows && rows[0] && rows[0].is_manager === true) {
+                tpBtn.style.display = '';
+              }
+            } catch (e) { /* silent — sidebar just stays hidden */ }
+          })();
+        }
         // Admin-only landing: when the admin signs in for the first time
         // this session, snap them to Team Dashboard. Everyone else stays
         // on the default Tracker. Tracked in sessionStorage so navigating
@@ -21230,6 +21663,31 @@
         const u = window.currentUser;
         return !!(u && TP_ADMIN_EMAILS.includes((u.email || '').toLowerCase()));
       }
+      // Manager check uses agent_profiles.is_manager — but we don't have
+      // profiles loaded synchronously when the gate decides whether to show
+      // the panel. Fetch once and cache for this page load.
+      let _managerFlag = null;
+      async function isManagerByProfile() {
+        if (_managerFlag !== null) return _managerFlag;
+        const u = window.currentUser;
+        if (!u || !u.id) { _managerFlag = false; return false; }
+        try {
+          const r = await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?select=is_manager&user_id=eq.' + encodeURIComponent(u.id) + '&limit=1', {
+            headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + (window.accessToken || SUPABASE_KEY) }
+          });
+          if (!r.ok) { _managerFlag = false; return false; }
+          const rows = await r.json();
+          _managerFlag = !!(rows && rows[0] && rows[0].is_manager === true);
+          return _managerFlag;
+        } catch (e) { _managerFlag = false; return false; }
+      }
+
+      function applyRoleVisibility(adminMode) {
+        // Hide admin-only tabs (Agent Profiles) when in manager mode.
+        document.querySelectorAll('#panel-teamperf [data-admin-only="true"]').forEach(el => {
+          el.style.display = adminMode ? '' : 'none';
+        });
+      }
 
       function wireUp() {
         document.querySelectorAll('#panel-teamperf .tp-admin-tab').forEach(tab => {
@@ -21242,24 +21700,28 @@
             if (which === 'performance' && window.tpMountDashboard) window.tpMountDashboard();
             if (which === 'agents' && window.tpMountAgents) window.tpMountAgents();
             if (which === 'policies' && window.tpMountPolicies) window.tpMountPolicies();
+            if (which === 'hierarchy' && window.tpMountHierarchy) window.tpMountHierarchy();
           });
         });
       }
 
-      window.loadTeamPerf = function () {
+      window.loadTeamPerf = async function () {
         const gate = document.getElementById('tpGate');
         const content = document.getElementById('tpContent');
         if (!gate || !content) return;
-        if (!isAdmin()) {
+        const adminMode = isAdmin();
+        const managerMode = adminMode ? false : await isManagerByProfile();
+        if (!adminMode && !managerMode) {
           gate.style.display = 'block';
           content.style.display = 'none';
           return;
         }
+        applyRoleVisibility(adminMode);
         gate.style.display = 'none';
         content.style.display = 'block';
         if (!initialized) { wireUp(); initialized = true; }
-        // Performance is the default-active tab — mount it first. Policies +
-        // Agents lazy-mount when their tabs are clicked.
+        // Performance is the default-active tab — mount it first. Other tabs
+        // lazy-mount when clicked.
         if (window.tpMountDashboard) window.tpMountDashboard();
       };
     })();
@@ -21373,9 +21835,54 @@
         return res.json();
       }
       async function fetchAgentProfiles() {
-        const res = await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?select=user_id,agent_name,comp_level,training_complete,annual_goal&order=agent_name.asc', { headers: HDRS });
+        const res = await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?select=user_id,agent_name,comp_level,training_complete,annual_goal,manager_user_id,is_manager&order=agent_name.asc', { headers: HDRS });
         if (!res.ok) return [];
         return res.json();
+      }
+
+      // ─── Role / downline helpers ──────────────────────────────────────────
+      // Admin is hardcoded — only the owner email. Managers are agent_profiles
+      // rows with is_manager=true. Permissions:
+      //   - Admin: full edit + see everything
+      //   - Manager: VIEW-only access to Team Performance, Policies, Agent
+      //     Hierarchy, scoped to themselves + their entire subtree downline.
+      //   - Regular agent: My Tracker only (no Team Performance entry at all).
+      const TP_ADMIN_EMAIL = 'dev@kairos-financial.com';
+      function isCurrentUserAdmin() {
+        const email = ((window.currentUser && window.currentUser.email) || '').toLowerCase();
+        return email === TP_ADMIN_EMAIL;
+      }
+      function findOwnProfile(profiles) {
+        const uid = (window.currentUser && window.currentUser.id) || null;
+        if (!uid || !Array.isArray(profiles)) return null;
+        return profiles.find(p => p.user_id === uid) || null;
+      }
+      function isCurrentUserManager(profiles) {
+        if (isCurrentUserAdmin()) return true; // admin trumps everything
+        const me = findOwnProfile(profiles);
+        return !!(me && me.is_manager === true);
+      }
+      // Collect entire subtree (BFS) of user_ids that report (directly or
+      // transitively) to rootUserId. `rootUserId` itself is INCLUDED so a
+      // manager always sees their own data alongside their downline.
+      function collectDownlineUserIds(profiles, rootUserId) {
+        const out = new Set();
+        if (!rootUserId || !Array.isArray(profiles)) return out;
+        out.add(rootUserId);
+        const childrenBy = new Map();
+        profiles.forEach(p => {
+          if (!p || !p.manager_user_id) return;
+          const arr = childrenBy.get(p.manager_user_id) || [];
+          arr.push(p.user_id);
+          childrenBy.set(p.manager_user_id, arr);
+        });
+        const queue = [rootUserId];
+        while (queue.length) {
+          const cur = queue.shift();
+          const kids = childrenBy.get(cur) || [];
+          kids.forEach(k => { if (!out.has(k)) { out.add(k); queue.push(k); } });
+        }
+        return out;
       }
       async function fetchVideoProgress() {
         const res = await fetch(SUPABASE_URL + '/rest/v1/video_progress?select=user_id,video_id', { headers: HDRS });
@@ -22568,7 +23075,21 @@
                 fetchAgentProfiles(), fetchPolicies(), fetchKpis()
               ]);
               if (cancelled) return;
-              const builtAgents = buildAgents(profiles, policies, kpis);
+              // Scope to manager's downline (self + entire subtree) when the
+              // signed-in user isn't admin. Admin sees the full org as before.
+              let scopedProfiles = profiles;
+              let scopedPolicies = policies;
+              let scopedKpis = kpis;
+              if (!isCurrentUserAdmin() && isCurrentUserManager(profiles)) {
+                const myUid = (window.currentUser && window.currentUser.id) || null;
+                const downline = collectDownlineUserIds(profiles, myUid);
+                scopedProfiles = profiles.filter(p => downline.has(p.user_id));
+                scopedPolicies = policies.filter(p => p.user_id && downline.has(p.user_id));
+                // KPIs key off sales_rep (name), not user_id, so map to names.
+                const nameSet = new Set(scopedProfiles.map(p => p.agent_name).filter(Boolean));
+                scopedKpis = kpis.filter(k => k.sales_rep && nameSet.has(k.sales_rep));
+              }
+              const builtAgents = buildAgents(scopedProfiles, scopedPolicies, scopedKpis);
               const builtTeam = buildTeam(builtAgents);
               setAgents(builtAgents);
               setTeam(builtTeam);
@@ -23267,10 +23788,18 @@
           setLoading(true);
           try {
             const [p, a] = await Promise.all([fetchPolicies(), fetchAgentProfiles()]);
-            setPolicies(p);
-            setAgents(a);
+            // Manager scope: trim to manager's downline (self + subtree).
+            let scopedA = a, scopedP = p;
+            if (!isCurrentUserAdmin() && isCurrentUserManager(a)) {
+              const myUid = (window.currentUser && window.currentUser.id) || null;
+              const downline = collectDownlineUserIds(a, myUid);
+              scopedA = a.filter(x => downline.has(x.user_id));
+              scopedP = p.filter(x => x.user_id && downline.has(x.user_id));
+            }
+            setPolicies(scopedP);
+            setAgents(scopedA);
             // Default filters.reps to all known agents the first time we get them
-            setFilters(f => f.reps.length === 0 ? Object.assign({}, f, { reps: a.map(x => x.user_id) }) : f);
+            setFilters(f => f.reps.length === 0 ? Object.assign({}, f, { reps: scopedA.map(x => x.user_id) }) : f);
           } catch (e) {
             console.error('TP policies load failed:', e);
           } finally { setLoading(false); }
@@ -23564,10 +24093,14 @@
                             <td><PolicyStatusBadge status={p.status} /></td>
                             <td className="mono">{fmtDateShort(p.effective_date)}</td>
                             <td>
-                              <PolicyRowActions
-                                policy={p}
-                                onEdit={(pp) => setOpenPolicy(pp)}
-                              />
+                              {isCurrentUserAdmin() ? (
+                                <PolicyRowActions
+                                  policy={p}
+                                  onEdit={(pp) => setOpenPolicy(pp)}
+                                />
+                              ) : (
+                                <span style={{fontFamily:'var(--tp-mono)', fontSize:10, color:'var(--tp-ink-4)', textTransform:'uppercase', letterSpacing:'0.06em'}}>View only</span>
+                              )}
                             </td>
                           </tr>
                         );
@@ -23607,10 +24140,734 @@
         );
       }
 
+      // ─── AGENT HIERARCHY ─────────────────────────────────────────────
+      // Tree view of agent_profiles linked by manager_user_id.
+      //   • Admin: drag-to-reparent, grant/revoke manager access, edit
+      //     name + comp_level, view detail panel for every agent.
+      //   • Manager (is_manager === true): VIEW-only, scoped to themselves +
+      //     entire downline. No drag, no buttons, no edit fields.
+      const HV_NODE_W = 240;
+      const HV_NODE_H = 132;
+      const HV_H_GAP = 28;
+      const HV_V_GAP = 76;
+      const HV_CANVAS_PAD = 80;
+
+      function hvFmtMoney(n) {
+        if (n >= 1e6) return '$' + (n / 1e6).toFixed(2) + 'M';
+        if (n >= 1e3) return '$' + Math.round(n / 1e3) + 'K';
+        return '$' + Math.round(n || 0);
+      }
+      function hvInitials(name) {
+        return (name || '').replace(/\(.*?\)/g, '').trim()
+          .split(/\s+/).slice(0, 2).map(s => s[0] || '').join('').toUpperCase() || '··';
+      }
+      // Three-tier rank: admin (purple, owner-only) → manager (blue, granted)
+      // → agent (yellow, default). `_is_admin` is tagged client-side in
+      // hvAttachStats since admin identity lives in the email check, not the
+      // agent_profiles table.
+      function hvRankFor(profile) {
+        if (profile && profile._is_admin) return { key: 'ADM', label: 'Admin', color: 'var(--rb-purple)' };
+        if (profile && profile.is_manager) return { key: 'MGR', label: 'Manager', color: 'var(--rb-blue)' };
+        return { key: 'AGT', label: 'Agent', color: 'var(--rb-yellow)' };
+      }
+      function hvAvatarTint(profile) {
+        return 'color-mix(in oklch, ' + hvRankFor(profile).color + ' 22%, var(--tp-surface-2))';
+      }
+
+      function hvBuildIndex(profiles) {
+        const byId = new Map();
+        profiles.forEach(p => byId.set(p.user_id, Object.assign({}, p, { children: [] })));
+        let roots = [];
+        for (const a of byId.values()) {
+          if (a.manager_user_id && byId.has(a.manager_user_id)) {
+            byId.get(a.manager_user_id).children.push(a);
+          } else {
+            roots.push(a);
+          }
+        }
+        for (const n of byId.values()) {
+          n.children.sort((a, b) => {
+            // Managers first, then by name for stable layout.
+            const am = a.is_manager ? 1 : 0, bm = b.is_manager ? 1 : 0;
+            if (am !== bm) return bm - am;
+            return (a.agent_name || '').localeCompare(b.agent_name || '');
+          });
+        }
+        return { byId, roots };
+      }
+
+      // Reingold-Tilford-ish tidy tree against a synthetic super-root so
+      // multiple top-level agents lay out horizontally without overlap.
+      function hvLayout(byId, roots) {
+        const positions = new Map();
+        if (!roots.length) return positions;
+
+        function measure(node) {
+          if (!node.children.length) return HV_NODE_W;
+          const widths = node.children.map(measure);
+          const total = widths.reduce((a, w) => a + w, 0) + HV_H_GAP * (node.children.length - 1);
+          return Math.max(HV_NODE_W, total);
+        }
+        function place(node, depth, leftEdge) {
+          const width = measure(node);
+          if (!node.children.length) {
+            positions.set(node.user_id, { x: leftEdge + (width - HV_NODE_W) / 2, y: depth * (HV_NODE_H + HV_V_GAP), w: width });
+            return;
+          }
+          let cursor = leftEdge;
+          for (const c of node.children) {
+            const cw = measure(c);
+            place(c, depth + 1, cursor);
+            cursor += cw + HV_H_GAP;
+          }
+          const first = positions.get(node.children[0].user_id);
+          const last = positions.get(node.children[node.children.length - 1].user_id);
+          const centerX = (first.x + last.x + HV_NODE_W) / 2 - HV_NODE_W / 2;
+          positions.set(node.user_id, { x: centerX, y: depth * (HV_NODE_H + HV_V_GAP), w: width });
+        }
+
+        let cursor = 0;
+        for (const r of roots) {
+          const w = measure(r);
+          place(r, 0, cursor);
+          cursor += w + HV_H_GAP;
+        }
+        return positions;
+      }
+
+      function hvRollup(rootId, byId) {
+        const stack = [rootId];
+        let ap = 0, deals = 0, count = 0;
+        const seen = new Set();
+        while (stack.length) {
+          const id = stack.pop();
+          if (seen.has(id)) continue;
+          seen.add(id);
+          const n = byId.get(id);
+          if (!n) continue;
+          if (id !== rootId) { ap += (n._ap || 0); deals += (n._deals || 0); count++; }
+          for (const c of n.children) stack.push(c.user_id);
+        }
+        return { downlineCount: count, downlineAp: ap, downlineDeals: deals };
+      }
+
+      function hvIsDescendantOf(descId, ancId, byId) {
+        let cur = byId.get(descId);
+        while (cur) {
+          if (cur.user_id === ancId) return true;
+          if (!cur.manager_user_id) return false;
+          cur = byId.get(cur.manager_user_id);
+        }
+        return false;
+      }
+
+      // Compute per-agent YTD AP + deals from raw policies (YTD = current
+      // calendar year). Mutates the profile object with `_ap` / `_deals`.
+      // Also tags the signed-in admin's own profile with `_is_admin` so the
+      // owner shows as the top tier even though there's no is_admin column.
+      function hvAttachStats(profiles, policies) {
+        const yearStart = new Date(new Date().getFullYear(), 0, 1);
+        const byUser = {};
+        (policies || []).forEach(p => {
+          if (!p.user_id) return;
+          const d = parsePolicyDate(p.policy_date || p.created_at);
+          if (!d || d < yearStart) return;
+          const cur = byUser[p.user_id] || { ap: 0, deals: 0 };
+          cur.ap += parseFloat(p.annual_premium || 0);
+          cur.deals += 1;
+          byUser[p.user_id] = cur;
+        });
+        const adminUid = isCurrentUserAdmin() && window.currentUser ? window.currentUser.id : null;
+        return profiles.map(p => Object.assign({}, p, {
+          _ap: (byUser[p.user_id] && byUser[p.user_id].ap) || 0,
+          _deals: (byUser[p.user_id] && byUser[p.user_id].deals) || 0,
+          _is_admin: !!(adminUid && p.user_id === adminUid),
+        }));
+      }
+
+      function HvNode({ profile, pos, byId, selected, searchState, dragState, canEdit, onMouseDown, onClick }) {
+        const rank = hvRankFor(profile);
+        const roll = useMemo(() => hvRollup(profile.user_id, byId), [profile.user_id, byId]);
+        const cls = ['hv-node'];
+        if (selected) cls.push('selected');
+        if (dragState.draggingId === profile.user_id) cls.push('dragging');
+        if (dragState.draggingId && dragState.draggingId !== profile.user_id) {
+          if (dragState.invalidTargets.has(profile.user_id)) cls.push('drop-invalid');
+          else if (dragState.hoverTargetId === profile.user_id) cls.push('drop-valid');
+        }
+        if (searchState.active) {
+          if (searchState.hits.has(profile.user_id)) cls.push('search-hit'); else cls.push('search-dim');
+        }
+        let transform = 'translate3d(' + pos.x + 'px, ' + pos.y + 'px, 0)';
+        if (dragState.draggingId === profile.user_id) {
+          transform = 'translate3d(' + (pos.x + dragState.dx) + 'px, ' + (pos.y + dragState.dy) + 'px, 0)';
+        }
+        return (
+          <div className={cls.join(' ')}
+            style={{ transform, width: HV_NODE_W, '--rank-color': rank.color }}
+            onMouseDown={canEdit ? (e) => onMouseDown(e, profile.user_id) : null}
+            onClick={(e) => { e.stopPropagation(); onClick(profile.user_id); }}>
+            <div className="hv-node-stripe"></div>
+            <div className="hv-node-body">
+              <div className="hv-node-row">
+                <div className="hv-node-avatar" style={{ background: hvAvatarTint(profile) }}>
+                  {hvInitials(profile.agent_name)}
+                </div>
+                <div className="hv-node-id">
+                  <div className="hv-node-name">{profile.agent_name || 'Unnamed'}</div>
+                  <div className="hv-node-rank">
+                    <span className="hv-rank-dot"></span>
+                    {rank.label}{profile.comp_level ? ' · ' + profile.comp_level + '%' : ''}
+                  </div>
+                </div>
+              </div>
+              <div className="hv-node-stats">
+                <div className="hv-node-stat">
+                  <div className="hv-node-stat-val">{hvFmtMoney(profile._ap || 0)}</div>
+                  <div className="hv-node-stat-lbl">AP YTD</div>
+                </div>
+                <div className="hv-node-stat">
+                  <div className="hv-node-stat-val">{profile._deals || 0}</div>
+                  <div className="hv-node-stat-lbl">Deals</div>
+                </div>
+                <div className="hv-node-stat">
+                  <div className="hv-node-stat-val">{roll.downlineCount}</div>
+                  <div className="hv-node-stat-lbl">Team</div>
+                </div>
+              </div>
+            </div>
+            {roll.downlineCount > 0 && (
+              <div className="hv-downline-badge">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                  <circle cx="9" cy="7" r="4"/>
+                </svg>
+                {roll.downlineCount}
+              </div>
+            )}
+          </div>
+        );
+      }
+
+      function HvEdgeLayer({ roots, byId, positions, bounds }) {
+        const edges = [];
+        function walk(node) {
+          const pp = positions.get(node.user_id);
+          if (!pp) return;
+          for (const c of node.children) {
+            const cp = positions.get(c.user_id);
+            if (!cp) continue;
+            const x1 = pp.x + HV_NODE_W / 2;
+            const y1 = pp.y + HV_NODE_H;
+            const x2 = cp.x + HV_NODE_W / 2;
+            const y2 = cp.y;
+            const midY = (y1 + y2) / 2;
+            const d = 'M ' + x1 + ' ' + y1 + ' C ' + x1 + ' ' + midY + ', ' + x2 + ' ' + midY + ', ' + x2 + ' ' + y2;
+            edges.push({ d, key: node.user_id + '-' + c.user_id });
+            walk(c);
+          }
+        }
+        roots.forEach(walk);
+        return (
+          <svg className="hv-edge-layer" width={bounds.width} height={bounds.height}>
+            {edges.map(e => <path key={e.key} d={e.d} className="hv-edge" />)}
+          </svg>
+        );
+      }
+
+      function HvDetailPanel({ profile, byId, profiles, canEdit, onClose, onUpdate, onReparent, onToggleManager }) {
+        if (!profile) return null;
+        const rank = hvRankFor(profile);
+        const roll = useMemo(() => hvRollup(profile.user_id, byId), [profile.user_id, byId, profiles]);
+        const directs = (byId.get(profile.user_id) || {}).children || [];
+        const parent = profile.manager_user_id ? byId.get(profile.manager_user_id) : null;
+        return (
+          <div className="hv-detail" onClick={(e) => e.stopPropagation()}>
+            <div className="hv-detail-hd">
+              <div className="hv-detail-title">
+                <div className="hv-detail-avatar" style={{ background: hvAvatarTint(profile) }}>
+                  {hvInitials(profile.agent_name)}
+                </div>
+                <div className="hv-detail-name-block">
+                  <div className="hv-detail-name">{profile.agent_name || 'Unnamed'}</div>
+                  <div className="hv-detail-rank-sub">
+                    <span className="hv-rank-dot" style={{background: rank.color}}></span>
+                    {rank.label}
+                    {parent && <> · reports to <b>{parent.agent_name}</b></>}
+                  </div>
+                </div>
+              </div>
+              <button className="hv-detail-close" onClick={onClose} aria-label="Close">×</button>
+            </div>
+
+            {canEdit && (
+              <>
+                <div className="hv-field">
+                  <label className="hv-field-lbl">Name</label>
+                  <input type="text" value={profile.agent_name || ''} onChange={(e) => onUpdate(profile.user_id, { agent_name: e.target.value })} />
+                </div>
+                <div className="hv-field">
+                  <label className="hv-field-lbl">Comp level (%)</label>
+                  <input type="number" min="0" max="200" value={profile.comp_level || ''} placeholder="e.g. 80"
+                    onChange={(e) => onUpdate(profile.user_id, { comp_level: e.target.value === '' ? null : parseInt(e.target.value, 10) })} />
+                </div>
+                <div className="hv-field">
+                  <label className="hv-field-lbl">Reports to</label>
+                  <select value={profile.manager_user_id || ''}
+                    onChange={(e) => onReparent(profile.user_id, e.target.value || null)}>
+                    <option value="">— Top of org —</option>
+                    {profiles
+                      .filter(a => a.user_id !== profile.user_id && !hvIsDescendantOf(a.user_id, profile.user_id, byId))
+                      .map(a => <option key={a.user_id} value={a.user_id}>{a.agent_name}</option>)}
+                  </select>
+                </div>
+              </>
+            )}
+
+            <div className="hv-block">
+              <div className="hv-sec-hd"><div className="hv-sec-lbl">Personal YTD</div></div>
+              <div className="hv-kpi-mini-grid">
+                <div className="hv-kpi-mini">
+                  <div className="hv-kpi-mini-lbl"><span className="swatch" style={{background:'var(--rb-green)'}}></span>AP Written</div>
+                  <div className="hv-kpi-mini-val">{hvFmtMoney(profile._ap || 0)}</div>
+                </div>
+                <div className="hv-kpi-mini">
+                  <div className="hv-kpi-mini-lbl"><span className="swatch" style={{background:'var(--rb-purple)'}}></span>Deals</div>
+                  <div className="hv-kpi-mini-val">{profile._deals || 0}</div>
+                </div>
+                <div className="hv-kpi-mini">
+                  <div className="hv-kpi-mini-lbl"><span className="swatch" style={{background:'var(--rb-blue)'}}></span>Avg Premium</div>
+                  <div className="hv-kpi-mini-val">{hvFmtMoney(Math.round((profile._ap || 0) / Math.max(profile._deals || 0, 1)))}</div>
+                </div>
+                <div className="hv-kpi-mini">
+                  <div className="hv-kpi-mini-lbl"><span className="swatch" style={{background:'var(--rb-orange)'}}></span>Comp</div>
+                  <div className="hv-kpi-mini-val">{profile.comp_level ? profile.comp_level + '%' : '—'}</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="hv-block">
+              <div className="hv-sec-hd"><div className="hv-sec-lbl">Downline rollup</div><div className="hv-sec-meta">{roll.downlineCount} agents</div></div>
+              <div className="hv-kpi-mini-grid" style={{gridTemplateColumns:'1fr 1fr'}}>
+                <div className="hv-kpi-mini">
+                  <div className="hv-kpi-mini-lbl"><span className="swatch" style={{background:'var(--rb-green)'}}></span>Team AP YTD</div>
+                  <div className="hv-kpi-mini-val">{hvFmtMoney(roll.downlineAp)}</div>
+                  <div className="hv-kpi-mini-sub">across {roll.downlineCount} agents</div>
+                </div>
+                <div className="hv-kpi-mini">
+                  <div className="hv-kpi-mini-lbl"><span className="swatch" style={{background:'var(--rb-purple)'}}></span>Team Deals</div>
+                  <div className="hv-kpi-mini-val">{roll.downlineDeals}</div>
+                  <div className="hv-kpi-mini-sub">{Math.round(roll.downlineDeals / Math.max(roll.downlineCount, 1))} avg / agent</div>
+                </div>
+              </div>
+            </div>
+
+            {directs.length > 0 && (
+              <div className="hv-block">
+                <div className="hv-sec-hd"><div className="hv-sec-lbl">Direct reports</div><div className="hv-sec-meta">{directs.length}</div></div>
+                <div className="hv-direct-list">
+                  {directs.map(d => (
+                    <div key={d.user_id} className="hv-direct-row">
+                      <div className="hv-direct-avatar" style={{background: hvAvatarTint(d)}}>{hvInitials(d.agent_name)}</div>
+                      <div className="hv-direct-nm">
+                        <div className="hv-direct-nm-name">{d.agent_name}</div>
+                        <div className="hv-direct-nm-rank">{hvRankFor(d).label}</div>
+                      </div>
+                      <div className="hv-direct-ap">{hvFmtMoney(d._ap || 0)}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {canEdit && !profile._is_admin && (
+              <div className="hv-actions">
+                <button
+                  className={'hv-btn ' + (profile.is_manager ? 'danger' : 'primary')}
+                  onClick={() => onToggleManager(profile)}>
+                  {profile.is_manager ? 'Revoke Manager Access' : 'Grant Manager Access'}
+                </button>
+              </div>
+            )}
+          </div>
+        );
+      }
+
+      function HierarchyView() {
+        const [theme, setTheme] = useState(initialTheme);
+        const [profiles, setProfiles] = useState([]);
+        const [policies, setPolicies] = useState([]);
+        const [loading, setLoading] = useState(true);
+        const [error, setError] = useState(null);
+        const [selectedId, setSelectedId] = useState(null);
+        const [search, setSearch] = useState('');
+        const [view, setView] = useState({ x: 80, y: 40, scale: 0.85 });
+        const [confirmFor, setConfirmFor] = useState(null); // { profile, grant: bool }
+        const wrapRef = useRef(null);
+        const panRef = useRef({ active: false });
+        const fittedRef = useRef(false);
+
+        const canEdit = isCurrentUserAdmin();
+
+        useEffect(() => {
+          const root = document.getElementById('tpatab-hierarchy');
+          if (root) root.setAttribute('data-tp-theme', theme);
+          document.documentElement.setAttribute('data-kf-theme', theme);
+          try { localStorage.setItem('kf_skin_theme_v1', theme); } catch (e) {}
+        }, [theme]);
+
+        const reload = async () => {
+          setLoading(true); setError(null);
+          try {
+            const [ps, pols] = await Promise.all([fetchAgentProfiles(), fetchPolicies()]);
+            // Scope for managers — show themselves + entire subtree only.
+            let scoped = ps;
+            if (!isCurrentUserAdmin() && isCurrentUserManager(ps)) {
+              const myUid = (window.currentUser && window.currentUser.id) || null;
+              const downline = collectDownlineUserIds(ps, myUid);
+              scoped = ps.filter(p => downline.has(p.user_id));
+            }
+            const withStats = hvAttachStats(scoped, pols);
+            setProfiles(withStats);
+            setPolicies(pols);
+            setLoading(false);
+          } catch (e) {
+            console.error('Hierarchy load failed:', e);
+            setError(e.message || String(e));
+            setLoading(false);
+          }
+        };
+        useEffect(() => { reload(); }, []);
+
+        const { byId, roots } = useMemo(() => hvBuildIndex(profiles), [profiles]);
+        const positions = useMemo(() => hvLayout(byId, roots), [byId, roots]);
+        const bounds = useMemo(() => {
+          let maxX = 0, maxY = 0;
+          for (const p of positions.values()) {
+            if (p.x + HV_NODE_W > maxX) maxX = p.x + HV_NODE_W;
+            if (p.y + HV_NODE_H > maxY) maxY = p.y + HV_NODE_H;
+          }
+          return { width: maxX + HV_CANVAS_PAD, height: maxY + HV_CANVAS_PAD };
+        }, [positions]);
+
+        // ── pan ──
+        const startPan = (e) => {
+          if (e.target.closest('.hv-node')) return;
+          panRef.current = { active: true, startX: e.clientX, startY: e.clientY, baseX: view.x, baseY: view.y };
+          if (wrapRef.current) wrapRef.current.classList.add('panning');
+        };
+        useEffect(() => {
+          function onMove(e) {
+            if (!panRef.current.active) return;
+            setView(v => Object.assign({}, v, {
+              x: panRef.current.baseX + (e.clientX - panRef.current.startX),
+              y: panRef.current.baseY + (e.clientY - panRef.current.startY),
+            }));
+          }
+          function onUp() {
+            if (panRef.current.active) {
+              panRef.current.active = false;
+              if (wrapRef.current) wrapRef.current.classList.remove('panning');
+            }
+          }
+          window.addEventListener('mousemove', onMove);
+          window.addEventListener('mouseup', onUp);
+          return () => { window.removeEventListener('mousemove', onMove); window.removeEventListener('mouseup', onUp); };
+        }, []);
+
+        // ── wheel zoom ──
+        useEffect(() => {
+          const el = wrapRef.current;
+          if (!el) return;
+          function onWheel(e) {
+            if (!e.ctrlKey && !e.metaKey && Math.abs(e.deltaX) > Math.abs(e.deltaY) * 0.5) {
+              e.preventDefault();
+              setView(v => Object.assign({}, v, { x: v.x - e.deltaX, y: v.y - e.deltaY }));
+              return;
+            }
+            e.preventDefault();
+            const rect = el.getBoundingClientRect();
+            const mx = e.clientX - rect.left, my = e.clientY - rect.top;
+            const factor = Math.exp(-e.deltaY * 0.0015);
+            setView(v => {
+              const ns = Math.max(0.3, Math.min(1.6, v.scale * factor));
+              const k = ns / v.scale;
+              return { scale: ns, x: mx - (mx - v.x) * k, y: my - (my - v.y) * k };
+            });
+          }
+          el.addEventListener('wheel', onWheel, { passive: false });
+          return () => el.removeEventListener('wheel', onWheel);
+        }, []);
+
+        const zoomBy = (dir) => {
+          setView(v => {
+            const el = wrapRef.current; if (!el) return v;
+            const r = el.getBoundingClientRect();
+            const mx = r.width / 2, my = r.height / 2;
+            const factor = dir > 0 ? 1.18 : 1 / 1.18;
+            const ns = Math.max(0.3, Math.min(1.6, v.scale * factor));
+            const k = ns / v.scale;
+            return { scale: ns, x: mx - (mx - v.x) * k, y: my - (my - v.y) * k };
+          });
+        };
+        const zoomFit = () => {
+          const el = wrapRef.current; if (!el) return;
+          const r = el.getBoundingClientRect();
+          const s = Math.min((r.width - 80) / Math.max(bounds.width, 1), (r.height - 80) / Math.max(bounds.height, 1), 1.1);
+          setView({ scale: s, x: (r.width - bounds.width * s) / 2, y: 40 });
+        };
+        useEffect(() => {
+          // Defer the auto-fit until profiles have actually loaded — fitting
+          // against the initial empty bounds (HV_CANVAS_PAD only) leaves the
+          // real cards rendered off-screen once data arrives.
+          if (!fittedRef.current && profiles.length > 0 && bounds.width > HV_CANVAS_PAD) {
+            fittedRef.current = true;
+            zoomFit();
+          }
+        }, [profiles.length, bounds.width, bounds.height]);
+
+        // ── drag-to-reparent (admin only) ──
+        const [dragState, setDragState] = useState({ draggingId: null, dx: 0, dy: 0, hoverTargetId: null, invalidTargets: new Set() });
+        const dragRef = useRef({});
+        const onNodeMouseDown = (e, id) => {
+          if (!canEdit) return;
+          if (e.button !== 0) return;
+          if (e.target.closest('button')) return;
+          e.stopPropagation(); e.preventDefault();
+          const invalid = new Set();
+          for (const a of profiles) {
+            if (a.user_id === id) continue;
+            if (hvIsDescendantOf(a.user_id, id, byId)) invalid.add(a.user_id);
+          }
+          dragRef.current = { startX: e.clientX, startY: e.clientY, scale: view.scale, id, invalid, lastHover: null };
+          setDragState({ draggingId: null, dx: 0, dy: 0, hoverTargetId: null, invalidTargets: invalid });
+        };
+        useEffect(() => {
+          function onMove(e) {
+            const dr = dragRef.current; if (!dr.id) return;
+            const rawDx = e.clientX - dr.startX, rawDy = e.clientY - dr.startY;
+            if (!dr.activated) { if (Math.hypot(rawDx, rawDy) < 5) return; dr.activated = true; }
+            const dx = rawDx / dr.scale, dy = rawDy / dr.scale;
+            // Find drop target (excluding dragging card itself)
+            const draggingEl = document.querySelector('[data-hv-agent-id="' + dr.id + '"]');
+            const prev = draggingEl ? draggingEl.style.pointerEvents : null;
+            if (draggingEl) draggingEl.style.pointerEvents = 'none';
+            const el = document.elementFromPoint(e.clientX, e.clientY);
+            if (draggingEl) draggingEl.style.pointerEvents = prev || '';
+            const card = el && el.closest('[data-hv-agent-id]');
+            const hoverId = (card && card.getAttribute('data-hv-agent-id') !== dr.id) ? card.getAttribute('data-hv-agent-id') : null;
+            setDragState(s => Object.assign({}, s, { draggingId: dr.id, dx, dy, hoverTargetId: hoverId }));
+            dr.lastHover = hoverId;
+          }
+          async function onUp() {
+            const dr = dragRef.current; if (!dr.id) return;
+            const dropped = dr.lastHover, activated = dr.activated;
+            dragRef.current = {};
+            setDragState({ draggingId: null, dx: 0, dy: 0, hoverTargetId: null, invalidTargets: new Set() });
+            if (activated && dropped && !dr.invalid.has(dropped) && dropped !== dr.id) {
+              await persistReparent(dr.id, dropped);
+            }
+          }
+          window.addEventListener('mousemove', onMove);
+          window.addEventListener('mouseup', onUp);
+          return () => { window.removeEventListener('mousemove', onMove); window.removeEventListener('mouseup', onUp); };
+        }, [canEdit, profiles, byId]);
+
+        // ── Supabase writes (admin only) ──
+        const writeHdrs = () => Object.assign({
+          'apikey': SUPABASE_KEY,
+          'Authorization': 'Bearer ' + (window.accessToken || SUPABASE_KEY),
+          'Content-Type': 'application/json',
+          'Prefer': 'return=minimal',
+        });
+        const persistPatch = async (userId, patch) => {
+          if (!canEdit) return;
+          try {
+            const r = await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?user_id=eq.' + encodeURIComponent(userId), {
+              method: 'PATCH', headers: writeHdrs(), body: JSON.stringify(patch)
+            });
+            if (!r.ok) {
+              const txt = await r.text().catch(() => '');
+              console.error('Hierarchy PATCH failed:', r.status, txt);
+              try { alert('Update failed (' + r.status + '). See console.'); } catch (_) {}
+              return;
+            }
+            await reload();
+          } catch (e) {
+            console.error('Hierarchy PATCH threw:', e);
+          }
+        };
+        const persistReparent = (userId, newManagerId) => persistPatch(userId, { manager_user_id: newManagerId });
+        const updateAgent = (userId, patch) => persistPatch(userId, patch);
+        const reparentFromDropdown = (userId, newManagerId) => persistPatch(userId, { manager_user_id: newManagerId });
+        const askToggleManager = (profile) => setConfirmFor({ profile, grant: !profile.is_manager });
+        const confirmToggle = async () => {
+          if (!confirmFor) return;
+          const { profile, grant } = confirmFor;
+          await persistPatch(profile.user_id, { is_manager: grant });
+          setConfirmFor(null);
+        };
+
+        // ── search ──
+        const searchHits = useMemo(() => {
+          const q = search.trim().toLowerCase();
+          if (!q) return new Set();
+          const hits = new Set();
+          for (const a of profiles) {
+            if ((a.agent_name || '').toLowerCase().includes(q)) hits.add(a.user_id);
+            if (hvRankFor(a).label.toLowerCase().includes(q)) hits.add(a.user_id);
+          }
+          return hits;
+        }, [search, profiles]);
+        const searchState = { active: search.trim().length > 0, hits: searchHits };
+
+        const selected = selectedId ? profiles.find(p => p.user_id === selectedId) : null;
+
+        // Org stats for header
+        const orgStats = useMemo(() => {
+          const totalAp = profiles.reduce((s, a) => s + (a._ap || 0), 0);
+          const totalDeals = profiles.reduce((s, a) => s + (a._deals || 0), 0);
+          const depth = (function () {
+            let max = 0;
+            function walk(node, d) {
+              max = Math.max(max, d);
+              for (const c of node.children) walk(c, d + 1);
+            }
+            roots.forEach(r => walk(r, 1));
+            return max;
+          })();
+          return { count: profiles.length, totalAp, totalDeals, depth };
+        }, [profiles, roots]);
+
+        return (
+          <div className="hv-app" onClick={() => setSelectedId(null)}>
+            <header className="hv-hdr">
+              <div className="hv-hdr-l">
+                <div className="hv-hdr-brand">
+                  <div className="hv-hdr-mark"></div>
+                  <div className="hv-hdr-title">Kairos Financial</div>
+                  <span className="hv-hdr-sub">· Agent Hierarchy</span>
+                </div>
+                <div className="hv-hdr-sub" style={{marginTop:6, marginLeft:34}}>
+                  {canEdit
+                    ? 'Downline org chart · drag to reorganize · click a card to edit'
+                    : 'Your downline · view only'}
+                </div>
+              </div>
+              <div className="hv-hdr-r" onClick={(e) => e.stopPropagation()}>
+                <div className="hv-hdr-stat"><div className="hv-hdr-stat-lbl">Agents</div><div className="hv-hdr-stat-val">{orgStats.count}</div></div>
+                <div className="hv-hdr-stat"><div className="hv-hdr-stat-lbl">Levels</div><div className="hv-hdr-stat-val">{orgStats.depth}</div></div>
+                <div className="hv-hdr-stat"><div className="hv-hdr-stat-lbl">Total AP YTD</div><div className="hv-hdr-stat-val">{hvFmtMoney(orgStats.totalAp)}</div></div>
+                <div className="hv-hdr-stat"><div className="hv-hdr-stat-lbl">Total Deals</div><div className="hv-hdr-stat-val">{orgStats.totalDeals}</div></div>
+                <button className="hv-theme-toggle" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} aria-label="Toggle theme">
+                  {theme === 'dark' ? '☀' : '☾'}
+                </button>
+              </div>
+            </header>
+
+            <div className="hv-toolbar" onClick={(e) => e.stopPropagation()}>
+              <div className="hv-toolbar-l">
+                <div className="hv-search">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                  </svg>
+                  <input placeholder="Search agents…" value={search} onChange={(e) => setSearch(e.target.value)} />
+                </div>
+                {!canEdit && (
+                  <div className="hv-viewonly-badge">View only</div>
+                )}
+              </div>
+              <div className="hv-toolbar-r">
+                <button className="hv-btn" onClick={zoomFit}>Fit</button>
+                <div className="hv-zoom-cluster">
+                  <button onClick={() => zoomBy(-1)} title="Zoom out">−</button>
+                  <div className="hv-zoom-val">{Math.round(view.scale * 100)}%</div>
+                  <button onClick={() => zoomBy(1)} title="Zoom in">+</button>
+                </div>
+              </div>
+            </div>
+
+            <div className="hv-canvas-wrap" ref={wrapRef}>
+              <div className="hv-canvas-bg" style={{
+                backgroundSize: (24 * view.scale) + 'px ' + (24 * view.scale) + 'px',
+                backgroundPosition: view.x + 'px ' + view.y + 'px',
+              }}></div>
+              <div className="hv-canvas" onMouseDown={startPan} onClick={() => setSelectedId(null)}>
+                <div className="hv-canvas-inner" style={{
+                  transform: 'translate3d(' + view.x + 'px, ' + view.y + 'px, 0) scale(' + view.scale + ')',
+                  width: bounds.width, height: bounds.height,
+                }}>
+                  <HvEdgeLayer roots={roots} byId={byId} positions={positions} bounds={bounds} />
+                  {profiles.map(p => {
+                    const pos = positions.get(p.user_id);
+                    if (!pos) return null;
+                    return (
+                      <div key={p.user_id} data-hv-agent-id={p.user_id} style={{position:'absolute', top:0, left:0}}>
+                        <HvNode
+                          profile={byId.get(p.user_id) || p}
+                          pos={pos}
+                          byId={byId}
+                          selected={selectedId === p.user_id}
+                          searchState={searchState}
+                          dragState={dragState}
+                          canEdit={canEdit}
+                          onMouseDown={onNodeMouseDown}
+                          onClick={setSelectedId}
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+              {loading && <div className="hv-overlay-msg">Loading hierarchy…</div>}
+              {error && <div className="hv-overlay-msg" style={{color:'var(--tp-neg)'}}>Failed to load: {error}</div>}
+              {!loading && !error && profiles.length === 0 && (
+                <div className="hv-overlay-msg">No agents to display.</div>
+              )}
+            </div>
+
+            {selected && (
+              <HvDetailPanel
+                profile={selected}
+                byId={byId}
+                profiles={profiles}
+                canEdit={canEdit}
+                onClose={() => setSelectedId(null)}
+                onUpdate={updateAgent}
+                onReparent={reparentFromDropdown}
+                onToggleManager={askToggleManager}
+              />
+            )}
+
+            {confirmFor && (
+              <div className="hv-modal-layer" onClick={() => setConfirmFor(null)}>
+                <div className="hv-modal" onClick={(e) => e.stopPropagation()}>
+                  <div className="hv-modal-hd">
+                    {confirmFor.grant ? 'Grant Manager Access' : 'Revoke Manager Access'}
+                  </div>
+                  <div className="hv-modal-body">
+                    {confirmFor.grant
+                      ? <>Grant <b>{confirmFor.profile.agent_name}</b> manager access? They'll be able to view the Team Performance dashboard, Policies, and Agent Hierarchy scoped to their downline. View-only — they cannot edit anything.</>
+                      : <>Revoke <b>{confirmFor.profile.agent_name}</b>'s manager access? They'll lose access to the Team Performance dashboard and Policies tab.</>}
+                  </div>
+                  <div className="hv-modal-foot">
+                    <button className="hv-btn" onClick={() => setConfirmFor(null)}>Cancel</button>
+                    <button className={'hv-btn ' + (confirmFor.grant ? 'primary' : 'danger')} onClick={confirmToggle}>
+                      {confirmFor.grant ? 'Grant access' : 'Revoke access'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        );
+      }
+
       // ─── Mount lifecycle ──────────────────────────────────────────────
       let dashRoot = null;
       let agentsRoot = null;
       let policiesRoot = null;
+      let hierarchyRoot = null;
       window.tpMountDashboard = function () {
         const el = document.getElementById('tpDashboardRoot');
         if (!el) return;
@@ -23628,6 +24885,12 @@
         if (!el) return;
         if (!policiesRoot) policiesRoot = ReactDOM.createRoot(el);
         policiesRoot.render(<PoliciesView />);
+      };
+      window.tpMountHierarchy = function () {
+        const el = document.getElementById('tpHierarchyRoot');
+        if (!el) return;
+        if (!hierarchyRoot) hierarchyRoot = ReactDOM.createRoot(el);
+        hierarchyRoot.render(<HierarchyView />);
       };
 
       // ─── TRACKER (Agent Dashboard — claude.ai/design) ────────────────
