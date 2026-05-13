@@ -2904,7 +2904,7 @@
       background: var(--tp-surface-2); border: 1px solid var(--tp-hairline-strong);
       padding: 6px 10px; border-radius: 100px;
     }
-    #tpatab-hierarchy .hv-btn {
+    #tpatab-hierarchy .hv-btn, #tpatab-agents .hv-btn {
       appearance: none; cursor: pointer;
       background: var(--tp-surface); border: 1px solid var(--tp-hairline-strong);
       color: var(--tp-ink-2);
@@ -2914,14 +2914,14 @@
       display: inline-flex; align-items: center; gap: 8px;
       transition: all 120ms;
     }
-    #tpatab-hierarchy .hv-btn:hover { border-color: var(--tp-ink-3); color: var(--tp-ink-1); background: var(--tp-surface-2); }
+    #tpatab-hierarchy .hv-btn:hover, #tpatab-agents .hv-btn:hover { border-color: var(--tp-ink-3); color: var(--tp-ink-1); background: var(--tp-surface-2); }
     #tpatab-hierarchy .hv-btn.primary {
       background: color-mix(in oklch, var(--rb-blue) 22%, var(--tp-surface));
       border-color: color-mix(in oklch, var(--rb-blue) 60%, transparent);
       color: var(--tp-ink-1);
     }
     #tpatab-hierarchy .hv-btn.primary:hover { background: color-mix(in oklch, var(--rb-blue) 32%, var(--tp-surface)); }
-    #tpatab-hierarchy .hv-btn.danger {
+    #tpatab-hierarchy .hv-btn.danger, #tpatab-agents .hv-btn.danger {
       background: color-mix(in oklch, var(--rb-red) 18%, var(--tp-surface));
       border-color: color-mix(in oklch, var(--rb-red) 50%, transparent);
       color: var(--tp-ink-1);
@@ -3191,32 +3191,71 @@
     }
 
     /* Confirm modal */
-    #tpatab-hierarchy .hv-modal-layer {
+    #tpatab-hierarchy .hv-modal-layer, #tpatab-agents .hv-modal-layer {
       position: fixed; inset: 0; z-index: 9999;
       background: rgba(0,0,0,0.55);
       display: grid; place-items: center;
       backdrop-filter: blur(4px);
     }
-    #tpatab-hierarchy .hv-modal {
+    #tpatab-hierarchy .hv-modal, #tpatab-agents .hv-modal {
       width: min(440px, calc(100vw - 40px));
       background: var(--tp-surface);
       border: 1px solid var(--tp-hairline-strong);
       border-radius: 12px;
       box-shadow: 0 30px 80px rgba(0,0,0,0.5);
       display: flex; flex-direction: column;
+      max-height: calc(100vh - 60px);
     }
-    #tpatab-hierarchy .hv-modal-hd {
+    #tpatab-agents .hv-modal.hv-modal-wide { width: min(560px, calc(100vw - 40px)); }
+    #tpatab-agents .hv-modal-body { overflow-y: auto; }
+    #tpatab-agents .hv-form-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+      margin-bottom: 18px;
+    }
+    #tpatab-agents .hv-form-field { display: flex; flex-direction: column; gap: 6px; }
+    #tpatab-agents .hv-form-lbl {
+      font-family: var(--tp-mono); font-size: 10px;
+      color: var(--tp-ink-3); letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    #tpatab-agents .hv-form-section {
+      border: 1px solid var(--tp-hairline);
+      background: var(--tp-surface-2);
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin-bottom: 12px;
+    }
+    #tpatab-agents .hv-form-section-danger {
+      border-color: color-mix(in oklch, var(--tp-neg) 40%, var(--tp-hairline-strong));
+      background: color-mix(in oklch, var(--tp-neg) 6%, var(--tp-surface-2));
+    }
+    #tpatab-agents .hv-form-section-hd {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 14px; flex-wrap: wrap;
+    }
+    #tpatab-agents .hv-form-section-lbl {
+      font-family: var(--tp-sans); font-size: 13px; font-weight: 600;
+      color: var(--tp-ink-1);
+    }
+    #tpatab-agents .hv-form-section-meta {
+      font-family: var(--tp-mono); font-size: 11px;
+      color: var(--tp-ink-3); margin-top: 2px;
+    }
+    @media (max-width: 600px) {
+      #tpatab-agents .hv-form-grid { grid-template-columns: 1fr; }
+    }
+    #tpatab-hierarchy .hv-modal-hd, #tpatab-agents .hv-modal-hd {
       padding: 18px 22px;
       border-bottom: 1px solid var(--tp-hairline);
       font-family: var(--tp-sans); font-size: 16px; font-weight: 600;
       color: var(--tp-ink-1);
     }
-    #tpatab-hierarchy .hv-modal-body {
+    #tpatab-hierarchy .hv-modal-body, #tpatab-agents .hv-modal-body {
       padding: 18px 22px; color: var(--tp-ink-2);
       font-size: 13px; line-height: 1.5;
     }
-    #tpatab-hierarchy .hv-modal-body b { color: var(--tp-ink-1); font-weight: 600; }
-    #tpatab-hierarchy .hv-modal-foot {
+    #tpatab-hierarchy .hv-modal-body b, #tpatab-agents .hv-modal-body b { color: var(--tp-ink-1); font-weight: 600; }
+    #tpatab-hierarchy .hv-modal-foot, #tpatab-agents .hv-modal-foot {
       display: flex; justify-content: flex-end; gap: 8px;
       padding: 14px 18px; border-top: 1px solid var(--tp-hairline);
     }
@@ -23330,6 +23369,52 @@
           reload();
         };
 
+        // Edit modal — single point of editing for every agent attribute.
+        // The row UI is read-only; clicking Edit opens this dialog. Reuses
+        // the existing `drafts` state via draftFor/updateDraft so changes
+        // round-trip cleanly through saveRow().
+        const [editFor, setEditFor] = useState(null);
+        const askEdit = (p) => setEditFor(p);
+        const closeEdit = () => setEditFor(null);
+        const saveAndClose = async (uid) => {
+          await saveRow(uid);
+          setEditFor(null);
+        };
+
+        // Delete agent — calls the admin-gated delete_agent_user RPC. The
+        // function on the Supabase side reparents any direct reports to the
+        // deleted agent's manager, then deletes auth.users (cascades to
+        // agent_profiles, daily_kpis, video_progress). policies.user_id is
+        // FK SET NULL so policies are preserved with their sales_rep text.
+        const [deleteFor, setDeleteFor] = useState(null); // profile being deleted
+        const [deleting, setDeleting] = useState(false);
+        const askDelete = (p) => setDeleteFor(p);
+        const confirmDelete = async () => {
+          if (!deleteFor) return;
+          setDeleting(true);
+          try {
+            const r = await fetch(SUPABASE_URL + '/rest/v1/rpc/delete_agent_user', {
+              method: 'POST',
+              headers: Object.assign({}, writeHdrs(), { 'Content-Type': 'application/json' }),
+              body: JSON.stringify({ target_user_id: deleteFor.user_id }),
+            });
+            if (!r.ok) {
+              const txt = await r.text().catch(() => '');
+              console.error('[delete agent] failed', r.status, txt);
+              try { alert('Delete failed (' + r.status + '). ' + (txt || 'See console for details.')); } catch (_) {}
+              setDeleting(false);
+              return;
+            }
+            setDeleteFor(null);
+            setDeleting(false);
+            reload();
+          } catch (e) {
+            console.error('[delete agent] threw:', e);
+            try { alert('Delete failed — ' + (e.message || e)); } catch (_) {}
+            setDeleting(false);
+          }
+        };
+
         const avatarColor = (i) => RAINBOW_TOKENS[i % RAINBOW_TOKENS.length];
         const initialsOf = (name) => (name || '').split(' ').map(s => s[0]).filter(Boolean).slice(0,2).join('').toUpperCase() || '··';
 
@@ -23370,33 +23455,24 @@
                       {sorted.map((p, i) => {
                         const orig = profiles.findIndex(x => x.user_id === p.user_id);
                         const sparkColor = avatarColor(orig);
-                        const draft = draftFor(p.user_id, p);
                         const vCount = videoCounts[p.user_id] || 0;
                         const pct = Math.min(100, Math.round((vCount / TOTAL_TRAINING_VIDEOS) * 100));
                         const isComplete = p.training_complete === true;
-                        const justSaved = !!savedFor[p.user_id];
+                        const name = p.agent_name || 'Unnamed';
                         return (
                           <tr key={p.user_id}>
                             <td>
                               <div className="tp-agt-cell">
                                 <div className="tp-avatar" style={{background:'color-mix(in oklch, ' + sparkColor + ' 22%, var(--tp-surface-2))', borderColor:'color-mix(in oklch, ' + sparkColor + ' 40%, transparent)'}}>
-                                  {initialsOf(draft.agent_name)}
+                                  {initialsOf(name)}
                                 </div>
-                                <input className="tp-input"
-                                  style={{minWidth:160}}
-                                  value={draft.agent_name}
-                                  onChange={e => updateDraft(p.user_id, 'agent_name', e.target.value)} />
+                                <span className="tp-agt-name">{name}</span>
                               </div>
                             </td>
                             <td>
-                              <select className="tp-select"
-                                value={draft.comp_level || ''}
-                                onChange={e => updateDraft(p.user_id, 'comp_level', e.target.value)}>
-                                <option value="">—</option>
-                                {Array.from({length: 17}, (_, k) => 65 + k * 5).map(v => (
-                                  <option key={v} value={v}>{v}%</option>
-                                ))}
-                              </select>
+                              <span style={{fontFamily:'var(--tp-mono)', fontSize:12, color:'var(--tp-ink-2)'}}>
+                                {p.comp_level ? p.comp_level + '%' : '—'}
+                              </span>
                             </td>
                             <td>
                               <div style={{display:'flex', flexDirection:'column', gap:2}}>
@@ -23413,12 +23489,8 @@
                             </td>
                             <td className="num">
                               <div className="tp-actions-cell">
-                                <button type="button" className="tp-btn primary" onClick={() => saveRow(p.user_id)}>
-                                  {justSaved ? 'Saved ✓' : 'Save'}
-                                </button>
-                                <button type="button" className={'tp-btn ' + (isComplete ? 'danger' : 'success')}
-                                  onClick={() => toggleAccess(p.user_id, isComplete)}>
-                                  {isComplete ? 'Revoke' : 'Grant'}
+                                <button type="button" className="tp-btn primary" onClick={() => askEdit(p)}>
+                                  Edit
                                 </button>
                               </div>
                             </td>
@@ -23434,6 +23506,115 @@
               <div>Kairos Financial · Internal · Confidential</div>
               <div>{profiles.length} agent profiles</div>
             </div>
+            {editFor && (() => {
+              const live = profiles.find(x => x.user_id === editFor.user_id) || editFor;
+              const draft = draftFor(editFor.user_id, live);
+              const vCount = videoCounts[editFor.user_id] || 0;
+              const pct = Math.min(100, Math.round((vCount / TOTAL_TRAINING_VIDEOS) * 100));
+              const isComplete = live.training_complete === true;
+              const justSaved = !!savedFor[editFor.user_id];
+              return (
+                <div className="hv-modal-layer" onClick={closeEdit}>
+                  <div className="hv-modal hv-modal-wide" onClick={(e) => e.stopPropagation()}>
+                    <div className="hv-modal-hd">
+                      Edit agent · {live.agent_name || 'Unnamed'}
+                    </div>
+                    <div className="hv-modal-body">
+                      <div className="hv-form-grid">
+                        <div className="hv-form-field">
+                          <label className="hv-form-lbl">Name</label>
+                          <input
+                            className="tp-input"
+                            value={draft.agent_name}
+                            onChange={e => updateDraft(editFor.user_id, 'agent_name', e.target.value)}
+                            placeholder="Agent name" />
+                        </div>
+                        <div className="hv-form-field">
+                          <label className="hv-form-lbl">Comp level</label>
+                          <select
+                            className="tp-select"
+                            value={draft.comp_level || ''}
+                            onChange={e => updateDraft(editFor.user_id, 'comp_level', e.target.value)}>
+                            <option value="">— Not set —</option>
+                            {Array.from({length: 17}, (_, k) => 65 + k * 5).map(v => (
+                              <option key={v} value={v}>{v}%</option>
+                            ))}
+                          </select>
+                        </div>
+                      </div>
+                      <div className="hv-form-section">
+                        <div className="hv-form-section-hd">
+                          <div>
+                            <div className="hv-form-section-lbl">Training progress</div>
+                            <div className="hv-form-section-meta">{vCount} of {TOTAL_TRAINING_VIDEOS} videos completed</div>
+                          </div>
+                          <span className={'tp-agent-status ' + (isComplete ? 'active' : 'training')}>
+                            {isComplete ? 'Active' : 'In training'}
+                          </span>
+                        </div>
+                        <div className="tp-progress-track" style={{marginTop:10}}>
+                          <div className="tp-progress-fill" style={{width:pct + '%', background: pct >= 100 ? 'var(--rb-green)' : 'linear-gradient(90deg, var(--rb-purple), var(--rb-blue))'}}></div>
+                        </div>
+                      </div>
+                      <div className="hv-form-section">
+                        <div className="hv-form-section-hd">
+                          <div>
+                            <div className="hv-form-section-lbl">Sales Hub access</div>
+                            <div className="hv-form-section-meta">
+                              {isComplete ? 'This agent can log deals, KPIs, and see every panel.' : 'This agent is locked into the training gate.'}
+                            </div>
+                          </div>
+                          <button type="button" className={'hv-btn ' + (isComplete ? 'danger' : 'primary')}
+                            onClick={() => toggleAccess(editFor.user_id, isComplete)}>
+                            {isComplete ? 'Revoke access' : 'Grant access'}
+                          </button>
+                        </div>
+                      </div>
+                      <div className="hv-form-section hv-form-section-danger">
+                        <div className="hv-form-section-hd">
+                          <div>
+                            <div className="hv-form-section-lbl" style={{color:'var(--tp-neg)'}}>Danger zone</div>
+                            <div className="hv-form-section-meta">Removes login, profile, KPI activity, and training progress. Their policies stay on the Policies tab.</div>
+                          </div>
+                          <button type="button" className="hv-btn danger"
+                            onClick={() => { setEditFor(null); askDelete(live); }}>
+                            Delete agent
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="hv-modal-foot">
+                      <button type="button" className="hv-btn" onClick={closeEdit}>Cancel</button>
+                      <button type="button" className="hv-btn primary" onClick={() => saveAndClose(editFor.user_id)}>
+                        {justSaved ? 'Saved ✓' : 'Save changes'}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
+            {deleteFor && (
+              <div className="hv-modal-layer" onClick={() => !deleting && setDeleteFor(null)}>
+                <div className="hv-modal" onClick={(e) => e.stopPropagation()}>
+                  <div className="hv-modal-hd">Delete agent · {deleteFor.agent_name || 'Unnamed'}</div>
+                  <div className="hv-modal-body">
+                    <p style={{margin:'0 0 10px'}}><b>This cannot be undone.</b></p>
+                    <p style={{margin:'0 0 10px', color:'var(--tp-ink-2)'}}>Deleting this agent will:</p>
+                    <ul style={{margin:'0 0 12px', paddingLeft:18, color:'var(--tp-ink-2)', fontSize:13, lineHeight:1.6}}>
+                      <li><b style={{color:'var(--tp-ink-1)'}}>Remove</b> their login, profile, daily KPI activity, and training progress</li>
+                      <li><b style={{color:'var(--tp-ink-1)'}}>Reparent</b> any direct reports to <b style={{color:'var(--tp-ink-1)'}}>{deleteFor.manager_user_id ? ((profiles.find(x => x.user_id === deleteFor.manager_user_id) || {}).agent_name || 'their manager') : 'top of org'}</b></li>
+                      <li><b style={{color:'var(--tp-ink-1)'}}>Keep</b> their policies on the Policies tab, still attributed to <b style={{color:'var(--tp-ink-1)'}}>{deleteFor.agent_name || 'them'}</b></li>
+                    </ul>
+                  </div>
+                  <div className="hv-modal-foot">
+                    <button type="button" className="hv-btn" disabled={deleting} onClick={() => setDeleteFor(null)}>Cancel</button>
+                    <button type="button" className="hv-btn danger" disabled={deleting} onClick={confirmDelete}>
+                      {deleting ? 'Deleting…' : 'Delete agent'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         );
       }
