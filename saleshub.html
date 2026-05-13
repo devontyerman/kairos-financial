@@ -21495,7 +21495,7 @@
             kSum.leadSpend += parseFloat(r.lead_spend || 0);
             kSum.deposits += parseFloat(r.deposits || 0);
           });
-          const deals = kSum.deals || dealsCount;
+          const deals = dealsCount;
           const dialToDeal = kSum.dials > 0 ? (deals / kSum.dials) * 100 : 0;
           const roi = kSum.leadSpend > 0 ? ((kSum.deposits - kSum.leadSpend) / kSum.leadSpend) * 100 : 0;
           const avgPremium = deals > 0 ? Math.round(ap / deals) : 0;
@@ -24483,7 +24483,7 @@
         const tfKpis = filterKpis(tfRange[0], tfRange[1]);
         const k = sumK(tfKpis);
         const tfPolAP = sumPolAP(tfRange[0], tfRange[1]);
-        const tfDeals = k.deals || policies.filter(p => { const d = policyDate(p); return d && (tfRange[1] ? (d >= tfRange[0] && d <= tfRange[1]) : d >= tfRange[0]); }).length;
+        const tfDeals = policies.filter(p => { const d = policyDate(p); return d && (tfRange[1] ? (d >= tfRange[0] && d <= tfRange[1]) : d >= tfRange[0]); }).length;
         const conversion = k.dials > 0 ? (tfDeals / k.dials) * 100 : 0;
         const roi = k.leadSpend > 0 ? ((k.deposits - k.leadSpend) / k.leadSpend) * 100 : 0;
         const avgPremium = tfDeals > 0 ? tfPolAP / tfDeals : 0;
