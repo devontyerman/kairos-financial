@@ -2729,10 +2729,47 @@
     #tpatab-performance .tp-rank, #tpatab-agents .tp-rank, #tpatab-policies .tp-rank { font-family: var(--tp-mono); font-size: 10px; color: var(--tp-ink-3); width: 18px; display: inline-block; }
     #tpatab-performance .tp-dial-pct { font-family: var(--tp-mono); font-size: 13px; color: var(--tp-ink-1); }
 
+    /* Leaderboard pager */
+    #tpatab-performance .tp-lb-pager, #tpatab-agents .tp-lb-pager {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px; padding: 12px 22px 16px;
+      border-top: 1px solid var(--tp-hairline);
+      flex-wrap: wrap;
+    }
+    #tpatab-performance .tp-lb-pager-info, #tpatab-agents .tp-lb-pager-info {
+      font-family: var(--tp-mono); font-size: 11px; color: var(--tp-ink-3);
+      letter-spacing: 0.06em; text-transform: uppercase;
+    }
+    #tpatab-performance .tp-lb-pager-info b, #tpatab-agents .tp-lb-pager-info b { color: var(--tp-ink-1); font-weight: 600; }
+    #tpatab-performance .tp-lb-pager-ctrl, #tpatab-agents .tp-lb-pager-ctrl { display: inline-flex; gap: 8px; align-items: center; }
+    #tpatab-performance .tp-lb-pager-pages, #tpatab-agents .tp-lb-pager-pages {
+      font-family: var(--tp-mono); font-size: 11px; color: var(--tp-ink-3);
+      letter-spacing: 0.06em; text-transform: uppercase; padding: 0 6px;
+    }
+    #tpatab-performance .tp-lb-pager-pages b, #tpatab-agents .tp-lb-pager-pages b { color: var(--tp-ink-1); font-weight: 600; }
+    #tpatab-performance .tp-lb-pager-btn, #tpatab-agents .tp-lb-pager-btn {
+      appearance: none; border: 1px solid var(--tp-hairline-strong);
+      background: var(--tp-surface); color: var(--tp-ink-2);
+      width: 28px; height: 28px; border-radius: 7px; cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-family: var(--tp-mono); font-size: 13px; line-height: 1;
+      transition: color 120ms, border-color 120ms, background 120ms;
+    }
+    #tpatab-performance .tp-lb-pager-btn:hover:not(:disabled), #tpatab-agents .tp-lb-pager-btn:hover:not(:disabled) { color: var(--tp-ink-1); border-color: var(--tp-ink-3); }
+    #tpatab-performance .tp-lb-pager-btn:disabled, #tpatab-agents .tp-lb-pager-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
     /* Carriers */
-    #tpatab-performance .tp-carriers { grid-column: span 5; }
+    #tpatab-performance .tp-carriers { grid-column: span 5; container-type: inline-size; }
     #tpatab-performance .tp-carriers-body { display: flex; gap: 22px; align-items: center; }
-    #tpatab-performance .tp-carrier-list { flex: 1; display: flex; flex-direction: column; gap: 12px; }
+    #tpatab-performance .tp-carrier-list { flex: 1; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+    /* When the card itself is narrow (regardless of viewport), stack the
+       donut above the list so the chart never gets clipped. Triggers a hair
+       earlier than the donut's intrinsic 180px + gap + list min-content. */
+    @container (max-width: 360px) {
+      #tpatab-performance .tp-carriers-body { flex-direction: column; align-items: stretch; gap: 16px; }
+      #tpatab-performance .tp-carriers-body > svg,
+      #tpatab-performance .tp-carriers-body > .tp-carriers-donut { align-self: center; }
+    }
     #tpatab-performance .tp-carrier-row { display: flex; align-items: center; gap: 12px; }
     #tpatab-performance .tp-carrier-row .name { flex: 1; font-size: 13px; color: var(--tp-ink-1); display: flex; align-items: center; gap: 10px; }
     #tpatab-performance .tp-carrier-row .pct { font-family: var(--tp-mono); font-size: 12px; color: var(--tp-ink-2); width: 48px; text-align: right; }
@@ -7533,6 +7570,55 @@
     #panel-goals .tk-daily-table tbody td.pos { color: var(--rb-green); font-weight: 600; }
     #panel-goals .tk-daily-table tbody tr:last-child td { border-bottom: 0; }
     #panel-goals .tk-daily-table tbody tr:hover td { background: var(--tk-surface-2); }
+    /* Day-of-week column */
+    #panel-goals .tk-daily-table thead th.dt-dow,
+    #panel-goals .tk-daily-table tbody td.dt-dow {
+      width: 44px; color: var(--tk-ink-3); text-transform: uppercase;
+      letter-spacing: 0.06em; font-size: 10px;
+    }
+    /* Empty / zero day rows — muted, but still visible so the calendar reads continuous */
+    #panel-goals .tk-daily-table tbody tr.empty td { color: var(--tk-ink-4); }
+    #panel-goals .tk-daily-table tbody tr.empty td.dt-date { color: var(--tk-ink-3); font-weight: 400; }
+    #panel-goals .tk-daily-table tbody tr.future td { opacity: 0.35; }
+    /* Week-divider header row — sits above each 7-day block */
+    #panel-goals .tk-daily-table tbody tr.week-hd td {
+      background: var(--tk-surface-2);
+      color: var(--tk-ink-3);
+      font-family: var(--tk-mono);
+      font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase;
+      padding: 8px 14px; font-weight: 500;
+      border-top: 1px solid var(--tk-hairline-strong);
+    }
+    /* Weekly subtotal row — bold, highlighted */
+    #panel-goals .tk-daily-table tbody tr.week-total td {
+      background: color-mix(in oklch, var(--rb-blue) 10%, var(--tk-surface));
+      color: var(--tk-ink-1); font-weight: 700;
+      border-top: 1px solid var(--tk-hairline-strong);
+      border-bottom: 1px solid var(--tk-hairline-strong);
+    }
+    #panel-goals .tk-daily-table tbody tr.week-total td.dt-date { font-family: var(--tk-mono); font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; }
+    #panel-goals .tk-daily-table tbody tr.week-total:hover td { background: color-mix(in oklch, var(--rb-blue) 14%, var(--tk-surface)); }
+    /* Pagination bar above the table */
+    #panel-goals .tk-daily-pager {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px; padding: 0 2px 10px; flex-wrap: wrap;
+    }
+    #panel-goals .tk-daily-pager-info {
+      font-family: var(--tk-mono); font-size: 11px; color: var(--tk-ink-3);
+      letter-spacing: 0.06em; text-transform: uppercase;
+    }
+    #panel-goals .tk-daily-pager-info b { color: var(--tk-ink-1); font-weight: 600; }
+    #panel-goals .tk-daily-pager-ctrl { display: inline-flex; gap: 6px; }
+    #panel-goals .tk-daily-pager-btn {
+      appearance: none; border: 1px solid var(--tk-hairline-strong);
+      background: var(--tk-surface); color: var(--tk-ink-2);
+      width: 28px; height: 28px; border-radius: 7px; cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-family: var(--tk-mono); font-size: 13px; line-height: 1;
+      transition: color 120ms, border-color 120ms, background 120ms;
+    }
+    #panel-goals .tk-daily-pager-btn:hover:not(:disabled) { color: var(--tk-ink-1); border-color: var(--tk-ink-3); }
+    #panel-goals .tk-daily-pager-btn:disabled { opacity: 0.4; cursor: not-allowed; }
     @media (max-width: 768px) {
       #panel-goals.active .tk-daily-table thead th:nth-child(3),
       #panel-goals.active .tk-daily-table thead th:nth-child(4),
@@ -21465,15 +21551,43 @@
         };
       }
 
+      function dynamicTfRange(timeframe, customRange) {
+        // Resolves LW/LM/ALL/CUSTOM into [start, end] dates so the on-the-fly
+        // path in scopedView and the chart in APHero share a single source of
+        // truth. Either bound may be null (open-ended). Returns null for the
+        // static WTD/MTD/YTD timeframes.
+        const today = new Date();
+        if (timeframe === 'ALL') return [null, null];
+        if (timeframe === 'CUSTOM') return [
+          (customRange && customRange[0]) || null,
+          (customRange && customRange[1]) || null,
+        ];
+        if (timeframe === 'LW') {
+          const ws = startOfWeek(today);
+          const lws = new Date(ws); lws.setDate(lws.getDate() - 7);
+          return [lws, new Date(ws.getTime() - 1)];
+        }
+        if (timeframe === 'LM') {
+          return [
+            new Date(today.getFullYear(), today.getMonth() - 1, 1),
+            new Date(today.getFullYear(), today.getMonth(), 0, 23, 59, 59),
+          ];
+        }
+        return null;
+      }
+
       function scopedView(scope, timeframe, customRange) {
         if (!scope) return null;
-        // Dynamic-window mode (ALL / CUSTOM): recompute AP, deals, KPIs and
-        // carrier mix on the fly from the scope's raw policies + kpis. Falls
-        // through to the precomputed WTD/MTD/YTD values otherwise.
-        if (timeframe === 'ALL' || timeframe === 'CUSTOM') {
-          const start = (timeframe === 'ALL') ? new Date(0) : ((customRange && customRange[0]) || new Date(0));
-          const end = (timeframe === 'ALL') ? null : ((customRange && customRange[1]) || null);
-          const inWin = (d) => d && d >= start && (!end || d <= end);
+        // Dynamic-window mode (ALL / CUSTOM / LW / LM): recompute AP, deals,
+        // KPIs and carrier mix on the fly from the scope's raw policies +
+        // kpis. Falls through to the precomputed WTD/MTD/YTD values otherwise.
+        const dyn = dynamicTfRange(timeframe, customRange);
+        if (dyn) {
+          // Either bound may be null (unbounded). Filter accepts dates that
+          // fall on/after start (or any date if no start) and on/before end.
+          const start = dyn[0];
+          const end = dyn[1];
+          const inWin = (d) => !!d && (!start || d >= start) && (!end || d <= end);
           let ap = 0, dealsCount = 0;
           const mix = {}; CARRIER_LIST.forEach(c => mix[c] = 0);
           (scope.policies || []).forEach(po => {
@@ -21504,6 +21618,7 @@
             dials: kSum.dials, answers: kSum.answers, appointments: kSum.appointments,
             presentations: kSum.presentations, leadSpend: kSum.leadSpend, deposits: kSum.deposits,
             carrierMix: mix, name: scope.name,
+            rangeStart: start, rangeEnd: end,
           };
         }
         const ap = timeframe === 'WTD' ? scope.apWTD : timeframe === 'YTD' ? scope.apYTD : scope.apMTD;
@@ -21914,23 +22029,23 @@
           });
           mtdProjectedTotal = projectedTotal;
           label = 'Month-to-date';
-        } else if (timeframe === 'ALL' || timeframe === 'CUSTOM') {
-          // Dynamic-window chart: bucket policies into months across the
-          // selected window and draw a cumulative AP line. No projection —
-          // we don't know the user's intent for windows that may already be
-          // closed (e.g. a custom range in the past).
+        } else if (dynamicTfRange(timeframe, customRange)) {
+          // Dynamic-window chart (ALL / CUSTOM / LW / LM): bucket policies
+          // by day for short windows (≤92 days) and by month for longer
+          // windows, then draw a cumulative AP line. No projection — we
+          // don't know the user's intent for windows that may already be
+          // closed (e.g. last month, or a custom range in the past).
+          const dyn = dynamicTfRange(timeframe, customRange);
           const allPols = scope.policies || [];
-          let rangeStart = null, rangeEnd = null;
-          if (timeframe === 'CUSTOM') {
-            rangeStart = (customRange && customRange[0]) || null;
-            rangeEnd = (customRange && customRange[1]) || null;
-          }
+          const rangeStart = dyn[0];
+          const rangeEnd = dyn[1];
           const datedAP = allPols.map(p => {
             const d = parsePolicyDate(p.policy_date || p.created_at);
             return d ? { d, ap: parseFloat(p.annual_premium || 0) } : null;
           }).filter(Boolean);
-          let firstDate = null, lastDate = null;
+          let firstDate, lastDate;
           if (timeframe === 'ALL') {
+            firstDate = null; lastDate = null;
             datedAP.forEach(x => {
               if (!firstDate || x.d < firstDate) firstDate = x.d;
               if (!lastDate || x.d > lastDate) lastDate = x.d;
@@ -21941,32 +22056,59 @@
             firstDate = rangeStart || (datedAP.length ? datedAP.reduce((m,x) => x.d < m ? x.d : m, datedAP[0].d) : startOfMonth(today));
             lastDate = rangeEnd || today;
           }
-          const monthKey = (d) => d.getFullYear() * 12 + d.getMonth();
-          const startKey = monthKey(firstDate);
-          const endKey = monthKey(lastDate);
-          const totalMonths = Math.max(1, endKey - startKey + 1);
-          const buckets = new Array(totalMonths).fill(0);
-          datedAP.forEach(x => {
-            if (rangeStart && x.d < rangeStart) return;
-            if (rangeEnd && x.d > rangeEnd) return;
-            const idx = monthKey(x.d) - startKey;
-            if (idx >= 0 && idx < totalMonths) buckets[idx] += x.ap;
-          });
-          const cum = buckets.reduce((arr, v) => { arr.push((arr[arr.length-1] || 0) + v); return arr; }, []);
-          series = cum;
+          const dayMs = 86400000;
+          const dayCount = Math.max(1, Math.floor((lastDate - firstDate) / dayMs) + 1);
+          const useDaily = dayCount <= 92;
           const monthShort = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-          labels = [];
-          for (let i = 0; i < totalMonths; i++) {
-            const k = startKey + i;
-            const y = Math.floor(k / 12);
-            const m = k % 12;
-            labels.push(monthShort[m] + " '" + String(y).slice(-2));
+          if (useDaily) {
+            const startMid = new Date(firstDate.getFullYear(), firstDate.getMonth(), firstDate.getDate());
+            const endMid = new Date(lastDate.getFullYear(), lastDate.getMonth(), lastDate.getDate());
+            const totalDays = Math.max(1, Math.floor((endMid - startMid) / dayMs) + 1);
+            const buckets = new Array(totalDays).fill(0);
+            datedAP.forEach(x => {
+              if (rangeStart && x.d < rangeStart) return;
+              if (rangeEnd && x.d > rangeEnd) return;
+              const idx = Math.floor((new Date(x.d.getFullYear(), x.d.getMonth(), x.d.getDate()) - startMid) / dayMs);
+              if (idx >= 0 && idx < totalDays) buckets[idx] += x.ap;
+            });
+            const cum = buckets.reduce((arr, v) => { arr.push((arr[arr.length-1] || 0) + v); return arr; }, []);
+            series = cum;
+            labels = [];
+            for (let i = 0; i < totalDays; i++) {
+              const dy = new Date(startMid); dy.setDate(dy.getDate() + i);
+              labels.push((dy.getMonth() + 1) + '/' + dy.getDate());
+            }
+          } else {
+            const monthKey = (d) => d.getFullYear() * 12 + d.getMonth();
+            const startKey = monthKey(firstDate);
+            const endKey = monthKey(lastDate);
+            const totalMonths = Math.max(1, endKey - startKey + 1);
+            const buckets = new Array(totalMonths).fill(0);
+            datedAP.forEach(x => {
+              if (rangeStart && x.d < rangeStart) return;
+              if (rangeEnd && x.d > rangeEnd) return;
+              const idx = monthKey(x.d) - startKey;
+              if (idx >= 0 && idx < totalMonths) buckets[idx] += x.ap;
+            });
+            const cum = buckets.reduce((arr, v) => { arr.push((arr[arr.length-1] || 0) + v); return arr; }, []);
+            series = cum;
+            labels = [];
+            for (let i = 0; i < totalMonths; i++) {
+              const k = startKey + i;
+              const y = Math.floor(k / 12);
+              const m = k % 12;
+              labels.push(monthShort[m] + " '" + String(y).slice(-2));
+            }
           }
           total = view.ap;
           projectionFromIdx = undefined;
           prior = 0;
           if (timeframe === 'ALL') {
             label = 'All-time';
+          } else if (timeframe === 'LW') {
+            label = 'Last week';
+          } else if (timeframe === 'LM') {
+            label = 'Last month';
           } else {
             const fmt = (d) => (d.getMonth()+1) + '/' + d.getDate() + '/' + String(d.getFullYear()).slice(-2);
             label = (rangeStart && rangeEnd) ? (fmt(rangeStart) + ' → ' + fmt(rangeEnd))
@@ -22019,7 +22161,7 @@
         }
         const deltaBasis = timeframe === 'MTD' && mtdProjectedTotal != null ? mtdProjectedTotal : total;
         const delta = prior ? ((deltaBasis - prior) / prior) * 100 : 0;
-        const deltaLabel = timeframe === 'WTD' ? 'vs last week' : timeframe === 'MTD' ? 'projected vs last month' : timeframe === 'YTD' ? 'vs same point last year' : '';
+        const deltaLabel = timeframe === 'WTD' ? 'vs last week' : timeframe === 'MTD' ? 'projected vs last month' : timeframe === 'YTD' ? 'vs same point last year' : timeframe === 'LW' ? 'last week total' : timeframe === 'LM' ? 'last month total' : '';
         const isTeam = scope.id === '__team__';
         return (
           <div className="tp-card tp-ap-hero">
@@ -22029,7 +22171,7 @@
                 <div className="tp-card-meta">{label}</div>
               </div>
               <div className="tp-tf-segment">
-                {[['WTD','WTD'],['MTD','MTD'],['YTD','YTD'],['ALL','All'],['CUSTOM','Custom']].map(([t, lbl]) => (
+                {[['WTD','WTD'],['MTD','MTD'],['YTD','YTD'],['LW','Last Wk'],['LM','Last Mo'],['ALL','All'],['CUSTOM','Custom']].map(([t, lbl]) => (
                   <button key={t} className={timeframe === t ? 'on' : ''} onClick={() => setTimeframe(t)}>{lbl}</button>
                 ))}
               </div>
@@ -22080,11 +22222,13 @@
       // All numeric columns (AP, Deals, D→D %, ROI) reflect the active
       // timeframe so a switch from MTD → WTD/YTD updates every row.
       function Leaderboard({ agents, activeId, onSelect, timeframe, customRange }) {
-        const isDynamic = timeframe === 'ALL' || timeframe === 'CUSTOM';
+        const isDynamic = !!dynamicTfRange(timeframe, customRange);
         const tfLabel = timeframe === 'WTD' ? 'WTD'
                       : timeframe === 'YTD' ? 'YTD'
                       : timeframe === 'ALL' ? 'ALL'
-                      : timeframe === 'CUSTOM' ? 'Custom' : 'MTD';
+                      : timeframe === 'CUSTOM' ? 'Custom'
+                      : timeframe === 'LW' ? 'Last Wk'
+                      : timeframe === 'LM' ? 'Last Mo' : 'MTD';
         const apKey = timeframe === 'WTD' ? 'apWTD' : timeframe === 'YTD' ? 'apYTD' : 'apMTD';
         const dealsKey = timeframe === 'WTD' ? 'dealsWTD' : timeframe === 'YTD' ? 'dealsYTD' : 'dealsMTD';
         const kpiKey = timeframe === 'WTD' ? 'kpiWTD' : timeframe === 'YTD' ? 'kpiYTD' : 'kpiMTD';
@@ -22114,6 +22258,16 @@
         };
         const arrow = (k) => sortKey === k ? <span className="arrow">{sortDir === 'asc' ? '↑' : '↓'}</span> : null;
         const avatarColor = (i) => RAINBOW_TOKENS[i % RAINBOW_TOKENS.length];
+        // Pagination — 10 agents per page. Reset to page 0 when sort or
+        // timeframe changes so the user always lands on the new "top 10".
+        const PAGE_SIZE = 10;
+        const [page, setPage] = useState(0);
+        useEffect(() => { setPage(0); }, [timeframe, sortKey, sortDir, customRange]);
+        const totalPages = Math.max(1, Math.ceil(sorted.length / PAGE_SIZE));
+        const safePage = Math.max(0, Math.min(page, totalPages - 1));
+        const visible = sorted.slice(safePage * PAGE_SIZE, (safePage + 1) * PAGE_SIZE);
+        const startRank = safePage * PAGE_SIZE + 1;
+        const endRank = Math.min((safePage + 1) * PAGE_SIZE, sorted.length);
         return (
           <div className="tp-card tp-lb">
             <div className="tp-lb-hd">
@@ -22131,14 +22285,15 @@
                 </tr>
               </thead>
               <tbody>
-                {sorted.map((a, i) => {
+                {visible.map((a, i) => {
                   const orig = agents.findIndex(x => x.id === a.id);
                   const sparkColor = avatarColor(orig);
+                  const rank = safePage * PAGE_SIZE + i + 1;
                   return (
                     <tr key={a.id} className={activeId === a.id ? 'active' : ''} onClick={() => onSelect(a.id)}>
                       <td>
                         <div className="tp-agt-cell">
-                          <span className="tp-rank">{String(i + 1).padStart(2, '0')}</span>
+                          <span className="tp-rank">{String(rank).padStart(2, '0')}</span>
                           <div className="tp-avatar" style={{background:'color-mix(in oklch, ' + sparkColor + ' 22%, var(--tp-surface-2))', borderColor:'color-mix(in oklch, ' + sparkColor + ' 40%, transparent)'}}>
                             {a.initials}
                           </div>
@@ -22159,6 +22314,20 @@
                 })}
               </tbody>
             </table>
+            {totalPages > 1 && (
+              <div className="tp-lb-pager">
+                <div className="tp-lb-pager-info">
+                  Ranks <b>{startRank}–{endRank}</b> of {sorted.length}
+                </div>
+                <div className="tp-lb-pager-ctrl">
+                  <button type="button" className="tp-lb-pager-btn" onClick={() => setPage(p => Math.max(0, p - 1))} disabled={safePage === 0} aria-label="Previous page">‹</button>
+                  <span className="tp-lb-pager-pages">
+                    Page <b>{safePage + 1}</b> / {totalPages}
+                  </span>
+                  <button type="button" className="tp-lb-pager-btn" onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))} disabled={safePage >= totalPages - 1} aria-label="Next page">›</button>
+                </div>
+              </div>
+            )}
           </div>
         );
       }
@@ -22303,10 +22472,12 @@
       function KPIPanel({ scope, view, timeframe }) {
         const s = view;
         const isTeam = scope.id === '__team__';
-        // Business-day denominator for "dials per business day" — 5 for WTD,
-        // 22 for MTD, 220 for YTD. ALL/CUSTOM fall back to 1 (no per-day
-        // averaging) so the sub-line just reflects the raw total.
-        const dayDivisor = timeframe === 'WTD' ? 5 : timeframe === 'MTD' ? 22 : timeframe === 'YTD' ? 220 : 1;
+        // Business-day denominator for "dials per business day" — 5 for
+        // WTD/LW, 22 for MTD/LM, 220 for YTD. ALL/CUSTOM fall back to 1 (no
+        // per-day averaging) so the sub-line just reflects the raw total.
+        const dayDivisor = (timeframe === 'WTD' || timeframe === 'LW') ? 5
+                          : (timeframe === 'MTD' || timeframe === 'LM') ? 22
+                          : timeframe === 'YTD' ? 220 : 1;
         const HUES = {
           dials: 'var(--rb-green)', answers: 'var(--rb-yellow)',
           appointments: 'var(--rb-orange)', presentations: 'var(--rb-red)',
@@ -24207,6 +24378,9 @@
         const [showKpiModal, setShowKpiModal] = useState(false);
         const [kpiInitial, setKpiInitial] = useState(null);
         const [showDaily, setShowDaily] = useState(false);
+        // Daily Breakdown pagination — 0 = newest 5-week page. Reset on tf change.
+        const [dailyPage, setDailyPage] = useState(0);
+        useEffect(() => { setDailyPage(0); }, [tf, customFrom, customTo]);
         const [editingGoal, setEditingGoal] = useState(false);
         const [goalDraft, setGoalDraft] = useState('');
         // Goal-line chart mode: 'annual' shows the year-cumulative chart with
@@ -24870,16 +25044,89 @@
                 </div>
                 {/* Daily Breakdown — connected to the KPI Tracker card above */}
                 {(() => {
-                  const sortedKpis = (kpis || []).slice().sort((a, b) =>
-                    (a.kpi_date < b.kpi_date ? 1 : a.kpi_date > b.kpi_date ? -1 : 0)
-                  );
-                  const visible = showDaily ? sortedKpis : [];
+                  // Effective range: clamp to today's end-of-day. For ALL,
+                  // anchor the start at the earliest KPI/policy date so we
+                  // don't try to render every day since the Unix epoch.
+                  const todayEod = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+                  const rawEnd = tfRange[1] && tfRange[1] < todayEod ? tfRange[1] : todayEod;
+                  const breakdownEnd = new Date(rawEnd.getFullYear(), rawEnd.getMonth(), rawEnd.getDate());
+                  let breakdownStart = tfRange[0];
+                  // For ALL — and for CUSTOM with no start date set (which
+                  // resolves to the Unix epoch) — anchor to the earliest
+                  // logged KPI/policy so we don't try to render every week
+                  // since 1970.
+                  const minSensible = new Date(2000, 0, 1);
+                  if (tf === 'ALL' || !breakdownStart || breakdownStart < minSensible) {
+                    let earliest = null;
+                    kpis.forEach(r => { const d = r.kpi_date ? parsePolicyDate(r.kpi_date) : null; if (d && (!earliest || d < earliest)) earliest = d; });
+                    policies.forEach(p => { const d = policyDate(p); if (d && (!earliest || d < earliest)) earliest = d; });
+                    breakdownStart = earliest || breakdownEnd;
+                  }
+                  if (breakdownStart > breakdownEnd) breakdownStart = breakdownEnd;
+
+                  // Snap to whole weeks (Sunday–Saturday) so each row block is
+                  // a complete calendar week — easier to scan + matches the
+                  // Heatmap layout above.
+                  const wkStart = startOfWeekTk(breakdownStart);
+                  const wkEnd = startOfWeekTk(breakdownEnd); wkEnd.setDate(wkEnd.getDate() + 6);
+
+                  const ymdOf = (d) => d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+                  const kMap = {};
+                  kpis.forEach(r => { if (r.kpi_date) kMap[r.kpi_date] = r; });
+
+                  const DOW = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+                  const weeks = [];
+                  const cursor = new Date(wkStart);
+                  while (cursor <= wkEnd) {
+                    const days = [];
+                    for (let i = 0; i < 7; i++) {
+                      const dy = new Date(cursor); dy.setDate(dy.getDate() + i);
+                      const dymd = ymdOf(dy);
+                      const r = kMap[dymd] || {};
+                      days.push({
+                        date: dy, ymd: dymd, dow: DOW[dy.getDay()],
+                        dials: r.dials || 0,
+                        answers: r.answers || 0,
+                        appointments: r.appointments || 0,
+                        presentations: r.presentations || 0,
+                        deals: r.deals || 0,
+                        lead_spend: parseFloat(r.lead_spend || 0),
+                        deposits: parseFloat(r.deposits || 0),
+                        hasData: !!kMap[dymd],
+                        isFuture: dy > todayEod,
+                        inRange: dy >= breakdownStart && dy <= breakdownEnd,
+                      });
+                    }
+                    const total = days.reduce((acc, d) => ({
+                      dials: acc.dials + d.dials,
+                      answers: acc.answers + d.answers,
+                      appointments: acc.appointments + d.appointments,
+                      presentations: acc.presentations + d.presentations,
+                      deals: acc.deals + d.deals,
+                      lead_spend: acc.lead_spend + d.lead_spend,
+                      deposits: acc.deposits + d.deposits,
+                    }), { dials:0, answers:0, appointments:0, presentations:0, deals:0, lead_spend:0, deposits:0 });
+                    const wkLabelStart = days[0].date.toLocaleDateString('en-US', { month:'short', day:'numeric' });
+                    const wkLabelEnd = days[6].date.toLocaleDateString('en-US', { month:'short', day:'numeric' });
+                    weeks.push({ start: new Date(cursor), days, total, label: 'Week of ' + wkLabelStart + ' — ' + wkLabelEnd });
+                    cursor.setDate(cursor.getDate() + 7);
+                  }
+                  // Newest first so the most recent week is on top.
+                  weeks.reverse();
+
+                  const PAGE_SIZE = 5;
+                  const needsPagination = weeks.length > PAGE_SIZE;
+                  const totalPages = Math.max(1, Math.ceil(weeks.length / PAGE_SIZE));
+                  const page = Math.max(0, Math.min(dailyPage, totalPages - 1));
+                  const visibleWeeks = needsPagination ? weeks.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE) : weeks;
+                  const loggedDays = weeks.reduce((s, w) => s + w.days.filter(d => d.hasData).length, 0);
+
                   return (
                     <div className="tk-daily-attached">
                       <div className="tk-daily-attached-hd">
                         <div>
                           <div className="tk-daily-title">Daily Breakdown</div>
-                          <div className="tk-daily-meta">{sortedKpis.length} day{sortedKpis.length === 1 ? '' : 's'} logged</div>
+                          <div className="tk-daily-meta">{loggedDays} day{loggedDays === 1 ? '' : 's'} logged · {weeks.length} week{weeks.length === 1 ? '' : 's'} in range</div>
                         </div>
                         <button type="button" className={'tk-daily-toggle' + (showDaily ? ' on' : '')} onClick={() => setShowDaily(v => !v)} aria-expanded={showDaily}>
                           {showDaily ? 'Hide' : 'Show'}
@@ -24887,43 +25134,76 @@
                         </button>
                       </div>
                       <div className={'tk-daily-wrap' + (showDaily ? ' open' : '')}>
-                        {sortedKpis.length === 0 ? (
-                          <div className="tk-daily-empty">No KPI activity logged yet.</div>
+                        {weeks.length === 0 ? (
+                          <div className="tk-daily-empty">No days in this timeframe.</div>
                         ) : (
-                          <div className="tk-daily-scroll">
-                            <table className="tk-daily-table">
-                              <thead>
-                                <tr>
-                                  <th className="dt-date">Date</th>
-                                  <th>Dials</th>
-                                  <th>Answers</th>
-                                  <th>Appts</th>
-                                  <th>Pres.</th>
-                                  <th>Deals</th>
-                                  <th className="num">Lead spend</th>
-                                  <th className="num">Deposits</th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                {visible.map(r => {
-                                  const d = parsePolicyDate(r.kpi_date);
-                                  const lbl = d ? d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : (r.kpi_date || '');
-                                  return (
-                                    <tr key={r.kpi_date}>
-                                      <td className="dt-date">{lbl}</td>
-                                      <td>{fmtNum(r.dials || 0)}</td>
-                                      <td>{fmtNum(r.answers || 0)}</td>
-                                      <td>{fmtNum(r.appointments || 0)}</td>
-                                      <td>{fmtNum(r.presentations || 0)}</td>
-                                      <td className={r.deals > 0 ? 'pos' : ''}>{fmtNum(r.deals || 0)}</td>
-                                      <td className="num">{fmtCurrency(r.lead_spend || 0)}</td>
-                                      <td className="num">{fmtCurrency(r.deposits || 0)}</td>
-                                    </tr>
-                                  );
-                                })}
-                              </tbody>
-                            </table>
-                          </div>
+                          <>
+                            {needsPagination && (
+                              <div className="tk-daily-pager">
+                                <div className="tk-daily-pager-info">
+                                  Weeks <b>{page * PAGE_SIZE + 1}–{Math.min((page + 1) * PAGE_SIZE, weeks.length)}</b> of {weeks.length}
+                                </div>
+                                <div className="tk-daily-pager-ctrl">
+                                  <button type="button" className="tk-daily-pager-btn" onClick={() => setDailyPage(p => Math.max(0, p - 1))} disabled={page === 0} aria-label="Newer weeks">‹</button>
+                                  <button type="button" className="tk-daily-pager-btn" onClick={() => setDailyPage(p => Math.min(totalPages - 1, p + 1))} disabled={page >= totalPages - 1} aria-label="Older weeks">›</button>
+                                </div>
+                              </div>
+                            )}
+                            <div className="tk-daily-scroll">
+                              <table className="tk-daily-table">
+                                <thead>
+                                  <tr>
+                                    <th className="dt-date">Date</th>
+                                    <th className="dt-dow">Day</th>
+                                    <th>Dials</th>
+                                    <th>Answers</th>
+                                    <th>Appts</th>
+                                    <th>Pres.</th>
+                                    <th>Deals</th>
+                                    <th className="num">Lead spend</th>
+                                    <th className="num">Deposits</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {visibleWeeks.map(wk => (
+                                    <React.Fragment key={wk.start.toISOString()}>
+                                      <tr className="week-hd">
+                                        <td colSpan="9">{wk.label}</td>
+                                      </tr>
+                                      {wk.days.map(d => {
+                                        const lbl = d.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                                        const cls = (d.hasData ? '' : 'empty') + (d.isFuture ? ' future' : '');
+                                        return (
+                                          <tr key={d.ymd} className={cls.trim()}>
+                                            <td className="dt-date">{lbl}</td>
+                                            <td className="dt-dow">{d.dow}</td>
+                                            <td>{fmtNum(d.dials)}</td>
+                                            <td>{fmtNum(d.answers)}</td>
+                                            <td>{fmtNum(d.appointments)}</td>
+                                            <td>{fmtNum(d.presentations)}</td>
+                                            <td className={d.deals > 0 ? 'pos' : ''}>{fmtNum(d.deals)}</td>
+                                            <td className="num">{d.lead_spend ? fmtCurrency(d.lead_spend) : '—'}</td>
+                                            <td className="num">{d.deposits ? fmtCurrency(d.deposits) : '—'}</td>
+                                          </tr>
+                                        );
+                                      })}
+                                      <tr className="week-total">
+                                        <td className="dt-date">Week total</td>
+                                        <td className="dt-dow"></td>
+                                        <td>{fmtNum(wk.total.dials)}</td>
+                                        <td>{fmtNum(wk.total.answers)}</td>
+                                        <td>{fmtNum(wk.total.appointments)}</td>
+                                        <td>{fmtNum(wk.total.presentations)}</td>
+                                        <td className={wk.total.deals > 0 ? 'pos' : ''}>{fmtNum(wk.total.deals)}</td>
+                                        <td className="num">{fmtCurrency(wk.total.lead_spend)}</td>
+                                        <td className="num">{fmtCurrency(wk.total.deposits)}</td>
+                                      </tr>
+                                    </React.Fragment>
+                                  ))}
+                                </tbody>
+                              </table>
+                            </div>
+                          </>
                         )}
                       </div>
                     </div>
