@@ -693,6 +693,10 @@ th .sort-btn { font-family: var(--mono); font-size: 10px; font-weight: 500; colo
 .cb-row td { background: color-mix(in srgb, oklch(0.45 0 0) 22%, transparent); }
 .cb-row .client-name { color: var(--ink-2); }
 
+/* Declined: muted red — carrier said no, deal is dead */
+.declined-row td { background: color-mix(in srgb, var(--rb-red) 10%, transparent); }
+.declined-row .client-name { color: var(--ink-2); }
+
 .paid-row td { background: color-mix(in srgb, var(--rb-blue) 5%, transparent); }
 .issued-row td { background: color-mix(in srgb, var(--rb-green) 8%, transparent); }
 
@@ -1324,6 +1328,7 @@ const STATUSES = [
   { id: 'approved',      label: 'Approved',                 short: 'Approved',       color: 'var(--rb-purple)' },
   { id: 'pending_lapse', label: 'Pending Lapse',            short: 'Pending Lapse',  color: 'var(--rb-orange)' },
   { id: 'issued',        label: 'Issued',                   short: 'Issued',         color: 'var(--rb-green)' },
+  { id: 'declined',      label: 'Declined',                 short: 'Declined',       color: 'var(--rb-red)' },
 ];
 const statusMeta = (id) => STATUSES.find(s => s.id === id) || STATUSES[0];
 // Chargeback allowed on any status (still requires the deal be marked Paid first).
@@ -1374,8 +1379,8 @@ function dateRange(filter) {
     default: return null;
   }
 }
-// Sort priority for status: pending lapse first (most urgent), issued last.
-const STATUS_PRIORITY = { pending_lapse: 0, uw_submitted: 1, approved: 2, issued: 3 };
+// Sort priority for status: pending lapse first (most urgent), declined last (dead).
+const STATUS_PRIORITY = { pending_lapse: 0, uw_submitted: 1, approved: 2, issued: 3, declined: 4 };
 
 function compareDeals(a, b, key, dir) {
   // Status column has a custom workflow ordering, and chargebacks sink to the
@@ -2186,16 +2191,18 @@ function Dashboard({ isAdmin, setter, deals, manualPayments = [], loading, onAdd
   const stats = useMemo(() => {
     let pipeline = 0, paidOut = 0, chargeback = 0;
     let issuedTotal = 0;
-    const counts = { uw_submitted: 0, approved: 0, issued: 0, pending_lapse: 0, chargeback: 0, paid: 0, pipeline: 0, manual: 0 };
+    const counts = { uw_submitted: 0, approved: 0, issued: 0, pending_lapse: 0, declined: 0, chargeback: 0, paid: 0, pipeline: 0, manual: 0 };
 
     for (const d of deals) {
       counts[d.status] = (counts[d.status] || 0) + 1;
       const com = Number(d.commission) || 0;
       const cb = !!d.chargeback && !!d.paid;
+      const declined = d.status === 'declined';
 
       if (cb) { counts.chargeback++; chargeback += com; }
       if (d.paid) { paidOut += com; if (!cb) counts.paid++; }
-      if (!d.paid && !cb) { pipeline += com; counts.pipeline++; }
+      // Declined deals are dead — don't roll into pipeline totals.
+      if (!d.paid && !cb && !declined) { pipeline += com; counts.pipeline++; }
       if (d.status === 'issued' || d.status === 'pending_lapse') issuedTotal += com;
     }
 
@@ -2549,6 +2556,7 @@ function DealRow({ deal, isAdmin, onUpdate, onEdit, onRemove }) {
   return (
     <tr className={
       (deal.chargeback && deal.paid) ? 'cb-row' :
+      deal.status === 'declined' ? 'declined-row' :
       deal.status === 'pending_lapse' ? 'lapse-row' :
       deal.status === 'issued' ? 'issued-row' :
       deal.paid ? 'paid-row' : ''
