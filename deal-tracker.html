@@ -476,7 +476,7 @@ input, select { font-family: inherit; font-size: inherit; color: var(--ink-1); }
 }
 
 .kpi-grid {
-  display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px;
+  display: grid; grid-template-columns: repeat(5, 1fr); gap: 1px;
   background: var(--hairline);
   border: 1px solid var(--hairline);
   border-radius: var(--radius);
@@ -505,6 +505,7 @@ input, select { font-family: inherit; font-size: inherit; color: var(--ink-1); }
 }
 .kpi-cell.featured .kpi-val { font-size: 32px; color: var(--pos); }
 .kpi-cell.tone-neg .kpi-val { color: var(--neg); }
+.kpi-cell.tone-warn .kpi-val { color: var(--rb-orange); }
 .kpi-sub { font-family: var(--mono); font-size: 11px; color: var(--ink-3); }
 
 /* ─── Filter row ─── */
@@ -2191,6 +2192,7 @@ function Dashboard({ isAdmin, setter, deals, manualPayments = [], loading, onAdd
   const stats = useMemo(() => {
     let pipeline = 0, paidOut = 0, chargeback = 0;
     let issuedTotal = 0;
+    let atRisk = 0;
     const counts = { uw_submitted: 0, approved: 0, issued: 0, pending_lapse: 0, declined: 0, chargeback: 0, paid: 0, pipeline: 0, manual: 0 };
 
     for (const d of deals) {
@@ -2204,6 +2206,7 @@ function Dashboard({ isAdmin, setter, deals, manualPayments = [], loading, onAdd
       // Declined deals are dead — don't roll into pipeline totals.
       if (!d.paid && !cb && !declined) { pipeline += com; counts.pipeline++; }
       if (d.status === 'issued' || d.status === 'pending_lapse') issuedTotal += com;
+      if (d.status === 'pending_lapse' && !cb) atRisk += com;
     }
 
     // Manual payments (advances/bonuses) fold into Paid out but NOT Net earned —
@@ -2217,7 +2220,7 @@ function Dashboard({ isAdmin, setter, deals, manualPayments = [], loading, onAdd
 
     // Net earned = commissions on Issued/Pending Lapse minus all chargebacks.
     const netEarned = issuedTotal - chargeback;
-    return { pipeline, paidOut, chargeback, netEarned, manualTotal, counts };
+    return { pipeline, paidOut, chargeback, netEarned, atRisk, manualTotal, counts };
   }, [deals, manualPayments]);
 
   const filtered = useMemo(() => {
@@ -2320,6 +2323,7 @@ function Dashboard({ isAdmin, setter, deals, manualPayments = [], loading, onAdd
           swatch="var(--rb-blue)"
         />
         <KpiCell label="Chargebacks" value={fmt(stats.chargeback)} sub={stats.counts.chargeback + ' owed back'} swatch="var(--rb-red)" tone="neg" />
+        <KpiCell label="At risk" value={fmt(stats.atRisk)} sub={stats.counts.pending_lapse + ' pending lapse'} swatch="var(--rb-orange)" tone="warn" />
         <KpiCell label="Net earned" value={fmt(stats.netEarned)} sub="Issued − chargebacks" swatch="var(--rb-green)" tone="pos" featured />
       </section>
 
