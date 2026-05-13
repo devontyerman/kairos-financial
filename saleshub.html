@@ -1663,11 +1663,12 @@
     /* (Avatar still used on Sales Reps tab; week sheet shows the name only.) */
     #panel-weeklytracker .wt-avatar { display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--wt-blue-100); color: var(--wt-blue-700); font-weight: 600; font-size: 11px; margin-right: 6px; vertical-align: middle; flex-shrink: 0; }
     /* Column order (sticky pins, left-to-right):
-         rank(44) → name(130) → monthly goal(80) → MTD total(76) → weekly goal(80) → WTD total(76)
-       Cumulative left offsets: 0, 44, 174, 254, 330, 410. */
+         rank(44) → name(130) → monthly goal(80) → MTD total(76) → weekly goal(80) → WTD total(76) → WTD dials(76)
+       Cumulative left offsets: 0, 44, 174, 254, 330, 410, 486. */
     #panel-weeklytracker .wt-monthly-cell { width: 80px; min-width: 80px; max-width: 80px; position: sticky; left: 174px; z-index: 2; background: var(--wt-gray-25); border-right: 1px solid var(--wt-gray-200) !important; }
     #panel-weeklytracker .wt-mtd-cell { background: #dbe9fe; text-align: right; padding: 0 5px !important; font-family: 'JetBrains Mono', monospace; font-weight: 600; color: var(--wt-blue-900); width: 76px; min-width: 76px; max-width: 76px; font-size: 13px; position: sticky; left: 254px; z-index: 2; box-sizing: border-box; border-right: 1px solid var(--wt-blue-100) !important; }
     #panel-weeklytracker .wt-wtd-cell { background: var(--wt-blue-50); text-align: right; padding: 0 5px !important; font-family: 'JetBrains Mono', monospace; font-weight: 600; color: var(--wt-blue-700); width: 76px; min-width: 76px; max-width: 76px; font-size: 13px; position: sticky; left: 410px; z-index: 2; box-sizing: border-box; border-right: 1px solid var(--wt-blue-100) !important; }
+    #panel-weeklytracker .wt-wtd-dials-cell { background: var(--wt-amber-50); text-align: right; padding: 0 5px !important; font-family: 'JetBrains Mono', monospace; font-weight: 600; color: var(--wt-amber-500); width: 76px; min-width: 76px; max-width: 76px; font-size: 13px; position: sticky; left: 486px; z-index: 2; box-sizing: border-box; border-right: 1px solid var(--wt-gray-200) !important; }
     #panel-weeklytracker .wt-ytd-cell { background: var(--wt-green-50); text-align: right; padding: 0 5px !important; font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--wt-green-700); width: 88px; min-width: 88px; max-width: 88px; border-left: 1px solid var(--wt-green-100); font-size: 13px; }
     #panel-weeklytracker .wt-day-cell { width: 66px; min-width: 66px; max-width: 66px; padding: 0 !important; text-align: right; box-sizing: border-box; }
     #panel-weeklytracker .wt-day-cell input { width: 100%; height: 36px; border: none; background: transparent; text-align: right; padding: 0 2px; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--wt-gray-700); outline: none; font-weight: 500; box-sizing: border-box; }
@@ -1706,6 +1707,7 @@
     #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th.wt-mtd-h    { position: sticky; left: 254px; z-index: 6; width: 76px; min-width: 76px; max-width: 76px; background: var(--wt-blue-900); }
     #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th.wt-weekly-h { position: sticky; left: 330px; z-index: 6; width: 80px; min-width: 80px; max-width: 80px; background: var(--wt-blue-900); }
     #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th.wt-wtd-h    { position: sticky; left: 410px; z-index: 6; width: 76px; min-width: 76px; max-width: 76px; }
+    #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th.wt-wtd-dials-h { position: sticky; left: 486px; z-index: 6; width: 76px; min-width: 76px; max-width: 76px; background: var(--wt-blue-900); }
     /* Sticky footer cells (mirror the body offsets so totals stay aligned with the data rows) */
     #panel-weeklytracker .wt-grid-table tfoot td.wt-foot-rank   { position: sticky; left: 0;    z-index: 2; width: 44px; min-width: 44px; max-width: 44px; }
     #panel-weeklytracker .wt-grid-table tfoot td.wt-foot-name   { position: sticky; left: 44px; z-index: 2; width: 130px; min-width: 130px; max-width: 130px; text-align: left; text-transform: uppercase; letter-spacing: 0.04em; font-size: 12px; font-family: 'Inter', sans-serif; }
@@ -1713,6 +1715,7 @@
     #panel-weeklytracker .wt-grid-table tfoot td.wt-foot-mtd    { position: sticky; left: 254px; z-index: 2; width: 76px; min-width: 76px; max-width: 76px; }
     #panel-weeklytracker .wt-grid-table tfoot td.wt-foot-weekly { position: sticky; left: 330px; z-index: 2; width: 80px; min-width: 80px; max-width: 80px; }
     #panel-weeklytracker .wt-grid-table tfoot td.wt-foot-wtd    { position: sticky; left: 410px; z-index: 2; width: 76px; min-width: 76px; max-width: 76px; }
+    #panel-weeklytracker .wt-grid-table tfoot td.wt-foot-wtd-dials { position: sticky; left: 486px; z-index: 2; width: 76px; min-width: 76px; max-width: 76px; }
     #panel-weeklytracker .wt-day-cell .wt-pct { display: block; font-size: 9px; color: var(--wt-gray-400); text-align: right; padding-right: 0; margin-top: -2px; font-weight: 500; }
     #panel-weeklytracker .wt-day-cell.actual.over .wt-pct       { color: var(--wt-green-600); }
     #panel-weeklytracker .wt-day-cell.actual.met .wt-pct        { color: var(--wt-green-600); }
@@ -1870,8 +1873,8 @@
         font-size: 12px;
       }
       /* Mobile sticky pin order — same as desktop, just narrower:
-           rank(30) → name(88) → monthly(60) → mtd(56) → weekly(60) → wtd(56)
-         Cumulative left offsets: 0, 30, 118, 178, 234, 294. */
+           rank(30) → name(88) → monthly(60) → mtd(56) → weekly(60) → wtd(56) → wtd-dials(56)
+         Cumulative left offsets: 0, 30, 118, 178, 234, 294, 350. */
       #panel-weeklytracker .wt-monthly-cell {
         width: 60px; min-width: 60px; max-width: 60px;
         left: 118px;
@@ -1889,6 +1892,12 @@
       #panel-weeklytracker .wt-wtd-cell {
         width: 56px; min-width: 56px; max-width: 56px;
         left: 294px;
+        font-size: 11px;
+        padding: 0 4px !important;
+      }
+      #panel-weeklytracker .wt-wtd-dials-cell {
+        width: 56px; min-width: 56px; max-width: 56px;
+        left: 350px;
         font-size: 11px;
         padding: 0 4px !important;
       }
@@ -1910,6 +1919,7 @@
       #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th.wt-mtd-h     { left: 178px; width: 56px; min-width: 56px; max-width: 56px; }
       #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th.wt-weekly-h  { left: 234px; width: 60px; min-width: 60px; max-width: 60px; }
       #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th.wt-wtd-h     { left: 294px; width: 56px; min-width: 56px; max-width: 56px; }
+      #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th.wt-wtd-dials-h { left: 350px; width: 56px; min-width: 56px; max-width: 56px; }
 
       /* Footer sticky offsets */
       #panel-weeklytracker .wt-grid-table tfoot td { font-size: 11px; padding: 6px 4px; }
@@ -1919,6 +1929,7 @@
       #panel-weeklytracker .wt-grid-table tfoot td.wt-foot-mtd     { left: 178px; width: 56px; min-width: 56px; max-width: 56px; }
       #panel-weeklytracker .wt-grid-table tfoot td.wt-foot-weekly  { left: 234px; width: 60px; min-width: 60px; max-width: 60px; }
       #panel-weeklytracker .wt-grid-table tfoot td.wt-foot-wtd     { left: 294px; width: 56px; min-width: 56px; max-width: 56px; }
+      #panel-weeklytracker .wt-grid-table tfoot td.wt-foot-wtd-dials { left: 350px; width: 56px; min-width: 56px; max-width: 56px; }
 
       /* Tabs bar: more touch-friendly */
       #panel-weeklytracker .wt-tabs-bar { min-height: 40px; padding: 0 6px; }
@@ -1935,14 +1946,17 @@
       #panel-weeklytracker .wt-shell.wt-totals-collapsed .wt-monthly-cell,
       #panel-weeklytracker .wt-shell.wt-totals-collapsed .wt-mtd-cell,
       #panel-weeklytracker .wt-shell.wt-totals-collapsed .wt-wtd-cell,
+      #panel-weeklytracker .wt-shell.wt-totals-collapsed .wt-wtd-dials-cell,
       #panel-weeklytracker .wt-shell.wt-totals-collapsed .wt-weekly-cell,
       #panel-weeklytracker .wt-shell.wt-totals-collapsed .wt-grid-table thead tr.wt-day-row th.wt-monthly-h,
       #panel-weeklytracker .wt-shell.wt-totals-collapsed .wt-grid-table thead tr.wt-day-row th.wt-mtd-h,
       #panel-weeklytracker .wt-shell.wt-totals-collapsed .wt-grid-table thead tr.wt-day-row th.wt-wtd-h,
+      #panel-weeklytracker .wt-shell.wt-totals-collapsed .wt-grid-table thead tr.wt-day-row th.wt-wtd-dials-h,
       #panel-weeklytracker .wt-shell.wt-totals-collapsed .wt-grid-table thead tr.wt-day-row th.wt-weekly-h,
       #panel-weeklytracker .wt-shell.wt-totals-collapsed .wt-grid-table tfoot td.wt-foot-monthly,
       #panel-weeklytracker .wt-shell.wt-totals-collapsed .wt-grid-table tfoot td.wt-foot-mtd,
       #panel-weeklytracker .wt-shell.wt-totals-collapsed .wt-grid-table tfoot td.wt-foot-wtd,
+      #panel-weeklytracker .wt-shell.wt-totals-collapsed .wt-grid-table tfoot td.wt-foot-wtd-dials,
       #panel-weeklytracker .wt-shell.wt-totals-collapsed .wt-grid-table tfoot td.wt-foot-weekly {
         display: none !important;
       }
@@ -19312,6 +19326,7 @@
           const a = actuals[rep] || [0, 0, 0, 0, 0, 0];
           const da = dialActuals[rep] || [0, 0, 0, 0, 0, 0];
           const wtd = a.reduce((s, v) => s + v, 0);
+          const wtdDials = da.reduce((s, v) => s + v, 0);
           const dgAp = getDefaultGoal('ap', rep);
           const dgDial = getDefaultGoal('dial', rep);
           const apGoals = [0, 1, 2, 3, 4, 5].map(i => {
@@ -19324,7 +19339,7 @@
           });
           const weeklyGoal = getWeeklyApGoal(weekKey, rep);
           const monthlyGoal = getMonthlyApGoal(monthKey, rep);
-          return { rep, actuals: a, dialActuals: da, apGoals, dialGoals, wtd, weeklyGoal, monthlyGoal, mtd: mtdSnap[rep] || 0, ytd: ytdSnap[rep] || 0 };
+          return { rep, actuals: a, dialActuals: da, apGoals, dialGoals, wtd, wtdDials, weeklyGoal, monthlyGoal, mtd: mtdSnap[rep] || 0, ytd: ytdSnap[rep] || 0 };
         }).sort((a, b) => {
           // Primary rank: MTD descending. Tiebreaker / fallback when nobody has
           // MTD yet (start of month): YTD descending.
@@ -19410,6 +19425,7 @@
               '<input type="text" inputmode="decimal" data-wt-weekly-goal-week="' + escHtml(weekKey) + '" data-wt-weekly-goal-rep="' + escHtml(row.rep) + '" value="' + escHtml(weeklyGoalDisplay) + '" placeholder="$0" />' +
             '</td>' +
             '<td class="wt-wtd-cell">' + escHtml(fmtMoney(row.wtd)) + wtdCrown + '</td>' +
+            '<td class="wt-wtd-dials-cell">' + escHtml(row.wtdDials > 0 ? Number(row.wtdDials).toLocaleString() : '—') + '</td>' +
             dayCells +
             '<td class="wt-ytd-cell">' + escHtml(fmtMoney(row.ytd)) + '</td>' +
           '</tr>';
@@ -19428,6 +19444,7 @@
           dayTotals.push({ apGoal: apG, apActual: apA, dialGoal: dG, dialActual: dA });
         }
         const totalWTD = rows.reduce((s, r) => s + r.wtd, 0);
+        const totalWTDDials = rows.reduce((s, r) => s + (r.wtdDials || 0), 0);
         const totalMTD = rows.reduce((s, r) => s + r.mtd, 0);
         const totalWeeklyGoal = rows.reduce((s, r) => s + (r.weeklyGoal || 0), 0);
         const totalMonthlyGoal = rows.reduce((s, r) => s + (r.monthlyGoal || 0), 0);
@@ -19477,7 +19494,7 @@
                          '<td>' + escHtml(fmtMoney(dt.apActual)) + '</td>';
         });
 
-        const colCount = 6 + (DAYS.length * 4) + 1; // rank,name,monthlyGoal,mtd,weeklyGoal,wtd + 4*days + ytd
+        const colCount = 7 + (DAYS.length * 4) + 1; // rank,name,monthlyGoal,mtd,weeklyGoal,wtd,wtdDials + 4*days + ytd
 
         const headerHtml =
           '<div class="wt-sheet-header">' +
@@ -19498,6 +19515,7 @@
                   '<th class="wt-mtd-h" rowspan="2">MTD Total · ' + escHtml(MONTHS_SHORT[anchorMonthForWeek(weekKey).monthIdx]) + '</th>' +
                   '<th class="wt-weekly-h" rowspan="2">WTD Goal</th>' +
                   '<th class="wt-wtd-h" rowspan="2">WTD Total</th>' +
+                  '<th class="wt-wtd-dials-h" rowspan="2">WTD Dials</th>' +
                   dayHeaderHtml +
                   '<th class="wt-ytd-h" rowspan="2">YTD Total</th>' +
                 '</tr>' +
@@ -19511,6 +19529,7 @@
                 '<td class="wt-foot-mtd"><span class="wt-foot-val">' + escHtml(fmtMoney(totalMTD)) + '</span>' + projectionChip(_mtdProj) + '</td>' +
                 '<td class="wt-foot-weekly">' + escHtml(fmtMoney(totalWeeklyGoal)) + '</td>' +
                 '<td class="wt-foot-wtd"><span class="wt-foot-val">' + escHtml(fmtMoney(totalWTD)) + '</span>' + projectionChip(_wtdProj) + '</td>' +
+                '<td class="wt-foot-wtd-dials">' + escHtml(totalWTDDials > 0 ? Number(totalWTDDials).toLocaleString() : '0') + '</td>' +
                 footDayHtml +
                 '<td class="wt-ytd-foot">' + escHtml(fmtMoney(totalYTD)) + '</td>' +
               '</tr></tfoot>') : '') +
@@ -21390,6 +21409,7 @@
             carrierMix: carrierMixMTD,
             carrierMixWTD, carrierMixMTD, carrierMixYTD,
             policies: myPols,
+            kpis: myKpis,
           };
         });
       }
@@ -21420,6 +21440,8 @@
         const roi = ytd.leadSpend > 0 ? ((ytd.deposits - ytd.leadSpend) / ytd.leadSpend) * 100 : 0;
         const teamPolicies = [];
         agents.forEach(a => (a.policies || []).forEach(p => teamPolicies.push(p)));
+        const teamKpis = [];
+        agents.forEach(a => (a.kpis || []).forEach(k => teamKpis.push(k)));
         return {
           id: '__team__',
           name: 'Team',
@@ -21439,11 +21461,51 @@
           carrierMix: carrierMixMTD,
           carrierMixWTD, carrierMixMTD, carrierMixYTD,
           policies: teamPolicies,
+          kpis: teamKpis,
         };
       }
 
-      function scopedView(scope, timeframe) {
+      function scopedView(scope, timeframe, customRange) {
         if (!scope) return null;
+        // Dynamic-window mode (ALL / CUSTOM): recompute AP, deals, KPIs and
+        // carrier mix on the fly from the scope's raw policies + kpis. Falls
+        // through to the precomputed WTD/MTD/YTD values otherwise.
+        if (timeframe === 'ALL' || timeframe === 'CUSTOM') {
+          const start = (timeframe === 'ALL') ? new Date(0) : ((customRange && customRange[0]) || new Date(0));
+          const end = (timeframe === 'ALL') ? null : ((customRange && customRange[1]) || null);
+          const inWin = (d) => d && d >= start && (!end || d <= end);
+          let ap = 0, dealsCount = 0;
+          const mix = {}; CARRIER_LIST.forEach(c => mix[c] = 0);
+          (scope.policies || []).forEach(po => {
+            const d = parsePolicyDate(po.policy_date || po.created_at);
+            if (!inWin(d)) return;
+            const v = parseFloat(po.annual_premium || 0);
+            ap += v; dealsCount += 1;
+            if (CARRIER_LIST.includes(po.carrier)) mix[po.carrier] += v;
+          });
+          const kSum = { dials:0, answers:0, appointments:0, presentations:0, deals:0, leadSpend:0, deposits:0 };
+          (scope.kpis || []).forEach(r => {
+            const d = r.kpi_date ? new Date(r.kpi_date + 'T00:00:00') : null;
+            if (!inWin(d)) return;
+            kSum.dials += (r.dials || 0);
+            kSum.answers += (r.answers || 0);
+            kSum.appointments += (r.appointments || 0);
+            kSum.presentations += (r.presentations || 0);
+            kSum.deals += (r.deals || 0);
+            kSum.leadSpend += parseFloat(r.lead_spend || 0);
+            kSum.deposits += parseFloat(r.deposits || 0);
+          });
+          const deals = kSum.deals || dealsCount;
+          const dialToDeal = kSum.dials > 0 ? (deals / kSum.dials) * 100 : 0;
+          const roi = kSum.leadSpend > 0 ? ((kSum.deposits - kSum.leadSpend) / kSum.leadSpend) * 100 : 0;
+          const avgPremium = deals > 0 ? Math.round(ap / deals) : 0;
+          return {
+            timeframe, ap, deals, dialToDeal, roi, avgPremium,
+            dials: kSum.dials, answers: kSum.answers, appointments: kSum.appointments,
+            presentations: kSum.presentations, leadSpend: kSum.leadSpend, deposits: kSum.deposits,
+            carrierMix: mix, name: scope.name,
+          };
+        }
         const ap = timeframe === 'WTD' ? scope.apWTD : timeframe === 'YTD' ? scope.apYTD : scope.apMTD;
         const deals = timeframe === 'WTD' ? scope.dealsWTD : timeframe === 'YTD' ? scope.dealsYTD : scope.dealsMTD;
         const k = timeframe === 'WTD' ? scope.kpiWTD : timeframe === 'YTD' ? scope.kpiYTD : scope.kpiMTD;
@@ -21763,7 +21825,7 @@
         const x = Math.sin(seed * 12.9898 + 78.233) * 43758.5453;
         return (x - Math.floor(x)) - 0.5;
       }
-      function APHero({ scope, view, timeframe, setTimeframe }) {
+      function APHero({ scope, view, timeframe, setTimeframe, customFrom, customTo, setCustomFrom, setCustomTo, customRange }) {
         const today = new Date();
         let series, labels, total, prior, label, projectionFromIdx, mtdProjectedTotal;
         if (timeframe === 'WTD') {
@@ -21852,6 +21914,66 @@
           });
           mtdProjectedTotal = projectedTotal;
           label = 'Month-to-date';
+        } else if (timeframe === 'ALL' || timeframe === 'CUSTOM') {
+          // Dynamic-window chart: bucket policies into months across the
+          // selected window and draw a cumulative AP line. No projection —
+          // we don't know the user's intent for windows that may already be
+          // closed (e.g. a custom range in the past).
+          const allPols = scope.policies || [];
+          let rangeStart = null, rangeEnd = null;
+          if (timeframe === 'CUSTOM') {
+            rangeStart = (customRange && customRange[0]) || null;
+            rangeEnd = (customRange && customRange[1]) || null;
+          }
+          const datedAP = allPols.map(p => {
+            const d = parsePolicyDate(p.policy_date || p.created_at);
+            return d ? { d, ap: parseFloat(p.annual_premium || 0) } : null;
+          }).filter(Boolean);
+          let firstDate = null, lastDate = null;
+          if (timeframe === 'ALL') {
+            datedAP.forEach(x => {
+              if (!firstDate || x.d < firstDate) firstDate = x.d;
+              if (!lastDate || x.d > lastDate) lastDate = x.d;
+            });
+            if (!firstDate) { firstDate = startOfMonth(today); lastDate = today; }
+            if (lastDate < today) lastDate = today;
+          } else {
+            firstDate = rangeStart || (datedAP.length ? datedAP.reduce((m,x) => x.d < m ? x.d : m, datedAP[0].d) : startOfMonth(today));
+            lastDate = rangeEnd || today;
+          }
+          const monthKey = (d) => d.getFullYear() * 12 + d.getMonth();
+          const startKey = monthKey(firstDate);
+          const endKey = monthKey(lastDate);
+          const totalMonths = Math.max(1, endKey - startKey + 1);
+          const buckets = new Array(totalMonths).fill(0);
+          datedAP.forEach(x => {
+            if (rangeStart && x.d < rangeStart) return;
+            if (rangeEnd && x.d > rangeEnd) return;
+            const idx = monthKey(x.d) - startKey;
+            if (idx >= 0 && idx < totalMonths) buckets[idx] += x.ap;
+          });
+          const cum = buckets.reduce((arr, v) => { arr.push((arr[arr.length-1] || 0) + v); return arr; }, []);
+          series = cum;
+          const monthShort = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+          labels = [];
+          for (let i = 0; i < totalMonths; i++) {
+            const k = startKey + i;
+            const y = Math.floor(k / 12);
+            const m = k % 12;
+            labels.push(monthShort[m] + " '" + String(y).slice(-2));
+          }
+          total = view.ap;
+          projectionFromIdx = undefined;
+          prior = 0;
+          if (timeframe === 'ALL') {
+            label = 'All-time';
+          } else {
+            const fmt = (d) => (d.getMonth()+1) + '/' + d.getDate() + '/' + String(d.getFullYear()).slice(-2);
+            label = (rangeStart && rangeEnd) ? (fmt(rangeStart) + ' → ' + fmt(rangeEnd))
+                  : rangeStart ? ('From ' + fmt(rangeStart))
+                  : rangeEnd ? ('Through ' + fmt(rangeEnd))
+                  : 'Custom range — pick dates';
+          }
         } else {
           // YTD: chart spans Jan → Dec of the current year. Past + current
           // months show real cumulative AP; future months show a linear
@@ -21897,7 +22019,7 @@
         }
         const deltaBasis = timeframe === 'MTD' && mtdProjectedTotal != null ? mtdProjectedTotal : total;
         const delta = prior ? ((deltaBasis - prior) / prior) * 100 : 0;
-        const deltaLabel = timeframe === 'WTD' ? 'vs last week' : timeframe === 'MTD' ? 'projected vs last month' : 'vs same point last year';
+        const deltaLabel = timeframe === 'WTD' ? 'vs last week' : timeframe === 'MTD' ? 'projected vs last month' : timeframe === 'YTD' ? 'vs same point last year' : '';
         const isTeam = scope.id === '__team__';
         return (
           <div className="tp-card tp-ap-hero">
@@ -21907,11 +22029,22 @@
                 <div className="tp-card-meta">{label}</div>
               </div>
               <div className="tp-tf-segment">
-                {['WTD','MTD','YTD'].map(t => (
-                  <button key={t} className={timeframe === t ? 'on' : ''} onClick={() => setTimeframe(t)}>{t}</button>
+                {[['WTD','WTD'],['MTD','MTD'],['YTD','YTD'],['ALL','All'],['CUSTOM','Custom']].map(([t, lbl]) => (
+                  <button key={t} className={timeframe === t ? 'on' : ''} onClick={() => setTimeframe(t)}>{lbl}</button>
                 ))}
               </div>
             </div>
+            {timeframe === 'CUSTOM' && setCustomFrom && (
+              <div style={{display:'flex', alignItems:'center', gap:10, flexWrap:'wrap', margin:'4px 0 14px'}}>
+                <span style={{fontFamily:'var(--tp-mono)', fontSize:10, color:'var(--tp-ink-3)', textTransform:'uppercase', letterSpacing:'0.06em'}}>From</span>
+                <input type="date" value={customFrom || ''} onChange={e => setCustomFrom(e.target.value)} style={{appearance:'none', background:'var(--tp-surface)', color:'var(--tp-ink-1)', border:'1px solid var(--tp-hairline-strong)', borderRadius:8, padding:'6px 10px', fontFamily:'var(--tp-mono)', fontSize:12, outline:'none'}} />
+                <span style={{fontFamily:'var(--tp-mono)', fontSize:10, color:'var(--tp-ink-3)', textTransform:'uppercase', letterSpacing:'0.06em'}}>To</span>
+                <input type="date" value={customTo || ''} onChange={e => setCustomTo(e.target.value)} style={{appearance:'none', background:'var(--tp-surface)', color:'var(--tp-ink-1)', border:'1px solid var(--tp-hairline-strong)', borderRadius:8, padding:'6px 10px', fontFamily:'var(--tp-mono)', fontSize:12, outline:'none'}} />
+                {(customFrom || customTo) && (
+                  <button type="button" onClick={() => { setCustomFrom(''); setCustomTo(''); }} style={{appearance:'none', border:'1px solid var(--tp-hairline-strong)', background:'transparent', color:'var(--tp-ink-2)', borderRadius:8, padding:'6px 10px', fontFamily:'var(--tp-mono)', fontSize:11, cursor:'pointer'}}>Clear</button>
+                )}
+              </div>
+            )}
             <div className="tp-ap-stats">
               <div className="tp-ap-num">{fmtCurrency(total)}</div>
               {prior > 0 ? (
@@ -21946,17 +22079,25 @@
       // ─── Leaderboard ─────────────────────────────────────────────────
       // All numeric columns (AP, Deals, D→D %, ROI) reflect the active
       // timeframe so a switch from MTD → WTD/YTD updates every row.
-      function Leaderboard({ agents, activeId, onSelect, timeframe }) {
-        const tfLabel = timeframe === 'WTD' ? 'WTD' : timeframe === 'YTD' ? 'YTD' : 'MTD';
+      function Leaderboard({ agents, activeId, onSelect, timeframe, customRange }) {
+        const isDynamic = timeframe === 'ALL' || timeframe === 'CUSTOM';
+        const tfLabel = timeframe === 'WTD' ? 'WTD'
+                      : timeframe === 'YTD' ? 'YTD'
+                      : timeframe === 'ALL' ? 'ALL'
+                      : timeframe === 'CUSTOM' ? 'Custom' : 'MTD';
         const apKey = timeframe === 'WTD' ? 'apWTD' : timeframe === 'YTD' ? 'apYTD' : 'apMTD';
         const dealsKey = timeframe === 'WTD' ? 'dealsWTD' : timeframe === 'YTD' ? 'dealsYTD' : 'dealsMTD';
         const kpiKey = timeframe === 'WTD' ? 'kpiWTD' : timeframe === 'YTD' ? 'kpiYTD' : 'kpiMTD';
         const enriched = useMemo(() => agents.map(a => {
+          if (isDynamic) {
+            const v = scopedView(a, timeframe, customRange);
+            return Object.assign({}, a, { _ap: v.ap || 0, _deals: v.deals || 0, _dialToDeal: v.dialToDeal || 0, _roi: v.roi || 0, _dials: v.dials || 0 });
+          }
           const k = a[kpiKey] || { dials: 0, leadSpend: 0, deposits: 0 };
           const d2d = k.dials > 0 ? (a[dealsKey] / k.dials) * 100 : 0;
           const r = k.leadSpend > 0 ? ((k.deposits - k.leadSpend) / k.leadSpend) * 100 : 0;
           return Object.assign({}, a, { _ap: a[apKey] || 0, _deals: a[dealsKey] || 0, _dialToDeal: d2d, _roi: r, _dials: k.dials });
-        }), [agents, timeframe, apKey, dealsKey, kpiKey]);
+        }), [agents, timeframe, apKey, dealsKey, kpiKey, isDynamic, customRange]);
         const [sortKey, setSortKey] = useState('_ap');
         const [sortDir, setSortDir] = useState('desc');
         const sorted = useMemo(() => {
@@ -22162,7 +22303,10 @@
       function KPIPanel({ scope, view, timeframe }) {
         const s = view;
         const isTeam = scope.id === '__team__';
-        const dayDivisor = timeframe === 'WTD' ? 5 : timeframe === 'MTD' ? 22 : 220;
+        // Business-day denominator for "dials per business day" — 5 for WTD,
+        // 22 for MTD, 220 for YTD. ALL/CUSTOM fall back to 1 (no per-day
+        // averaging) so the sub-line just reflects the raw total.
+        const dayDivisor = timeframe === 'WTD' ? 5 : timeframe === 'MTD' ? 22 : timeframe === 'YTD' ? 220 : 1;
         const HUES = {
           dials: 'var(--rb-green)', answers: 'var(--rb-yellow)',
           appointments: 'var(--rb-orange)', presentations: 'var(--rb-red)',
@@ -22228,6 +22372,8 @@
       function Dashboard() {
         const [theme, setTheme] = useState(initialTheme);
         const [timeframe, setTimeframe] = useState('MTD');
+        const [customFrom, setCustomFrom] = useState('');
+        const [customTo, setCustomTo] = useState('');
         const [activeId, setActiveId] = useState(null);
         const [agents, setAgents] = useState([]);
         const [team, setTeam] = useState(null);
@@ -22267,7 +22413,21 @@
         }, []);
 
         const scope = activeId ? (agents.find(a => a.id === activeId) || team) : team;
-        const view = useMemo(() => scope ? scopedView(scope, timeframe) : null, [scope, timeframe, agents, team]);
+        const customRange = useMemo(() => {
+          const parse = (s) => {
+            if (!s) return null;
+            const parts = String(s).split('-');
+            if (parts.length !== 3) return null;
+            const y = parseInt(parts[0], 10), m = parseInt(parts[1], 10), d = parseInt(parts[2], 10);
+            if (!y || !m || !d) return null;
+            return new Date(y, m - 1, d);
+          };
+          const start = parse(customFrom);
+          const endRaw = parse(customTo);
+          const end = endRaw ? new Date(endRaw.getFullYear(), endRaw.getMonth(), endRaw.getDate(), 23, 59, 59) : null;
+          return [start, end];
+        }, [customFrom, customTo]);
+        const view = useMemo(() => scope ? scopedView(scope, timeframe, customRange) : null, [scope, timeframe, agents, team, customRange]);
 
         if (loading) {
           return (
@@ -22309,8 +22469,11 @@
               <div className="tp-hdr-sub">Last sync · {new Date().toLocaleTimeString('en-US', {hour:'numeric', minute:'2-digit'})}</div>
             </div>
             <div className="tp-grid tp-grid-12">
-              <APHero scope={scope} view={view} timeframe={timeframe} setTimeframe={setTimeframe} />
-              <Leaderboard agents={agents} activeId={activeId} timeframe={timeframe} onSelect={(id) => setActiveId(curr => curr === id ? null : id)} />
+              <APHero scope={scope} view={view} timeframe={timeframe} setTimeframe={setTimeframe}
+                customFrom={customFrom} customTo={customTo} setCustomFrom={setCustomFrom} setCustomTo={setCustomTo}
+                customRange={customRange} />
+              <Leaderboard agents={agents} activeId={activeId} timeframe={timeframe} customRange={customRange}
+                onSelect={(id) => setActiveId(curr => curr === id ? null : id)} />
               <CarrierBreakdown scope={scope} view={view} timeframe={timeframe} />
               <Comparison scope={scope} team={team} agents={agents} months={12} />
               <KPIPanel scope={scope} view={view} timeframe={timeframe} />
@@ -24038,6 +24201,8 @@
         const [loading, setLoading] = useState(true);
         const [error, setError] = useState(null);
         const [tf, setTf] = useState('WTD');
+        const [customFrom, setCustomFrom] = useState('');
+        const [customTo, setCustomTo] = useState('');
         const [showDealModal, setShowDealModal] = useState(false);
         const [showKpiModal, setShowKpiModal] = useState(false);
         const [kpiInitial, setKpiInitial] = useState(null);
@@ -24294,13 +24459,27 @@
           if (end ? (d >= start && d <= end) : d >= start) return s + parseFloat(p.annual_premium || 0);
           return s;
         }, 0);
-        const tfRange = {
+        const parseLocalYMD = (s) => {
+          if (!s) return null;
+          const parts = String(s).split('-');
+          if (parts.length !== 3) return null;
+          const y = parseInt(parts[0], 10), m = parseInt(parts[1], 10), d = parseInt(parts[2], 10);
+          if (!y || !m || !d) return null;
+          return new Date(y, m - 1, d);
+        };
+        const customStart = parseLocalYMD(customFrom);
+        const customEndRaw = parseLocalYMD(customTo);
+        const customEnd = customEndRaw ? new Date(customEndRaw.getFullYear(), customEndRaw.getMonth(), customEndRaw.getDate(), 23, 59, 59) : null;
+        const tfRangeMap = {
           WTD: [weekStart, null],
           MTD: [monthStart, null],
           YTD: [yearStart, null],
           LW:  [lastWeekStart, new Date(weekStart.getTime() - 1)],
           LM:  [lastMonthStart, lastMonthEnd],
-        }[tf];
+          ALL: [new Date(0), null],
+          CUSTOM: [customStart || new Date(0), customEnd],
+        };
+        const tfRange = tfRangeMap[tf] || tfRangeMap.WTD;
         const tfKpis = filterKpis(tfRange[0], tfRange[1]);
         const k = sumK(tfKpis);
         const tfPolAP = sumPolAP(tfRange[0], tfRange[1]);
@@ -24308,7 +24487,11 @@
         const conversion = k.dials > 0 ? (tfDeals / k.dials) * 100 : 0;
         const roi = k.leadSpend > 0 ? ((k.deposits - k.leadSpend) / k.leadSpend) * 100 : 0;
         const avgPremium = tfDeals > 0 ? tfPolAP / tfDeals : 0;
-        const tfLabel = { WTD: 'Week to date', MTD: 'Month to date', YTD: 'Year to date', LW: 'Last week', LM: 'Last month' }[tf];
+        const fmtRangeYMD = (d) => d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+        const customLabel = (customStart && customEnd)
+          ? fmtRangeYMD(customStart) + ' → ' + fmtRangeYMD(customEnd)
+          : (customStart ? 'From ' + fmtRangeYMD(customStart) : (customEnd ? 'Through ' + fmtRangeYMD(customEnd) : 'Pick a range'));
+        const tfLabel = { WTD: 'Week to date', MTD: 'Month to date', YTD: 'Year to date', LW: 'Last week', LM: 'Last month', ALL: 'All time', CUSTOM: customLabel }[tf];
 
         // Heatmap totals (last + this month combined). Active-day count
         // dedupes across both KPI rows AND policy rows so a day with only
@@ -24651,17 +24834,28 @@
 
               {/* KPI Tracker */}
               <div className="tk-card" style={{gridColumn:'span 12', padding:0}}>
-                <div className="tk-card-hd" style={{padding:'18px 22px 14px', borderBottom:'1px solid var(--tk-hairline)'}}>
+                <div className="tk-card-hd" style={{padding:'18px 22px 14px', borderBottom: tf === 'CUSTOM' ? '0' : '1px solid var(--tk-hairline)'}}>
                   <div style={{display:'flex', alignItems:'baseline', gap:14}}>
                     <div className="tk-card-title">KPI Tracker</div>
                     <div className="tk-card-meta">{tfLabel}</div>
                   </div>
                   <div className="tk-tf-segment">
-                    {[['WTD','WTD'],['MTD','MTD'],['YTD','YTD'],['LW','Last Wk'],['LM','Last Mo']].map(([key, lbl]) => (
+                    {[['WTD','WTD'],['MTD','MTD'],['YTD','YTD'],['LW','Last Wk'],['LM','Last Mo'],['ALL','All Time'],['CUSTOM','Custom']].map(([key, lbl]) => (
                       <button key={key} className={tf === key ? 'on' : ''} onClick={() => setTf(key)}>{lbl}</button>
                     ))}
                   </div>
                 </div>
+                {tf === 'CUSTOM' && (
+                  <div style={{padding:'10px 22px 14px', borderBottom:'1px solid var(--tk-hairline)', display:'flex', alignItems:'center', gap:10, flexWrap:'wrap'}}>
+                    <span style={{fontFamily:'var(--tk-mono)', fontSize:10, color:'var(--tk-ink-3)', textTransform:'uppercase', letterSpacing:'0.06em'}}>From</span>
+                    <input type="date" value={customFrom} onChange={e => setCustomFrom(e.target.value)} style={{appearance:'none', background:'var(--tk-surface)', color:'var(--tk-ink-1)', border:'1px solid var(--tk-hairline-strong)', borderRadius:8, padding:'6px 10px', fontFamily:'var(--tk-mono)', fontSize:12, outline:'none'}} />
+                    <span style={{fontFamily:'var(--tk-mono)', fontSize:10, color:'var(--tk-ink-3)', textTransform:'uppercase', letterSpacing:'0.06em'}}>To</span>
+                    <input type="date" value={customTo} onChange={e => setCustomTo(e.target.value)} style={{appearance:'none', background:'var(--tk-surface)', color:'var(--tk-ink-1)', border:'1px solid var(--tk-hairline-strong)', borderRadius:8, padding:'6px 10px', fontFamily:'var(--tk-mono)', fontSize:12, outline:'none'}} />
+                    {(customFrom || customTo) && (
+                      <button type="button" onClick={() => { setCustomFrom(''); setCustomTo(''); }} style={{appearance:'none', border:'1px solid var(--tk-hairline-strong)', background:'transparent', color:'var(--tk-ink-2)', borderRadius:8, padding:'6px 10px', fontFamily:'var(--tk-mono)', fontSize:11, cursor:'pointer'}}>Clear</button>
+                    )}
+                  </div>
+                )}
                 <div className="tk-kpi-grid" style={{gridTemplateColumns:'repeat(5, 1fr)', borderRadius:0, border:'none'}}>
                   <div className="tk-kpi-cell"><div className="tk-kpi-lbl"><span className="swatch" style={{background:'var(--rb-green)'}}></span>Dials</div><div className="tk-kpi-val">{fmtNum(k.dials)}</div><div className="tk-kpi-sub">outbound calls</div></div>
                   <div className="tk-kpi-cell"><div className="tk-kpi-lbl"><span className="swatch" style={{background:'var(--rb-yellow)'}}></span>Answers</div><div className="tk-kpi-val">{fmtNum(k.answers)}</div><div className="tk-kpi-sub"><b>{k.dials > 0 ? (k.answers / k.dials * 100).toFixed(1) : '0.0'}%</b> answer rate</div></div>
