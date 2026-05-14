@@ -1291,6 +1291,7 @@ const ADMIN_EMAIL = 'dev@kairos-financial.com';
 const THEME_KEY = 'deal-tracker-theme';
 const REP_CODE_KEY = 'deal-tracker-rep-code';
 const ADMIN_TOKEN_KEY = 'deal-tracker-admin-token';
+const ADMIN_REFRESH_KEY = 'deal-tracker-admin-refresh';
 const ADMIN_EMAIL_KEY = 'deal-tracker-admin-email';
 const ADMIN_LAST_SETTER_KEY = 'deal-tracker-admin-last-setter';
 
@@ -1465,8 +1466,9 @@ function App() {
   // ── Restore session on mount ──
   useEffect(() => {
     (async () => {
-      const savedAdminToken = sessionStorage.getItem(ADMIN_TOKEN_KEY);
-      const savedAdminEmail = sessionStorage.getItem(ADMIN_EMAIL_KEY);
+      const savedAdminToken = localStorage.getItem(ADMIN_TOKEN_KEY);
+      const savedAdminRefresh = localStorage.getItem(ADMIN_REFRESH_KEY);
+      const savedAdminEmail = localStorage.getItem(ADMIN_EMAIL_KEY);
       if (savedAdminToken && savedAdminEmail === ADMIN_EMAIL) {
         try {
           const verify = await fetch(SUPABASE_URL + '/auth/v1/user', {
@@ -1478,11 +1480,29 @@ function App() {
             setMode('admin');
             return;
           }
+          // Access token rejected — try the refresh token before giving up.
+          if (savedAdminRefresh) {
+            const rr = await fetch(SUPABASE_URL + '/auth/v1/token?grant_type=refresh_token', {
+              method: 'POST',
+              headers: { apikey: SUPABASE_KEY, 'Content-Type': 'application/json' },
+              body: JSON.stringify({ refresh_token: savedAdminRefresh }),
+            });
+            if (rr.ok) {
+              const rd = await rr.json();
+              localStorage.setItem(ADMIN_TOKEN_KEY, rd.access_token);
+              if (rd.refresh_token) localStorage.setItem(ADMIN_REFRESH_KEY, rd.refresh_token);
+              setAdminToken(rd.access_token);
+              setAdminEmail(savedAdminEmail);
+              setMode('admin');
+              return;
+            }
+          }
         } catch (_) {}
-        sessionStorage.removeItem(ADMIN_TOKEN_KEY);
-        sessionStorage.removeItem(ADMIN_EMAIL_KEY);
+        localStorage.removeItem(ADMIN_TOKEN_KEY);
+        localStorage.removeItem(ADMIN_REFRESH_KEY);
+        localStorage.removeItem(ADMIN_EMAIL_KEY);
       }
-      const savedRepCode = sessionStorage.getItem(REP_CODE_KEY);
+      const savedRepCode = localStorage.getItem(REP_CODE_KEY);
       if (savedRepCode) {
         await tryRepCode(savedRepCode, true);
       }
@@ -1498,7 +1518,7 @@ function App() {
       const setterRows = await supaRpc('verify_setter_code', { p_code: code.trim() });
       if (!Array.isArray(setterRows) || setterRows.length === 0) {
         if (!silent) showToast('Invalid access code.', true);
-        sessionStorage.removeItem(REP_CODE_KEY);
+        localStorage.removeItem(REP_CODE_KEY);
         setRepLoading(false);
         return false;
       }
@@ -1512,7 +1532,7 @@ function App() {
       setRepDeals((dealRows || []).map(dealFromRow));
       setRepManualPayments((mpRows || []).map(manualPaymentFromRow));
       setMode('rep');
-      try { sessionStorage.setItem(REP_CODE_KEY, code.trim()); } catch (_) {}
+      try { localStorage.setItem(REP_CODE_KEY, code.trim()); } catch (_) {}
       setRepLoading(false);
       return true;
     } catch (e) {
@@ -1527,7 +1547,7 @@ function App() {
     setRepSetter(null);
     setRepDeals([]);
     setRepManualPayments([]);
-    sessionStorage.removeItem(REP_CODE_KEY);
+    localStorage.removeItem(REP_CODE_KEY);
     setMode('gate-rep');
   }
 
@@ -1548,8 +1568,9 @@ function App() {
         showToast(data.error_description || 'Invalid email or password.', true);
         return false;
       }
-      sessionStorage.setItem(ADMIN_TOKEN_KEY, data.access_token);
-      sessionStorage.setItem(ADMIN_EMAIL_KEY, email);
+      localStorage.setItem(ADMIN_TOKEN_KEY, data.access_token);
+      if (data.refresh_token) localStorage.setItem(ADMIN_REFRESH_KEY, data.refresh_token);
+      localStorage.setItem(ADMIN_EMAIL_KEY, email);
       setAdminToken(data.access_token);
       setAdminEmail(email);
       setMode('admin');
@@ -1561,8 +1582,9 @@ function App() {
   }
 
   function adminSignOut() {
-    sessionStorage.removeItem(ADMIN_TOKEN_KEY);
-    sessionStorage.removeItem(ADMIN_EMAIL_KEY);
+    localStorage.removeItem(ADMIN_TOKEN_KEY);
+    localStorage.removeItem(ADMIN_REFRESH_KEY);
+    localStorage.removeItem(ADMIN_EMAIL_KEY);
     setAdminToken(null);
     setAdminEmail(null);
     setSetters([]);
