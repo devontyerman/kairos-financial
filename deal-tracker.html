@@ -1039,7 +1039,6 @@ th .sort-btn { font-family: var(--mono); font-size: 10px; font-weight: 500; colo
 
 /* ─── Date inputs — make the whole field a clickable calendar trigger ─── */
 input[type="date"] {
-  position: relative;
   cursor: pointer;
   padding-right: 36px;
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect x='3' y='4' width='18' height='18' rx='2' ry='2'/><line x1='16' y1='2' x2='16' y2='6'/><line x1='8' y1='2' x2='8' y2='6'/><line x1='3' y1='10' x2='21' y2='10'/></svg>");
@@ -1047,13 +1046,11 @@ input[type="date"] {
   background-position: right 10px center;
 }
 input[type="date"]:hover { border-color: var(--ink-3); }
-/* Hide the default tiny indicator and stretch its hit area to cover the
-   whole field — clicking anywhere on the input opens the native picker. */
+/* Hide the default tiny indicator so only our background SVG icon shows;
+   the small clickable hit area at the right of the field still opens the
+   native picker. We do NOT stretch the indicator across the whole input —
+   that escapes into the shadow DOM and traps clicks elsewhere on the page. */
 input[type="date"]::-webkit-calendar-picker-indicator {
-  position: absolute;
-  right: 0; top: 0;
-  width: 100%; height: 100%;
-  margin: 0; padding: 0;
   opacity: 0;
   cursor: pointer;
 }
