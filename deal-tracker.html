@@ -1046,8 +1046,8 @@ input[type="date"] {
   background-position: right 10px center;
 }
 input[type="date"]:hover { border-color: var(--ink-3); }
-/* Hide the default tiny indicator — our background SVG replaces it, and the
-   whole field now opens the picker on click via showPicker(). */
+/* Hide the default tiny indicator and stretch its hit area to cover the
+   whole field — clicking anywhere on the input opens the native picker. */
 input[type="date"]::-webkit-calendar-picker-indicator {
   position: absolute;
   right: 0; top: 0;
@@ -2883,13 +2883,11 @@ function DealFormModal({ deal, carriers, onClose, onSave }) {
           <div className="row-2">
             <Field label="Date sold">
               <input type="date" value={form.date || ''}
-                onChange={e => setForm(f => ({ ...f, date: e.target.value }))}
-                onClick={e => { try { e.currentTarget.showPicker?.(); } catch (_) {} }} />
+                onChange={e => setForm(f => ({ ...f, date: e.target.value }))} />
             </Field>
             <Field label="Effective date">
               <input type="date" value={form.effectiveDate || ''}
-                onChange={e => setForm(f => ({ ...f, effectiveDate: e.target.value }))}
-                onClick={e => { try { e.currentTarget.showPicker?.(); } catch (_) {} }} />
+                onChange={e => setForm(f => ({ ...f, effectiveDate: e.target.value }))} />
             </Field>
           </div>
 
@@ -3016,7 +3014,6 @@ function ManualPaymentsPanel({ isAdmin, hasSetter, payments, totalAll, totalCoun
                 type="date"
                 value={date}
                 onChange={e => setDate(e.target.value)}
-                onClick={e => { try { e.currentTarget.showPicker?.(); } catch (_) {} }}
               />
             </Field>
             <Field label="Amount">
