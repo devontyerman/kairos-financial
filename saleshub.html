@@ -13445,6 +13445,14 @@
             </a>
           </div>
 
+          <!-- CRM sign-up (shown under the "How to Access the CRM" video) -->
+          <div class="ss-tv-resource-btns" id="ssTvCrm">
+            <a href="https://crm.kairos-financial.com/" target="_blank" rel="noopener noreferrer" class="ss-tv-resource-btn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              <strong>Click Here to Sign Up for CRM</strong>
+            </a>
+          </div>
+
           <!-- Wavv sign-up -->
           <div class="ss-tv-resource-btns" id="ssTvWavv">
             <div style="display:flex;flex-direction:column;gap:0.6rem;">
@@ -20657,6 +20665,7 @@
     // Resource panel refs (extras wired to original seeded videos by slug)
     const tvResources = {
       discord:      document.getElementById('ssTvDiscord'),
+      crm:          document.getElementById('ssTvCrm'),
       wavv:         document.getElementById('ssTvWavv'),
       nipr:         document.getElementById('ssTvNipr'),
       a2p:          document.getElementById('ssTvA2p'),
@@ -20667,6 +20676,7 @@
     };
     const SLUG_EXTRAS = {
       'discord-walkthrough': 'discord',
+      'access-crm': 'crm',
       'script-sales-presentation': 'script',
       'buy-state-licenses': 'nipr',
       'next-steps-licenses': 'licensing',
