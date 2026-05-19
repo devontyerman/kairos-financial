@@ -2210,7 +2210,7 @@ function Dashboard({ isAdmin, setter, deals, manualPayments = [], loading, onAdd
   }, [deals]);
 
   const stats = useMemo(() => {
-    let pipeline = 0, paidOut = 0, chargeback = 0;
+    let chargeback = 0;
     let issuedTotal = 0;
     let atRisk = 0;
     const counts = { uw_submitted: 0, approved: 0, issued: 0, pending_lapse: 0, declined: 0, chargeback: 0, paid: 0, pipeline: 0, manual: 0 };
@@ -2219,28 +2219,29 @@ function Dashboard({ isAdmin, setter, deals, manualPayments = [], loading, onAdd
       counts[d.status] = (counts[d.status] || 0) + 1;
       const com = Number(d.commission) || 0;
       const cb = !!d.chargeback && !!d.paid;
-      const declined = d.status === 'declined';
 
       if (cb) { counts.chargeback++; chargeback += com; }
-      if (d.paid) { paidOut += com; if (!cb) counts.paid++; }
-      // Declined deals are dead — don't roll into pipeline totals.
-      if (!d.paid && !cb && !declined) { pipeline += com; counts.pipeline++; }
-      if (d.status === 'issued' || d.status === 'pending_lapse') issuedTotal += com;
+      // `paid` is now purely visual — counts feed the filter chips only.
+      if (d.paid && !cb) counts.paid++;
+      if (!d.paid && !cb) counts.pipeline++;
+      if (d.status === 'issued') issuedTotal += com;
       if (d.status === 'pending_lapse' && !cb) atRisk += com;
     }
 
-    // Manual payments (advances/bonuses) fold into Paid out but NOT Net earned —
-    // they're cash already paid, not commissions earned on issued policies.
+    // Paid out is now driven entirely by manual payments. The `paid` toggle on
+    // individual deals is purely visual and does not affect totals.
     let manualTotal = 0;
     for (const m of manualPayments) {
       manualTotal += Number(m.amount) || 0;
       counts.manual++;
     }
-    paidOut += manualTotal;
+    const paidOut = manualTotal;
 
-    // Net earned = commissions on Issued/Pending Lapse minus all chargebacks.
-    const netEarned = issuedTotal - chargeback;
-    return { pipeline, paidOut, chargeback, netEarned, atRisk, manualTotal, counts };
+    // Net earned = sum of commissions on Issued policies (status === 'issued').
+    const netEarned = issuedTotal;
+    // Pipeline = issued commissions minus everything paid out so far.
+    const pipeline = issuedTotal - paidOut;
+    return { pipeline, paidOut, chargeback, netEarned, atRisk, manualTotal, issuedTotal, counts };
   }, [deals, manualPayments]);
 
   const filtered = useMemo(() => {
@@ -2331,20 +2332,16 @@ function Dashboard({ isAdmin, setter, deals, manualPayments = [], loading, onAdd
       </section>
 
       <section className="kpi-grid">
-        <KpiCell label="Pipeline" value={fmt(stats.pipeline)} sub={stats.counts.pipeline + ' awaiting payout'} swatch="var(--rb-green)" tone="pos" />
+        <KpiCell label="Pipeline" value={fmt(stats.pipeline)} sub="Issued − paid out" swatch="var(--rb-green)" tone="pos" />
         <KpiCell
           label="Paid out"
           value={fmt(stats.paidOut)}
-          sub={
-            stats.counts.manual > 0
-              ? stats.counts.paid + ' deals + ' + stats.counts.manual + ' manual'
-              : stats.counts.paid + ' deals paid'
-          }
+          sub={stats.counts.manual + ' manual payment' + (stats.counts.manual === 1 ? '' : 's')}
           swatch="var(--rb-blue)"
         />
         <KpiCell label="Chargebacks" value={fmt(stats.chargeback)} sub={stats.counts.chargeback + ' owed back'} swatch="var(--rb-red)" tone="neg" />
         <KpiCell label="At risk" value={fmt(stats.atRisk)} sub={stats.counts.pending_lapse + ' pending lapse'} swatch="var(--rb-orange)" tone="warn" />
-        <KpiCell label="Net earned" value={fmt(stats.netEarned)} sub="Issued − chargebacks" swatch="var(--rb-green)" tone="pos" featured />
+        <KpiCell label="Net earned" value={fmt(stats.netEarned)} sub={stats.counts.issued + ' issued'} swatch="var(--rb-green)" tone="pos" featured />
       </section>
 
       <section className="deals-section">
@@ -2939,7 +2936,7 @@ function DealFormModal({ deal, carriers, onClose, onSave }) {
                 <span className="switch"></span>
                 <span className="switch-label">
                   <strong>Paid to setter</strong>
-                  <span className="hint-sm">{form.paid ? 'Counts toward Paid out total' : 'Counts toward Pipeline'}</span>
+                  <span className="hint-sm">Visual marker only — does not affect totals</span>
                 </span>
               </label>
 
@@ -2984,8 +2981,7 @@ function Field({ label, hint, children }) {
 }
 
 // ============== MANUAL PAYMENTS PANEL ==============
-// Admin-managed ad-hoc payouts (advances / bonuses) that aren't tied to a
-// specific deal. Counts toward the Paid out KPI but not Net earned.
+// Admin-managed payouts. This is the only source of the Paid out KPI.
 function ManualPaymentsPanel({ isAdmin, hasSetter, payments, totalAll, totalCount, dateFilterLabel, onAdd, onRemove }) {
   const [date, setDate] = useState(todayISO());
   const [amount, setAmount] = useState('');
@@ -3012,7 +3008,7 @@ function ManualPaymentsPanel({ isAdmin, hasSetter, payments, totalAll, totalCoun
       <div className="manual-head">
         <div>
           <div className="eyebrow">Manual payments</div>
-          <div className="manual-sub">Advances &amp; bonuses — counted in Paid out, not Net earned.</div>
+          <div className="manual-sub">Manual payments are the sole source of the Paid out total.</div>
         </div>
         <div className="manual-totals">
           <div className="manual-total">
