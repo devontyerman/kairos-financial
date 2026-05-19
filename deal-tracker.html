@@ -2900,10 +2900,12 @@ function DealFormModal({ deal, carriers, onClose, onSave }) {
           <div className="row-2">
             <Field label="Date sold">
               <input type="date" value={form.date || ''}
+                onClick={e => { try { e.currentTarget.showPicker?.(); } catch (_) {} }}
                 onChange={e => setForm(f => ({ ...f, date: e.target.value }))} />
             </Field>
             <Field label="Effective date">
               <input type="date" value={form.effectiveDate || ''}
+                onClick={e => { try { e.currentTarget.showPicker?.(); } catch (_) {} }}
                 onChange={e => setForm(f => ({ ...f, effectiveDate: e.target.value }))} />
             </Field>
           </div>
