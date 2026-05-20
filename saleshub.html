@@ -3410,6 +3410,34 @@
       #tpatab-performance .tp-card, #tpatab-agents .tp-card, #tpatab-policies .tp-card { padding: 16px 14px; }
       /* AP hero chart needs more height to be readable on a phone */
       #tpatab-performance .tp-ap-hero { padding: 16px 14px 8px; }
+      /* Card headers (title + timeframe segment) stack vertically so the
+         8-button segment can scroll horizontally instead of crushing the
+         title or wrapping awkwardly mid-row. */
+      #tpatab-performance .tp-card-hd,
+      #tpatab-agents .tp-card-hd,
+      #tpatab-policies .tp-card-hd {
+        flex-direction: column; align-items: stretch !important; gap: 10px;
+      }
+      #tpatab-performance .tp-card-hd > div:first-child,
+      #tpatab-agents .tp-card-hd > div:first-child,
+      #tpatab-policies .tp-card-hd > div:first-child { flex-wrap: wrap; }
+      #tpatab-performance .tp-tf-segment,
+      #tpatab-agents .tp-tf-segment,
+      #tpatab-policies .tp-tf-segment {
+        display: flex; width: 100%; overflow-x: auto;
+        -webkit-overflow-scrolling: touch; scrollbar-width: none;
+      }
+      #tpatab-performance .tp-tf-segment::-webkit-scrollbar,
+      #tpatab-agents .tp-tf-segment::-webkit-scrollbar,
+      #tpatab-policies .tp-tf-segment::-webkit-scrollbar { display: none; }
+      #tpatab-performance .tp-tf-segment button,
+      #tpatab-agents .tp-tf-segment button,
+      #tpatab-policies .tp-tf-segment button {
+        padding: 8px 12px; flex-shrink: 0; white-space: nowrap;
+      }
+      /* AP stats: tighten gap and let the headline number own the row */
+      #tpatab-performance .tp-ap-stats { gap: 10px 16px; }
+      #tpatab-performance .tp-ap-num { line-height: 1.1; }
       /* Compare card legend wraps under the title on mobile */
       #tpatab-performance .tp-compare-hd { flex-direction: column; align-items: flex-start; gap: 10px; }
       /* Performance + Agents share the same .tp-lb table — let it scroll */
@@ -8069,12 +8097,103 @@
     #panel-goals .tk-daily-pager-btn:hover:not(:disabled) { color: var(--tk-ink-1); border-color: var(--tk-ink-3); }
     #panel-goals .tk-daily-pager-btn:disabled { opacity: 0.4; cursor: not-allowed; }
     @media (max-width: 768px) {
-      #panel-goals.active .tk-daily-table thead th:nth-child(3),
-      #panel-goals.active .tk-daily-table thead th:nth-child(4),
-      #panel-goals.active .tk-daily-table thead th:nth-child(5),
-      #panel-goals.active .tk-daily-table tbody td:nth-child(3),
-      #panel-goals.active .tk-daily-table tbody td:nth-child(4),
-      #panel-goals.active .tk-daily-table tbody td:nth-child(5) { display: none; }
+      /* Daily Breakdown → card stack. Every KPI stays visible per day; the
+         table-as-table on a phone was unreadable (9 columns, horizontal
+         crush). Each day becomes a 2-column grid card; week dividers and
+         week totals become full-width section bars. */
+      #panel-goals.active .tk-daily-attached { padding: 14px 12px 18px; }
+      #panel-goals.active .tk-daily-scroll {
+        max-height: none; overflow: visible;
+        border: 0; background: transparent; border-radius: 0;
+      }
+      #panel-goals.active .tk-daily-table,
+      #panel-goals.active .tk-daily-table thead,
+      #panel-goals.active .tk-daily-table tbody,
+      #panel-goals.active .tk-daily-table tr,
+      #panel-goals.active .tk-daily-table td { display: block; width: 100%; }
+      #panel-goals.active .tk-daily-table thead { display: none; }
+      /* Day card */
+      #panel-goals.active .tk-daily-table tbody tr {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 6px 12px;
+        padding: 12px 14px;
+        border: 1px solid var(--tk-hairline);
+        border-radius: 10px;
+        margin-bottom: 8px;
+        background: var(--tk-surface);
+      }
+      #panel-goals.active .tk-daily-table tbody tr:last-child td { border-bottom: 0; }
+      #panel-goals.active .tk-daily-table tbody td {
+        padding: 0 !important;
+        border: 0 !important;
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 10px;
+        font-size: 12px;
+        white-space: normal;
+      }
+      #panel-goals.active .tk-daily-table tbody td::before {
+        content: attr(data-label);
+        color: var(--tk-ink-3);
+        font-family: var(--tk-mono);
+        font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase;
+        flex-shrink: 0;
+      }
+      /* Date + Day span the whole card and form a single header row */
+      #panel-goals.active .tk-daily-table tbody td.dt-date {
+        grid-column: 1 / -1;
+        border-bottom: 1px solid var(--tk-hairline) !important;
+        padding-bottom: 8px !important;
+        margin-bottom: 4px;
+        font-family: var(--tk-sans);
+        font-size: 13px; font-weight: 600;
+        color: var(--tk-ink-1);
+      }
+      #panel-goals.active .tk-daily-table tbody td.dt-date::before { display: none; }
+      #panel-goals.active .tk-daily-table tbody td.dt-dow {
+        order: -1;
+        grid-column: 1 / -1;
+        font-family: var(--tk-mono);
+        font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase;
+        color: var(--tk-ink-3);
+        justify-content: flex-start;
+      }
+      #panel-goals.active .tk-daily-table tbody td.dt-dow::before { display: none; }
+      /* Empty / future days stay smaller so the page can be scanned */
+      #panel-goals.active .tk-daily-table tbody tr.empty { background: var(--tk-bg); border-style: dashed; }
+      #panel-goals.active .tk-daily-table tbody tr.future { opacity: 0.35; }
+      /* Week divider — full-width strip */
+      #panel-goals.active .tk-daily-table tbody tr.week-hd {
+        display: block;
+        background: transparent;
+        border: 0;
+        margin: 14px 0 6px;
+        padding: 0;
+      }
+      #panel-goals.active .tk-daily-table tbody tr.week-hd td {
+        background: transparent !important;
+        padding: 0 !important;
+        border: 0 !important;
+        font-family: var(--tk-mono);
+        font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase;
+        color: var(--tk-ink-3);
+        font-weight: 500;
+      }
+      #panel-goals.active .tk-daily-table tbody tr.week-hd td::before { display: none; }
+      /* Week total — highlighted card */
+      #panel-goals.active .tk-daily-table tbody tr.week-total {
+        background: color-mix(in oklch, var(--rb-blue) 10%, var(--tk-surface));
+        border-color: color-mix(in oklch, var(--rb-blue) 30%, var(--tk-hairline-strong));
+      }
+      #panel-goals.active .tk-daily-table tbody tr.week-total td.dt-date {
+        font-family: var(--tk-mono);
+        font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase;
+        color: var(--tk-ink-1);
+        font-weight: 700;
+      }
+      #panel-goals.active .tk-daily-table tbody tr.week-total td.dt-dow { display: none; }
     }
     @media (max-width: 768px) {
       #panel-goals.active { margin: -0.75rem -0.75rem -3rem; padding: 16px 12px 24px; min-height: calc(100vh - 0.75rem); }
@@ -13293,7 +13412,7 @@
             Main Resources
           </div>
           <div class="sh-resources-grid">
-            <a href="assets/Documents/Sales%20Call%20Script.pdf" target="_blank" rel="noopener noreferrer" class="sh-resource-card" data-pdf-viewer data-pdf-title="Sales Call Script" data-pdf-filename="Sales Call Script.pdf">
+            <a href="assets/Documents/Script.pdf" target="_blank" rel="noopener noreferrer" class="sh-resource-card" data-pdf-viewer data-pdf-title="Sales Call Script" data-pdf-filename="Script.pdf">
               <div class="sh-resource-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
               <div><div class="sh-resource-title">Script</div><div class="sh-resource-desc">Step-by-step sales script for product presentations.</div><span class="sh-resource-tag">PDF</span></div>
             </a>
@@ -13506,11 +13625,11 @@
                viewer the Resources tab uses, so reps can view inline or
                download right from the sidebar). -->
           <div class="ss-tv-resource-btns" id="ssTvScript">
-            <a href="assets/Documents/Sales%20Call%20Script.pdf" target="_blank" rel="noopener noreferrer"
+            <a href="assets/Documents/Script.pdf" target="_blank" rel="noopener noreferrer"
                class="ss-tv-resource-btn"
                data-pdf-viewer
                data-pdf-title="Sales Call Script"
-               data-pdf-filename="Sales Call Script.pdf">
+               data-pdf-filename="Script.pdf">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
               View Script
             </a>
@@ -22108,16 +22227,20 @@
       }
 
       function dynamicTfRange(timeframe, customRange) {
-        // Resolves LW/LM/ALL/CUSTOM into [start, end] dates so the on-the-fly
-        // path in scopedView and the chart in APHero share a single source of
-        // truth. Either bound may be null (open-ended). Returns null for the
-        // static WTD/MTD/YTD timeframes.
+        // Resolves YDAY/LW/LM/ALL/CUSTOM into [start, end] dates so the
+        // on-the-fly path in scopedView and the chart in APHero share a single
+        // source of truth. Either bound may be null (open-ended). Returns null
+        // for the static WTD/MTD/YTD timeframes.
         const today = new Date();
         if (timeframe === 'ALL') return [null, null];
         if (timeframe === 'CUSTOM') return [
           (customRange && customRange[0]) || null,
           (customRange && customRange[1]) || null,
         ];
+        if (timeframe === 'YDAY') {
+          const y = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 1);
+          return [y, new Date(y.getFullYear(), y.getMonth(), y.getDate(), 23, 59, 59)];
+        }
         if (timeframe === 'LW') {
           const ws = startOfWeek(today);
           const lws = new Date(ws); lws.setDate(lws.getDate() - 7);
@@ -22661,6 +22784,8 @@
           prior = 0;
           if (timeframe === 'ALL') {
             label = 'All-time';
+          } else if (timeframe === 'YDAY') {
+            label = 'Yesterday';
           } else if (timeframe === 'LW') {
             label = 'Last week';
           } else if (timeframe === 'LM') {
@@ -22717,7 +22842,7 @@
         }
         const deltaBasis = timeframe === 'MTD' && mtdProjectedTotal != null ? mtdProjectedTotal : total;
         const delta = prior ? ((deltaBasis - prior) / prior) * 100 : 0;
-        const deltaLabel = timeframe === 'WTD' ? 'vs last week' : timeframe === 'MTD' ? 'projected vs last month' : timeframe === 'YTD' ? 'vs same point last year' : timeframe === 'LW' ? 'last week total' : timeframe === 'LM' ? 'last month total' : '';
+        const deltaLabel = timeframe === 'WTD' ? 'vs last week' : timeframe === 'MTD' ? 'projected vs last month' : timeframe === 'YTD' ? 'vs same point last year' : timeframe === 'LW' ? 'last week total' : timeframe === 'LM' ? 'last month total' : timeframe === 'YDAY' ? 'yesterday total' : '';
         const isTeam = scope.id === '__team__';
         return (
           <div className="tp-card tp-ap-hero">
@@ -22727,7 +22852,7 @@
                 <div className="tp-card-meta">{label}</div>
               </div>
               <div className="tp-tf-segment">
-                {[['WTD','WTD'],['MTD','MTD'],['YTD','YTD'],['LW','Last Wk'],['LM','Last Mo'],['ALL','All'],['CUSTOM','Custom']].map(([t, lbl]) => (
+                {[['YDAY','Yesterday'],['WTD','WTD'],['MTD','MTD'],['YTD','YTD'],['LW','Last Wk'],['LM','Last Mo'],['ALL','All'],['CUSTOM','Custom']].map(([t, lbl]) => (
                   <button key={t} className={timeframe === t ? 'on' : ''} onClick={() => setTimeframe(t)}>{lbl}</button>
                 ))}
               </div>
@@ -22783,6 +22908,7 @@
                       : timeframe === 'YTD' ? 'YTD'
                       : timeframe === 'ALL' ? 'ALL'
                       : timeframe === 'CUSTOM' ? 'Custom'
+                      : timeframe === 'YDAY' ? 'Yesterday'
                       : timeframe === 'LW' ? 'Last Wk'
                       : timeframe === 'LM' ? 'Last Mo' : 'MTD';
         const apKey = timeframe === 'WTD' ? 'apWTD' : timeframe === 'YTD' ? 'apYTD' : 'apMTD';
@@ -26629,28 +26755,28 @@
                                         const cls = (d.hasData ? '' : 'empty') + (d.isFuture ? ' future' : '');
                                         return (
                                           <tr key={d.ymd} className={cls.trim()}>
-                                            <td className="dt-date">{lbl}</td>
-                                            <td className="dt-dow">{d.dow}</td>
-                                            <td>{fmtNum(d.dials)}</td>
-                                            <td>{fmtNum(d.answers)}</td>
-                                            <td>{fmtNum(d.appointments)}</td>
-                                            <td>{fmtNum(d.presentations)}</td>
-                                            <td className={d.deals > 0 ? 'pos' : ''}>{fmtNum(d.deals)}</td>
-                                            <td className="num">{d.lead_spend ? fmtCurrency(d.lead_spend) : '—'}</td>
-                                            <td className="num">{d.deposits ? fmtCurrency(d.deposits) : '—'}</td>
+                                            <td className="dt-date" data-label="Date">{lbl}</td>
+                                            <td className="dt-dow" data-label="Day">{d.dow}</td>
+                                            <td data-label="Dials">{fmtNum(d.dials)}</td>
+                                            <td data-label="Answers">{fmtNum(d.answers)}</td>
+                                            <td data-label="Appts">{fmtNum(d.appointments)}</td>
+                                            <td data-label="Pres.">{fmtNum(d.presentations)}</td>
+                                            <td data-label="Deals" className={d.deals > 0 ? 'pos' : ''}>{fmtNum(d.deals)}</td>
+                                            <td data-label="Lead spend" className="num">{d.lead_spend ? fmtCurrency(d.lead_spend) : '—'}</td>
+                                            <td data-label="Deposits" className="num">{d.deposits ? fmtCurrency(d.deposits) : '—'}</td>
                                           </tr>
                                         );
                                       })}
                                       <tr className="week-total">
-                                        <td className="dt-date">Week total</td>
-                                        <td className="dt-dow"></td>
-                                        <td>{fmtNum(wk.total.dials)}</td>
-                                        <td>{fmtNum(wk.total.answers)}</td>
-                                        <td>{fmtNum(wk.total.appointments)}</td>
-                                        <td>{fmtNum(wk.total.presentations)}</td>
-                                        <td className={wk.total.deals > 0 ? 'pos' : ''}>{fmtNum(wk.total.deals)}</td>
-                                        <td className="num">{fmtCurrency(wk.total.lead_spend)}</td>
-                                        <td className="num">{fmtCurrency(wk.total.deposits)}</td>
+                                        <td className="dt-date" data-label="">Week total</td>
+                                        <td className="dt-dow" data-label=""></td>
+                                        <td data-label="Dials">{fmtNum(wk.total.dials)}</td>
+                                        <td data-label="Answers">{fmtNum(wk.total.answers)}</td>
+                                        <td data-label="Appts">{fmtNum(wk.total.appointments)}</td>
+                                        <td data-label="Pres.">{fmtNum(wk.total.presentations)}</td>
+                                        <td data-label="Deals" className={wk.total.deals > 0 ? 'pos' : ''}>{fmtNum(wk.total.deals)}</td>
+                                        <td data-label="Lead spend" className="num">{fmtCurrency(wk.total.lead_spend)}</td>
+                                        <td data-label="Deposits" className="num">{fmtCurrency(wk.total.deposits)}</td>
                                       </tr>
                                     </React.Fragment>
                                   ))}
