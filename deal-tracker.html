@@ -1386,8 +1386,8 @@ function compareDeals(a, b, key, dir) {
   // Status column has a custom workflow ordering, and chargebacks sink to the
   // bottom regardless of sort direction.
   if (key === 'status') {
-    const aCB = !!a.chargeback && !!a.paid;
-    const bCB = !!b.chargeback && !!b.paid;
+    const aCB = !!a.chargeback;
+    const bCB = !!b.chargeback;
     if (aCB !== bCB) return aCB ? 1 : -1;
     const aP = STATUS_PRIORITY[a.status] ?? 99;
     const bP = STATUS_PRIORITY[b.status] ?? 99;
@@ -1686,7 +1686,7 @@ function App() {
         deal_date: deal.date || null,
         effective_date: deal.effectiveDate || null,
         status: deal.status,
-        paid: !!deal.paid,
+        paid: false,
         chargeback: !!deal.chargeback,
       };
       const rows = await supaRest('/deal_tracker_deals', {
@@ -1708,7 +1708,6 @@ function App() {
     if ('date' in patch) body.deal_date = patch.date || null;
     if ('effectiveDate' in patch) body.effective_date = patch.effectiveDate || null;
     if ('status' in patch) body.status = patch.status;
-    if ('paid' in patch) body.paid = patch.paid;
     if ('chargeback' in patch) body.chargeback = patch.chargeback;
     // Optimistic update
     setAdminDeals(d => d.map(x => x.id === id ? { ...x, ...patch } : x));
@@ -2214,17 +2213,14 @@ function Dashboard({ isAdmin, setter, deals, manualPayments = [], loading, onAdd
     let issuedTotal = 0;
     let activeTotal = 0;
     let atRisk = 0;
-    const counts = { uw_submitted: 0, approved: 0, issued: 0, pending_lapse: 0, declined: 0, chargeback: 0, paid: 0, pipeline: 0, manual: 0 };
+    const counts = { uw_submitted: 0, approved: 0, issued: 0, pending_lapse: 0, declined: 0, chargeback: 0, manual: 0 };
 
     for (const d of deals) {
       counts[d.status] = (counts[d.status] || 0) + 1;
       const com = Number(d.commission) || 0;
-      const cb = !!d.chargeback && !!d.paid;
+      const cb = !!d.chargeback;
 
       if (cb) { counts.chargeback++; chargeback += com; }
-      // `paid` is now purely visual — counts feed the filter chips only.
-      if (d.paid && !cb) counts.paid++;
-      if (!d.paid && !cb) counts.pipeline++;
       if (d.status === 'issued') issuedTotal += com;
       if (d.status === 'pending_lapse' && !cb) atRisk += com;
       // Pipeline source: every deal still in play — exclude pending lapse,
@@ -2254,9 +2250,7 @@ function Dashboard({ isAdmin, setter, deals, manualPayments = [], loading, onAdd
     let list = deals;
 
     // Status filter
-    if (filterStatus === 'chargeback') list = list.filter(d => d.chargeback && d.paid);
-    else if (filterStatus === 'paid') list = list.filter(d => d.paid && !d.chargeback);
-    else if (filterStatus === 'pipeline') list = list.filter(d => !d.paid && !d.chargeback);
+    if (filterStatus === 'chargeback') list = list.filter(d => d.chargeback);
     else if (filterStatus !== 'all') list = list.filter(d => d.status === filterStatus);
 
     // Search by client name
@@ -2282,8 +2276,8 @@ function Dashboard({ isAdmin, setter, deals, manualPayments = [], loading, onAdd
       // Default: chargebacks at bottom, then by status priority (Pending Lapse
       // first), and within each status by date descending (newest first).
       list = [...list].sort((a, b) => {
-        const aCB = !!a.chargeback && !!a.paid;
-        const bCB = !!b.chargeback && !!b.paid;
+        const aCB = !!a.chargeback;
+        const bCB = !!b.chargeback;
         if (aCB !== bCB) return aCB ? 1 : -1;
         const aP = STATUS_PRIORITY[a.status] ?? 99;
         const bP = STATUS_PRIORITY[b.status] ?? 99;
@@ -2390,8 +2384,6 @@ function Dashboard({ isAdmin, setter, deals, manualPayments = [], loading, onAdd
                 </FilterChip>
               ))}
               <span className="filter-sep"></span>
-              <FilterChip active={filterStatus === 'pipeline'} onClick={() => setFilterStatus('pipeline')} count={stats.counts.pipeline} dot="var(--rb-yellow)">Pipeline</FilterChip>
-              <FilterChip active={filterStatus === 'paid'} onClick={() => setFilterStatus('paid')} count={stats.counts.paid} dot="var(--rb-blue)">Paid</FilterChip>
               <FilterChip active={filterStatus === 'chargeback'} onClick={() => setFilterStatus('chargeback')} count={stats.counts.chargeback} dot="var(--rb-red)">Chargeback</FilterChip>
             </div>
 
@@ -2409,7 +2401,7 @@ function Dashboard({ isAdmin, setter, deals, manualPayments = [], loading, onAdd
                       <th className="num"><button className="sort-btn num" onClick={() => toggleSort('commission')}>Commission{sortIcon('commission')}</button></th>
                       <th><button className="sort-btn" onClick={() => toggleSort('carrier')}>Carrier{sortIcon('carrier')}</button></th>
                       <th><button className="sort-btn" onClick={() => toggleSort('status')}>Status{sortIcon('status')}</button></th>
-                      <th>Payout</th>
+                      <th>Chargeback</th>
                       {isAdmin && <th></th>}
                     </tr>
                   </thead>
@@ -2568,25 +2560,18 @@ function DealRow({ deal, isAdmin, onUpdate, onEdit, onRemove }) {
     };
   }, [statusOpen]);
 
-  const togglePaid = () => {
-    if (!isAdmin) return;
-    if (!deal.paid && !confirm('Mark this deal for ' + deal.client + ' as PAID?')) return;
-    onUpdate({ paid: !deal.paid, chargeback: !deal.paid ? deal.chargeback : false });
-  };
   const toggleCB = () => {
     if (!isAdmin) return;
-    if (!deal.paid) return;
     if (!deal.chargeback && !confirm('Mark this deal for ' + deal.client + ' as CHARGEBACK?')) return;
     onUpdate({ chargeback: !deal.chargeback });
   };
 
   return (
     <tr className={
-      (deal.chargeback && deal.paid) ? 'cb-row' :
+      deal.chargeback ? 'cb-row' :
       deal.status === 'declined' ? 'declined-row' :
       deal.status === 'pending_lapse' ? 'lapse-row' :
-      deal.status === 'issued' ? 'issued-row' :
-      deal.paid ? 'paid-row' : ''
+      deal.status === 'issued' ? 'issued-row' : ''
     }>
       <td>
         <div className="client-cell">
@@ -2647,23 +2632,11 @@ function DealRow({ deal, isAdmin, onUpdate, onEdit, onRemove }) {
       <td>
         <div className="payout-cell">
           <button
-            className={'toggle-pill paid' + (deal.paid ? ' on' : '')}
-            onClick={togglePaid}
-            disabled={!isAdmin}
-            title={deal.paid ? 'Marked paid' : 'Not yet paid'}
-          >
-            {deal.paid ? (
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M5 12l5 5L20 7"/></svg>
-            ) : <span className="dot-empty"></span>}
-            Paid
-          </button>
-          <button
             className={'toggle-pill cb' + (deal.chargeback ? ' on' : '')}
             onClick={toggleCB}
-            disabled={!isAdmin || !deal.paid}
+            disabled={!isAdmin}
             title={
               !isAdmin ? 'View only' :
-              !deal.paid ? 'Mark Paid first — chargebacks only apply to deals already paid' :
               deal.chargeback ? 'Click to clear chargeback' : 'Click to mark as chargeback'
             }
           >
@@ -2835,7 +2808,6 @@ function DealFormModal({ deal, carriers, onClose, onSave }) {
     date: deal?.date || todayISO(),
     effectiveDate: deal?.effectiveDate || '',
     status: deal?.status || 'uw_submitted',
-    paid: deal?.paid || false,
     chargeback: deal?.chargeback || false,
   });
 
@@ -2851,8 +2823,7 @@ function DealFormModal({ deal, carriers, onClose, onSave }) {
       date: form.date || null,
       effectiveDate: form.effectiveDate || null,
       status: form.status,
-      paid: !!form.paid,
-      chargeback: form.paid ? !!form.chargeback : false,
+      chargeback: !!form.chargeback,
     });
   };
 
@@ -2936,29 +2907,17 @@ function DealFormModal({ deal, carriers, onClose, onSave }) {
             </div>
           </Field>
 
-          <Field label="Payout">
+          <Field label="Chargeback">
             <div className="payout-grid">
-              <label className={'switch-row paid' + (form.paid ? ' active' : '')}>
-                <input type="checkbox" checked={form.paid}
-                  onChange={e => setForm(f => ({ ...f, paid: e.target.checked, chargeback: e.target.checked ? f.chargeback : false }))} />
-                <span className="switch"></span>
-                <span className="switch-label">
-                  <strong>Paid to setter</strong>
-                  <span className="hint-sm">Visual marker only — does not affect totals</span>
-                </span>
-              </label>
-
-              <label className={'switch-row cb' + (!form.paid ? ' disabled' : '') + (form.chargeback && form.paid ? ' active' : '')}>
+              <label className={'switch-row cb' + (form.chargeback ? ' active' : '')}>
                 <input type="checkbox"
-                  disabled={!form.paid}
-                  checked={form.chargeback && form.paid}
+                  checked={form.chargeback}
                   onChange={e => setForm(f => ({ ...f, chargeback: e.target.checked }))} />
                 <span className="switch"></span>
                 <span className="switch-label">
                   <strong>Chargeback</strong>
                   <span className="hint-sm">
-                    {!form.paid ? 'Available after marking paid' :
-                      form.chargeback ? 'Owed back to you' : 'No chargeback'}
+                    {form.chargeback ? 'Owed back to you' : 'No chargeback'}
                   </span>
                 </span>
               </label>
