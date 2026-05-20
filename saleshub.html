@@ -1009,6 +1009,29 @@
       display: none; max-width: 960px; margin-top: 1.25rem;
     }
     .ss-tv-email-list.visible { display: block; }
+    .ss-tv-extra-block {
+      display: none; max-width: 720px; margin-top: 1.25rem;
+    }
+    .ss-tv-extra-block.visible { display: block; }
+    .ss-tv-extra-heading {
+      font-weight: 700; font-size: 1rem; color: #1a1a1a; margin-bottom: 0.4rem;
+    }
+    .ss-tv-extra-sub {
+      color: #555; font-size: 0.85rem; margin-bottom: 0.9rem; line-height: 1.5;
+    }
+    .ss-tv-cred-card {
+      display: grid; grid-template-columns: auto 1fr; gap: 0.4rem 0.85rem;
+      background: #f7f7f5; border: 1px solid #ececec; border-radius: 10px;
+      padding: 0.75rem 0.9rem; margin-bottom: 0.9rem;
+      font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.85rem;
+      align-items: center;
+    }
+    .ss-tv-cred-label { color: #666; font-weight: 600; }
+    .ss-tv-cred-value {
+      color: #1a1a1a;
+      font-family: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+      word-break: break-all;
+    }
     .ss-tv-email-grid {
       display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 0.6rem;
     }
@@ -13643,6 +13666,46 @@
             </a>
           </div>
 
+          <!-- Presentation video → Script PDF only -->
+          <div class="ss-tv-resource-btns" id="ssTvScriptOnly">
+            <a href="assets/Documents/Script.pdf" target="_blank" rel="noopener noreferrer"
+               class="ss-tv-resource-btn"
+               data-pdf-viewer
+               data-pdf-title="Sales Call Script"
+               data-pdf-filename="Script.pdf">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              View Script
+            </a>
+          </div>
+
+          <!-- Objections video → Objection Responses PDF only -->
+          <div class="ss-tv-resource-btns" id="ssTvObjectionsOnly">
+            <a href="assets/Documents/Objection%20Responses.pdf" target="_blank" rel="noopener noreferrer"
+               class="ss-tv-resource-btn"
+               data-pdf-viewer
+               data-pdf-title="Objection Responses"
+               data-pdf-filename="Objection Responses.pdf">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="14" x2="15" y2="14"/><line x1="9" y1="18" x2="13" y2="18"/></svg>
+              Objection Responses
+            </a>
+          </div>
+
+          <!-- Additional Resources (Castudios) — synthetic non-video item -->
+          <div class="ss-tv-extra-block" id="ssTvCastudios">
+            <div class="ss-tv-extra-heading">Here are some additional resources you should go through</div>
+            <div class="ss-tv-extra-sub">Sign in to Castudios with the shared training login below and work through the supplemental videos.</div>
+            <div class="ss-tv-cred-card">
+              <div class="ss-tv-cred-label">Username</div>
+              <div class="ss-tv-cred-value">dev@kairos-financial.com</div>
+              <div class="ss-tv-cred-label">Password</div>
+              <div class="ss-tv-cred-value">2BE9Z4juBx!r7%7L$&amp;Zz</div>
+            </div>
+            <a href="https://castudios.tv/" target="_blank" rel="noopener noreferrer" class="ss-tv-resource-btn" style="display:inline-flex;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              Open Castudios
+            </a>
+          </div>
+
           <!-- Carrier contracting emails -->
           <div class="ss-tv-email-list" id="ssTvLicensing">
             <h3 style="font-weight:700;font-size:0.95rem;color:#1a1a1a;margin-bottom:0.75rem;">Carrier Contracting Emails</h3>
@@ -20759,6 +20822,22 @@
     let tvSections = [];   // [{ id, title, sort_order }]
     let tvVideos = [];     // [{ id, section_id, slug, title, loom_url, duration_seconds, sort_order }]
 
+    // Synthetic non-video item appended to "New Agent Steps" after Objections.
+    // Not stored in Supabase — added client-side after fetch so it can't be
+    // edited or deleted through the admin UI. section_id is filled in at load
+    // time by matching the section title (resilient if the UUID changes).
+    const EXTRA_VIDEO_HOST_SECTION_TITLE = 'New Agent Steps';
+    const EXTRA_VIDEO = {
+      id: '__extra-castudios__',
+      section_id: null, // set in loadTrainingContent
+      slug: 'additional-resources',
+      title: 'Castudios Training',
+      loom_url: null,
+      duration_seconds: 0,
+      sort_order: 9999, // after every real video in the host section
+      synthetic: true
+    };
+
     // User state
     let trainingComplete = true;        // default true so nothing breaks before fetch
     let completedVideoIds = new Set();  // keyed by slug (text)
@@ -20790,6 +20869,9 @@
       a2p:          document.getElementById('ssTvA2p'),
       underwriting: document.getElementById('ssTvUnderwriting'),
       script:       document.getElementById('ssTvScript'),
+      scriptOnly:   document.getElementById('ssTvScriptOnly'),
+      objections:   document.getElementById('ssTvObjectionsOnly'),
+      castudios:    document.getElementById('ssTvCastudios'),
       licensing:    document.getElementById('ssTvLicensing'),
       products:     document.getElementById('ssTvProducts')
     };
@@ -20797,6 +20879,9 @@
       'discord-walkthrough': 'discord',
       'access-crm': 'crm',
       'script-sales-presentation': 'script',
+      'v-n5e3z79m': 'scriptOnly',
+      'v-m266tttv': 'objections',
+      'additional-resources': 'castudios',
       'buy-state-licenses': 'nipr',
       'next-steps-licenses': 'licensing',
       'a2p-texting': 'a2p',
@@ -20954,13 +21039,15 @@
         labelText.className = 'ss-tv-cat-label-text';
         labelText.textContent = sec.title;
         label.appendChild(labelText);
-        label.appendChild(tvBuildRowActions({
-          onUp:     secIdx > 0            ? () => tvMoveSection(sec.id, -1) : null,
-          onDown:   secIdx < secs.length-1 ? () => tvMoveSection(sec.id, +1) : null,
-          onRename: () => tvOpenSectionModal(sec),
-          onDelete: () => tvDeleteSection(sec),
-          editLabel: 'Rename section'
-        }));
+        if (!sec.synthetic) {
+          label.appendChild(tvBuildRowActions({
+            onUp:     secIdx > 0            ? () => tvMoveSection(sec.id, -1) : null,
+            onDown:   secIdx < secs.length-1 ? () => tvMoveSection(sec.id, +1) : null,
+            onRename: () => tvOpenSectionModal(sec),
+            onDelete: () => tvDeleteSection(sec),
+            editLabel: 'Rename section'
+          }));
+        }
         tvSidebarBody.appendChild(label);
 
         const inSection = tvVideos
@@ -20971,24 +21058,27 @@
           const item = document.createElement('div');
           item.className = 'ss-tv-item';
           item.dataset.slug = vid.slug;
-          item.dataset.src = vid.loom_url;
+          item.dataset.src = vid.loom_url || '';
           item.dataset.duration = String(vid.duration_seconds);
           item.dataset.videoId = vid.id;
+          if (vid.synthetic) item.dataset.synthetic = '1';
           item.innerHTML =
             '<span class="tv-status-icon"></span>' +
             '<span class="ss-tv-item-label"></span>';
           item.querySelector('.ss-tv-item-label').textContent = vid.title;
 
-          item.appendChild(tvBuildRowActions({
-            onUp:     vIdx > 0                    ? () => tvMoveVideo(vid.id, -1) : null,
-            onDown:   vIdx < inSection.length - 1 ? () => tvMoveVideo(vid.id, +1) : null,
-            onRename: () => tvOpenVideoModal(vid),
-            onDelete: () => tvDeleteVideo(vid),
-            editLabel: 'Edit video'
-          }));
+          if (!vid.synthetic) {
+            item.appendChild(tvBuildRowActions({
+              onUp:     vIdx > 0                    ? () => tvMoveVideo(vid.id, -1) : null,
+              onDown:   vIdx < inSection.length - 1 ? () => tvMoveVideo(vid.id, +1) : null,
+              onRename: () => tvOpenVideoModal(vid),
+              onDelete: () => tvDeleteVideo(vid),
+              editLabel: 'Edit video'
+            }));
+          }
 
           item.addEventListener('click', (e) => {
-            if (tvEditMode) return;
+            if (tvEditMode && !vid.synthetic) return;
             if (e.target.closest('.ss-tv-row-actions')) return;
             selectVideo(item);
           });
@@ -20996,6 +21086,7 @@
           tvSidebarBody.appendChild(item);
         });
 
+        if (sec.synthetic) return; // no "+ Add Video" for the synthetic section
         const addVid = document.createElement('button');
         addVid.type = 'button';
         addVid.className = 'ss-tv-add-btn ss-tv-add-video';
@@ -21061,8 +21152,17 @@
     function selectVideo(item) {
       if (item.classList.contains('locked')) return;
       const slug = item.dataset.slug;
+      const isSynthetic = item.dataset.synthetic === '1';
       currentVideoSlug = slug;
-      tvPlayer.src = item.dataset.src + LOOM_PARAMS;
+
+      const videoWrap = tvPlayer.closest('.ss-tv-video-wrap');
+      if (isSynthetic) {
+        tvPlayer.src = '';
+        if (videoWrap) videoWrap.style.display = 'none';
+      } else {
+        tvPlayer.src = item.dataset.src + LOOM_PARAMS;
+        if (videoWrap) videoWrap.style.display = '';
+      }
       tvTitle.textContent = item.querySelector('.ss-tv-item-label').textContent;
 
       // Toggle resource panels by slug
@@ -21077,6 +21177,12 @@
       videoTimerStarted = false;
       currentVideoDuration = parseInt(item.dataset.duration) || 120;
       videoTimerRemaining = Math.round(currentVideoDuration * 0.9);
+
+      // Synthetic items have no video — Mark Complete is immediately available
+      if (isSynthetic) {
+        videoTimerReady = true;
+        videoTimerStarted = true;
+      }
 
       if (completedVideoIds.has(slug)) videoTimerReady = true;
 
@@ -21116,7 +21222,12 @@
     }
 
     function updateMarkCompleteBtn() {
-      if (!currentVideoSlug || completedVideoIds.has(currentVideoSlug) || trainingComplete) {
+      // Synthetic (non-video) items can be marked complete even after the
+      // overall training_complete gate has flipped, so existing reps can still
+      // tick off newly-added resources and reach 100% on the progress bar.
+      const currentVid = currentVideoSlug ? tvVideos.find(v => v.slug === currentVideoSlug) : null;
+      const isSynthetic = !!(currentVid && currentVid.synthetic);
+      if (!currentVideoSlug || completedVideoIds.has(currentVideoSlug) || (trainingComplete && !isSynthetic)) {
         tvMarkCompleteBtn.style.display = 'none';
         return;
       }
@@ -21362,8 +21473,9 @@
           tvSupaGet('training_sections?select=*&order=sort_order.asc'),
           tvSupaGet('training_videos?select=*&order=sort_order.asc')
         ]);
+        const host = secs.find(s => s.title === EXTRA_VIDEO_HOST_SECTION_TITLE);
         tvSections = secs;
-        tvVideos = vids;
+        tvVideos = host ? vids.concat([{ ...EXTRA_VIDEO, section_id: host.id }]) : vids;
       } catch (e) {
         console.error('Failed to load training content:', e);
         tvSections = []; tvVideos = [];
@@ -21912,7 +22024,7 @@
       // this IIFE runs in the same window so they're accessible via globalThis.
       const HDRS = { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY };
       const HDRS_WRITE = Object.assign({}, HDRS, { 'Content-Type': 'application/json', 'Prefer': 'return=minimal' });
-      const TOTAL_TRAINING_VIDEOS = 24;
+      const TOTAL_TRAINING_VIDEOS = 25;
 
       // All carriers we currently sell — extends the design's 5-color rainbow
       // palette to cover all 15 by cycling through CSS rainbow tokens.
