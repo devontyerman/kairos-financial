@@ -9512,12 +9512,12 @@
     }
     .ss-input[type="date"]::-webkit-inner-spin-button,
     .ss-input[type="date"]::-webkit-clear-button { display: none; }
-    .ss-input[type="date"]::-webkit-datetime-edit { color: #1a1a1a; padding: 0; }
-    .ss-input[type="date"]::-webkit-datetime-edit-fields-wrapper { color: #1a1a1a; }
+    .ss-input[type="date"]::-webkit-datetime-edit { color: inherit; padding: 0; }
+    .ss-input[type="date"]::-webkit-datetime-edit-fields-wrapper { color: inherit; }
     .ss-input[type="date"]::-webkit-datetime-edit-text,
     .ss-input[type="date"]::-webkit-datetime-edit-month-field,
     .ss-input[type="date"]::-webkit-datetime-edit-day-field,
-    .ss-input[type="date"]::-webkit-datetime-edit-year-field { color: #1a1a1a; }
+    .ss-input[type="date"]::-webkit-datetime-edit-year-field { color: inherit; }
     .ss-goal-save {
       padding: 0.35rem 0.7rem; font-size: 0.7rem; font-weight: 700;
       color: #1a1a1a; background: #2563eb; border: none; border-radius: 6px; cursor: pointer;
@@ -15456,11 +15456,14 @@
         try {
           if (!shouldPost) throw new Error('Discord notify disabled for this submission');
           const DISCORD_WEBHOOK = 'https://discord.com/api/webhooks/1450235046618333358/W7iLux4QLMESxwVX_so6uBJWRVog_Dc6eJT6jp3BpIKD4TIEodEWT8_epWWX6aRjyD4d';
-          // Fetch agent's discord_id from agent_profiles
+          // Fetch agent's discord_id from agent_profiles.
+          // Use the anon key (not the rep's session token) so a stale/expired
+          // JWT can't silently 401 this lookup and force a fallback to the
+          // plain name in Discord. discord_id is publicly readable per RLS.
           let agentTag = data.sales_rep;
           try {
             const profRes = await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?user_id=eq.' + currentUser.id + '&select=discord_id', {
-              headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + (accessToken || SUPABASE_KEY) }
+              headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
             });
             const profRows = await profRes.json();
             if (profRows && profRows.length > 0 && profRows[0].discord_id) {
@@ -25384,8 +25387,10 @@
               const DISCORD_WEBHOOK = 'https://discord.com/api/webhooks/1450235046618333358/W7iLux4QLMESxwVX_so6uBJWRVog_Dc6eJT6jp3BpIKD4TIEodEWT8_epWWX6aRjyD4d';
               let agentTag = agentName;
               try {
+                // Anon read — see comment in the Sales Hub form path above
+                // for why we don't use the user's session token here.
                 const profRes = await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?user_id=eq.' + userId + '&select=discord_id', {
-                  headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + (window.accessToken || SUPABASE_KEY) }
+                  headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
                 });
                 const profRows = await profRes.json();
                 if (profRows && profRows.length > 0 && profRows[0].discord_id) {
