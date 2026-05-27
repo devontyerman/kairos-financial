@@ -7448,10 +7448,10 @@
       --tk-ink-4:     rgba(243, 243, 241, 0.28);
       --tk-pos:       oklch(0.78 0.16 145);
       --tk-neg:       oklch(0.7 0.18 25);
-      /* Aliases so the shared MonthlyBars chart (built for the Team
-         Dashboard) inherits the right text + grid colors when rendered
-         inside the Tracker panel. Without these its axis labels render
-         in default black on the dark background. */
+      /* Aliases so shared chart components (built for the Team Dashboard)
+         inherit the right text + grid colors when rendered inside the
+         Tracker panel. Without these their axis labels render in default
+         black on the dark background. */
       --tp-mono: var(--tk-mono);
       --tp-sans: var(--tk-sans);
       --tp-bg: var(--tk-bg); --tp-bg-2: var(--tk-bg-2);
@@ -22442,7 +22442,7 @@
       // transitions from real → projected. The chart draws a solid line +
       // gradient fill up to that index, then a dashed line beyond it. Used
       // by the YTD view to extrapolate the rest of the year.
-      function APLineChart({ labels, series, color, height, projectionFromIdx }) {
+      function APLineChart({ labels, series, color, height, projectionFromIdx, mode }) {
         const ref = useRef(null);
         const [w, setW] = useState(800);
         const [hover, setHover] = useState(null);
@@ -22460,13 +22460,20 @@
         const max = Math.max.apply(null, series.concat([1])) * 1.1;
         const xs = (i) => pad.left + (i / Math.max(labels.length - 1, 1)) * innerW;
         const ys = (v) => pad.top + (1 - v / max) * innerH;
+        // Every point sits at its exact raw value so relative ordering is
+        // preserved (a March peak should look higher than April). The path
+        // smoothness comes purely from the Catmull-Rom tension below, which
+        // only affects how the line curves *between* points.
         const points = series.map((v, i) => [xs(i), ys(v)]);
         const hasProjection = (typeof projectionFromIdx === 'number')
           && projectionFromIdx >= 0 && projectionFromIdx < points.length - 1;
         const realPoints      = hasProjection ? points.slice(0, projectionFromIdx + 1) : points;
         const projectedPoints = hasProjection ? points.slice(projectionFromIdx)         : [];
-        const realPath        = smoothPath(realPoints, 0.5);
-        const projectedPath   = projectedPoints.length >= 2 ? smoothPath(projectedPoints, 0.5) : '';
+        // Tension 0.85 gives a softer, more sweeping curve through each
+        // data point than the default 0.5 — still passes through every
+        // value exactly.
+        const realPath        = smoothPath(realPoints, 0.85);
+        const projectedPath   = projectedPoints.length >= 2 ? smoothPath(projectedPoints, 0.85) : '';
         // Gradient fill follows only the real portion so the projection feels
         // visually "lighter" — a future estimate, not booked AP.
         const areaEndIdx = hasProjection ? projectionFromIdx : labels.length - 1;
@@ -22546,9 +22553,12 @@
             {hover !== null && (
               <div className="tp-chart-tip" style={{
                 left: Math.min(w - 140, Math.max(0, xs(hover) - 60)),
-                top: ys(series[hover]) - 52,
+                top: ys(series[hover]) - 60,
               }}>
-                <div className="tp-chart-tip-lbl">{labels[hover]}</div>
+                <div className="tp-chart-tip-lbl">
+                  {labels[hover]}
+                  {mode === 'comparison' ? ' · Sold' : (mode === 'cumulative' && typeof projectionFromIdx === 'number' && hover > projectionFromIdx ? ' · Projected' : ' · Cumulative')}
+                </div>
                 <div className="tp-chart-tip-val">{fmtCurrency(series[hover])}</div>
               </div>
             )}
@@ -22556,72 +22566,77 @@
         );
       }
 
-      function MonthlyBars({ labels, primary, secondary, primaryLabel, secondaryLabel,
-                              primaryColor, secondaryColor, height }) {
+      // Bar chart used by Comparison mode. Every label on the x-axis is
+      // rendered, bars touch (no gap) so the per-period AP reads as a
+      // continuous "skyline." Cumulative mode still uses APLineChart.
+      function APBarChart({ labels, series, height }) {
         const ref = useRef(null);
         const [w, setW] = useState(800);
         const [hover, setHover] = useState(null);
-        const h = height || 220;
+        const strokeColor = 'var(--rb-green)';
+        const h = height || 280;
         useEffect(() => {
           if (!ref.current) return;
           const ro = new ResizeObserver(([e]) => setW(e.contentRect.width));
           ro.observe(ref.current);
           return () => ro.disconnect();
         }, []);
-        const pad = { top: 16, right: 12, bottom: 28, left: 56 };
+        const pad = { top: 24, right: 16, bottom: 28, left: 56 };
         const innerW = Math.max(100, w - pad.left - pad.right);
         const innerH = h - pad.top - pad.bottom;
-        const max = Math.max.apply(null, primary.concat(secondary || [0]).concat([1])) * 1.15;
-        const groupW = innerW / labels.length;
-        const barW = secondary ? Math.min(14, groupW * 0.32) : Math.min(22, groupW * 0.55);
-        const gap = secondary ? 3 : 0;
-        const ys = (v) => pad.top + (1 - v / max) * innerH;
+        const max = Math.max.apply(null, series.concat([1])) * 1.1;
+        const n = Math.max(1, labels.length);
+        const barW = innerW / n;
+        const ys = (v) => pad.top + (1 - (v || 0) / max) * innerH;
+        const grid = [0, 0.25, 0.5, 0.75, 1].map(t => ({ y: pad.top + t * innerH, v: max * (1 - t) }));
         return (
-          <div ref={ref} className="tp-chart-wrap">
+          <div ref={ref} className="tp-chart-wrap" onMouseLeave={() => setHover(null)}>
             <svg width={w} height={h} style={{display:'block'}}>
-              {[0, 0.5, 1].map((t, i) => (
+              <defs>
+                {/* Same fade-down gradient the cumulative line chart uses for
+                    its area under the curve, so the bar fill reads as a
+                    matching translucent green. */}
+                <linearGradient id="tpBarGrad" x1="0" x2="0" y1="0" y2="1">
+                  <stop offset="0%" stopColor="var(--rb-green)" stopOpacity="0.32" />
+                  <stop offset="100%" stopColor="var(--rb-green)" stopOpacity="0" />
+                </linearGradient>
+              </defs>
+              {grid.map((g, i) => (
                 <g key={i}>
-                  <line x1={pad.left} x2={w - pad.right} y1={pad.top + t * innerH} y2={pad.top + t * innerH}
-                    stroke="var(--tp-hairline)" strokeDasharray={i === 2 ? '0' : '2 4'} />
-                  <text x={pad.left - 10} y={pad.top + t * innerH + 4} textAnchor="end"
+                  <line x1={pad.left} x2={w - pad.right} y1={g.y} y2={g.y}
+                    stroke="var(--tp-hairline)" strokeDasharray={i === grid.length - 1 ? '0' : '2 4'} />
+                  <text x={pad.left - 10} y={g.y + 4} textAnchor="end"
                     fill="var(--tp-ink-3)" fontSize="11" fontFamily="var(--tp-mono)">
-                    {fmtCurrency(max * (1 - t), {compact:true})}
+                    {fmtCurrency(g.v, {compact:true})}
                   </text>
                 </g>
               ))}
               {labels.map((lbl, i) => {
-                const cx = pad.left + groupW * (i + 0.5);
-                const p = primary[i] || 0;
-                const s = secondary ? (secondary[i] || 0) : null;
-                const pX = secondary ? cx - barW - gap/2 : cx - barW/2;
-                const sX = cx + gap/2;
+                const v = series[i] || 0;
+                const x = pad.left + barW * i;
+                const y = ys(v);
+                const barH = Math.max(0, (pad.top + innerH) - y);
                 return (
-                  <g key={i} onMouseEnter={() => setHover(i)} onMouseLeave={() => setHover(null)}>
-                    <rect x={pad.left + groupW * i} y={pad.top} width={groupW} height={innerH} fill="transparent" />
-                    <rect x={pX} y={ys(p)} width={barW} height={Math.max(0, pad.top + innerH - ys(p))}
-                      fill={primaryColor} rx="2" opacity={hover === null || hover === i ? 1 : 0.45} />
-                    {s !== null && (
-                      <rect x={sX} y={ys(s)} width={barW} height={Math.max(0, pad.top + innerH - ys(s))}
-                        fill={secondaryColor} rx="2" opacity={hover === null || hover === i ? 1 : 0.45} />
-                    )}
-                    <text x={cx} y={h - 8} textAnchor="middle"
-                      fill={hover === i ? 'var(--tp-ink-1)' : 'var(--tp-ink-3)'} fontSize="11" fontFamily="var(--tp-mono)">
-                      {lbl}
-                    </text>
+                  <g key={i} onMouseEnter={() => setHover(i)}>
+                    <rect x={x} y={pad.top} width={barW} height={innerH} fill="transparent" />
+                    <rect x={x} y={y} width={barW} height={barH}
+                      fill="url(#tpBarGrad)" stroke={strokeColor} strokeWidth="1"
+                      opacity={hover === null || hover === i ? 1 : 0.55} />
                   </g>
                 );
               })}
+              {labels.map((lbl, i) => (
+                <text key={i} x={pad.left + barW * (i + 0.5)} y={h - 8} textAnchor="middle"
+                  fill="var(--tp-ink-3)" fontSize="10" fontFamily="var(--tp-mono)">{lbl}</text>
+              ))}
             </svg>
             {hover !== null && (
               <div className="tp-chart-tip" style={{
-                left: Math.min(w - 180, pad.left + groupW * (hover + 0.5) - 80),
-                top: 0,
+                left: Math.min(w - 140, Math.max(0, pad.left + barW * (hover + 0.5) - 60)),
+                top: Math.max(0, ys(series[hover]) - 60),
               }}>
-                <div className="tp-chart-tip-lbl">{labels[hover]}</div>
-                <div className="tp-chart-tip-row"><span className="tp-dot" style={{background:primaryColor}}></span>{primaryLabel} <b>{fmtCurrency(primary[hover] || 0, {compact:true})}</b></div>
-                {secondary && (
-                  <div className="tp-chart-tip-row"><span className="tp-dot" style={{background:secondaryColor}}></span>{secondaryLabel} <b>{fmtCurrency(secondary[hover] || 0, {compact:true})}</b></div>
-                )}
+                <div className="tp-chart-tip-lbl">{labels[hover]} · Sold</div>
+                <div className="tp-chart-tip-val">{fmtCurrency(series[hover])}</div>
               </div>
             )}
           </div>
@@ -22736,7 +22751,15 @@
       }
       function APHero({ scope, view, timeframe, setTimeframe, customFrom, customTo, setCustomFrom, setCustomTo, customRange }) {
         const today = new Date();
+        // Cumulative shows the running total (with projection for incomplete
+        // timeframes). Comparison shows raw per-bucket AP — the actual
+        // up-and-down trend through past + current periods, no projection.
+        const [chartMode, setChartMode] = useState('cumulative');
         let series, labels, total, prior, label, projectionFromIdx, mtdProjectedTotal;
+        // Populated by each timeframe branch so the comparison-mode override
+        // at the bottom can swap the cumulative series for raw per-bucket AP.
+        let rawBuckets = null;
+        let comparisonCutoff = null; // last index with real data (inclusive)
         if (timeframe === 'WTD') {
           // Build a cumulative Mon→Sun series so the chart can show a real
           // line that builds up day-by-day, plus a projection band for the
@@ -22773,6 +22796,8 @@
           }
           series = cum;
           labels = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+          rawBuckets = dailyMonSun;
+          comparisonCutoff = todayIdx;
           total = view.ap;
           projectionFromIdx = Math.max(0, Math.min(6, todayIdx));
           prior = (scope.weekly || [])[(scope.weekly || []).length - 2] || 0;
@@ -22808,6 +22833,8 @@
           }
           series = cumDaily;
           labels = Array.from({length: totalDays}, (_, i) => String(i + 1));
+          rawBuckets = dayBuckets;
+          comparisonCutoff = Math.max(0, Math.min(totalDays - 1, dayOfMonthCur - 1));
           total = view.ap;
           projectionFromIdx = Math.max(0, Math.min(totalDays - 1, dayOfMonthCur - 1));
           const projectedTotal = cumDaily[totalDays - 1] || total;
@@ -22867,6 +22894,8 @@
             });
             const cum = buckets.reduce((arr, v) => { arr.push((arr[arr.length-1] || 0) + v); return arr; }, []);
             series = cum;
+            rawBuckets = buckets;
+            comparisonCutoff = buckets.length - 1;
             labels = [];
             for (let i = 0; i < totalDays; i++) {
               const dy = new Date(startMid); dy.setDate(dy.getDate() + i);
@@ -22886,6 +22915,8 @@
             });
             const cum = buckets.reduce((arr, v) => { arr.push((arr[arr.length-1] || 0) + v); return arr; }, []);
             series = cum;
+            rawBuckets = buckets;
+            comparisonCutoff = buckets.length - 1;
             labels = [];
             for (let i = 0; i < totalMonths; i++) {
               const k = startKey + i;
@@ -22941,6 +22972,8 @@
           }
           series = projected;
           labels = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+          rawBuckets = monthly;
+          comparisonCutoff = currentMonthIdx;
           total = view.ap;
           projectionFromIdx = currentMonthIdx;
           // Prior = same window last year (Jan 1 → today's anniversary)
@@ -22955,9 +22988,20 @@
           });
           label = 'Year-to-date';
         }
+        // Comparison override: swap the cumulative + projection line for the
+        // raw per-bucket AP, truncated to past+current buckets only.
+        if (chartMode === 'comparison' && rawBuckets) {
+          const lastIdx = (comparisonCutoff != null ? comparisonCutoff : rawBuckets.length - 1);
+          const cut = Math.max(0, Math.min(rawBuckets.length - 1, lastIdx));
+          series = rawBuckets.slice(0, cut + 1);
+          labels = labels.slice(0, cut + 1);
+          projectionFromIdx = undefined;
+          mtdProjectedTotal = null;
+        }
         const deltaBasis = timeframe === 'MTD' && mtdProjectedTotal != null ? mtdProjectedTotal : total;
         const delta = prior ? ((deltaBasis - prior) / prior) * 100 : 0;
-        const deltaLabel = timeframe === 'WTD' ? 'vs last week' : timeframe === 'MTD' ? 'projected vs last month' : timeframe === 'YTD' ? 'vs same point last year' : timeframe === 'LW' ? 'last week total' : timeframe === 'LM' ? 'last month total' : timeframe === 'YDAY' ? 'yesterday total' : '';
+        const mtdDeltaLabel = (chartMode === 'comparison') ? 'vs last month' : 'projected vs last month';
+        const deltaLabel = timeframe === 'WTD' ? 'vs last week' : timeframe === 'MTD' ? mtdDeltaLabel : timeframe === 'YTD' ? 'vs same point last year' : timeframe === 'LW' ? 'last week total' : timeframe === 'LM' ? 'last month total' : timeframe === 'YDAY' ? 'yesterday total' : '';
         const isTeam = scope.id === '__team__';
         return (
           <div className="tp-card tp-ap-hero">
@@ -22997,7 +23041,15 @@
                 Avg premium <b style={{color:'var(--tp-ink-1)'}}>{fmtCurrency(view.avgPremium)}</b> · Deals <b style={{color:'var(--tp-ink-1)'}}>{view.deals.toLocaleString()}</b>
               </div>
             </div>
-            <APLineChart labels={labels} series={series} color="var(--rb-green)" height={300} projectionFromIdx={projectionFromIdx} />
+            <div style={{display:'flex', justifyContent:'flex-end', marginBottom:8}}>
+              <div className="tp-tf-segment">
+                <button className={chartMode === 'cumulative' ? 'on' : ''} onClick={() => setChartMode('cumulative')}>Cumulative</button>
+                <button className={chartMode === 'comparison' ? 'on' : ''} onClick={() => setChartMode('comparison')}>Comparison</button>
+              </div>
+            </div>
+            {chartMode === 'comparison'
+              ? <APBarChart labels={labels} series={series} height={300} />
+              : <APLineChart labels={labels} series={series} color="var(--rb-green)" height={300} projectionFromIdx={projectionFromIdx} mode={chartMode} />}
             {typeof projectionFromIdx === 'number' && (
               <div style={{display:'flex', gap:14, alignItems:'center', marginTop:8, fontFamily:'var(--tp-mono)', fontSize:10, color:'var(--tp-ink-3)', textTransform:'uppercase', letterSpacing:'0.06em'}}>
                 <span style={{display:'inline-flex', alignItems:'center', gap:6}}>
@@ -23015,8 +23067,9 @@
       }
 
       // ─── Leaderboard ─────────────────────────────────────────────────
-      // All numeric columns (AP, Deals, D→D %, ROI) reflect the active
-      // timeframe so a switch from MTD → WTD/YTD updates every row.
+      // All numeric columns (AP, Deals, Avg Premium, Days Active) reflect
+      // the active timeframe so a switch from MTD → WTD/YTD updates every
+      // row. Days Active is the only one that's fixed to the last 30 days.
       function Leaderboard({ agents, activeId, onSelect, timeframe, customRange }) {
         const isDynamic = !!dynamicTfRange(timeframe, customRange);
         const tfLabel = timeframe === 'WTD' ? 'WTD'
@@ -23029,15 +23082,48 @@
         const apKey = timeframe === 'WTD' ? 'apWTD' : timeframe === 'YTD' ? 'apYTD' : 'apMTD';
         const dealsKey = timeframe === 'WTD' ? 'dealsWTD' : timeframe === 'YTD' ? 'dealsYTD' : 'dealsMTD';
         const kpiKey = timeframe === 'WTD' ? 'kpiWTD' : timeframe === 'YTD' ? 'kpiYTD' : 'kpiMTD';
+        // "Active" = a real-work day: a policy was logged, OR daily_kpis has
+        // dials/presentations/deals > 0. Lead-spend or deposit-only entries
+        // don't count. Window is the last 30 calendar days.
+        const daysActive30 = (a) => {
+          const today = new Date();
+          const cutoff = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 29);
+          const ymd = (d) => d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+          const days = new Set();
+          (a.policies || []).forEach(p => {
+            const d = parsePolicyDate(p.policy_date || p.created_at);
+            if (d && d >= cutoff && d <= today) days.add(ymd(d));
+          });
+          (a.kpis || []).forEach(r => {
+            if (!r.kpi_date) return;
+            const d = new Date(r.kpi_date + 'T00:00:00');
+            if (d < cutoff || d > today) return;
+            if ((r.dials || 0) > 0 || (r.presentations || 0) > 0 || (r.deals || 0) > 0) {
+              days.add(ymd(d));
+            }
+          });
+          return days.size;
+        };
         const enriched = useMemo(() => agents.map(a => {
           if (isDynamic) {
             const v = scopedView(a, timeframe, customRange);
-            return Object.assign({}, a, { _ap: v.ap || 0, _deals: v.deals || 0, _dialToDeal: v.dialToDeal || 0, _roi: v.roi || 0, _dials: v.dials || 0 });
+            return Object.assign({}, a, {
+              _ap: v.ap || 0, _deals: v.deals || 0,
+              _avgPrem: v.avgPremium || 0,
+              _daysActive: daysActive30(a),
+              _dials: v.dials || 0
+            });
           }
           const k = a[kpiKey] || { dials: 0, leadSpend: 0, deposits: 0 };
-          const d2d = k.dials > 0 ? (a[dealsKey] / k.dials) * 100 : 0;
-          const r = k.leadSpend > 0 ? ((k.deposits - k.leadSpend) / k.leadSpend) * 100 : 0;
-          return Object.assign({}, a, { _ap: a[apKey] || 0, _deals: a[dealsKey] || 0, _dialToDeal: d2d, _roi: r, _dials: k.dials });
+          const ap = a[apKey] || 0;
+          const deals = a[dealsKey] || 0;
+          const avgP = deals > 0 ? Math.round(ap / deals) : 0;
+          return Object.assign({}, a, {
+            _ap: ap, _deals: deals,
+            _avgPrem: avgP,
+            _daysActive: daysActive30(a),
+            _dials: k.dials
+          });
         }), [agents, timeframe, apKey, dealsKey, kpiKey, isDynamic, customRange]);
         const [sortKey, setSortKey] = useState('_ap');
         const [sortDir, setSortDir] = useState('desc');
@@ -23077,8 +23163,8 @@
                   <th onClick={() => setSort('_ap')}>Agent</th>
                   <th className="num" onClick={() => setSort('_ap')}>AP {tfLabel} {arrow('_ap')}</th>
                   <th className="num" onClick={() => setSort('_deals')}>Deals {arrow('_deals')}</th>
-                  <th className="num" onClick={() => setSort('_dialToDeal')}>D→D % {arrow('_dialToDeal')}</th>
-                  <th className="num" onClick={() => setSort('_roi')}>ROI {arrow('_roi')}</th>
+                  <th className="num" onClick={() => setSort('_avgPrem')}>Avg Premium {arrow('_avgPrem')}</th>
+                  <th className="num" onClick={() => setSort('_daysActive')}>Days Active 30d {arrow('_daysActive')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -23102,10 +23188,8 @@
                       </td>
                       <td className="num">{fmtCurrency(a._ap, {compact:true})}</td>
                       <td className="num">{a._deals}</td>
-                      <td className="num"><span className="tp-dial-pct">{a._dialToDeal.toFixed(2)}%</span></td>
-                      <td className="num" style={{color: a._roi >= 0 ? 'var(--tp-pos)' : 'var(--tp-neg)'}}>
-                        {a._roi >= 0 ? '+' : ''}{a._roi.toFixed(0)}%
-                      </td>
+                      <td className="num">{a._avgPrem > 0 ? fmtCurrency(a._avgPrem, {compact:true}) : '—'}</td>
+                      <td className="num">{a._daysActive} <span style={{color:'var(--tp-ink-3)', fontFamily:'var(--tp-mono)', fontSize:10}}>/ 30</span></td>
                     </tr>
                   );
                 })}
@@ -23166,87 +23250,6 @@
                 ))}
               </div>
             </div>
-          </div>
-        );
-      }
-
-      // ─── Comparison ─────────────────────────────────────────────────────
-      function Comparison({ scope, team, agents, months }) {
-        const isTeam = scope.id === '__team__';
-        const [mode, setMode] = useState(isTeam ? 'thisVsLast' : 'agentVsTeam');
-        useEffect(() => { setMode(isTeam ? 'thisVsLast' : 'agentVsTeam'); }, [isTeam]);
-        const labels = (scope.monthLabels || []).slice(-months);
-        const teamMonthly = (team.monthly || []).slice(-months);
-        let primary, secondary, primaryLabel, secondaryLabel, primaryColor, secondaryColor;
-        if (!isTeam && mode === 'agentVsTeam') {
-          primary = (scope.monthly || []).slice(-months);
-          secondary = teamMonthly.map(v => Math.round(v / Math.max(agents.length, 1)));
-          primaryLabel = scope.name.split(' ')[0];
-          secondaryLabel = 'Team avg';
-          primaryColor = 'var(--rb-green)';
-          secondaryColor = 'var(--rb-blue)';
-        } else if (mode === 'thisVsLast') {
-          primary = teamMonthly;
-          const today = new Date();
-          const allPols = team.policies || [];
-          const priorYearMonthly = [];
-          for (let i = months - 1; i >= 0; i--) {
-            const ms = new Date(today.getFullYear() - 1, today.getMonth() - i, 1);
-            const me = new Date(today.getFullYear() - 1, today.getMonth() - i + 1, 1);
-            const sum = allPols.reduce((s, p) => {
-              const d = parsePolicyDate(p.policy_date || p.created_at);
-              return d >= ms && d < me ? s + parseFloat(p.annual_premium || 0) : s;
-            }, 0);
-            priorYearMonthly.push(sum);
-          }
-          secondary = priorYearMonthly;
-          primaryLabel = 'This year';
-          secondaryLabel = 'Prior year';
-          primaryColor = 'var(--rb-green)';
-          secondaryColor = 'var(--rb-purple)';
-        } else {
-          primary = isTeam ? teamMonthly : (scope.monthly || []).slice(-months);
-          secondary = null;
-          primaryLabel = isTeam ? 'Team total' : scope.name.split(' ')[0];
-          primaryColor = 'var(--rb-green)';
-        }
-        return (
-          <div className="tp-card tp-compare">
-            <div className="tp-compare-hd">
-              <div>
-                <div className="tp-card-title">Month-over-month · {isTeam ? 'Team' : scope.name}</div>
-                <div className="tp-card-meta" style={{marginTop:4}}>Last {months} months · annual premium</div>
-              </div>
-              <div style={{display:'flex', alignItems:'center', gap:18}}>
-                <div className="tp-legend">
-                  <div><span className="tp-dot" style={{background: primaryColor}}></span>{primaryLabel}</div>
-                  {secondary && <div><span className="tp-dot" style={{background: secondaryColor}}></span>{secondaryLabel}</div>}
-                </div>
-                <div className="tp-tf-segment">
-                  {!isTeam ? (
-                    <>
-                      <button className={mode === 'agentVsTeam' ? 'on' : ''} onClick={() => setMode('agentVsTeam')}>vs Team avg</button>
-                      <button className={mode === 'soloOnly' ? 'on' : ''} onClick={() => setMode('soloOnly')}>Solo</button>
-                    </>
-                  ) : (
-                    <>
-                      <button className={mode === 'thisVsLast' ? 'on' : ''} onClick={() => setMode('thisVsLast')}>YoY</button>
-                      <button className={mode === 'soloOnly' ? 'on' : ''} onClick={() => setMode('soloOnly')}>Solo</button>
-                    </>
-                  )}
-                </div>
-              </div>
-            </div>
-            <MonthlyBars
-              labels={labels}
-              primary={primary}
-              secondary={secondary}
-              primaryLabel={primaryLabel}
-              secondaryLabel={secondaryLabel}
-              primaryColor={primaryColor}
-              secondaryColor={secondaryColor}
-              height={240}
-            />
           </div>
         );
       }
@@ -23457,7 +23460,6 @@
               <Leaderboard agents={agents} activeId={activeId} timeframe={timeframe} customRange={customRange}
                 onSelect={(id) => setActiveId(curr => curr === id ? null : id)} />
               <CarrierBreakdown scope={scope} view={view} timeframe={timeframe} />
-              <Comparison scope={scope} team={team} agents={agents} months={12} />
               <KPIPanel scope={scope} view={view} timeframe={timeframe} />
             </div>
             <div className="tp-foot">
