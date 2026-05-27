@@ -22367,6 +22367,12 @@
             new Date(today.getFullYear(), today.getMonth(), 0, 23, 59, 59),
           ];
         }
+        if (timeframe === 'L30') {
+          // Rolling last-30-day window ending today (inclusive of today).
+          const start = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 29);
+          const end = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59);
+          return [start, end];
+        }
         return null;
       }
 
@@ -22569,7 +22575,7 @@
       // Bar chart used by Comparison mode. Every label on the x-axis is
       // rendered, bars touch (no gap) so the per-period AP reads as a
       // continuous "skyline." Cumulative mode still uses APLineChart.
-      function APBarChart({ labels, series, height }) {
+      function APBarChart({ labels, series, dealsSeries, height }) {
         const ref = useRef(null);
         const [w, setW] = useState(800);
         const [hover, setHover] = useState(null);
@@ -22630,15 +22636,19 @@
                   fill="var(--tp-ink-3)" fontSize="10" fontFamily="var(--tp-mono)">{lbl}</text>
               ))}
             </svg>
-            {hover !== null && (
-              <div className="tp-chart-tip" style={{
-                left: Math.min(w - 140, Math.max(0, pad.left + barW * (hover + 0.5) - 60)),
-                top: Math.max(0, ys(series[hover]) - 60),
-              }}>
-                <div className="tp-chart-tip-lbl">{labels[hover]} · Sold</div>
-                <div className="tp-chart-tip-val">{fmtCurrency(series[hover])}</div>
-              </div>
-            )}
+            {hover !== null && (() => {
+              const d = (dealsSeries && dealsSeries[hover]) || 0;
+              return (
+                <div className="tp-chart-tip" style={{
+                  left: Math.min(w - 140, Math.max(0, pad.left + barW * (hover + 0.5) - 60)),
+                  top: Math.max(0, ys(series[hover]) - 72),
+                }}>
+                  <div className="tp-chart-tip-lbl">{labels[hover]} · Sold</div>
+                  <div className="tp-chart-tip-val">{fmtCurrency(series[hover])}</div>
+                  <div style={{fontFamily:'var(--tp-mono)', fontSize:10, color:'var(--tp-ink-3)', marginTop:2}}>{d} {d === 1 ? 'deal' : 'deals'}</div>
+                </div>
+              );
+            })()}
           </div>
         );
       }
@@ -22759,17 +22769,20 @@
         // Populated by each timeframe branch so the comparison-mode override
         // at the bottom can swap the cumulative series for raw per-bucket AP.
         let rawBuckets = null;
+        let rawDealBuckets = null; // parallel per-bucket deal counts
         let comparisonCutoff = null; // last index with real data (inclusive)
         if (timeframe === 'WTD') {
           // Build a cumulative Mon→Sun series so the chart can show a real
           // line that builds up day-by-day, plus a projection band for the
           // rest of the week. Mon = 0, Sun = 6 in our indexing.
           const weekStart = startOfWeek(today);
-          const dayBucketsByDow = [0,0,0,0,0,0,0]; // by date.getDay()
+          const dayBucketsByDow = [0,0,0,0,0,0,0]; // AP by date.getDay()
+          const dealBucketsByDow = [0,0,0,0,0,0,0]; // deal count by date.getDay()
           (scope.policies || []).forEach(p => {
             const d = parsePolicyDate(p.policy_date || p.created_at);
             if (d >= weekStart) {
               dayBucketsByDow[d.getDay()] += parseFloat(p.annual_premium || 0);
+              dealBucketsByDow[d.getDay()] += 1;
             }
           });
           // Reorder Mon..Sun
@@ -22777,6 +22790,11 @@
             dayBucketsByDow[1], dayBucketsByDow[2], dayBucketsByDow[3],
             dayBucketsByDow[4], dayBucketsByDow[5], dayBucketsByDow[6],
             dayBucketsByDow[0],
+          ];
+          const dailyDealsMonSun = [
+            dealBucketsByDow[1], dealBucketsByDow[2], dealBucketsByDow[3],
+            dealBucketsByDow[4], dealBucketsByDow[5], dealBucketsByDow[6],
+            dealBucketsByDow[0],
           ];
           // Today's index in Mon..Sun
           const todayDow = today.getDay();
@@ -22797,6 +22815,7 @@
           series = cum;
           labels = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
           rawBuckets = dailyMonSun;
+          rawDealBuckets = dailyDealsMonSun;
           comparisonCutoff = todayIdx;
           total = view.ap;
           projectionFromIdx = Math.max(0, Math.min(6, todayIdx));
@@ -22811,10 +22830,12 @@
           const monthEnd = new Date(today.getFullYear(), today.getMonth() + 1, 0);
           const totalDays = monthEnd.getDate();
           const dayBuckets = new Array(totalDays).fill(0);
+          const dayDealBuckets = new Array(totalDays).fill(0);
           (scope.policies || []).forEach(p => {
             const d = parsePolicyDate(p.policy_date || p.created_at);
             if (d >= monthStart && d <= monthEnd) {
               dayBuckets[d.getDate() - 1] += parseFloat(p.annual_premium || 0);
+              dayDealBuckets[d.getDate() - 1] += 1;
             }
           });
           const dayOfMonthCur = today.getDate();
@@ -22834,6 +22855,7 @@
           series = cumDaily;
           labels = Array.from({length: totalDays}, (_, i) => String(i + 1));
           rawBuckets = dayBuckets;
+          rawDealBuckets = dayDealBuckets;
           comparisonCutoff = Math.max(0, Math.min(totalDays - 1, dayOfMonthCur - 1));
           total = view.ap;
           projectionFromIdx = Math.max(0, Math.min(totalDays - 1, dayOfMonthCur - 1));
@@ -22886,15 +22908,17 @@
             const endMid = new Date(lastDate.getFullYear(), lastDate.getMonth(), lastDate.getDate());
             const totalDays = Math.max(1, Math.floor((endMid - startMid) / dayMs) + 1);
             const buckets = new Array(totalDays).fill(0);
+            const dealBuckets = new Array(totalDays).fill(0);
             datedAP.forEach(x => {
               if (rangeStart && x.d < rangeStart) return;
               if (rangeEnd && x.d > rangeEnd) return;
               const idx = Math.floor((new Date(x.d.getFullYear(), x.d.getMonth(), x.d.getDate()) - startMid) / dayMs);
-              if (idx >= 0 && idx < totalDays) buckets[idx] += x.ap;
+              if (idx >= 0 && idx < totalDays) { buckets[idx] += x.ap; dealBuckets[idx] += 1; }
             });
             const cum = buckets.reduce((arr, v) => { arr.push((arr[arr.length-1] || 0) + v); return arr; }, []);
             series = cum;
             rawBuckets = buckets;
+            rawDealBuckets = dealBuckets;
             comparisonCutoff = buckets.length - 1;
             labels = [];
             for (let i = 0; i < totalDays; i++) {
@@ -22907,15 +22931,17 @@
             const endKey = monthKey(lastDate);
             const totalMonths = Math.max(1, endKey - startKey + 1);
             const buckets = new Array(totalMonths).fill(0);
+            const dealBuckets = new Array(totalMonths).fill(0);
             datedAP.forEach(x => {
               if (rangeStart && x.d < rangeStart) return;
               if (rangeEnd && x.d > rangeEnd) return;
               const idx = monthKey(x.d) - startKey;
-              if (idx >= 0 && idx < totalMonths) buckets[idx] += x.ap;
+              if (idx >= 0 && idx < totalMonths) { buckets[idx] += x.ap; dealBuckets[idx] += 1; }
             });
             const cum = buckets.reduce((arr, v) => { arr.push((arr[arr.length-1] || 0) + v); return arr; }, []);
             series = cum;
             rawBuckets = buckets;
+            rawDealBuckets = dealBuckets;
             comparisonCutoff = buckets.length - 1;
             labels = [];
             for (let i = 0; i < totalMonths; i++) {
@@ -22928,7 +22954,19 @@
           total = view.ap;
           projectionFromIdx = undefined;
           prior = 0;
-          if (timeframe === 'ALL') {
+          if (timeframe === 'L30') {
+            // Compare to the 30 days immediately before the current window
+            // so the delta % reads as "current 30 vs prior 30".
+            const prior30End = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 30, 23, 59, 59);
+            const prior30Start = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 59);
+            (scope.policies || []).forEach(p => {
+              const d = parsePolicyDate(p.policy_date || p.created_at);
+              if (d && d >= prior30Start && d <= prior30End) {
+                prior += parseFloat(p.annual_premium || 0);
+              }
+            });
+            label = 'Last 30 days';
+          } else if (timeframe === 'ALL') {
             label = 'All-time';
           } else if (timeframe === 'YDAY') {
             label = 'Yesterday';
@@ -22949,10 +22987,12 @@
           // projection from current pace to year-end (rendered dashed).
           const yearStart = startOfYear(today);
           const monthly = new Array(12).fill(0);
+          const monthlyDeals = new Array(12).fill(0);
           (scope.policies || []).forEach(p => {
             const d = parsePolicyDate(p.policy_date || p.created_at);
             if (d && d.getFullYear() === today.getFullYear()) {
               monthly[d.getMonth()] += parseFloat(p.annual_premium || 0);
+              monthlyDeals[d.getMonth()] += 1;
             }
           });
           const cumulative = monthly.reduce((arr, v) => { arr.push((arr[arr.length-1] || 0) + v); return arr; }, []);
@@ -22973,6 +23013,7 @@
           series = projected;
           labels = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
           rawBuckets = monthly;
+          rawDealBuckets = monthlyDeals;
           comparisonCutoff = currentMonthIdx;
           total = view.ap;
           projectionFromIdx = currentMonthIdx;
@@ -22990,10 +23031,12 @@
         }
         // Comparison override: swap the cumulative + projection line for the
         // raw per-bucket AP, truncated to past+current buckets only.
+        let dealsSeries = null;
         if (chartMode === 'comparison' && rawBuckets) {
           const lastIdx = (comparisonCutoff != null ? comparisonCutoff : rawBuckets.length - 1);
           const cut = Math.max(0, Math.min(rawBuckets.length - 1, lastIdx));
           series = rawBuckets.slice(0, cut + 1);
+          dealsSeries = (rawDealBuckets || []).slice(0, cut + 1);
           labels = labels.slice(0, cut + 1);
           projectionFromIdx = undefined;
           mtdProjectedTotal = null;
@@ -23001,7 +23044,7 @@
         const deltaBasis = timeframe === 'MTD' && mtdProjectedTotal != null ? mtdProjectedTotal : total;
         const delta = prior ? ((deltaBasis - prior) / prior) * 100 : 0;
         const mtdDeltaLabel = (chartMode === 'comparison') ? 'vs last month' : 'projected vs last month';
-        const deltaLabel = timeframe === 'WTD' ? 'vs last week' : timeframe === 'MTD' ? mtdDeltaLabel : timeframe === 'YTD' ? 'vs same point last year' : timeframe === 'LW' ? 'last week total' : timeframe === 'LM' ? 'last month total' : timeframe === 'YDAY' ? 'yesterday total' : '';
+        const deltaLabel = timeframe === 'WTD' ? 'vs last week' : timeframe === 'MTD' ? mtdDeltaLabel : timeframe === 'YTD' ? 'vs same point last year' : timeframe === 'LW' ? 'last week total' : timeframe === 'LM' ? 'last month total' : timeframe === 'YDAY' ? 'yesterday total' : timeframe === 'L30' ? 'vs prior 30 days' : '';
         const isTeam = scope.id === '__team__';
         return (
           <div className="tp-card tp-ap-hero">
@@ -23011,7 +23054,7 @@
                 <div className="tp-card-meta">{label}</div>
               </div>
               <div className="tp-tf-segment">
-                {[['YDAY','Yesterday'],['WTD','WTD'],['MTD','MTD'],['YTD','YTD'],['LW','Last Wk'],['LM','Last Mo'],['ALL','All'],['CUSTOM','Custom']].map(([t, lbl]) => (
+                {[['YDAY','Yesterday'],['WTD','WTD'],['MTD','MTD'],['L30','L30'],['YTD','YTD'],['LW','Last Wk'],['LM','Last Mo'],['ALL','All'],['CUSTOM','Custom']].map(([t, lbl]) => (
                   <button key={t} className={timeframe === t ? 'on' : ''} onClick={() => setTimeframe(t)}>{lbl}</button>
                 ))}
               </div>
@@ -23048,7 +23091,7 @@
               </div>
             </div>
             {chartMode === 'comparison'
-              ? <APBarChart labels={labels} series={series} height={300} />
+              ? <APBarChart labels={labels} series={series} dealsSeries={dealsSeries} height={300} />
               : <APLineChart labels={labels} series={series} color="var(--rb-green)" height={300} projectionFromIdx={projectionFromIdx} mode={chartMode} />}
             {typeof projectionFromIdx === 'number' && (
               <div style={{display:'flex', gap:14, alignItems:'center', marginTop:8, fontFamily:'var(--tp-mono)', fontSize:10, color:'var(--tp-ink-3)', textTransform:'uppercase', letterSpacing:'0.06em'}}>
@@ -23078,7 +23121,8 @@
                       : timeframe === 'CUSTOM' ? 'Custom'
                       : timeframe === 'YDAY' ? 'Yesterday'
                       : timeframe === 'LW' ? 'Last Wk'
-                      : timeframe === 'LM' ? 'Last Mo' : 'MTD';
+                      : timeframe === 'LM' ? 'Last Mo'
+                      : timeframe === 'L30' ? 'L30' : 'MTD';
         const apKey = timeframe === 'WTD' ? 'apWTD' : timeframe === 'YTD' ? 'apYTD' : 'apMTD';
         const dealsKey = timeframe === 'WTD' ? 'dealsWTD' : timeframe === 'YTD' ? 'dealsYTD' : 'dealsMTD';
         const kpiKey = timeframe === 'WTD' ? 'kpiWTD' : timeframe === 'YTD' ? 'kpiYTD' : 'kpiMTD';
