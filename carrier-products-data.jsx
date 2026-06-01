@@ -1,11 +1,32 @@
 // Carrier product data, derived from the source guide.
 // Notes paraphrased from the original; URLs preserved verbatim.
-// Order within each category: rec → niche → skip → pro (pro/strict last).
+// Display order is the order of this array — drag-to-reorder removed.
 
 const PRODUCTS = [
   // ============ WHOLE LIFE ============
 
-  // --- Recommended (yellow highlight) ---
+  {
+    id: "aetna-cva-accendo",
+    tone: "green",
+    cat: "wl",
+    carrier: "Aetna CVS",
+    name: "Accendo",
+    rec: "niche",
+    badges: ["Simplified issue", "Level / graded"],
+    note: [
+      "First choice for whole life clients. Two different rate classes to capture majority of clients.",
+      "Competitive rates and a recognizable brand — solid alternative when a client doesn't fit the primary recommended carriers."
+    ],
+    bestFor: "First choice for whole life clients. Two different rate classes to capture majority of clients.",
+    risk: "Health-tiered benefit",
+    coverage: "",
+    ageRange: "",
+    method: "",
+    timeline: "",
+    links: [
+      { kind: "uw", label: "Underwriting Guide", href: "https://www.amhomelife.com/images/Underwriting-PSFE-Disease_Guide.pdf" }
+    ]
+  },
   {
     id: "transamerica-fe",
     tone: "green",
@@ -30,8 +51,28 @@ const PRODUCTS = [
       { kind: "uw", label: "Underwriting Guide", href: "https://drive.google.com/file/d/1Jsy8VLMKONVCHzUJMGrJIIyqVfYN6VeY/view?usp=sharing" }
     ]
   },
-
-  // --- Situational ---
+  {
+    id: "corebridge-siwl",
+    tone: "green",
+    cat: "wl",
+    carrier: "Corebridge",
+    name: "Simplified Issue Whole Life",
+    rec: "niche",
+    badges: ["Simplified issue", "Day-1 coverage", "Few health questions"],
+    note: [
+      "A bit more lenient with cancer cases, however requires full electronic signature so not the first choice.",
+      "Try this before guaranteed issue: a healthy-enough client gets immediate full coverage instead of a graded benefit."
+    ],
+    bestFor: "A bit more lenient with cancer cases, however requires full electronic signature so not the first choice.",
+    risk: "Health questions apply",
+    coverage: "",
+    ageRange: "",
+    method: "",
+    timeline: "",
+    links: [
+      { kind: "uw", label: "Underwriting Guide", href: "https://drive.google.com/file/d/10k4FhPc5s8iuY9onfwK4_ZgLDw5SGXmQ/view?usp=sharing" }
+    ]
+  },
   {
     id: "moo-living-promise",
     tone: "green",
@@ -53,31 +94,6 @@ const PRODUCTS = [
     timeline: "",
     links: [
       { kind: "uw", label: "Underwriting Guide", href: "https://drive.google.com/file/d/1PBr_RlB17x7f90c0mLGtHi_yYNPtOp_R/view?usp=sharing" }
-    ]
-  },
-  // TruStage SIWL — above Family Choice, below Living Promise
-  {
-    id: "ethos-trustage-siwl",
-    tone: "red",
-    cat: "wl",
-    carrier: "Ethos / TruStage",
-    name: "TruStage SIWL",
-    rec: "rec",
-    feat: true,
-    badges: ["6-digit text code", "Reduced comp <60 / >80", "Watch GI flag"],
-    note: [
-      "Very lenient underwriting however lower compensation and 6 month full chargeback rule. Only recommended as a last resort before going to guaranteed issue. Keep in mine compensation will also be reduced by around 50% for clients younger than 60 or older than 80.  ",
-      { type: "warn", text: "If approval comes back tagged Guaranteed Issue, that product pays only 2.5% commission. Pivot to Corebridge GI if no other option works." },
-      "Clients under 60 and over 80 pay a significantly reduced commission."
-    ],
-    bestFor: "Mid-age, healthy",
-    risk: "Comp cliff <60 / >80",
-    coverage: "",
-    ageRange: "",
-    method: "",
-    timeline: "",
-    links: [
-      { kind: "uw", label: "Underwriting Guide", href: "https://online.flippingbook.com/view/881422400/2/" }
     ]
   },
   {
@@ -105,48 +121,27 @@ const PRODUCTS = [
     ]
   },
   {
-    id: "aetna-cva-accendo",
-    tone: "green",
+    id: "ethos-trustage-siwl",
+    tone: "red",
     cat: "wl",
-    carrier: "Aetna CVS",
-    name: "Accendo",
-    rec: "niche",
-    badges: ["Simplified issue", "Level / graded"],
+    carrier: "Ethos / TruStage",
+    name: "TruStage SIWL",
+    rec: "rec",
+    feat: true,
+    badges: ["6-digit text code", "Reduced comp <60 / >80", "Watch GI flag"],
     note: [
-      "First choice for whole life clients. Two different rate classes to capture majority of clients.",
-      "Competitive rates and a recognizable brand — solid alternative when a client doesn't fit the primary recommended carriers."
+      "Very lenient underwriting however lower compensation and 6 month full chargeback rule. Only recommended as a last resort before going to guaranteed issue. Keep in mine compensation will also be reduced by around 50% for clients younger than 60 or older than 80.  ",
+      { type: "warn", text: "If approval comes back tagged Guaranteed Issue, that product pays only 2.5% commission. Pivot to Corebridge GI if no other option works." },
+      "Clients under 60 and over 80 pay a significantly reduced commission."
     ],
-    bestFor: "First choice for whole life clients. Two different rate classes to capture majority of clients.",
-    risk: "Health-tiered benefit",
+    bestFor: "Mid-age, healthy",
+    risk: "Comp cliff <60 / >80",
     coverage: "",
     ageRange: "",
     method: "",
     timeline: "",
     links: [
-      { kind: "uw", label: "Underwriting Guide", href: "https://www.amhomelife.com/images/Underwriting-PSFE-Disease_Guide.pdf" }
-    ]
-  },
-
-  {
-    id: "corebridge-siwl",
-    tone: "green",
-    cat: "wl",
-    carrier: "Corebridge",
-    name: "Simplified Issue Whole Life",
-    rec: "niche",
-    badges: ["Simplified issue", "Day-1 coverage", "Few health questions"],
-    note: [
-      "A bit more lenient with cancer cases, however requires full electronic signature so not the first choice.",
-      "Try this before guaranteed issue: a healthy-enough client gets immediate full coverage instead of a graded benefit."
-    ],
-    bestFor: "A bit more lenient with cancer cases, however requires full electronic signature so not the first choice.",
-    risk: "Health questions apply",
-    coverage: "",
-    ageRange: "",
-    method: "",
-    timeline: "",
-    links: [
-      { kind: "uw", label: "Underwriting Guide", href: "https://drive.google.com/file/d/10k4FhPc5s8iuY9onfwK4_ZgLDw5SGXmQ/view?usp=sharing" }
+      { kind: "uw", label: "Underwriting Guide", href: "https://online.flippingbook.com/view/881422400/2/" }
     ]
   },
   {
@@ -173,31 +168,6 @@ const PRODUCTS = [
 
   // ============ IUL ============
 
-  {
-    id: "ethos-iul",
-    tone: "gray",
-    cat: "iul",
-    carrier: "Ethos",
-    name: "Ethos IUL",
-    rec: "rec",
-    feat: true,
-    badges: ["No medical exam", "90% instant", "Higher young limits"],
-    note: [
-      "Solid IUL option for younger healthy people with a 90% instant approval rate",
-      "A little stricter than the other options, but has higher limits for younger clients."
-    ],
-    bestFor: "Solid IUL option for younger healthy people with a 90% instant approval rate if Mutual of Omaha's IUL rates are not competitive enough.",
-    risk: "Stricter",
-    coverage: "",
-    ageRange: "",
-    method: "",
-    timeline: "",
-    links: [
-      { kind: "pg", label: "Product Guide", href: "https://online.flippingbook.com/view/319418901/4" },
-      { kind: "kc", label: "Knockout Conditions", href: "https://online.flippingbook.com/view/318795893/" },
-      { kind: "vid", label: "IUL Training Video", href: "https://vimeo.com/914854733/b8671a27a3" }
-    ]
-  },
   {
     id: "amam-intelligent-choice",
     tone: "green",
@@ -244,6 +214,31 @@ const PRODUCTS = [
       { kind: "pg", label: "Product Guide", href: "https://drive.google.com/file/d/1zAVI9Hv-ExPqzovS0pOpW1MuHjZrX27g/view?usp=drive_link" }
     ]
   },
+  {
+    id: "ethos-iul",
+    tone: "gray",
+    cat: "iul",
+    carrier: "Ethos",
+    name: "Ethos IUL",
+    rec: "rec",
+    feat: true,
+    badges: ["No medical exam", "90% instant", "Higher young limits"],
+    note: [
+      "Solid IUL option for younger healthy people with a 90% instant approval rate",
+      "A little stricter than the other options, but has higher limits for younger clients."
+    ],
+    bestFor: "Solid IUL option for younger healthy people with a 90% instant approval rate if Mutual of Omaha's IUL rates are not competitive enough.",
+    risk: "Stricter",
+    coverage: "",
+    ageRange: "",
+    method: "",
+    timeline: "",
+    links: [
+      { kind: "pg", label: "Product Guide", href: "https://online.flippingbook.com/view/319418901/4" },
+      { kind: "kc", label: "Knockout Conditions", href: "https://online.flippingbook.com/view/318795893/" },
+      { kind: "vid", label: "IUL Training Video", href: "https://vimeo.com/914854733/b8671a27a3" }
+    ]
+  },
 
   // ============ TERM ============
 
@@ -270,25 +265,26 @@ const PRODUCTS = [
     links: []
   },
   {
-    id: "ethos-term",
-    tone: "gray",
+    id: "moo-term-express",
+    tone: "green",
     cat: "term",
-    carrier: "Ethos",
-    name: "Term Life",
-    rec: "rec",
-    feat: true,
-    badges: ["No medical exam", "90% instant"],
+    carrier: "Mutual of Omaha",
+    name: "Term Life Express",
+    rec: "niche",
+    badges: ["Name recognition", "More lenient"],
     note: [
-      "No medical exams. ~90% of applications return an instant answer."
+      "Solid simplified issue term that never requires full medical underwriting, can be more lenient that most other options.",
+      "Better options exist for healthy clients, but this can be slightly more lenient if your client is on the edge of approval elsewhere."
     ],
-    bestFor: "No medical exams. ~90% of applications return an instant answer.",
+    bestFor: "Solid simplified issue term that never requires full medical underwriting ",
     risk: "Low",
     coverage: "",
     ageRange: "",
     method: "",
     timeline: "",
     links: [
-      { kind: "kc", label: "Knockout Conditions", href: "https://online.flippingbook.com/view/266827897/2" }
+      { kind: "uw", label: "Underwriting Guide", href: "https://drive.google.com/file/d/1KjXSTyJlmvtk6Jl2475b0xL17xal7vfB/view?usp=sharing" },
+      { kind: "pg", label: "Product Guide", href: "https://drive.google.com/file/d/1zAVI9Hv-ExPqzovS0pOpW1MuHjZrX27g/view?usp=sharing" }
     ]
   },
   {
@@ -315,26 +311,25 @@ const PRODUCTS = [
     ]
   },
   {
-    id: "moo-term-express",
-    tone: "green",
+    id: "ethos-term",
+    tone: "gray",
     cat: "term",
-    carrier: "Mutual of Omaha",
-    name: "Term Life Express",
-    rec: "niche",
-    badges: ["Name recognition", "More lenient"],
+    carrier: "Ethos",
+    name: "Term Life",
+    rec: "rec",
+    feat: true,
+    badges: ["No medical exam", "90% instant"],
     note: [
-      "Solid simplified issue term that never requires full medical underwriting, can be more lenient that most other options.",
-      "Better options exist for healthy clients, but this can be slightly more lenient if your client is on the edge of approval elsewhere."
+      "No medical exams. ~90% of applications return an instant answer."
     ],
-    bestFor: "Solid simplified issue term that never requires full medical underwriting ",
+    bestFor: "No medical exams. ~90% of applications return an instant answer.",
     risk: "Low",
     coverage: "",
     ageRange: "",
     method: "",
     timeline: "",
     links: [
-      { kind: "uw", label: "Underwriting Guide", href: "https://drive.google.com/file/d/1KjXSTyJlmvtk6Jl2475b0xL17xal7vfB/view?usp=sharing" },
-      { kind: "pg", label: "Product Guide", href: "https://drive.google.com/file/d/1zAVI9Hv-ExPqzovS0pOpW1MuHjZrX27g/view?usp=sharing" }
+      { kind: "kc", label: "Knockout Conditions", href: "https://online.flippingbook.com/view/266827897/2" }
     ]
   },
   {

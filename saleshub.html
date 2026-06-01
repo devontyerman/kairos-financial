@@ -1040,6 +1040,54 @@
       font-family: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
       word-break: break-all;
     }
+
+    /* Insurance Toolkits credentials popup */
+    .tk-cred {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 0.4rem 0.85rem;
+      background: #f7f7f5;
+      border: 1px solid #ececec;
+      border-radius: 10px;
+      padding: 0.65rem 0.85rem;
+      margin-bottom: 0.6rem;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.85rem;
+    }
+    .tk-cred-label { color: #666; font-weight: 600; }
+    .tk-cred-value {
+      color: #1a1a1a;
+      font-family: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+      word-break: break-all;
+    }
+    .tk-copy-btn {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 0.32rem 0.65rem;
+      background: #ffffff;
+      border: 1px solid #d6d6dc;
+      border-radius: 6px;
+      color: #1a1a1a;
+      cursor: pointer;
+      transition: all .15s;
+    }
+    .tk-copy-btn:hover { border-color: #1a1a1a; }
+    .tk-copy-btn.copied { background: #16a34a; color: #ffffff; border-color: #16a34a; }
+    .tk-cred-actions {
+      display: flex; gap: 0.6rem; justify-content: center; margin-top: 0.85rem; flex-wrap: wrap;
+    }
+    .tk-cancel {
+      background: #e5e5ea !important;
+      color: #1a1a1a !important;
+    }
+    .tk-continue {
+      display: inline-flex !important;
+      align-items: center;
+      gap: 0.5rem;
+      text-decoration: none;
+    }
     .ss-tv-email-grid {
       display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 0.6rem;
     }
@@ -4469,9 +4517,11 @@
     }
     #panel-carriers.active #cdEmail { color: var(--rb-blue) !important; }
 
-    /* ─── Lead Vendors (.sh-vendors-grid + cards) ───────────────────────── */
+    /* ─── Lead Vendors + Carrier Directory (.sh-vendors-grid + cards) ───── */
     #panel-leadvendors.active .sh-vendors-grid > *,
-    #panel-leadvendors.active .sh-vendor-card {
+    #panel-leadvendors.active .sh-vendor-card,
+    #panel-carriers.active .sh-vendors-grid > *,
+    #panel-carriers.active .sh-vendor-card {
       background: var(--kf-surface) !important;
       border: 1px solid var(--kf-hairline) !important;
       border-radius: var(--kf-radius) !important;
@@ -4479,22 +4529,26 @@
       box-shadow: none !important;
       transition: all 120ms !important;
     }
-    #panel-leadvendors.active .sh-vendor-card:hover {
+    #panel-leadvendors.active .sh-vendor-card:hover,
+    #panel-carriers.active .sh-vendor-card:hover {
       background: var(--kf-surface-2) !important;
       border-color: var(--kf-hairline-strong) !important;
       transform: translateY(-1px);
     }
-    #panel-leadvendors.active .sh-vendor-name {
+    #panel-leadvendors.active .sh-vendor-name,
+    #panel-carriers.active .sh-vendor-name {
       color: var(--kf-ink-1) !important;
       font-family: var(--kf-sans) !important;
       font-weight: 600 !important;
     }
     #panel-leadvendors.active .sh-vendor-desc,
     #panel-leadvendors.active .sh-vendor-card .desc,
-    #panel-leadvendors.active .sh-vendor-card p {
+    #panel-leadvendors.active .sh-vendor-card p,
+    #panel-carriers.active .sh-vendor-desc {
       color: var(--kf-ink-2) !important;
     }
-    #panel-leadvendors.active .sh-vendor-badge {
+    #panel-leadvendors.active .sh-vendor-badge,
+    #panel-carriers.active .sh-vendor-badge {
       background: color-mix(in oklch, var(--rb-green) 14%, transparent) !important;
       color: var(--rb-green) !important;
       border: 1px solid color-mix(in oklch, var(--rb-green) 32%, transparent) !important;
@@ -4503,7 +4557,8 @@
       letter-spacing: 0.08em !important;
       text-transform: uppercase !important;
     }
-    #panel-leadvendors.active .sh-vendor-top { gap: 12px; }
+    #panel-leadvendors.active .sh-vendor-top,
+    #panel-carriers.active .sh-vendor-top { gap: 12px; }
 
     /* Mobile + ultrawide */
     @media (max-width: 768px) {
@@ -6662,7 +6717,7 @@
     /* (cc_outRequired styling now lives near the cd-input-shell rules.) */
 
     /* ─── Universal card uniformity for Carriers / Leads / Resources ────── */
-    #panel-carriers.active .sh-carriers-grid,
+    #panel-carriers.active .sh-vendors-grid,
     #panel-leadvendors.active .sh-vendors-grid,
     #panel-resources.active .sh-resources-grid {
       grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)) !important;
@@ -6670,7 +6725,7 @@
       max-width: none !important;
       margin: 0 !important;
     }
-    #panel-carriers.active .sh-carrier-card,
+    #panel-carriers.active .sh-vendor-card,
     #panel-leadvendors.active .sh-vendor-card,
     #panel-resources.active .sh-resource-card {
       background: var(--kf-surface) !important;
@@ -6681,7 +6736,7 @@
       box-shadow: none !important;
       transition: all 120ms !important;
     }
-    #panel-carriers.active .sh-carrier-card:hover,
+    #panel-carriers.active .sh-vendor-card:hover,
     #panel-leadvendors.active .sh-vendor-card:hover,
     #panel-resources.active .sh-resource-card:hover {
       background: var(--kf-surface-2) !important;
@@ -6690,7 +6745,7 @@
       box-shadow: none !important;
     }
     /* Titles uniform: 14px Geist 600 */
-    #panel-carriers.active .sh-carrier-card .name,
+    #panel-carriers.active .sh-vendor-name,
     #panel-leadvendors.active .sh-vendor-name,
     #panel-resources.active .sh-resource-title {
       font-family: var(--kf-sans) !important;
@@ -6701,7 +6756,7 @@
       letter-spacing: -0.005em !important;
     }
     /* Subtitles uniform: 12px ink-3 */
-    #panel-carriers.active .sh-carrier-card .phone,
+    #panel-carriers.active .sh-vendor-desc,
     #panel-leadvendors.active .sh-vendor-desc,
     #panel-resources.active .sh-resource-desc {
       font-family: var(--kf-mono) !important;
@@ -12227,10 +12282,6 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>
       <span>Carriers</span>
     </button>
-    <button class="ss-sidebar-btn" data-panel="leadvendors">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
-      <span>Leads</span>
-    </button>
     <button class="ss-sidebar-btn" data-panel="resources">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
       <span>Resources</span>
@@ -12247,10 +12298,6 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
         Training Videos
       </a>
-      <a href="https://ai.kairos-financial.com/" target="_blank" rel="noopener noreferrer">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a4 4 0 014 4v1a1 1 0 001 1h1a4 4 0 010 8h-1a1 1 0 00-1 1v1a4 4 0 01-8 0v-1a1 1 0 00-1-1H6a4 4 0 010-8h1a1 1 0 001-1V6a4 4 0 014-4z"/></svg>
-        AI Training
-      </a>
       <a href="https://app.kairos-financial.com/" target="_blank" rel="noopener noreferrer">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
         CRM
@@ -12266,10 +12313,6 @@
       <a href="#" data-panel="training" class="ss-nav-panel-link">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
         Training Videos
-      </a>
-      <a href="https://ai.kairos-financial.com/" target="_blank" rel="noopener noreferrer">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a4 4 0 014 4v1a1 1 0 001 1h1a4 4 0 010 8h-1a1 1 0 00-1 1v1a4 4 0 01-8 0v-1a1 1 0 00-1-1H6a4 4 0 010-8h1a1 1 0 001-1V6a4 4 0 014-4z"/></svg>
-        AI Training
       </a>
       <a href="https://app.kairos-financial.com/" target="_blank" rel="noopener noreferrer">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
@@ -13270,18 +13313,48 @@
           <p class="ss-panel-sub">Tap a carrier to view details.</p>
         </div>
 
-        <!-- Carrier grid (visible by default) -->
-        <div class="sh-carriers-grid" id="carrierGrid">
-          <div class="sh-carrier-card" data-carrier-id="aetna"><div class="name">Aetna</div><div class="phone">(866) 272-6630</div></div>
-          <div class="sh-carrier-card" data-carrier-id="american-amicable"><div class="name">American Amicable</div><div class="phone">(800) 736-7311</div></div>
-          <div class="sh-carrier-card" data-carrier-id="americo"><div class="name">Americo</div><div class="phone">(800) 231-0801</div></div>
-          <div class="sh-carrier-card" data-carrier-id="corebridge"><div class="name">Corebridge</div><div class="phone">(800) 247-8837</div></div>
-          <div class="sh-carrier-card" data-carrier-id="ethos"><div class="name">Ethos</div><div class="phone">(415) 498-1734</div></div>
-          <div class="sh-carrier-card" data-carrier-id="foresters"><div class="name">Foresters</div><div class="phone">(866) 466-7166</div></div>
-          <div class="sh-carrier-card" data-carrier-id="instabrain"><div class="name">Instabrain</div><div class="phone">(800) 835-5095</div></div>
-          <div class="sh-carrier-card" data-carrier-id="mutual-of-omaha"><div class="name">Mutual of Omaha</div><div class="phone">(800) 228-7104</div></div>
-          <div class="sh-carrier-card" data-carrier-id="transamerica"><div class="name">Transamerica</div><div class="phone">(877) 234-4848</div></div>
-          <div class="sh-carrier-card" data-carrier-id="royal-neighbors"><div class="name">Royal Neighbors</div><div class="phone">(309) 788-4561</div></div>
+        <!-- Carrier grid (visible by default) — same card style as Lead Vendors -->
+        <div class="sh-vendors-grid" id="carrierGrid">
+          <div class="sh-vendor-card sh-carrier-tile" data-carrier-id="aetna">
+            <div class="sh-vendor-top"><div class="sh-vendor-name">Aetna</div><span class="sh-vendor-badge">Direct Line</span></div>
+            <div class="sh-vendor-desc">(866) 272-6630 · Mon–Fri, 8:00 AM – 5:00 PM CT</div>
+          </div>
+          <div class="sh-vendor-card sh-carrier-tile" data-carrier-id="american-amicable">
+            <div class="sh-vendor-top"><div class="sh-vendor-name">American Amicable</div><span class="sh-vendor-badge">Direct Line</span></div>
+            <div class="sh-vendor-desc">(800) 736-7311 · Mon–Fri, 8:00 AM – 4:45 PM CT</div>
+          </div>
+          <div class="sh-vendor-card sh-carrier-tile" data-carrier-id="americo">
+            <div class="sh-vendor-top"><div class="sh-vendor-name">Americo</div><span class="sh-vendor-badge">Direct Line</span></div>
+            <div class="sh-vendor-desc">(800) 231-0801 · Mon–Fri, 8:00 AM – 5:00 PM CT</div>
+          </div>
+          <div class="sh-vendor-card sh-carrier-tile" data-carrier-id="corebridge">
+            <div class="sh-vendor-top"><div class="sh-vendor-name">Corebridge</div><span class="sh-vendor-badge">Direct Line</span></div>
+            <div class="sh-vendor-desc">(800) 247-8837 · Mon–Fri, 7:00 AM – 8:00 PM CT</div>
+          </div>
+          <div class="sh-vendor-card sh-carrier-tile" data-carrier-id="ethos">
+            <div class="sh-vendor-top"><div class="sh-vendor-name">Ethos</div><span class="sh-vendor-badge">Direct Line</span></div>
+            <div class="sh-vendor-desc">(415) 498-1734 · Mon–Fri, 8:00 AM – 6:00 PM ET</div>
+          </div>
+          <div class="sh-vendor-card sh-carrier-tile" data-carrier-id="foresters">
+            <div class="sh-vendor-top"><div class="sh-vendor-name">Foresters</div><span class="sh-vendor-badge">Direct Line</span></div>
+            <div class="sh-vendor-desc">(866) 466-7166 · Mon–Fri, 9:00 AM – 6:00 PM ET</div>
+          </div>
+          <div class="sh-vendor-card sh-carrier-tile" data-carrier-id="instabrain">
+            <div class="sh-vendor-top"><div class="sh-vendor-name">Instabrain</div><span class="sh-vendor-badge">Direct Line</span></div>
+            <div class="sh-vendor-desc">(800) 835-5095 · Mon–Fri, 8:30 AM – 7:00 PM ET</div>
+          </div>
+          <div class="sh-vendor-card sh-carrier-tile" data-carrier-id="mutual-of-omaha">
+            <div class="sh-vendor-top"><div class="sh-vendor-name">Mutual of Omaha</div><span class="sh-vendor-badge">Direct Line</span></div>
+            <div class="sh-vendor-desc">(800) 228-7104 · Mon–Fri, 8:00 AM – 5:00 PM CT</div>
+          </div>
+          <div class="sh-vendor-card sh-carrier-tile" data-carrier-id="transamerica">
+            <div class="sh-vendor-top"><div class="sh-vendor-name">Transamerica</div><span class="sh-vendor-badge">Direct Line</span></div>
+            <div class="sh-vendor-desc">(877) 234-4848 · Mon–Fri, 8:00 AM – 7:00 PM ET</div>
+          </div>
+          <div class="sh-vendor-card sh-carrier-tile" data-carrier-id="royal-neighbors">
+            <div class="sh-vendor-top"><div class="sh-vendor-name">Royal Neighbors</div><span class="sh-vendor-badge">Direct Line</span></div>
+            <div class="sh-vendor-desc">(309) 788-4561 · Mon–Fri, 8:00 AM – 5:00 PM CT</div>
+          </div>
         </div>
 
         <!-- Carrier detail view (shown when a carrier is clicked) -->
@@ -13825,6 +13898,32 @@
       <p>Remind these clients their policy is going into effect tomorrow.</p>
       <div class="ss-uw-list" id="effectiveDateList"></div>
       <button class="ss-alert-close" id="effectiveDateClose">Got It</button>
+    </div>
+  </div>
+
+  <!-- Insurance Toolkits — shared credentials popup -->
+  <div class="ss-alert-overlay" id="toolkitCredsAlert">
+    <div class="ss-alert-box" style="max-width: 480px;">
+      <div class="ss-alert-icon">🔐</div>
+      <h3>Insurance Toolkits — Shared Login</h3>
+      <p>Use the credentials below to sign in to Insurance Toolkits.</p>
+      <div class="tk-cred">
+        <span class="tk-cred-label">Username</span>
+        <span class="tk-cred-value" id="toolkitCredsUser">dev@kairos-financial.com</span>
+        <button type="button" class="tk-copy-btn" data-tk-copy-target="toolkitCredsUser">Copy</button>
+      </div>
+      <div class="tk-cred">
+        <span class="tk-cred-label">Password</span>
+        <span class="tk-cred-value" id="toolkitCredsPass">s&amp;T380GkZc^@&amp;3G@</span>
+        <button type="button" class="tk-copy-btn" data-tk-copy-target="toolkitCredsPass">Copy</button>
+      </div>
+      <div class="tk-cred-actions">
+        <button type="button" class="ss-alert-close tk-cancel" id="toolkitCredsCancel">Cancel</button>
+        <a id="toolkitCredsOpen" class="ss-alert-close tk-continue" href="#" target="_blank" rel="noopener noreferrer">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          Continue to Toolkit
+        </a>
+      </div>
     </div>
   </div>
 
@@ -15825,7 +15924,8 @@
       var cdBackBtn = document.getElementById('cdBackBtn');
 
       if (grid && detail) {
-        grid.querySelectorAll('.sh-carrier-card').forEach(function(card) {
+        grid.querySelectorAll('[data-carrier-id]').forEach(function(card) {
+          card.style.cursor = 'pointer';
           card.addEventListener('click', function() {
             var id = card.dataset.carrierId;
             var c = carrierData[id];
@@ -17826,6 +17926,64 @@
     }
     document.getElementById('overloadClose').addEventListener('click', () => document.getElementById('overloadAlert').classList.remove('open'));
     document.getElementById('overloadAlert').addEventListener('click', (e) => { if (e.target.id === 'overloadAlert') e.target.classList.remove('open'); });
+
+    // ─── INSURANCE TOOLKITS CREDENTIALS POPUP ───
+    // Intercept Toolkit/Insurance Toolkits clicks from the left sidebar and the
+    // training video resource panel. Show shared credentials, then let the rep
+    // continue to the original URL.
+    (function setupToolkitCredsPopup() {
+      const overlay = document.getElementById('toolkitCredsAlert');
+      const continueLink = document.getElementById('toolkitCredsOpen');
+      const cancelBtn = document.getElementById('toolkitCredsCancel');
+      if (!overlay || !continueLink || !cancelBtn) return;
+
+      const close = () => overlay.classList.remove('open');
+
+      // Capture-phase listener so we run before any nested handlers + the
+      // browser's default link navigation.
+      document.addEventListener('click', (e) => {
+        const link = e.target.closest('a[href*="insurancetoolkits"]');
+        if (!link) return;
+        // Only intercept the sidebar + training-panel instances. The top header
+        // nav stays untouched.
+        const inSidebar = !!link.closest('.ss-sidebar');
+        const inTraining = !!link.closest('#panel-training');
+        if (!inSidebar && !inTraining) return;
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        continueLink.href = link.href;
+        overlay.classList.add('open');
+      }, true);
+
+      cancelBtn.addEventListener('click', close);
+      overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); });
+      continueLink.addEventListener('click', close);
+
+      // Copy-to-clipboard buttons inside the popup.
+      overlay.querySelectorAll('.tk-copy-btn').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          const target = document.getElementById(btn.dataset.tkCopyTarget);
+          if (!target) return;
+          const text = target.textContent.trim();
+          try {
+            await navigator.clipboard.writeText(text);
+          } catch (err) {
+            // Fallback for non-secure contexts.
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            ta.style.position = 'fixed'; ta.style.opacity = '0';
+            document.body.appendChild(ta);
+            ta.select();
+            try { document.execCommand('copy'); } catch (e2) {}
+            ta.remove();
+          }
+          const orig = btn.textContent;
+          btn.textContent = 'Copied!';
+          btn.classList.add('copied');
+          setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 1400);
+        });
+      });
+    })();
 
     // ─── UNDERWRITING REMINDERS ───
     async function checkUnderwritingReminders() {

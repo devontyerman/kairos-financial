@@ -115,13 +115,6 @@ function App() {
   const [filter, setFilter] = useState("all");
   const [q, setQ] = useState("");
   const [openIds, setOpenIds] = useState(new Set());
-  const [order] = useState(() => {
-    try {
-      const s = localStorage.getItem("cp-order");
-      if (s) return JSON.parse(s);
-    } catch (e) {}
-    return {};
-  });
 
   const [theme, setTheme] = useState(readSiteTheme);
 
@@ -163,28 +156,13 @@ function App() {
     });
   }, [filter, q]);
 
-  // Reconcile stored order with the live product list (append new, drop stale).
-  const liveOrder = useMemo(() => {
-    const o = {};
-    CATEGORIES.forEach((c) => {
-      const all = PRODUCTS.filter((p) => p.cat === c.id).map((p) => p.id);
-      const saved = (order[c.id] || []).filter((id) => all.includes(id));
-      const missing = all.filter((id) => !saved.includes(id));
-      o[c.id] = [...saved, ...missing];
-    });
-    return o;
-  }, [order]);
-
+  // Group by category — display order is the order of PRODUCTS in data.jsx.
   const byCat = useMemo(() => {
     const out = {};
     CATEGORIES.forEach((c) => out[c.id] = []);
     filtered.forEach((p) => out[p.cat].push(p));
-    CATEGORIES.forEach((c) => {
-      const idx = liveOrder[c.id];
-      out[c.id].sort((a, b) => idx.indexOf(a.id) - idx.indexOf(b.id));
-    });
     return out;
-  }, [filtered, liveOrder]);
+  }, [filtered]);
 
   // ⌘K to focus search
   useEffect(() => {
