@@ -14083,7 +14083,7 @@
     // ─── CONFIG (easy to update) ───
     const SUPABASE_URL = 'https://mrjlbpyqvfvmegjyovzq.supabase.co';
     const SUPABASE_KEY = 'sb_publishable_V4kzfIHC-GRTtdoJwJRZMA__2j-DUh-';
-    const CARRIERS = ['Mutual of Omaha', 'Americo', 'Transamerica', 'American Amicable', 'Corebridge', 'Chubb', 'Ethos', 'Aetna', 'InstaBrain', 'Liberty', 'NLG', 'Royal Neighbors', 'Foresters', 'KCL', 'CICA'];
+    const CARRIERS = ['Mutual of Omaha', 'Americo', 'Transamerica', 'American Amicable', 'Corebridge', 'Chubb', 'Ethos', 'Aetna', 'InstaBrain', 'Liberty', 'NLG', 'Royal Neighbors', 'Foresters', 'KCL', 'CICA', 'F&G'];
     const PRODUCT_TYPES = ['Whole Life', 'Term', 'IUL', 'GIWL', 'Health/Accidental'];
 
     // Map form carrier names → comp grid pcg-ids
@@ -14126,6 +14126,10 @@
     //   - No rate at that level → walk down the ladder
     //   - Royal Neighbors is a special case: profile comp - 10 (grid is wrong, will be fixed later)
     function lookupDealComp(carrierName, productType, profileComp) {
+      // F&G isn't in the comp grid — falls through to profileComp below, but
+      // if the agent hasn't set a comp yet, default F&G to 80% so their
+      // deal still records a commission.
+      if (carrierName === 'F&G' && (!profileComp || profileComp <= 0)) return 80;
       if (!profileComp || profileComp <= 0) return 0;
       if (productType === 'Health/Accidental') return Math.max(profileComp - 10, 0);
       const pcgId = CARRIER_TO_PCG[carrierName];
@@ -22227,7 +22231,7 @@
 
       // All carriers we currently sell — extends the design's 5-color rainbow
       // palette to cover all 15 by cycling through CSS rainbow tokens.
-      const CARRIER_LIST = ['Mutual of Omaha', 'Americo', 'Transamerica', 'American Amicable', 'Corebridge', 'Chubb', 'Ethos', 'Aetna', 'InstaBrain', 'Liberty', 'NLG', 'Royal Neighbors', 'Foresters', 'KCL', 'CICA'];
+      const CARRIER_LIST = ['Mutual of Omaha', 'Americo', 'Transamerica', 'American Amicable', 'Corebridge', 'Chubb', 'Ethos', 'Aetna', 'InstaBrain', 'Liberty', 'NLG', 'Royal Neighbors', 'Foresters', 'KCL', 'CICA', 'F&G'];
       const RAINBOW_TOKENS = ['var(--rb-green)', 'var(--rb-yellow)', 'var(--rb-orange)', 'var(--rb-red)', 'var(--rb-purple)', 'var(--rb-blue)'];
       const carrierColor = (name) => {
         const idx = CARRIER_LIST.indexOf(name);
@@ -27917,13 +27921,20 @@
           } catch (e) { console.error('Policy delete failed:', e); }
         };
         const advancePolicy = async (p, nextStatus, extra) => {
+          const body = Object.assign({ status: nextStatus }, extra || {});
+          // Optimistic local update — avoids a full reload() that would flip
+          // loading=true and reset the user's scroll position.
+          const prev = policies;
+          setPolicies(rows => rows.map(x => x.id === p.id ? Object.assign({}, x, body) : x));
           try {
-            const body = Object.assign({ status: nextStatus }, extra || {});
-            await fetch(SUPABASE_URL + '/rest/v1/policies?id=eq.' + p.id, {
+            const res = await fetch(SUPABASE_URL + '/rest/v1/policies?id=eq.' + p.id, {
               method: 'PATCH', headers: HDRS_WRITE, body: JSON.stringify(body)
             });
-            reload();
-          } catch (e) { console.error('Advance failed:', e); }
+            if (!res.ok) throw new Error('PATCH failed: ' + res.status);
+          } catch (e) {
+            console.error('Advance failed:', e);
+            setPolicies(prev);
+          }
         };
 
         const exportCSV = () => {
