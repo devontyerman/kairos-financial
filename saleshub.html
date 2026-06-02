@@ -3866,6 +3866,7 @@
     #panel-policies .bob-status-underwriting { color: var(--rb-yellow); background: color-mix(in oklch, var(--rb-yellow) 14%, transparent); border-color: color-mix(in oklch, var(--rb-yellow) 32%, transparent); }
     #panel-policies .bob-status-approved    { color: var(--rb-green);  background: color-mix(in oklch, var(--rb-green) 12%, transparent);  border-color: color-mix(in oklch, var(--rb-green) 28%, transparent); }
     #panel-policies .bob-status-paid        { color: var(--rb-purple); background: color-mix(in oklch, var(--rb-purple) 14%, transparent); border-color: color-mix(in oklch, var(--rb-purple) 32%, transparent); }
+    #panel-policies .bob-status-cancelled   { color: var(--rb-red);    background: color-mix(in oklch, var(--rb-red) 10%, transparent);    border-color: color-mix(in oklch, var(--rb-red) 28%, transparent); text-decoration: line-through; text-decoration-thickness: 1px; }
 
     #panel-policies .bob-age-pill {
       display: inline-flex; align-items: center;
@@ -8525,6 +8526,7 @@
     #tpatab-policies .tp-status-underwriting { color: var(--rb-yellow); background: color-mix(in oklch, var(--rb-yellow) 14%, transparent); border-color: color-mix(in oklch, var(--rb-yellow) 32%, transparent); }
     #tpatab-policies .tp-status-approved    { color: var(--rb-green);  background: color-mix(in oklch, var(--rb-green) 12%, transparent);  border-color: color-mix(in oklch, var(--rb-green) 28%, transparent); }
     #tpatab-policies .tp-status-paid        { color: var(--rb-purple); background: color-mix(in oklch, var(--rb-purple) 14%, transparent); border-color: color-mix(in oklch, var(--rb-purple) 32%, transparent); }
+    #tpatab-policies .tp-status-cancelled   { color: var(--rb-red);    background: color-mix(in oklch, var(--rb-red) 10%, transparent);    border-color: color-mix(in oklch, var(--rb-red) 28%, transparent); text-decoration: line-through; text-decoration-thickness: 1px; }
 
     /* Row actions */
     #tpatab-policies .tp-actions-cell { position: relative; text-align: right; }
@@ -9603,6 +9605,9 @@
     input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 
     /* Date inputs: whole box is clickable, calendar icon white */
+    /* Universal cursor — pairs with the delegated showPicker() click handler
+       below so clicking anywhere in any date input opens the calendar. */
+    input[type="date"] { cursor: pointer; }
     .ss-input[type="date"] {
       color-scheme: dark;
       cursor: pointer;
@@ -12849,7 +12854,7 @@
               <div class="ss-pd-edit-field"><label>Policy Number</label><input type="text" id="pdEditPolicyNum" /></div>
               <div class="ss-pd-edit-field"><label>Sold Date</label><input type="date" id="pdEditSoldDate" /></div>
               <div class="ss-pd-edit-field"><label>Effective Date</label><input type="date" id="pdEditEffDate" /></div>
-              <div class="ss-pd-edit-field"><label>Status</label><select id="pdEditStatus"><option>Underwriting</option><option>Approved</option><option>Issue Paid</option></select></div>
+              <div class="ss-pd-edit-field"><label>Status</label><select id="pdEditStatus"><option>Underwriting</option><option>Approved</option><option>Issue Paid</option><option>Cancelled</option></select></div>
               <div class="ss-pd-edit-field"><label>Deal Comp %</label><input type="number" id="pdEditDealComp" step="0.1" /></div>
               <div class="ss-pd-edit-field" style="grid-column:1/-1;">
                 <label>Pending Override ($)</label>
@@ -13940,7 +13945,7 @@
           <div class="mp-edit-field"><label>Policy Number</label><input type="text" id="mpEditPolicy" required /></div>
           <div class="mp-edit-field"><label>Sold Date</label><input type="date" id="mpEditPolicyDate" required /></div>
           <div class="mp-edit-field"><label>Effective Date</label><input type="date" id="mpEditEffectiveDate" /></div>
-          <div class="mp-edit-field"><label>Status</label><select id="mpEditStatus"><option value="Underwriting">Underwriting</option><option value="Approved">Approved</option><option value="Issue Paid">Issue Paid</option></select></div>
+          <div class="mp-edit-field"><label>Status</label><select id="mpEditStatus"><option value="Underwriting">Underwriting</option><option value="Approved">Approved</option><option value="Issue Paid">Issue Paid</option><option value="Cancelled">Cancelled</option></select></div>
           <div class="mp-edit-field"><label>Sales Rep</label><input type="text" id="mpEditRep" required /></div>
           <div class="mp-edit-btns">
             <button type="button" class="mp-edit-cancel" id="mpEditCancel">Cancel</button>
@@ -15257,6 +15262,17 @@
       dtState[cat] = Math.max(0, (dtState[cat] || 0) + step);
       dtSave(dtState);
       dtUpdateCard(cat);
+    });
+
+    // Global: clicking anywhere inside a date input opens the native picker.
+    // Covers every date input in the app (legacy + React) without needing a
+    // per-field onClick. Safe no-op on browsers without showPicker().
+    document.addEventListener('click', (e) => {
+      const el = e.target.closest('input[type="date"]');
+      if (!el || el.disabled || el.readOnly) return;
+      if (typeof el.showPicker === 'function') {
+        try { el.showPicker(); } catch (_) { /* picker already open or blocked */ }
+      }
     });
 
     // Manual entry handler — typing into the count input
@@ -18439,6 +18455,17 @@
     // ─── COMMISSION PIPELINE ───
     // Shared compute function: takes a policy + current profile comp, returns pending $
     function computePolicyPending(p) {
+      // Cancelled policies stay in the submitted/AP totals but contribute
+      // zero to pending commission. Honors manual override below if the
+      // user explicitly set one.
+      if (p.status === 'Cancelled') {
+        const override = parseFloat(p.pending_override);
+        if (!isNaN(override) && p.pending_override !== null && p.pending_override !== undefined && p.pending_override !== '') {
+          return override;
+        }
+        return 0;
+      }
+
       // Manual override takes precedence
       const override = parseFloat(p.pending_override);
       if (!isNaN(override) && p.pending_override !== null && p.pending_override !== undefined && p.pending_override !== '') {
@@ -24126,11 +24153,13 @@
         'Underwriting': 'var(--rb-yellow)',
         'Approved':     'var(--rb-green)',
         'Issue Paid':   'var(--rb-purple)',
+        'Cancelled':    'var(--rb-red)',
       };
       const POLICY_STATUS_CLASS = {
         'Underwriting': 'tp-status-underwriting',
         'Approved':     'tp-status-approved',
         'Issue Paid':   'tp-status-paid',
+        'Cancelled':    'tp-status-cancelled',
       };
       const TIMEFRAMES = [
         { id: 'all',     label: 'All time' },
@@ -25742,7 +25771,6 @@
                     <select className="tk-mod-select" value={status} onChange={e => setStatus(e.target.value)}>
                       <option value="Underwriting">Underwriting</option>
                       <option value="Approved">Approved</option>
-                      <option value="Issue Paid">Issue Paid</option>
                     </select>
                   </div>
                 </div>
@@ -27516,15 +27544,21 @@
       const BOB_THEME_KEY = 'bob_theme_v1';
       const BOB_PRODUCT_TYPES = ['Whole Life', 'Term', 'IUL', 'GIWL', 'Health/Accidental'];
       const BOB_STATUSES = ['Underwriting', 'Approved', 'Issue Paid'];
+      // Includes Cancelled — used by the edit-modal status picker only.
+      // Filter dropdown intentionally omits Cancelled; visibility is gated
+      // by the dedicated "Show cancelled" toggle.
+      const BOB_EDIT_STATUSES = ['Underwriting', 'Approved', 'Issue Paid', 'Cancelled'];
       const BOB_STATUS_HUE = {
         'Underwriting': 'var(--rb-yellow)',
         'Approved':     'var(--rb-green)',
         'Issue Paid':   'var(--rb-purple)',
+        'Cancelled':    'var(--rb-red)',
       };
       const BOB_STATUS_CLASS = {
         'Underwriting': 'bob-status-underwriting',
         'Approved':     'bob-status-approved',
         'Issue Paid':   'bob-status-paid',
+        'Cancelled':    'bob-status-cancelled',
       };
       const BOB_TIMEFRAMES = [
         { id: 'all',       label: 'All time' },
@@ -27664,7 +27698,7 @@
                 <div>
                   <div className="bob-mod-section-title">Status</div>
                   <div className="bob-mod-status-row">
-                    {BOB_STATUSES.map(s => (
+                    {BOB_EDIT_STATUSES.map(s => (
                       <button key={s}
                         className={draft.status === s ? 'on' : ''}
                         onClick={() => update('status', s)}
@@ -27793,6 +27827,9 @@
         const [openPolicy, setOpenPolicy] = useState(null);
         // Pending status-advance awaiting user confirmation
         const [confirmAdvance, setConfirmAdvance] = useState(null);
+        // Off by default — cancelled policies stay in the deal/AP totals
+        // but are hidden from the table until this toggle is flipped on.
+        const [showCancelled, setShowCancelled] = useState(false);
 
         useEffect(() => {
           const root = document.getElementById('panel-policies');
@@ -27854,6 +27891,9 @@
         // Filter + sort the full table
         const filtered = useMemo(() => {
           const rows = policies.filter(p => {
+            // Cancelled deals stay counted in submitted totals but are hidden
+            // from the table unless the user flips the toggle.
+            if (p.status === 'Cancelled' && !showCancelled) return false;
             const sold = p.policy_date || p.created_at;
             if (!bobInTimeframe(sold, filters.timeframe, filters.customFrom, filters.customTo)) return false;
             if (filters.statuses.length < BOB_STATUSES.length && !filters.statuses.includes(p.status)) return false;
@@ -27883,9 +27923,9 @@
           };
           rows.sort(cmp);
           return rows;
-        }, [policies, filters, search, sortKey, sortDir]);
+        }, [policies, filters, search, sortKey, sortDir, showCancelled]);
 
-        useEffect(() => { setPage(0); }, [filters, search, sortKey, sortDir]);
+        useEffect(() => { setPage(0); }, [filters, search, sortKey, sortDir, showCancelled]);
 
         const onSort = (k) => {
           if (sortKey === k) setSortDir(d => d === 'asc' ? 'desc' : 'asc');
@@ -27980,6 +28020,7 @@
 
         const today = new Date();
         const dateStr = today.toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric', year:'numeric' });
+        const cancelledCount = policies.filter(p => p.status === 'Cancelled').length;
         const daysSince = (d) => {
           const dt = parsePolicyDate(d);
           if (!dt) return 0;
@@ -28168,6 +28209,22 @@
                   <div className="bob-filter-group">
                     <span className="bob-filter-label-sm">&nbsp;</span>
                     <div style={{display:'flex', gap:8, alignItems:'center'}}>
+                      {cancelledCount > 0 && (
+                        <button className={'bob-button' + (showCancelled ? '' : ' ghost')} onClick={() => setShowCancelled(v => !v)}
+                          title={showCancelled ? 'Hide cancelled policies' : 'Show cancelled policies'}
+                          style={showCancelled ? {
+                            color: 'var(--rb-red)',
+                            borderColor: 'color-mix(in oklch, var(--rb-red) 40%, transparent)',
+                            background: 'color-mix(in oklch, var(--rb-red) 14%, transparent)',
+                          } : null}>
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            {showCancelled
+                              ? <><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></>
+                              : <><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></>}
+                          </svg>
+                          <span>{showCancelled ? 'Hide' : 'Show'} cancelled ({cancelledCount})</span>
+                        </button>
+                      )}
                       {!isCleared && (
                         <button className="bob-button ghost" onClick={() => setFilters({timeframe:'ytd', statuses: BOB_STATUSES.slice(), carriers: CARRIER_LIST.slice(), customFrom:'', customTo:''})}
                           style={{padding:'8px 12px', fontSize:11, fontFamily:'var(--bob-mono)', textTransform:'uppercase', letterSpacing:'0.06em'}}>
