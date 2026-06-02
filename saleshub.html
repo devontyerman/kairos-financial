@@ -6600,6 +6600,26 @@
     }
     #panel-calculator.active .cd-pd-pill-other::before { background: var(--rb-blue); }
 
+    /* Backend (as-earned) marker on Issue Paid rows — sits next to the
+       status label so it's obvious that the pending amount is the 25%
+       trailer, not the full upfront commission. */
+    #panel-calculator.active .cd-pd-backend-pill {
+      display: inline-block;
+      margin-left: 6px;
+      padding: 1px 6px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--rb-purple);
+      background: color-mix(in oklch, var(--rb-purple) 14%, transparent);
+      border: 1px solid color-mix(in oklch, var(--rb-purple) 32%, transparent);
+      border-radius: 99px;
+      vertical-align: middle;
+      cursor: help;
+    }
+
     /* Status progress bar — track + green fill, status label alongside */
     #panel-calculator.active .cd-pd-statbar {
       display: inline-flex !important; align-items: center !important; gap: 8px !important;
@@ -12832,6 +12852,11 @@
                 <button class="ss-pd-filter" data-pd-range="ytd">YTD</button>
                 <button class="ss-pd-filter" data-pd-range="all">All Time</button>
               </div>
+              <div class="ss-pd-filters cd-pd-filters" role="tablist" aria-label="Commission type">
+                <button class="ss-pd-filter active" data-pd-side="all">All</button>
+                <button class="ss-pd-filter" data-pd-side="upfront">Upfront only</button>
+                <button class="ss-pd-filter" data-pd-side="backend">Backend only</button>
+              </div>
             </div>
             <!-- Hidden values still required by the renderer (it writes summary stats here even though the boxes are hidden) -->
             <span id="pdSoldAP" hidden></span><span id="pdPaid" hidden></span><span id="pdPending" hidden></span>
@@ -18532,6 +18557,8 @@
     let pipelineAllPolicies = [];
     let pipelineAllDeposits = [];
     let pdRange = 'mtd';
+    // 'all' | 'upfront' (Underwriting + Approved) | 'backend' (Issue Paid trailer)
+    let pdSide = 'all';
     let pipelineRange = 'ytd';
 
     function getPipelineDateRange() {
@@ -18572,14 +18599,32 @@
         const d = new Date(p.policy_date + 'T00:00:00');
         return d >= start && d <= end;
       });
-      const totalPending = policiesInRange.reduce((s, p) => s + computePolicyPending(p), 0);
+      // Split pending into upfront (Underwriting / Approved — the 75%
+       // advance not yet earned) vs backend (Issue Paid — the 25% as-earned
+       // trailer that pays out months 10-12 after effective). Visualising
+       // the split keeps Issue Paid deals legible on the dashboard without
+       // dropping them from pending entirely.
+      let upfrontPending = 0;
+      let backendPending = 0;
+      policiesInRange.forEach(p => {
+        const v = computePolicyPending(p);
+        if (p.status === 'Issue Paid') backendPending += v;
+        else upfrontPending += v;
+      });
+      const totalPending = upfrontPending + backendPending;
 
       const fmt = n => '$' + Math.round(n).toLocaleString('en-US');
       const rangeLabel = pipelineRange === 'mtd' ? 'this month' : pipelineRange === 'lastmonth' ? 'last month' : 'year to date';
       paidEl.textContent = fmt(totalPaid);
       pendingEl.textContent = fmt(totalPending);
       paidSub.textContent = depositsInRange.length + ' daily KPI entries (' + rangeLabel + ')';
-      pendingSub.textContent = policiesInRange.length + ' policies (' + rangeLabel + ')';
+      // When some pending is backend (as-earned), surface the split so it's
+      // clear what's upfront vs trailing — otherwise just show the count.
+      if (backendPending > 0) {
+        pendingSub.textContent = fmt(upfrontPending) + ' upfront · ' + fmt(backendPending) + ' backend (as-earned)';
+      } else {
+        pendingSub.textContent = policiesInRange.length + ' policies (' + rangeLabel + ')';
+      }
     }
 
     async function loadCommissionPipeline() {
@@ -18736,15 +18781,26 @@
       document.getElementById('pdPaid').textContent = fmt(paidInRange);
       document.getElementById('pdPending').textContent = fmt(pending);
 
-      // Policy list — only those with pending > 0
+      // Policy list — only those with pending > 0, then optionally split
+      // into upfront (Underwriting/Approved) vs backend (Issue Paid trailer).
       const withPending = filtered
         .map(p => ({ p, pending: computePolicyPending(p) }))
         .filter(x => x.pending > 0)
+        .filter(x => {
+          if (pdSide === 'upfront') return x.p.status !== 'Issue Paid';
+          if (pdSide === 'backend') return x.p.status === 'Issue Paid';
+          return true;
+        })
         .sort((a, b) => new Date(b.p.policy_date) - new Date(a.p.policy_date));
 
       const listEl = document.getElementById('pdPolicyList');
       if (!withPending.length) {
-        listEl.innerHTML = '<div class="ss-pd-empty">No policies with pending payouts in this range.</div>';
+        const empty = pdSide === 'upfront'
+          ? 'No upfront-pending policies in this range.'
+          : pdSide === 'backend'
+            ? 'No backend (as-earned) policies in this range.'
+            : 'No policies with pending payouts in this range.';
+        listEl.innerHTML = '<div class="ss-pd-empty">' + empty + '</div>';
         return;
       }
 
@@ -18782,13 +18838,20 @@
         const bucket = productBucket(p.product_type);
         const progress = statusProgress(p.status);
         const sold = p.policy_date ? new Date(p.policy_date + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
+        // Issue Paid policies with pending > 0 are showing the as-earned
+        // trailer (25% backend that hasn't dropped to $0 yet). Tag them so
+        // it's obvious that this isn't a fresh upfront pending balance.
+        const isBackend = p.status === 'Issue Paid';
+        const backendBadge = isBackend
+          ? ' <span class="cd-pd-backend-pill" title="As-earned commission \u2014 pays out months 10-12 after effective date">Backend</span>'
+          : '';
         html += '<div class="ss-pd-row ss-pd-policy cd-pd-row">';
         html += '<div class="pd-client cd-pd-client">' + esc(p.client_name || 'Unknown') + '<small>' + (p.policy_number ? '#' + esc(p.policy_number) : '') + (p.policy_number && sold ? ' \u00b7 ' : '') + (sold ? 'Sold ' + sold : '') + '</small></div>';
         html += '<div class="pd-product"><span class="cd-pd-pill cd-pd-pill-' + bucket + '">' + esc(p.product_type || 'Other') + '</span></div>';
         html += '<div class="pd-carrier cd-pd-muted">' + esc(p.carrier || '\u2014') + '</div>';
         html += '<div class="pd-status cd-pd-statbar">' +
           '<div class="cd-pd-statbar-track"><div class="cd-pd-statbar-fill" style="width:' + progress + '%"></div></div>' +
-          '<span class="cd-pd-statbar-label">' + esc(p.status || 'Underwriting') + '</span>' +
+          '<span class="cd-pd-statbar-label">' + esc(p.status || 'Underwriting') + backendBadge + '</span>' +
         '</div>';
         html += '<div class="pd-submitted num cd-pd-muted">' + esc(sold || '\u2014') + '</div>';
         html += '<div class="pd-ap num">' + fmt(ap) + '</div>';
@@ -18916,12 +18979,16 @@
         });
       }
 
-      // Filter buttons (segmented control)
-      document.querySelectorAll('.ss-pd-filter').forEach(btn => {
+      // Filter buttons (segmented controls). Two rows live inside the
+      // drawer head — date range and commission type — and each acts
+      // independently, so we only deactivate siblings in the same row.
+      document.querySelectorAll('.cd-pd-drawer-head .ss-pd-filter').forEach(btn => {
         btn.addEventListener('click', () => {
-          document.querySelectorAll('.ss-pd-filter').forEach(b => b.classList.remove('active'));
+          const row = btn.parentElement;
+          row.querySelectorAll('.ss-pd-filter').forEach(b => b.classList.remove('active'));
           btn.classList.add('active');
-          pdRange = btn.dataset.pdRange;
+          if (btn.dataset.pdRange) pdRange = btn.dataset.pdRange;
+          if (btn.dataset.pdSide) pdSide = btn.dataset.pdSide;
           renderPipelineDetails();
         });
       });
