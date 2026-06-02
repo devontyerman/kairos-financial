@@ -27543,11 +27543,13 @@
       // ─── BOOK OF BUSINESS (claude.ai/design — wired to Supabase) ────────
       const BOB_THEME_KEY = 'bob_theme_v1';
       const BOB_PRODUCT_TYPES = ['Whole Life', 'Term', 'IUL', 'GIWL', 'Health/Accidental'];
-      const BOB_STATUSES = ['Underwriting', 'Approved', 'Issue Paid'];
-      // Includes Cancelled — used by the edit-modal status picker only.
-      // Filter dropdown intentionally omits Cancelled; visibility is gated
-      // by the dedicated "Show cancelled" toggle.
-      const BOB_EDIT_STATUSES = ['Underwriting', 'Approved', 'Issue Paid', 'Cancelled'];
+      // Full status universe — drives the filter dropdown options.
+      const BOB_STATUSES = ['Underwriting', 'Approved', 'Issue Paid', 'Cancelled'];
+      // Default selection on first load and on "Reset filters" — Cancelled
+      // is intentionally unchecked so cancelled deals hide by default.
+      const BOB_DEFAULT_STATUSES = ['Underwriting', 'Approved', 'Issue Paid'];
+      // Edit-modal status picker mirrors the full universe.
+      const BOB_EDIT_STATUSES = BOB_STATUSES;
       const BOB_STATUS_HUE = {
         'Underwriting': 'var(--rb-yellow)',
         'Approved':     'var(--rb-green)',
@@ -27814,7 +27816,7 @@
         const [error, setError] = useState(null);
         const [filters, setFilters] = useState({
           timeframe: 'ytd',
-          statuses: BOB_STATUSES.slice(),
+          statuses: BOB_DEFAULT_STATUSES.slice(),
           carriers: CARRIER_LIST.slice(),
           customFrom: '',
           customTo: '',
@@ -27827,9 +27829,14 @@
         const [openPolicy, setOpenPolicy] = useState(null);
         // Pending status-advance awaiting user confirmation
         const [confirmAdvance, setConfirmAdvance] = useState(null);
-        // Off by default — cancelled policies stay in the deal/AP totals
-        // but are hidden from the table until this toggle is flipped on.
-        const [showCancelled, setShowCancelled] = useState(false);
+        // Derived: cancelled visibility is whether 'Cancelled' is in the
+        // status filter set. The toggle button and the Status dropdown both
+        // mutate the same source of truth (filters.statuses).
+        const showCancelled = filters.statuses.includes('Cancelled');
+        const setShowCancelled = (next) => setFilters(f => Object.assign({}, f, {
+          statuses: next ? f.statuses.concat(['Cancelled'])
+                         : f.statuses.filter(s => s !== 'Cancelled')
+        }));
 
         useEffect(() => {
           const root = document.getElementById('panel-policies');
@@ -27891,11 +27898,10 @@
         // Filter + sort the full table
         const filtered = useMemo(() => {
           const rows = policies.filter(p => {
-            // Cancelled deals stay counted in submitted totals but are hidden
-            // from the table unless the user flips the toggle.
-            if (p.status === 'Cancelled' && !showCancelled) return false;
             const sold = p.policy_date || p.created_at;
             if (!bobInTimeframe(sold, filters.timeframe, filters.customFrom, filters.customTo)) return false;
+            // Status gate also handles Cancelled visibility — by default
+            // 'Cancelled' is not in filters.statuses so those rows drop out.
             if (filters.statuses.length < BOB_STATUSES.length && !filters.statuses.includes(p.status)) return false;
             if (filters.carriers.length < CARRIER_LIST.length && !filters.carriers.includes(p.carrier)) return false;
             if (search) {
@@ -27923,9 +27929,9 @@
           };
           rows.sort(cmp);
           return rows;
-        }, [policies, filters, search, sortKey, sortDir, showCancelled]);
+        }, [policies, filters, search, sortKey, sortDir]);
 
-        useEffect(() => { setPage(0); }, [filters, search, sortKey, sortDir, showCancelled]);
+        useEffect(() => { setPage(0); }, [filters, search, sortKey, sortDir]);
 
         const onSort = (k) => {
           if (sortKey === k) setSortDir(d => d === 'asc' ? 'desc' : 'asc');
@@ -28010,8 +28016,13 @@
           const tf = BOB_TIMEFRAMES.find(t => t.id === filters.timeframe);
           if (tf) pills.push({ key: 'tf', label: tf.label, color: 'blue', clear: () => setFilters(f => Object.assign({}, f, { timeframe: 'ytd' })) });
         }
-        if (filters.statuses.length !== BOB_STATUSES.length) {
-          pills.push({ key: 'st', label: filters.statuses.length === 1 ? filters.statuses[0] : filters.statuses.length + ' statuses', color: 'yellow', clear: () => setFilters(f => Object.assign({}, f, { statuses: BOB_STATUSES.slice() })) });
+        // Show a pill whenever the status selection deviates from the
+        // default 3-set (Underwriting / Approved / Issue Paid).
+        const isDefaultStatuses =
+          filters.statuses.length === BOB_DEFAULT_STATUSES.length &&
+          BOB_DEFAULT_STATUSES.every(s => filters.statuses.includes(s));
+        if (!isDefaultStatuses) {
+          pills.push({ key: 'st', label: filters.statuses.length === 1 ? filters.statuses[0] : filters.statuses.length + ' statuses', color: 'yellow', clear: () => setFilters(f => Object.assign({}, f, { statuses: BOB_DEFAULT_STATUSES.slice() })) });
         }
         if (filters.carriers.length !== CARRIER_LIST.length) {
           pills.push({ key: 'c', label: filters.carriers.length + ' carriers', color: 'purple', clear: () => setFilters(f => Object.assign({}, f, { carriers: CARRIER_LIST.slice() })) });
@@ -28210,7 +28221,7 @@
                     <span className="bob-filter-label-sm">&nbsp;</span>
                     <div style={{display:'flex', gap:8, alignItems:'center'}}>
                       {cancelledCount > 0 && (
-                        <button className={'bob-button' + (showCancelled ? '' : ' ghost')} onClick={() => setShowCancelled(v => !v)}
+                        <button className={'bob-button' + (showCancelled ? '' : ' ghost')} onClick={() => setShowCancelled(!showCancelled)}
                           title={showCancelled ? 'Hide cancelled policies' : 'Show cancelled policies'}
                           style={showCancelled ? {
                             color: 'var(--rb-red)',
@@ -28226,7 +28237,7 @@
                         </button>
                       )}
                       {!isCleared && (
-                        <button className="bob-button ghost" onClick={() => setFilters({timeframe:'ytd', statuses: BOB_STATUSES.slice(), carriers: CARRIER_LIST.slice(), customFrom:'', customTo:''})}
+                        <button className="bob-button ghost" onClick={() => setFilters({timeframe:'ytd', statuses: BOB_DEFAULT_STATUSES.slice(), carriers: CARRIER_LIST.slice(), customFrom:'', customTo:''})}
                           style={{padding:'8px 12px', fontSize:11, fontFamily:'var(--bob-mono)', textTransform:'uppercase', letterSpacing:'0.06em'}}>
                           Reset filters
                         </button>
