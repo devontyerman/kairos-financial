@@ -21630,6 +21630,10 @@
 
       // ── Player ──
       let dur = 0, completedThis = false, programmatic = false, skipToastT = null, saveT = null;
+      // Free scrubbing is allowed once the rep has full access (granted) OR has
+      // already completed this video. No-skip only applies to a new rep on a
+      // video they haven't finished yet.
+      const canSeekFreely = () => granted || completedThis;
 
       function showSkipToast() {
         elSkipToast.classList.add('show');
@@ -21742,14 +21746,14 @@
       video.addEventListener('loadedmetadata', () => {
         dur = video.duration || (currentSlug && durationOf(currentSlug)) || 0;
         elDur.textContent = fmt(dur);
-        const resume = completedThis ? 0 : Math.min(maxOf(currentSlug), Math.max(0, dur - 1));
+        const resume = canSeekFreely() ? 0 : Math.min(maxOf(currentSlug), Math.max(0, dur - 1));
         programmatic = true;
         try { video.currentTime = resume; } catch (e) {}
         updateScrub();
       });
       video.addEventListener('seeking', () => {
         if (programmatic) return;
-        if (!completedThis && video.currentTime > maxOf(currentSlug) + 0.4) {
+        if (!canSeekFreely() && video.currentTime > maxOf(currentSlug) + 0.4) {
           programmatic = true;
           video.currentTime = maxOf(currentSlug);
           showSkipToast();
@@ -21765,7 +21769,7 @@
         if (!completedThis && dur && video.currentTime >= dur - 1.0) complete(currentSlug);
       });
       video.addEventListener('ended', () => { if (!completedThis) complete(currentSlug); });
-      video.addEventListener('ratechange', () => { if (!completedThis && video.playbackRate !== 1) video.playbackRate = 1; });
+      video.addEventListener('ratechange', () => { if (!canSeekFreely() && video.playbackRate !== 1) video.playbackRate = 1; });
       video.addEventListener('play', () => { elFrame.classList.remove('paused'); elBigPlay.classList.add('hidden'); elPlayBtn.innerHTML = ICO.pause; });
       video.addEventListener('pause', () => { elFrame.classList.add('paused'); elBigPlay.classList.remove('hidden'); elPlayBtn.innerHTML = ICO.play; });
 
@@ -21774,9 +21778,9 @@
         const cur = video.currentTime;
         elScrubFill.style.width = (cur / dur * 100) + '%';
         elScrubHandle.style.left = (cur / dur * 100) + '%';
-        const mx = completedThis ? dur : Math.max(maxOf(currentSlug), cur);
+        const mx = canSeekFreely() ? dur : Math.max(maxOf(currentSlug), cur);
         elScrubWatched.style.width = (Math.min(mx, dur) / dur * 100) + '%';
-        elScrub.classList.toggle('no-seek', !completedThis);
+        elScrub.classList.toggle('no-seek', !canSeekFreely());
         elCur.textContent = fmt(cur);
       }
 
@@ -21813,14 +21817,14 @@
         const rect = elScrub.getBoundingClientRect();
         const frac = Math.min(1, Math.max(0, (e.clientX - rect.left) / rect.width));
         let target = frac * dur;
-        if (!completedThis) { const cap = maxOf(currentSlug); if (target > cap + 0.4) { showSkipToast(); target = cap; } }
+        if (!canSeekFreely()) { const cap = maxOf(currentSlug); if (target > cap + 0.4) { showSkipToast(); target = cap; } }
         programmatic = true;
         try { video.currentTime = target; } catch (err) {}
       }
       elScrub.addEventListener('click', seekFromEvent);
       elFrame.addEventListener('keydown', (e) => {
         const blocked = ['ArrowRight', 'ArrowUp', 'l', 'L', 'PageUp'];
-        if (!completedThis && blocked.includes(e.key)) { e.preventDefault(); showSkipToast(); }
+        if (!canSeekFreely() && blocked.includes(e.key)) { e.preventDefault(); showSkipToast(); }
       });
 
       // mobile
