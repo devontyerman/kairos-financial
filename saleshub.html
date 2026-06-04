@@ -13975,10 +13975,6 @@
         <main class="tve-main">
           <div class="tve-topbar">
             <div class="tve-crumbs" id="tveCrumbs"></div>
-            <button class="tve-pill-btn" id="tveEditToggle" type="button" hidden>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 113 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>
-              <span id="tveEditLabel">Edit</span>
-            </button>
           </div>
 
           <div class="tve-scroll">
@@ -21359,13 +21355,16 @@
 
     // ═══════════════════════════════════════════════════════════════
     //  TRAINING VIDEO SYSTEM  —  R2 custom player, no fast-forward
-    //  (v1 localhost build: curriculum is embedded + progress in
-    //   localStorage so prod Supabase data is never touched. Supabase
-    //   wiring + admin persistence land when we deploy.)
+    //  Video list lives here in code; Supabase (video_progress) tracks
+    //  per-rep completion. Access rule: accounts created before
+    //  GO_LIVE_CUTOFF ("already signed up") get full access; brand-new
+    //  accounts go sequentially and are gated out of the rest of the Hub
+    //  until they finish.
     // ═══════════════════════════════════════════════════════════════
     (function () {
       const R2_BASE = 'https://pub-71115aa4b60d4cb68a4d88a29e2eea75.r2.dev/';
-      const ADMIN_USER_ID = 'be364ef5-8426-4587-b8b8-9328b02055a7';
+      // Accounts created before this instant = existing reps → full access.
+      const GO_LIVE_CUTOFF = '2026-06-04T05:00:00Z';
 
       const DISCORD = [
         { kind: 'discord', label: 'Disruption Group Discord', href: 'https://discord.gg/7jRu7r3FnC' },
@@ -21379,30 +21378,30 @@
         { kind: 'link', label: 'Open CA Studios', sub: 'castudios.tv', href: 'https://castudios.tv/' }
       ];
 
-      // ── Curriculum (embedded). file = exact R2 object name. ──
-      const DEFAULT_CURRICULUM = {
-        version: 3,
+      // ── Curriculum. file = exact R2 object name. slug = stable progress key. ──
+      const CURRICULUM = {
         title: 'Kairos Agent Training',
         sections: [
-          { id: 'sec-new', title: 'New Agent Steps', videos: [
+          { title: 'New Agent Steps', videos: [
             { slug: 'first-90-days', title: 'First 90 Days Expectations for Agents', file: 'First 90 Days Expectations for Agents.mp4', duration: 538, desc: '', resources: [] },
             { slug: 'navigating-discord', title: 'Navigating Discord', file: 'Navigating Our Discord Servers_ Key Features and Expectations.mp4', duration: 281, desc: '', resources: DISCORD },
             { slug: 'submit-a-sale', title: 'How to Submit a Sale', file: 'How to Submit a Sale in Discord 🚀.mp4', duration: 115, desc: '', resources: DISCORD }
           ]},
-          { id: 'sec-lic', title: 'Licensing', videos: [
+          { title: 'Licensing', videos: [
             { slug: 'carrier-contracting', title: 'Insurance Carrier Contracting Before Emailing States', file: 'Insurance Carrier Contracting Before Emailing States.mp4', duration: 78, desc: '', resources: [] },
             { slug: 'purchase-licenses', title: 'How to Purchase Additional Insurance Licenses', file: 'How to Purchase Additional Insurance Licenses.mp4', duration: 217, desc: '', resources: [] },
             { slug: 'after-state-license', title: 'After State License, Next Steps Checklist', file: 'After State License, Next Steps Checklist 📄.mp4', duration: 107, desc: '', resources: [] }
           ]},
-          { id: 'sec-sales', title: 'Sales & Presentation', videos: [
+          { title: 'Sales & Presentation', videos: [
             { slug: 'call-intro-script', title: 'Intro', file: 'Mastering Your Call Intro Script.mp4', duration: 1496, desc: '', resources: [SCRIPT_PDF] },
             { slug: 'insurance-presentation', title: 'Presentation', file: 'Insurance Presentation.mp4', duration: 1523, desc: '', resources: [SCRIPT_PDF] },
             { slug: 'overcome-objections', title: 'Objections', file: 'How to Overcome Client Insurance Objections.mp4', duration: 1034, desc: '', resources: [OBJ_PDF] },
             { slug: 'ca-studios', title: 'CA Studios', file: 'Ca Studios.mp4', duration: 94, desc: '', resources: CASTUDIOS },
             { slug: 'product-selection', title: 'Product Selection', file: 'Product Selection.mp4', duration: 828, desc: '', resources: [] },
-            { slug: 'underwriting-guide', title: 'Underwriting Guide', file: 'Underwriting Guide.mp4', duration: 1154, desc: '', resources: [] }
+            { slug: 'underwriting-guide', title: 'Underwriting Guide', file: 'Underwriting Guide.mp4', duration: 1154, desc: '', resources: [] },
+            { slug: 'carrier-applications-portal', title: 'Carrier Applications, Quotes, and Portal Tips', file: 'Carrier Applications, Quotes, and Portal Tips.mp4', duration: 533, desc: '', resources: [] }
           ]},
-          { id: 'sec-crm', title: 'CRM Guide', videos: [
+          { title: 'CRM Guide', videos: [
             { slug: 'how-to-buy-crm', title: 'How to Buy CRM', file: 'How to Buy CRM.mp4', duration: 166, desc: '', resources: [CRM_LINK] },
             { slug: 'phone-numbers-texting', title: 'Setting Up Phone Numbers and Texting', file: 'Setting Up Phone Numbers and Texting.mp4', duration: 93, desc: '', resources: [] },
             { slug: 'atp-registration', title: 'How to Complete ATP Registration Setup', file: 'How to Complete ATP Registration Setup ✅.mp4', duration: 164, desc: '', resources: [] },
@@ -21415,14 +21414,12 @@
       };
 
       // ── State ──
-      let curriculum = loadCurriculum();
-      let progress = loadProgress();          // { slug: { max:Number, done:Bool } }
+      const curriculum = CURRICULUM;
+      let completed = new Set();        // slugs done (Supabase video_progress)
+      let resumePos = {};               // { slug: seconds } resume point (localStorage, per device)
       let currentSlug = null;
-      let isAdmin = false;
-      let editMode = false;
-      // Test/grant convenience: when on, every video is unlocked for everyone
-      // (mirrors "existing reps already have full access"). Default ON.
-      let unlockAll = true; // every video open to everyone in this build; sequential lock returns with Supabase wiring
+      let granted = true;               // existing account → full access (default true until known)
+      let trainingComplete = true;      // Hub gate flag
 
       // ── DOM ──
       const $ = (id) => document.getElementById(id);
@@ -21432,17 +21429,13 @@
       const elProgBar = $('tveProgressBar');
       const elProgText = $('tveProgressText');
       const elCrumbs = $('tveCrumbs');
-      const elEditToggle = $('tveEditToggle');
-      const elEditLabel = $('tveEditLabel');
       const elMobileToggle = $('tveMobileToggle');
-
       const elEyebrow = $('tveLessonEyebrow');
       const elTitle = $('tveLessonTitle');
       const elFrame = $('tveVideoFrame');
       const video = $('tveVideo');
       const elEmptyMsg = $('tveEmptyMsg');
       const elBigPlay = $('tveBigPlay');
-      const elControls = $('tveControls');
       const elPlayBtn = $('tvePlayBtn');
       const elMuteBtn = $('tveMuteBtn');
       const elFsBtn = $('tveFsBtn');
@@ -21470,12 +21463,6 @@
         playSm: '<svg viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20 6 4"/></svg>',
         vol: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.5 8.5a5 5 0 010 7M19 5a9 9 0 010 14"/></svg>',
         muted: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>',
-        up: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>',
-        down: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>',
-        trash: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>',
-        pencil: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 113 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>',
-        sun: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>',
-        moon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>',
         discord: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.8 19.8 0 00-4.885-1.515.07.07 0 00-.079.037c-.21.375-.444.864-.608 1.25a18.3 18.3 0 00-5.487 0 12.6 12.6 0 00-.617-1.25.077.077 0 00-.079-.037A19.7 19.7 0 003.677 4.37a.07.07 0 00-.032.027C.533 9.046-.32 13.58.099 18.057a.08.08 0 00.031.057 19.9 19.9 0 005.993 3.03.078.078 0 00.084-.028 14.2 14.2 0 001.226-1.994.076.076 0 00-.041-.106 13.1 13.1 0 01-1.872-.892.077.077 0 01-.008-.128 10 10 0 00.372-.292.074.074 0 01.077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 01.078.01q.181.149.373.292a.077.077 0 01-.006.127 12.3 12.3 0 01-1.873.892.077.077 0 00-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 00.084.028 19.8 19.8 0 006.002-3.03.077.077 0 00.032-.054c.5-5.177-.838-9.674-3.549-13.66a.06.06 0 00-.031-.03z"/></svg>',
         pdf: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>',
         link: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>'
@@ -21488,106 +21475,124 @@
         return h ? h + ':' + String(m).padStart(2, '0') + ':' + String(ss).padStart(2, '0')
                  : m + ':' + String(ss).padStart(2, '0');
       }
-      function urlFor(file) { return R2_BASE + encodeURIComponent(file); }
+      function urlFor(file) { return /^https?:\/\//i.test(file) ? file : R2_BASE + encodeURIComponent(file); }
       function flat() { return curriculum.sections.flatMap(s => s.videos.map(v => ({ v, sec: s }))); }
       function findFlat(slug) { return flat().find(o => o.v.slug === slug); }
-      function isDone(slug) { return !!(progress[slug] && progress[slug].done); }
-      function maxOf(slug) { return (progress[slug] && progress[slug].max) || 0; }
+      function durationOf(slug) { const o = findFlat(slug); return o ? o.v.duration : 0; }
+      function isDone(slug) { return completed.has(slug); }
+      function maxOf(slug) { return resumePos[slug] || 0; }
+      function escapeHtml(s) { return String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c])); }
 
-      function progressKey() {
-        const uid = (window.currentUser && window.currentUser.id) || 'anon';
-        return 'tveProgress::' + uid;
-      }
-      function loadProgress() {
-        try { return JSON.parse(localStorage.getItem(progressKey())) || {}; } catch (e) { return {}; }
-      }
-      function saveProgress() {
-        try { localStorage.setItem(progressKey(), JSON.stringify(progress)); } catch (e) {}
-      }
-      function loadCurriculum() {
-        try {
-          const o = JSON.parse(localStorage.getItem('tveCurriculumOverride'));
-          if (o && o.sections && o.sections.length && o.version === DEFAULT_CURRICULUM.version) return o;
-        } catch (e) {}
-        return JSON.parse(JSON.stringify(DEFAULT_CURRICULUM));
-      }
-      function saveCurriculum() {
-        try { localStorage.setItem('tveCurriculumOverride', JSON.stringify(curriculum)); } catch (e) {}
-      }
+      function resumeKey() { return 'tveResume::' + ((window.currentUser && window.currentUser.id) || 'anon'); }
+      function loadResume() { try { return JSON.parse(localStorage.getItem(resumeKey())) || {}; } catch (e) { return {}; } }
+      function saveResume() { try { localStorage.setItem(resumeKey(), JSON.stringify(resumePos)); } catch (e) {} }
 
-      // first incomplete index in flat order → everything after is locked
       function firstIncompleteIdx() {
         const f = flat();
         for (let i = 0; i < f.length; i++) if (!isDone(f[i].v.slug)) return i;
         return -1;
       }
       function isUnlocked(slug) {
-        if (unlockAll) return true;
-        if (isAdmin && editMode) return true;
+        if (granted) return true;
         const f = flat();
         const idx = f.findIndex(o => o.v.slug === slug);
         const fi = firstIncompleteIdx();
         return fi === -1 || idx <= fi;
       }
 
-      // ── Theme: the training panel follows the site's global toggle, which
-      //    sets data-kf-theme on #panel-training (no separate toggle here). ──
-
-      // ── Sidebar render ──
-      function rowActions(opts) {
-        const wrap = document.createElement('span');
-        wrap.className = 'tve-row-actions';
-        const mk = (svg, title, fn, danger) => {
-          const b = document.createElement('button');
-          b.type = 'button'; b.className = 'tve-ico-btn' + (danger ? ' danger' : '');
-          b.title = title; b.innerHTML = svg;
-          if (fn) b.addEventListener('click', (e) => { e.stopPropagation(); fn(); });
-          else b.disabled = true;
-          return b;
-        };
-        wrap.appendChild(mk(ICO.up, 'Move up', opts.onUp));
-        wrap.appendChild(mk(ICO.down, 'Move down', opts.onDown));
-        if (opts.onEdit) wrap.appendChild(mk(ICO.pencil, opts.editTitle || 'Edit', opts.onEdit));
-        wrap.appendChild(mk(ICO.trash, 'Delete', opts.onDelete, true));
-        return wrap;
+      // ── Supabase (progress) ──
+      function supaHeaders() {
+        return { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + (window.accessToken || SUPABASE_KEY), 'Content-Type': 'application/json' };
+      }
+      async function loadCompleted() {
+        completed = new Set();
+        resumePos = loadResume();
+        if (!window.currentUser || !window.accessToken) return;
+        try {
+          const r = await fetch(SUPABASE_URL + '/rest/v1/video_progress?user_id=eq.' + window.currentUser.id + '&select=video_id', { headers: supaHeaders() });
+          if (r.ok) { const rows = await r.json(); completed = new Set(rows.map(x => x.video_id)); }
+        } catch (e) { /* offline → empty */ }
+      }
+      async function postComplete(slug) {
+        if (!window.currentUser || !window.accessToken) return;
+        try {
+          const r = await fetch(SUPABASE_URL + '/rest/v1/video_progress', {
+            method: 'POST',
+            headers: Object.assign(supaHeaders(), { 'Prefer': 'return=minimal,resolution=ignore-duplicates' }),
+            body: JSON.stringify({ user_id: window.currentUser.id, video_id: slug })
+          });
+          if (!r.ok && r.status !== 409) console.error('[training] save failed', r.status);
+        } catch (e) { console.error('[training] save threw', e); }
       }
 
+      // ── Gate (existing vs new account) ──
+      let gateEl = null;
+      function computeGate() {
+        const u = window.currentUser;
+        const ct = (u && u.created_at) ? Date.parse(u.created_at) : NaN;
+        // Fail OPEN: no user, missing/unparseable date → treat as existing rep (full access).
+        granted = !u || isNaN(ct) || ct < Date.parse(GO_LIVE_CUTOFF);
+        const all = flat();
+        const allDone = all.length > 0 && all.every(o => completed.has(o.v.slug));
+        trainingComplete = granted || allDone;
+      }
+      function ensureGate() {
+        if (gateEl) return gateEl;
+        gateEl = document.getElementById('trainingGate');
+        if (gateEl) return gateEl;
+        gateEl = document.createElement('div');
+        gateEl.className = 'ss-training-gate';
+        gateEl.id = 'trainingGate';
+        gateEl.innerHTML =
+          '<div class="ss-training-gate-box">' +
+            '<div class="kf-gate-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg></div>' +
+            '<h3 class="kf-gate-title">Complete your training</h3>' +
+            '<p class="kf-gate-sub">Watch all training videos before accessing the Sales Hub. Your progress is saved automatically.</p>' +
+            '<div class="kf-gate-actions"><button type="button" class="kf-gate-btn primary">Go to Training Videos</button></div>' +
+          '</div>';
+        document.body.appendChild(gateEl);
+        gateEl.querySelector('.kf-gate-btn').addEventListener('click', () => { if (typeof activatePanel === 'function') activatePanel('training'); });
+        return gateEl;
+      }
+      function applyTrainingGate() {
+        const g = ensureGate();
+        const sidebarBtns = document.querySelectorAll('.ss-sidebar-btn[data-panel]');
+        const externalLinks = document.querySelectorAll('.ss-nav-links a[href^="http"], .ss-mobile-menu a[href^="http"]');
+        if (trainingComplete) {
+          g.classList.remove('active');
+          sidebarBtns.forEach(b => b.classList.remove('training-locked'));
+          externalLinks.forEach(a => a.classList.remove('training-locked'));
+        } else {
+          const open = new Set(['training', 'profile']);
+          sidebarBtns.forEach(b => b.classList.toggle('training-locked', !open.has(b.dataset.panel)));
+          externalLinks.forEach(a => a.classList.add('training-locked'));
+          const activePanel = document.querySelector('.ss-panel.active');
+          if (activePanel && activePanel.id !== 'panel-training') g.classList.add('active');
+          else g.classList.remove('active');
+        }
+      }
+
+      // ── Sidebar render ──
       function renderSidebar() {
         elCourseTitle.textContent = curriculum.title;
-        elCourseTitle.contentEditable = (isAdmin && editMode) ? 'true' : 'false';
         elList.innerHTML = '';
-        const fi = firstIncompleteIdx();
-        const f = flat();
-
-        curriculum.sections.forEach((sec, sIdx) => {
+        curriculum.sections.forEach((sec) => {
           const secEl = document.createElement('div');
           secEl.className = 'tve-section';
-
           const head = document.createElement('div');
           head.className = 'tve-section-head';
           const name = document.createElement('span');
           name.className = 'tve-section-name';
           name.textContent = sec.title;
-          name.contentEditable = (isAdmin && editMode) ? 'true' : 'false';
-          name.spellcheck = false;
-          name.addEventListener('blur', () => { sec.title = name.textContent.trim() || sec.title; saveCurriculum(); renderCrumbs(); });
-          name.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); name.blur(); } });
           head.appendChild(name);
-          head.appendChild(rowActions({
-            onUp: sIdx > 0 ? () => moveSection(sIdx, -1) : null,
-            onDown: sIdx < curriculum.sections.length - 1 ? () => moveSection(sIdx, +1) : null,
-            onDelete: () => deleteSection(sIdx)
-          }));
           secEl.appendChild(head);
 
-          sec.videos.forEach((v, vIdx) => {
+          sec.videos.forEach((v) => {
             const locked = !isUnlocked(v.slug);
             const done = isDone(v.slug);
-
             const li = document.createElement('div');
             li.className = 'tve-lesson' + (locked ? ' locked' : '') + (v.slug === currentSlug ? ' active' : '');
             li.dataset.slug = v.slug;
-
             const ico = document.createElement('span');
             ico.className = 'tve-lesson-ico' + (done ? ' done' : '');
             ico.innerHTML = done ? ICO.check : (locked ? ICO.lock : ICO.playSm);
@@ -21598,38 +21603,11 @@
             tm.className = 'tve-lesson-time';
             tm.textContent = fmt(v.duration);
             li.appendChild(ico); li.appendChild(ttl); li.appendChild(tm);
-            li.appendChild(rowActions({
-              onUp: vIdx > 0 ? () => moveVideo(sIdx, vIdx, -1) : null,
-              onDown: vIdx < sec.videos.length - 1 ? () => moveVideo(sIdx, vIdx, +1) : null,
-              onEdit: () => editVideo(sIdx, vIdx),
-              editTitle: 'Edit video',
-              onDelete: () => deleteVideo(sIdx, vIdx)
-            }));
-
-            li.addEventListener('click', (e) => {
-              if (e.target.closest('.tve-row-actions')) return;
-              if (editMode && isAdmin) { select(v.slug); return; }
-              if (locked) return;
-              select(v.slug);
-            });
+            li.addEventListener('click', () => { if (!locked) select(v.slug); });
             secEl.appendChild(li);
           });
-
-          const addV = document.createElement('button');
-          addV.type = 'button'; addV.className = 'tve-add';
-          addV.textContent = '+ Add Video';
-          addV.addEventListener('click', () => addVideo(sIdx));
-          secEl.appendChild(addV);
-
           elList.appendChild(secEl);
         });
-
-        const addS = document.createElement('button');
-        addS.type = 'button'; addS.className = 'tve-add tve-add-section';
-        addS.textContent = '+ Add Section';
-        addS.addEventListener('click', addSection);
-        elList.appendChild(addS);
-
         updateProgressBar();
       }
 
@@ -21644,11 +21622,7 @@
       function renderCrumbs() {
         const o = currentSlug ? findFlat(currentSlug) : null;
         elCrumbs.innerHTML = '';
-        const add = (txt, cur) => {
-          const s = document.createElement('span');
-          if (cur) s.className = 'current';
-          s.textContent = txt; elCrumbs.appendChild(s);
-        };
+        const add = (txt, cur) => { const s = document.createElement('span'); if (cur) s.className = 'current'; s.textContent = txt; elCrumbs.appendChild(s); };
         const sep = () => { const s = document.createElement('span'); s.className = 'sep'; s.textContent = '/'; elCrumbs.appendChild(s); };
         add('Training'); sep(); add(curriculum.title);
         if (o) { sep(); add(o.sec.title + ' → ' + o.v.title, true); }
@@ -21662,9 +21636,9 @@
         clearTimeout(skipToastT);
         skipToastT = setTimeout(() => elSkipToast.classList.remove('show'), 1600);
       }
-      function throttledSave() {
+      function throttledSaveResume() {
         if (saveT) return;
-        saveT = setTimeout(() => { saveT = null; saveProgress(); }, 1500);
+        saveT = setTimeout(() => { saveT = null; saveResume(); }, 1500);
       }
 
       function select(slug) {
@@ -21677,21 +21651,12 @@
         renderCrumbs();
         elEyebrow.innerHTML = 'Section <span class="accent">' + escapeHtml(o.sec.title) + '</span>';
         elTitle.textContent = v.title;
-        elTitle.contentEditable = (isAdmin && editMode) ? 'true' : 'false';
 
-        // description — only shown when there's text (or admin is editing)
-        if ((v.desc && v.desc.trim()) || (isAdmin && editMode)) {
-          elDescWrap.style.display = '';
-          elDesc.textContent = v.desc || '';
-          elDesc.contentEditable = (isAdmin && editMode) ? 'true' : 'false';
-        } else {
-          elDescWrap.style.display = 'none';
-        }
+        if (v.desc && v.desc.trim()) { elDescWrap.style.display = ''; elDesc.textContent = v.desc; }
+        else { elDescWrap.style.display = 'none'; }
 
-        // resources
         renderResources(v);
 
-        // video source
         elFrame.classList.remove('empty', 'paused', 'locked');
         elEmptyMsg.style.display = 'none';
         programmatic = true;
@@ -21700,12 +21665,8 @@
         video.playbackRate = 1;
         elBigPlay.classList.add('hidden');
         resetScrub();
-
         renderNav();
-        // mark active in sidebar
-        elList.querySelectorAll('.tve-lesson').forEach(li =>
-          li.classList.toggle('active', li.dataset.slug === slug));
-        // refresh icons/locks (active state)
+        elList.querySelectorAll('.tve-lesson').forEach(li => li.classList.toggle('active', li.dataset.slug === slug));
         if (window.innerWidth <= 820) tve.classList.remove('sidebar-open');
       }
 
@@ -21759,7 +21720,6 @@
         const prev = idx > 0 ? f[idx - 1] : null;
         const next = idx >= 0 && idx < f.length - 1 ? f[idx + 1] : null;
         elNav.innerHTML = '';
-        // prev
         const pBtn = document.createElement('button');
         pBtn.className = 'tve-nav-card'; pBtn.type = 'button';
         if (prev) {
@@ -21767,13 +21727,12 @@
           pBtn.addEventListener('click', () => select(prev.v.slug));
         } else { pBtn.disabled = true; pBtn.innerHTML = '<div class="dir">‹ Previous</div><div class="ttl">—</div>'; }
         elNav.appendChild(pBtn);
-        // next
         const nBtn = document.createElement('button');
         nBtn.className = 'tve-nav-card next'; nBtn.type = 'button';
         if (next) {
           const nextLocked = !isUnlocked(next.v.slug);
-          nBtn.innerHTML = '<div class="dir">Next ›</div><div class="ttl' + (nextLocked ? ' ' : '') + '">' + escapeHtml(next.v.title) + (nextLocked ? ' 🔒' : '') + '</div>';
-          if (nextLocked) { nBtn.disabled = true; }
+          nBtn.innerHTML = '<div class="dir">Next ›</div><div class="ttl">' + escapeHtml(next.v.title) + (nextLocked ? ' 🔒' : '') + '</div>';
+          if (nextLocked) nBtn.disabled = true;
           else nBtn.addEventListener('click', () => select(next.v.slug));
         } else { nBtn.disabled = true; nBtn.innerHTML = '<div class="dir">Next ›</div><div class="ttl">—</div>'; }
         elNav.appendChild(nBtn);
@@ -21781,7 +21740,7 @@
 
       // video events
       video.addEventListener('loadedmetadata', () => {
-        dur = video.duration || (currentSlug && findFlat(currentSlug).v.duration) || 0;
+        dur = video.duration || (currentSlug && durationOf(currentSlug)) || 0;
         elDur.textContent = fmt(dur);
         const resume = completedThis ? 0 : Math.min(maxOf(currentSlug), Math.max(0, dur - 1));
         programmatic = true;
@@ -21798,18 +21757,15 @@
       });
       video.addEventListener('seeked', () => { programmatic = false; updateScrub(); });
       video.addEventListener('timeupdate', () => {
-        if (!completedThis && !video.paused && video.currentTime > maxOf(currentSlug)) {
-          progress[currentSlug] = progress[currentSlug] || { max: 0, done: false };
-          progress[currentSlug].max = video.currentTime;
-          throttledSave();
+        if (!completedThis && !video.paused && video.currentTime > (resumePos[currentSlug] || 0)) {
+          resumePos[currentSlug] = video.currentTime;
+          throttledSaveResume();
         }
         updateScrub();
         if (!completedThis && dur && video.currentTime >= dur - 1.0) complete(currentSlug);
       });
       video.addEventListener('ended', () => { if (!completedThis) complete(currentSlug); });
-      video.addEventListener('ratechange', () => {
-        if (!completedThis && video.playbackRate !== 1) video.playbackRate = 1;
-      });
+      video.addEventListener('ratechange', () => { if (!completedThis && video.playbackRate !== 1) video.playbackRate = 1; });
       video.addEventListener('play', () => { elFrame.classList.remove('paused'); elBigPlay.classList.add('hidden'); elPlayBtn.innerHTML = ICO.pause; });
       video.addEventListener('pause', () => { elFrame.classList.add('paused'); elBigPlay.classList.remove('hidden'); elPlayBtn.innerHTML = ICO.play; });
 
@@ -21826,15 +21782,15 @@
 
       function complete(slug) {
         if (!slug || isDone(slug)) return;
-        progress[slug] = progress[slug] || { max: 0, done: false };
-        progress[slug].done = true;
-        progress[slug].max = dur || progress[slug].max;
-        completedThis = (slug === currentSlug) ? true : completedThis;
-        saveProgress();
+        completed.add(slug);
+        if (slug === currentSlug) completedThis = true;
+        resumePos[slug] = durationOf(slug); saveResume();
+        postComplete(slug);            // persist to Supabase (fire-and-forget)
         renderSidebar();
         updateScrub();
         renderNav();
-        // advance to the freshly-unlocked next video (loaded, paused)
+        computeGate();
+        applyTrainingGate();
         const f = flat();
         const idx = f.findIndex(o => o.v.slug === slug);
         if (idx >= 0 && idx < f.length - 1) {
@@ -21851,135 +21807,82 @@
       elBigPlay.addEventListener('click', togglePlay);
       video.addEventListener('click', togglePlay);
       elMuteBtn.addEventListener('click', () => { video.muted = !video.muted; elMuteBtn.innerHTML = video.muted ? ICO.muted : ICO.vol; });
-      elFsBtn.addEventListener('click', () => {
-        if (document.fullscreenElement) document.exitFullscreen();
-        else if (elFrame.requestFullscreen) elFrame.requestFullscreen();
-      });
+      elFsBtn.addEventListener('click', () => { if (document.fullscreenElement) document.exitFullscreen(); else if (elFrame.requestFullscreen) elFrame.requestFullscreen(); });
       function seekFromEvent(e) {
         if (!dur) return;
         const rect = elScrub.getBoundingClientRect();
         const frac = Math.min(1, Math.max(0, (e.clientX - rect.left) / rect.width));
         let target = frac * dur;
-        if (!completedThis) {
-          const cap = maxOf(currentSlug);
-          if (target > cap + 0.4) { showSkipToast(); target = cap; }
-        }
+        if (!completedThis) { const cap = maxOf(currentSlug); if (target > cap + 0.4) { showSkipToast(); target = cap; } }
         programmatic = true;
         try { video.currentTime = target; } catch (err) {}
       }
       elScrub.addEventListener('click', seekFromEvent);
-      // block keyboard fast-forward while focused on the player
       elFrame.addEventListener('keydown', (e) => {
         const blocked = ['ArrowRight', 'ArrowUp', 'l', 'L', 'PageUp'];
         if (!completedThis && blocked.includes(e.key)) { e.preventDefault(); showSkipToast(); }
       });
 
-      // ── Admin editing (v1: localStorage only) ──
-      function refreshAdmin() {
-        isAdmin = !!(window.currentUser && window.currentUser.id === ADMIN_USER_ID);
-        if (isAdmin) elEditToggle.removeAttribute('hidden');
-        else { elEditToggle.setAttribute('hidden', ''); if (editMode) toggleEdit(false); }
-      }
-      function toggleEdit(force) {
-        editMode = (typeof force === 'boolean') ? force : !editMode;
-        tve.classList.toggle('edit-mode', editMode);
-        elEditToggle.classList.toggle('active', editMode);
-        elEditLabel.textContent = editMode ? 'Done' : 'Edit';
-        renderSidebar();
-        if (currentSlug) select(currentSlug); // re-apply editable fields
-      }
-      elEditToggle.addEventListener('click', () => { if (isAdmin) toggleEdit(); });
-      elCourseTitle.addEventListener('blur', () => {
-        if (!(isAdmin && editMode)) return;
-        curriculum.title = elCourseTitle.textContent.trim() || curriculum.title;
-        saveCurriculum(); renderCrumbs();
-      });
-      elTitle.addEventListener('blur', () => {
-        if (!(isAdmin && editMode) || !currentSlug) return;
-        const o = findFlat(currentSlug); if (!o) return;
-        o.v.title = elTitle.textContent.trim() || o.v.title;
-        saveCurriculum(); renderSidebar(); renderCrumbs();
-      });
-      elDesc.addEventListener('blur', () => {
-        if (!(isAdmin && editMode) || !currentSlug) return;
-        const o = findFlat(currentSlug); if (!o) return;
-        o.v.desc = elDesc.textContent; saveCurriculum();
-      });
-      // (per-video "Edit video" button removed with the meta bar; admins edit via the sidebar pencil)
-
-      function slugToIdx(slug) {
-        for (let s = 0; s < curriculum.sections.length; s++) {
-          const v = curriculum.sections[s].videos.findIndex(x => x.slug === slug);
-          if (v >= 0) return [s, v];
-        }
-        return [0, 0];
-      }
-      function moveSection(i, dir) {
-        const j = i + dir; const a = curriculum.sections;
-        if (j < 0 || j >= a.length) return;
-        [a[i], a[j]] = [a[j], a[i]]; saveCurriculum(); renderSidebar();
-      }
-      function moveVideo(s, i, dir) {
-        const arr = curriculum.sections[s].videos; const j = i + dir;
-        if (j < 0 || j >= arr.length) return;
-        [arr[i], arr[j]] = [arr[j], arr[i]]; saveCurriculum(); renderSidebar();
-      }
-      function deleteSection(i) {
-        const sec = curriculum.sections[i];
-        if (!confirm('Delete section "' + sec.title + '" and its ' + sec.videos.length + ' video(s)?')) return;
-        curriculum.sections.splice(i, 1); saveCurriculum(); renderSidebar();
-      }
-      function deleteVideo(s, i) {
-        const v = curriculum.sections[s].videos[i];
-        if (!confirm('Delete video "' + v.title + '"?')) return;
-        curriculum.sections[s].videos.splice(i, 1);
-        if (currentSlug === v.slug) currentSlug = null;
-        saveCurriculum(); renderSidebar();
-      }
-      function addSection() {
-        const t = prompt('New section name:', 'New Section'); if (!t) return;
-        curriculum.sections.push({ id: 'sec-' + Date.now(), title: t, videos: [] });
-        saveCurriculum(); renderSidebar();
-      }
-      function addVideo(s) {
-        const title = prompt('Video title:'); if (!title) return;
-        const file = prompt('Exact R2 file name (e.g. My Video.mp4):'); if (!file) return;
-        const slug = 'v-' + Math.random().toString(36).slice(2, 9);
-        curriculum.sections[s].videos.push({ slug, title, file, duration: 0, desc: '', resources: [] });
-        saveCurriculum(); renderSidebar();
-      }
-      function editVideo(s, i) {
-        const v = curriculum.sections[s].videos[i];
-        const title = prompt('Video title:', v.title); if (title === null) return;
-        const file = prompt('Exact R2 file name:', v.file); if (file === null) return;
-        v.title = title.trim() || v.title; v.file = file.trim() || v.file;
-        saveCurriculum(); renderSidebar();
-        if (currentSlug === v.slug) select(v.slug);
-      }
-
-      function escapeHtml(s) { return String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c])); }
-
       // mobile
       if (elMobileToggle) elMobileToggle.addEventListener('click', () => tve.classList.toggle('sidebar-open'));
 
-      // ── Boot ──
-      function boot() {
-        refreshAdmin();
-        renderSidebar();
-        renderCrumbs();
-        // auto-select first unlocked / incomplete video
+      function autoSelect() {
         const f = flat();
         const fi = firstIncompleteIdx();
         const target = fi === -1 ? (f[0] && f[0].v.slug) : f[fi].v.slug;
         if (target) select(target);
       }
 
-      // re-check admin + reload per-user progress when auth changes
+      // ── Hub gate: intercept other panels for not-yet-finished new reps ──
+      if (typeof activatePanel === 'function') {
+        const _ap = activatePanel;
+        activatePanel = function (panelName) {
+          if (!trainingComplete && panelName !== 'training' && panelName !== 'profile' && window.currentUser) {
+            if (typeof showConfirmModal === 'function') {
+              const done = completed.size, total = flat().length;
+              showConfirmModal({
+                title: 'Complete Your Training',
+                message: 'You need to finish all training videos before accessing the Sales Hub. You\'ve completed ' + done + ' of ' + total + ' videos so far.',
+                confirmText: 'Go to Training', cancelText: '', variant: 'info', icon: '🎓'
+              }).then(() => { _ap('training'); if (gateEl) gateEl.classList.remove('active'); if (!currentSlug) autoSelect(); });
+              return;
+            }
+          }
+          _ap(panelName);
+          if (panelName === 'training') { if (gateEl) gateEl.classList.remove('active'); if (!currentSlug) autoSelect(); }
+        };
+      }
+      // Click guard: locked external links bounce back to training.
+      document.addEventListener('click', function (e) {
+        const a = e.target && e.target.closest && e.target.closest('a.training-locked');
+        if (!a) return;
+        e.preventDefault(); e.stopPropagation();
+        if (typeof activatePanel === 'function') activatePanel('training');
+      }, true);
+
+      // ── Boot ──
+      function boot() {
+        computeGate();
+        renderSidebar();
+        renderCrumbs();
+        autoSelect();
+        applyTrainingGate();
+      }
+
+      // Reload progress + recompute access whenever auth changes.
       if (typeof window.updateAuthUI === 'function') {
         const _orig = window.updateAuthUI;
         window.updateAuthUI = function () {
           _orig.apply(this, arguments);
-          try { progress = loadProgress(); refreshAdmin(); renderSidebar(); if (currentSlug) select(currentSlug); } catch (e) {}
+          (async () => {
+            try {
+              await loadCompleted();
+              computeGate();
+              renderSidebar();
+              applyTrainingGate();
+              if (currentSlug) select(currentSlug); else autoSelect();
+            } catch (e) {}
+          })();
         };
       }
 
