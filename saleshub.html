@@ -12521,6 +12521,13 @@
       background: var(--bg-2); color: var(--text-2); font-size: 11px; font-weight: 600; cursor: pointer;
     }
     #panel-training .tve-creds-copy:hover { color: var(--text-1); border-color: var(--line-strong); }
+    /* Admin rename mode */
+    #panel-training .tve.edit-mode .tve-lesson { cursor: default; }
+    #panel-training .tve.edit-mode .tve-lesson-title {
+      white-space: normal; overflow: visible; cursor: text;
+      outline: 1px dashed var(--line-strong); border-radius: 4px; padding: 1px 5px; margin: -1px 0;
+    }
+    #panel-training .tve.edit-mode .tve-lesson-title:focus { outline: 1px solid var(--accent); background: var(--bg-2); }
 
     /* prev/next */
     #panel-training .tve-nav { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 26px; }
@@ -13975,6 +13982,10 @@
         <main class="tve-main">
           <div class="tve-topbar">
             <div class="tve-crumbs" id="tveCrumbs"></div>
+            <button class="tve-pill-btn" id="tveEditToggle" type="button" hidden>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 113 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>
+              <span id="tveEditLabel">Edit names</span>
+            </button>
           </div>
 
           <div class="tve-scroll">
@@ -21363,6 +21374,7 @@
     // ═══════════════════════════════════════════════════════════════
     (function () {
       const R2_BASE = 'https://pub-71115aa4b60d4cb68a4d88a29e2eea75.r2.dev/';
+      const ADMIN_USER_ID = 'be364ef5-8426-4587-b8b8-9328b02055a7';
       // Accounts created before this instant = existing reps → full access.
       const GO_LIVE_CUTOFF = '2026-06-04T05:00:00Z';
 
@@ -21418,6 +21430,8 @@
       let completed = new Set();        // slugs done (Supabase video_progress)
       let resumePos = {};               // { slug: seconds } resume point (localStorage, per device)
       let currentSlug = null;
+      let isAdmin = false, editMode = false;
+      const titleOverrides = {};        // slug → custom name (Supabase training_titles)
       let granted = true;               // existing account → full access (default true until known)
       let trainingComplete = true;      // Hub gate flag
 
@@ -21429,6 +21443,8 @@
       const elProgBar = $('tveProgressBar');
       const elProgText = $('tveProgressText');
       const elCrumbs = $('tveCrumbs');
+      const elEditToggle = $('tveEditToggle');
+      const elEditLabel = $('tveEditLabel');
       const elMobileToggle = $('tveMobileToggle');
       const elEyebrow = $('tveLessonEyebrow');
       const elTitle = $('tveLessonTitle');
@@ -21573,6 +21589,52 @@
       }
 
       // ── Sidebar render ──
+      // ── Admin: rename videos (persisted to Supabase; admin-only) ──
+      async function loadTitleOverrides() {
+        try {
+          const r = await fetch(SUPABASE_URL + '/rest/v1/training_titles?select=slug,title', { headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + (window.accessToken || SUPABASE_KEY) } });
+          if (!r.ok) return;
+          const rows = await r.json();
+          rows.forEach(row => { titleOverrides[row.slug] = row.title; });
+          curriculum.sections.forEach(s => s.videos.forEach(v => { if (titleOverrides[v.slug]) v.title = titleOverrides[v.slug]; }));
+        } catch (e) { /* table may not exist yet — names stay as the code defaults */ }
+      }
+      async function saveTitle(slug, newTitle) {
+        const o = findFlat(slug); if (!o) return;
+        newTitle = (newTitle || '').replace(/\s+/g, ' ').trim();
+        if (!newTitle || newTitle === o.v.title) { renderSidebar(); return; }
+        const prev = o.v.title;
+        o.v.title = newTitle; titleOverrides[slug] = newTitle;
+        renderSidebar();
+        if (slug === currentSlug) { renderCrumbs(); elTitle.textContent = newTitle; }
+        try {
+          const r = await fetch(SUPABASE_URL + '/rest/v1/training_titles', {
+            method: 'POST',
+            headers: Object.assign(supaHeaders(), { 'Prefer': 'resolution=merge-duplicates,return=minimal' }),
+            body: JSON.stringify({ slug: slug, title: newTitle })
+          });
+          if (!r.ok) throw new Error('HTTP ' + r.status);
+        } catch (e) {
+          o.v.title = prev; delete titleOverrides[slug]; renderSidebar();
+          if (slug === currentSlug) { renderCrumbs(); elTitle.textContent = prev; }
+          alert('Could not save the new name. If this is the first rename, run the one-time training_titles setup SQL in Supabase, then try again.');
+        }
+      }
+      function refreshAdmin() {
+        isAdmin = !!(window.currentUser && window.currentUser.id === ADMIN_USER_ID);
+        if (!elEditToggle) return;
+        if (isAdmin) elEditToggle.removeAttribute('hidden');
+        else { elEditToggle.setAttribute('hidden', ''); if (editMode) toggleEdit(false); }
+      }
+      function toggleEdit(force) {
+        editMode = (typeof force === 'boolean') ? force : !editMode;
+        tve.classList.toggle('edit-mode', editMode);
+        if (elEditToggle) elEditToggle.classList.toggle('active', editMode);
+        if (elEditLabel) elEditLabel.textContent = editMode ? 'Done' : 'Edit names';
+        renderSidebar();
+      }
+      if (elEditToggle) elEditToggle.addEventListener('click', () => { if (isAdmin) toggleEdit(); });
+
       function renderSidebar() {
         elCourseTitle.textContent = curriculum.title;
         elList.innerHTML = '';
@@ -21599,11 +21661,19 @@
             const ttl = document.createElement('span');
             ttl.className = 'tve-lesson-title';
             ttl.textContent = v.title;
+            if (editMode) {
+              ttl.contentEditable = 'true';
+              ttl.spellcheck = false;
+              ttl.title = 'Click to rename';
+              ttl.addEventListener('click', (e) => e.stopPropagation());
+              ttl.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); ttl.blur(); } });
+              ttl.addEventListener('blur', () => saveTitle(v.slug, ttl.textContent));
+            }
             const tm = document.createElement('span');
             tm.className = 'tve-lesson-time';
             tm.textContent = fmt(v.duration);
             li.appendChild(ico); li.appendChild(ttl); li.appendChild(tm);
-            li.addEventListener('click', () => { if (!locked) select(v.slug); });
+            li.addEventListener('click', () => { if (editMode) return; if (!locked) select(v.slug); });
             secEl.appendChild(li);
           });
           elList.appendChild(secEl);
@@ -21871,6 +21941,8 @@
         renderCrumbs();
         autoSelect();
         applyTrainingGate();
+        refreshAdmin();
+        loadTitleOverrides().then(() => { renderSidebar(); if (currentSlug) { const o = findFlat(currentSlug); if (o) { renderCrumbs(); elTitle.textContent = o.v.title; } } });
       }
 
       // Reload progress + recompute access whenever auth changes.
@@ -21881,7 +21953,9 @@
           (async () => {
             try {
               await loadCompleted();
+              await loadTitleOverrides();
               computeGate();
+              refreshAdmin();
               renderSidebar();
               applyTrainingGate();
               if (currentSlug) select(currentSlug); else autoSelect();
