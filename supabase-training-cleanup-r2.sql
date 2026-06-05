@@ -28,8 +28,7 @@ delete from public.video_progress
    'carrier-contracting','purchase-licenses','after-state-license',
    'call-intro-script','insurance-presentation','overcome-objections',
    'ca-studios','product-selection','underwriting-guide','carrier-applications-portal',
-   'how-to-buy-crm','phone-numbers-texting','atp-registration','a2p-wave',
-   'lead-management-pipeline','appointment-calendar','lead-management-automation'
+   'how-to-buy-crm','crm-setup','calendar-setup','wavv-setup','atp-registration'
  );
 
 -- Verify:
