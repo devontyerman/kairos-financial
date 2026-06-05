@@ -14049,7 +14049,6 @@
                 <div class="tve-resources" id="tveResources"></div>
               </div>
 
-              <div class="tve-nav" id="tveNav"></div>
             </div>
           </div>
         </main>
@@ -21385,6 +21384,8 @@
       const SCRIPT_PDF = { kind: 'pdf', label: 'Sales Call Script', sub: 'PDF', href: 'assets/Documents/Script.pdf' };
       const OBJ_PDF = { kind: 'pdf', label: 'Objection Responses', sub: 'PDF', href: 'assets/Documents/Objection%20Responses.pdf' };
       const CRM_LINK = { kind: 'link', label: 'Sign up / log in to the CRM', sub: 'crm.kairos-financial.com', href: 'https://crm.kairos-financial.com/' };
+      const A2P_GUIDE = { kind: 'link', label: 'A2P Guide', sub: 'Google Doc', href: 'https://docs.google.com/document/d/1o4-9vPWHMClHOBrhdKtnH-z_ANJCSORHKgcPD4SEgTo/edit?usp=sharing' };
+      const WAVV = { kind: 'link', label: 'Sign up for Wavv', sub: 'Use referral code SPAMPROOF for free spam monitoring', href: 'https://refer.wavv.com/?fpr=1094dk' };
       const CASTUDIOS = [
         { kind: 'creds', label: 'CA Studios login', user: 'dev@kairos-financial.com', pass: '2BE9Z4juBx!r7%7L$&Zz' },
         { kind: 'link', label: 'Open CA Studios', sub: 'castudios.tv', href: 'https://castudios.tv/' }
@@ -21416,8 +21417,8 @@
           { title: 'CRM Guide', videos: [
             { slug: 'how-to-buy-crm', title: 'How to Buy CRM', file: 'How to Buy CRM.mp4', duration: 166, desc: '', resources: [CRM_LINK] },
             { slug: 'phone-numbers-texting', title: 'Setting Up Phone Numbers and Texting', file: 'Setting Up Phone Numbers and Texting.mp4', duration: 93, desc: '', resources: [] },
-            { slug: 'atp-registration', title: 'How to Complete ATP Registration Setup', file: 'How to Complete ATP Registration Setup ✅.mp4', duration: 164, desc: '', resources: [] },
-            { slug: 'a2p-wave', title: 'Set Up A2P and Wave Efficiently', file: 'Set Up A2P and Wave Efficiently 📱.mp4', duration: 130, desc: '', resources: [] },
+            { slug: 'atp-registration', title: 'How to Complete ATP Registration Setup', file: 'How to Complete ATP Registration Setup ✅.mp4', duration: 164, desc: '', resources: [A2P_GUIDE] },
+            { slug: 'a2p-wave', title: 'Set Up A2P and Wave Efficiently', file: 'Set Up A2P and Wave Efficiently 📱.mp4', duration: 130, desc: '', resources: [WAVV] },
             { slug: 'lead-management-pipeline', title: 'Mastering Your Lead Management Pipeline', file: 'Mastering Your Lead Management Pipeline_ Uploading, Tagging, and Automation.mp4', duration: 2023, desc: '', resources: [] },
             { slug: 'appointment-calendar', title: 'Setting Up Your Insurance Appointment Calendar and Automations', file: 'Setting Up Your Insurance Appointment Calendar and Automations.mp4', duration: 314, desc: '', resources: [] },
             { slug: 'lead-management-automation', title: 'Mastering Lead Management and Automation in Sales', file: 'Mastering Lead Management and Automation in Sales.mp4', duration: 1435, desc: '', resources: [] }
@@ -21466,7 +21467,6 @@
       const elDesc = $('tveDesc');
       const elResWrap = $('tveResWrap');
       const elResources = $('tveResources');
-      const elNav = $('tveNav');
 
       if (!tve) return; // panel markup missing — bail safely
 
@@ -21739,7 +21739,6 @@
         video.playbackRate = 1;
         elBigPlay.classList.add('hidden');
         resetScrub();
-        renderNav();
         elList.querySelectorAll('.tve-lesson').forEach(li => li.classList.toggle('active', li.dataset.slug === slug));
         if (window.innerWidth <= 820) tve.classList.remove('sidebar-open');
       }
@@ -21788,29 +21787,6 @@
         });
       }
 
-      function renderNav() {
-        const f = flat();
-        const idx = f.findIndex(o => o.v.slug === currentSlug);
-        const prev = idx > 0 ? f[idx - 1] : null;
-        const next = idx >= 0 && idx < f.length - 1 ? f[idx + 1] : null;
-        elNav.innerHTML = '';
-        const pBtn = document.createElement('button');
-        pBtn.className = 'tve-nav-card'; pBtn.type = 'button';
-        if (prev) {
-          pBtn.innerHTML = '<div class="dir">‹ Previous</div><div class="ttl">' + escapeHtml(prev.v.title) + '</div>';
-          pBtn.addEventListener('click', () => select(prev.v.slug));
-        } else { pBtn.disabled = true; pBtn.innerHTML = '<div class="dir">‹ Previous</div><div class="ttl">—</div>'; }
-        elNav.appendChild(pBtn);
-        const nBtn = document.createElement('button');
-        nBtn.className = 'tve-nav-card next'; nBtn.type = 'button';
-        if (next) {
-          const nextLocked = !isUnlocked(next.v.slug);
-          nBtn.innerHTML = '<div class="dir">Next ›</div><div class="ttl">' + escapeHtml(next.v.title) + (nextLocked ? ' 🔒' : '') + '</div>';
-          if (nextLocked) nBtn.disabled = true;
-          else nBtn.addEventListener('click', () => select(next.v.slug));
-        } else { nBtn.disabled = true; nBtn.innerHTML = '<div class="dir">Next ›</div><div class="ttl">—</div>'; }
-        elNav.appendChild(nBtn);
-      }
 
       // video events
       video.addEventListener('loadedmetadata', () => {
@@ -21862,7 +21838,6 @@
         postComplete(slug);            // persist to Supabase (fire-and-forget)
         renderSidebar();
         updateScrub();
-        renderNav();
         computeGate();
         applyTrainingGate();
         const f = flat();
