@@ -3320,7 +3320,7 @@
       font-family: var(--tp-mono); font-size: 11px;
       color: var(--tp-ink-3); margin-top: 2px;
     }
-    /* Read-only licenses & ready numbers shown in the edit-agent modal */
+    /* Read-only licenses & writing numbers shown in the edit-agent modal */
     #tpatab-agents .tp-lic-grid {
       display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 12px;
     }
@@ -5856,7 +5856,7 @@
       font-size: 11px !important;
     }
 
-    /* ─── Licenses & Ready Numbers — repeatable rows ─────────────────────── */
+    /* ─── Licenses & Writing Numbers — repeatable rows ───────────────────── */
     #panel-profile.active .lic-row {
       display: grid;
       grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr) auto;
@@ -14230,12 +14230,12 @@
           <div id="profileCompMsg" style="margin-top:0.6rem;font-size:0.8rem;text-align:center;display:none;"></div>
         </div>
 
-        <!-- Licenses & Ready Numbers -->
+        <!-- Licenses & Writing Numbers -->
         <div class="ss-form-card" id="profileLicensesCard" style="margin-bottom:1.25rem;">
           <div class="lic-head">
             <div class="ss-form-title" style="color:#7c3aed;margin:0;">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M15 8h3"/><path d="M15 12h3"/><path d="M7 16h10"/></svg>
-              Licenses &amp; Ready Numbers
+              Licenses &amp; Writing Numbers
             </div>
             <!-- Edit toggle: shown in view mode so entries aren't editable by accident -->
             <button class="lic-edit-btn" type="button" id="licEditBtn">
@@ -14251,14 +14251,14 @@
               <div id="licStateView" class="lic-view-list"></div>
             </div>
             <div class="lic-view-group">
-              <div class="lic-view-label">Carrier Writing / Ready Numbers</div>
+              <div class="lic-view-label">Carrier Writing Numbers</div>
               <div id="licCarrierView" class="lic-view-list"></div>
             </div>
           </div>
 
           <!-- ── EDIT MODE (hidden until Edit is clicked) ── -->
           <div id="licEdit" style="display:none;">
-            <p style="font-size:0.82rem;color:#666;margin:0 0 1rem;">Add or update your state license numbers and carrier writing / ready numbers, then Save.</p>
+            <p style="font-size:0.82rem;color:#666;margin:0 0 1rem;">Add or update your state license numbers and carrier writing numbers, then Save.</p>
 
             <!-- State Licenses -->
             <div style="margin-bottom:1.1rem;">
@@ -14270,9 +14270,9 @@
               </button>
             </div>
 
-            <!-- Carrier Ready Numbers -->
+            <!-- Carrier Writing Numbers -->
             <div style="margin-bottom:1.1rem;">
-              <label class="ss-label" style="display:block;margin-bottom:0.5rem;">Carrier Writing / Ready Numbers</label>
+              <label class="ss-label" style="display:block;margin-bottom:0.5rem;">Carrier Writing Numbers</label>
               <div id="licCarrierRows"></div>
               <button class="lic-add-btn" type="button" id="licCarrierAdd">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -19536,7 +19536,7 @@
       }
     });
 
-    // ─── LICENSES & READY NUMBERS ───
+    // ─── LICENSES & WRITING NUMBERS ───
     // Stored on agent_profiles as two JSONB array columns:
     //   state_licenses  → [{ state: "TX", number: "1234567" }, ...]
     //   carrier_numbers → [{ carrier: "Americo", number: "ABC123" }, ...]
@@ -19598,7 +19598,7 @@
       const num = document.createElement('input');
       num.type = 'text';
       num.className = 'ss-input lic-number';
-      num.placeholder = 'Writing / ready number';
+      num.placeholder = 'Writing number';
       num.value = number || '';
       row.appendChild(sel);
       row.appendChild(num);
@@ -24363,7 +24363,7 @@
               const pct = Math.min(100, Math.round((vCount / TOTAL_TRAINING_VIDEOS) * 100));
               const isComplete = live.training_complete === true;
               const justSaved = !!savedFor[editFor.user_id];
-              // Read-only licenses & ready numbers, sorted alphabetically.
+              // Read-only licenses & writing numbers, sorted alphabetically.
               const stateLics = (Array.isArray(live.state_licenses) ? live.state_licenses : [])
                 .slice().sort((a, b) => (a.state || '').localeCompare(b.state || ''));
               const carrierNums = (Array.isArray(live.carrier_numbers) ? live.carrier_numbers : [])
@@ -24428,7 +24428,7 @@
                       <div className="hv-form-section">
                         <div className="hv-form-section-hd">
                           <div>
-                            <div className="hv-form-section-lbl">Licenses &amp; ready numbers</div>
+                            <div className="hv-form-section-lbl">Licenses &amp; writing numbers</div>
                             <div className="hv-form-section-meta">
                               {stateLics.length} state license{stateLics.length === 1 ? '' : 's'} · {carrierNums.length} carrier number{carrierNums.length === 1 ? '' : 's'}
                             </div>
@@ -24451,7 +24451,7 @@
                             )}
                           </div>
                           <div>
-                            <div className="tp-lic-col-lbl">Carrier Writing / Ready Numbers</div>
+                            <div className="tp-lic-col-lbl">Carrier Writing Numbers</div>
                             {carrierNums.length ? (
                               <div className="tp-lic-list">
                                 {carrierNums.map((c, i) => (

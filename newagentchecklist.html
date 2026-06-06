@@ -1,0 +1,763 @@
+<!DOCTYPE html><html lang="en"><head>
+
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kairos Financial — New Agent Checklist</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&amp;family=Hanken+Grotesk:wght@400;500;600;700&amp;family=Space+Mono:wght@400;700&amp;display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F4F0E8;
+    --bg-deep: #EDE7DB;
+    --surface: #FCFAF5;
+    --ink: #1B1813;
+    --ink-soft: #6A635A;
+    --ink-faint: #A39B8E;
+    --line: #DAD2C4;
+    --accent: #F2541B;
+    --accent-soft: #FCE9DF;
+    --accent-ink: #B23A0F;
+    --go: #2E7D5B;
+    --go-soft: #E2F0E9;
+    --radius: 18px;
+    --maxw: 1080px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Hanken Grotesk", system-ui, sans-serif;
+    font-size: 17px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    overflow-x: hidden;
+  }
+
+  .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 28px; }
+
+  .mono {
+    font-family: "Space Mono", monospace;
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  /* ---------- top bar ---------- */
+  .topbar {
+    border-bottom: 1px solid var(--line);
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter: blur(8px);
+    position: sticky;
+    top: 0;
+    z-index: 20;
+  }
+  .topbar .wrap {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+  }
+  .brand { display: flex; align-items: center; gap: 12px; }
+  .brand-mark {
+    width: 30px; height: 30px;
+    border-radius: 8px;
+    background: var(--ink);
+    color: var(--bg);
+    display: grid; place-items: center;
+    font-family: "Space Grotesk", sans-serif;
+    font-weight: 700;
+    font-size: 17px;
+  }
+  .brand-name {
+    font-family: "Space Grotesk", sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    letter-spacing: -0.01em;
+  }
+  .brand-name span { color: var(--ink-faint); font-weight: 500; }
+  .topbar .tag { color: var(--ink-soft); }
+  @media (max-width: 640px) { .topbar .tag { display: none; } }
+
+  /* ---------- hero ---------- */
+  .hero { padding: 86px 0 60px; position: relative; }
+  .kicker {
+    color: var(--accent-ink);
+    display: inline-flex; align-items: center; gap: 10px;
+    margin-bottom: 26px;
+  }
+  .kicker::before {
+    content: ""; width: 26px; height: 2px; background: var(--accent);
+    display: inline-block;
+  }
+  .hero h1 {
+    font-family: "Space Grotesk", sans-serif;
+    font-weight: 700;
+    font-size: clamp(40px, 7vw, 76px);
+    line-height: 0.98;
+    letter-spacing: -0.03em;
+    max-width: 16ch;
+    text-wrap: balance;
+  }
+  .hero h1 .accent { color: var(--accent); }
+  .hero .lede {
+    margin-top: 28px;
+    max-width: 56ch;
+    font-size: clamp(18px, 2.2vw, 21px);
+    color: var(--ink-soft);
+    line-height: 1.62;
+    font-weight: 400;
+  }
+  .hero .lede strong { color: var(--ink); font-weight: 600; }
+
+  .stats {
+    margin-top: 44px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    overflow: hidden;
+    background: var(--surface);
+    max-width: 620px;
+  }
+  .stat {
+    flex: 1 1 0;
+    min-width: 150px;
+    padding: 20px 24px;
+    border-right: 1px solid var(--line);
+  }
+  .stat:last-child { border-right: none; }
+  .stat .num {
+    font-family: "Space Grotesk", sans-serif;
+    font-weight: 700;
+    font-size: 30px;
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+  .stat .lab { color: var(--ink-soft); margin-top: 7px; }
+  @media (max-width: 560px) {
+    .stat { border-right: none; border-bottom: 1px solid var(--line); flex-basis: 100%; }
+    .stat:last-child { border-bottom: none; }
+  }
+
+  /* ---------- section heading ---------- */
+  .section { padding: 30px 0 20px; }
+  .section-head {
+    display: flex; align-items: baseline; gap: 16px;
+    margin-bottom: 14px;
+  }
+  .section-head .mono { color: var(--ink-faint); }
+  .section-head h2 {
+    font-family: "Space Grotesk", sans-serif;
+    font-weight: 600;
+    font-size: clamp(22px, 3vw, 28px);
+    letter-spacing: -0.02em;
+  }
+
+  /* ---------- roadmap ---------- */
+  .roadmap { padding-bottom: 30px; position: relative; }
+
+  .step {
+    display: grid;
+    grid-template-columns: 76px 1fr;
+    gap: 26px;
+    position: relative;
+    padding-bottom: 26px;
+  }
+  .rail {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .marker {
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    border: 1.5px solid var(--ink);
+    background: var(--surface);
+    display: grid; place-items: center;
+    font-family: "Space Grotesk", sans-serif;
+    font-weight: 700;
+    font-size: 22px;
+    flex: 0 0 auto;
+    position: relative;
+    z-index: 2;
+    transition: transform .5s cubic-bezier(.2,.8,.2,1);
+  }
+  .line {
+    width: 1.5px;
+    flex: 1 1 auto;
+    background: var(--line);
+    margin: 6px 0 -26px;
+  }
+  .step:last-child .line { display: none; }
+
+  .step.is-hot .marker {
+    border-color: var(--accent);
+    color: var(--accent);
+    box-shadow: 0 0 0 5px var(--accent-soft);
+  }
+  .step.is-final .marker {
+    border-color: var(--go);
+    color: var(--go);
+    box-shadow: 0 0 0 5px var(--go-soft);
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 26px 28px;
+    margin-top: 0;
+    transition: box-shadow .35s ease, transform .35s ease, border-color .35s ease;
+  }
+  .card:hover {
+    box-shadow: 0 18px 40px -28px rgba(27,24,19,0.45);
+    transform: translateY(-2px);
+    border-color: color-mix(in srgb, var(--ink) 22%, var(--line));
+  }
+
+  .card-top {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    gap: 18px; flex-wrap: wrap;
+  }
+  .card h3 {
+    font-family: "Space Grotesk", sans-serif;
+    font-weight: 600;
+    font-size: clamp(20px, 2.6vw, 25px);
+    letter-spacing: -0.02em;
+    line-height: 1.12;
+    max-width: 22ch;
+  }
+  .badges { display: flex; gap: 8px; flex-wrap: wrap; flex-shrink: 0; }
+  .badge {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-family: "Space Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border: 1px solid var(--line);
+    color: var(--ink-soft);
+    background: var(--bg);
+    white-space: nowrap;
+  }
+  .badge.hot {
+    color: var(--accent-ink);
+    border-color: color-mix(in srgb, var(--accent) 35%, var(--line));
+    background: var(--accent-soft);
+  }
+  .badge.allie { color: var(--ink); border-color: color-mix(in srgb, var(--ink) 25%, var(--line)); }
+  .badge .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+
+  .card p {
+    color: var(--ink-soft);
+    margin-top: 14px;
+    max-width: 64ch;
+    line-height: 1.62;
+  }
+  .card p strong { color: var(--ink); font-weight: 600; }
+
+  .actions {
+    display: flex; flex-wrap: wrap; gap: 10px;
+    margin-top: 20px;
+  }
+  .btn {
+    display: inline-flex; align-items: center; gap: 9px;
+    padding: 11px 17px;
+    border-radius: 11px;
+    font-family: "Hanken Grotesk", sans-serif;
+    font-weight: 600;
+    font-size: 14.5px;
+    text-decoration: none;
+    border: 1px solid var(--ink);
+    color: var(--ink);
+    background: transparent;
+    transition: background .2s ease, color .2s ease, transform .15s ease;
+    cursor: pointer;
+  }
+  .btn:hover { background: var(--ink); color: var(--bg); transform: translateY(-1px); }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .btn.primary:hover { background: var(--accent-ink); border-color: var(--accent-ink); }
+  .btn svg { width: 15px; height: 15px; }
+
+  .hubnote {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 11px 16px;
+    border-radius: 11px;
+    background: var(--bg-deep);
+    border: 1px dashed color-mix(in srgb, var(--ink) 16%, var(--line));
+    color: var(--ink-soft);
+    font-size: 14.5px; font-weight: 500;
+  }
+  .hubnote strong { color: var(--ink); font-weight: 600; }
+  .hubnote svg { width: 16px; height: 16px; color: var(--ink-faint); flex: 0 0 auto; }
+
+  .inline-contact {
+    margin-top: 20px;
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 16px;
+    border: 1px solid var(--line);
+    border-radius: 13px;
+    background: var(--bg-deep);
+  }
+  .ic-avatar {
+    width: 40px; height: 40px; border-radius: 10px;
+    background: var(--ink); color: var(--bg);
+    display: grid; place-items: center;
+    font-family: "Space Grotesk", sans-serif; font-weight: 700; font-size: 16px;
+    flex: 0 0 auto;
+  }
+  .ic-body { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+  .ic-name { font-weight: 600; font-size: 14.5px; color: var(--ink); }
+  .ic-links { display: flex; flex-wrap: wrap; gap: 5px 18px; font-family: "Space Mono", monospace; font-size: 12.5px; }
+  .ic-links a { color: var(--ink-soft); text-decoration: none; border-bottom: 1px solid var(--line); padding-bottom: 1px; transition: color .15s ease, border-color .15s ease; }
+  .ic-links a:hover { color: var(--accent-ink); border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); }
+
+  .substeps {
+    margin-top: 18px;
+    display: grid;
+    gap: 9px;
+  }
+  .substep {
+    display: flex; align-items: flex-start; gap: 11px;
+    color: var(--ink-soft);
+    font-size: 15.5px;
+  }
+  .substep .tick {
+    width: 19px; height: 19px; border-radius: 6px;
+    border: 1.5px solid var(--ink-faint);
+    flex: 0 0 auto; margin-top: 2px;
+  }
+
+  /* ---------- contacts ---------- */
+  .contacts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 18px;
+  }
+  .contact {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 26px;
+    display: flex;
+    flex-direction: column;
+  }
+  .contact-head { display: flex; align-items: center; gap: 14px; }
+  .avatar {
+    width: 50px; height: 50px; border-radius: 13px;
+    display: grid; place-items: center;
+    font-family: "Space Grotesk", sans-serif;
+    font-weight: 700; font-size: 20px;
+    background: var(--ink); color: var(--bg);
+    flex: 0 0 auto;
+  }
+  .avatar.wavv, .avatar.accent { background: var(--accent); color: #fff; }
+  .contact h3 {
+    font-family: "Space Grotesk", sans-serif;
+    font-weight: 600; font-size: 19px; letter-spacing: -0.01em;
+  }
+  .contact .role { color: var(--ink-soft); font-size: 14px; }
+  .contact p { color: var(--ink-soft); margin-top: 16px; font-size: 15px; line-height: 1.6; flex: 1 1 auto; }
+  .contact .fields { margin-top: 18px; display: grid; gap: 9px; }
+  .field {
+    display: flex; align-items: center; gap: 10px;
+    font-family: "Space Mono", monospace; font-size: 12.5px;
+    color: var(--ink-soft);
+  }
+  .field .k { color: var(--ink-faint); min-width: 58px; }
+  .field a { color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--line); padding-bottom: 1px; transition: color .15s ease, border-color .15s ease; }
+  .field a:hover { color: var(--accent-ink); border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); }
+  .ph {
+    color: var(--accent-ink);
+    background: var(--accent-soft);
+    border: 1px dashed color-mix(in srgb, var(--accent) 40%, var(--line));
+    padding: 2px 8px; border-radius: 6px;
+  }
+
+  /* ---------- footer ---------- */
+  .footer {
+    margin-top: 40px;
+    border-top: 1px solid var(--line);
+    background: var(--ink);
+    color: var(--bg);
+  }
+  .footer .wrap { padding: 56px 28px 50px; }
+  .footer h2 {
+    font-family: "Space Grotesk", sans-serif;
+    font-weight: 700; letter-spacing: -0.02em;
+    font-size: clamp(26px, 4vw, 38px);
+    line-height: 1.05;
+    max-width: 18ch;
+  }
+  .footer h2 .accent { color: var(--accent); }
+  .footer p { color: color-mix(in srgb, var(--bg) 70%, transparent); margin-top: 16px; max-width: 50ch; }
+  .footer .meta {
+    margin-top: 40px; padding-top: 22px;
+    border-top: 1px solid color-mix(in srgb, var(--bg) 18%, transparent);
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 14px;
+    color: var(--ink-faint);
+  }
+  .footer .meta .mono { color: color-mix(in srgb, var(--bg) 55%, transparent); }
+
+  /* ---------- (intentionally no entrance animation: static, always visible) ---------- */
+</style>
+</head>
+<body style="">
+
+  <header class="topbar">
+    <div class="wrap">
+      <div class="brand">
+        <div class="brand-mark">K</div>
+        <div class="brand-name">Kairos Financial <span>/ Onboarding</span></div>
+      </div>
+      <div class="mono tag">New Agent Checklist</div>
+    </div>
+  </header>
+
+  <main>
+    <!-- HERO -->
+    <section class="hero">
+      <div class="wrap">
+        <div class="kicker mono reveal">Welcome aboard · Your first week</div>
+        <h1 class="reveal">Let's get you <span class="accent">licensed, trained,</span> and on closing deals.</h1>
+        <p class="lede reveal">Welcome to Kairos Financial. This is your roadmap from passed exam to your first sales. Work through each step in order. Get this done within 1 week.&nbsp;</p>
+        <div class="stats reveal">
+          <div class="stat">
+            <div class="num">9</div>
+            <div class="lab mono">Steps</div>
+          </div>
+          <div class="stat">
+            <div class="num">~1 wk</div>
+            <div class="lab mono">To go-live</div>
+          </div>
+          <div class="stat">
+            <div class="num">In order</div>
+            <div class="lab mono">Top to bottom</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ROADMAP -->
+    <section class="section">
+      <div class="wrap">
+        <div class="section-head reveal">
+          <span class="mono">01 — 09</span>
+          <h2>The checklist</h2>
+        </div>
+      </div>
+
+      <div class="wrap roadmap">
+
+        <!-- STEP 1 -->
+        <article class="step is-hot reveal">
+          <div class="rail">
+            <div class="marker">1</div>
+            <div class="line"></div>
+          </div>
+          <div class="card">
+            <div class="card-top">
+              <h3>Apply for your state license &amp; submit your carrier contracts</h3>
+              <div class="badges">
+                <span class="badge hot"><span class="dot"></span>Start immediately</span>
+                <span class="badge allie"><span class="dot"></span>Work with Allie</span>
+              </div>
+            </div>
+            <p>
+              First, <strong>apply for your state license</strong>. Then work with <strong>Allie</strong> to get every
+              carrier contract completed and submitted in full. This is the one thing that can hold your entire launch up,
+              so <strong>push to finish it as fast as you can</strong>. You don't have to wait for full approval to keep
+              moving — start the next steps in parallel — but stay on this until Allie confirms it's all in.
+            </p>
+            <div class="substeps">
+              <div class="substep"><span class="tick"></span><span>State license application submitted</span></div>
+              <div class="substep"><span class="tick"></span><span>Every carrier contract submitted in full, with Allie</span></div>
+              <div class="substep"><span class="tick"></span><span>Verbally confirmed as complete with Allie</span></div>
+            </div>
+            <div class="actions">
+              <div class="inline-contact">
+                <div class="ic-avatar">A</div>
+                <div class="ic-body">
+                  <div class="ic-name">Allie · Contracting &amp; Licensing</div>
+                  <div class="ic-links">
+                    <a href="mailto:operations@re.disruptiongrp.com">operations@re.disruptiongrp.com</a>
+                    <a href="tel:+17208948445">720-894-8445</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- STEP 2 -->
+        <article class="step reveal">
+          <div class="rail">
+            <div class="marker">2</div>
+            <div class="line"></div>
+          </div>
+          <div class="card">
+            <div class="card-top">
+              <h3>Register for Discord</h3>
+              <div class="badges">
+                <span class="badge"><span class="dot"></span>Community</span>
+              </div>
+            </div>
+            <p>
+              Get connected with the team. If you don't already have a <strong>Discord</strong> account, create one — this is
+              where day-to-day communication, questions, and announcements happen, so set it up early.
+            </p>
+            <div class="actions">
+              <a class="btn" href="https://discord.com" target="_blank" rel="noopener">Open Discord
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M7 17 17 7M9 7h8v8"></path></svg>
+              </a>
+            </div>
+          </div>
+        </article>
+
+        <!-- STEP 3 -->
+        <article class="step reveal">
+          <div class="rail">
+            <div class="marker">3</div>
+            <div class="line"></div>
+          </div>
+          <div class="card">
+            <div class="card-top">
+              <h3>Register for the Sales Hub &amp; complete the training</h3>
+              <div class="badges">
+                <span class="badge hot"><span class="dot"></span>Start immediately</span>
+              </div>
+            </div>
+            <p>
+              Create your <strong>Sales Hub</strong> account and work through <strong>every training video, start to finish</strong>.
+              Everything else lives here, so get in right away and don't skip ahead or skim.
+            </p>
+            <div class="actions">
+              <a class="btn" href="https://kairos-financial.com/saleshub" target="_blank" rel="noopener">Open the Sales Hub
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M7 17 17 7M9 7h8v8"></path></svg>
+              </a>
+            </div>
+          </div>
+        </article>
+
+        <!-- STEP 4 -->
+        <article class="step reveal">
+          <div class="rail">
+            <div class="marker">4</div>
+            <div class="line"></div>
+          </div>
+          <div class="card">
+            <div class="card-top">
+              <h3>Set up your CRM</h3>
+              <div class="badges">
+                <span class="badge"><span class="dot"></span>In the Sales Hub</span>
+              </div>
+            </div>
+            <p>
+              Get your <strong>CRM</strong> configured so you're ready to dial. The full setup walkthrough and your
+              onboarding details both live inside the <strong>Sales Training Hub</strong> — follow the steps there.
+            </p>
+            <div class="actions">
+              <span class="hubnote">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m9 11 3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+                Find this inside the <strong>Sales Training Hub</strong>
+              </span>
+            </div>
+          </div>
+        </article>
+
+        <!-- STEP 5 -->
+        <article class="step reveal">
+          <div class="rail">
+            <div class="marker">5</div>
+            <div class="line"></div>
+          </div>
+          <div class="card">
+            <div class="card-top">
+              <h3>Memorize the script &amp; objections — then drill them</h3>
+              <div class="badges">
+                <span class="badge"><span class="dot"></span>Practice daily</span>
+              </div>
+            </div>
+            <p>
+              Learn the <strong>sales script</strong> and the <strong>objection responses</strong> cold. Rehearse them out loud,
+              over and over, until they're automatic and still sound natural — so you can stop thinking about the words and
+              focus on the person.
+            </p>
+            <div class="actions">
+              <span class="hubnote">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m9 11 3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+                Script &amp; objections are in the <strong>Sales Training Hub</strong>
+              </span>
+            </div>
+          </div>
+        </article>
+
+        <!-- STEP 6 -->
+        <article class="step reveal">
+          <div class="rail">
+            <div class="marker">6</div>
+            <div class="line"></div>
+          </div>
+          <div class="card">
+            <div class="card-top">
+              <h3>Shadow live presentations &amp; review pre-recorded sales</h3>
+              <div class="badges">
+                <span class="badge"><span class="dot"></span>Learn by watching</span>
+              </div>
+            </div>
+            <p>
+              Sit in on agents <strong>presenting live</strong>, and listen back to <strong>pre-recorded sales</strong> to hear
+              how the script holds up in real conversations — where top performers slow down, adapt, and close.
+            </p>
+            <div class="actions">
+              <span class="hubnote">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m9 11 3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+                Pre-recorded sales are in the <strong>Sales Training Hub</strong>
+              </span>
+            </div>
+          </div>
+        </article>
+
+        <!-- STEP 7 -->
+        <article class="step reveal">
+          <div class="rail">
+            <div class="marker">7</div>
+            <div class="line"></div>
+          </div>
+          <div class="card">
+            <div class="card-top">
+              <h3>Log your numbers &amp; set up your carrier portals</h3>
+              <div class="badges">
+                <span class="badge"><span class="dot"></span>Ongoing</span>
+              </div>
+            </div>
+            <p>
+              Head to your <strong>profile page in the Sales Hub</strong> and log all of your <strong>writing numbers</strong> and
+              <strong>state license numbers</strong> there. Then, as carrier approval emails land, <strong>register and log in to
+              each carrier portal right away</strong> — and bookmark every portal in one dedicated folder (Google Chrome works
+              best) so they're all in one place.
+            </p>
+            <div class="substeps">
+              <div class="substep"><span class="tick"></span><span>Writing &amp; state license numbers logged on your Sales Hub profile</span></div>
+              <div class="substep"><span class="tick"></span><span>Each carrier portal registered as the approval email arrives</span></div>
+              <div class="substep"><span class="tick"></span><span>All portals bookmarked in one Chrome folder</span></div>
+            </div>
+          </div>
+        </article>
+
+        <!-- STEP 8 -->
+        <article class="step reveal">
+          <div class="rail">
+            <div class="marker">8</div>
+            <div class="line"></div>
+          </div>
+          <div class="card">
+            <div class="card-top">
+              <h3>Attend your new agent orientation</h3>
+              <div class="badges">
+                <span class="badge"><span class="dot"></span>Live session</span>
+              </div>
+            </div>
+            <p style="">
+              Show up to your <strong>new agent orientation</strong>. This is where everything you've set up comes together. You'll learn how the day-to-day runs, and get clear on what's expected of you out of the gate.
+            </p>
+          </div>
+        </article>
+
+        <!-- STEP 9 -->
+        <article class="step is-final reveal">
+          <div class="rail">
+            <div class="marker">9</div>
+            <div class="line"></div>
+          </div>
+          <div class="card">
+            <div class="card-top">
+              <h3>Launch call with your upline</h3>
+              <div class="badges">
+                <span class="badge hot"><span class="dot"></span>Fill out the Launch Plan first</span>
+              </div>
+            </div>
+            <p>
+              Your final step before go-live. On this call you'll sit down with your upline to talk through your
+              personal goals and build a lead plan custom-tailored to your situation.
+              Before the call, <strong>fill out your launch plan sheet</strong> linked below. Don't fill it out on your
+              computer &mdash; print it out and keep it on your desk.</p>
+            <div class="substeps">
+              <div class="substep"><span class="tick"></span><span>Launch Plan goals filled out by hand, before the call</span></div>
+              <div class="substep"><span class="tick"></span><span>Launch call booked with your upline</span></div>
+              <div class="substep"><span class="tick"></span><span>Custom lead plan built together — you're live</span></div>
+            </div>
+            <div class="actions">
+              <a class="btn primary" href="assets/Documents/Launch%20Plan%20-%20One%20Page.pdf" target="_blank" rel="noopener">Open the Launch Plan
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 21h14"></path></svg>
+              </a>
+            </div>
+          </div>
+        </article>
+
+      </div>
+    </section>
+    <section class="section" id="contacts">
+      <div class="wrap">
+        <div class="section-head reveal">
+          <span class="mono">Need a hand</span>
+          <h2>Who to talk to</h2>
+        </div>
+        <div class="contacts-grid">
+          <div class="contact reveal">
+            <div class="contact-head">
+              <div class="avatar">A</div>
+              <div>
+                <h3>Allie</h3>
+                <div class="role">Contracting &amp; Licensing</div>
+              </div>
+            </div>
+            <p>Your first checkpoint. Allie helps you get licensed and your carrier contracts submitted — get her verbal sign-off that everything is in. Reach out early and stay in touch until it's done.</p>
+            <div class="fields">
+              <div class="field"><span class="k">Email</span><a href="mailto:operations@re.disruptiongrp.com">operations@re.disruptiongrp.com</a></div>
+              <div class="field"><span class="k">Phone</span><a href="tel:+17208948445">720-894-8445</a></div>
+            </div>
+          </div>
+
+          <div class="contact reveal">
+            <div class="contact-head">
+              <div class="avatar accent">D</div>
+              <div>
+                <h3>Dev Tyerman</h3>
+                <div class="role">Sales Training &amp; Questions</div>
+              </div>
+            </div>
+            <p>Your go-to for sales training and anything else you're unsure about. If you have a question at any point in this process, reach out to Dev.</p>
+            <div class="fields">
+              <div class="field"><span class="k">Phone</span><a href="tel:+13104227440">310-422-7440</a></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="wrap">
+      <h2>The right moment is <span class="accent">now.</span></h2>
+      <p>Work the list top to bottom, ask questions early, and keep your momentum. We're glad you're here — go build something.</p>
+      <div class="meta">
+        <span class="mono">Kairos Financial — New Agent Onboarding</span>
+        <span class="mono">v1.0</span>
+      </div>
+    </div>
+  </footer>
+
+
+
+</body></html>
