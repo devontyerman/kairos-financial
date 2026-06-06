@@ -27,7 +27,7 @@
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
-  html { scroll-behavior: smooth; }
+  html { scroll-behavior: smooth; overflow-x: hidden; }
 
   body {
     background: var(--bg);
@@ -38,6 +38,8 @@
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
     overflow-x: hidden;
+    width: 100%;
+    max-width: 100%;
   }
 
   .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 28px; }
@@ -331,7 +333,7 @@
   .ic-body { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
   .ic-name { font-weight: 600; font-size: 14.5px; color: var(--ink); }
   .ic-links { display: flex; flex-wrap: wrap; gap: 5px 18px; font-family: "Space Mono", monospace; font-size: 12.5px; }
-  .ic-links a { color: var(--ink-soft); text-decoration: none; border-bottom: 1px solid var(--line); padding-bottom: 1px; transition: color .15s ease, border-color .15s ease; }
+  .ic-links a { color: var(--ink-soft); text-decoration: none; border-bottom: 1px solid var(--line); padding-bottom: 1px; transition: color .15s ease, border-color .15s ease; overflow-wrap: anywhere; min-width: 0; max-width: 100%; }
   .ic-links a:hover { color: var(--accent-ink); border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); }
 
   .substeps {
@@ -387,7 +389,8 @@
     color: var(--ink-soft);
   }
   .field .k { color: var(--ink-faint); min-width: 58px; }
-  .field a { color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--line); padding-bottom: 1px; transition: color .15s ease, border-color .15s ease; }
+  .field a { color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--line); padding-bottom: 1px; transition: color .15s ease, border-color .15s ease; overflow-wrap: anywhere; min-width: 0; }
+  .field { flex-wrap: wrap; }
   .field a:hover { color: var(--accent-ink); border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); }
   .ph {
     color: var(--accent-ink);
@@ -425,27 +428,28 @@
 
   /* ---------- mobile ---------- */
   @media (max-width: 720px) {
-    .wrap { padding: 0 18px; }
+    .wrap { padding: 0 16px; }
 
-    .hero { padding: 48px 0 36px; }
-    .kicker { margin-bottom: 18px; }
-    .hero h1 { font-size: clamp(32px, 9vw, 50px); max-width: 100%; }
-    .hero .lede { margin-top: 20px; }
-    .stats { margin-top: 30px; }
+    .hero { padding: 44px 0 32px; }
+    .kicker { margin-bottom: 16px; }
+    .hero h1 { font-size: clamp(30px, 8.5vw, 48px); max-width: 100%; }
+    .hero .lede { margin-top: 18px; }
+    .stats { margin-top: 28px; }
 
-    .section { padding: 24px 0 16px; }
+    .section { padding: 22px 0 14px; }
 
-    /* Tighter timeline so the card gets the room on a narrow screen */
-    .step { grid-template-columns: 44px 1fr; gap: 14px; padding-bottom: 18px; }
-    .marker { width: 44px; height: 44px; font-size: 18px; }
-    .step.is-hot .marker, .step.is-final .marker { box-shadow: 0 0 0 4px var(--accent-soft); }
-    .step.is-final .marker { box-shadow: 0 0 0 4px var(--go-soft); }
-    .line { margin: 6px 0 -18px; }
+    /* Put the step number ABOVE a full-width card. No left rail, so every
+       card spans the same width down the page — built for vertical scroll. */
+    .roadmap { padding-bottom: 16px; }
+    .step { display: block; padding-bottom: 26px; }
+    .rail { flex-direction: row; align-items: center; margin-bottom: 14px; }
+    .line { display: none; }
+    .marker { width: 46px; height: 46px; font-size: 19px; }
 
-    .card { padding: 18px 16px; border-radius: 14px; }
+    .card { width: 100%; padding: 18px 16px; border-radius: 14px; }
     .card-top { gap: 10px; }
     .card h3 { max-width: 100%; }
-    .card p { margin-top: 12px; }
+    .card p { margin-top: 12px; max-width: 100%; }
 
     /* Stack actions full-width for comfortable tap targets */
     .actions { flex-direction: column; align-items: stretch; gap: 9px; }
@@ -453,14 +457,13 @@
     .hubnote { display: flex; width: 100%; justify-content: flex-start; }
     .video-embed { max-width: 100%; }
 
+    .contacts-grid { grid-template-columns: 1fr; }
     .contact { padding: 20px; }
-    .footer .wrap { padding: 44px 18px 40px; }
+    .footer .wrap { padding: 40px 16px 36px; }
   }
 
   @media (max-width: 380px) {
-    .step { grid-template-columns: 38px 1fr; gap: 11px; }
-    .marker { width: 38px; height: 38px; font-size: 16px; }
-    .line { margin: 5px 0 -18px; }
+    .marker { width: 42px; height: 42px; font-size: 17px; }
     .badge { font-size: 10px; padding: 5px 9px; }
   }
 </style>
