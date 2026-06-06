@@ -21803,12 +21803,20 @@
           { title: 'New Agent Steps', videos: [
             { slug: 'first-90-days', title: 'First 90 Days Expectations for Agents', file: 'First 90 Days Expectations for Agents.mp4', duration: 538, desc: '', resources: [] },
             { slug: 'navigating-discord', title: 'Navigating Discord', file: 'Navigating Our Discord Servers_ Key Features and Expectations.mp4', duration: 281, desc: '', resources: DISCORD },
-            { slug: 'submit-a-sale', title: 'How to Submit a Sale', file: 'How to Submit a Sale in Discord 🚀.mp4', duration: 115, desc: '', resources: DISCORD }
+            { slug: 'submit-a-sale', title: 'How to Submit a Sale', file: 'How to Submit a Sale in Discord 🚀.mp4', duration: 115, desc: '', resources: DISCORD },
+            { slug: 'sales-hub-tracker', title: 'How to Use the Sales Hub Tracker', file: 'How to Use the Sales Hub Tracker.mp4', duration: 0, desc: '', resources: [] }
           ]},
           { title: 'Licensing', videos: [
             { slug: 'carrier-contracting', title: 'Insurance Carrier Contracting Before Emailing States', file: 'Insurance Carrier Contracting Before Emailing States.mp4', duration: 78, desc: '', resources: [] },
             { slug: 'purchase-licenses', title: 'How to Purchase Additional Insurance Licenses', file: 'How to Purchase Additional Insurance Licenses.mp4', duration: 217, desc: '', resources: [] },
             { slug: 'after-state-license', title: 'After State License, Next Steps Checklist', file: 'After State License, Next Steps Checklist 📄.mp4', duration: 107, desc: '', resources: [] }
+          ]},
+          { title: 'CRM Guide', videos: [
+            { slug: 'how-to-buy-crm', title: 'How to Buy CRM', file: 'How to Buy CRM.mp4', duration: 166, desc: '', resources: [CRM_LINK] },
+            { slug: 'crm-setup', title: 'CRM Setup', file: 'CRM Setup.mp4', duration: 974, desc: '', resources: [] },
+            { slug: 'calendar-setup', title: 'Calendar Setup', file: 'Calendar Setup.mp4', duration: 342, desc: '', resources: [] },
+            { slug: 'wavv-setup', title: 'WAVV Setup', file: 'WAVV Setup.mp4', duration: 266, desc: '', resources: [WAVV, WAVV_COURSE] },
+            { slug: 'atp-registration', title: 'A2P Guide', file: 'How to Complete ATP Registration Setup ✅.mp4', duration: 164, desc: '', resources: [A2P_GUIDE] }
           ]},
           { title: 'Sales & Presentation', videos: [
             { slug: 'call-intro-script', title: 'Intro', file: 'Mastering Your Call Intro Script.mp4', duration: 1496, desc: '', resources: [SCRIPT_PDF] },
@@ -21818,13 +21826,6 @@
             { slug: 'product-selection', title: 'Product Selection', file: 'Product Selection.mp4', duration: 828, desc: '', resources: [] },
             { slug: 'underwriting-guide', title: 'Underwriting Guide', file: 'Underwriting Guide.mp4', duration: 1154, desc: '', resources: [] },
             { slug: 'carrier-applications-portal', title: 'Carrier Applications, Quotes, and Portal Tips', file: 'Carrier Applications, Quotes, and Portal Tips.mp4', duration: 533, desc: '', resources: [] }
-          ]},
-          { title: 'CRM Guide', videos: [
-            { slug: 'how-to-buy-crm', title: 'How to Buy CRM', file: 'How to Buy CRM.mp4', duration: 166, desc: '', resources: [CRM_LINK] },
-            { slug: 'crm-setup', title: 'CRM Setup', file: 'CRM Setup.mp4', duration: 974, desc: '', resources: [] },
-            { slug: 'calendar-setup', title: 'Calendar Setup', file: 'Calendar Setup.mp4', duration: 342, desc: '', resources: [] },
-            { slug: 'wavv-setup', title: 'WAVV Setup', file: 'WAVV Setup.mp4', duration: 266, desc: '', resources: [WAVV, WAVV_COURSE] },
-            { slug: 'atp-registration', title: 'A2P Guide', file: 'How to Complete ATP Registration Setup ✅.mp4', duration: 164, desc: '', resources: [A2P_GUIDE] }
           ]}
         ]
       };
@@ -22074,7 +22075,7 @@
             }
             const tm = document.createElement('span');
             tm.className = 'tve-lesson-time';
-            tm.textContent = fmt(v.duration);
+            tm.textContent = v.duration ? fmt(v.duration) : '';
             li.appendChild(ico); li.appendChild(ttl); li.appendChild(tm);
             li.addEventListener('click', () => { if (editMode) return; if (!locked) select(v.slug); });
             secEl.appendChild(li);
