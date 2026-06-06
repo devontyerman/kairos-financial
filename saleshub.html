@@ -3320,8 +3320,41 @@
       font-family: var(--tp-mono); font-size: 11px;
       color: var(--tp-ink-3); margin-top: 2px;
     }
+    /* Read-only licenses & ready numbers shown in the edit-agent modal */
+    #tpatab-agents .tp-lic-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 12px;
+    }
+    #tpatab-agents .tp-lic-col-lbl {
+      font-family: var(--tp-mono); font-size: 10px; letter-spacing: 0.07em;
+      text-transform: uppercase; color: var(--tp-ink-3); margin-bottom: 8px;
+    }
+    #tpatab-agents .tp-lic-list { display: flex; flex-direction: column; gap: 6px; }
+    #tpatab-agents .tp-lic-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 10px; border-radius: 8px;
+      background: var(--tp-surface-3); border: 1px solid var(--tp-hairline);
+    }
+    #tpatab-agents .tp-lic-badge {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-width: 30px; padding: 2px 7px; border-radius: 6px; flex: 0 0 auto;
+      font-family: var(--tp-mono); font-weight: 700; font-size: 11px;
+      background: color-mix(in oklch, var(--rb-purple, #7c3aed) 16%, transparent);
+      color: var(--rb-purple, #7c3aed);
+    }
+    #tpatab-agents .tp-lic-key {
+      font-size: 12.5px; font-weight: 600; color: var(--tp-ink-1);
+      flex: 0 0 auto; min-width: 0;
+    }
+    #tpatab-agents .tp-lic-val {
+      margin-left: auto; text-align: right; word-break: break-all;
+      font-family: var(--tp-mono); font-size: 12.5px; color: var(--tp-ink-1);
+    }
+    #tpatab-agents .tp-lic-empty {
+      font-size: 12px; color: var(--tp-ink-3); font-style: italic; padding: 2px 0;
+    }
     @media (max-width: 600px) {
       #tpatab-agents .hv-form-grid { grid-template-columns: 1fr; }
+      #tpatab-agents .tp-lic-grid { grid-template-columns: 1fr; }
     }
     #tpatab-hierarchy .hv-modal-hd, #tpatab-agents .hv-modal-hd {
       padding: 18px 22px;
@@ -5813,10 +5846,114 @@
     }
     #panel-profile.active #profileCompMsg,
     #panel-profile.active #profileEmailMsg,
-    #panel-profile.active #profilePasswordMsg {
+    #panel-profile.active #profilePasswordMsg,
+    #panel-profile.active #profileLicensesMsg {
       color: var(--kf-ink-2) !important;
       font-family: var(--kf-mono) !important;
       font-size: 11px !important;
+    }
+
+    /* ─── Licenses & Ready Numbers — repeatable rows ─────────────────────── */
+    #panel-profile.active .lic-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr) auto;
+      gap: 8px;
+      margin-bottom: 8px;
+      align-items: center;
+    }
+    #panel-profile.active .lic-row .ss-input,
+    #panel-profile.active .lic-row .ss-select { margin: 0 !important; }
+    #panel-profile.active .lic-remove {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 34px; height: 34px; flex-shrink: 0;
+      border-radius: 8px; cursor: pointer;
+      background: color-mix(in oklch, #ef4444 12%, transparent);
+      border: 1px solid color-mix(in oklch, #ef4444 30%, transparent);
+      color: #ef4444;
+    }
+    #panel-profile.active .lic-remove:hover { background: color-mix(in oklch, #ef4444 22%, transparent); }
+    #panel-profile.active .lic-remove svg { width: 16px; height: 16px; }
+    #panel-profile.active .lic-empty {
+      font-size: 12px; color: var(--kf-ink-3, #888);
+      font-style: italic; margin: 0 0 8px;
+    }
+    #panel-profile.active .lic-add-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 7px 12px; margin-top: 2px;
+      font-size: 12px; font-weight: 600; cursor: pointer;
+      border-radius: 8px;
+      background: color-mix(in oklch, var(--rb-green, #16a34a) 10%, transparent);
+      border: 1px solid color-mix(in oklch, var(--rb-green, #16a34a) 30%, transparent);
+      color: var(--rb-green, #16a34a);
+    }
+    #panel-profile.active .lic-add-btn:hover { background: color-mix(in oklch, var(--rb-green, #16a34a) 20%, transparent); }
+
+    /* Card header with the Edit toggle on the right */
+    #panel-profile.active .lic-head {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 10px; margin-bottom: 12px;
+    }
+    #panel-profile.active .lic-edit-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 6px 12px; flex-shrink: 0;
+      font-size: 12px; font-weight: 600; cursor: pointer;
+      border-radius: 8px;
+      background: color-mix(in oklch, #7c3aed 10%, transparent);
+      border: 1px solid color-mix(in oklch, #7c3aed 32%, transparent);
+      color: #7c3aed;
+    }
+    #panel-profile.active .lic-edit-btn:hover { background: color-mix(in oklch, #7c3aed 20%, transparent); }
+
+    /* View mode — organized read-only display */
+    #panel-profile.active .lic-view-group + .lic-view-group { margin-top: 16px; }
+    #panel-profile.active .lic-view-label {
+      font-family: var(--kf-mono) !important;
+      font-size: 10.5px; letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--kf-ink-3, #8a8a8a); margin-bottom: 8px;
+    }
+    #panel-profile.active .lic-view-list { display: flex; flex-direction: column; gap: 6px; }
+    #panel-profile.active .lic-view-row {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 12px; border-radius: 8px;
+      background: color-mix(in oklch, var(--kf-ink-1, #111) 4%, transparent);
+      border: 1px solid color-mix(in oklch, var(--kf-ink-1, #111) 8%, transparent);
+    }
+    #panel-profile.active .lic-view-key {
+      font-weight: 600; font-size: 13px; color: var(--kf-ink-1, #1a1a1a);
+      flex: 0 0 auto; min-width: 0;
+    }
+    #panel-profile.active .lic-view-badge {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-width: 34px; padding: 3px 8px; border-radius: 6px;
+      font-family: var(--kf-mono) !important; font-weight: 700; font-size: 12px;
+      background: color-mix(in oklch, #7c3aed 14%, transparent); color: #7c3aed;
+      flex: 0 0 auto;
+    }
+    #panel-profile.active .lic-view-val {
+      margin-left: auto; text-align: right;
+      font-family: var(--kf-mono) !important; font-size: 13px;
+      color: var(--kf-ink-1, #1a1a1a); word-break: break-all;
+    }
+    #panel-profile.active .lic-view-empty {
+      font-size: 12.5px; color: var(--kf-ink-3, #888); font-style: italic;
+      padding: 2px 0;
+    }
+
+    /* Edit-mode action row */
+    #panel-profile.active .lic-edit-actions { display: flex; align-items: center; gap: 10px; }
+    #panel-profile.active .lic-edit-actions .ss-submit { flex: 1; }
+    #panel-profile.active .lic-cancel-btn {
+      padding: 11px 16px; flex-shrink: 0;
+      font-size: 13px; font-weight: 600; cursor: pointer;
+      border-radius: 10px;
+      background: transparent;
+      border: 1px solid color-mix(in oklch, var(--kf-ink-1, #111) 18%, transparent);
+      color: var(--kf-ink-2, #555);
+    }
+    #panel-profile.active .lic-cancel-btn:hover { background: color-mix(in oklch, var(--kf-ink-1, #111) 6%, transparent); }
+
+    @media (max-width: 520px) {
+      #panel-profile.active .lic-row { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto; gap: 6px; }
     }
 
     /* Constrain profile content like the bundle's max-width pattern */
@@ -12662,9 +12799,6 @@
     </div>
     <div class="ss-sidebar-user" id="sidebarUser">
       <span class="ss-sidebar-user-name" id="sidebarUserName"></span>
-      <button class="ss-sidebar-settings" id="sidebarSettingsBtn" type="button" aria-label="Profile settings">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
-      </button>
     </div>
     <div class="ss-sidebar-grid">
     <!-- Admin-only Team Dashboard pinned to the top of the rail; visibility is
@@ -12713,6 +12847,10 @@
     <button class="ss-sidebar-btn" data-panel="weeklytracker" id="weeklyTrackerSidebarBtn" style="display:none;">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
       <span>Weekly Tracker</span>
+    </button>
+    <button class="ss-sidebar-btn" data-panel="profile">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span>Profile</span>
     </button>
     </div>
 
@@ -14097,6 +14235,68 @@
             Save Comp Level
           </button>
           <div id="profileCompMsg" style="margin-top:0.6rem;font-size:0.8rem;text-align:center;display:none;"></div>
+        </div>
+
+        <!-- Licenses & Ready Numbers -->
+        <div class="ss-form-card" id="profileLicensesCard" style="margin-bottom:1.25rem;">
+          <div class="lic-head">
+            <div class="ss-form-title" style="color:#7c3aed;margin:0;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M15 8h3"/><path d="M15 12h3"/><path d="M7 16h10"/></svg>
+              Licenses &amp; Ready Numbers
+            </div>
+            <!-- Edit toggle: shown in view mode so entries aren't editable by accident -->
+            <button class="lic-edit-btn" type="button" id="licEditBtn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4z"/></svg>
+              Edit
+            </button>
+          </div>
+
+          <!-- ── VIEW MODE (locked / read-only, organized) ── -->
+          <div id="licView">
+            <div class="lic-view-group">
+              <div class="lic-view-label">State Licenses</div>
+              <div id="licStateView" class="lic-view-list"></div>
+            </div>
+            <div class="lic-view-group">
+              <div class="lic-view-label">Carrier Writing / Ready Numbers</div>
+              <div id="licCarrierView" class="lic-view-list"></div>
+            </div>
+          </div>
+
+          <!-- ── EDIT MODE (hidden until Edit is clicked) ── -->
+          <div id="licEdit" style="display:none;">
+            <p style="font-size:0.82rem;color:#666;margin:0 0 1rem;">Add or update your state license numbers and carrier writing / ready numbers, then Save.</p>
+
+            <!-- State Licenses -->
+            <div style="margin-bottom:1.1rem;">
+              <label class="ss-label" style="display:block;margin-bottom:0.5rem;">State License Numbers</label>
+              <div id="licStateRows"></div>
+              <button class="lic-add-btn" type="button" id="licStateAdd">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Add State License
+              </button>
+            </div>
+
+            <!-- Carrier Ready Numbers -->
+            <div style="margin-bottom:1.1rem;">
+              <label class="ss-label" style="display:block;margin-bottom:0.5rem;">Carrier Writing / Ready Numbers</label>
+              <div id="licCarrierRows"></div>
+              <button class="lic-add-btn" type="button" id="licCarrierAdd">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Add Carrier Number
+              </button>
+            </div>
+
+            <div class="lic-edit-actions">
+              <button class="ss-submit" type="button" id="profileLicensesSave" style="background:#7c3aed;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                Save
+              </button>
+              <button class="lic-cancel-btn" type="button" id="licCancelBtn">Cancel</button>
+            </div>
+          </div>
+
+          <div id="profileLicensesMsg" style="margin-top:0.6rem;font-size:0.8rem;text-align:center;display:none;"></div>
         </div>
 
         <!-- Email -->
@@ -19299,6 +19499,8 @@
         const isAdmin = (currentUser.email || '').toLowerCase() === 'dev@kairos-financial.com';
         adminCard.style.display = isAdmin ? '' : 'none';
       }
+      // Load saved licenses + carrier numbers
+      loadProfileLicenses();
     }
 
     // Save comp level
@@ -19331,6 +19533,215 @@
           if (typeof recalcFromAP === 'function') recalcFromAP();
         }
         msgEl.textContent = '✓ Comp level saved';
+        msgEl.style.color = '#16a34a';
+        msgEl.style.display = 'block';
+        setTimeout(() => { msgEl.style.display = 'none'; }, 3000);
+      } catch (e) {
+        msgEl.textContent = 'Error: ' + e.message;
+        msgEl.style.color = '#dc2626';
+        msgEl.style.display = 'block';
+      }
+    });
+
+    // ─── LICENSES & READY NUMBERS ───
+    // Stored on agent_profiles as two JSONB array columns:
+    //   state_licenses  → [{ state: "TX", number: "1234567" }, ...]
+    //   carrier_numbers → [{ carrier: "Americo", number: "ABC123" }, ...]
+    // The card has two modes: a locked, organized VIEW (default) and an
+    // EDIT form revealed by the Edit button — so saved numbers aren't
+    // changed by an accidental click. Carrier options mirror the
+    // submit-a-sale list (the shared CARRIERS constant).
+    const US_STATES = ['AL','AK','AZ','AR','CA','CO','CT','DE','DC','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY'];
+
+    // Last-loaded values, kept so Edit/Cancel can repopulate without a refetch.
+    let licData = { state_licenses: [], carrier_numbers: [] };
+
+    function licEscape(str) {
+      return String(str == null ? '' : str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    function licRemoveBtn() {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'lic-remove';
+      b.setAttribute('aria-label', 'Remove');
+      b.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>';
+      b.addEventListener('click', () => b.closest('.lic-row').remove());
+      return b;
+    }
+
+    function addStateLicenseRow(state, number) {
+      const wrap = document.getElementById('licStateRows');
+      const row = document.createElement('div');
+      row.className = 'lic-row';
+      const sel = document.createElement('select');
+      sel.className = 'ss-select lic-state';
+      sel.innerHTML = '<option value="">State…</option>' + US_STATES.map(s => '<option value="' + s + '">' + s + '</option>').join('');
+      if (state) sel.value = state;
+      const num = document.createElement('input');
+      num.type = 'text';
+      num.className = 'ss-input lic-number';
+      num.placeholder = 'License number';
+      num.value = number || '';
+      row.appendChild(sel);
+      row.appendChild(num);
+      row.appendChild(licRemoveBtn());
+      wrap.appendChild(row);
+    }
+
+    function addCarrierNumberRow(carrier, number) {
+      const wrap = document.getElementById('licCarrierRows');
+      const row = document.createElement('div');
+      row.className = 'lic-row';
+      const sel = document.createElement('select');
+      sel.className = 'ss-select lic-carrier';
+      // Same carriers offered on the submit-a-sale form.
+      const opts = (typeof CARRIERS !== 'undefined' ? CARRIERS : []);
+      let optsHtml = '<option value="">Carrier…</option>' + opts.map(c => '<option value="' + licEscape(c) + '">' + licEscape(c) + '</option>').join('');
+      // Preserve a previously-saved carrier even if it's not in the list.
+      if (carrier && opts.indexOf(carrier) === -1) optsHtml += '<option value="' + licEscape(carrier) + '">' + licEscape(carrier) + '</option>';
+      sel.innerHTML = optsHtml;
+      if (carrier) sel.value = carrier;
+      const num = document.createElement('input');
+      num.type = 'text';
+      num.className = 'ss-input lic-number';
+      num.placeholder = 'Writing / ready number';
+      num.value = number || '';
+      row.appendChild(sel);
+      row.appendChild(num);
+      row.appendChild(licRemoveBtn());
+      wrap.appendChild(row);
+    }
+
+    // Render the locked, organized view from licData.
+    function renderLicensesView() {
+      const stateView = document.getElementById('licStateView');
+      const carrierView = document.getElementById('licCarrierView');
+      if (!stateView || !carrierView) return;
+      // Sort copies alphabetically for display (state code / carrier name),
+      // leaving the stored order untouched.
+      const states = (licData.state_licenses || []).slice().sort((a, b) =>
+        (a.state || '').localeCompare(b.state || ''));
+      const carriers = (licData.carrier_numbers || []).slice().sort((a, b) =>
+        (a.carrier || '').localeCompare(b.carrier || ''));
+      if (states.length) {
+        stateView.innerHTML = states.map(s =>
+          '<div class="lic-view-row"><span class="lic-view-badge">' + licEscape(s.state || '—') + '</span>' +
+          '<span class="lic-view-val">' + licEscape(s.number || '—') + '</span></div>'
+        ).join('');
+      } else {
+        stateView.innerHTML = '<div class="lic-view-empty">No state licenses added yet.</div>';
+      }
+      if (carriers.length) {
+        carrierView.innerHTML = carriers.map(c =>
+          '<div class="lic-view-row"><span class="lic-view-key">' + licEscape(c.carrier || '—') + '</span>' +
+          '<span class="lic-view-val">' + licEscape(c.number || '—') + '</span></div>'
+        ).join('');
+      } else {
+        carrierView.innerHTML = '<div class="lic-view-empty">No carrier numbers added yet.</div>';
+      }
+    }
+
+    // Build the editable rows from licData.
+    function populateLicenseEditRows() {
+      const stateWrap = document.getElementById('licStateRows');
+      const carrierWrap = document.getElementById('licCarrierRows');
+      if (!stateWrap || !carrierWrap) return;
+      stateWrap.innerHTML = '';
+      carrierWrap.innerHTML = '';
+      (licData.state_licenses || []).forEach(s => addStateLicenseRow(s.state || '', s.number || ''));
+      (licData.carrier_numbers || []).forEach(c => addCarrierNumberRow(c.carrier || '', c.number || ''));
+      // Always leave at least one empty row so the form is usable.
+      if (!stateWrap.children.length) addStateLicenseRow('', '');
+      if (!carrierWrap.children.length) addCarrierNumberRow('', '');
+    }
+
+    function setLicensesMode(editing) {
+      const view = document.getElementById('licView');
+      const edit = document.getElementById('licEdit');
+      const editBtn = document.getElementById('licEditBtn');
+      if (!view || !edit) return;
+      if (editing) {
+        populateLicenseEditRows();
+        view.style.display = 'none';
+        edit.style.display = '';
+        if (editBtn) editBtn.style.display = 'none';
+      } else {
+        renderLicensesView();
+        edit.style.display = 'none';
+        view.style.display = '';
+        if (editBtn) editBtn.style.display = '';
+      }
+    }
+
+    document.getElementById('licStateAdd')?.addEventListener('click', () => addStateLicenseRow('', ''));
+    document.getElementById('licCarrierAdd')?.addEventListener('click', () => addCarrierNumberRow('', ''));
+    document.getElementById('licEditBtn')?.addEventListener('click', () => setLicensesMode(true));
+    document.getElementById('licCancelBtn')?.addEventListener('click', () => {
+      const msgEl = document.getElementById('profileLicensesMsg');
+      if (msgEl) msgEl.style.display = 'none';
+      setLicensesMode(false);
+    });
+
+    async function loadProfileLicenses() {
+      if (!currentUser) return;
+      licData = { state_licenses: [], carrier_numbers: [] };
+      try {
+        const token = accessToken || SUPABASE_KEY;
+        const res = await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?user_id=eq.' + currentUser.id + '&select=state_licenses,carrier_numbers', {
+          headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + token }
+        });
+        const rows = await res.json();
+        const prof = (rows && rows[0]) || {};
+        licData.state_licenses = Array.isArray(prof.state_licenses) ? prof.state_licenses : [];
+        licData.carrier_numbers = Array.isArray(prof.carrier_numbers) ? prof.carrier_numbers : [];
+      } catch (e) {
+        console.error('Failed to load licenses:', e);
+      }
+      // Open in locked view mode every time the panel loads.
+      setLicensesMode(false);
+    }
+
+    document.getElementById('profileLicensesSave')?.addEventListener('click', async () => {
+      if (!currentUser) return;
+      const msgEl = document.getElementById('profileLicensesMsg');
+      const token = accessToken || SUPABASE_KEY;
+
+      // Collect rows, dropping fully-empty ones.
+      const stateLicenses = [];
+      document.querySelectorAll('#licStateRows .lic-row').forEach(row => {
+        const state = row.querySelector('.lic-state').value.trim();
+        const number = row.querySelector('.lic-number').value.trim();
+        if (state || number) stateLicenses.push({ state, number });
+      });
+      const carrierNumbers = [];
+      document.querySelectorAll('#licCarrierRows .lic-row').forEach(row => {
+        const carrier = row.querySelector('.lic-carrier').value.trim();
+        const number = row.querySelector('.lic-number').value.trim();
+        if (carrier || number) carrierNumbers.push({ carrier, number });
+      });
+
+      const payload = { state_licenses: stateLicenses, carrier_numbers: carrierNumbers };
+      try {
+        // Update first; if no row exists yet, insert.
+        const updRes = await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?user_id=eq.' + currentUser.id, {
+          method: 'PATCH',
+          headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json', 'Prefer': 'return=representation' },
+          body: JSON.stringify(payload)
+        });
+        const updRows = await updRes.json();
+        if (!Array.isArray(updRows) || updRows.length === 0) {
+          await fetch(SUPABASE_URL + '/rest/v1/agent_profiles', {
+            method: 'POST',
+            headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+            body: JSON.stringify(Object.assign({ user_id: currentUser.id }, payload))
+          });
+        }
+        // Persist locally and drop back into the locked view.
+        licData.state_licenses = stateLicenses;
+        licData.carrier_numbers = carrierNumbers;
+        setLicensesMode(false);
+        msgEl.textContent = '✓ Licenses & numbers saved';
         msgEl.style.color = '#16a34a';
         msgEl.style.display = 'block';
         setTimeout(() => { msgEl.style.display = 'none'; }, 3000);
@@ -22266,7 +22677,7 @@
         return res.json();
       }
       async function fetchAgentProfiles() {
-        const res = await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?select=user_id,agent_name,comp_level,training_complete,annual_goal,manager_user_id,is_manager&order=agent_name.asc', { headers: HDRS });
+        const res = await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?select=user_id,agent_name,comp_level,training_complete,annual_goal,manager_user_id,is_manager,state_licenses,carrier_numbers&order=agent_name.asc', { headers: HDRS });
         if (!res.ok) return [];
         return res.json();
       }
@@ -23958,6 +24369,11 @@
               const pct = Math.min(100, Math.round((vCount / TOTAL_TRAINING_VIDEOS) * 100));
               const isComplete = live.training_complete === true;
               const justSaved = !!savedFor[editFor.user_id];
+              // Read-only licenses & ready numbers, sorted alphabetically.
+              const stateLics = (Array.isArray(live.state_licenses) ? live.state_licenses : [])
+                .slice().sort((a, b) => (a.state || '').localeCompare(b.state || ''));
+              const carrierNums = (Array.isArray(live.carrier_numbers) ? live.carrier_numbers : [])
+                .slice().sort((a, b) => (a.carrier || '').localeCompare(b.carrier || ''));
               return (
                 <div className="hv-modal-layer" onClick={closeEdit}>
                   <div className="hv-modal hv-modal-wide" onClick={(e) => e.stopPropagation()}>
@@ -24013,6 +24429,48 @@
                             onClick={() => toggleAccess(editFor.user_id, isComplete)}>
                             {isComplete ? 'Revoke access' : 'Grant access'}
                           </button>
+                        </div>
+                      </div>
+                      <div className="hv-form-section">
+                        <div className="hv-form-section-hd">
+                          <div>
+                            <div className="hv-form-section-lbl">Licenses &amp; ready numbers</div>
+                            <div className="hv-form-section-meta">
+                              {stateLics.length} state license{stateLics.length === 1 ? '' : 's'} · {carrierNums.length} carrier number{carrierNums.length === 1 ? '' : 's'}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="tp-lic-grid">
+                          <div>
+                            <div className="tp-lic-col-lbl">State Licenses</div>
+                            {stateLics.length ? (
+                              <div className="tp-lic-list">
+                                {stateLics.map((s, i) => (
+                                  <div className="tp-lic-row" key={'st' + i}>
+                                    <span className="tp-lic-badge">{s.state || '—'}</span>
+                                    <span className="tp-lic-val">{s.number || '—'}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            ) : (
+                              <div className="tp-lic-empty">None on file</div>
+                            )}
+                          </div>
+                          <div>
+                            <div className="tp-lic-col-lbl">Carrier Writing / Ready Numbers</div>
+                            {carrierNums.length ? (
+                              <div className="tp-lic-list">
+                                {carrierNums.map((c, i) => (
+                                  <div className="tp-lic-row" key={'ca' + i}>
+                                    <span className="tp-lic-key">{c.carrier || '—'}</span>
+                                    <span className="tp-lic-val">{c.number || '—'}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            ) : (
+                              <div className="tp-lic-empty">None on file</div>
+                            )}
+                          </div>
                         </div>
                       </div>
                       <div className="hv-form-section hv-form-section-danger">
