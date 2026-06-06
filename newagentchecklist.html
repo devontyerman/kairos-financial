@@ -300,6 +300,19 @@
   .hubnote strong { color: var(--ink); font-weight: 600; }
   .hubnote svg { width: 16px; height: 16px; color: var(--ink-faint); flex: 0 0 auto; }
 
+  .video-embed {
+    margin-top: 16px;
+    position: relative;
+    width: 100%;
+    max-width: 560px;
+    aspect-ratio: 16 / 9;
+    border-radius: 13px;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    background: #000;
+  }
+  .video-embed iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+
   .inline-contact {
     margin-top: 20px;
     display: flex; align-items: center; gap: 14px;
@@ -409,6 +422,47 @@
   .footer .meta .mono { color: color-mix(in srgb, var(--bg) 55%, transparent); }
 
   /* ---------- (intentionally no entrance animation: static, always visible) ---------- */
+
+  /* ---------- mobile ---------- */
+  @media (max-width: 720px) {
+    .wrap { padding: 0 18px; }
+
+    .hero { padding: 48px 0 36px; }
+    .kicker { margin-bottom: 18px; }
+    .hero h1 { font-size: clamp(32px, 9vw, 50px); max-width: 100%; }
+    .hero .lede { margin-top: 20px; }
+    .stats { margin-top: 30px; }
+
+    .section { padding: 24px 0 16px; }
+
+    /* Tighter timeline so the card gets the room on a narrow screen */
+    .step { grid-template-columns: 44px 1fr; gap: 14px; padding-bottom: 18px; }
+    .marker { width: 44px; height: 44px; font-size: 18px; }
+    .step.is-hot .marker, .step.is-final .marker { box-shadow: 0 0 0 4px var(--accent-soft); }
+    .step.is-final .marker { box-shadow: 0 0 0 4px var(--go-soft); }
+    .line { margin: 6px 0 -18px; }
+
+    .card { padding: 18px 16px; border-radius: 14px; }
+    .card-top { gap: 10px; }
+    .card h3 { max-width: 100%; }
+    .card p { margin-top: 12px; }
+
+    /* Stack actions full-width for comfortable tap targets */
+    .actions { flex-direction: column; align-items: stretch; gap: 9px; }
+    .btn { justify-content: center; padding: 13px 16px; font-size: 15px; }
+    .hubnote { display: flex; width: 100%; justify-content: flex-start; }
+    .video-embed { max-width: 100%; }
+
+    .contact { padding: 20px; }
+    .footer .wrap { padding: 44px 18px 40px; }
+  }
+
+  @media (max-width: 380px) {
+    .step { grid-template-columns: 38px 1fr; gap: 11px; }
+    .marker { width: 38px; height: 38px; font-size: 16px; }
+    .line { margin: 5px 0 -18px; }
+    .badge { font-size: 10px; padding: 5px 9px; }
+  }
 </style>
 </head>
 <body style="">
@@ -432,7 +486,7 @@
         <p class="lede reveal">Welcome to Kairos Financial. This is your roadmap from passed exam to your first sales. Work through each step in order. Get this done within 1 week.&nbsp;</p>
         <div class="stats reveal">
           <div class="stat">
-            <div class="num">9</div>
+            <div class="num">11</div>
             <div class="lab mono">Steps</div>
           </div>
           <div class="stat">
@@ -451,7 +505,7 @@
     <section class="section">
       <div class="wrap">
         <div class="section-head reveal">
-          <span class="mono">01 — 09</span>
+          <span class="mono">01 — 11</span>
           <h2>The checklist</h2>
         </div>
       </div>
@@ -478,8 +532,13 @@
               so <strong>push to finish it as fast as you can</strong>. You don't have to wait for full approval to keep
               moving — start the next steps in parallel — but stay on this until Allie confirms it's all in.
             </p>
+            <span class="hubnote" style="margin-top:16px; align-items:flex-start;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg>
+              <span>You won't be able to submit your carrier contracts until your <strong>NPN number</strong> comes back. As soon as you have it, <strong>come back to this step</strong> and complete them — and <strong>let Allie know the moment you get your NPN</strong>.</span>
+            </span>
             <div class="substeps">
               <div class="substep"><span class="tick"></span><span>State license application submitted</span></div>
+              <div class="substep"><span class="tick"></span><span>NPN number received — Allie notified</span></div>
               <div class="substep"><span class="tick"></span><span>Every carrier contract submitted in full, with Allie</span></div>
               <div class="substep"><span class="tick"></span><span>Verbally confirmed as complete with Allie</span></div>
             </div>
@@ -506,6 +565,72 @@
           </div>
           <div class="card">
             <div class="card-top">
+              <h3>Apply for your nonresident licenses</h3>
+              <div class="badges">
+                <span class="badge"><span class="dot"></span>Needs your NPN</span>
+              </div>
+            </div>
+            <p>
+              As soon as you have your <strong>NPN number</strong>, apply for <strong>4–6 additional state licenses</strong>.
+              Step-by-step instructions are in the <strong>Sales Hub</strong>.
+            </p>
+            <span class="hubnote" style="align-items:flex-start;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg>
+              <span>Just submitted your resident license? Your <strong>NPN</strong> usually takes a few days to a week to come back, and you can't purchase licenses until then. <strong>Come back to this step once you have it</strong> — for now, keep moving through the rest of the steps.</span>
+            </span>
+            <div class="substeps">
+              <div class="substep"><span class="tick"></span><span>NPN number received</span></div>
+              <div class="substep"><span class="tick"></span><span>4–6 nonresident state licenses applied for</span></div>
+            </div>
+          </div>
+        </article>
+
+        <!-- STEP 3 -->
+        <article class="step reveal">
+          <div class="rail">
+            <div class="marker">3</div>
+            <div class="line"></div>
+          </div>
+          <div class="card">
+            <div class="card-top">
+              <h3>Get your equipment ready</h3>
+              <div class="badges">
+                <span class="badge"><span class="dot"></span>Before you start</span>
+              </div>
+            </div>
+            <p>
+              Set yourself up to work effectively. You'll need a <strong>laptop</strong>, a <strong>stable Wi-Fi connection</strong>,
+              and a <strong>quiet place to work</strong> where you can take calls without interruptions.
+            </p>
+            <p>
+              For your headset, we recommend the <strong>Jabra Evolve2 Flex</strong> — the audio quality is well worth it. If budget
+              is tight, you can start with the more affordable option below, but plan to upgrade to the Jabra.
+            </p>
+            <div class="substeps">
+              <div class="substep"><span class="tick"></span><span>Laptop</span></div>
+              <div class="substep"><span class="tick"></span><span>Stable Wi-Fi connection</span></div>
+              <div class="substep"><span class="tick"></span><span>Quiet place to work</span></div>
+              <div class="substep"><span class="tick"></span><span>Headset — Jabra Evolve2 Flex recommended</span></div>
+            </div>
+            <div class="actions">
+              <a class="btn primary" href="https://amzn.to/43kH5Gh" target="_blank" rel="noopener">Jabra Evolve2 Flex — recommended
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M7 17 17 7M9 7h8v8"></path></svg>
+              </a>
+              <a class="btn" href="https://amzn.to/4x3PUSq" target="_blank" rel="noopener">Budget headset option
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M7 17 17 7M9 7h8v8"></path></svg>
+              </a>
+            </div>
+          </div>
+        </article>
+
+        <!-- STEP 4 -->
+        <article class="step reveal">
+          <div class="rail">
+            <div class="marker">4</div>
+            <div class="line"></div>
+          </div>
+          <div class="card">
+            <div class="card-top">
               <h3>Register for Discord</h3>
               <div class="badges">
                 <span class="badge"><span class="dot"></span>Community</span>
@@ -515,6 +640,17 @@
               Get connected with the team. If you don't already have a <strong>Discord</strong> account, create one — this is
               where day-to-day communication, questions, and announcements happen, so set it up early.
             </p>
+            <p>
+              The <strong>invite to join our Discord server is in the Sales Hub</strong> — but you'll need a Discord account
+              <strong>before</strong> you can register for the Sales Hub, so create your account here first.
+            </p>
+            <span class="hubnote" style="align-items:flex-start;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg>
+              <span>New to Discord and not sure how to use it? Watch this quick tutorial below.</span>
+            </span>
+            <div class="video-embed">
+              <iframe src="https://www.youtube.com/embed/z5c6Bc-S0TI" title="Discord tutorial for new agents" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+            </div>
             <div class="actions">
               <a class="btn" href="https://discord.com" target="_blank" rel="noopener">Open Discord
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M7 17 17 7M9 7h8v8"></path></svg>
@@ -523,10 +659,10 @@
           </div>
         </article>
 
-        <!-- STEP 3 -->
+        <!-- STEP 5 -->
         <article class="step reveal">
           <div class="rail">
-            <div class="marker">3</div>
+            <div class="marker">5</div>
             <div class="line"></div>
           </div>
           <div class="card">
@@ -548,10 +684,10 @@
           </div>
         </article>
 
-        <!-- STEP 4 -->
+        <!-- STEP 6 -->
         <article class="step reveal">
           <div class="rail">
-            <div class="marker">4</div>
+            <div class="marker">6</div>
             <div class="line"></div>
           </div>
           <div class="card">
@@ -574,10 +710,10 @@
           </div>
         </article>
 
-        <!-- STEP 5 -->
+        <!-- STEP 7 -->
         <article class="step reveal">
           <div class="rail">
-            <div class="marker">5</div>
+            <div class="marker">7</div>
             <div class="line"></div>
           </div>
           <div class="card">
@@ -601,10 +737,10 @@
           </div>
         </article>
 
-        <!-- STEP 6 -->
+        <!-- STEP 8 -->
         <article class="step reveal">
           <div class="rail">
-            <div class="marker">6</div>
+            <div class="marker">8</div>
             <div class="line"></div>
           </div>
           <div class="card">
@@ -627,10 +763,10 @@
           </div>
         </article>
 
-        <!-- STEP 7 -->
+        <!-- STEP 9 -->
         <article class="step reveal">
           <div class="rail">
-            <div class="marker">7</div>
+            <div class="marker">9</div>
             <div class="line"></div>
           </div>
           <div class="card">
@@ -654,10 +790,10 @@
           </div>
         </article>
 
-        <!-- STEP 8 -->
+        <!-- STEP 10 -->
         <article class="step reveal">
           <div class="rail">
-            <div class="marker">8</div>
+            <div class="marker">10</div>
             <div class="line"></div>
           </div>
           <div class="card">
@@ -670,30 +806,33 @@
             <p style="">
               Show up to your <strong>new agent orientation</strong>. This is where everything you've set up comes together. You'll learn how the day-to-day runs, and get clear on what's expected of you out of the gate.
             </p>
+            <p>
+              <strong>Reach out to your mentor</strong> for the date of the next new agent orientation call.
+            </p>
           </div>
         </article>
 
-        <!-- STEP 9 -->
+        <!-- STEP 11 -->
         <article class="step is-final reveal">
           <div class="rail">
-            <div class="marker">9</div>
+            <div class="marker">11</div>
             <div class="line"></div>
           </div>
           <div class="card">
             <div class="card-top">
-              <h3>Launch call with your upline</h3>
+              <h3>Launch call with your mentor</h3>
               <div class="badges">
                 <span class="badge hot"><span class="dot"></span>Fill out the Launch Plan first</span>
               </div>
             </div>
             <p>
-              Your final step before go-live. On this call you'll sit down with your upline to talk through your
+              Your final step before go-live. On this call you'll sit down with your mentor to talk through your
               personal goals and build a lead plan custom-tailored to your situation.
               Before the call, <strong>fill out your launch plan sheet</strong> linked below. Don't fill it out on your
               computer &mdash; print it out and keep it on your desk.</p>
             <div class="substeps">
               <div class="substep"><span class="tick"></span><span>Launch Plan goals filled out by hand, before the call</span></div>
-              <div class="substep"><span class="tick"></span><span>Launch call booked with your upline</span></div>
+              <div class="substep"><span class="tick"></span><span>Launch call booked with your mentor</span></div>
               <div class="substep"><span class="tick"></span><span>Custom lead plan built together — you're live</span></div>
             </div>
             <div class="actions">
