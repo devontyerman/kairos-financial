@@ -12651,6 +12651,29 @@
       background: var(--bg-2); color: var(--text-2); font-size: 11px; font-weight: 600; cursor: pointer;
     }
     #panel-training .tve-creds-copy:hover { color: var(--text-1); border-color: var(--line-strong); }
+    /* Carrier contracting emails — copy individually or all at once */
+    #panel-training .tve-emails {
+      display: flex; flex-direction: column; gap: 8px; padding: 14px 16px;
+      border-radius: var(--tve-r-md); background: var(--bg-1); border: 1px solid var(--line-1);
+    }
+    #panel-training .tve-emails-title { font-size: 12px; font-weight: 600; color: var(--text-2); margin-bottom: 2px; }
+    #panel-training .tve-emails-row { display: flex; align-items: center; gap: 10px; }
+    #panel-training .tve-emails-row .carrier {
+      font-size: 12px; font-weight: 600; color: var(--text-2); width: 132px; flex-shrink: 0;
+    }
+    #panel-training .tve-emails-row .addr {
+      font-family: var(--tve-font-mono); font-size: 12.5px; color: var(--text-1); flex: 1; min-width: 0; word-break: break-all;
+    }
+    #panel-training .tve-emails-copyall {
+      margin-top: 4px; align-self: flex-start; padding: 7px 14px; border-radius: 7px;
+      border: 1px solid var(--line-2); background: var(--bg-2); color: var(--text-1);
+      font-size: 12px; font-weight: 600; cursor: pointer;
+    }
+    #panel-training .tve-emails-copyall:hover { border-color: var(--line-strong); }
+    @media (max-width: 520px) {
+      #panel-training .tve-emails-row { flex-wrap: wrap; }
+      #panel-training .tve-emails-row .carrier { width: auto; }
+    }
     /* Admin rename mode */
     #panel-training .tve.edit-mode .tve-lesson { cursor: default; }
     #panel-training .tve.edit-mode .tve-lesson-title {
@@ -21795,6 +21818,14 @@
         { kind: 'creds', label: 'CA Studios login', user: 'dev@kairos-financial.com', pass: '2BE9Z4juBx!r7%7L$&Zz' },
         { kind: 'link', label: 'Open CA Studios', sub: 'castudios.tv', href: 'https://castudios.tv/' }
       ];
+      const CARRIER_CONTRACT_EMAILS = { kind: 'emails', label: 'Carrier contracting emails', items: [
+        { carrier: 'Aetna', email: 'aetssiinformation@aetna.com' },
+        { carrier: 'American Amicable', email: 'agentprocessing@aatx.com' },
+        { carrier: 'Corebridge', email: 'giwlcontracting@corebridgefinancial.com' },
+        { carrier: 'Ethos', email: 'agents@getethos.com' },
+        { carrier: 'Transamerica', email: 'tlp-crcontractadmin@transamerica.com' },
+        { carrier: 'Mutual of Omaha', email: 'contractsandappointments@mutualofomaha.com' }
+      ] };
 
       // ── Curriculum. file = exact R2 object name. slug = stable progress key. ──
       const CURRICULUM = {
@@ -21808,7 +21839,7 @@
           { title: 'Licensing', videos: [
             { slug: 'carrier-contracting', title: 'Insurance Carrier Contracting Before Emailing States', file: 'Insurance Carrier Contracting Before Emailing States.mp4', duration: 78, desc: '', resources: [] },
             { slug: 'purchase-licenses', title: 'How to Purchase Additional Insurance Licenses', file: 'How to Purchase State Insurance Licenses.mp4', duration: 0, desc: '', resources: [] },
-            { slug: 'after-state-license', title: 'After State License, Next Steps Checklist', file: 'After State License, Next Steps Checklist 📄.mp4', duration: 107, desc: '', resources: [] }
+            { slug: 'after-state-license', title: 'After State License, Next Steps Checklist', file: 'After State License, Next Steps Checklist 📄.mp4', duration: 107, desc: '', resources: [CARRIER_CONTRACT_EMAILS] }
           ]},
           { title: 'CRM Guide', videos: [
             { slug: 'how-to-buy-crm', title: 'How to Buy CRM', file: 'How to Buy CRM.mp4', duration: 166, desc: '', resources: [CRM_LINK] },
@@ -22172,6 +22203,29 @@
               row.appendChild(l); row.appendChild(vv); row.appendChild(cp);
               card.appendChild(row);
             });
+            elResources.appendChild(card);
+            return;
+          }
+          if (r.kind === 'emails') {
+            const card = document.createElement('div'); card.className = 'tve-emails';
+            if (r.label) { const t = document.createElement('div'); t.className = 'tve-emails-title'; t.textContent = r.label; card.appendChild(t); }
+            const items = r.items || [];
+            items.forEach(it => {
+              const row = document.createElement('div'); row.className = 'tve-emails-row';
+              const c = document.createElement('span'); c.className = 'carrier'; c.textContent = it.carrier;
+              const e = document.createElement('span'); e.className = 'addr'; e.textContent = it.email;
+              const cp = document.createElement('button'); cp.type = 'button'; cp.className = 'tve-creds-copy'; cp.textContent = 'Copy';
+              cp.addEventListener('click', () => { try { navigator.clipboard.writeText(it.email); cp.textContent = 'Copied'; setTimeout(() => { cp.textContent = 'Copy'; }, 1200); } catch (e) {} });
+              row.appendChild(c); row.appendChild(e); row.appendChild(cp);
+              card.appendChild(row);
+            });
+            if (items.length) {
+              const all = items.map(it => it.email).join(', ');
+              const allBtn = document.createElement('button'); allBtn.type = 'button'; allBtn.className = 'tve-emails-copyall';
+              allBtn.textContent = 'Copy all emails';
+              allBtn.addEventListener('click', () => { try { navigator.clipboard.writeText(all); allBtn.textContent = 'Copied all ✓'; setTimeout(() => { allBtn.textContent = 'Copy all emails'; }, 1400); } catch (e) {} });
+              card.appendChild(allBtn);
+            }
             elResources.appendChild(card);
             return;
           }
