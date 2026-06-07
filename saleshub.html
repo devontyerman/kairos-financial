@@ -22115,10 +22115,7 @@
               ttl.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); ttl.blur(); } });
               ttl.addEventListener('blur', () => saveTitle(v.slug, ttl.textContent));
             }
-            const tm = document.createElement('span');
-            tm.className = 'tve-lesson-time';
-            tm.textContent = v.duration ? fmt(v.duration) : '';
-            li.appendChild(ico); li.appendChild(ttl); li.appendChild(tm);
+            li.appendChild(ico); li.appendChild(ttl);
             li.addEventListener('click', () => { if (editMode) return; if (!locked) select(v.slug); });
             secEl.appendChild(li);
           });
