@@ -12670,6 +12670,14 @@
       font-size: 12px; font-weight: 600; cursor: pointer;
     }
     #panel-training .tve-emails-copyall:hover { border-color: var(--line-strong); }
+    /* Plain reminder note (non-clickable) */
+    #panel-training .tve-note {
+      display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: var(--tve-r-md);
+      background: var(--bg-1); border: 1px solid var(--line-1); color: var(--text-1);
+      font-size: 13px; font-weight: 500;
+    }
+    #panel-training .tve-note-ico { display: grid; place-items: center; flex-shrink: 0; color: var(--text-3); }
+    #panel-training .tve-note-ico svg { width: 16px; height: 16px; }
     @media (max-width: 520px) {
       #panel-training .tve-emails-row { flex-wrap: wrap; }
       #panel-training .tve-emails-row .carrier { width: auto; }
@@ -21827,6 +21835,8 @@
         { carrier: 'Mutual of Omaha', email: 'contractsandappointments@mutualofomaha.com' }
       ] };
       const SALES_RECORDINGS_LINK = { kind: 'link', label: 'Sales recordings', sub: 'Google Drive folder', href: 'https://drive.google.com/drive/folders/1OQ3d2pjj2oHqD9lxbXMnwG2xwLBj_R_J?usp=sharing' };
+      const ZOOM_3PM_TRAINING = { kind: 'link', label: '3 PM Eastern Training', sub: 'Zoom meeting', href: 'https://us06web.zoom.us/j/83831507469?pwd=6MnKDFyzETvkMWB1zTvs7pvxOrLWT6.1' };
+      const TEAM_MEETING_NOTE = { kind: 'note', label: 'Kairos team meeting — 11 AM EST in Discord' };
 
       // ── Curriculum. file = exact R2 object name. slug = stable progress key. ──
       const CURRICULUM = {
@@ -21834,7 +21844,7 @@
         sections: [
           { title: 'New Agent Steps', videos: [
             { slug: 'first-90-days', title: 'First 90 Days Expectations for Agents', file: 'First 90 Days Expectations for Agents.mp4', duration: 538, desc: '', resources: [] },
-            { slug: 'navigating-discord', title: 'Navigating Discord', file: 'Navigating Our Discord Servers_ Key Features and Expectations.mp4', duration: 281, desc: '', resources: DISCORD },
+            { slug: 'navigating-discord', title: 'Navigating Discord', file: 'Discord and Team Meeting Schedule Overview.mp4', duration: 0, desc: '', resources: [...DISCORD, ZOOM_3PM_TRAINING, TEAM_MEETING_NOTE] },
             { slug: 'submit-a-sale', title: 'How to Submit a Sale', file: 'How to Submit a Sale in Discord 🚀.mp4', duration: 115, desc: '', resources: DISCORD }
           ]},
           { title: 'Licensing', videos: [
@@ -22229,6 +22239,15 @@
               card.appendChild(allBtn);
             }
             elResources.appendChild(card);
+            return;
+          }
+          if (r.kind === 'note') {
+            const d = document.createElement('div'); d.className = 'tve-note';
+            const ico = document.createElement('span'); ico.className = 'tve-note-ico';
+            ico.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>';
+            const sp = document.createElement('span'); sp.className = 'tve-note-text'; sp.textContent = r.label;
+            d.appendChild(ico); d.appendChild(sp);
+            elResources.appendChild(d);
             return;
           }
           const a = document.createElement('a');
