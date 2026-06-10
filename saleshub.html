@@ -21883,6 +21883,7 @@
       const titleOverrides = {};        // slug → custom name (Supabase training_titles)
       let granted = true;               // existing account → full access (default true until known)
       let trainingComplete = true;      // Hub gate flag
+      let dbGranted = false;            // admin "Grant access" override (agent_profiles.training_complete)
 
       // ── DOM ──
       const $ = (id) => document.getElementById(id);
@@ -21971,11 +21972,17 @@
       async function loadCompleted() {
         completed = new Set();
         resumePos = loadResume();
+        dbGranted = false;
         if (!window.currentUser || !window.accessToken) return;
         try {
           const r = await fetch(SUPABASE_URL + '/rest/v1/video_progress?user_id=eq.' + window.currentUser.id + '&select=video_id', { headers: supaHeaders() });
           if (r.ok) { const rows = await r.json(); completed = new Set(rows.map(x => x.video_id)); }
         } catch (e) { /* offline → empty */ }
+        try {
+          // Honor an admin "Grant access" (agent_profiles.training_complete) for THIS user.
+          const pr = await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?user_id=eq.' + window.currentUser.id + '&select=training_complete', { headers: supaHeaders() });
+          if (pr.ok) { const prows = await pr.json(); dbGranted = Array.isArray(prows) && prows[0] && prows[0].training_complete === true; }
+        } catch (e) { /* offline → no override */ }
       }
       async function postComplete(slug) {
         if (!window.currentUser || !window.accessToken) return;
@@ -21995,7 +22002,7 @@
         const u = window.currentUser;
         const ct = (u && u.created_at) ? Date.parse(u.created_at) : NaN;
         // Fail OPEN: no user, missing/unparseable date → treat as existing rep (full access).
-        granted = !u || isNaN(ct) || ct < Date.parse(GO_LIVE_CUTOFF);
+        granted = !u || isNaN(ct) || ct < Date.parse(GO_LIVE_CUTOFF) || dbGranted;
         const all = flat();
         const allDone = all.length > 0 && all.every(o => completed.has(o.v.slug));
         trainingComplete = granted || allDone;
@@ -22099,7 +22106,7 @@
 
           sec.videos.forEach((v) => {
             const locked = !isUnlocked(v.slug);
-            const done = isDone(v.slug);
+            const done = granted || isDone(v.slug);   // granted (incl. admin override) → show all complete
             const li = document.createElement('div');
             li.className = 'tve-lesson' + (locked ? ' locked' : '') + (v.slug === currentSlug ? ' active' : '');
             li.dataset.slug = v.slug;
@@ -22128,7 +22135,7 @@
 
       function updateProgressBar() {
         const total = flat().length;
-        const done = flat().filter(o => isDone(o.v.slug)).length;
+        const done = granted ? total : flat().filter(o => isDone(o.v.slug)).length;
         const pct = total ? Math.round(done / total * 100) : 0;
         elProgBar.style.width = pct + '%';
         elProgText.textContent = done + ' of ' + total + ' complete';
@@ -24379,9 +24386,10 @@
                       {sorted.map((p, i) => {
                         const orig = profiles.findIndex(x => x.user_id === p.user_id);
                         const sparkColor = avatarColor(orig);
-                        const vCount = videoCounts[p.user_id] || 0;
-                        const pct = Math.min(100, Math.round((vCount / TOTAL_TRAINING_VIDEOS) * 100));
                         const isComplete = p.training_complete === true;
+                        // Granted access counts as all videos complete.
+                        const vCount = isComplete ? TOTAL_TRAINING_VIDEOS : (videoCounts[p.user_id] || 0);
+                        const pct = Math.min(100, Math.round((vCount / TOTAL_TRAINING_VIDEOS) * 100));
                         const name = p.agent_name || 'Unnamed';
                         return (
                           <tr key={p.user_id}>
@@ -24433,9 +24441,10 @@
             {editFor && (() => {
               const live = profiles.find(x => x.user_id === editFor.user_id) || editFor;
               const draft = draftFor(editFor.user_id, live);
-              const vCount = videoCounts[editFor.user_id] || 0;
-              const pct = Math.min(100, Math.round((vCount / TOTAL_TRAINING_VIDEOS) * 100));
               const isComplete = live.training_complete === true;
+              // Granted access counts as all videos complete.
+              const vCount = isComplete ? TOTAL_TRAINING_VIDEOS : (videoCounts[editFor.user_id] || 0);
+              const pct = Math.min(100, Math.round((vCount / TOTAL_TRAINING_VIDEOS) * 100));
               const justSaved = !!savedFor[editFor.user_id];
               // Read-only licenses & writing numbers, sorted alphabetically.
               const stateLics = (Array.isArray(live.state_licenses) ? live.state_licenses : [])
