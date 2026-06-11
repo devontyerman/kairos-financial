@@ -476,7 +476,7 @@ input, select { font-family: inherit; font-size: inherit; color: var(--ink-1); }
 }
 
 .kpi-grid {
-  display: grid; grid-template-columns: repeat(5, 1fr); gap: 1px;
+  display: grid; grid-template-columns: repeat(6, 1fr); gap: 1px;
   background: var(--hairline);
   border: 1px solid var(--hairline);
   border-radius: var(--radius);
@@ -2211,6 +2211,7 @@ function Dashboard({ isAdmin, setter, deals, manualPayments = [], loading, onAdd
   const stats = useMemo(() => {
     let chargeback = 0;
     let issuedTotal = 0;
+    let issuedAP = 0;
     let activeTotal = 0;
     let atRisk = 0;
     const counts = { uw_submitted: 0, approved: 0, issued: 0, pending_lapse: 0, declined: 0, chargeback: 0, manual: 0 };
@@ -2221,7 +2222,7 @@ function Dashboard({ isAdmin, setter, deals, manualPayments = [], loading, onAdd
       const cb = !!d.chargeback;
 
       if (cb) { counts.chargeback++; chargeback += com; }
-      if (d.status === 'issued') issuedTotal += com;
+      if (d.status === 'issued') { issuedTotal += com; issuedAP += Number(d.ap) || 0; }
       if (d.status === 'pending_lapse' && !cb) atRisk += com;
       // Pipeline source: every deal still in play — exclude pending lapse,
       // declined, and charged-back deals (all functionally cancelled).
@@ -2243,7 +2244,7 @@ function Dashboard({ isAdmin, setter, deals, manualPayments = [], loading, onAdd
     const netEarned = issuedTotal;
     // Pipeline = active (non-cancelled) commissions minus everything paid out.
     const pipeline = activeTotal - paidOut;
-    return { pipeline, paidOut, chargeback, netEarned, atRisk, manualTotal, issuedTotal, activeTotal, counts };
+    return { pipeline, paidOut, chargeback, netEarned, atRisk, manualTotal, issuedTotal, issuedAP, activeTotal, counts };
   }, [deals, manualPayments]);
 
   const filtered = useMemo(() => {
@@ -2332,6 +2333,7 @@ function Dashboard({ isAdmin, setter, deals, manualPayments = [], loading, onAdd
       </section>
 
       <section className="kpi-grid">
+        <KpiCell label="Issued AP" value={fmt(stats.issuedAP)} sub={stats.counts.issued + ' issued'} swatch="var(--rb-green)" tone="pos" featured />
         <KpiCell label="Pipeline" value={fmt(stats.pipeline)} sub="Active deals − paid out" swatch="var(--rb-green)" tone="pos" />
         <KpiCell
           label="Paid out"
