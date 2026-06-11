@@ -9052,7 +9052,7 @@
     }
     .ss-field { }
     .ss-field.full { grid-column: 1 / -1; }
-    .ss-label { display: block; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.75rem; font-weight: 700; color: #444444; margin-bottom: 0.35rem; text-transform: uppercase; letter-spacing: 0.06em; }
+    .ss-label { display: block; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.75rem; font-weight: 700; color: #1a1a1a; margin-bottom: 0.35rem; text-transform: uppercase; letter-spacing: 0.06em; }
     .ss-input, .ss-select { width: 100%; padding: 0.6rem 0.85rem; font-size: 0.85rem; font-family: 'Inter', sans-serif; color: #1a1a1a; background: #e8e8ec; border: 1px solid #ddd; border-radius: var(--radius-md); transition: all 0.25s ease; box-sizing: border-box; }
     .ss-input:focus, .ss-select:focus { outline: none; border-color: #4a4a5a; box-shadow: 0 0 0 3px rgba(37,99,235,0.15); background: #e2e2e8; }
     .ss-input::placeholder { color: #666666; }
@@ -12972,7 +12972,7 @@
               <div class="kpi-form-grid">
                 <div class="ss-field">
                   <label class="ss-label">Date</label>
-                  <input type="date" class="ss-input" id="kpiDate" required />
+                  <input type="date" class="ss-input" id="kpiDate" required onclick="try{this.showPicker()}catch(e){}" style="cursor:pointer;" />
                 </div>
                 <div class="ss-field">
                   <label class="ss-label">Dials</label>
@@ -13077,7 +13077,7 @@
             </div>
             <div class="ss-field">
               <label class="ss-label">Sold Date</label>
-              <input class="ss-input" type="date" id="policyDate" required />
+              <input class="ss-input" type="date" id="policyDate" required onclick="try{this.showPicker()}catch(e){}" style="cursor:pointer;" />
             </div>
             <div class="ss-field">
               <label class="ss-label">Effective Date</label>
