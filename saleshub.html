@@ -22986,6 +22986,10 @@
           (customRange && customRange[0]) || null,
           (customRange && customRange[1]) || null,
         ];
+        if (timeframe === 'TODAY') {
+          const t0 = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+          return [t0, new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59)];
+        }
         if (timeframe === 'YDAY') {
           const y = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 1);
           return [y, new Date(y.getFullYear(), y.getMonth(), y.getDate(), 23, 59, 59)];
@@ -23453,7 +23457,16 @@
           comparisonCutoff = todayIdx;
           total = view.ap;
           projectionFromIdx = Math.max(0, Math.min(6, todayIdx));
-          prior = (scope.weekly || [])[(scope.weekly || []).length - 2] || 0;
+          // Prior = "this point last week": last week from Monday through the
+          // same weekday as today, so a mid-week WTD is an apples-to-apples
+          // comparison instead of WTD-so-far vs last week's full total.
+          const lastWeekStart = new Date(weekStart); lastWeekStart.setDate(lastWeekStart.getDate() - 7);
+          const lastWeekPoint = new Date(lastWeekStart); lastWeekPoint.setDate(lastWeekPoint.getDate() + todayIdx); lastWeekPoint.setHours(23, 59, 59);
+          prior = 0;
+          (scope.policies || []).forEach(p => {
+            const d = parsePolicyDate(p.policy_date || p.created_at);
+            if (d && d >= lastWeekStart && d <= lastWeekPoint) prior += parseFloat(p.annual_premium || 0);
+          });
           label = 'Week-to-date';
         } else if (timeframe === 'MTD') {
           // Cumulative through today + linear-projection-to-EOM so the chart
@@ -23494,13 +23507,17 @@
           total = view.ap;
           projectionFromIdx = Math.max(0, Math.min(totalDays - 1, dayOfMonthCur - 1));
           const projectedTotal = cumDaily[totalDays - 1] || total;
-          // Compare projection vs last month full total
+          // Prior = "this point last month": last month from the 1st through the
+          // same day-of-month as today (clamped to last month's length), so a
+          // mid-month MTD compares apples-to-apples instead of vs a full month.
           const lastMonthStart = new Date(today.getFullYear(), today.getMonth() - 1, 1);
-          const lastMonthEnd = new Date(today.getFullYear(), today.getMonth(), 0, 23, 59, 59);
+          const lastMonthDays = new Date(today.getFullYear(), today.getMonth(), 0).getDate();
+          const lastMonthPointDay = Math.min(today.getDate(), lastMonthDays);
+          const lastMonthPoint = new Date(today.getFullYear(), today.getMonth() - 1, lastMonthPointDay, 23, 59, 59);
           prior = 0;
           (scope.policies || []).forEach(p => {
             const d = parsePolicyDate(p.policy_date || p.created_at);
-            if (d && d >= lastMonthStart && d <= lastMonthEnd) {
+            if (d && d >= lastMonthStart && d <= lastMonthPoint) {
               prior += parseFloat(p.annual_premium || 0);
             }
           });
@@ -23602,11 +23619,35 @@
             label = 'Last 30 days';
           } else if (timeframe === 'ALL') {
             label = 'All-time';
+          } else if (timeframe === 'TODAY') {
+            // Compare today vs the previous day.
+            const yStart = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 1);
+            const yEnd = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 1, 23, 59, 59);
+            (scope.policies || []).forEach(p => {
+              const d = parsePolicyDate(p.policy_date || p.created_at);
+              if (d && d >= yStart && d <= yEnd) prior += parseFloat(p.annual_premium || 0);
+            });
+            label = 'Today';
           } else if (timeframe === 'YDAY') {
             label = 'Yesterday';
           } else if (timeframe === 'LW') {
+            // Compare last week vs the week before it.
+            const ws = startOfWeek(today);
+            const lws = new Date(ws); lws.setDate(lws.getDate() - 7);
+            const wbs = new Date(lws); wbs.setDate(wbs.getDate() - 7);
+            (scope.policies || []).forEach(p => {
+              const d = parsePolicyDate(p.policy_date || p.created_at);
+              if (d && d >= wbs && d < lws) prior += parseFloat(p.annual_premium || 0);
+            });
             label = 'Last week';
           } else if (timeframe === 'LM') {
+            // Compare last month vs the month before it.
+            const lmStart = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+            const mbStart = new Date(today.getFullYear(), today.getMonth() - 2, 1);
+            (scope.policies || []).forEach(p => {
+              const d = parsePolicyDate(p.policy_date || p.created_at);
+              if (d && d >= mbStart && d < lmStart) prior += parseFloat(p.annual_premium || 0);
+            });
             label = 'Last month';
           } else {
             const fmt = (d) => (d.getMonth()+1) + '/' + d.getDate() + '/' + String(d.getFullYear()).slice(-2);
@@ -23675,10 +23716,45 @@
           projectionFromIdx = undefined;
           mtdProjectedTotal = null;
         }
-        const deltaBasis = timeframe === 'MTD' && mtdProjectedTotal != null ? mtdProjectedTotal : total;
+        // Always compare actual booked AP for the period (no projection) so the
+        // delta is a like-for-like read against the prior period's same point.
+        const deltaBasis = total;
         const delta = prior ? ((deltaBasis - prior) / prior) * 100 : 0;
-        const mtdDeltaLabel = (chartMode === 'comparison') ? 'vs last month' : 'projected vs last month';
-        const deltaLabel = timeframe === 'WTD' ? 'vs last week' : timeframe === 'MTD' ? mtdDeltaLabel : timeframe === 'YTD' ? 'vs same point last year' : timeframe === 'LW' ? 'last week total' : timeframe === 'LM' ? 'last month total' : timeframe === 'YDAY' ? 'yesterday total' : timeframe === 'L30' ? 'vs prior 30 days' : '';
+        const deltaLabel = timeframe === 'WTD' ? 'vs this point last week' : timeframe === 'MTD' ? 'vs this point last month' : timeframe === 'YTD' ? 'vs same point last year' : timeframe === 'LW' ? 'vs week before' : timeframe === 'LM' ? 'vs month before' : timeframe === 'TODAY' ? 'vs yesterday' : timeframe === 'YDAY' ? 'yesterday total' : timeframe === 'L30' ? 'vs prior 30 days' : '';
+        // Avg premium per day = total AP for the timeframe ÷ number of calendar
+        // days it spans (in-progress periods only count days elapsed so far).
+        const DAY_MS = 86400000;
+        const dayFloor = (d) => new Date(d.getFullYear(), d.getMonth(), d.getDate());
+        let periodDays;
+        if (timeframe === 'TODAY' || timeframe === 'YDAY') {
+          periodDays = 1;
+        } else if (timeframe === 'WTD') {
+          periodDays = (today.getDay() === 0 ? 6 : today.getDay() - 1) + 1; // Mon → today
+        } else if (timeframe === 'MTD') {
+          periodDays = today.getDate();
+        } else if (timeframe === 'YTD') {
+          periodDays = Math.floor((dayFloor(today) - new Date(today.getFullYear(), 0, 1)) / DAY_MS) + 1;
+        } else if (timeframe === 'L30') {
+          periodDays = 30;
+        } else if (timeframe === 'LW') {
+          periodDays = 7;
+        } else if (timeframe === 'LM') {
+          periodDays = new Date(today.getFullYear(), today.getMonth(), 0).getDate();
+        } else {
+          // ALL / CUSTOM — span from the window start (or earliest policy) to its
+          // end (or today for open-ended windows).
+          let s = view.rangeStart, e = view.rangeEnd || today;
+          if (!s) {
+            let first = null;
+            (scope.policies || []).forEach(p => {
+              const d = parsePolicyDate(p.policy_date || p.created_at);
+              if (d && (!first || d < first)) first = d;
+            });
+            s = first || today;
+          }
+          periodDays = Math.max(1, Math.floor((dayFloor(e) - dayFloor(s)) / DAY_MS) + 1);
+        }
+        const avgPerDay = periodDays > 0 ? total / periodDays : 0;
         const isTeam = scope.id === '__team__';
         return (
           <div className="tp-card tp-ap-hero">
@@ -23688,7 +23764,7 @@
                 <div className="tp-card-meta">{label}</div>
               </div>
               <div className="tp-tf-segment">
-                {[['YDAY','Yesterday'],['WTD','WTD'],['MTD','MTD'],['L30','L30'],['YTD','YTD'],['LW','Last Wk'],['LM','Last Mo'],['ALL','All'],['CUSTOM','Custom']].map(([t, lbl]) => (
+                {[['TODAY','Today'],['YDAY','Yesterday'],['WTD','WTD'],['MTD','MTD'],['L30','L30'],['YTD','YTD'],['LW','Last Wk'],['LM','Last Mo'],['ALL','All'],['CUSTOM','Custom']].map(([t, lbl]) => (
                   <button key={t} className={timeframe === t ? 'on' : ''} onClick={() => setTimeframe(t)}>{lbl}</button>
                 ))}
               </div>
@@ -23715,7 +23791,7 @@
                 <div className="tp-ap-num-sub">no prior period to compare</div>
               )}
               <div className="tp-ap-num-sub">
-                Avg premium <b style={{color:'var(--tp-ink-1)'}}>{fmtCurrency(view.avgPremium)}</b> · Deals <b style={{color:'var(--tp-ink-1)'}}>{view.deals.toLocaleString()}</b>
+                Avg premium <b style={{color:'var(--tp-ink-1)'}}>{fmtCurrency(view.avgPremium)}</b> · Avg/day <b style={{color:'var(--tp-ink-1)'}}>{fmtCurrency(avgPerDay)}</b> · Deals <b style={{color:'var(--tp-ink-1)'}}>{view.deals.toLocaleString()}</b>
               </div>
             </div>
             <div style={{display:'flex', justifyContent:'flex-end', marginBottom:8}}>
@@ -23753,6 +23829,7 @@
                       : timeframe === 'YTD' ? 'YTD'
                       : timeframe === 'ALL' ? 'ALL'
                       : timeframe === 'CUSTOM' ? 'Custom'
+                      : timeframe === 'TODAY' ? 'Today'
                       : timeframe === 'YDAY' ? 'Yesterday'
                       : timeframe === 'LW' ? 'Last Wk'
                       : timeframe === 'LM' ? 'Last Mo'
