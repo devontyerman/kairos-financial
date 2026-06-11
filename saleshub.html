@@ -8171,7 +8171,7 @@
     .tk-mod-field label {
       font-family: var(--tk-mono); font-size: 10px;
       text-transform: uppercase; letter-spacing: 0.08em;
-      color: var(--tk-ink-4);
+      color: var(--tk-ink-1);
     }
     .tk-mod-input, .tk-mod-select, .tk-mod-textarea {
       width: 100%; appearance: none;
@@ -26293,11 +26293,11 @@
                   </div>
                   <div className="tk-mod-field">
                     <label>Sold date *</label>
-                    <input className="tk-mod-input mono" type="date" value={policyDate} onChange={e => setPolicyDate(e.target.value)} required />
+                    <input className="tk-mod-input mono" type="date" value={policyDate} onChange={e => setPolicyDate(e.target.value)} onClick={e => { try { e.currentTarget.showPicker(); } catch (_) {} }} style={{cursor:'pointer'}} required />
                   </div>
                   <div className="tk-mod-field">
                     <label>Effective date</label>
-                    <input className="tk-mod-input mono" type="date" value={effectiveDate} onChange={e => setEffectiveDate(e.target.value)} />
+                    <input className="tk-mod-input mono" type="date" value={effectiveDate} onChange={e => setEffectiveDate(e.target.value)} onClick={e => { try { e.currentTarget.showPicker(); } catch (_) {} }} style={{cursor:'pointer'}} />
                   </div>
                   <div className="tk-mod-field">
                     <label>Status</label>
@@ -26413,7 +26413,7 @@
                 <div className="tk-mod-grid">
                   <div className="tk-mod-field full">
                     <label>Date *</label>
-                    <input className="tk-mod-input mono" type="date" value={date} onChange={e => setDate(e.target.value)} />
+                    <input className="tk-mod-input mono" type="date" value={date} onChange={e => setDate(e.target.value)} onClick={e => { try { e.currentTarget.showPicker(); } catch (_) {} }} style={{cursor:'pointer'}} />
                   </div>
                 </div>
                 <div className="tk-mod-grid cols-4">
