@@ -2671,11 +2671,15 @@
     #tpatab-performance .tp-tf-segment, #tpatab-agents .tp-tf-segment, #tpatab-policies .tp-tf-segment {
       display: inline-flex; padding: 3px;
       background: var(--tp-surface); border: 1px solid var(--tp-hairline); border-radius: 9px;
+      /* Never shrink/grow: the segment keeps a constant size no matter how long
+         the adjacent timeframe label is, so selecting a timeframe can't reflow
+         (and previously wrap → enlarge) the selector bar. */
+      flex: 0 0 auto;
     }
     #tpatab-performance .tp-tf-segment button, #tpatab-agents .tp-tf-segment button, #tpatab-policies .tp-tf-segment button {
       appearance: none; border: 0; background: transparent;
       color: var(--tp-ink-3); cursor: pointer;
-      padding: 7px 16px; border-radius: 6px;
+      padding: 7px 16px; border-radius: 6px; white-space: nowrap;
       font-family: var(--tp-mono); font-size: 11px; letter-spacing: 0.06em;
       text-transform: uppercase; transition: all 120ms;
     }
@@ -23404,6 +23408,9 @@
         // up-and-down trend through past + current periods, no projection.
         const [chartMode, setChartMode] = useState('cumulative');
         let series, labels, total, prior, label, projectionFromIdx, mtdProjectedTotal;
+        // Parallel to `prior` (AP): deal count in the same prior comparison
+        // window, so we can show deal-count growth, not just premium growth.
+        let priorDeals = 0;
         // Populated by each timeframe branch so the comparison-mode override
         // at the bottom can swap the cumulative series for raw per-bucket AP.
         let rawBuckets = null;
@@ -23465,7 +23472,7 @@
           prior = 0;
           (scope.policies || []).forEach(p => {
             const d = parsePolicyDate(p.policy_date || p.created_at);
-            if (d && d >= lastWeekStart && d <= lastWeekPoint) prior += parseFloat(p.annual_premium || 0);
+            if (d && d >= lastWeekStart && d <= lastWeekPoint) { prior += parseFloat(p.annual_premium || 0); priorDeals++; }
           });
           label = 'Week-to-date';
         } else if (timeframe === 'MTD') {
@@ -23519,6 +23526,7 @@
             const d = parsePolicyDate(p.policy_date || p.created_at);
             if (d && d >= lastMonthStart && d <= lastMonthPoint) {
               prior += parseFloat(p.annual_premium || 0);
+              priorDeals++;
             }
           });
           mtdProjectedTotal = projectedTotal;
@@ -23614,6 +23622,7 @@
               const d = parsePolicyDate(p.policy_date || p.created_at);
               if (d && d >= prior30Start && d <= prior30End) {
                 prior += parseFloat(p.annual_premium || 0);
+                priorDeals++;
               }
             });
             label = 'Last 30 days';
@@ -23625,7 +23634,7 @@
             const yEnd = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 1, 23, 59, 59);
             (scope.policies || []).forEach(p => {
               const d = parsePolicyDate(p.policy_date || p.created_at);
-              if (d && d >= yStart && d <= yEnd) prior += parseFloat(p.annual_premium || 0);
+              if (d && d >= yStart && d <= yEnd) { prior += parseFloat(p.annual_premium || 0); priorDeals++; }
             });
             label = 'Today';
           } else if (timeframe === 'YDAY') {
@@ -23637,7 +23646,7 @@
             const wbs = new Date(lws); wbs.setDate(wbs.getDate() - 7);
             (scope.policies || []).forEach(p => {
               const d = parsePolicyDate(p.policy_date || p.created_at);
-              if (d && d >= wbs && d < lws) prior += parseFloat(p.annual_premium || 0);
+              if (d && d >= wbs && d < lws) { prior += parseFloat(p.annual_premium || 0); priorDeals++; }
             });
             label = 'Last week';
           } else if (timeframe === 'LM') {
@@ -23646,7 +23655,7 @@
             const mbStart = new Date(today.getFullYear(), today.getMonth() - 2, 1);
             (scope.policies || []).forEach(p => {
               const d = parsePolicyDate(p.policy_date || p.created_at);
-              if (d && d >= mbStart && d < lmStart) prior += parseFloat(p.annual_premium || 0);
+              if (d && d >= mbStart && d < lmStart) { prior += parseFloat(p.annual_premium || 0); priorDeals++; }
             });
             label = 'Last month';
           } else {
@@ -23700,6 +23709,7 @@
             const d = parsePolicyDate(p.policy_date || p.created_at);
             if (d && d >= priorYearStart && d <= priorAnniversary) {
               prior += parseFloat(p.annual_premium || 0);
+              priorDeals++;
             }
           });
           label = 'Year-to-date';
@@ -23755,13 +23765,18 @@
           periodDays = Math.max(1, Math.floor((dayFloor(e) - dayFloor(s)) / DAY_MS) + 1);
         }
         const avgPerDay = periodDays > 0 ? total / periodDays : 0;
+        // Deal-count metrics mirror the AP ones: average deals sold per day,
+        // and period-over-period growth in raw deal count (deals are the truer
+        // measure of improvement — AP can be smaller on a stronger month).
+        const avgDealsPerDay = periodDays > 0 ? view.deals / periodDays : 0;
+        const dealsDelta = priorDeals ? ((view.deals - priorDeals) / priorDeals) * 100 : 0;
         const isTeam = scope.id === '__team__';
         return (
           <div className="tp-card tp-ap-hero">
             <div className="tp-card-hd">
-              <div style={{display:'flex', alignItems:'center', gap:14}}>
-                <div className="tp-card-title">{isTeam ? 'Total Annual Premium' : (scope.name.split(' ')[0] + "'s Annual Premium")}</div>
-                <div className="tp-card-meta">{label}</div>
+              <div style={{display:'flex', alignItems:'center', gap:14, minWidth:0, flex:'1 1 auto'}}>
+                <div className="tp-card-title" style={{whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis'}}>{isTeam ? 'Total Annual Premium' : (scope.name.split(' ')[0] + "'s Annual Premium")}</div>
+                <div className="tp-card-meta" style={{whiteSpace:'nowrap', flex:'0 0 auto'}}>{label}</div>
               </div>
               <div className="tp-tf-segment">
                 {[['TODAY','Today'],['YDAY','Yesterday'],['WTD','WTD'],['MTD','MTD'],['L30','L30'],['YTD','YTD'],['LW','Last Wk'],['LM','Last Mo'],['ALL','All'],['CUSTOM','Custom']].map(([t, lbl]) => (
@@ -23784,14 +23799,20 @@
               <div className="tp-ap-num">{fmtCurrency(total)}</div>
               {prior > 0 ? (
                 <div className={'tp-ap-delta ' + (delta >= 0 ? 'pos' : 'neg')}>
-                  {delta >= 0 ? '▲' : '▼'} {Math.abs(delta).toFixed(1)}%
+                  {delta >= 0 ? '▲' : '▼'} {Math.abs(delta).toFixed(1)}% premium
                   <span style={{color:'var(--tp-ink-3)', marginLeft:6}}>{deltaLabel}</span>
                 </div>
               ) : (
                 <div className="tp-ap-num-sub">no prior period to compare</div>
               )}
+              {priorDeals > 0 && (
+                <div className={'tp-ap-delta ' + (dealsDelta >= 0 ? 'pos' : 'neg')}>
+                  {dealsDelta >= 0 ? '▲' : '▼'} {Math.abs(dealsDelta).toFixed(1)}% deals
+                  <span style={{color:'var(--tp-ink-3)', marginLeft:6}}>{deltaLabel}</span>
+                </div>
+              )}
               <div className="tp-ap-num-sub">
-                Avg premium <b style={{color:'var(--tp-ink-1)'}}>{fmtCurrency(view.avgPremium)}</b> · Avg/day <b style={{color:'var(--tp-ink-1)'}}>{fmtCurrency(avgPerDay)}</b> · Deals <b style={{color:'var(--tp-ink-1)'}}>{view.deals.toLocaleString()}</b>
+                Avg premium <b style={{color:'var(--tp-ink-1)'}}>{fmtCurrency(view.avgPremium)}</b> · Avg/day <b style={{color:'var(--tp-ink-1)'}}>{fmtCurrency(avgPerDay)}</b> · Deals <b style={{color:'var(--tp-ink-1)'}}>{view.deals.toLocaleString()}</b> · Avg deals/day <b style={{color:'var(--tp-ink-1)'}}>{avgDealsPerDay.toFixed(1)}</b>
               </div>
             </div>
             <div style={{display:'flex', justifyContent:'flex-end', marginBottom:8}}>
