@@ -7842,10 +7842,17 @@
       color: var(--tk-ink-3); font-weight: 500;
     }
     #panel-goals .tk-card-meta { font-family: var(--tk-mono); font-size: 11px; color: var(--tk-ink-3); }
+    /* Centered, more pronounced card title (used across the rep tracker cards) */
+    #panel-goals .tk-card-title-lg {
+      font-family: var(--tk-sans); font-size: 17px; font-weight: 700;
+      text-transform: none; letter-spacing: -0.01em; color: var(--tk-ink-1);
+    }
+    #panel-goals .tk-card-hd-center { flex-direction: column; align-items: center; text-align: center; gap: 12px; }
+    #panel-goals .tk-card-hd-center .tk-card-title-lg { width: 100%; text-align: center; }
     #panel-goals .tk-dot { width: 8px; height: 8px; border-radius: 99px; display: inline-block; }
 
     /* AP hero */
-    #panel-goals .tk-ap-hero { grid-column: span 12; padding: 26px 28px; }
+    #panel-goals .tk-ap-hero { grid-column: span 12; padding: 18px 28px; }
     #panel-goals .tk-ap-num {
       font-family: var(--tk-mono); font-size: 38px; font-weight: 500;
       color: var(--tk-ink-1); letter-spacing: -0.02em;
@@ -7953,8 +7960,8 @@
       color: var(--tk-ink-1); letter-spacing: -0.01em;
       font-variant-numeric: tabular-nums; line-height: 1; margin-top: 4px;
     }
-    #panel-goals .tk-kpi-sub { font-family: var(--tk-mono); font-size: 11px; color: var(--tk-ink-3); }
-    #panel-goals .tk-kpi-sub b { color: var(--tk-ink-1); font-weight: 500; }
+    #panel-goals .tk-kpi-sub { font-family: var(--tk-mono); font-size: 12px; color: var(--tk-ink-2); }
+    #panel-goals .tk-kpi-sub b { color: var(--tk-ink-1); font-weight: 600; font-size: 13px; }
 
     /* Timeframe segmented control */
     #panel-goals .tk-tf-segment {
@@ -8016,6 +8023,17 @@
       opacity: 1; transform: translateX(-50%) scale(1); pointer-events: auto;
     }
     #panel-goals .tk-heat-day.tk-heat-day-active { z-index: 10; }
+    /* Keep the hover tooltip on-screen on narrow / split-screen windows: the
+       left-edge column anchors its tip to the left, the right-edge column to the
+       right, instead of centering and getting clipped by the viewport. */
+    #panel-goals .tk-heat-cal > .tk-heat-day:nth-child(7n+1) .tk-heat-tip { left: 0; right: auto; transform: translateX(0) scale(0.96); transform-origin: bottom left; }
+    #panel-goals .tk-heat-cal > .tk-heat-day:nth-child(7n+1):hover:not(.empty):not(.future) .tk-heat-tip,
+    #panel-goals .tk-heat-cal > .tk-heat-day:nth-child(7n+1).tk-heat-day-active .tk-heat-tip { transform: translateX(0) scale(1); }
+    #panel-goals .tk-heat-cal > .tk-heat-day:nth-child(7n) .tk-heat-tip { left: auto; right: 0; transform: translateX(0) scale(0.96); transform-origin: bottom right; }
+    #panel-goals .tk-heat-cal > .tk-heat-day:nth-child(7n):hover:not(.empty):not(.future) .tk-heat-tip,
+    #panel-goals .tk-heat-cal > .tk-heat-day:nth-child(7n).tk-heat-day-active .tk-heat-tip { transform: translateX(0) scale(1); }
+    /* Never wider than the viewport, wherever it lands */
+    #panel-goals .tk-heat-tip { max-width: min(240px, 90vw); }
     #panel-goals .tk-heat-tip-date {
       font-family: var(--tk-sans);
       font-size: 12px; font-weight: 600;
@@ -8062,6 +8080,13 @@
       font-family: var(--tk-mono); font-size: 11px; color: var(--tk-ink-2);
       text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 10px;
     }
+    /* Keep the activity calendar compact + square: cap each month's width and
+       center it so the card height stays roughly half instead of growing tall
+       on wide screens. The padding falls naturally on either side. */
+    #panel-goals .tk-heat-month-label,
+    #panel-goals .tk-heat-week-row,
+    #panel-goals .tk-heat-cal { max-width: 435px; margin-left: auto; margin-right: auto; }
+    #panel-goals .tk-heat-month-label { text-align: center; }
 
     /* Horizontal bar chart (deal status) — thin bars matching the rest of
        the Kairos design system. Two-row layout: label/count up top, thin
@@ -8168,6 +8193,7 @@
       display: flex; flex-direction: column; gap: 14px;
     }
     .tk-mod-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .tk-mod-grid.cols-2 { grid-template-columns: 1fr 1fr; }
     .tk-mod-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
     .tk-mod-grid.cols-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
     .tk-mod-grid .full { grid-column: 1 / -1; }
@@ -8293,7 +8319,7 @@
       border: 1px solid var(--tk-hairline);
       border-radius: var(--tk-radius);
       overflow: auto;
-      max-height: 440px;
+      max-height: 620px;
       background: var(--tk-bg);
     }
     #panel-goals .tk-daily-table {
@@ -8329,6 +8355,22 @@
     #panel-goals .tk-daily-table tbody td.pos { color: var(--rb-green); font-weight: 600; }
     #panel-goals .tk-daily-table tbody tr:last-child td { border-bottom: 0; }
     #panel-goals .tk-daily-table tbody tr:hover td { background: var(--tk-surface-2); }
+    /* Inline (Excel-style) cell editing in the Daily Breakdown */
+    #panel-goals .tk-daily-table tbody td.kpi-editable { cursor: pointer; }
+    #panel-goals .tk-daily-table tbody td.kpi-editable:hover { box-shadow: inset 0 0 0 1px var(--rb-blue); background: color-mix(in oklch, var(--rb-blue) 10%, var(--tk-surface)); }
+    #panel-goals .tk-cell-input {
+      /* Fill the cell exactly — never force it wider, so editing a value
+         doesn't shove the other columns sideways. Numbers here are 2-3 digits. */
+      width: 100%; min-width: 0; max-width: 100%; box-sizing: border-box;
+      background: var(--tk-surface); color: var(--tk-ink-1);
+      border: 1px solid var(--rb-blue); border-radius: 4px;
+      padding: 2px 5px; margin: -3px 0;
+      font-family: var(--tk-mono); font-variant-numeric: tabular-nums;
+      font-size: 12px; text-align: inherit; outline: none;
+    }
+    /* Hide the number-spinner so it reads like a plain editable cell */
+    #panel-goals .tk-cell-input::-webkit-outer-spin-button,
+    #panel-goals .tk-cell-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
     /* Day-of-week column */
     #panel-goals .tk-daily-table thead th.dt-dow,
     #panel-goals .tk-daily-table tbody td.dt-dow {
@@ -8484,7 +8526,7 @@
       #panel-goals .tk-ap-num { font-size: 28px; }
       #panel-goals .tk-grid-12 > * { grid-column: span 12 !important; }
       #panel-goals .tk-kpi-grid { grid-template-columns: repeat(2, 1fr) !important; }
-      .tk-mod-grid, .tk-mod-grid.cols-3, .tk-mod-grid.cols-4 { grid-template-columns: 1fr !important; }
+      .tk-mod-grid, .tk-mod-grid.cols-2, .tk-mod-grid.cols-3, .tk-mod-grid.cols-4 { grid-template-columns: 1fr !important; }
       /* Submit Deal / Submit KPI modals — fit within the viewport so the
          action bar (Cancel / Submit) is reachable on small phones. */
       .tk-modal-layer { padding: 8px !important; align-items: flex-start !important; }
@@ -23020,6 +23062,17 @@
 
       function scopedView(scope, timeframe, customRange) {
         if (!scope) return null;
+        // Count of distinct agents who wrote at least one policy within a date
+        // predicate. Used for "Avg agent AP" — only producing agents are
+        // counted, so reps with zero policies in the window never dilute it.
+        const distinctAgents = (pred) => {
+          const ids = new Set();
+          (scope.policies || []).forEach(po => {
+            const d = parsePolicyDate(po.policy_date || po.created_at);
+            if (pred(d)) ids.add(po.user_id || po.sales_rep || '__unknown__');
+          });
+          return ids.size;
+        };
         // Dynamic-window mode (ALL / CUSTOM / LW / LM): recompute AP, deals,
         // KPIs and carrier mix on the fly from the scope's raw policies +
         // kpis. Falls through to the precomputed WTD/MTD/YTD values otherwise.
@@ -23060,11 +23113,15 @@
             dials: kSum.dials, answers: kSum.answers, appointments: kSum.appointments,
             presentations: kSum.presentations, leadSpend: kSum.leadSpend, deposits: kSum.deposits,
             carrierMix: mix, name: scope.name,
+            activeAgents: distinctAgents(inWin),
             rangeStart: start, rangeEnd: end,
           };
         }
         const ap = timeframe === 'WTD' ? scope.apWTD : timeframe === 'YTD' ? scope.apYTD : scope.apMTD;
         const deals = timeframe === 'WTD' ? scope.dealsWTD : timeframe === 'YTD' ? scope.dealsYTD : scope.dealsMTD;
+        const nowTf = new Date();
+        const tfStart = timeframe === 'WTD' ? startOfWeek(nowTf) : timeframe === 'YTD' ? startOfYear(nowTf) : startOfMonth(nowTf);
+        const activeAgents = distinctAgents(d => !!d && d >= tfStart);
         const k = timeframe === 'WTD' ? scope.kpiWTD : timeframe === 'YTD' ? scope.kpiYTD : scope.kpiMTD;
         const carrierMix = timeframe === 'WTD' ? (scope.carrierMixWTD || scope.carrierMix)
                           : timeframe === 'YTD' ? (scope.carrierMixYTD || scope.carrierMix)
@@ -23081,6 +23138,7 @@
           leadSpend: k.leadSpend,
           deposits: k.deposits,
           carrierMix,
+          activeAgents,
           name: scope.name,
         };
       }
@@ -23770,6 +23828,10 @@
         // measure of improvement — AP can be smaller on a stronger month).
         const avgDealsPerDay = periodDays > 0 ? view.deals / periodDays : 0;
         const dealsDelta = priorDeals ? ((view.deals - priorDeals) / priorDeals) * 100 : 0;
+        // Avg agent AP = total AP ÷ number of agents who actually wrote a policy
+        // in this timeframe. Non-producing agents are excluded from the divisor.
+        const activeAgents = view.activeAgents || 0;
+        const avgAgentAP = activeAgents > 0 ? total / activeAgents : 0;
         const isTeam = scope.id === '__team__';
         return (
           <div className="tp-card tp-ap-hero">
@@ -23813,6 +23875,7 @@
               )}
               <div className="tp-ap-num-sub">
                 Avg premium <b style={{color:'var(--tp-ink-1)'}}>{fmtCurrency(view.avgPremium)}</b> · Avg/day <b style={{color:'var(--tp-ink-1)'}}>{fmtCurrency(avgPerDay)}</b> · Deals <b style={{color:'var(--tp-ink-1)'}}>{view.deals.toLocaleString()}</b> · Avg deals/day <b style={{color:'var(--tp-ink-1)'}}>{avgDealsPerDay.toFixed(1)}</b>
+                {isTeam && <> · Avg agent AP <b style={{color:'var(--tp-ink-1)'}}>{fmtCurrency(avgAgentAP)}</b> <span style={{color:'var(--tp-ink-3)'}}>({activeAgents} {activeAgents === 1 ? 'agent' : 'agents'})</span></>}
               </div>
             </div>
             <div style={{display:'flex', justifyContent:'flex-end', marginBottom:8}}>
@@ -26350,7 +26413,6 @@
         const [answers, setAnswers] = useState(fld(init.answers));
         const [appointments, setAppointments] = useState(fld(init.appointments));
         const [presentations, setPresentations] = useState(fld(init.presentations));
-        const [deals, setDeals] = useState(fld(init.deals));
         const [leadSpend, setLeadSpend] = useState(fld(init.lead_spend));
         const [deposits, setDeposits] = useState(fld(init.deposits));
         const [saving, setSaving] = useState(false);
@@ -26374,7 +26436,6 @@
               answers: num(answers),
               appointments: num(appointments),
               presentations: num(presentations),
-              deals: num(deals),
               lead_spend: num(leadSpend),
               deposits: num(deposits),
               updated_at: new Date().toISOString(),
@@ -26407,7 +26468,7 @@
             const prevYMD = prev.getFullYear() + '-' + String(prev.getMonth()+1).padStart(2,'0') + '-' + String(prev.getDate()).padStart(2,'0');
             setDate(prevYMD);
             setDials(''); setAnswers(''); setAppointments(''); setPresentations('');
-            setDeals(''); setLeadSpend(''); setDeposits('');
+            setLeadSpend(''); setDeposits('');
             setToast({ kind: 'ok', msg: '✓ KPIs logged · entering ' + prevYMD });
             setTimeout(() => setToast(null), 1800);
             setSaving(false);
@@ -26438,13 +26499,12 @@
                   </div>
                 </div>
                 <div className="tk-mod-grid cols-4">
-                  <div className="tk-mod-field"><label>Dials</label><input className="tk-mod-input mono" type="number" min="0" value={dials} onChange={e => setDials(e.target.value)} placeholder="0" /></div>
+                  <div className="tk-mod-field"><label>Calls</label><input className="tk-mod-input mono" type="number" min="0" value={dials} onChange={e => setDials(e.target.value)} placeholder="0" /></div>
                   <div className="tk-mod-field"><label>Answers</label><input className="tk-mod-input mono" type="number" min="0" value={answers} onChange={e => setAnswers(e.target.value)} placeholder="0" /></div>
                   <div className="tk-mod-field"><label>Appts</label><input className="tk-mod-input mono" type="number" min="0" value={appointments} onChange={e => setAppointments(e.target.value)} placeholder="0" /></div>
                   <div className="tk-mod-field"><label>Pres.</label><input className="tk-mod-input mono" type="number" min="0" value={presentations} onChange={e => setPresentations(e.target.value)} placeholder="0" /></div>
                 </div>
-                <div className="tk-mod-grid cols-3">
-                  <div className="tk-mod-field"><label>Deals</label><input className="tk-mod-input mono" type="number" min="0" value={deals} onChange={e => setDeals(e.target.value)} placeholder="0" /></div>
+                <div className="tk-mod-grid cols-2">
                   <div className="tk-mod-field"><label>Lead spend</label><input className="tk-mod-input mono" type="number" min="0" step="0.01" value={leadSpend} onChange={e => setLeadSpend(e.target.value)} placeholder="0.00" /></div>
                   <div className="tk-mod-field"><label>Deposits</label><input className="tk-mod-input mono" type="number" min="0" step="0.01" value={deposits} onChange={e => setDeposits(e.target.value)} placeholder="0.00" /></div>
                 </div>
@@ -26464,7 +26524,7 @@
         const ref = useRef(null);
         const [w, setW] = useState(800);
         const [hover, setHover] = useState(null);
-        const h = 280;
+        const h = 240;
         useEffect(() => {
           if (!ref.current) return;
           const ro = new ResizeObserver(([e]) => setW(e.contentRect.width));
@@ -26529,8 +26589,8 @@
                   <stop offset="100%" stopColor={color} stopOpacity="0" />
                 </linearGradient>
                 <linearGradient id="tkApProjGrad" x1="0" x2="0" y1="0" y2="1">
-                  <stop offset="0%" stopColor="oklch(0.86 0.13 145)" stopOpacity="0.22" />
-                  <stop offset="100%" stopColor="oklch(0.86 0.13 145)" stopOpacity="0" />
+                  <stop offset="0%" stopColor="var(--rb-blue)" stopOpacity="0.22" />
+                  <stop offset="100%" stopColor="var(--rb-blue)" stopOpacity="0" />
                 </linearGradient>
               </defs>
               {grid.map((g, i) => (
@@ -26549,7 +26609,7 @@
               <path d={areaPath} fill="url(#tkApGrad)" />
               {projAreaPath && <path d={projAreaPath} fill="url(#tkApProjGrad)" />}
               <path d={realPath} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              {projPath && <path d={projPath} fill="none" stroke="oklch(0.86 0.13 145)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />}
+              {projPath && <path d={projPath} fill="none" stroke="var(--rb-blue)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />}
               <line x1={xs(currentMonthIdx)} x2={xs(currentMonthIdx)} y1={pad.top} y2={pad.top + innerH} stroke="var(--tk-ink-4)" strokeDasharray="2 4" opacity="0.4" />
               {/* "You are here" pulsing dot at the boundary */}
               <circle className="kf-pulse-ring" cx={boundaryX} cy={boundaryY} r="5" fill="var(--rb-green)" />
@@ -26560,7 +26620,7 @@
               {hover !== null && (
                 <g>
                   <line x1={xs(hover)} x2={xs(hover)} y1={pad.top} y2={pad.top + innerH} stroke="var(--tk-ink-3)" strokeDasharray="2 3" />
-                  <circle cx={xs(hover)} cy={ys(cumProjected[hover] || 0)} r="5" fill="var(--tk-surface)" stroke={hover <= currentMonthIdx ? color : 'oklch(0.86 0.13 145)'} strokeWidth="2" />
+                  <circle cx={xs(hover)} cy={ys(cumProjected[hover] || 0)} r="5" fill="var(--tk-surface)" stroke={hover <= currentMonthIdx ? color : 'var(--rb-blue)'} strokeWidth="2" />
                 </g>
               )}
             </svg>
@@ -26583,7 +26643,7 @@
         const ref = useRef(null);
         const [w, setW] = useState(800);
         const [hover, setHover] = useState(null);
-        const h = 280;
+        const h = 240;
         useEffect(() => {
           if (!ref.current) return;
           const ro = new ResizeObserver(([e]) => setW(e.contentRect.width));
@@ -26662,8 +26722,8 @@
                   <stop offset="100%" stopColor={color} stopOpacity="0" />
                 </linearGradient>
                 <linearGradient id="tkMtdProjGrad" x1="0" x2="0" y1="0" y2="1">
-                  <stop offset="0%" stopColor="oklch(0.86 0.13 145)" stopOpacity="0.22" />
-                  <stop offset="100%" stopColor="oklch(0.86 0.13 145)" stopOpacity="0" />
+                  <stop offset="0%" stopColor="var(--rb-blue)" stopOpacity="0.22" />
+                  <stop offset="100%" stopColor="var(--rb-blue)" stopOpacity="0" />
                 </linearGradient>
               </defs>
               {grid.map((g, i) => (
@@ -26681,7 +26741,7 @@
               <path d={areaPath} fill="url(#tkMtdGrad)" />
               {projAreaPath && <path d={projAreaPath} fill="url(#tkMtdProjGrad)" />}
               <path d={realPath} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              {projPath && <path d={projPath} fill="none" stroke="oklch(0.86 0.13 145)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />}
+              {projPath && <path d={projPath} fill="none" stroke="var(--rb-blue)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />}
               <line x1={xs(todayDay - 1)} x2={xs(todayDay - 1)} y1={pad.top} y2={pad.top + innerH} stroke="var(--tk-ink-4)" strokeDasharray="2 4" opacity="0.4" />
               {/* "You are here" pulsing dot at today */}
               <circle className="kf-pulse-ring" cx={boundaryX} cy={boundaryY} r="5" fill="var(--rb-green)" />
@@ -26692,7 +26752,7 @@
               {hover !== null && (
                 <g>
                   <line x1={xs(hover)} x2={xs(hover)} y1={pad.top} y2={pad.top + innerH} stroke="var(--tk-ink-3)" strokeDasharray="2 3" />
-                  <circle cx={xs(hover)} cy={ys(projection[hover] || 0)} r="5" fill="var(--tk-surface)" stroke={hover < todayDay ? color : 'oklch(0.86 0.13 145)'} strokeWidth="2" />
+                  <circle cx={xs(hover)} cy={ys(projection[hover] || 0)} r="5" fill="var(--tk-surface)" stroke={hover < todayDay ? color : 'var(--rb-blue)'} strokeWidth="2" />
                 </g>
               )}
             </svg>
@@ -26779,7 +26839,8 @@
           cur.pres += (k.presentations || 0);
           cur.answers += (k.answers || 0);
           cur.appointments += (k.appointments || 0);
-          cur.deals += (k.deals || 0);
+          // Deals come ONLY from submitted deals (policies table) below — never
+          // from daily_kpis — so the count matches the Submit Deal form.
           cur.lead_spend += parseFloat(k.lead_spend || 0);
           cur.deposits += parseFloat(k.deposits || 0);
           byDay[day] = cur;
@@ -26818,9 +26879,14 @@
             <div className="tk-heat-cal">
               {cells.map((c, i) => {
                 if (c.empty) return <div key={i} className="tk-heat-day empty"></div>;
+                // Color scale: more activity → green, less → red. A weekday that
+                // has fully passed with nothing logged is flagged red (missed day).
+                const dow = new Date(year, month, c.day).getDay();
+                const missed = (dow >= 1 && dow <= 5) && !c.isFuture && !c.isToday && c.lvl === 0;
                 const bg = c.lvl === 0
-                  ? 'var(--tk-surface-3)'
-                  : 'color-mix(in oklch, var(--rb-green) ' + c.bgPct + '%, var(--tk-surface-3))';
+                  ? (missed ? 'var(--rb-red)' : 'var(--tk-surface-3)')
+                  : 'color-mix(in oklch, var(--rb-green) ' + [0,20,40,60,80,100][c.lvl] + '%, var(--rb-red))';
+                const heatFg = c.lvl >= 4 ? '#0d0e10' : ((c.lvl === 0 && !missed) ? 'var(--tk-ink-3)' : '#fff');
                 const clickable = !c.isFuture && !viewingOther && typeof onDayClick === 'function';
                 const showTip = isMobile && activeDay === c.day; // mobile: tip only shows for the tapped day
                 const cls = 'tk-heat-day' +
@@ -26844,7 +26910,7 @@
                   <div
                     key={i}
                     className={cls}
-                    style={{background: bg, color: c.lvl >= 4 ? '#0d0e10' : 'var(--tk-ink-3)', cursor: clickable ? 'pointer' : 'default'}}
+                    style={{background: bg, color: heatFg, cursor: clickable ? 'pointer' : 'default'}}
                     role={clickable ? 'button' : undefined}
                     tabIndex={clickable ? 0 : undefined}
                     onClick={onCellClick}
@@ -26855,7 +26921,7 @@
                       <div className="tk-heat-tip-date">{dateLbl}</div>
                       {c.data ? (
                         <div className="tk-heat-tip-rows">
-                          <div><span>Dials</span><b>{c.data.dials}</b></div>
+                          <div><span>Calls</span><b>{c.data.dials}</b></div>
                           <div><span>Answers</span><b>{c.data.answers || 0}</b></div>
                           <div><span>Appts</span><b>{c.data.appointments || 0}</b></div>
                           <div><span>Pres.</span><b>{c.data.pres}</b></div>
@@ -26884,6 +26950,33 @@
               })}
             </div>
           </div>
+        );
+      }
+
+      // ─── Inline-editable KPI cell (Daily Breakdown, Excel-style) ─────
+      // Click the cell → it becomes a number input in place. Enter (or blur)
+      // commits just that one field; Escape cancels. No modal.
+      function EditableKpiCell({ value, money, editable, className, label, onCommit }) {
+        const [editing, setEditing] = useState(false);
+        const [draft, setDraft] = useState('');
+        const begin = () => { setDraft(value ? String(value) : ''); setEditing(true); };
+        const commit = () => {
+          setEditing(false);
+          const n = draft === '' ? 0 : parseFloat(draft);
+          if (!isNaN(n) && n !== (value || 0)) onCommit(n);
+        };
+        const cls = ((className ? className + ' ' : '') + (editable ? 'kpi-editable' : '')).trim();
+        const display = money ? (value ? fmtCurrency(value) : '—') : fmtNum(value);
+        return (
+          <td className={cls} data-label={label} title={editable ? 'Click to edit' : undefined}
+              onClick={editable && !editing ? begin : undefined}>
+            {editing ? (
+              <input autoFocus className="tk-cell-input" type="number" min="0" step={money ? '0.01' : '1'}
+                value={draft} onChange={e => setDraft(e.target.value)} onBlur={commit}
+                onKeyDown={e => { if (e.key === 'Enter') { e.target.blur(); } else if (e.key === 'Escape') { setEditing(false); } }}
+                onClick={e => e.stopPropagation()} />
+            ) : display}
+          </td>
         );
       }
 
@@ -27042,6 +27135,38 @@
             });
             setMonthlyGoal(newGoal);
           } catch (e) { console.error('Save monthly goal failed:', e); }
+        };
+
+        // Inline single-field edit from the Daily Breakdown. Writes the whole
+        // day's row (the other fields carried over from dayRow) so we don't wipe
+        // anything, then refreshes quietly. Same PATCH-then-POST path the modal
+        // uses so it hits the real (user_id, kpi_date) unique key.
+        const saveCellEdit = async (ymd, field, value, dayRow) => {
+          if (viewingOther || !agentProfile || !agentProfile.user_id) return;
+          // No 'deals' — deals are owned by the Submit Deal form (policies table).
+          const numFields = ['dials','answers','appointments','presentations','lead_spend','deposits'];
+          const body = {
+            user_id: agentProfile.user_id,
+            sales_rep: agentProfile.agent_name,
+            kpi_date: ymd,
+            updated_at: new Date().toISOString(),
+          };
+          numFields.forEach(f => { body[f] = (f === field) ? value : (dayRow[f] || 0); });
+          try {
+            const patchRes = await fetch(
+              SUPABASE_URL + '/rest/v1/daily_kpis?user_id=eq.' + encodeURIComponent(agentProfile.user_id) + '&kpi_date=eq.' + encodeURIComponent(ymd),
+              { method: 'PATCH', headers: Object.assign({}, HDRS_WRITE, { Prefer: 'return=representation' }), body: JSON.stringify(body) }
+            );
+            if (!patchRes.ok) throw new Error('patch failed (' + patchRes.status + ')');
+            const rows = await patchRes.json().catch(() => []);
+            if (!Array.isArray(rows) || rows.length === 0) {
+              const insRes = await fetch(SUPABASE_URL + '/rest/v1/daily_kpis', {
+                method: 'POST', headers: Object.assign({}, HDRS_WRITE, { Prefer: 'return=minimal' }), body: JSON.stringify(body)
+              });
+              if (!insRes.ok) throw new Error('insert failed (' + insRes.status + ')');
+            }
+            reload({ quiet: true });
+          } catch (e) { console.error('Inline KPI edit failed:', e); }
         };
 
         if (loading) {
@@ -27210,7 +27335,7 @@
           const cur = dayMap[r.kpi_date] || { dials: 0, pres: 0, deals: 0 };
           cur.dials += (r.dials || 0);
           cur.pres += (r.presentations || 0);
-          cur.deals += (r.deals || 0);
+          // deals added from policies only (below)
           dayMap[r.kpi_date] = cur;
         });
         policies.forEach(p => {
@@ -27283,20 +27408,9 @@
 
             <div className="tk-grid tk-grid-12">
               {/* Annual Premium Goal hero */}
-              <div className="tk-card tk-ap-hero" style={{gridColumn:'span 12'}}>
-                <div className="tk-card-hd" style={{marginBottom:18}}>
-                  <div style={{display:'flex', alignItems:'center', gap:14}}>
-                    <div className="tk-card-title">
-                      {chartMode === 'mtd'
-                        ? 'Monthly Premium Goal · ' + today.toLocaleString('en-US', {month:'long'}) + ' ' + today.getFullYear()
-                        : 'Annual Premium Goal · ' + today.getFullYear()}
-                    </div>
-                    <div className="tk-card-meta">
-                      {chartMode === 'mtd'
-                        ? Math.round(expectedMonthPct) + '% of month elapsed'
-                        : Math.round(expectedPct) + '% of year elapsed'}
-                    </div>
-                  </div>
+              <div className="tk-card tk-ap-hero" style={{gridColumn:'span 12', order:0}}>
+                <div className="tk-card-hd tk-card-hd-center" style={{marginBottom:18}}>
+                  <div className="tk-card-title tk-card-title-lg">Gold Tracker</div>
                   <div style={{display:'flex', alignItems:'center', gap:12}}>
                     <div className="tk-card-meta" style={{display:'flex', alignItems:'center', gap:6}}>
                       <span className="tk-dot" style={{background: chartMode === 'mtd' ? monthlyPaceColor : paceColor}}></span>
@@ -27414,10 +27528,10 @@
                   </div>
                 </div>
                 {chartMode === 'mtd'
-                  ? <MtdLineChart policies={policies} goal={monthlyGoal} color={paceColor} />
+                  ? <MtdLineChart policies={policies} goal={monthlyGoal} color={monthlyPaceColor} />
                   : <GoalLineChart monthlyValues={monthlyPremium} currentMonthIdx={today.getMonth()} goal={goal} color={paceColor} />}
                 <div style={{marginTop:14, paddingTop:14, borderTop:'1px solid var(--tk-hairline)', display:'flex', alignItems:'center', gap:22, flexWrap:'wrap', fontFamily:'var(--tk-mono)', fontSize:11, color:'var(--tk-ink-3)'}}>
-                  <span><span style={{display:'inline-block', width:18, height:2, background:paceColor, marginRight:6, verticalAlign:'middle', borderRadius:1}}></span>Cumulative actual</span>
+                  <span><span style={{display:'inline-block', width:18, height:2, background:(chartMode === 'mtd' ? monthlyPaceColor : paceColor), marginRight:6, verticalAlign:'middle', borderRadius:1}}></span>Cumulative actual</span>
                   <span><span style={{display:'inline-block', width:18, height:2, background:'repeating-linear-gradient(to right, var(--rb-blue) 0 5px, transparent 5px 10px)', marginRight:6, verticalAlign:'middle'}}></span>{chartMode === 'mtd' ? 'Projected to month-end' : 'Projected to year-end'}</span>
                   {((chartMode === 'mtd' ? monthlyGoal : goal) > 0) && <span><span style={{display:'inline-block', width:18, height:2, background:'repeating-linear-gradient(to right, var(--tk-ink-2) 0 4px, transparent 4px 9px)', marginRight:6, verticalAlign:'middle'}}></span>{chartMode === 'mtd' ? 'Monthly goal' : 'Annual goal'}</span>}
                 </div>
@@ -27429,13 +27543,10 @@
                 const heatLeftDate = new Date(heatRightDate.getFullYear(), heatRightDate.getMonth() - 1, 1);
                 const onHeatDay = (date, row) => { setKpiInitial({ date, dials: row?.dials, answers: row?.answers, appointments: row?.appointments, presentations: row?.presentations, deals: row?.deals, lead_spend: row?.lead_spend, deposits: row?.deposits }); setShowKpiModal(true); };
                 return (
-              <div className="tk-card" style={{gridColumn:'span 12'}}>
-                <div className="tk-card-hd">
-                  <div style={{display:'flex', alignItems:'baseline', gap:14}}>
-                    <div className="tk-card-title">Daily Activity Heatmap</div>
-                    <div className="tk-card-meta">Weighted: dials · presentations · sales</div>
-                  </div>
-                  <div style={{display:'flex', alignItems:'center', gap:16, flexWrap:'wrap'}}>
+              <div className="tk-card" style={{gridColumn:'span 12', order:1}}>
+                <div className="tk-card-hd tk-card-hd-center">
+                  <div className="tk-card-title tk-card-title-lg">Activity Tracker</div>
+                  <div style={{display:'flex', alignItems:'center', gap:16, flexWrap:'wrap', justifyContent:'center'}}>
                     <div style={{display:'flex', alignItems:'center', gap:6}}>
                       <button type="button" className="tk-seg-btn" onClick={() => setHeatOffset(o => o - 1)} title="Previous month" aria-label="Previous month">‹</button>
                       {heatOffset !== 0 && (
@@ -27447,7 +27558,7 @@
                       <span style={{fontFamily:'var(--tk-mono)', fontSize:10, color:'var(--tk-ink-4)', textTransform:'uppercase', letterSpacing:'0.06em'}}>Less</span>
                       <div style={{display:'flex', gap:3}}>
                         {[1,2,3,4,5].map(lvl => (
-                          <div key={lvl} style={{width:12, height:12, borderRadius:3, background:'color-mix(in oklch, var(--rb-green) ' + [18,34,55,78,100][lvl-1] + '%, var(--tk-surface-3))'}}></div>
+                          <div key={lvl} style={{width:12, height:12, borderRadius:3, background:'color-mix(in oklch, var(--rb-green) ' + [20,40,60,80,100][lvl-1] + '%, var(--rb-red))'}}></div>
                         ))}
                       </div>
                       <span style={{fontFamily:'var(--tk-mono)', fontSize:10, color:'var(--tk-ink-4)', textTransform:'uppercase', letterSpacing:'0.06em'}}>More</span>
@@ -27459,30 +27570,40 @@
                     )}
                   </div>
                 </div>
-                <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:32}}>
-                  <HeatmapMonth year={heatLeftDate.getFullYear()} month={heatLeftDate.getMonth()} kpis={kpis} policies={policies} today={today} viewingOther={viewingOther} onDayClick={onHeatDay} />
-                  <HeatmapMonth year={heatRightDate.getFullYear()} month={heatRightDate.getMonth()} kpis={kpis} policies={policies} today={today} viewingOther={viewingOther} onDayClick={onHeatDay} />
-                </div>
-                <div style={{marginTop:22, paddingTop:16, borderTop:'1px solid var(--tk-hairline)', display:'grid', gridTemplateColumns:'repeat(4, 1fr)', gap:24}}>
-                  <div className="tk-stat"><div className="tk-kpi-lbl">Total Dials</div><div className="v">{fmtNum(heatTotals.dials)}</div><div className="tk-kpi-sub">across 2 months</div></div>
-                  <div className="tk-stat"><div className="tk-kpi-lbl">Presentations</div><div className="v">{fmtNum(heatTotals.presentations)}</div><div className="tk-kpi-sub">2 months</div></div>
-                  <div className="tk-stat"><div className="tk-kpi-lbl">Sales</div><div className="v pos">{heatSales}</div><div className="tk-kpi-sub">2 months</div></div>
-                  <div className="tk-stat"><div className="tk-kpi-lbl">Active Days</div><div className="v">{activeDays} / {totalHeatDays}</div><div className="tk-kpi-sub">{(activeDays/totalHeatDays*100).toFixed(0)}% activity rate</div></div>
+                <div style={{display:'flex', gap:28, alignItems:'stretch', flexWrap:'wrap'}}>
+                  <div style={{flex:'1 1 520px', display:'grid', gridTemplateColumns:'1fr 1fr', gap:28}}>
+                    <HeatmapMonth year={heatLeftDate.getFullYear()} month={heatLeftDate.getMonth()} kpis={kpis} policies={policies} today={today} viewingOther={viewingOther} onDayClick={onHeatDay} />
+                    <HeatmapMonth year={heatRightDate.getFullYear()} month={heatRightDate.getMonth()} kpis={kpis} policies={policies} today={today} viewingOther={viewingOther} onDayClick={onHeatDay} />
+                  </div>
+                  <div style={{flex:'0 1 230px', minWidth:180, display:'flex', flexDirection:'column', justifyContent:'center', gap:20}}>
+                    <div style={{border:'1px solid var(--tk-hairline-strong)', borderRadius:'var(--tk-radius)', padding:'14px 16px', background:'var(--tk-surface-2)'}}>
+                      <div style={{fontFamily:'var(--tk-sans)', fontSize:13, fontWeight:700, color:'var(--tk-ink-1)'}}>Daily Goal</div>
+                      <div style={{fontFamily:'var(--tk-mono)', fontSize:9, color:'var(--tk-ink-3)', textTransform:'uppercase', letterSpacing:'0.08em', marginTop:2, marginBottom:11}}>Hit at least one</div>
+                      <div style={{display:'flex', flexDirection:'column', gap:9}}>
+                        {[['var(--rb-green)','1','sale'],['var(--rb-orange)','3','presentations'],['var(--rb-blue)','300','calls']].map(([c, n, lbl]) => (
+                          <div key={lbl} style={{display:'flex', alignItems:'baseline', gap:8}}>
+                            <span className="tk-dot" style={{background:c, alignSelf:'center'}}></span>
+                            <b style={{fontFamily:'var(--tk-mono)', fontVariantNumeric:'tabular-nums', fontSize:14, color:'var(--tk-ink-1)', minWidth:30}}>{n}</b>
+                            <span style={{fontSize:12, color:'var(--tk-ink-2)'}}>{lbl}</span>
+                          </div>
+                        ))}
+                      </div>
+                      <div style={{marginTop:11, paddingTop:11, borderTop:'1px solid var(--tk-hairline)', fontFamily:'var(--tk-mono)', fontSize:10.5, lineHeight:1.55, color:'var(--tk-ink-3)'}}>
+                        Aim for a sale. No sale? Land 3 presentations. No presentations? Make 300 calls.
+                      </div>
+                    </div>
+                    <div className="tk-stat"><div className="tk-kpi-lbl">Active Days</div><div className="v">{activeDays} / {totalHeatDays}</div><div className="tk-kpi-sub">{(activeDays/totalHeatDays*100).toFixed(0)}% activity rate</div></div>
+                    <div className="tk-stat"><div className="tk-kpi-lbl">Total Sales</div><div className="v pos">{heatSales}</div><div className="tk-kpi-sub">across 2 months</div></div>
+                  </div>
                 </div>
               </div>
                 );
               })()}
 
               {/* Deal Status pipeline */}
-              <div className="tk-card" style={{gridColumn:'span 6'}}>
-                <div className="tk-card-hd">
-                  <div style={{display:'flex', alignItems:'baseline', gap:14}}>
-                    <div className="tk-card-title">Deal Status · Pipeline &amp; Closed</div>
-                    <div className="tk-card-meta">By premium volume · YTD</div>
-                  </div>
-                  <div className="tk-card-meta" style={{fontFamily:'var(--tk-mono)'}}>
-                    {totalStatusCount} deals · {fmtCurrency(totalStatusAP, {compact:true})}
-                  </div>
+              <div className="tk-card" style={{gridColumn:'span 6', order:3}}>
+                <div className="tk-card-hd tk-card-hd-center">
+                  <div className="tk-card-title tk-card-title-lg">Deal Status</div>
                 </div>
                 {statusItems.map(s => (
                   <div key={s.label} className="tk-hbar-item">
@@ -27501,15 +27622,9 @@
               </div>
 
               {/* Top Carriers YTD — sits next to Deal Status, same width */}
-              <div className="tk-card" style={{gridColumn:'span 6'}}>
-                <div className="tk-card-hd">
-                  <div style={{display:'flex', alignItems:'baseline', gap:14}}>
-                    <div className="tk-card-title">Top Carriers · YTD</div>
-                    <div className="tk-card-meta">By premium written</div>
-                  </div>
-                  <div className="tk-card-meta" style={{fontFamily:'var(--tk-mono)'}}>
-                    {carriers.length} carriers · {fmtCurrency(totalCarrierAP, {compact:true})}
-                  </div>
+              <div className="tk-card" style={{gridColumn:'span 6', order:4}}>
+                <div className="tk-card-hd tk-card-hd-center">
+                  <div className="tk-card-title tk-card-title-lg">Top Carriers</div>
                 </div>
                 {carriers.length === 0 ? (
                   <div style={{padding:'24px 0', color:'var(--tk-ink-3)', fontFamily:'var(--tk-mono)', fontSize:11}}>No policies written yet this year.</div>
@@ -27532,12 +27647,9 @@
               </div>
 
               {/* KPI Tracker */}
-              <div className="tk-card" style={{gridColumn:'span 12', padding:0}}>
-                <div className="tk-card-hd" style={{padding:'18px 22px 14px', borderBottom: tf === 'CUSTOM' ? '0' : '1px solid var(--tk-hairline)'}}>
-                  <div style={{display:'flex', alignItems:'baseline', gap:14}}>
-                    <div className="tk-card-title">KPI Tracker</div>
-                    <div className="tk-card-meta">{tfLabel}</div>
-                  </div>
+              <div className="tk-card" style={{gridColumn:'span 12', padding:0, order:2}}>
+                <div className="tk-card-hd tk-card-hd-center" style={{padding:'18px 22px 14px', borderBottom: tf === 'CUSTOM' ? '0' : '1px solid var(--tk-hairline)'}}>
+                  <div className="tk-card-title tk-card-title-lg">KPI Tracker</div>
                   <div className="tk-tf-segment">
                     {[['WTD','WTD'],['MTD','MTD'],['YTD','YTD'],['LW','Last Wk'],['LM','Last Mo'],['ALL','All Time'],['CUSTOM','Custom']].map(([key, lbl]) => (
                       <button key={key} className={tf === key ? 'on' : ''} onClick={() => setTf(key)}>{lbl}</button>
@@ -27556,15 +27668,15 @@
                   </div>
                 )}
                 <div className="tk-kpi-grid" style={{gridTemplateColumns:'repeat(5, 1fr)', borderRadius:0, border:'none'}}>
-                  <div className="tk-kpi-cell"><div className="tk-kpi-lbl"><span className="swatch" style={{background:'var(--rb-green)'}}></span>Dials</div><div className="tk-kpi-val">{fmtNum(k.dials)}</div><div className="tk-kpi-sub">outbound calls</div></div>
+                  <div className="tk-kpi-cell"><div className="tk-kpi-lbl"><span className="swatch" style={{background:'var(--rb-green)'}}></span>Calls</div><div className="tk-kpi-val">{fmtNum(k.dials)}</div><div className="tk-kpi-sub">inbound + outbound</div></div>
                   <div className="tk-kpi-cell"><div className="tk-kpi-lbl"><span className="swatch" style={{background:'var(--rb-yellow)'}}></span>Answers</div><div className="tk-kpi-val">{fmtNum(k.answers)}</div><div className="tk-kpi-sub"><b>{k.dials > 0 ? (k.answers / k.dials * 100).toFixed(1) : '0.0'}%</b> answer rate</div></div>
                   <div className="tk-kpi-cell"><div className="tk-kpi-lbl"><span className="swatch" style={{background:'var(--rb-orange)'}}></span>Appointments</div><div className="tk-kpi-val">{fmtNum(k.appointments)}</div><div className="tk-kpi-sub"><b>{k.answers > 0 ? (k.appointments / k.answers * 100).toFixed(1) : '0.0'}%</b> set rate</div></div>
                   <div className="tk-kpi-cell"><div className="tk-kpi-lbl"><span className="swatch" style={{background:'var(--rb-red)'}}></span>Presentations</div><div className="tk-kpi-val">{fmtNum(k.presentations)}</div><div className="tk-kpi-sub"><b>{k.appointments > 0 ? (k.presentations / k.appointments * 100).toFixed(1) : '0.0'}%</b> show rate</div></div>
                   <div className="tk-kpi-cell"><div className="tk-kpi-lbl"><span className="swatch" style={{background:'var(--rb-purple)'}}></span>Deals</div><div className="tk-kpi-val">{fmtNum(tfDeals)}</div><div className="tk-kpi-sub">closed business</div></div>
-                  <div className="tk-kpi-cell"><div className="tk-kpi-lbl"><span className="swatch" style={{background:'var(--rb-blue)'}}></span>Lead Spend</div><div className="tk-kpi-val">{fmtCurrency(k.leadSpend, {compact:true})}</div><div className="tk-kpi-sub">{tfDeals > 0 ? fmtCurrency(k.leadSpend / tfDeals) : '$0'} <span style={{color:'var(--tk-ink-4)'}}>/ deal</span></div></div>
+                  <div className="tk-kpi-cell"><div className="tk-kpi-lbl"><span className="swatch" style={{background:'var(--rb-blue)'}}></span>Lead Spend</div><div className="tk-kpi-val">{fmtCurrency(k.leadSpend, {compact:true})}</div><div className="tk-kpi-sub">{tfDeals > 0 ? fmtCurrency(k.leadSpend / tfDeals) : '$0'} <span style={{color:'var(--tk-ink-3)'}}>/ deal</span></div></div>
                   <div className="tk-kpi-cell"><div className="tk-kpi-lbl"><span className="swatch" style={{background:'var(--rb-green)'}}></span>Deposits</div><div className="tk-kpi-val">{fmtCurrency(k.deposits, {compact:true})}</div><div className="tk-kpi-sub">premium collected</div></div>
                   <div className="tk-kpi-cell"><div className="tk-kpi-lbl"><span className="swatch" style={{background:'var(--rb-blue)'}}></span>Avg Premium</div><div className="tk-kpi-val">{fmtCurrency(avgPremium, {compact:true})}</div><div className="tk-kpi-sub">per closed deal</div></div>
-                  <div className="tk-kpi-cell"><div className="tk-kpi-lbl"><span className="swatch" style={{background:'var(--rb-purple)'}}></span>Conversion</div><div className="tk-kpi-val">{conversion.toFixed(2)}%</div><div className="tk-kpi-sub">{tfDeals > 0 ? Math.round(k.dials / tfDeals) : 0} <span style={{color:'var(--tk-ink-4)'}}>dials → 1 deal</span></div></div>
+                  <div className="tk-kpi-cell"><div className="tk-kpi-lbl"><span className="swatch" style={{background:'var(--rb-purple)'}}></span>Conversion</div><div className="tk-kpi-val">{conversion.toFixed(2)}%</div><div className="tk-kpi-sub">{tfDeals > 0 ? Math.round(k.dials / tfDeals) : 0} <span style={{color:'var(--tk-ink-3)'}}>dials → 1 deal</span></div></div>
                   <div className="tk-kpi-cell"><div className="tk-kpi-lbl"><span className="swatch" style={{background:'var(--rb-orange)'}}></span>ROI</div><div className="tk-kpi-val" style={{color: roi >= 0 ? 'var(--tk-pos)' : 'var(--tk-neg)'}}>{roi >= 0 ? '+' : ''}{roi.toFixed(0)}%</div><div className="tk-kpi-sub">(deposits − spend) / spend</div></div>
                 </div>
                 {/* Daily Breakdown — connected to the KPI Tracker card above */}
@@ -27589,6 +27701,25 @@
                   }
                   if (breakdownStart > breakdownEnd) breakdownStart = breakdownEnd;
 
+                  // The daily breakdown renders every day in range. For very long
+                  // ranges (All Time, or any custom range over a year) that can be
+                  // thousands of rows — too heavy to build/render and a real crash
+                  // risk for long-tenured reps — so we skip it entirely and tell the
+                  // user to narrow the timeframe. Only ranges of a year or less load.
+                  const rangeTooLong = tf === 'ALL' || (breakdownEnd - breakdownStart) > 366 * 24 * 60 * 60 * 1000;
+                  if (rangeTooLong) {
+                    return (
+                      <div className="tk-daily-attached">
+                        <div className="tk-daily-attached-hd">
+                          <div>
+                            <div className="tk-daily-title">Daily Breakdown</div>
+                            <div className="tk-daily-meta">Unavailable over a year of data — switch to Year&nbsp;to&nbsp;date or a shorter timeframe to see the day-by-day log.</div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  }
+
                   // Snap to whole weeks (Sunday–Saturday) so each row block is
                   // a complete calendar week — easier to scan + matches the
                   // Heatmap layout above.
@@ -27598,6 +27729,9 @@
                   const ymdOf = (d) => d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
                   const kMap = {};
                   kpis.forEach(r => { if (r.kpi_date) kMap[r.kpi_date] = r; });
+                  // Deals per day come from submitted deals (policies), not daily_kpis.
+                  const polByDay = {};
+                  policies.forEach(p => { const pd = policyDate(p); if (pd) { const key = ymdOf(pd); polByDay[key] = (polByDay[key] || 0) + 1; } });
 
                   const DOW = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
                   const weeks = [];
@@ -27614,7 +27748,7 @@
                         answers: r.answers || 0,
                         appointments: r.appointments || 0,
                         presentations: r.presentations || 0,
-                        deals: r.deals || 0,
+                        deals: polByDay[dymd] || 0,
                         lead_spend: parseFloat(r.lead_spend || 0),
                         deposits: parseFloat(r.deposits || 0),
                         hasData: !!kMap[dymd],
@@ -27659,6 +27793,7 @@
                         </button>
                       </div>
                       <div className={'tk-daily-wrap' + (showDaily ? ' open' : '')}>
+                        <div className="tk-daily-inner">
                         {weeks.length === 0 ? (
                           <div className="tk-daily-empty">No days in this timeframe.</div>
                         ) : (
@@ -27680,7 +27815,7 @@
                                   <tr>
                                     <th className="dt-date">Date</th>
                                     <th className="dt-dow">Day</th>
-                                    <th>Dials</th>
+                                    <th>Calls</th>
                                     <th>Answers</th>
                                     <th>Appts</th>
                                     <th>Pres.</th>
@@ -27697,18 +27832,25 @@
                                       </tr>
                                       {wk.days.map(d => {
                                         const lbl = d.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-                                        const cls = (d.hasData ? '' : 'empty') + (d.isFuture ? ' future' : '');
+                                        const editable = !viewingOther && !d.isFuture;
+                                        const cls = ((d.hasData ? '' : 'empty') + (d.isFuture ? ' future' : '')).trim();
+                                        const cell = (fieldName, fieldLabel, money, className, canEdit = editable) => (
+                                          <EditableKpiCell value={d[fieldName]} money={money} editable={canEdit}
+                                            className={className} label={fieldLabel}
+                                            onCommit={(v) => saveCellEdit(d.ymd, fieldName, v, d)} />
+                                        );
                                         return (
-                                          <tr key={d.ymd} className={cls.trim()}>
+                                          <tr key={d.ymd} className={cls}>
                                             <td className="dt-date" data-label="Date">{lbl}</td>
                                             <td className="dt-dow" data-label="Day">{d.dow}</td>
-                                            <td data-label="Dials">{fmtNum(d.dials)}</td>
-                                            <td data-label="Answers">{fmtNum(d.answers)}</td>
-                                            <td data-label="Appts">{fmtNum(d.appointments)}</td>
-                                            <td data-label="Pres.">{fmtNum(d.presentations)}</td>
-                                            <td data-label="Deals" className={d.deals > 0 ? 'pos' : ''}>{fmtNum(d.deals)}</td>
-                                            <td data-label="Lead spend" className="num">{d.lead_spend ? fmtCurrency(d.lead_spend) : '—'}</td>
-                                            <td data-label="Deposits" className="num">{d.deposits ? fmtCurrency(d.deposits) : '—'}</td>
+                                            {cell('dials', 'Calls', false, '')}
+                                            {cell('answers', 'Answers', false, '')}
+                                            {cell('appointments', 'Appts', false, '')}
+                                            {cell('presentations', 'Pres.', false, '')}
+                                            {/* Deals are managed via the Submit Deal form — not editable here */}
+                                            {cell('deals', 'Deals', false, d.deals > 0 ? 'pos' : '', false)}
+                                            {cell('lead_spend', 'Lead spend', true, 'num')}
+                                            {cell('deposits', 'Deposits', true, 'num')}
                                           </tr>
                                         );
                                       })}
@@ -27730,6 +27872,7 @@
                             </div>
                           </>
                         )}
+                        </div>
                       </div>
                     </div>
                   );
