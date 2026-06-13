@@ -22719,6 +22719,22 @@
       };
 
       // ─── Theme persistence ─────────────────────────────────────────────────
+      // Single source of truth for the skin theme is html[data-kf-theme] (the
+      // sidebar/logo CSS reads it). Every panel writes it on toggle, but panels
+      // are long-lived and each holds its own React `theme` state, so without
+      // this they drift apart: toggle on one panel, another mounted panel keeps
+      // its stale theme and disagrees with the sidebar. kfWatchTheme makes a
+      // panel FOLLOW html[data-kf-theme] so the rail and every panel always match.
+      function kfWatchTheme(setTheme) {
+        const sync = () => {
+          const t = document.documentElement.getAttribute('data-kf-theme') || 'dark';
+          setTheme(prev => (prev === t ? prev : t));
+        };
+        const obs = new MutationObserver(sync);
+        obs.observe(document.documentElement, { attributes: true, attributeFilter: ['data-kf-theme'] });
+        sync(); // catch any drift that happened before this panel subscribed
+        return () => obs.disconnect();
+      }
       const TP_THEME_KEY = 'tp_theme_v1';
       const initialTheme = (function () {
         try { return localStorage.getItem('kf_skin_theme_v1') || localStorage.getItem(TP_THEME_KEY) || 'dark'; } catch (e) { return 'dark'; }
@@ -24181,6 +24197,7 @@
       // ─── Dashboard ───────────────────────────────────────────────────
       function Dashboard() {
         const [theme, setTheme] = useState(initialTheme);
+        useEffect(() => kfWatchTheme(setTheme), []); // follow the global skin theme
         const [timeframe, setTimeframe] = useState('MTD');
         const [customFrom, setCustomFrom] = useState('');
         const [customTo, setCustomTo] = useState('');
@@ -24312,6 +24329,7 @@
       // ─── Agent Profiles ──────────────────────────────────────────────
       function AgentProfiles() {
         const [theme, setTheme] = useState(initialTheme);
+        useEffect(() => kfWatchTheme(setTheme), []); // follow the global skin theme
         const [profiles, setProfiles] = useState([]);
         const [videoCounts, setVideoCounts] = useState({});
         const [loading, setLoading] = useState(true);
@@ -25084,6 +25102,7 @@
 
       function PoliciesView() {
         const [theme, setTheme] = useState(initialTheme);
+        useEffect(() => kfWatchTheme(setTheme), []); // follow the global skin theme
         const [policies, setPolicies] = useState([]);
         const [agents, setAgents] = useState([]);
         const [loading, setLoading] = useState(true);
@@ -25819,6 +25838,7 @@
 
       function HierarchyView() {
         const [theme, setTheme] = useState(initialTheme);
+        useEffect(() => kfWatchTheme(setTheme), []); // follow the global skin theme
         const [profiles, setProfiles] = useState([]);
         const [policies, setPolicies] = useState([]);
         const [loading, setLoading] = useState(true);
@@ -26984,6 +27004,7 @@
       const TK_ADMIN_EMAIL = 'dev@kairos-financial.com';
       function TrackerView() {
         const [theme, setTheme] = useState(tkInitialTheme());
+        useEffect(() => kfWatchTheme(setTheme), []); // follow the global skin theme
         const [agentProfile, setAgentProfile] = useState(null);
         const [policies, setPolicies] = useState([]);
         const [kpis, setKpis] = useState([]);
@@ -27966,6 +27987,7 @@
 
       function LeaderboardView() {
         const [theme, setTheme] = useState(lbInitialTheme());
+        useEffect(() => kfWatchTheme(setTheme), []); // follow the global skin theme
         const [period, setPeriod] = useState('MTD');
         const [search, setSearch] = useState('');
         const [sortKey, setSortKey] = useState('rank');
@@ -28494,6 +28516,7 @@
 
       function BookOfBusinessView() {
         const [theme, setTheme] = useState(bobInitialTheme());
+        useEffect(() => kfWatchTheme(setTheme), []); // follow the global skin theme
         const [policies, setPolicies] = useState([]);
         const [agentName, setAgentName] = useState('');
         const [loading, setLoading] = useState(true);
