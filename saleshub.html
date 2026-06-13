@@ -8277,7 +8277,7 @@
     }
     #panel-goals .tk-daily-meta {
       font-family: var(--tk-mono);
-      font-size: 11px; color: var(--tk-ink-3);
+      font-size: 11px; color: var(--tk-ink-2);
       margin-top: 2px;
     }
     /* Daily Breakdown — collapsible per-day KPI table */
@@ -8331,7 +8331,7 @@
     #panel-goals .tk-daily-table thead th {
       position: sticky; top: 0;
       background: var(--tk-surface-2);
-      color: var(--tk-ink-3);
+      color: var(--tk-ink-2);
       font-family: var(--tk-mono);
       font-size: 10px;
       font-weight: 500;
@@ -8346,7 +8346,7 @@
     #panel-goals .tk-daily-table tbody td {
       padding: 10px 14px;
       border-bottom: 1px solid var(--tk-hairline);
-      color: var(--tk-ink-2);
+      color: var(--tk-ink-1);
       font-size: 12px;
       white-space: nowrap;
     }
@@ -8374,17 +8374,17 @@
     /* Day-of-week column */
     #panel-goals .tk-daily-table thead th.dt-dow,
     #panel-goals .tk-daily-table tbody td.dt-dow {
-      width: 44px; color: var(--tk-ink-3); text-transform: uppercase;
+      width: 44px; color: var(--tk-ink-2); text-transform: uppercase;
       letter-spacing: 0.06em; font-size: 10px;
     }
-    /* Empty / zero day rows — muted, but still visible so the calendar reads continuous */
-    #panel-goals .tk-daily-table tbody tr.empty td { color: var(--tk-ink-4); }
-    #panel-goals .tk-daily-table tbody tr.empty td.dt-date { color: var(--tk-ink-3); font-weight: 400; }
+    /* Empty / zero day rows — still clearly readable, one step below filled rows */
+    #panel-goals .tk-daily-table tbody tr.empty td { color: var(--tk-ink-2); }
+    #panel-goals .tk-daily-table tbody tr.empty td.dt-date { color: var(--tk-ink-2); font-weight: 400; }
     #panel-goals .tk-daily-table tbody tr.future td { opacity: 0.35; }
     /* Week-divider header row — sits above each 7-day block */
     #panel-goals .tk-daily-table tbody tr.week-hd td {
       background: var(--tk-surface-2);
-      color: var(--tk-ink-3);
+      color: var(--tk-ink-1);
       font-family: var(--tk-mono);
       font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase;
       padding: 8px 14px; font-weight: 500;
@@ -26773,11 +26773,11 @@
       // ─── Heatmap (one month) ────────────────────────────────────────
       // Activity scoring rules:
       //   * NOT active (level 0):  < 75 dials AND no presentations AND no sales
-      //   * DARKEST (level 5):     1+ sale OR 300+ dials OR 3+ presentations
+      //   * DARKEST (level 5):     1+ sale OR 400+ dials OR 4+ presentations
       //   * In-between levels 1-4: weighted score where presentations count
       //     much more than dials (1 presentation ≈ 100 dials of work).
-      const TK_DARK_DIALS = 300;
-      const TK_DARK_PRES  = 3;
+      const TK_DARK_DIALS = 400;
+      const TK_DARK_PRES  = 4;
       const TK_DARK_SALES = 1;
       const TK_ACT_DIALS  = 75;
       function tkActivityLevel(c) {
@@ -27580,7 +27580,7 @@
                       <div style={{fontFamily:'var(--tk-sans)', fontSize:13, fontWeight:700, color:'var(--tk-ink-1)'}}>Daily Goal</div>
                       <div style={{fontFamily:'var(--tk-mono)', fontSize:9, color:'var(--tk-ink-3)', textTransform:'uppercase', letterSpacing:'0.08em', marginTop:2, marginBottom:11}}>Hit at least one</div>
                       <div style={{display:'flex', flexDirection:'column', gap:9}}>
-                        {[['var(--rb-green)','1','sale'],['var(--rb-orange)','3','presentations'],['var(--rb-blue)','300','calls']].map(([c, n, lbl]) => (
+                        {[['var(--rb-green)','1','sale'],['var(--rb-orange)','4','presentations'],['var(--rb-blue)','400','calls']].map(([c, n, lbl]) => (
                           <div key={lbl} style={{display:'flex', alignItems:'baseline', gap:8}}>
                             <span className="tk-dot" style={{background:c, alignSelf:'center'}}></span>
                             <b style={{fontFamily:'var(--tk-mono)', fontVariantNumeric:'tabular-nums', fontSize:14, color:'var(--tk-ink-1)', minWidth:30}}>{n}</b>
@@ -27589,7 +27589,7 @@
                         ))}
                       </div>
                       <div style={{marginTop:11, paddingTop:11, borderTop:'1px solid var(--tk-hairline)', fontFamily:'var(--tk-mono)', fontSize:10.5, lineHeight:1.55, color:'var(--tk-ink-3)'}}>
-                        Aim for a sale. No sale? Land 3 presentations. No presentations? Make 300 calls.
+                        Aim for a sale. No sale? Land 4 presentations. No presentations? Make 400 calls.
                       </div>
                     </div>
                     <div className="tk-stat"><div className="tk-kpi-lbl">Active Days</div><div className="v">{activeDays} / {totalHeatDays}</div><div className="tk-kpi-sub">{(activeDays/totalHeatDays*100).toFixed(0)}% activity rate</div></div>
@@ -27773,11 +27773,9 @@
                   // Newest first so the most recent week is on top.
                   weeks.reverse();
 
-                  const PAGE_SIZE = 5;
-                  const needsPagination = weeks.length > PAGE_SIZE;
-                  const totalPages = Math.max(1, Math.ceil(weeks.length / PAGE_SIZE));
-                  const page = Math.max(0, Math.min(dailyPage, totalPages - 1));
-                  const visibleWeeks = needsPagination ? weeks.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE) : weeks;
+                  // No pagination — render every week in range (already capped at
+                  // one year by the rangeTooLong guard above) and let the user
+                  // scroll the table vertically through the whole timeframe.
                   const loggedDays = weeks.reduce((s, w) => s + w.days.filter(d => d.hasData).length, 0);
 
                   return (
@@ -27798,17 +27796,6 @@
                           <div className="tk-daily-empty">No days in this timeframe.</div>
                         ) : (
                           <>
-                            {needsPagination && (
-                              <div className="tk-daily-pager">
-                                <div className="tk-daily-pager-info">
-                                  Weeks <b>{page * PAGE_SIZE + 1}–{Math.min((page + 1) * PAGE_SIZE, weeks.length)}</b> of {weeks.length}
-                                </div>
-                                <div className="tk-daily-pager-ctrl">
-                                  <button type="button" className="tk-daily-pager-btn" onClick={() => setDailyPage(p => Math.max(0, p - 1))} disabled={page === 0} aria-label="Newer weeks">‹</button>
-                                  <button type="button" className="tk-daily-pager-btn" onClick={() => setDailyPage(p => Math.min(totalPages - 1, p + 1))} disabled={page >= totalPages - 1} aria-label="Older weeks">›</button>
-                                </div>
-                              </div>
-                            )}
                             <div className="tk-daily-scroll">
                               <table className="tk-daily-table">
                                 <thead>
@@ -27825,7 +27812,7 @@
                                   </tr>
                                 </thead>
                                 <tbody>
-                                  {visibleWeeks.map(wk => (
+                                  {weeks.map(wk => (
                                     <React.Fragment key={wk.start.toISOString()}>
                                       <tr className="week-hd">
                                         <td colSpan="9">{wk.label}</td>
