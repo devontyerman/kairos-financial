@@ -2899,7 +2899,7 @@
     #tpatab-performance .tp-legend > div { display: flex; align-items: center; gap: 6px; }
 
     /* KPI panel */
-    #tpatab-performance .tp-kpi-panel { grid-column: span 12; }
+    #tpatab-performance .tp-kpi-panel { grid-column: span 7; }
     #tpatab-performance .tp-kpi-grid {
       display: grid; grid-template-columns: repeat(5, 1fr); gap: 1px;
       background: var(--tp-hairline);
@@ -24451,9 +24451,9 @@
               <APHero scope={scope} view={view} timeframe={timeframe} setTimeframe={setTimeframe}
                 customFrom={customFrom} customTo={customTo} setCustomFrom={setCustomFrom} setCustomTo={setCustomTo}
                 customRange={customRange} />
-              <CarrierBreakdown scope={scope} view={view} timeframe={timeframe} />
-              <KPIPanel scope={scope} view={view} timeframe={timeframe} />
               <TeamKpiByRep agents={agents} timeframe={timeframe} customRange={customRange} />
+              <KPIPanel scope={scope} view={view} timeframe={timeframe} />
+              <CarrierBreakdown scope={scope} view={view} timeframe={timeframe} />
             </div>
             <div className="tp-foot">
               <div>Kairos Financial · Internal · Confidential</div>
