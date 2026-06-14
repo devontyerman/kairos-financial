@@ -7872,16 +7872,20 @@
     }
     #panel-goals .tk-card-meta { font-family: var(--tk-mono); font-size: 11px; color: var(--tk-ink-3); }
     /* Centered, more pronounced card title (used across the rep tracker cards) */
+    /* Mono (JetBrains) to match the tracker's data/labels + the AP number,
+       so the headings stop clashing with the body. JetBrains Mono is loaded
+       up to weight 600, so cap there rather than 700. */
     #panel-goals .tk-card-title-lg {
-      font-family: var(--tk-sans); font-size: 17px; font-weight: 700;
-      text-transform: none; letter-spacing: -0.01em; color: var(--tk-ink-1);
+      font-family: var(--tk-mono); font-size: 26px; font-weight: 600;
+      text-transform: none; letter-spacing: -0.02em; color: var(--tk-ink-1);
+      line-height: 1.15;
     }
     #panel-goals .tk-card-hd-center { flex-direction: column; align-items: center; text-align: center; gap: 12px; }
     #panel-goals .tk-card-hd-center .tk-card-title-lg { width: 100%; text-align: center; }
     #panel-goals .tk-dot { width: 8px; height: 8px; border-radius: 99px; display: inline-block; }
 
     /* AP hero */
-    #panel-goals .tk-ap-hero { grid-column: span 12; padding: 18px 28px; }
+    #panel-goals .tk-ap-hero { grid-column: span 12; padding: 12px 28px; }
     #panel-goals .tk-ap-num {
       font-family: var(--tk-mono); font-size: 38px; font-weight: 500;
       color: var(--tk-ink-1); letter-spacing: -0.02em;
@@ -27648,8 +27652,8 @@
             <div className="tk-grid tk-grid-12">
               {/* Annual Premium Goal hero */}
               <div className="tk-card tk-ap-hero" style={{gridColumn:'span 12', order:0}}>
-                <div className="tk-card-hd tk-card-hd-center" style={{marginBottom:18}}>
-                  <div className="tk-card-title tk-card-title-lg">Gold Tracker</div>
+                <div className="tk-card-hd tk-card-hd-center" style={{marginBottom:8}}>
+                  <div className="tk-card-title tk-card-title-lg">Goal Tracker</div>
                   <div style={{display:'flex', alignItems:'center', gap:12}}>
                     <div className="tk-card-meta" style={{display:'flex', alignItems:'center', gap:6}}>
                       <span className="tk-dot" style={{background: chartMode === 'mtd' ? monthlyPaceColor : paceColor}}></span>
@@ -27664,7 +27668,7 @@
                     )}
                   </div>
                 </div>
-                <div style={{display:'flex', flexDirection:'column', gap:4, marginBottom:14}}>
+                <div style={{display:'flex', flexDirection:'column', gap:4, marginBottom:8}}>
                   <div className="tk-card-title">{chartMode === 'mtd' ? 'Monthly Premium' : 'Annual Premium'}</div>
                   {chartMode === 'mtd' ? (
                     <>
@@ -27826,9 +27830,6 @@
                             <span style={{fontSize:12, color:'var(--tk-ink-2)'}}>{lbl}</span>
                           </div>
                         ))}
-                      </div>
-                      <div style={{marginTop:11, paddingTop:11, borderTop:'1px solid var(--tk-hairline)', fontFamily:'var(--tk-mono)', fontSize:10.5, lineHeight:1.55, color:'var(--tk-ink-3)'}}>
-                        Aim for a sale. No sale? Land 4 presentations. No presentations? Make 400 calls.
                       </div>
                     </div>
                     <div className="tk-stat"><div className="tk-kpi-lbl">Active Days</div><div className="v">{activeDays} / {totalHeatDays}</div><div className="tk-kpi-sub">{(activeDays/totalHeatDays*100).toFixed(0)}% activity rate</div></div>
