@@ -8232,6 +8232,14 @@
       text-transform: uppercase; letter-spacing: 0.08em;
       color: var(--tk-ink-1);
     }
+    /* Small inline disclaimer under a field input */
+    .tk-mod-hint {
+      font-family: var(--tk-mono); font-size: 9px; line-height: 1.35;
+      letter-spacing: 0; text-transform: none; color: var(--tk-ink-3);
+    }
+    /* Reserve 2 lines for the 4-up KPI labels so a wrapped label (e.g.
+       "Pres. / Billable Calls") doesn't shove its input out of alignment. */
+    .tk-mod-grid.cols-4 .tk-mod-field > label { min-height: 26px; }
     .tk-mod-input, .tk-mod-select, .tk-mod-textarea {
       width: 100%; appearance: none;
       background: var(--tk-surface);
@@ -24239,7 +24247,7 @@
             id: a.id, name: a.name, initials: a.initials, color: RAINBOW_TOKENS[i % RAINBOW_TOKENS.length],
             dials: v.dials || 0, answers: v.answers || 0, appointments: v.appointments || 0,
             presentations: v.presentations || 0, deals: v.deals || 0, leadSpend: v.leadSpend || 0,
-            deposits: v.deposits || 0, ap: v.ap || 0, avgPremium: v.avgPremium || 0,
+            deposits: v.deposits || 0, ap: v.ap || 0, avgPremium: v.avgPremium || 0, roi: v.roi || 0,
           };
         });
         rows.sort((x, y) => {
@@ -24253,6 +24261,7 @@
           leadSpend: t.leadSpend + r.leadSpend, deposits: t.deposits + r.deposits, ap: t.ap + r.ap,
         }), { dials:0, answers:0, appointments:0, presentations:0, deals:0, leadSpend:0, deposits:0, ap:0 });
         const totAvg = tot.deals > 0 ? Math.round(tot.ap / tot.deals) : 0;
+        const totRoi = tot.leadSpend > 0 ? ((tot.deposits - tot.leadSpend) / tot.leadSpend) * 100 : 0;
         return (
           <div className="tp-card tp-lb" style={{gridColumn:'span 12'}}>
             <div className="tp-lb-hd">
@@ -24271,13 +24280,14 @@
                     <th onClick={() => setSort('deals')}>Deals {arrow('deals')}</th>
                     <th onClick={() => setSort('leadSpend')}>Lead spend {arrow('leadSpend')}</th>
                     <th onClick={() => setSort('deposits')}>Deposits {arrow('deposits')}</th>
+                    <th onClick={() => setSort('roi')}>ROI {arrow('roi')}</th>
                     <th onClick={() => setSort('ap')}>AP written {arrow('ap')}</th>
                     <th onClick={() => setSort('avgPremium')}>Avg premium {arrow('avgPremium')}</th>
                   </tr>
                 </thead>
                 <tbody>
                   {rows.length === 0 ? (
-                    <tr><td colSpan="10" style={{textAlign:'center', color:'var(--tp-ink-3)', padding:'18px 0'}}>No agents yet.</td></tr>
+                    <tr><td colSpan="11" style={{textAlign:'center', color:'var(--tp-ink-3)', padding:'18px 0'}}>No agents yet.</td></tr>
                   ) : rows.map(r => (
                     <tr key={r.id}>
                       <td>
@@ -24293,6 +24303,7 @@
                       <td>{fmtNum(r.deals)}</td>
                       <td>{fmtCurrency(r.leadSpend, {compact:true})}</td>
                       <td>{fmtCurrency(r.deposits, {compact:true})}</td>
+                      <td style={{color: r.leadSpend > 0 ? (r.roi >= 0 ? 'var(--tp-pos)' : 'var(--tp-neg)') : 'var(--tp-ink-3)'}}>{r.leadSpend > 0 ? ((r.roi >= 0 ? '+' : '') + r.roi.toFixed(0) + '%') : '—'}</td>
                       <td>{fmtCurrency(r.ap, {compact:true})}</td>
                       <td>{r.avgPremium > 0 ? fmtCurrency(r.avgPremium, {compact:true}) : '—'}</td>
                     </tr>
@@ -24309,6 +24320,7 @@
                       <td>{fmtNum(tot.deals)}</td>
                       <td>{fmtCurrency(tot.leadSpend, {compact:true})}</td>
                       <td>{fmtCurrency(tot.deposits, {compact:true})}</td>
+                      <td style={{color: tot.leadSpend > 0 ? (totRoi >= 0 ? 'var(--tp-pos)' : 'var(--tp-neg)') : 'var(--tp-ink-3)'}}>{tot.leadSpend > 0 ? ((totRoi >= 0 ? '+' : '') + totRoi.toFixed(0) + '%') : '—'}</td>
                       <td>{fmtCurrency(tot.ap, {compact:true})}</td>
                       <td>{totAvg > 0 ? fmtCurrency(totAvg, {compact:true}) : '—'}</td>
                     </tr>
@@ -24439,8 +24451,6 @@
               <APHero scope={scope} view={view} timeframe={timeframe} setTimeframe={setTimeframe}
                 customFrom={customFrom} customTo={customTo} setCustomFrom={setCustomFrom} setCustomTo={setCustomTo}
                 customRange={customRange} />
-              <Leaderboard agents={agents} activeId={activeId} timeframe={timeframe} customRange={customRange}
-                onSelect={(id) => setActiveId(curr => curr === id ? null : id)} />
               <CarrierBreakdown scope={scope} view={view} timeframe={timeframe} />
               <KPIPanel scope={scope} view={view} timeframe={timeframe} />
               <TeamKpiByRep agents={agents} timeframe={timeframe} customRange={customRange} />
@@ -26646,10 +26656,10 @@
                   </div>
                 </div>
                 <div className="tk-mod-grid cols-4">
-                  <div className="tk-mod-field"><label>Calls</label><input className="tk-mod-input mono" type="number" min="0" value={dials} onChange={e => setDials(e.target.value)} placeholder="0" /></div>
-                  <div className="tk-mod-field"><label>Answers</label><input className="tk-mod-input mono" type="number" min="0" value={answers} onChange={e => setAnswers(e.target.value)} placeholder="0" /></div>
-                  <div className="tk-mod-field"><label>Appts</label><input className="tk-mod-input mono" type="number" min="0" value={appointments} onChange={e => setAppointments(e.target.value)} placeholder="0" /></div>
-                  <div className="tk-mod-field"><label>Pres.</label><input className="tk-mod-input mono" type="number" min="0" value={presentations} onChange={e => setPresentations(e.target.value)} placeholder="0" /></div>
+                  <div className="tk-mod-field"><label>Calls</label><input className="tk-mod-input mono" type="number" min="0" value={dials} onChange={e => setDials(e.target.value)} placeholder="0" /><span className="tk-mod-hint">Answers &amp; calls are the same for inbounds</span></div>
+                  <div className="tk-mod-field"><label>Answers</label><input className="tk-mod-input mono" type="number" min="0" value={answers} onChange={e => setAnswers(e.target.value)} placeholder="0" /><span className="tk-mod-hint">Answers &amp; calls are the same for inbounds</span></div>
+                  <div className="tk-mod-field"><label>Appointments Booked</label><input className="tk-mod-input mono" type="number" min="0" value={appointments} onChange={e => setAppointments(e.target.value)} placeholder="0" /></div>
+                  <div className="tk-mod-field"><label>Pres. / Billable Calls</label><input className="tk-mod-input mono" type="number" min="0" value={presentations} onChange={e => setPresentations(e.target.value)} placeholder="0" /></div>
                 </div>
                 <div className="tk-mod-grid cols-2">
                   <div className="tk-mod-field"><label>Lead spend</label><input className="tk-mod-input mono" type="number" min="0" step="0.01" value={leadSpend} onChange={e => setLeadSpend(e.target.value)} placeholder="0.00" /></div>
