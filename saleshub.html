@@ -22851,7 +22851,7 @@
         return res.json();
       }
       async function fetchAgentProfiles() {
-        const res = await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?select=user_id,agent_name,comp_level,training_complete,annual_goal,manager_user_id,is_manager,state_licenses,carrier_numbers&order=agent_name.asc', { headers: HDRS });
+        const res = await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?select=user_id,agent_name,comp_level,training_complete,annual_goal,manager_user_id,is_manager,state_licenses,carrier_numbers,status&order=agent_name.asc', { headers: HDRS });
         if (!res.ok) return [];
         return res.json();
       }
@@ -22933,7 +22933,14 @@
           return pred(d) ? s + parseFloat(p.annual_premium || 0) : s;
         }, 0);
 
-        return profiles.map((p) => {
+        // Include a synthetic "Former agents" bucket so policies from already-
+        // removed reps (whose user_id was nulled) still count in TEAM totals.
+        // Tagged inactive so roster lists filter it out.
+        const orphanPols = polsBy['__norep__'] || [];
+        const buildList = orphanPols.length
+          ? profiles.concat([{ user_id: '__norep__', agent_name: 'Former agents', status: 'inactive' }])
+          : profiles;
+        return buildList.map((p) => {
           const uid = p.user_id;
           const name = p.agent_name || repNameById[uid] || 'Unknown';
           const myPols = polsBy[uid] || [];
@@ -23005,6 +23012,7 @@
             id: uid,
             name,
             initials,
+            status: p.status || 'active',
             compLevel: p.comp_level || null,
             trainingComplete: p.training_complete === true,
             annualGoal: parseFloat(p.annual_goal) || 0,
@@ -24241,7 +24249,7 @@
         };
         const arrow = (k) => sortKey === k ? <span className="arrow">{sortDir === 'asc' ? '↑' : '↓'}</span> : null;
         const tfLabel = { WTD:'WTD', MTD:'MTD', YTD:'YTD', LW:'Last week', LM:'Last month', ALL:'All time', CUSTOM:'Custom range', TODAY:'Today', YDAY:'Yesterday', L30:'Last 30 days' }[timeframe] || timeframe;
-        const rows = (agents || []).map((a, i) => {
+        const rows = (agents || []).filter(a => a.status !== 'inactive' && a.id !== '__norep__').map((a, i) => {
           const v = scopedView(a, timeframe, customRange) || {};
           return {
             id: a.id, name: a.name, initials: a.initials, color: RAINBOW_TOKENS[i % RAINBOW_TOKENS.length],
@@ -24430,7 +24438,7 @@
             <Header
               theme={theme}
               onToggleTheme={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-              agentCount={agents.length}
+              agentCount={agents.filter(a => a.status !== 'inactive' && a.id !== '__norep__').length}
               subtitle="Team Performance"
             />
             <div className="tp-filter-bar">
@@ -24442,7 +24450,7 @@
                     <button className="x" onClick={() => setActiveId(null)} aria-label="Clear filter">×</button>
                   </div>
                 ) : (
-                  <div className="tp-hdr-sub">All {agents.length} agents</div>
+                  <div className="tp-hdr-sub">All {agents.filter(a => a.status !== 'inactive' && a.id !== '__norep__').length} agents</div>
                 )}
               </div>
               <div className="tp-hdr-sub">Last sync · {new Date().toLocaleTimeString('en-US', {hour:'numeric', minute:'2-digit'})}</div>
@@ -24518,6 +24526,10 @@
           else { setSortKey(k); setSortDir(k === 'agent_name' ? 'asc' : 'desc'); }
         };
         const arrow = (k) => sortKey === k ? <span className="arrow">{sortDir === 'asc' ? '↑' : '↓'}</span> : null;
+        const [showArchived, setShowArchived] = useState(false);
+        const archivedCount = profiles.filter(p => p.status === 'inactive').length;
+        const activeCount = profiles.length - archivedCount;
+        const visible = sorted.filter(p => showArchived ? p.status === 'inactive' : p.status !== 'inactive');
 
         const draftFor = (uid, prof) => drafts[uid] || { agent_name: prof.agent_name || '', comp_level: prof.comp_level || '' };
         const updateDraft = (uid, key, value) => {
@@ -24561,11 +24573,11 @@
           const who = prof.agent_name || 'this agent';
           if (typeof window.showConfirmModal === 'function') {
             const ok = await window.showConfirmModal({
-              title: next ? 'Grant access?' : 'Revoke access?',
+              title: next ? 'Grant training access?' : 'Lock to training?',
               message: next
                 ? 'Grant ' + who + ' full Sales Hub access? They\u2019ll be able to log deals, KPIs, and view all panels.'
-                : 'Revoke ' + who + '\u2019s access? They\u2019ll be locked back into the training gate until you grant again.',
-              confirmText: next ? 'Grant access' : 'Revoke access',
+                : 'Lock ' + who + ' back into the training gate? They keep their login but only see training until you grant access again. (To remove a departing agent entirely, use Remove agent.)',
+              confirmText: next ? 'Grant access' : 'Lock to training',
               cancelText: 'Cancel',
               variant: next ? 'info' : 'danger',
               icon: next ? '\u2713' : '\u26A0\uFE0F'
@@ -24633,33 +24645,72 @@
         // deleted agent's manager, then deletes auth.users (cascades to
         // agent_profiles, daily_kpis, video_progress). policies.user_id is
         // FK SET NULL so policies are preserved with their sales_rep text.
-        const [deleteFor, setDeleteFor] = useState(null); // profile being deleted
+        // Remove-agent flow. We check how many policies the agent has, then:
+        //   0 policies        → delete_agent_user (full clean delete)
+        //   >0 policies        → archive_agent_user (keep data, ban login) by default
+        //   >0 + "also delete" → delete_agent_user_and_data (purge everything)
+        const [deleteFor, setDeleteFor] = useState(null);
         const [deleting, setDeleting] = useState(false);
-        const askDelete = (p) => setDeleteFor(p);
+        const [deleteCount, setDeleteCount] = useState(null); // # policies (null = loading)
+        const [alsoDeleteData, setAlsoDeleteData] = useState(false);
+        const [confirmText, setConfirmText] = useState('');
+        const askDelete = (p) => { setDeleteFor(p); setDeleteCount(null); setAlsoDeleteData(false); setConfirmText(''); };
+
+        // Count the agent's policies whenever the remove dialog opens.
+        useEffect(() => {
+          if (!deleteFor) { setDeleteCount(null); return; }
+          let cancelled = false;
+          (async () => {
+            try {
+              const r = await fetch(SUPABASE_URL + '/rest/v1/policies?select=id&user_id=eq.' + encodeURIComponent(deleteFor.user_id), { headers: HDRS });
+              const rows = r.ok ? await r.json() : [];
+              if (!cancelled) setDeleteCount(Array.isArray(rows) ? rows.length : 0);
+            } catch (e) { if (!cancelled) setDeleteCount(0); }
+          })();
+          return () => { cancelled = true; };
+        }, [deleteFor]);
+
         const confirmDelete = async () => {
           if (!deleteFor) return;
+          const cnt = deleteCount || 0;
+          const hasPolicies = cnt > 0;
+          if (hasPolicies && alsoDeleteData && confirmText.trim().toUpperCase() !== 'DELETE') return;
+          const rpc = !hasPolicies ? 'delete_agent_user'
+                    : alsoDeleteData ? 'delete_agent_user_and_data'
+                    : 'archive_agent_user';
           setDeleting(true);
           try {
-            const r = await fetch(SUPABASE_URL + '/rest/v1/rpc/delete_agent_user', {
+            const r = await fetch(SUPABASE_URL + '/rest/v1/rpc/' + rpc, {
               method: 'POST',
               headers: Object.assign({}, writeHdrs(), { 'Content-Type': 'application/json' }),
               body: JSON.stringify({ target_user_id: deleteFor.user_id }),
             });
             if (!r.ok) {
               const txt = await r.text().catch(() => '');
-              console.error('[delete agent] failed', r.status, txt);
-              try { alert('Delete failed (' + r.status + '). ' + (txt || 'See console for details.')); } catch (_) {}
+              console.error('[remove agent] failed', rpc, r.status, txt);
+              try { alert('Action failed (' + r.status + '). ' + (txt || 'See console for details.')); } catch (_) {}
               setDeleting(false);
               return;
             }
-            setDeleteFor(null);
-            setDeleting(false);
+            setDeleteFor(null); setDeleting(false); setAlsoDeleteData(false); setConfirmText('');
             reload();
           } catch (e) {
-            console.error('[delete agent] threw:', e);
-            try { alert('Delete failed — ' + (e.message || e)); } catch (_) {}
+            console.error('[remove agent] threw:', e);
+            try { alert('Action failed — ' + (e.message || e)); } catch (_) {}
             setDeleting(false);
           }
+        };
+
+        const unarchive = async (p) => {
+          try {
+            const r = await fetch(SUPABASE_URL + '/rest/v1/rpc/unarchive_agent_user', {
+              method: 'POST',
+              headers: Object.assign({}, writeHdrs(), { 'Content-Type': 'application/json' }),
+              body: JSON.stringify({ target_user_id: p.user_id }),
+            });
+            if (!r.ok) { const t = await r.text().catch(() => ''); console.error('[unarchive] failed', r.status, t); try { alert('Unarchive failed (' + r.status + ').'); } catch (_) {} return; }
+            reload();
+          } catch (e) { console.error('[unarchive] threw:', e); }
         };
 
         const avatarColor = (i) => RAINBOW_TOKENS[i % RAINBOW_TOKENS.length];
@@ -24680,13 +24731,22 @@
             <div className="tp-grid tp-grid-12">
               <div className="tp-card tp-lb">
                 <div className="tp-lb-hd">
-                  <div className="tp-card-title">All agents</div>
-                  <div className="tp-card-meta">Inline edit · click headers to sort</div>
+                  <div className="tp-card-title">{showArchived ? 'Archived agents' : 'All agents'}</div>
+                  <div style={{display:'flex', alignItems:'center', gap:12}}>
+                    {(archivedCount > 0 || showArchived) && (
+                      <button type="button" className="tp-btn" onClick={() => setShowArchived(v => !v)}>
+                        {showArchived ? '← Active agents' : 'Show archived (' + archivedCount + ')'}
+                      </button>
+                    )}
+                    <div className="tp-card-meta">{showArchived ? 'Removed agents · data retained' : 'Inline edit · click headers to sort'}</div>
+                  </div>
                 </div>
                 {loading ? (
                   <div className="tp-loading">Loading agent profiles…</div>
                 ) : profiles.length === 0 ? (
                   <div className="tp-loading">No agent profiles found.</div>
+                ) : visible.length === 0 ? (
+                  <div className="tp-loading">{showArchived ? 'No archived agents.' : 'No active agents.'}</div>
                 ) : (
                   <table className="tp-lb-table">
                     <thead>
@@ -24699,7 +24759,7 @@
                       </tr>
                     </thead>
                     <tbody>
-                      {sorted.map((p, i) => {
+                      {visible.map((p, i) => {
                         const orig = profiles.findIndex(x => x.user_id === p.user_id);
                         const sparkColor = avatarColor(orig);
                         const isComplete = p.training_complete === true;
@@ -24731,15 +24791,21 @@
                               </div>
                             </td>
                             <td>
-                              <span className={'tp-agent-status ' + (isComplete ? 'active' : 'training')}>
-                                {isComplete ? 'Active' : 'In training'}
-                              </span>
+                              {p.status === 'inactive' ? (
+                                <span className="tp-agent-status" style={{background:'color-mix(in oklch, var(--tp-neg) 16%, transparent)', color:'var(--tp-neg)'}}>Archived</span>
+                              ) : (
+                                <span className={'tp-agent-status ' + (isComplete ? 'active' : 'training')}>
+                                  {isComplete ? 'Active' : 'In training'}
+                                </span>
+                              )}
                             </td>
                             <td className="num">
                               <div className="tp-actions-cell">
-                                <button type="button" className="tp-btn primary" onClick={() => askEdit(p)}>
-                                  Edit
-                                </button>
+                                {p.status === 'inactive' ? (
+                                  <button type="button" className="tp-btn" onClick={() => unarchive(p)}>Unarchive</button>
+                                ) : (
+                                  <button type="button" className="tp-btn primary" onClick={() => askEdit(p)}>Edit</button>
+                                )}
                               </div>
                             </td>
                           </tr>
@@ -24813,14 +24879,14 @@
                       <div className="hv-form-section">
                         <div className="hv-form-section-hd">
                           <div>
-                            <div className="hv-form-section-lbl">Sales Hub access</div>
+                            <div className="hv-form-section-lbl">Training access</div>
                             <div className="hv-form-section-meta">
-                              {isComplete ? 'This agent can log deals, KPIs, and see every panel.' : 'This agent is locked into the training gate.'}
+                              {isComplete ? 'Past training — can log deals, KPIs, and see every panel.' : 'Locked into the training gate.'} To remove a departing agent, use Remove agent below.
                             </div>
                           </div>
                           <button type="button" className={'hv-btn ' + (isComplete ? 'danger' : 'primary')}
                             onClick={() => toggleAccess(editFor.user_id, isComplete)}>
-                            {isComplete ? 'Revoke access' : 'Grant access'}
+                            {isComplete ? 'Lock to training' : 'Grant access'}
                           </button>
                         </div>
                       </div>
@@ -24869,12 +24935,12 @@
                       <div className="hv-form-section hv-form-section-danger">
                         <div className="hv-form-section-hd">
                           <div>
-                            <div className="hv-form-section-lbl" style={{color:'var(--tp-neg)'}}>Danger zone</div>
-                            <div className="hv-form-section-meta">Removes login, profile, KPI activity, and training progress. Their policies stay on the Policies tab.</div>
+                            <div className="hv-form-section-lbl" style={{color:'var(--tp-neg)'}}>Remove agent</div>
+                            <div className="hv-form-section-meta">Disables their login immediately. With policies on file they're archived (data kept); with none, the account is fully deleted.</div>
                           </div>
                           <button type="button" className="hv-btn danger"
                             onClick={() => { setEditFor(null); askDelete(live); }}>
-                            Delete agent
+                            Remove agent
                           </button>
                         </div>
                       </div>
@@ -24889,28 +24955,62 @@
                 </div>
               );
             })()}
-            {deleteFor && (
+            {deleteFor && (() => {
+              const loadingCnt = deleteCount === null;
+              const cnt = deleteCount || 0;
+              const hasPolicies = cnt > 0;
+              const willHardDelete = !hasPolicies || alsoDeleteData;
+              const needType = hasPolicies && alsoDeleteData;
+              const mgr = deleteFor.manager_user_id ? ((profiles.find(x => x.user_id === deleteFor.manager_user_id) || {}).agent_name || 'their manager') : 'top of org';
+              const canConfirm = !loadingCnt && !deleting && (!needType || confirmText.trim().toUpperCase() === 'DELETE');
+              return (
               <div className="hv-modal-layer" onClick={() => !deleting && setDeleteFor(null)}>
                 <div className="hv-modal" onClick={(e) => e.stopPropagation()}>
-                  <div className="hv-modal-hd">Delete agent · {deleteFor.agent_name || 'Unnamed'}</div>
+                  <div className="hv-modal-hd">{willHardDelete ? 'Delete' : 'Archive'} agent · {deleteFor.agent_name || 'Unnamed'}</div>
                   <div className="hv-modal-body">
-                    <p style={{margin:'0 0 10px'}}><b>This cannot be undone.</b></p>
-                    <p style={{margin:'0 0 10px', color:'var(--tp-ink-2)'}}>Deleting this agent will:</p>
-                    <ul style={{margin:'0 0 12px', paddingLeft:18, color:'var(--tp-ink-2)', fontSize:13, lineHeight:1.6}}>
-                      <li><b style={{color:'var(--tp-ink-1)'}}>Remove</b> their login, profile, daily KPI activity, and training progress</li>
-                      <li><b style={{color:'var(--tp-ink-1)'}}>Reparent</b> any direct reports to <b style={{color:'var(--tp-ink-1)'}}>{deleteFor.manager_user_id ? ((profiles.find(x => x.user_id === deleteFor.manager_user_id) || {}).agent_name || 'their manager') : 'top of org'}</b></li>
-                      <li><b style={{color:'var(--tp-ink-1)'}}>Keep</b> their policies on the Policies tab, still attributed to <b style={{color:'var(--tp-ink-1)'}}>{deleteFor.agent_name || 'them'}</b></li>
-                    </ul>
+                    {loadingCnt ? (
+                      <p style={{margin:0, color:'var(--tp-ink-2)'}}>Checking their policies…</p>
+                    ) : !hasPolicies ? (
+                      <>
+                        <p style={{margin:'0 0 10px'}}><b>No policies on file — safe to fully delete.</b></p>
+                        <ul style={{margin:'0 0 12px', paddingLeft:18, color:'var(--tp-ink-2)', fontSize:13, lineHeight:1.6}}>
+                          <li><b style={{color:'var(--tp-ink-1)'}}>Remove</b> their login, profile, daily KPI activity, and training</li>
+                          <li><b style={{color:'var(--tp-ink-1)'}}>Reparent</b> any reports to <b style={{color:'var(--tp-ink-1)'}}>{mgr}</b></li>
+                        </ul>
+                        <p style={{margin:0, color:'var(--tp-ink-3)', fontSize:12}}>This cannot be undone.</p>
+                      </>
+                    ) : (
+                      <>
+                        <p style={{margin:'0 0 10px'}}>This agent has <b>{cnt}</b> {cnt === 1 ? 'policy' : 'policies'}. By default they'll be <b>archived</b>:</p>
+                        <ul style={{margin:'0 0 12px', paddingLeft:18, color:'var(--tp-ink-2)', fontSize:13, lineHeight:1.6}}>
+                          <li><b style={{color:'var(--tp-ink-1)'}}>Disable</b> their login immediately + hide from all dashboards</li>
+                          <li><b style={{color:'var(--tp-ink-1)'}}>Keep</b> their {cnt === 1 ? 'policy' : 'policies'}, KPIs, and history intact</li>
+                          <li><b style={{color:'var(--tp-ink-1)'}}>Reparent</b> any reports to <b style={{color:'var(--tp-ink-1)'}}>{mgr}</b></li>
+                          <li><span style={{color:'var(--tp-ink-3)'}}>Reversible — you can unarchive them later</span></li>
+                        </ul>
+                        <label style={{display:'flex', alignItems:'flex-start', gap:8, fontSize:13, color:'var(--tp-ink-2)', cursor:'pointer', padding:'10px 12px', border:'1px solid var(--tp-hairline)', borderRadius:8}}>
+                          <input type="checkbox" checked={alsoDeleteData} onChange={e => { setAlsoDeleteData(e.target.checked); setConfirmText(''); }} style={{marginTop:2, flex:'0 0 auto'}} />
+                          <span>Instead, <b style={{color:'var(--tp-neg)'}}>permanently delete</b> this agent <b>and all {cnt} of their {cnt === 1 ? 'policy' : 'policies'}</b>. Cannot be undone.</span>
+                        </label>
+                        {needType && (
+                          <div style={{marginTop:10}}>
+                            <div style={{fontSize:12, color:'var(--tp-ink-3)', marginBottom:6}}>Type <b style={{color:'var(--tp-ink-1)'}}>DELETE</b> to confirm:</div>
+                            <input value={confirmText} onChange={e => setConfirmText(e.target.value)} placeholder="DELETE" style={{width:'100%', boxSizing:'border-box', background:'var(--tp-surface)', border:'1px solid var(--tp-hairline-strong)', borderRadius:8, padding:'8px 10px', color:'var(--tp-ink-1)', fontFamily:'var(--tp-mono)', outline:'none'}} />
+                          </div>
+                        )}
+                      </>
+                    )}
                   </div>
                   <div className="hv-modal-foot">
                     <button type="button" className="hv-btn" disabled={deleting} onClick={() => setDeleteFor(null)}>Cancel</button>
-                    <button type="button" className="hv-btn danger" disabled={deleting} onClick={confirmDelete}>
-                      {deleting ? 'Deleting…' : 'Delete agent'}
+                    <button type="button" className={'hv-btn ' + (willHardDelete ? 'danger' : 'primary')} disabled={!canConfirm} onClick={confirmDelete}>
+                      {deleting ? 'Working…' : willHardDelete ? (hasPolicies ? 'Delete agent + data' : 'Delete agent') : 'Archive agent'}
                     </button>
                   </div>
                 </div>
               </div>
-            )}
+              );
+            })()}
           </div>
         );
       }
@@ -27188,7 +27288,7 @@
           if (!isAdmin) return;
           (async () => {
             try {
-              const res = await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?select=user_id,agent_name&order=agent_name.asc', { headers: HDRS });
+              const res = await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?select=user_id,agent_name&status=eq.active&order=agent_name.asc', { headers: HDRS });
               if (!res.ok) return;
               const rows = await res.json();
               setAllAgents(rows.filter(r => r.agent_name && r.agent_name.trim()));
