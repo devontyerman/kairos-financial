@@ -2800,6 +2800,35 @@
     #tpatab-performance .tp-agt-cell, #tpatab-agents .tp-agt-cell, #tpatab-policies .tp-agt-cell { display: flex; align-items: center; justify-content: flex-start; gap: 10px; text-align: left; }
     #tpatab-performance .tp-lb-table tbody td:first-child, #tpatab-agents .tp-lb-table tbody td:first-child, #tpatab-policies .tp-lb-table tbody td:first-child { text-align: left !important; }
     #tpatab-performance .tp-agt-name, #tpatab-agents .tp-agt-name, #tpatab-policies .tp-agt-name { text-align: left; }
+    /* KPIs-by-rep table (own class — wider 10-col layout, independent of the
+       leaderboard's responsive column-hiding). */
+    #tpatab-performance .tp-rep-scroll { overflow-x: auto; }
+    #tpatab-performance .tp-rep-table { width: 100%; border-collapse: collapse; }
+    #tpatab-performance .tp-rep-table thead th {
+      text-align: right; font-family: var(--tp-mono); font-size: 10px;
+      letter-spacing: 0.06em; text-transform: uppercase; color: var(--tp-ink-3);
+      font-weight: 600; padding: 10px 12px; border-bottom: 1px solid var(--tp-hairline);
+      white-space: nowrap; cursor: pointer; user-select: none; transition: color 80ms;
+    }
+    #tpatab-performance .tp-rep-table thead th:hover { color: var(--tp-ink-1); }
+    #tpatab-performance .tp-rep-table thead th .arrow { margin-left: 4px; opacity: 0.7; }
+    #tpatab-performance .tp-rep-table thead th:first-child { text-align: left; padding-left: 18px; }
+    #tpatab-performance .tp-rep-table thead th:last-child { padding-right: 18px; }
+    #tpatab-performance .tp-rep-table tbody td {
+      padding: 10px 12px; border-bottom: 1px solid var(--tp-hairline);
+      color: var(--tp-ink-1); white-space: nowrap; text-align: right;
+      font-family: var(--tp-mono); font-variant-numeric: tabular-nums; font-size: 12.5px;
+    }
+    #tpatab-performance .tp-rep-table tbody td:first-child { text-align: left; padding-left: 18px; font-family: var(--tp-sans); }
+    #tpatab-performance .tp-rep-table tbody td:last-child { padding-right: 18px; }
+    #tpatab-performance .tp-rep-table tbody tr:hover td { background: var(--tp-surface-2); }
+    #tpatab-performance .tp-rep-table tfoot td {
+      padding: 12px; border-top: 2px solid var(--tp-hairline-strong);
+      background: var(--tp-surface-2); color: var(--tp-ink-1); font-weight: 700;
+      text-align: right; font-family: var(--tp-mono); white-space: nowrap; font-size: 12.5px;
+    }
+    #tpatab-performance .tp-rep-table tfoot td:first-child { text-align: left; padding-left: 18px; font-family: var(--tp-sans); }
+    #tpatab-performance .tp-rep-table tfoot td:last-child { padding-right: 18px; }
     #tpatab-performance .tp-avatar, #tpatab-agents .tp-avatar, #tpatab-policies .tp-avatar {
       width: 28px; height: 28px; min-width: 28px; min-height: 28px;
       border-radius: 99px; flex-shrink: 0; aspect-ratio: 1 / 1;
@@ -24194,6 +24223,103 @@
         );
       }
 
+      // ─── KPIs by rep (per-agent totals for the selected timeframe) ──────
+      function TeamKpiByRep({ agents, timeframe, customRange }) {
+        const [sortKey, setSortKey] = useState('ap');
+        const [sortDir, setSortDir] = useState('desc');
+        const setSort = (k) => {
+          if (k === sortKey) setSortDir(d => d === 'asc' ? 'desc' : 'asc');
+          else { setSortKey(k); setSortDir(k === 'name' ? 'asc' : 'desc'); }
+        };
+        const arrow = (k) => sortKey === k ? <span className="arrow">{sortDir === 'asc' ? '↑' : '↓'}</span> : null;
+        const tfLabel = { WTD:'WTD', MTD:'MTD', YTD:'YTD', LW:'Last week', LM:'Last month', ALL:'All time', CUSTOM:'Custom range', TODAY:'Today', YDAY:'Yesterday', L30:'Last 30 days' }[timeframe] || timeframe;
+        const rows = (agents || []).map((a, i) => {
+          const v = scopedView(a, timeframe, customRange) || {};
+          return {
+            id: a.id, name: a.name, initials: a.initials, color: RAINBOW_TOKENS[i % RAINBOW_TOKENS.length],
+            dials: v.dials || 0, answers: v.answers || 0, appointments: v.appointments || 0,
+            presentations: v.presentations || 0, deals: v.deals || 0, leadSpend: v.leadSpend || 0,
+            deposits: v.deposits || 0, ap: v.ap || 0, avgPremium: v.avgPremium || 0,
+          };
+        });
+        rows.sort((x, y) => {
+          if (sortKey === 'name') { const r = String(x.name).localeCompare(String(y.name)); return sortDir === 'asc' ? r : -r; }
+          const va = x[sortKey] || 0, vb = y[sortKey] || 0;
+          return sortDir === 'asc' ? va - vb : vb - va;
+        });
+        const tot = rows.reduce((t, r) => ({
+          dials: t.dials + r.dials, answers: t.answers + r.answers, appointments: t.appointments + r.appointments,
+          presentations: t.presentations + r.presentations, deals: t.deals + r.deals,
+          leadSpend: t.leadSpend + r.leadSpend, deposits: t.deposits + r.deposits, ap: t.ap + r.ap,
+        }), { dials:0, answers:0, appointments:0, presentations:0, deals:0, leadSpend:0, deposits:0, ap:0 });
+        const totAvg = tot.deals > 0 ? Math.round(tot.ap / tot.deals) : 0;
+        return (
+          <div className="tp-card tp-lb" style={{gridColumn:'span 12'}}>
+            <div className="tp-lb-hd">
+              <div className="tp-card-title">KPIs by rep · {tfLabel}</div>
+              <div className="tp-card-meta">Each rep's totals for the selected timeframe</div>
+            </div>
+            <div className="tp-rep-scroll">
+              <table className="tp-rep-table">
+                <thead>
+                  <tr>
+                    <th onClick={() => setSort('name')}>Agent {arrow('name')}</th>
+                    <th onClick={() => setSort('dials')}>Dials {arrow('dials')}</th>
+                    <th onClick={() => setSort('answers')}>Answers {arrow('answers')}</th>
+                    <th onClick={() => setSort('appointments')}>Appts {arrow('appointments')}</th>
+                    <th onClick={() => setSort('presentations')}>Pres. {arrow('presentations')}</th>
+                    <th onClick={() => setSort('deals')}>Deals {arrow('deals')}</th>
+                    <th onClick={() => setSort('leadSpend')}>Lead spend {arrow('leadSpend')}</th>
+                    <th onClick={() => setSort('deposits')}>Deposits {arrow('deposits')}</th>
+                    <th onClick={() => setSort('ap')}>AP written {arrow('ap')}</th>
+                    <th onClick={() => setSort('avgPremium')}>Avg premium {arrow('avgPremium')}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {rows.length === 0 ? (
+                    <tr><td colSpan="10" style={{textAlign:'center', color:'var(--tp-ink-3)', padding:'18px 0'}}>No agents yet.</td></tr>
+                  ) : rows.map(r => (
+                    <tr key={r.id}>
+                      <td>
+                        <div className="tp-agt-cell">
+                          <div className="tp-avatar" style={{background:'color-mix(in oklch, ' + r.color + ' 22%, var(--tp-surface-2))', borderColor:'color-mix(in oklch, ' + r.color + ' 40%, transparent)'}}>{r.initials}</div>
+                          <span className="tp-agt-name">{r.name}</span>
+                        </div>
+                      </td>
+                      <td>{fmtNum(r.dials)}</td>
+                      <td>{fmtNum(r.answers)}</td>
+                      <td>{fmtNum(r.appointments)}</td>
+                      <td>{fmtNum(r.presentations)}</td>
+                      <td>{fmtNum(r.deals)}</td>
+                      <td>{fmtCurrency(r.leadSpend, {compact:true})}</td>
+                      <td>{fmtCurrency(r.deposits, {compact:true})}</td>
+                      <td>{fmtCurrency(r.ap, {compact:true})}</td>
+                      <td>{r.avgPremium > 0 ? fmtCurrency(r.avgPremium, {compact:true}) : '—'}</td>
+                    </tr>
+                  ))}
+                </tbody>
+                {rows.length > 0 && (
+                  <tfoot>
+                    <tr>
+                      <td>Team total</td>
+                      <td>{fmtNum(tot.dials)}</td>
+                      <td>{fmtNum(tot.answers)}</td>
+                      <td>{fmtNum(tot.appointments)}</td>
+                      <td>{fmtNum(tot.presentations)}</td>
+                      <td>{fmtNum(tot.deals)}</td>
+                      <td>{fmtCurrency(tot.leadSpend, {compact:true})}</td>
+                      <td>{fmtCurrency(tot.deposits, {compact:true})}</td>
+                      <td>{fmtCurrency(tot.ap, {compact:true})}</td>
+                      <td>{totAvg > 0 ? fmtCurrency(totAvg, {compact:true}) : '—'}</td>
+                    </tr>
+                  </tfoot>
+                )}
+              </table>
+            </div>
+          </div>
+        );
+      }
+
       // ─── Dashboard ───────────────────────────────────────────────────
       function Dashboard() {
         const [theme, setTheme] = useState(initialTheme);
@@ -24317,6 +24443,7 @@
                 onSelect={(id) => setActiveId(curr => curr === id ? null : id)} />
               <CarrierBreakdown scope={scope} view={view} timeframe={timeframe} />
               <KPIPanel scope={scope} view={view} timeframe={timeframe} />
+              <TeamKpiByRep agents={agents} timeframe={timeframe} customRange={customRange} />
             </div>
             <div className="tp-foot">
               <div>Kairos Financial · Internal · Confidential</div>
@@ -27752,7 +27879,8 @@
                   kpis.forEach(r => { if (r.kpi_date) kMap[r.kpi_date] = r; });
                   // Deals per day come from submitted deals (policies), not daily_kpis.
                   const polByDay = {};
-                  policies.forEach(p => { const pd = policyDate(p); if (pd) { const key = ymdOf(pd); polByDay[key] = (polByDay[key] || 0) + 1; } });
+                  const polAPByDay = {};
+                  policies.forEach(p => { const pd = policyDate(p); if (pd) { const key = ymdOf(pd); polByDay[key] = (polByDay[key] || 0) + 1; polAPByDay[key] = (polAPByDay[key] || 0) + (parseFloat(p.annual_premium) || 0); } });
 
                   const DOW = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
                   const weeks = [];
@@ -27770,6 +27898,7 @@
                         appointments: r.appointments || 0,
                         presentations: r.presentations || 0,
                         deals: polByDay[dymd] || 0,
+                        annual_premium: polAPByDay[dymd] || 0,
                         lead_spend: parseFloat(r.lead_spend || 0),
                         deposits: parseFloat(r.deposits || 0),
                         hasData: !!kMap[dymd],
@@ -27783,9 +27912,10 @@
                       appointments: acc.appointments + d.appointments,
                       presentations: acc.presentations + d.presentations,
                       deals: acc.deals + d.deals,
+                      annual_premium: acc.annual_premium + d.annual_premium,
                       lead_spend: acc.lead_spend + d.lead_spend,
                       deposits: acc.deposits + d.deposits,
-                    }), { dials:0, answers:0, appointments:0, presentations:0, deals:0, lead_spend:0, deposits:0 });
+                    }), { dials:0, answers:0, appointments:0, presentations:0, deals:0, annual_premium:0, lead_spend:0, deposits:0 });
                     const wkLabelStart = days[0].date.toLocaleDateString('en-US', { month:'short', day:'numeric' });
                     const wkLabelEnd = days[6].date.toLocaleDateString('en-US', { month:'short', day:'numeric' });
                     weeks.push({ start: new Date(cursor), days, total, label: 'Week of ' + wkLabelStart + ' — ' + wkLabelEnd });
@@ -27828,6 +27958,7 @@
                                     <th>Appts</th>
                                     <th>Pres.</th>
                                     <th>Deals</th>
+                                    <th className="num">AP Written</th>
                                     <th className="num">Lead spend</th>
                                     <th className="num">Deposits</th>
                                   </tr>
@@ -27836,7 +27967,7 @@
                                   {weeks.map(wk => (
                                     <React.Fragment key={wk.start.toISOString()}>
                                       <tr className="week-hd">
-                                        <td colSpan="9">{wk.label}</td>
+                                        <td colSpan="10">{wk.label}</td>
                                       </tr>
                                       {wk.days.map(d => {
                                         const lbl = d.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
@@ -27857,6 +27988,7 @@
                                             {cell('presentations', 'Pres.', false, '')}
                                             {/* Deals are managed via the Submit Deal form — not editable here */}
                                             {cell('deals', 'Deals', false, d.deals > 0 ? 'pos' : '', false)}
+                                            {cell('annual_premium', 'AP Written', true, 'num', false)}
                                             {cell('lead_spend', 'Lead spend', true, 'num')}
                                             {cell('deposits', 'Deposits', true, 'num')}
                                           </tr>
@@ -27870,6 +28002,7 @@
                                         <td data-label="Appts">{fmtNum(wk.total.appointments)}</td>
                                         <td data-label="Pres.">{fmtNum(wk.total.presentations)}</td>
                                         <td data-label="Deals" className={wk.total.deals > 0 ? 'pos' : ''}>{fmtNum(wk.total.deals)}</td>
+                                        <td data-label="AP Written" className="num">{fmtCurrency(wk.total.annual_premium)}</td>
                                         <td data-label="Lead spend" className="num">{fmtCurrency(wk.total.lead_spend)}</td>
                                         <td data-label="Deposits" className="num">{fmtCurrency(wk.total.deposits)}</td>
                                       </tr>
