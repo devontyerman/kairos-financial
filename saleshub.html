@@ -23209,7 +23209,7 @@
       // transitions from real → projected. The chart draws a solid line +
       // gradient fill up to that index, then a dashed line beyond it. Used
       // by the YTD view to extrapolate the rest of the year.
-      function APLineChart({ labels, series, color, height, projectionFromIdx, mode }) {
+      function APLineChart({ labels, series, dealsSeries, color, height, projectionFromIdx, mode }) {
         const ref = useRef(null);
         const [w, setW] = useState(800);
         const [hover, setHover] = useState(null);
@@ -23270,8 +23270,8 @@
                   <stop offset="100%" stopColor={c} stopOpacity="0" />
                 </linearGradient>
                 <linearGradient id="tpApProjGrad" x1="0" x2="0" y1="0" y2="1">
-                  <stop offset="0%" stopColor="oklch(0.86 0.13 145)" stopOpacity="0.22" />
-                  <stop offset="100%" stopColor="oklch(0.86 0.13 145)" stopOpacity="0" />
+                  <stop offset="0%" stopColor="var(--rb-blue)" stopOpacity="0.22" />
+                  <stop offset="100%" stopColor="var(--rb-blue)" stopOpacity="0" />
                 </linearGradient>
               </defs>
               {grid.map((g, i) => (
@@ -23288,7 +23288,7 @@
               {projAreaPath && <path d={projAreaPath} fill="url(#tpApProjGrad)" />}
               <path d={realPath} fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               {projectedPath && (
-                <path d={projectedPath} fill="none" stroke="oklch(0.86 0.13 145)" strokeWidth="2"
+                <path d={projectedPath} fill="none" stroke="var(--rb-blue)" strokeWidth="2"
                   strokeLinecap="round" strokeLinejoin="round" />
               )}
               {hasProjection && (
@@ -23313,7 +23313,8 @@
                 <g>
                   <line x1={xs(hover)} x2={xs(hover)} y1={pad.top} y2={pad.top + innerH}
                     stroke="var(--tp-ink-3)" strokeDasharray="2 3" />
-                  <circle cx={xs(hover)} cy={ys(series[hover])} r="5" fill="var(--tp-surface)" stroke={c} strokeWidth="2" />
+                  <circle cx={xs(hover)} cy={ys(series[hover])} r="5" fill="var(--tp-surface)"
+                    stroke={(typeof projectionFromIdx === 'number' && hover > projectionFromIdx) ? 'var(--rb-blue)' : c} strokeWidth="2" />
                 </g>
               )}
             </svg>
@@ -23324,92 +23325,17 @@
               }}>
                 <div className="tp-chart-tip-lbl">
                   {labels[hover]}
-                  {mode === 'comparison' ? ' · Sold' : (mode === 'cumulative' && typeof projectionFromIdx === 'number' && hover > projectionFromIdx ? ' · Projected' : ' · Cumulative')}
+                  {(typeof projectionFromIdx === 'number' && hover > projectionFromIdx)
+                    ? ' · Projected'
+                    : (mode === 'comparison' ? ' · Sold' : ' · Cumulative')}
                 </div>
                 <div className="tp-chart-tip-val">{fmtCurrency(series[hover])}</div>
+                {mode === 'comparison' && dealsSeries && !(typeof projectionFromIdx === 'number' && hover > projectionFromIdx) && (() => {
+                  const d = dealsSeries[hover] || 0;
+                  return <div style={{fontFamily:'var(--tp-mono)', fontSize:10, color:'var(--tp-ink-3)', marginTop:2}}>{d} {d === 1 ? 'deal' : 'deals'}</div>;
+                })()}
               </div>
             )}
-          </div>
-        );
-      }
-
-      // Bar chart used by Comparison mode. Every label on the x-axis is
-      // rendered, bars touch (no gap) so the per-period AP reads as a
-      // continuous "skyline." Cumulative mode still uses APLineChart.
-      function APBarChart({ labels, series, dealsSeries, height }) {
-        const ref = useRef(null);
-        const [w, setW] = useState(800);
-        const [hover, setHover] = useState(null);
-        const strokeColor = 'var(--rb-green)';
-        const h = height || 280;
-        useEffect(() => {
-          if (!ref.current) return;
-          const ro = new ResizeObserver(([e]) => setW(e.contentRect.width));
-          ro.observe(ref.current);
-          return () => ro.disconnect();
-        }, []);
-        const pad = { top: 24, right: 16, bottom: 28, left: 56 };
-        const innerW = Math.max(100, w - pad.left - pad.right);
-        const innerH = h - pad.top - pad.bottom;
-        const max = Math.max.apply(null, series.concat([1])) * 1.1;
-        const n = Math.max(1, labels.length);
-        const barW = innerW / n;
-        const ys = (v) => pad.top + (1 - (v || 0) / max) * innerH;
-        const grid = [0, 0.25, 0.5, 0.75, 1].map(t => ({ y: pad.top + t * innerH, v: max * (1 - t) }));
-        return (
-          <div ref={ref} className="tp-chart-wrap" onMouseLeave={() => setHover(null)}>
-            <svg width={w} height={h} style={{display:'block'}}>
-              <defs>
-                {/* Same fade-down gradient the cumulative line chart uses for
-                    its area under the curve, so the bar fill reads as a
-                    matching translucent green. */}
-                <linearGradient id="tpBarGrad" x1="0" x2="0" y1="0" y2="1">
-                  <stop offset="0%" stopColor="var(--rb-green)" stopOpacity="0.32" />
-                  <stop offset="100%" stopColor="var(--rb-green)" stopOpacity="0" />
-                </linearGradient>
-              </defs>
-              {grid.map((g, i) => (
-                <g key={i}>
-                  <line x1={pad.left} x2={w - pad.right} y1={g.y} y2={g.y}
-                    stroke="var(--tp-hairline)" strokeDasharray={i === grid.length - 1 ? '0' : '2 4'} />
-                  <text x={pad.left - 10} y={g.y + 4} textAnchor="end"
-                    fill="var(--tp-ink-3)" fontSize="11" fontFamily="var(--tp-mono)">
-                    {fmtCurrency(g.v, {compact:true})}
-                  </text>
-                </g>
-              ))}
-              {labels.map((lbl, i) => {
-                const v = series[i] || 0;
-                const x = pad.left + barW * i;
-                const y = ys(v);
-                const barH = Math.max(0, (pad.top + innerH) - y);
-                return (
-                  <g key={i} onMouseEnter={() => setHover(i)}>
-                    <rect x={x} y={pad.top} width={barW} height={innerH} fill="transparent" />
-                    <rect x={x} y={y} width={barW} height={barH}
-                      fill="url(#tpBarGrad)" stroke={strokeColor} strokeWidth="1"
-                      opacity={hover === null || hover === i ? 1 : 0.55} />
-                  </g>
-                );
-              })}
-              {labels.map((lbl, i) => (
-                <text key={i} x={pad.left + barW * (i + 0.5)} y={h - 8} textAnchor="middle"
-                  fill="var(--tp-ink-3)" fontSize="10" fontFamily="var(--tp-mono)">{lbl}</text>
-              ))}
-            </svg>
-            {hover !== null && (() => {
-              const d = (dealsSeries && dealsSeries[hover]) || 0;
-              return (
-                <div className="tp-chart-tip" style={{
-                  left: Math.min(w - 140, Math.max(0, pad.left + barW * (hover + 0.5) - 60)),
-                  top: Math.max(0, ys(series[hover]) - 72),
-                }}>
-                  <div className="tp-chart-tip-lbl">{labels[hover]} · Sold</div>
-                  <div className="tp-chart-tip-val">{fmtCurrency(series[hover])}</div>
-                  <div style={{fontFamily:'var(--tp-mono)', fontSize:10, color:'var(--tp-ink-3)', marginTop:2}}>{d} {d === 1 ? 'deal' : 'deals'}</div>
-                </div>
-              );
-            })()}
           </div>
         );
       }
@@ -23834,15 +23760,38 @@
           label = 'Year-to-date';
         }
         // Comparison override: swap the cumulative + projection line for the
-        // raw per-bucket AP, truncated to past+current buckets only.
+        // raw per-bucket AP (the up-and-down per-period trend). For in-progress
+        // periods (WTD/MTD/YTD) the future buckets continue as a projected
+        // per-bucket pace that splits off into its own blue forecast line —
+        // mirroring the cumulative view. Closed windows (LW/LM/ALL/CUSTOM, or a
+        // fully elapsed period) just truncate at the last real bucket.
         let dealsSeries = null;
         if (chartMode === 'comparison' && rawBuckets) {
-          const lastIdx = (comparisonCutoff != null ? comparisonCutoff : rawBuckets.length - 1);
-          const cut = Math.max(0, Math.min(rawBuckets.length - 1, lastIdx));
-          series = rawBuckets.slice(0, cut + 1);
-          dealsSeries = (rawDealBuckets || []).slice(0, cut + 1);
-          labels = labels.slice(0, cut + 1);
-          projectionFromIdx = undefined;
+          const hasFuture = comparisonCutoff != null && comparisonCutoff < rawBuckets.length - 1;
+          if (hasFuture) {
+            const cut = Math.max(0, Math.min(rawBuckets.length - 1, comparisonCutoff));
+            const elapsed = cut + 1;
+            // Projected per-bucket value = average AP/bucket over the elapsed
+            // buckets, with a little organic jitter so the forecast doesn't
+            // read as a perfectly flat line.
+            const realSum = rawBuckets.slice(0, elapsed).reduce((s, v) => s + v, 0);
+            const avgPerBucket = elapsed > 0 ? realSum / elapsed : 0;
+            const projected = rawBuckets.slice();
+            for (let i = cut + 1; i < projected.length; i++) {
+              const noise = projectionJitter(i + 23) * avgPerBucket * 0.22;
+              projected[i] = Math.max(0, avgPerBucket + noise);
+            }
+            series = projected;
+            dealsSeries = (rawDealBuckets || []).slice();
+            projectionFromIdx = cut; // line splits to the blue forecast after this idx
+          } else {
+            const lastIdx = (comparisonCutoff != null ? comparisonCutoff : rawBuckets.length - 1);
+            const cut = Math.max(0, Math.min(rawBuckets.length - 1, lastIdx));
+            series = rawBuckets.slice(0, cut + 1);
+            dealsSeries = (rawDealBuckets || []).slice(0, cut + 1);
+            labels = labels.slice(0, cut + 1);
+            projectionFromIdx = undefined;
+          }
           mtdProjectedTotal = null;
         }
         // Always compare actual booked AP for the period (no projection) so the
@@ -23946,17 +23895,19 @@
               </div>
             </div>
             {chartMode === 'comparison'
-              ? <APBarChart labels={labels} series={series} dealsSeries={dealsSeries} height={300} />
+              ? <APLineChart labels={labels} series={series} dealsSeries={dealsSeries} color="var(--rb-green)" height={300} projectionFromIdx={projectionFromIdx} mode={chartMode} />
               : <APLineChart labels={labels} series={series} color="var(--rb-green)" height={300} projectionFromIdx={projectionFromIdx} mode={chartMode} />}
             {typeof projectionFromIdx === 'number' && (
               <div style={{display:'flex', gap:14, alignItems:'center', marginTop:8, fontFamily:'var(--tp-mono)', fontSize:10, color:'var(--tp-ink-3)', textTransform:'uppercase', letterSpacing:'0.06em'}}>
                 <span style={{display:'inline-flex', alignItems:'center', gap:6}}>
                   <span style={{display:'inline-block', width:14, height:2, background:'var(--rb-green)', borderRadius:2}}></span>
-                  Booked
+                  {chartMode === 'comparison' ? 'Sold' : 'Booked'}
                 </span>
                 <span style={{display:'inline-flex', alignItems:'center', gap:6}}>
-                  <span style={{display:'inline-block', width:14, height:2, background:'repeating-linear-gradient(90deg, var(--rb-green) 0 4px, transparent 4px 9px)', opacity:0.7}}></span>
-                  Projected · {fmtCurrency(series[series.length-1] || 0, {compact:true})} year-end pace
+                  <span style={{display:'inline-block', width:14, height:2, background:'repeating-linear-gradient(90deg, var(--rb-blue) 0 4px, transparent 4px 9px)', opacity:0.85}}></span>
+                  {chartMode === 'comparison'
+                    ? 'Projected pace'
+                    : <>Projected · {fmtCurrency(series[series.length-1] || 0, {compact:true})} year-end pace</>}
                 </span>
               </div>
             )}
@@ -24348,8 +24299,11 @@
         const [customFrom, setCustomFrom] = useState('');
         const [customTo, setCustomTo] = useState('');
         const [activeId, setActiveId] = useState(null);
-        const [agents, setAgents] = useState([]);
-        const [team, setTeam] = useState(null);
+        const [allAgents, setAllAgents] = useState([]);
+        // Admin-only: drop the signed-in admin's own production from the team
+        // view (totals, charts, leaderboard, per-rep) to read the team's
+        // numbers without the owner's book inflating them. Gated to admin only.
+        const [excludeMine, setExcludeMine] = useState(false);
         const [loading, setLoading] = useState(true);
         const [error, setError] = useState(null);
 
@@ -24385,9 +24339,7 @@
                 scopedKpis = kpis.filter(k => k.sales_rep && nameSet.has(k.sales_rep));
               }
               const builtAgents = buildAgents(scopedProfiles, scopedPolicies, scopedKpis);
-              const builtTeam = buildTeam(builtAgents);
-              setAgents(builtAgents);
-              setTeam(builtTeam);
+              setAllAgents(builtAgents);
               setLoading(false);
             } catch (e) {
               if (cancelled) return;
@@ -24398,6 +24350,17 @@
           })();
           return () => { cancelled = true; };
         }, []);
+
+        // Only the admin may exclude their own production. Everyone else
+        // (managers, regular agents) always sees the full team.
+        const canExcludeMine = isCurrentUserAdmin();
+        const myUid = (window.currentUser && window.currentUser.id) || null;
+        const agents = useMemo(() => (
+          (canExcludeMine && excludeMine && myUid)
+            ? allAgents.filter(a => a.id !== myUid)
+            : allAgents
+        ), [allAgents, excludeMine, canExcludeMine, myUid]);
+        const team = useMemo(() => buildTeam(agents), [agents]);
 
         const scope = activeId ? (agents.find(a => a.id === activeId) || team) : team;
         const customRange = useMemo(() => {
@@ -24453,7 +24416,25 @@
                   <div className="tp-hdr-sub">All {agents.filter(a => a.status !== 'inactive' && a.id !== '__norep__').length} agents</div>
                 )}
               </div>
-              <div className="tp-hdr-sub">Last sync · {new Date().toLocaleTimeString('en-US', {hour:'numeric', minute:'2-digit'})}</div>
+              <div style={{display:'flex', alignItems:'center', gap:14}}>
+                {canExcludeMine && (
+                  <button type="button" onClick={() => setExcludeMine(v => !v)}
+                    title="Admin only — removes your personal production from the team totals, charts, and leaderboard"
+                    style={{
+                      appearance:'none', cursor:'pointer',
+                      fontFamily:'var(--tp-mono)', fontSize:11, letterSpacing:'0.04em',
+                      padding:'6px 12px', borderRadius:999,
+                      border:'1px solid ' + (excludeMine ? 'var(--rb-green)' : 'var(--tp-hairline-strong)'),
+                      background: excludeMine ? 'color-mix(in oklch, var(--rb-green) 16%, transparent)' : 'transparent',
+                      color: excludeMine ? 'var(--rb-green)' : 'var(--tp-ink-2)',
+                      display:'inline-flex', alignItems:'center', gap:7, whiteSpace:'nowrap',
+                    }}>
+                    <span style={{fontSize:13, lineHeight:1}}>{excludeMine ? '◉' : '◯'}</span>
+                    Exclude my production
+                  </button>
+                )}
+                <div className="tp-hdr-sub">Last sync · {new Date().toLocaleTimeString('en-US', {hour:'numeric', minute:'2-digit'})}</div>
+              </div>
             </div>
             <div className="tp-grid tp-grid-12">
               <APHero scope={scope} view={view} timeframe={timeframe} setTimeframe={setTimeframe}
