@@ -7900,8 +7900,7 @@
     #panel-goals .tk-ap-delta.pos { color: var(--tk-pos); background: color-mix(in oklch, var(--tk-pos) 14%, transparent); }
     #panel-goals .tk-ap-delta.neg { color: var(--tk-neg); background: color-mix(in oklch, var(--tk-neg) 14%, transparent); }
     #panel-goals .tk-editable {
-      cursor: pointer; border-bottom: 1px dashed var(--tk-ink-4);
-      padding-bottom: 1px; font-family: var(--tk-mono);
+      cursor: pointer; font-family: var(--tk-mono);
     }
     #panel-goals .tk-edit-input {
       font: inherit; font-family: var(--tk-mono);
@@ -8400,12 +8399,15 @@
     #panel-goals .tk-daily-table tbody td.kpi-editable { cursor: pointer; }
     #panel-goals .tk-daily-table tbody td.kpi-editable:hover { box-shadow: inset 0 0 0 1px var(--rb-blue); background: color-mix(in oklch, var(--rb-blue) 10%, var(--tk-surface)); }
     #panel-goals .tk-cell-input {
-      /* Fill the cell exactly — never force it wider, so editing a value
-         doesn't shove the other columns sideways. Numbers here are 2-3 digits. */
-      width: 100%; min-width: 0; max-width: 100%; box-sizing: border-box;
+      /* Overlay the cell instead of sitting in flow — an in-flow <input> forces
+         the auto-layout column wider on edit, shoving the other columns sideways.
+         Absolutely positioned, it covers the cell without affecting its width, so
+         editing never moves the layout. A hidden sizer span keeps the cell width. */
+      position: absolute; top: 4px; left: 6px; right: 6px; bottom: 4px;
+      box-sizing: border-box;
       background: var(--tk-surface); color: var(--tk-ink-1);
       border: 1px solid var(--rb-blue); border-radius: 4px;
-      padding: 2px 5px; margin: -3px 0;
+      padding: 0 5px;
       font-family: var(--tk-mono); font-variant-numeric: tabular-nums;
       font-size: 12px; text-align: inherit; outline: none;
     }
@@ -27211,12 +27213,16 @@
         const display = money ? (value ? fmtCurrency(value) : '—') : fmtNum(value);
         return (
           <td className={cls} data-label={label} title={editable ? 'Click to edit' : undefined}
-              onClick={editable && !editing ? begin : undefined}>
+              onClick={editable && !editing ? begin : undefined}
+              style={editing ? {position:'relative'} : undefined}>
             {editing ? (
-              <input autoFocus className="tk-cell-input" type="number" min="0" step={money ? '0.01' : '1'}
-                value={draft} onChange={e => setDraft(e.target.value)} onBlur={commit}
-                onKeyDown={e => { if (e.key === 'Enter') { e.target.blur(); } else if (e.key === 'Escape') { setEditing(false); } }}
-                onClick={e => e.stopPropagation()} />
+              <>
+                <span aria-hidden="true" style={{visibility:'hidden'}}>{display}</span>
+                <input autoFocus className="tk-cell-input" type="number" min="0" step={money ? '0.01' : '1'}
+                  value={draft} onChange={e => setDraft(e.target.value)} onBlur={commit}
+                  onKeyDown={e => { if (e.key === 'Enter') { e.target.blur(); } else if (e.key === 'Escape') { setEditing(false); } }}
+                  onClick={e => e.stopPropagation()} />
+              </>
             ) : display}
           </td>
         );
@@ -27224,21 +27230,502 @@
 
       // ─── Tracker root component ──────────────────────────────────────
       const TK_ADMIN_EMAIL = 'dev@kairos-financial.com';
+      // ─────────────────────────────────────────────────────────────────
+      // PROFITABILITY SECTION  (Agent Profitability v2 design → wired to real data)
+      // Appended below the tracker grid. Pipeline value (pending commissions),
+      // annual P&L, financial cards, KPI tickers, and an editable one-off
+      // expense list. Reuses computePolicyPending()/lookupDealComp()/userCompLevel.
+      // ─────────────────────────────────────────────────────────────────
+      const PROF_CATEGORIES = ['Licensing','E&O Insurance','Software','Continuing Ed','Travel','Marketing','Equipment','Other'];
+      const PROF_MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      function profPalette(theme) {
+        return theme === 'dark' ? {
+          surface:'rgba(22,24,29,0.6)', surface2:'rgba(28,31,38,0.56)', surface3:'#232730',
+          hairline:'rgba(255,255,255,0.07)', hairlineStrong:'rgba(255,255,255,0.13)',
+          ink1:'#f3f3f1', ink2:'rgba(243,243,241,0.72)', ink3:'rgba(243,243,241,0.45)', ink4:'rgba(243,243,241,0.28)',
+          pos:'oklch(0.78 0.16 145)', neg:'oklch(0.70 0.18 25)', accentText:'#0d0e10',
+          green:'oklch(0.72 0.16 145)', yellow:'oklch(0.82 0.14 90)', orange:'oklch(0.74 0.16 50)',
+          red:'oklch(0.66 0.18 25)', purple:'oklch(0.62 0.15 305)', blue:'oklch(0.68 0.13 240)',
+          teal:'oklch(0.70 0.13 190)', magenta:'oklch(0.64 0.16 340)', gray:'rgba(243,243,241,0.45)',
+        } : {
+          surface:'rgba(255,255,255,0.62)', surface2:'rgba(251,250,246,0.55)', surface3:'#f1efe8',
+          hairline:'rgba(15,12,8,0.08)', hairlineStrong:'rgba(15,12,8,0.16)',
+          ink1:'#14130f', ink2:'rgba(20,19,15,0.74)', ink3:'rgba(20,19,15,0.5)', ink4:'rgba(20,19,15,0.32)',
+          pos:'oklch(0.55 0.14 145)', neg:'oklch(0.55 0.18 25)', accentText:'#ffffff',
+          green:'oklch(0.55 0.15 145)', yellow:'oklch(0.70 0.14 85)', orange:'oklch(0.62 0.16 50)',
+          red:'oklch(0.55 0.17 25)', purple:'oklch(0.50 0.15 305)', blue:'oklch(0.55 0.13 240)',
+          teal:'oklch(0.50 0.13 190)', magenta:'oklch(0.50 0.16 340)', gray:'rgba(20,19,15,0.5)',
+        };
+      }
+
+      function ProfitabilitySection({ theme, kpis, policies, expenses, agentName, readOnly, onAddExpense, onDeleteExpense, tf, customFrom, customTo }) {
+        const T = profPalette(theme);
+        const MONO = "'JetBrains Mono', ui-monospace, monospace";
+        const todayYMD = (() => { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); })();
+        const [form, setForm] = useState({ amount:'', category:'Software', note:'', date: todayYMD });
+        const [plHover, setPlHover] = useState(null); // hovered P&L month index
+
+        // ── date helpers ──
+        const pd = (s) => { if (!s) return null; const p = String(s).split('-'); if (p.length !== 3) return null; const y=+p[0], m=+p[1], d=+p[2]; if(!y||!m||!d) return null; return new Date(y, m-1, d); };
+        const now = new Date(); now.setHours(23,59,59,999);
+        const y = now.getFullYear(), moNow = now.getMonth();
+        const sod = (d) => new Date(d.getFullYear(), d.getMonth(), d.getDate());
+        const weekStart = (() => { const d = sod(now); const dow = (d.getDay()+6)%7; d.setDate(d.getDate()-dow); return d; })();
+        const lastWeekStart = (() => { const d = new Date(weekStart); d.setDate(d.getDate()-7); return d; })();
+        const lastWeekEnd = new Date(weekStart.getTime()-1);
+        const weekBeforeStart = (() => { const d = new Date(lastWeekStart); d.setDate(d.getDate()-7); return d; })();
+        const weekBeforeEnd = new Date(lastWeekStart.getTime()-1);
+        const monthStart = new Date(y, moNow, 1);
+        const lastMonthStart = new Date(y, moNow-1, 1);
+        const lastMonthEnd = new Date(y, moNow, 0, 23,59,59);
+        const monthBeforeStart = new Date(y, moNow-2, 1);
+        const monthBeforeEnd = new Date(y, moNow-1, 0, 23,59,59);
+        const qStart = new Date(y, Math.floor(moNow/3)*3, 1);
+        const lastQStart = new Date(y, Math.floor(moNow/3)*3 - 3, 1);
+        const lastQEnd = new Date(qStart.getTime()-1);
+        const yearStart = new Date(y, 0, 1);
+        const cS = pd(customFrom), cERaw = pd(customTo);
+        const cE = cERaw ? new Date(cERaw.getFullYear(), cERaw.getMonth(), cERaw.getDate(), 23,59,59) : null;
+
+        // "To this point" prior-period anchors. For an in-progress period we
+        // compare against the SAME elapsed slice of the prior period (e.g. day
+        // 10 of this month vs days 1–10 of last month), not the full prior
+        // period — otherwise volume metrics look artificially down early on.
+        const todayDate = now.getDate(), todayMonth = now.getMonth();
+        const daysInLastMonth = new Date(y, moNow, 0).getDate();
+        const wtdPrevEnd = new Date(lastWeekStart.getTime() + (now.getTime() - weekStart.getTime()));
+        const mtdPrevEnd = new Date(y, moNow-1, Math.min(todayDate, daysInLastMonth), 23,59,59);
+        const lastYearStart = new Date(y-1, 0, 1);
+        const ytdPrevEnd = new Date(y-1, todayMonth, todayDate, 23,59,59);
+
+        // Driven by the single tracker-wide timeframe (tf). prev=null means
+        // "no comparable prior period" → tickers/delta render gray 0.0%.
+        const TF = {
+          WTD:    { label:'Week to date',  word:'week',   range:[weekStart, now],               prev:[lastWeekStart, wtdPrevEnd] },
+          MTD:    { label:'Month to date', word:'month',  range:[monthStart, now],              prev:[lastMonthStart, mtdPrevEnd] },
+          YTD:    { label:'Year to date',  word:'year',   range:[yearStart, now],               prev:[lastYearStart, ytdPrevEnd] },
+          LW:     { label:'Last week',     word:'week',   range:[lastWeekStart, lastWeekEnd],   prev:[weekBeforeStart, weekBeforeEnd] },
+          LM:     { label:'Last month',    word:'month',  range:[lastMonthStart, lastMonthEnd], prev:[monthBeforeStart, monthBeforeEnd] },
+          ALL:    { label:'All time',      word:'period', range:[new Date(0), now],             prev:null },
+          CUSTOM: { label:'Custom range',  word:'range',  range:[cS || new Date(0), cE || now], prev:null },
+        };
+        const sel = TF[tf] || TF.MTD;
+        const periodLabel = sel.label;
+
+        // ── formatting ──
+        const usd0 = (n) => '$' + Math.round(n||0).toLocaleString('en-US');
+        const cc = (n) => { n = n||0; if (n>=1e6) return '$'+(n/1e6).toFixed(2)+'M'; if (n>=1e3) return '$'+(n/1e3).toFixed(1)+'K'; return '$'+Math.round(n).toLocaleString('en-US'); };
+        const fmtDay = (s) => { const d = pd(s); if (!d) return ''; return PROF_MONTHS[d.getMonth()] + ' ' + d.getDate(); };
+        const inR = (s, r) => { const d = pd(s); return d && d >= r[0] && d <= r[1]; };
+        const bizDays = (r) => { let d = sod(r[0] < new Date(0)? new Date() : r[0]), end = r[1], c = 0, guard = 0; d = new Date(d); while (d <= end && guard < 2000) { const wd = d.getDay(); if (wd !== 0 && wd !== 6) c++; d.setDate(d.getDate()+1); guard++; } return Math.max(1, c); };
+
+        // ── full commission per policy (annual_premium × comp %), for Avg commission ──
+        const fullComm = (p) => {
+          if (p.status === 'Cancelled') return 0;
+          const ap = parseFloat(p.annual_premium || 0); if (ap <= 0) return 0;
+          let dc = parseFloat(p.deal_comp || 0);
+          if (!dc && typeof userCompLevel !== 'undefined' && userCompLevel) {
+            try { dc = lookupDealComp(p.carrier, p.product_type, userCompLevel); } catch (e) { dc = 0; }
+          }
+          return dc ? ap * (dc / 100) : 0;
+        };
+
+        // ── metrics for a date range ──
+        const metricsFor = (r) => {
+          const kp = kpis.filter(k => inR(k.kpi_date, r));
+          const dials = kp.reduce((s,x)=>s+(parseFloat(x.dials)||0),0);
+          const pres = kp.reduce((s,x)=>s+(parseFloat(x.presentations)||0),0);
+          const deposits = kp.reduce((s,x)=>s+(parseFloat(x.deposits)||0),0);
+          const leadSpend = kp.reduce((s,x)=>s+(parseFloat(x.lead_spend)||0),0);
+          const pol = policies.filter(p => inR(p.policy_date, r));
+          const deals = pol.length;
+          let pSub = 0, pRem = 0;
+          pol.forEach(p => { const v = computePolicyPending(p); if (p.status === 'Issue Paid') pRem += v; else pSub += v; });
+          const apSub = pol.reduce((s,p)=>s+parseFloat(p.annual_premium||0),0);
+          const issued = pol.filter(p => p.status === 'Issue Paid');
+          const apIss = issued.reduce((s,p)=>s+parseFloat(p.annual_premium||0),0);
+          const commVals = issued.map(fullComm).filter(v => v > 0);
+          const avgComm = commVals.length ? commVals.reduce((a,b)=>a+b,0)/commVals.length : 0;
+          const oneOff = expenses.filter(e => inR(e.expense_date, r));
+          const oneOffTotal = oneOff.reduce((s,e)=>s+parseFloat(e.amount||0),0);
+          return { dials, pres, deposits, leadSpend, deals, pSub, pRem, apSub, apIss, avgComm, oneOff, oneOffTotal,
+                   closeRatio: pres > 0 ? deals/pres : 0, dts: dials > 0 ? deals/dials : 0 };
+        };
+        const cur = metricsFor(sel.range);
+        const prev = sel.prev ? metricsFor(sel.prev) : null;
+
+        const totalExpenses = cur.leadSpend + cur.oneOffTotal;
+        const net = cur.deposits - totalExpenses;
+        const roas = cur.leadSpend > 0 ? cur.deposits / cur.leadSpend : 0;
+        const pipelineTotal = cur.pSub + cur.pRem;
+        const prevPipeline = prev ? (prev.pSub + prev.pRem) : 0;
+        const div = bizDays(sel.range);
+
+        // ── ticker (period-over-period). Gray zero when no prior history. ──
+        const tickStyle = (up) => ({ fontFamily:MONO, fontSize:10, fontWeight:500, padding:'2px 6px', borderRadius:5, whiteSpace:'nowrap',
+          color: up===null ? T.ink3 : (up ? T.pos : T.neg),
+          background: up===null ? T.surface3 : ('color-mix(in oklch, ' + (up ? T.pos : T.neg) + ' 16%, transparent)') });
+        const tick = (c, p) => { if (prev == null || !p) return { text:'0.0%', up:null }; const dd = (c-p)/p*100; const up = dd >= 0; return { text:(up?'▲ ':'▼ ')+Math.abs(dd).toFixed(1)+'%', up }; };
+        const tCalls = tick(cur.dials, prev ? prev.dials : 0);
+        const tPres  = tick(cur.pres, prev ? prev.pres : 0);
+        const tClose = tick(cur.closeRatio, prev ? prev.closeRatio : 0);
+        const tDts   = tick(cur.dts, prev ? prev.dts : 0);
+        const tAvg   = tick(cur.avgComm, prev ? prev.avgComm : 0);
+        const pipeDelta = (prev == null || !prevPipeline) ? { text:'0.0%', up:null } : (() => { const dd=(pipelineTotal-prevPipeline)/prevPipeline*100; const up=dd>=0; return { text:(up?'▲ ':'▼ ')+Math.abs(dd).toFixed(1)+'%', up }; })();
+        // Financial-card tickers vs the prior comparable period (e.g. MTD vs last month).
+        const prevExpenses = prev ? (prev.leadSpend + prev.oneOffTotal) : 0;
+        const tDep = tick(cur.deposits, prev ? prev.deposits : 0);
+        const tExp = tick(totalExpenses, prevExpenses);
+        const tNet = tick(net, prev ? (prev.deposits - prevExpenses) : 0);
+        const tRoas = tick(roas, prev ? (prev.leadSpend > 0 ? prev.deposits / prev.leadSpend : 0) : 0);
+
+        // ── P&L series — STATIC: Jan → current month of this year, monthly.
+        // Intentionally NOT driven by the timeframe selector; it's a fixed
+        // year-long view of profit vs loss. Everything else on the page reacts
+        // to the timeframe, but this chart stays put.
+        const months = [];
+        for (let i = 0; i <= moNow; i++) {
+          const ms = new Date(y, i, 1), me = new Date(y, i+1, 0, 23,59,59);
+          const dep = kpis.filter(k => inR(k.kpi_date, [ms,me])).reduce((s,x)=>s+(parseFloat(x.deposits)||0),0);
+          const lead = kpis.filter(k => inR(k.kpi_date, [ms,me])).reduce((s,x)=>s+(parseFloat(x.lead_spend)||0),0);
+          const oneoff = expenses.filter(e => inR(e.expense_date, [ms,me])).reduce((s,x)=>s+parseFloat(x.amount||0),0);
+          months.push({ label: PROF_MONTHS[i], dep, exp: lead + oneoff });
+        }
+        const xLabelStep = 1; // monthly labels (≤12) all fit
+
+        // ── expense mix (selected period): Leads + one-off categories ──
+        const HUE = { 'Leads':T.green, 'Travel':T.orange, 'Licensing':T.purple, 'Software':T.blue, 'E&O Insurance':T.yellow, 'Continuing Ed':T.teal, 'Marketing':T.magenta, 'Equipment':T.red, 'Other':T.gray };
+        const agg = {}; if (cur.leadSpend > 0) agg['Leads'] = cur.leadSpend;
+        cur.oneOff.forEach(e => { agg[e.category] = (agg[e.category]||0) + parseFloat(e.amount||0); });
+        const mixEntries = Object.entries(agg).sort((a,b)=>b[1]-a[1]);
+        const mixMax = Math.max(1, ...mixEntries.map(e=>e[1]));
+        const breakdown = mixEntries.map(([name, amt]) => ({ name, amt, color: HUE[name] || T.gray, pct: totalExpenses>0 ? amt/totalExpenses*100 : 0 }));
+
+        // ── shared styles ──
+        const card = { background:T.surface, border:'1px solid '+T.hairline, borderRadius:10, overflow:'hidden', backdropFilter:'blur(14px) saturate(1.3)', WebkitBackdropFilter:'blur(14px) saturate(1.3)' };
+        const monoLabel = { fontFamily:MONO, fontSize:11, textTransform:'uppercase', letterSpacing:'.08em', color:T.ink3, fontWeight:500 };
+        const tintCard = (color, op) => ({ background:'color-mix(in oklch, '+color+' '+op+'%, '+T.surface+')', border:'1px solid color-mix(in oklch, '+color+' 26%, transparent)', borderRadius:10, padding:'20px 22px', textAlign:'center', backdropFilter:'blur(14px) saturate(1.3)', WebkitBackdropFilter:'blur(14px) saturate(1.3)' });
+        const finCardVal = (color) => ({ fontFamily:MONO, fontSize:29, fontWeight:500, marginTop:14, color, letterSpacing:'-.01em', fontVariantNumeric:'tabular-nums' });
+        const finCardLbl = { fontSize:11, fontFamily:MONO, textTransform:'uppercase', letterSpacing:'.08em', color:T.ink3, fontWeight:500 };
+        const finCardSub = { fontFamily:MONO, fontSize:11, color:T.ink3, marginTop:8 };
+        const kpiCard = { ...card, padding:'18px 20px', display:'flex', flexDirection:'column', gap:8, minHeight:108, alignItems:'center', textAlign:'center' };
+        const kpiLbl = { fontFamily:MONO, fontSize:10, textTransform:'uppercase', letterSpacing:'.08em', color:T.ink3, display:'flex', alignItems:'center', justifyContent:'center', gap:6 };
+        const kpiVal = { fontFamily:MONO, fontSize:26, fontWeight:500, color:T.ink1, letterSpacing:'-.01em', fontVariantNumeric:'tabular-nums', lineHeight:1, marginTop:4 };
+        const kpiSub = { fontFamily:MONO, fontSize:11, color:T.ink3 };
+        const inputBase = { borderRadius:8, border:'1px solid '+T.hairlineStrong, background:T.surface2, color:T.ink1, fontSize:13, fontFamily:MONO };
+
+        // ── P&L chart (SVG) ──
+        const W = 1000, Hc = 280, pad = { t:18, r:26, b:34, l:64 };
+        const iw = W - pad.l - pad.r, ih = Hc - pad.t - pad.b;
+        const depArr = months.map(m=>m.dep), expArr = months.map(m=>m.exp);
+        const pmax = Math.max(1, ...depArr, ...expArr) * 1.14;
+        const cxp = (i) => months.length <= 1 ? pad.l + iw/2 : pad.l + (i/(months.length-1))*iw;
+        const cyp = (v) => pad.t + (1 - v/pmax)*ih;
+        const toLine = (arr) => arr.map((v,i)=>(i?'L':'M')+cxp(i).toFixed(1)+','+cyp(v).toFixed(1)).join(' ');
+        const depArea = months.length>1 ? (toLine(depArr)+' L '+cxp(months.length-1).toFixed(1)+','+(pad.t+ih)+' L '+cxp(0).toFixed(1)+','+(pad.t+ih)+' Z') : '';
+
+        // ── expense-mix donut (SVG) ──
+        const dSize = 156, dR = dSize/2 - 8, dCx = dSize/2, dCy = dSize/2, dInner = dR*0.62;
+        const donutTotal = breakdown.reduce((s,d)=>s+d.amt,0) || 1;
+        // A single category = 100% of the circle. An SVG arc whose start and end
+        // points coincide draws nothing, so render the full ring as a stroked
+        // circle instead of an arc path.
+        const donutSegs = breakdown.length === 1
+          ? [<circle key="full" cx={dCx} cy={dCy} r={(dR+dInner)/2} fill="none" stroke={breakdown[0].color} strokeWidth={dR-dInner} />]
+          : (() => {
+              let acc = -Math.PI/2;
+              return breakdown.map((d,i) => {
+                const a0 = acc, a1 = acc + (d.amt/donutTotal)*Math.PI*2; acc = a1;
+                const large = a1-a0 > Math.PI ? 1 : 0;
+                const x0=dCx+Math.cos(a0)*dR, y0=dCy+Math.sin(a0)*dR, x1=dCx+Math.cos(a1)*dR, y1=dCy+Math.sin(a1)*dR;
+                const ix0=dCx+Math.cos(a0)*dInner, iy0=dCy+Math.sin(a0)*dInner, ix1=dCx+Math.cos(a1)*dInner, iy1=dCy+Math.sin(a1)*dInner;
+                const path='M '+x0+','+y0+' A '+dR+','+dR+' 0 '+large+' 1 '+x1+','+y1+' L '+ix1+','+iy1+' A '+dInner+','+dInner+' 0 '+large+' 0 '+ix0+','+iy0+' Z';
+                return <path key={i} d={path} fill={d.color} />;
+              });
+            })();
+
+        // ── Dial→Deal ring ──
+        const ringC = 2*Math.PI*22;
+        const dtsFill = Math.max(0, Math.min(100, cur.dts*100*30));
+        const dtsDash = (dtsFill/100*ringC).toFixed(2)+' '+ringC.toFixed(2);
+        const dialPerSale = cur.deals > 0 ? Math.round(cur.dials/cur.deals) : 0;
+
+        const hr = new Date().getHours();
+        const greeting = (hr < 12 ? 'Morning' : hr < 18 ? 'Afternoon' : 'Evening') + ', ' + ((agentName||'').trim().split(/\s+/)[0] || 'there');
+
+        const submitExpense = () => {
+          const amt = parseFloat(form.amount);
+          if (!amt || amt <= 0) return;
+          onAddExpense({ expense_date: form.date || todayYMD, category: form.category, note: (form.note||'').trim() || form.category, amount: Math.round(amt*100)/100 });
+          setForm({ ...form, amount:'', note:'' });
+        };
+
+        const segBtn = (active) => ({ appearance:'none', border:0, cursor:'pointer', padding:'6px 11px', borderRadius:6, fontFamily:MONO, fontSize:10.5, letterSpacing:'.05em', textTransform:'uppercase',
+          background: active ? T.surface3 : 'transparent', color: active ? T.ink1 : T.ink3, boxShadow: active ? ('0 1px 0 '+T.hairlineStrong+' inset') : 'none' });
+
+        return (
+          <div className="tk-prof" style={{ fontFamily:"'Geist', system-ui, sans-serif" }}>
+
+            {/* HERO — pipeline value */}
+            <div style={{ ...card, padding:'22px 24px 20px', marginBottom:16, textAlign:'center' }}>
+              <div style={{ display:'flex', alignItems:'center', justifyContent:'center', marginBottom:18, flexWrap:'wrap', gap:14 }}>
+                <div style={{ display:'flex', alignItems:'center', gap:14 }}>
+                  <div style={{ fontSize:15, fontFamily:MONO, textTransform:'uppercase', letterSpacing:'.06em', color:T.ink1, fontWeight:600 }}>Pipeline value</div>
+                  <div style={{ fontFamily:MONO, fontSize:12, color:T.ink3 }}>pending commissions</div>
+                </div>
+                <div style={{ fontFamily:MONO, fontSize:11, textTransform:'uppercase', letterSpacing:'.06em', color:T.ink3, padding:'5px 11px', borderRadius:6, background:T.surface2, border:'1px solid '+T.hairline }}>{periodLabel}</div>
+              </div>
+              <div style={{ display:'flex', alignItems:'baseline', justifyContent:'center', gap:24, flexWrap:'wrap', marginBottom:20 }}>
+                <div style={{ fontFamily:MONO, fontSize:'clamp(34px,5vw,44px)', fontWeight:500, color:T.ink1, letterSpacing:'-.02em', fontVariantNumeric:'tabular-nums', lineHeight:1 }}>{usd0(pipelineTotal)}</div>
+                <div style={{ display:'inline-flex', alignItems:'center', gap:4, fontFamily:MONO, fontSize:12, padding:'3px 8px', borderRadius:4, ...(pipeDelta.up===null ? { color:T.ink3, background:T.surface3 } : { color: pipeDelta.up ? T.pos : T.neg, background:'color-mix(in oklch, '+(pipeDelta.up?T.pos:T.neg)+' 14%, transparent)' }) }}>
+                  {pipeDelta.text}<span style={{ color:T.ink3, marginLeft:6 }}>vs prior {sel.word}</span>
+                </div>
+              </div>
+              <div style={{ display:'flex', flexWrap:'wrap', justifyContent:'center', gap:40, marginBottom:22, paddingBottom:20, borderBottom:'1px solid '+T.hairline }}>
+                <div>
+                  <div style={{ fontFamily:MONO, fontSize:10, letterSpacing:'.07em', textTransform:'uppercase', color:T.ink3 }}>Total Annual Premium Submitted</div>
+                  <div style={{ fontFamily:MONO, fontSize:23, fontWeight:500, color:T.ink1, marginTop:7, fontVariantNumeric:'tabular-nums' }}>{usd0(cur.apSub)}</div>
+                </div>
+                <div>
+                  <div style={{ fontFamily:MONO, fontSize:10, letterSpacing:'.07em', textTransform:'uppercase', color:T.ink3 }}>Total Annual Premium Issued</div>
+                  <div style={{ fontFamily:MONO, fontSize:23, fontWeight:500, color:T.pos, marginTop:7, fontVariantNumeric:'tabular-nums' }}>{usd0(cur.apIss)}</div>
+                </div>
+              </div>
+              <div style={{ display:'flex', height:14, borderRadius:99, background:T.surface3, overflow:'hidden' }}>
+                <div style={{ width: (pipelineTotal>0 ? (cur.pSub/pipelineTotal*100) : 0)+'%', background:T.blue }}></div>
+                <div style={{ width: (pipelineTotal>0 ? (cur.pRem/pipelineTotal*100) : 0)+'%', background:T.green }}></div>
+              </div>
+              <div style={{ display:'flex', flexWrap:'wrap', justifyContent:'center', gap:48, marginTop:18 }}>
+                <div>
+                  <div style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:8 }}><span style={{ width:8, height:8, borderRadius:2, background:T.blue }}></span><span style={{ fontSize:12, color:T.ink2 }}>Submitted &middot; awaiting payout</span></div>
+                  <div style={{ fontFamily:MONO, fontSize:20, fontWeight:500, color:T.ink1, marginTop:6, fontVariantNumeric:'tabular-nums' }}>{usd0(cur.pSub)}</div>
+                </div>
+                <div>
+                  <div style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:8 }}><span style={{ width:8, height:8, borderRadius:2, background:T.green }}></span><span style={{ fontSize:12, color:T.ink2 }}>Advanced &middot; remaining balance</span></div>
+                  <div style={{ fontFamily:MONO, fontSize:20, fontWeight:500, color:T.ink1, marginTop:6, fontVariantNumeric:'tabular-nums' }}>{usd0(cur.pRem)}</div>
+                </div>
+              </div>
+            </div>
+
+            {/* P&L TIMELINE */}
+            <div style={{ ...card, padding:'20px 22px 14px', marginBottom:16 }}>
+              <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:12, marginBottom:14 }}>
+                <div style={{ display:'flex', alignItems:'center', gap:14 }}>
+                  <div style={{ fontSize:15, fontFamily:MONO, textTransform:'uppercase', letterSpacing:'.06em', color:T.ink1, fontWeight:600 }}>Profit &amp; loss</div>
+                  <div style={{ fontFamily:MONO, fontSize:12, color:T.ink3 }}>deposited vs expenses &middot; {y}</div>
+                </div>
+                <div style={{ display:'flex', alignItems:'center', gap:18, fontFamily:MONO, fontSize:11, color:T.ink2 }}>
+                  <div style={{ display:'flex', alignItems:'center', gap:7 }}><span style={{ width:10, height:10, borderRadius:2, background:T.pos }}></span>Commissions deposited</div>
+                  <div style={{ display:'flex', alignItems:'center', gap:7 }}><span style={{ width:10, height:10, borderRadius:2, background:T.neg }}></span>Expenses</div>
+                </div>
+              </div>
+              <svg viewBox={'0 0 '+W+' '+Hc} width="100%" height="auto" preserveAspectRatio="xMidYMid meet" style={{ display:'block' }} onMouseLeave={() => setPlHover(null)}>
+                <defs><linearGradient id="profPlGrad" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stopColor={T.pos} stopOpacity="0.20"/><stop offset="100%" stopColor={T.pos} stopOpacity="0"/></linearGradient></defs>
+                {[0,0.25,0.5,0.75,1].map((tt,i) => (
+                  <g key={'g'+i}>
+                    <line x1={pad.l} x2={W-pad.r} y1={pad.t+tt*ih} y2={pad.t+tt*ih} stroke={T.hairline} strokeDasharray={i===4?'0':'2 5'} />
+                    <text x={pad.l-12} y={pad.t+tt*ih+4} textAnchor="end" fill={T.ink3} fontSize="13" fontFamily={MONO}>{cc(pmax*(1-tt))}</text>
+                  </g>
+                ))}
+                {depArea && <path d={depArea} fill="url(#profPlGrad)" />}
+                {months.length>1 && <path d={toLine(expArr)} fill="none" stroke={T.neg} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />}
+                {months.length>1 && <path d={toLine(depArr)} fill="none" stroke={T.pos} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />}
+                <circle cx={cxp(months.length-1)} cy={cyp(depArr[depArr.length-1]||0)} r="4" fill={T.pos} />
+                <circle cx={cxp(months.length-1)} cy={cyp(expArr[expArr.length-1]||0)} r="4" fill={T.neg} />
+                {months.map((m,i) => ((i % xLabelStep === 0 || i === months.length-1) ? <text key={'x'+i} x={cxp(i)} y={Hc-8} textAnchor="middle" fill={T.ink3} fontSize="13" fontFamily={MONO}>{m.label}</text> : null))}
+                {/* hover hit-areas (one column per month) */}
+                {months.map((m,i) => {
+                  const segW = months.length > 1 ? (iw/(months.length-1)) : iw;
+                  return <rect key={'hit'+i} x={cxp(i)-segW/2} y={pad.t} width={segW} height={ih} fill="transparent" style={{cursor:'pointer'}} onMouseEnter={() => setPlHover(i)} />;
+                })}
+                {/* tooltip */}
+                {plHover != null && months[plHover] && (() => {
+                  const i = plHover, mh = months[i], x = cxp(i);
+                  const boxW = 188, boxH = 70, by = pad.t + 6;
+                  const bx = Math.max(pad.l, Math.min(W - pad.r - boxW, x - boxW/2));
+                  return (
+                    <g pointerEvents="none">
+                      <line x1={x} x2={x} y1={pad.t} y2={pad.t+ih} stroke={T.hairlineStrong} strokeDasharray="3 4" />
+                      <circle cx={x} cy={cyp(depArr[i])} r="5" fill={T.pos} stroke={T.surface3} strokeWidth="2" />
+                      <circle cx={x} cy={cyp(expArr[i])} r="5" fill={T.neg} stroke={T.surface3} strokeWidth="2" />
+                      <rect x={bx} y={by} width={boxW} height={boxH} rx="8" fill={T.surface3} stroke={T.hairlineStrong} />
+                      <text x={bx+14} y={by+24} fill={T.ink1} fontSize="14" fontWeight="600" fontFamily={MONO}>{mh.label}</text>
+                      <text x={bx+14} y={by+44} fill={T.pos} fontSize="13" fontFamily={MONO}>Commissions {usd0(mh.dep)}</text>
+                      <text x={bx+14} y={by+62} fill={T.neg} fontSize="13" fontFamily={MONO}>Expenses {usd0(mh.exp)}</text>
+                    </g>
+                  );
+                })()}
+              </svg>
+            </div>
+
+            {/* FINANCIAL CARDS */}
+            <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(200px,1fr))', gap:16, marginBottom:24 }}>
+              <div style={tintCard(T.pos, 10)}>
+                <div style={{ ...finCardLbl, display:'flex', alignItems:'center', justifyContent:'center', gap:6, flexWrap:'wrap' }}>Commissions deposited <span style={tickStyle(tDep.up)}>{tDep.text}</span></div>
+                <div style={finCardVal(T.pos)}>{usd0(cur.deposits)}</div>
+                <div style={finCardSub}>advances received</div>
+              </div>
+              <div style={tintCard(T.neg, 9)}>
+                <div style={{ ...finCardLbl, display:'flex', alignItems:'center', justifyContent:'center', gap:6, flexWrap:'wrap' }}>Total expenses <span style={tickStyle(tExp.up)}>{tExp.text}</span></div>
+                <div style={finCardVal(T.neg)}>{usd0(totalExpenses)}</div>
+                <div style={finCardSub}>lead spend + one-off</div>
+              </div>
+              <div style={tintCard(T.pos, 10)}>
+                <div style={{ ...finCardLbl, display:'flex', alignItems:'center', justifyContent:'center', gap:6, flexWrap:'wrap' }}>Net profit <span style={tickStyle(tNet.up)}>{tNet.text}</span></div>
+                <div style={finCardVal(net>=0?T.pos:T.neg)}>{usd0(net)}</div>
+                <div style={finCardSub}>after lead spend &amp; expenses</div>
+              </div>
+              <div style={tintCard(T.pos, 10)}>
+                <div style={{ ...finCardLbl, display:'flex', alignItems:'center', justifyContent:'center', gap:6, flexWrap:'wrap' }}>Return on ad spend <span style={tickStyle(tRoas.up)}>{tRoas.text}</span></div>
+                <div style={finCardVal(T.pos)}>{cur.leadSpend>0 ? roas.toFixed(1)+'×' : '—'}</div>
+                <div style={finCardSub}>deposited &divide; lead spend</div>
+              </div>
+            </div>
+
+            {/* KPI PANEL */}
+            <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 4px 12px', flexWrap:'wrap', gap:8 }}>
+              <div style={monoLabel}>KPI tracking &middot; {periodLabel}</div>
+              <div style={{ fontFamily:MONO, fontSize:11, color:T.ink3 }}>synced from activity log</div>
+            </div>
+            <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(190px,1fr))', gap:16, marginBottom:24 }}>
+              <div style={kpiCard}>
+                <div style={kpiLbl}>Calls<span style={tickStyle(tCalls.up)}>{tCalls.text}</span></div>
+                <div style={kpiVal}>{Math.round(cur.dials).toLocaleString('en-US')}</div>
+                <div style={kpiSub}>{Math.round(cur.dials/div).toLocaleString('en-US')} <span style={{ color:T.ink4 }}>/ business day</span></div>
+              </div>
+              <div style={kpiCard}>
+                <div style={kpiLbl}>Presentations<span style={tickStyle(tPres.up)}>{tPres.text}</span></div>
+                <div style={kpiVal}>{Math.round(cur.pres).toLocaleString('en-US')}</div>
+                <div style={kpiSub}>{Math.max(0, Math.round(cur.pres/div))} <span style={{ color:T.ink4 }}>/ business day</span></div>
+              </div>
+              <div style={kpiCard}>
+                <div style={kpiLbl}>Close ratio<span style={tickStyle(tClose.up)}>{tClose.text}</span></div>
+                <div style={kpiVal}>{(cur.closeRatio*100).toFixed(1)}%</div>
+                <div style={kpiSub}><b style={{ color:T.ink1, fontWeight:500 }}>{cur.deals.toLocaleString('en-US')}</b> of {Math.round(cur.pres).toLocaleString('en-US')} pres.</div>
+              </div>
+              <div style={kpiCard}>
+                <div style={kpiLbl}>Dial &rarr; Deal<span style={tickStyle(tDts.up)}>{tDts.text}</span></div>
+                <div style={kpiVal}>{(cur.dts*100).toFixed(2)}%</div>
+                <div style={kpiSub}>{dialPerSale} dials &rarr; 1 deal</div>
+              </div>
+              <div style={kpiCard}>
+                <div style={kpiLbl}>Avg commission<span style={tickStyle(tAvg.up)}>{tAvg.text}</span></div>
+                <div style={kpiVal}>{usd0(cur.avgComm)}</div>
+                <div style={kpiSub}>per issued policy</div>
+              </div>
+            </div>
+
+            {/* EXPENSES + MIX */}
+            <div style={{ display:'flex', flexWrap:'wrap', gap:16, alignItems:'stretch' }}>
+              {/* Expenses panel */}
+              <div style={{ ...card, flex:'1.6 1 380px' }}>
+                <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'18px 22px 14px', borderBottom:'1px solid '+T.hairline }}>
+                  <div style={monoLabel}>Expenses</div>
+                  <div style={{ fontFamily:MONO, fontSize:11, color:T.ink3 }}>{usd0(totalExpenses)} total</div>
+                </div>
+                <div style={{ padding:'18px 22px 22px' }}>
+                  {/* synced lead spend */}
+                  <div style={{ display:'flex', alignItems:'center', gap:11, padding:'12px 14px', background:T.surface2, border:'1px solid '+T.hairline, borderRadius:8 }}>
+                    <span style={{ fontFamily:MONO, fontSize:9, letterSpacing:'.06em', textTransform:'uppercase', padding:'4px 7px', borderRadius:5, background:'color-mix(in oklch, '+T.blue+' 16%, transparent)', color:T.blue }}>Synced</span>
+                    <div style={{ flex:1, minWidth:0 }}>
+                      <div style={{ fontSize:13, fontWeight:500, color:T.ink1 }}>Lead spend</div>
+                      <div style={{ fontFamily:MONO, fontSize:10.5, color:T.ink3 }}>from daily lead logs &middot; not editable here</div>
+                    </div>
+                    <span style={{ fontFamily:MONO, fontSize:14, color:T.neg, fontVariantNumeric:'tabular-nums' }}>&minus;{usd0(cur.leadSpend)}</span>
+                  </div>
+
+                  <div style={{ display:'flex', alignItems:'baseline', justifyContent:'space-between', margin:'20px 0 2px' }}>
+                    <div style={{ fontFamily:MONO, fontSize:10, letterSpacing:'.08em', textTransform:'uppercase', color:T.ink3 }}>One-off expenses</div>
+                    <div style={{ fontFamily:MONO, fontSize:11, color:T.ink3 }}>{cur.oneOff.length} entries &middot; {usd0(cur.oneOffTotal)}</div>
+                  </div>
+
+                  {!readOnly && (
+                    <div style={{ display:'flex', flexWrap:'wrap', gap:8, alignItems:'center', margin:'12px 0 6px' }}>
+                      <div style={{ position:'relative', flex:'0 0 120px' }}>
+                        <span style={{ position:'absolute', left:11, top:'50%', transform:'translateY(-50%)', color:T.ink4, fontSize:13, fontFamily:MONO }}>$</span>
+                        <input type="number" min="0" step="0.01" value={form.amount} onChange={e=>setForm({...form, amount:e.target.value})} onKeyDown={e=>{ if(e.key==='Enter') submitExpense(); }} placeholder="0.00" style={{ ...inputBase, width:'100%', padding:'9px 10px 9px 22px' }} />
+                      </div>
+                      <select value={form.category} onChange={e=>setForm({...form, category:e.target.value})} style={{ ...inputBase, flex:'0 0 auto', padding:'9px 11px', fontFamily:"'Geist', sans-serif", cursor:'pointer' }}>
+                        {PROF_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+                      </select>
+                      <input type="text" value={form.note} onChange={e=>setForm({...form, note:e.target.value})} onKeyDown={e=>{ if(e.key==='Enter') submitExpense(); }} placeholder="What was it for?" style={{ ...inputBase, flex:'1 1 140px', minWidth:120, padding:'9px 11px', fontFamily:"'Geist', sans-serif" }} />
+                      <input type="date" value={form.date} onChange={e=>setForm({...form, date:e.target.value})} style={{ ...inputBase, flex:'0 0 auto', padding:'8px 10px', fontSize:12, color:T.ink2 }} />
+                      <button onClick={submitExpense} style={{ flex:'0 0 auto', padding:'9px 16px', borderRadius:8, border:'none', background:T.green, color:T.accentText, fontSize:12, fontWeight:600, fontFamily:MONO, letterSpacing:'.04em', textTransform:'uppercase', cursor:'pointer' }}>Add</button>
+                    </div>
+                  )}
+
+                  {cur.oneOff.length === 0 && (
+                    <div style={{ padding:24, textAlign:'center', color:T.ink4, fontFamily:MONO, fontSize:12 }}>No one-off expenses logged for this period yet.</div>
+                  )}
+                  <div style={{ maxHeight:300, overflow:'auto', marginTop:4 }}>
+                    {cur.oneOff.map(e => (
+                      <div key={e.id} style={{ display:'flex', alignItems:'center', gap:11, padding:'11px 2px', borderBottom:'1px solid '+T.hairline }}>
+                        <span style={{ fontFamily:MONO, fontSize:11, color:T.ink3, width:46, flexShrink:0 }}>{fmtDay(e.expense_date)}</span>
+                        <span style={{ display:'inline-block', fontFamily:MONO, fontSize:9, letterSpacing:'.05em', textTransform:'uppercase', padding:'3px 7px', borderRadius:5, background:'color-mix(in oklch, '+(HUE[e.category]||T.gray)+' 16%, transparent)', color:HUE[e.category]||T.gray, whiteSpace:'nowrap', flexShrink:0 }}>{e.category}</span>
+                        <span style={{ flex:1, minWidth:0, fontSize:13, color:T.ink1, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{e.note}</span>
+                        <span style={{ fontFamily:MONO, fontSize:13, color:T.neg, fontVariantNumeric:'tabular-nums' }}>&minus;{usd0(parseFloat(e.amount||0))}</span>
+                        {!readOnly && <button onClick={() => onDeleteExpense(e.id)} style={{ border:'none', background:'transparent', color:T.ink4, cursor:'pointer', fontSize:16, lineHeight:1, padding:'2px 5px', borderRadius:5 }} aria-label="Remove expense">&times;</button>}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Expense mix */}
+              <div style={{ ...card, flex:'1 1 300px', padding:'20px 22px' }}>
+                <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:16 }}>
+                  <div style={monoLabel}>Expense mix &middot; {periodLabel}</div>
+                  <div style={{ fontFamily:MONO, fontSize:11, color:T.ink3 }}>{usd0(totalExpenses)}</div>
+                </div>
+                {breakdown.length === 0 ? (
+                  <div style={{ padding:24, textAlign:'center', color:T.ink4, fontFamily:MONO, fontSize:12 }}>No expenses in this period yet.</div>
+                ) : (
+                  <div style={{ display:'flex', gap:22, alignItems:'center', flexWrap:'wrap' }}>
+                    <svg width={dSize} height={dSize} style={{ display:'block', flexShrink:0 }}>
+                      {donutSegs}
+                      <text x={dCx} y={dCy-3} textAnchor="middle" fill={T.ink2} fontSize="10" fontFamily={MONO} letterSpacing="0.08em">EXPENSE MIX</text>
+                      <text x={dCx} y={dCy+15} textAnchor="middle" fill={T.ink1} fontSize="18" fontFamily={MONO} fontWeight="500">100%</text>
+                    </svg>
+                    <div style={{ flex:1, minWidth:170, display:'flex', flexDirection:'column', gap:13 }}>
+                      {breakdown.map((b,i) => (
+                        <div key={i}>
+                          <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+                            <span style={{ width:9, height:9, borderRadius:3, background:b.color, flexShrink:0 }}></span>
+                            <span style={{ flex:1, fontSize:13, color:T.ink1 }}>{b.name}</span>
+                            <span style={{ fontFamily:MONO, fontSize:11, color:T.ink3 }}>{cc(b.amt)}</span>
+                            <span style={{ fontFamily:MONO, fontSize:12, color:T.ink2, width:48, textAlign:'right' }}>{b.pct.toFixed(1)}%</span>
+                          </div>
+                          <div style={{ height:4, background:T.surface3, borderRadius:99, overflow:'hidden', marginTop:6 }}>
+                            <div style={{ height:'100%', width:(b.amt/mixMax*100).toFixed(1)+'%', background:b.color, borderRadius:99 }}></div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        );
+      }
+
       function TrackerView() {
         const [theme, setTheme] = useState(tkInitialTheme());
         useEffect(() => kfWatchTheme(setTheme), []); // follow the global skin theme
         const [agentProfile, setAgentProfile] = useState(null);
         const [policies, setPolicies] = useState([]);
         const [kpis, setKpis] = useState([]);
+        const [expenses, setExpenses] = useState([]); // one-off expenses (Profitability section)
         const [loading, setLoading] = useState(true);
         const [error, setError] = useState(null);
-        const [tf, setTf] = useState('WTD');
+        const [tf, setTf] = useState('MTD');
         const [customFrom, setCustomFrom] = useState('');
         const [customTo, setCustomTo] = useState('');
         const [showDealModal, setShowDealModal] = useState(false);
         const [showKpiModal, setShowKpiModal] = useState(false);
         const [kpiInitial, setKpiInitial] = useState(null);
-        const [showDaily, setShowDaily] = useState(false);
+        const [showDaily, setShowDaily] = useState(true);
+        const [showDetailedKpis, setShowDetailedKpis] = useState(false); // collapsible Detailed KPIs at page bottom
         // Daily Breakdown pagination — 0 = newest 5-week page. Reset on tf change.
         const [dailyPage, setDailyPage] = useState(0);
         useEffect(() => { setDailyPage(0); }, [tf, customFrom, customTo]);
@@ -27298,7 +27785,7 @@
             // Effective viewing target: admin can override; everyone else is locked to themselves.
             const targetId = (isAdmin && viewAsUserId) ? viewAsUserId : u.id;
             const [profilesRes, policiesRes] = await Promise.all([
-              fetch(SUPABASE_URL + '/rest/v1/agent_profiles?select=user_id,agent_name,annual_goal&user_id=eq.' + targetId, { headers: HDRS }),
+              fetch(SUPABASE_URL + '/rest/v1/agent_profiles?select=user_id,agent_name,annual_goal,comp_level&user_id=eq.' + targetId, { headers: HDRS }),
               fetch(SUPABASE_URL + '/rest/v1/policies?select=id,user_id,sales_rep,client_name,phone,annual_premium,policy_date,created_at,carrier,status,product_type,policy_number,effective_date&user_id=eq.' + targetId + '&order=policy_date.desc', { headers: HDRS }),
             ]);
             const profiles = profilesRes.ok ? await profilesRes.json() : [];
@@ -27308,9 +27795,23 @@
                 ? { user_id: u.id, agent_name: u.user_metadata?.name || u.email, annual_goal: 0 }
                 : { user_id: targetId, agent_name: 'Unknown agent', annual_goal: 0 }
             );
+            // Pending-commission math (Profitability section) reuses the global
+            // computePolicyPending(), which reads userCompLevel as a fallback when
+            // a policy has no per-deal comp. Point it at the VIEWED rep's comp
+            // level so admin "view as" and self-view both compute correctly.
+            const viewedComp = profile.comp_level != null ? parseInt(profile.comp_level, 10) : null;
+            if (viewedComp && !isNaN(viewedComp)) userCompLevel = viewedComp;
             // KPIs are keyed by sales_rep name (not user_id)
             const kpisRes2 = await fetch(SUPABASE_URL + '/rest/v1/daily_kpis?select=*&sales_rep=eq.' + encodeURIComponent(profile.agent_name) + '&order=kpi_date.desc&limit=2000', { headers: HDRS });
             const kpisData = kpisRes2.ok ? await kpisRes2.json() : [];
+            // One-off expenses (Profitability section). Best-effort: if the
+            // table doesn't exist yet the dashboard still renders (lead spend
+            // + KPIs are enough), it just shows no one-off entries.
+            let expensesData = [];
+            try {
+              const expRes = await fetch(SUPABASE_URL + '/rest/v1/expenses?select=*&user_id=eq.' + targetId + '&order=expense_date.desc', { headers: HDRS });
+              if (expRes.ok) expensesData = await expRes.json();
+            } catch (e) { /* table may not exist yet */ }
             // Monthly AP goal — pulled from Weekly Tracker (wt_monthly_ap_goals).
             // month_start is the first day of the current month, YYYY-MM-DD.
             const now = new Date();
@@ -27326,6 +27827,7 @@
             setAgentProfile(profile);
             setPolicies(policiesData);
             setKpis(kpisData);
+            setExpenses(expensesData);
             setMonthlyGoal(mGoal);
             if (!quiet) setLoading(false);
           } catch (e) {
@@ -27336,6 +27838,46 @@
         };
         useEffect(() => { reload(); }, [viewAsUserId]);
         const viewingOther = isAdmin && !!viewAsUserId;
+
+        // ── One-off expenses (Profitability section) ──
+        // Writes go under the signed-in user's identity, so they're disabled
+        // while an admin is viewing another rep (RLS would reject them anyway).
+        const addExpense = async (entry) => {
+          if (!agentProfile || viewingOther) return;
+          const body = {
+            user_id: agentProfile.user_id,
+            sales_rep: agentProfile.agent_name,
+            expense_date: entry.expense_date,
+            category: entry.category,
+            note: entry.note,
+            amount: entry.amount,
+          };
+          try {
+            const res = await fetch(SUPABASE_URL + '/rest/v1/expenses', {
+              method: 'POST',
+              headers: Object.assign({}, HDRS_WRITE, { Prefer: 'return=representation' }),
+              body: JSON.stringify(body),
+            });
+            if (res.ok) {
+              const rows = await res.json().catch(() => []);
+              const saved = (Array.isArray(rows) && rows[0]) ? rows[0] : Object.assign({ id: 'tmp' + Date.now() }, body);
+              setExpenses(prev => [saved, ...prev]);
+            } else {
+              console.error('Add expense failed:', res.status, await res.text().catch(() => ''));
+            }
+          } catch (e) { console.error('Add expense failed:', e); }
+        };
+        const removeExpense = async (id) => {
+          if (!agentProfile || viewingOther) return;
+          const prev = expenses;
+          setExpenses(prev.filter(e => e.id !== id)); // optimistic
+          try {
+            const res = await fetch(SUPABASE_URL + '/rest/v1/expenses?id=eq.' + encodeURIComponent(id), {
+              method: 'DELETE', headers: HDRS_WRITE,
+            });
+            if (!res.ok) { console.error('Delete expense failed:', res.status); setExpenses(prev); }
+          } catch (e) { console.error('Delete expense failed:', e); setExpenses(prev); }
+        };
 
         const saveGoal = async (newGoal) => {
           if (!agentProfile) return;
@@ -27593,27 +28135,19 @@
         // Denominator: number of calendar days from lastMonthStart through today
         const totalHeatDays = Math.max(1, Math.floor((today - lastMonthStart) / 86400000) + 1);
         const dateStr = today.toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric', year:'numeric' });
+        const tkFirstName = (agentProfile.agent_name || '').trim().split(/\s+/)[0] || 'there';
+        const tkGreeting = (today.getHours() < 12 ? 'Morning' : today.getHours() < 18 ? 'Afternoon' : 'Evening') + ', ' + tkFirstName;
 
         return (
           <div>
-            <header className="tk-hdr">
-              <div className="tk-hdr-l">
-                <div className="tk-hdr-brand">
-                  <div className="tk-hdr-title">Kairos Financial</div>
-                  <span className="tk-hdr-sub">· My Tracker</span>
-                </div>
-                <div className="tk-hdr-sub" style={{marginTop:6}}>
-                  {agentProfile.agent_name} · Life &amp; Final Expense Division
-                </div>
-              </div>
-              <div className="tk-hdr-r">
-                <div className="tk-hdr-time"><b>{dateStr}</b> · Day {dayOfYear} / 365</div>
-                <button className="tk-theme-toggle" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} aria-label="Toggle theme">
-                  {theme === 'dark'
-                    ? <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
-                    : <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>}
-                </button>
-              </div>
+            <header className="tk-hdr" style={{position:'relative', flexDirection:'column', alignItems:'center', gap:4, textAlign:'center'}}>
+              <div style={{fontFamily:"'Fraunces', Georgia, serif", fontSize:'clamp(24px,3.2vw,38px)', fontWeight:500, letterSpacing:'-.01em', color:'var(--tk-ink-1)'}}>{tkGreeting}</div>
+              <div className="tk-hdr-time"><b>{dateStr}</b> · Day {dayOfYear} / 365</div>
+              <button className="tk-theme-toggle" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} aria-label="Toggle theme" style={{position:'absolute', right:0, top:0}}>
+                {theme === 'dark'
+                  ? <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+                  : <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>}
+              </button>
             </header>
 
             <div className="tk-filter-bar">
@@ -27646,30 +28180,47 @@
                   </select>
                 )}
               </div>
-              <div className="tk-hdr-sub">Last sync · {today.toLocaleTimeString('en-US', {hour:'numeric', minute:'2-digit'})}</div>
+              <div style={{display:'flex', alignItems:'center', gap:10, flexWrap:'wrap'}}>
+                <span className="tk-hdr-sub" style={{textTransform:'uppercase', letterSpacing:'0.06em'}}>Timeframe</span>
+                <div className="tk-tf-segment">
+                  {[['WTD','WTD'],['MTD','MTD'],['YTD','YTD'],['LW','Last Wk'],['LM','Last Mo'],['ALL','All Time'],['CUSTOM','Custom']].map(([key, lbl]) => (
+                    <button key={key} className={tf === key ? 'on' : ''} onClick={() => setTf(key)}>{lbl}</button>
+                  ))}
+                </div>
+              </div>
             </div>
+
+            {tf === 'CUSTOM' && (
+              <div className="tk-filter-bar" style={{paddingTop:0, marginTop:-4}}>
+                <div style={{display:'flex', alignItems:'center', gap:10, flexWrap:'wrap'}}>
+                  <span style={{fontFamily:'var(--tk-mono)', fontSize:10, color:'var(--tk-ink-3)', textTransform:'uppercase', letterSpacing:'0.06em'}}>From</span>
+                  <input type="date" value={customFrom} onChange={e => setCustomFrom(e.target.value)} style={{appearance:'none', background:'var(--tk-surface)', color:'var(--tk-ink-1)', border:'1px solid var(--tk-hairline-strong)', borderRadius:8, padding:'6px 10px', fontFamily:'var(--tk-mono)', fontSize:12, outline:'none'}} />
+                  <span style={{fontFamily:'var(--tk-mono)', fontSize:10, color:'var(--tk-ink-3)', textTransform:'uppercase', letterSpacing:'0.06em'}}>To</span>
+                  <input type="date" value={customTo} onChange={e => setCustomTo(e.target.value)} style={{appearance:'none', background:'var(--tk-surface)', color:'var(--tk-ink-1)', border:'1px solid var(--tk-hairline-strong)', borderRadius:8, padding:'6px 10px', fontFamily:'var(--tk-mono)', fontSize:12, outline:'none'}} />
+                  {(customFrom || customTo) && (
+                    <button type="button" onClick={() => { setCustomFrom(''); setCustomTo(''); }} style={{appearance:'none', border:'1px solid var(--tk-hairline-strong)', background:'transparent', color:'var(--tk-ink-2)', borderRadius:8, padding:'6px 10px', fontFamily:'var(--tk-mono)', fontSize:11, cursor:'pointer'}}>Clear</button>
+                  )}
+                </div>
+              </div>
+            )}
 
             <div className="tk-grid tk-grid-12">
               {/* Annual Premium Goal hero */}
               <div className="tk-card tk-ap-hero" style={{gridColumn:'span 12', order:0}}>
                 <div className="tk-card-hd tk-card-hd-center" style={{marginBottom:8}}>
                   <div className="tk-card-title tk-card-title-lg">Goal Tracker</div>
-                  <div style={{display:'flex', alignItems:'center', gap:12}}>
-                    <div className="tk-card-meta" style={{display:'flex', alignItems:'center', gap:6}}>
-                      <span className="tk-dot" style={{background: chartMode === 'mtd' ? monthlyPaceColor : paceColor}}></span>
-                      {chartMode === 'mtd'
-                        ? (monthlyPace >= -2 ? 'On pace' : monthlyPace >= -8 ? 'Slightly behind' : 'Behind')
-                        : (pace >= -2 ? 'On pace' : pace >= -8 ? 'Slightly behind' : 'Behind')}
-                    </div>
-                    {!viewingOther && (
+                  {!viewingOther && (
+                    <div style={{display:'flex', alignItems:'center', gap:10, flexWrap:'wrap'}}>
                       <button className="tk-action-btn green" onClick={() => setShowDealModal(true)}>
                         <span className="tk-plus">+</span> Submit Deal
                       </button>
-                    )}
-                  </div>
+                      <button className="tk-action-btn blue" onClick={() => setShowKpiModal(true)}>
+                        <span className="tk-plus">+</span> Submit KPI
+                      </button>
+                    </div>
+                  )}
                 </div>
-                <div style={{display:'flex', flexDirection:'column', gap:4, marginBottom:8}}>
-                  <div className="tk-card-title">{chartMode === 'mtd' ? 'Monthly Premium' : 'Annual Premium'}</div>
+                <div style={{display:'flex', flexDirection:'column', gap:4, marginBottom:8, alignItems:'center', textAlign:'center'}}>
                   {chartMode === 'mtd' ? (
                     <>
                       <div className="tk-ap-num">
@@ -27773,11 +28324,6 @@
                 {chartMode === 'mtd'
                   ? <MtdLineChart policies={policies} goal={monthlyGoal} color={monthlyPaceColor} />
                   : <GoalLineChart monthlyValues={monthlyPremium} currentMonthIdx={today.getMonth()} goal={goal} color={paceColor} />}
-                <div style={{marginTop:14, paddingTop:14, borderTop:'1px solid var(--tk-hairline)', display:'flex', alignItems:'center', gap:22, flexWrap:'wrap', fontFamily:'var(--tk-mono)', fontSize:11, color:'var(--tk-ink-3)'}}>
-                  <span><span style={{display:'inline-block', width:18, height:2, background:(chartMode === 'mtd' ? monthlyPaceColor : paceColor), marginRight:6, verticalAlign:'middle', borderRadius:1}}></span>Cumulative actual</span>
-                  <span><span style={{display:'inline-block', width:18, height:2, background:'repeating-linear-gradient(to right, var(--rb-blue) 0 5px, transparent 5px 10px)', marginRight:6, verticalAlign:'middle'}}></span>{chartMode === 'mtd' ? 'Projected to month-end' : 'Projected to year-end'}</span>
-                  {((chartMode === 'mtd' ? monthlyGoal : goal) > 0) && <span><span style={{display:'inline-block', width:18, height:2, background:'repeating-linear-gradient(to right, var(--tk-ink-2) 0 4px, transparent 4px 9px)', marginRight:6, verticalAlign:'middle'}}></span>{chartMode === 'mtd' ? 'Monthly goal' : 'Annual goal'}</span>}
-                </div>
               </div>
 
               {/* Daily Activity Heatmap */}
@@ -27786,7 +28332,7 @@
                 const heatLeftDate = new Date(heatRightDate.getFullYear(), heatRightDate.getMonth() - 1, 1);
                 const onHeatDay = (date, row) => { setKpiInitial({ date, dials: row?.dials, answers: row?.answers, appointments: row?.appointments, presentations: row?.presentations, deals: row?.deals, lead_spend: row?.lead_spend, deposits: row?.deposits }); setShowKpiModal(true); };
                 return (
-              <div className="tk-card" style={{gridColumn:'span 12', order:1}}>
+              <div className="tk-card" style={{gridColumn:'span 12', order:3}}>
                 <div className="tk-card-hd tk-card-hd-center">
                   <div className="tk-card-title tk-card-title-lg">Activity Tracker</div>
                   <div style={{display:'flex', alignItems:'center', gap:16, flexWrap:'wrap', justifyContent:'center'}}>
@@ -27806,11 +28352,6 @@
                       </div>
                       <span style={{fontFamily:'var(--tk-mono)', fontSize:10, color:'var(--tk-ink-4)', textTransform:'uppercase', letterSpacing:'0.06em'}}>More</span>
                     </div>
-                    {!viewingOther && (
-                      <button className="tk-action-btn blue" onClick={() => setShowKpiModal(true)}>
-                        <span className="tk-plus">+</span> Submit KPI
-                      </button>
-                    )}
                   </div>
                 </div>
                 <div style={{display:'flex', gap:28, alignItems:'stretch', flexWrap:'wrap'}}>
@@ -27831,40 +28372,33 @@
                           </div>
                         ))}
                       </div>
+                      <div style={{marginTop:13, paddingTop:13, borderTop:'1px solid var(--tk-hairline)', display:'flex', flexDirection:'column', gap:10}}>
+                        <div style={{display:'flex', alignItems:'baseline', justifyContent:'space-between', gap:8}}>
+                          <span style={{fontSize:12, color:'var(--tk-ink-2)'}}>Active days</span>
+                          <span style={{display:'flex', alignItems:'baseline', gap:6}}>
+                            <b style={{fontFamily:'var(--tk-mono)', fontVariantNumeric:'tabular-nums', fontSize:14, color:'var(--tk-ink-1)'}}>{activeDays} / {totalHeatDays}</b>
+                            <span style={{fontFamily:'var(--tk-mono)', fontSize:9, color:'var(--tk-ink-3)', textTransform:'uppercase', letterSpacing:'0.06em'}}>{(activeDays/totalHeatDays*100).toFixed(0)}%</span>
+                          </span>
+                        </div>
+                        <div style={{display:'flex', alignItems:'baseline', justifyContent:'space-between', gap:8}}>
+                          <span style={{fontSize:12, color:'var(--tk-ink-2)'}}>Total sales</span>
+                          <span style={{display:'flex', alignItems:'baseline', gap:6}}>
+                            <b style={{fontFamily:'var(--tk-mono)', fontVariantNumeric:'tabular-nums', fontSize:14, color:'var(--tk-pos)'}}>{heatSales}</b>
+                            <span style={{fontFamily:'var(--tk-mono)', fontSize:9, color:'var(--tk-ink-3)', textTransform:'uppercase', letterSpacing:'0.06em'}}>2 mo</span>
+                          </span>
+                        </div>
+                      </div>
                     </div>
-                    <div className="tk-stat"><div className="tk-kpi-lbl">Active Days</div><div className="v">{activeDays} / {totalHeatDays}</div><div className="tk-kpi-sub">{(activeDays/totalHeatDays*100).toFixed(0)}% activity rate</div></div>
-                    <div className="tk-stat"><div className="tk-kpi-lbl">Total Sales</div><div className="v pos">{heatSales}</div><div className="tk-kpi-sub">across 2 months</div></div>
                   </div>
                 </div>
               </div>
                 );
               })()}
 
-              {/* Deal Status pipeline */}
-              <div className="tk-card" style={{gridColumn:'span 6', order:3}}>
+              <div className="tk-card" style={{gridColumn:'span 12', order:2}}>
                 <div className="tk-card-hd tk-card-hd-center">
-                  <div className="tk-card-title tk-card-title-lg">Deal Status</div>
-                </div>
-                {statusItems.map(s => (
-                  <div key={s.label} className="tk-hbar-item">
-                    <div className="tk-hbar-row">
-                      <div className="lbl">
-                        <span className="tk-dot" style={{background: s.color}}></span>{s.label}
-                        <span className="count">· {s.count}</span>
-                      </div>
-                      <div className="val">{fmtCurrency(s.premium, {compact:true})}</div>
-                    </div>
-                    <div className="tk-hbar-track">
-                      <div className="tk-hbar-fill" style={{width: (s.premium / maxStatusAP * 100) + '%', background: s.color}}></div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Top Carriers YTD — sits next to Deal Status, same width */}
-              <div className="tk-card" style={{gridColumn:'span 6', order:4}}>
-                <div className="tk-card-hd tk-card-hd-center">
-                  <div className="tk-card-title tk-card-title-lg">Top Carriers</div>
+                  <div className="tk-card-title tk-card-title-lg">Carrier Mix</div>
+                  <div className="tk-hdr-sub" style={{fontFamily:'var(--tk-mono)', fontSize:11, textTransform:'uppercase', letterSpacing:'0.06em'}}>YTD · by premium</div>
                 </div>
                 {carriers.length === 0 ? (
                   <div style={{padding:'24px 0', color:'var(--tk-ink-3)', fontFamily:'var(--tk-mono)', fontSize:11}}>No policies written yet this year.</div>
@@ -27886,40 +28420,35 @@
                 })}
               </div>
 
-              {/* KPI Tracker */}
-              <div className="tk-card" style={{gridColumn:'span 12', padding:0, order:2}}>
-                <div className="tk-card-hd tk-card-hd-center" style={{padding:'18px 22px 14px', borderBottom: tf === 'CUSTOM' ? '0' : '1px solid var(--tk-hairline)'}}>
-                  <div className="tk-card-title tk-card-title-lg">KPI Tracker</div>
-                  <div className="tk-tf-segment">
-                    {[['WTD','WTD'],['MTD','MTD'],['YTD','YTD'],['LW','Last Wk'],['LM','Last Mo'],['ALL','All Time'],['CUSTOM','Custom']].map(([key, lbl]) => (
-                      <button key={key} className={tf === key ? 'on' : ''} onClick={() => setTf(key)}>{lbl}</button>
-                    ))}
+              <div style={{gridColumn:'span 12', order:1}}>
+                <ProfitabilitySection
+                  theme={theme}
+                  kpis={kpis}
+                  policies={policies}
+                  expenses={expenses}
+                  agentName={agentProfile.agent_name}
+                  readOnly={viewingOther}
+                  onAddExpense={addExpense}
+                  onDeleteExpense={removeExpense}
+                  tf={tf}
+                  customFrom={customFrom}
+                  customTo={customTo}
+                />
+              </div>
+
+              {/* Detailed KPIs — collapsible, driven by the top timeframe */}
+              <div className="tk-card" style={{gridColumn:'span 12', padding:0, order:4}}>
+                <button type="button" onClick={() => setShowDetailedKpis(s => !s)} aria-expanded={showDetailedKpis}
+                  style={{appearance:'none', width:'100%', display:'flex', alignItems:'center', justifyContent:'space-between', gap:12, padding:'18px 22px', background:'transparent', border:'none', cursor:'pointer', color:'var(--tk-ink-1)', borderBottom: showDetailedKpis ? '1px solid var(--tk-hairline)' : 'none'}}>
+                  <div className="tk-card-title tk-card-title-lg" style={{margin:0}}>Detailed KPIs</div>
+                  <div style={{display:'flex', alignItems:'center', gap:10}}>
+                    <span className="tk-hdr-sub" style={{fontFamily:'var(--tk-mono)', fontSize:11, textTransform:'uppercase', letterSpacing:'0.06em'}}>{tfLabel}</span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{transform: showDetailedKpis ? 'rotate(180deg)' : 'none', transition:'transform 180ms ease'}}><path d="M6 9l6 6 6-6"/></svg>
                   </div>
-                </div>
-                {tf === 'CUSTOM' && (
-                  <div style={{padding:'10px 22px 14px', borderBottom:'1px solid var(--tk-hairline)', display:'flex', alignItems:'center', gap:10, flexWrap:'wrap'}}>
-                    <span style={{fontFamily:'var(--tk-mono)', fontSize:10, color:'var(--tk-ink-3)', textTransform:'uppercase', letterSpacing:'0.06em'}}>From</span>
-                    <input type="date" value={customFrom} onChange={e => setCustomFrom(e.target.value)} style={{appearance:'none', background:'var(--tk-surface)', color:'var(--tk-ink-1)', border:'1px solid var(--tk-hairline-strong)', borderRadius:8, padding:'6px 10px', fontFamily:'var(--tk-mono)', fontSize:12, outline:'none'}} />
-                    <span style={{fontFamily:'var(--tk-mono)', fontSize:10, color:'var(--tk-ink-3)', textTransform:'uppercase', letterSpacing:'0.06em'}}>To</span>
-                    <input type="date" value={customTo} onChange={e => setCustomTo(e.target.value)} style={{appearance:'none', background:'var(--tk-surface)', color:'var(--tk-ink-1)', border:'1px solid var(--tk-hairline-strong)', borderRadius:8, padding:'6px 10px', fontFamily:'var(--tk-mono)', fontSize:12, outline:'none'}} />
-                    {(customFrom || customTo) && (
-                      <button type="button" onClick={() => { setCustomFrom(''); setCustomTo(''); }} style={{appearance:'none', border:'1px solid var(--tk-hairline-strong)', background:'transparent', color:'var(--tk-ink-2)', borderRadius:8, padding:'6px 10px', fontFamily:'var(--tk-mono)', fontSize:11, cursor:'pointer'}}>Clear</button>
-                    )}
-                  </div>
-                )}
-                <div className="tk-kpi-grid" style={{gridTemplateColumns:'repeat(5, 1fr)', borderRadius:0, border:'none'}}>
-                  <div className="tk-kpi-cell"><div className="tk-kpi-lbl"><span className="swatch" style={{background:'var(--rb-green)'}}></span>Calls</div><div className="tk-kpi-val">{fmtNum(k.dials)}</div><div className="tk-kpi-sub">inbound + outbound</div></div>
-                  <div className="tk-kpi-cell"><div className="tk-kpi-lbl"><span className="swatch" style={{background:'var(--rb-yellow)'}}></span>Answers</div><div className="tk-kpi-val">{fmtNum(k.answers)}</div><div className="tk-kpi-sub"><b>{k.dials > 0 ? (k.answers / k.dials * 100).toFixed(1) : '0.0'}%</b> answer rate</div></div>
-                  <div className="tk-kpi-cell"><div className="tk-kpi-lbl"><span className="swatch" style={{background:'var(--rb-orange)'}}></span>Appointments</div><div className="tk-kpi-val">{fmtNum(k.appointments)}</div><div className="tk-kpi-sub"><b>{k.answers > 0 ? (k.appointments / k.answers * 100).toFixed(1) : '0.0'}%</b> set rate</div></div>
-                  <div className="tk-kpi-cell"><div className="tk-kpi-lbl"><span className="swatch" style={{background:'var(--rb-red)'}}></span>Presentations</div><div className="tk-kpi-val">{fmtNum(k.presentations)}</div><div className="tk-kpi-sub"><b>{k.appointments > 0 ? (k.presentations / k.appointments * 100).toFixed(1) : '0.0'}%</b> show rate</div></div>
-                  <div className="tk-kpi-cell"><div className="tk-kpi-lbl"><span className="swatch" style={{background:'var(--rb-purple)'}}></span>Deals</div><div className="tk-kpi-val">{fmtNum(tfDeals)}</div><div className="tk-kpi-sub">closed business</div></div>
-                  <div className="tk-kpi-cell"><div className="tk-kpi-lbl"><span className="swatch" style={{background:'var(--rb-blue)'}}></span>Lead Spend</div><div className="tk-kpi-val">{fmtCurrency(k.leadSpend, {compact:true})}</div><div className="tk-kpi-sub">{tfDeals > 0 ? fmtCurrency(k.leadSpend / tfDeals) : '$0'} <span style={{color:'var(--tk-ink-3)'}}>/ deal</span></div></div>
-                  <div className="tk-kpi-cell"><div className="tk-kpi-lbl"><span className="swatch" style={{background:'var(--rb-green)'}}></span>Deposits</div><div className="tk-kpi-val">{fmtCurrency(k.deposits, {compact:true})}</div><div className="tk-kpi-sub">premium collected</div></div>
-                  <div className="tk-kpi-cell"><div className="tk-kpi-lbl"><span className="swatch" style={{background:'var(--rb-blue)'}}></span>Avg Premium</div><div className="tk-kpi-val">{fmtCurrency(avgPremium, {compact:true})}</div><div className="tk-kpi-sub">per closed deal</div></div>
-                  <div className="tk-kpi-cell"><div className="tk-kpi-lbl"><span className="swatch" style={{background:'var(--rb-purple)'}}></span>Conversion</div><div className="tk-kpi-val">{conversion.toFixed(2)}%</div><div className="tk-kpi-sub">{tfDeals > 0 ? Math.round(k.dials / tfDeals) : 0} <span style={{color:'var(--tk-ink-3)'}}>dials → 1 deal</span></div></div>
-                  <div className="tk-kpi-cell"><div className="tk-kpi-lbl"><span className="swatch" style={{background:'var(--rb-orange)'}}></span>ROI</div><div className="tk-kpi-val" style={{color: roi >= 0 ? 'var(--tk-pos)' : 'var(--tk-neg)'}}>{roi >= 0 ? '+' : ''}{roi.toFixed(0)}%</div><div className="tk-kpi-sub">(deposits − spend) / spend</div></div>
-                </div>
-                {/* Daily Breakdown — connected to the KPI Tracker card above */}
+                </button>
+                {showDetailedKpis && (
+                  <>
+                {/* Daily Breakdown */}
                 {(() => {
                   // Effective range: clamp to today's end-of-day. For ALL,
                   // anchor the start at the earliest KPI/policy date so we
@@ -28110,6 +28639,8 @@
                     </div>
                   );
                 })()}
+                  </>
+                )}
               </div>
             </div>
 
