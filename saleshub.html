@@ -8360,10 +8360,12 @@
       border-radius: var(--tk-radius);
       overflow: auto;
       max-height: 620px;
+      width: fit-content;
+      max-width: 100%;
       background: var(--tk-bg);
     }
     #panel-goals .tk-daily-table {
-      width: 100%;
+      width: auto;
       border-collapse: collapse;
       font-family: var(--tk-mono);
       font-variant-numeric: tabular-nums;
@@ -8378,16 +8380,16 @@
       letter-spacing: 0.06em;
       text-transform: uppercase;
       text-align: left;
-      padding: 10px 14px;
+      padding: 10px 6px;
       border-bottom: 1px solid var(--tk-hairline);
       white-space: nowrap;
     }
     #panel-goals .tk-daily-table thead th.num { text-align: right; }
     #panel-goals .tk-daily-table tbody td {
-      padding: 10px 14px;
+      padding: 10px 6px;
       border-bottom: 1px solid var(--tk-hairline);
       color: var(--tk-ink-1);
-      font-size: 12px;
+      font-size: 11px;
       white-space: nowrap;
     }
     #panel-goals .tk-daily-table tbody td.dt-date { color: var(--tk-ink-1); font-family: var(--tk-sans); font-weight: 500; }
@@ -26746,7 +26748,7 @@
                   <div className="tk-mod-field"><label>Calls</label><input className="tk-mod-input mono" type="number" min="0" value={dials} onChange={e => setDials(e.target.value)} placeholder="0" /><span className="tk-mod-hint">Answers &amp; calls are the same for inbounds</span></div>
                   <div className="tk-mod-field"><label>Answers</label><input className="tk-mod-input mono" type="number" min="0" value={answers} onChange={e => setAnswers(e.target.value)} placeholder="0" /><span className="tk-mod-hint">Answers &amp; calls are the same for inbounds</span></div>
                   <div className="tk-mod-field"><label>Appointments Booked</label><input className="tk-mod-input mono" type="number" min="0" value={appointments} onChange={e => setAppointments(e.target.value)} placeholder="0" /></div>
-                  <div className="tk-mod-field"><label>Pres. / Billable Calls</label><input className="tk-mod-input mono" type="number" min="0" value={presentations} onChange={e => setPresentations(e.target.value)} placeholder="0" /></div>
+                  <div className="tk-mod-field"><label>Presentations / Billable Calls</label><input className="tk-mod-input mono" type="number" min="0" value={presentations} onChange={e => setPresentations(e.target.value)} placeholder="0" /></div>
                 </div>
                 <div className="tk-mod-grid cols-2">
                   <div className="tk-mod-field"><label>Lead spend</label><input className="tk-mod-input mono" type="number" min="0" step="0.01" value={leadSpend} onChange={e => setLeadSpend(e.target.value)} placeholder="0.00" /></div>
@@ -27348,7 +27350,9 @@
           const avgComm = commVals.length ? commVals.reduce((a,b)=>a+b,0)/commVals.length : 0;
           const oneOff = expenses.filter(e => inR(e.expense_date, r));
           const oneOffTotal = oneOff.reduce((s,e)=>s+parseFloat(e.amount||0),0);
-          return { dials, pres, deposits, leadSpend, deals, pSub, pRem, apSub, apIss, avgComm, oneOff, oneOffTotal,
+          // Marketing expenses count as ad spend alongside lead spend for ROAS.
+          const marketingSpend = oneOff.filter(e => e.category === 'Marketing').reduce((s,e)=>s+parseFloat(e.amount||0),0);
+          return { dials, pres, deposits, leadSpend, deals, pSub, pRem, apSub, apIss, avgComm, oneOff, oneOffTotal, marketingSpend,
                    closeRatio: pres > 0 ? deals/pres : 0, dts: dials > 0 ? deals/dials : 0 };
         };
         const cur = metricsFor(sel.range);
@@ -27356,7 +27360,9 @@
 
         const totalExpenses = cur.leadSpend + cur.oneOffTotal;
         const net = cur.deposits - totalExpenses;
-        const roas = cur.leadSpend > 0 ? cur.deposits / cur.leadSpend : 0;
+        // Ad spend = lead spend + marketing expenses; both drive return on ad spend.
+        const adSpend = cur.leadSpend + cur.marketingSpend;
+        const roas = adSpend > 0 ? cur.deposits / adSpend : 0;
         const pipelineTotal = cur.pSub + cur.pRem;
         const prevPipeline = prev ? (prev.pSub + prev.pRem) : 0;
         const div = bizDays(sel.range);
@@ -27377,7 +27383,7 @@
         const tDep = tick(cur.deposits, prev ? prev.deposits : 0);
         const tExp = tick(totalExpenses, prevExpenses);
         const tNet = tick(net, prev ? (prev.deposits - prevExpenses) : 0);
-        const tRoas = tick(roas, prev ? (prev.leadSpend > 0 ? prev.deposits / prev.leadSpend : 0) : 0);
+        const tRoas = tick(roas, prev ? ((prev.leadSpend + prev.marketingSpend) > 0 ? prev.deposits / (prev.leadSpend + prev.marketingSpend) : 0) : 0);
 
         // ── P&L series — STATIC: Jan → current month of this year, monthly.
         // Intentionally NOT driven by the timeframe selector; it's a fixed
@@ -27577,8 +27583,8 @@
               </div>
               <div style={tintCard(T.pos, 10)}>
                 <div style={{ ...finCardLbl, display:'flex', alignItems:'center', justifyContent:'center', gap:6, flexWrap:'wrap' }}>Return on ad spend <span style={tickStyle(tRoas.up)}>{tRoas.text}</span></div>
-                <div style={finCardVal(T.pos)}>{cur.leadSpend>0 ? roas.toFixed(1)+'×' : '—'}</div>
-                <div style={finCardSub}>deposited &divide; lead spend</div>
+                <div style={finCardVal(T.pos)}>{adSpend>0 ? roas.toFixed(1)+'×' : '—'}</div>
+                <div style={finCardSub}>deposited &divide; lead spend + marketing</div>
               </div>
             </div>
 
@@ -27664,7 +27670,7 @@
                         <span style={{ display:'inline-block', fontFamily:MONO, fontSize:9, letterSpacing:'.05em', textTransform:'uppercase', padding:'3px 7px', borderRadius:5, background:'color-mix(in oklch, '+(HUE[e.category]||T.gray)+' 16%, transparent)', color:HUE[e.category]||T.gray, whiteSpace:'nowrap', flexShrink:0 }}>{e.category}</span>
                         <span style={{ flex:1, minWidth:0, fontSize:13, color:T.ink1, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{e.note}</span>
                         <span style={{ fontFamily:MONO, fontSize:13, color:T.neg, fontVariantNumeric:'tabular-nums' }}>&minus;{usd0(parseFloat(e.amount||0))}</span>
-                        {!readOnly && <button onClick={() => onDeleteExpense(e.id)} style={{ border:'none', background:'transparent', color:T.ink4, cursor:'pointer', fontSize:16, lineHeight:1, padding:'2px 5px', borderRadius:5 }} aria-label="Remove expense">&times;</button>}
+                        {!readOnly && <button onClick={() => { if (window.confirm('Delete this expense?\n\n' + (e.note || e.category) + '  −' + usd0(parseFloat(e.amount||0)))) onDeleteExpense(e.id); }} style={{ border:'none', background:'transparent', color:T.ink4, cursor:'pointer', fontSize:16, lineHeight:1, padding:'2px 5px', borderRadius:5 }} aria-label="Remove expense">&times;</button>}
                       </div>
                     ))}
                   </div>
@@ -28093,6 +28099,18 @@
         const k = sumK(tfKpis);
         const tfPolAP = sumPolAP(tfRange[0], tfRange[1]);
         const tfDeals = policies.filter(p => { const d = policyDate(p); return d && (tfRange[1] ? (d >= tfRange[0] && d <= tfRange[1]) : d >= tfRange[0]); }).length;
+        // Carrier Mix — filtered by the selected timeframe (not hardcoded YTD).
+        const tfCarrierMap = {};
+        policies.forEach(p => {
+          if (!p.carrier) return;
+          const d = policyDate(p);
+          if (!d) return;
+          if (tfRange[1] ? (d >= tfRange[0] && d <= tfRange[1]) : d >= tfRange[0]) {
+            tfCarrierMap[p.carrier] = (tfCarrierMap[p.carrier] || 0) + parseFloat(p.annual_premium || 0);
+          }
+        });
+        const tfCarriers = Object.entries(tfCarrierMap).map(([name, ap]) => ({ name, ap })).sort((a, b) => b.ap - a.ap);
+        const tfTotalCarrierAP = tfCarriers.reduce((s, c) => s + c.ap, 0);
         const conversion = k.dials > 0 ? (tfDeals / k.dials) * 100 : 0;
         const roi = k.leadSpend > 0 ? ((k.deposits - k.leadSpend) / k.leadSpend) * 100 : 0;
         const avgPremium = tfDeals > 0 ? tfPolAP / tfDeals : 0;
@@ -28398,13 +28416,13 @@
               <div className="tk-card" style={{gridColumn:'span 12', order:2}}>
                 <div className="tk-card-hd tk-card-hd-center">
                   <div className="tk-card-title tk-card-title-lg">Carrier Mix</div>
-                  <div className="tk-hdr-sub" style={{fontFamily:'var(--tk-mono)', fontSize:11, textTransform:'uppercase', letterSpacing:'0.06em'}}>YTD · by premium</div>
+                  <div className="tk-hdr-sub" style={{fontFamily:'var(--tk-mono)', fontSize:11, textTransform:'uppercase', letterSpacing:'0.06em'}}>{tfLabel} · by premium</div>
                 </div>
-                {carriers.length === 0 ? (
-                  <div style={{padding:'24px 0', color:'var(--tk-ink-3)', fontFamily:'var(--tk-mono)', fontSize:11}}>No policies written yet this year.</div>
-                ) : carriers.map(c => {
+                {tfCarriers.length === 0 ? (
+                  <div style={{padding:'24px 0', color:'var(--tk-ink-3)', fontFamily:'var(--tk-mono)', fontSize:11}}>No policies in this timeframe.</div>
+                ) : tfCarriers.map(c => {
                   const color = carrierColorByName(c.name);
-                  const pct = totalCarrierAP > 0 ? (c.ap / totalCarrierAP * 100) : 0;
+                  const pct = tfTotalCarrierAP > 0 ? (c.ap / tfTotalCarrierAP * 100) : 0;
                   return (
                     <div key={c.name} className="tk-carrier-item">
                       <div className="tk-carrier-row">
