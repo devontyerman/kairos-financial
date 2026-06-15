@@ -8378,16 +8378,17 @@
       letter-spacing: 0.06em;
       text-transform: uppercase;
       text-align: left;
-      padding: 10px 6px;
+      padding: 10px 14px;
       border-bottom: 1px solid var(--tk-hairline);
       white-space: nowrap;
     }
     #panel-goals .tk-daily-table thead th.num { text-align: right; }
-    /* Trailing filler column absorbs leftover width so the real columns stay
-       tight together (no gaps) while the table still fills the box edge-to-edge. */
-    #panel-goals .tk-daily-table .dt-fill { width: 100%; padding: 0; }
+    /* Trailing filler column is collapsed to zero so the table's leftover width
+       is distributed across the real columns instead — they spread out evenly
+       to fill the box edge-to-edge rather than clustering on the left. */
+    #panel-goals .tk-daily-table .dt-fill { width: 0; padding: 0; border: 0; }
     #panel-goals .tk-daily-table tbody td {
-      padding: 10px 6px;
+      padding: 10px 14px;
       border-bottom: 1px solid var(--tk-hairline);
       color: var(--tk-ink-1);
       font-size: 11px;
