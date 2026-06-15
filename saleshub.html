@@ -8360,12 +8360,10 @@
       border-radius: var(--tk-radius);
       overflow: auto;
       max-height: 620px;
-      width: fit-content;
-      max-width: 100%;
       background: var(--tk-bg);
     }
     #panel-goals .tk-daily-table {
-      width: auto;
+      width: 100%;
       border-collapse: collapse;
       font-family: var(--tk-mono);
       font-variant-numeric: tabular-nums;
@@ -8385,6 +8383,9 @@
       white-space: nowrap;
     }
     #panel-goals .tk-daily-table thead th.num { text-align: right; }
+    /* Trailing filler column absorbs leftover width so the real columns stay
+       tight together (no gaps) while the table still fills the box edge-to-edge. */
+    #panel-goals .tk-daily-table .dt-fill { width: 100%; padding: 0; }
     #panel-goals .tk-daily-table tbody td {
       padding: 10px 6px;
       border-bottom: 1px solid var(--tk-hairline);
@@ -8481,6 +8482,7 @@
       #panel-goals.active .tk-daily-table tr,
       #panel-goals.active .tk-daily-table td { display: block; width: 100%; }
       #panel-goals.active .tk-daily-table thead { display: none; }
+      #panel-goals.active .tk-daily-table .dt-fill { display: none; }
       /* Day card */
       #panel-goals.active .tk-daily-table tbody tr {
         display: grid;
@@ -13445,108 +13447,7 @@
 
         <div class="ss-panel-head">
           <h2>Commission Desk</h2>
-          <p class="ss-panel-sub">Track paid and pending commission, model your monthly target, and project income.</p>
-        </div>
-
-        <!-- ═══ COMMISSION PIPELINE — section + two stat cards ═══ -->
-        <div class="cd-section-head">
-          <div>
-            <div class="cd-eyebrow">Commission Pipeline</div>
-            <h2 class="cd-section-title">Where you stand right now</h2>
-          </div>
-          <span class="cd-section-sub" id="pipelineEmpty" style="display:none;">Sign in to view your commission pipeline.</span>
-        </div>
-
-        <div class="cd-pipeline-range" id="pipelineRangeBtns">
-          <button class="cd-pipeline-range-btn ss-pipeline-range-btn" data-pipeline-range="mtd">MTD</button>
-          <button class="cd-pipeline-range-btn ss-pipeline-range-btn" data-pipeline-range="lastmonth">Last Month</button>
-          <button class="cd-pipeline-range-btn ss-pipeline-range-btn active" data-pipeline-range="ytd">YTD</button>
-        </div>
-
-        <div class="cd-ytd-grid" id="commissionPipeline">
-          <div class="cd-stat">
-            <svg class="cd-spark" viewBox="0 0 64 28" preserveAspectRatio="none">
-              <path d="M0,22 L8,18 L16,20 L24,14 L32,16 L40,8 L48,10 L56,4 L64,6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-            </svg>
-            <div class="cd-stat-label"><span class="cd-dot paid"></span> Total Paid</div>
-            <div class="cd-stat-value" id="pipelinePaid">$0</div>
-            <div class="cd-stat-meta">
-              <span id="pipelinePaidSub">Sum of deposits entered</span>
-            </div>
-          </div>
-          <div class="cd-stat">
-            <svg class="cd-spark cd-spark-warn" viewBox="0 0 64 28" preserveAspectRatio="none">
-              <path d="M0,18 L8,20 L16,16 L24,18 L32,12 L40,14 L48,8 L56,10 L64,6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-            </svg>
-            <div class="cd-stat-label"><span class="cd-dot pending"></span> Pending Commission</div>
-            <div class="cd-stat-value" id="pipelinePending">$0</div>
-            <div class="cd-stat-meta">
-              <span id="pipelinePendingSub">Unpaid commission owed</span>
-              <button id="pipelineDetailsBtn" class="cd-details-btn ss-pipeline-btn">See details
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <div class="cd-pipeline-note">
-          <strong>Note:</strong> This is a rough estimate; your actual payout may vary based on age, term, chargebacks, persistency, and other factors.
-        </div>
-
-        <!-- ═══ COMMISSION PIPELINE DETAILS — inline drawer ═══ -->
-        <div class="cd-pd-drawer" id="pipelineDetails">
-          <div class="cd-pd-drawer-inner">
-            <div class="cd-pd-drawer-head">
-              <h3>Pending policies · awaiting issue or pay</h3>
-              <div class="ss-pd-filters cd-pd-filters" role="tablist" aria-label="Date range">
-                <button class="ss-pd-filter active" data-pd-range="mtd">MTD</button>
-                <button class="ss-pd-filter" data-pd-range="lastmonth">Last Month</button>
-                <button class="ss-pd-filter" data-pd-range="ytd">YTD</button>
-                <button class="ss-pd-filter" data-pd-range="all">All Time</button>
-              </div>
-              <div class="ss-pd-filters cd-pd-filters" role="tablist" aria-label="Commission type">
-                <button class="ss-pd-filter active" data-pd-side="all">All</button>
-                <button class="ss-pd-filter" data-pd-side="upfront">Upfront only</button>
-                <button class="ss-pd-filter" data-pd-side="backend">Backend only</button>
-              </div>
-            </div>
-            <!-- Hidden values still required by the renderer (it writes summary stats here even though the boxes are hidden) -->
-            <span id="pdSoldAP" hidden></span><span id="pdPaid" hidden></span><span id="pdPending" hidden></span>
-            <!-- Hidden custom range plumbing kept for handler compat (not surfaced) -->
-            <span id="pdCustomRange" hidden><input type="date" id="pdDateFrom"/><input type="date" id="pdDateTo"/><button id="pdCustomApply" hidden></button></span>
-            <div id="pdPolicyList" class="cd-pd-list"></div>
-          </div>
-        </div>
-
-        <!-- EDIT POLICY MODAL -->
-        <div class="ss-pd-edit-overlay" id="pdEditOverlay">
-          <div class="ss-pd-edit-modal">
-            <h3>Edit Policy</h3>
-            <div class="ss-pd-edit-grid">
-              <div class="ss-pd-edit-field"><label>Client Name</label><input type="text" id="pdEditClient" /></div>
-              <div class="ss-pd-edit-field"><label>Phone</label><input type="tel" id="pdEditPhone" /></div>
-              <div class="ss-pd-edit-field"><label>Carrier</label><select id="pdEditCarrier"></select></div>
-              <div class="ss-pd-edit-field"><label>Product Type</label><select id="pdEditProduct"></select></div>
-              <div class="ss-pd-edit-field"><label>Annual Premium</label><input type="number" id="pdEditAP" step="0.01" /></div>
-              <div class="ss-pd-edit-field"><label>Policy Number</label><input type="text" id="pdEditPolicyNum" /></div>
-              <div class="ss-pd-edit-field"><label>Sold Date</label><input type="date" id="pdEditSoldDate" /></div>
-              <div class="ss-pd-edit-field"><label>Effective Date</label><input type="date" id="pdEditEffDate" /></div>
-              <div class="ss-pd-edit-field"><label>Status</label><select id="pdEditStatus"><option>Underwriting</option><option>Approved</option><option>Issue Paid</option><option>Cancelled</option></select></div>
-              <div class="ss-pd-edit-field"><label>Deal Comp %</label><input type="number" id="pdEditDealComp" step="0.1" /></div>
-              <div class="ss-pd-edit-field" style="grid-column:1/-1;">
-                <label>Pending Override ($)</label>
-                <input type="number" id="pdEditPendingOverride" step="0.01" placeholder="Leave blank to use the calculated amount" />
-                <div style="margin-top:0.4rem;padding:0.65rem 0.8rem;background:#f0f7ff;border:1px solid #cfe0ff;border-radius:8px;font-size:0.72rem;color:#1e3a8a;line-height:1.5;">
-                  <strong>What is this?</strong> Enter a dollar amount to manually override the pending commission for this policy. Use this if a chargeback, split, or other adjustment means the calculated amount is wrong. Leave blank to let the system calculate it automatically from AP × comp level and the payout schedule.
-                </div>
-              </div>
-            </div>
-            <div class="ss-pd-edit-btns">
-              <button type="button" class="ss-pipeline-btn secondary" id="pdEditCancel">Cancel</button>
-              <button type="button" class="ss-pipeline-btn" id="pdEditSave">Save Changes</button>
-            </div>
-            <div id="pdEditMsg" style="margin-top:0.75rem;font-size:0.8rem;text-align:center;display:none;"></div>
-          </div>
+          <p class="ss-panel-sub">Model your monthly target and project income.</p>
         </div>
 
         <!-- ═══ MONTHLY PRODUCTION CALCULATOR ═══ -->
@@ -13918,9 +13819,7 @@
                 <th class="pcg-col-extra pcg-col-term">Term — 20yr</th>
                 <th class="pcg-col-extra pcg-col-term">Term — 15yr</th>
                 <th class="pcg-col-extra pcg-col-term">Term — 10yr</th>
-                <th class="pcg-col-fe">Final Expense WL (50–69)</th>
-                <th class="pcg-col-extra pcg-col-fe">Final Expense WL (70–79)</th>
-                <th class="pcg-col-extra pcg-col-fe">Final Expense WL (80+)</th>
+                <th class="pcg-col-fe">Final Expense WL</th>
                 <th class="pcg-col-gi">Guaranteed Issue WL (50–69)</th>
                 <th class="pcg-col-extra pcg-col-gi">Guaranteed Issue WL (70–79)</th>
                 <th class="pcg-col-extra pcg-col-gi">Guaranteed Issue WL (80+)</th>
@@ -13933,11 +13832,7 @@
                 <th class="pcg-col-extra pcg-col-term"></th>
                 <th class="pcg-col-extra pcg-col-term"></th>
                 <th class="pcg-col-extra pcg-col-term"></th>
-                <th class="pcg-col-fe"><button type="button" class="pcg-col-toggle" data-target="fe"
-                            data-label-inactive="+ Other Ages"
-                            data-label-active="− Hide Other Ages">+ Other Ages</button></th>
-                <th class="pcg-col-extra pcg-col-fe"></th>
-                <th class="pcg-col-extra pcg-col-fe"></th>
+                <th class="pcg-col-fe"></th>
                 <th class="pcg-col-gi"><button type="button" class="pcg-col-toggle" data-target="gi"
                             data-label-inactive="+ Other Ages"
                             data-label-active="− Hide Other Ages">+ Other Ages</button></th>
@@ -13946,23 +13841,23 @@
               </tr>
             </thead>
             <tbody>
-              <tr><td>145</td><td class="pcg-col-term">130.00%</td><td class="pcg-col-extra pcg-col-term">130.00%</td><td class="pcg-col-extra pcg-col-term">125.00%</td><td class="pcg-col-extra pcg-col-term">120.00%</td><td class="pcg-col-fe">127.50%</td><td class="pcg-col-extra pcg-col-fe">102.50%</td><td class="pcg-col-extra pcg-col-fe">87.50%</td><td class="pcg-col-gi">72.50%</td><td class="pcg-col-extra pcg-col-gi">52.50%</td><td class="pcg-col-extra pcg-col-gi">42.50%</td><td>90%</td></tr>
-              <tr><td>140</td><td class="pcg-col-term">125.00%</td><td class="pcg-col-extra pcg-col-term">125.00%</td><td class="pcg-col-extra pcg-col-term">120.00%</td><td class="pcg-col-extra pcg-col-term">115.00%</td><td class="pcg-col-fe">125.00%</td><td class="pcg-col-extra pcg-col-fe">100.00%</td><td class="pcg-col-extra pcg-col-fe">85.00%</td><td class="pcg-col-gi">70.00%</td><td class="pcg-col-extra pcg-col-gi">50.00%</td><td class="pcg-col-extra pcg-col-gi">40.00%</td><td>85%</td></tr>
-              <tr><td>135</td><td class="pcg-col-term">120.00%</td><td class="pcg-col-extra pcg-col-term">120.00%</td><td class="pcg-col-extra pcg-col-term">115.00%</td><td class="pcg-col-extra pcg-col-term">110.00%</td><td class="pcg-col-fe">122.50%</td><td class="pcg-col-extra pcg-col-fe">97.50%</td><td class="pcg-col-extra pcg-col-fe">82.50%</td><td class="pcg-col-gi">67.50%</td><td class="pcg-col-extra pcg-col-gi">47.50%</td><td class="pcg-col-extra pcg-col-gi">37.50%</td><td>80%</td></tr>
-              <tr><td>130</td><td class="pcg-col-term">115.00%</td><td class="pcg-col-extra pcg-col-term">115.00%</td><td class="pcg-col-extra pcg-col-term">110.00%</td><td class="pcg-col-extra pcg-col-term">105.00%</td><td class="pcg-col-fe">120.00%</td><td class="pcg-col-extra pcg-col-fe">95.00%</td><td class="pcg-col-extra pcg-col-fe">80.00%</td><td class="pcg-col-gi">65.00%</td><td class="pcg-col-extra pcg-col-gi">45.00%</td><td class="pcg-col-extra pcg-col-gi">35.00%</td><td>75%</td></tr>
-              <tr><td>125</td><td class="pcg-col-term">110.00%</td><td class="pcg-col-extra pcg-col-term">110.00%</td><td class="pcg-col-extra pcg-col-term">105.00%</td><td class="pcg-col-extra pcg-col-term">100.00%</td><td class="pcg-col-fe">117.50%</td><td class="pcg-col-extra pcg-col-fe">92.50%</td><td class="pcg-col-extra pcg-col-fe">77.50%</td><td class="pcg-col-gi">62.50%</td><td class="pcg-col-extra pcg-col-gi">42.50%</td><td class="pcg-col-extra pcg-col-gi">32.50%</td><td>70%</td></tr>
-              <tr><td>120</td><td class="pcg-col-term">105.00%</td><td class="pcg-col-extra pcg-col-term">105.00%</td><td class="pcg-col-extra pcg-col-term">100.00%</td><td class="pcg-col-extra pcg-col-term">95.00%</td><td class="pcg-col-fe">115.00%</td><td class="pcg-col-extra pcg-col-fe">90.00%</td><td class="pcg-col-extra pcg-col-fe">75.00%</td><td class="pcg-col-gi">60.00%</td><td class="pcg-col-extra pcg-col-gi">40.00%</td><td class="pcg-col-extra pcg-col-gi">30.00%</td><td>65%</td></tr>
-              <tr><td>115</td><td class="pcg-col-term">100.00%</td><td class="pcg-col-extra pcg-col-term">100.00%</td><td class="pcg-col-extra pcg-col-term">95.00%</td><td class="pcg-col-extra pcg-col-term">90.00%</td><td class="pcg-col-fe">112.50%</td><td class="pcg-col-extra pcg-col-fe">87.50%</td><td class="pcg-col-extra pcg-col-fe">72.50%</td><td class="pcg-col-gi">57.50%</td><td class="pcg-col-extra pcg-col-gi">37.50%</td><td class="pcg-col-extra pcg-col-gi">27.50%</td><td>60%</td></tr>
-              <tr><td>110</td><td class="pcg-col-term">95.00%</td><td class="pcg-col-extra pcg-col-term">95.00%</td><td class="pcg-col-extra pcg-col-term">90.00%</td><td class="pcg-col-extra pcg-col-term">85.00%</td><td class="pcg-col-fe">110.00%</td><td class="pcg-col-extra pcg-col-fe">85.00%</td><td class="pcg-col-extra pcg-col-fe">70.00%</td><td class="pcg-col-gi">55.00%</td><td class="pcg-col-extra pcg-col-gi">35.00%</td><td class="pcg-col-extra pcg-col-gi">25.00%</td><td>55%</td></tr>
-              <tr><td>105</td><td class="pcg-col-term">90.00%</td><td class="pcg-col-extra pcg-col-term">90.00%</td><td class="pcg-col-extra pcg-col-term">85.00%</td><td class="pcg-col-extra pcg-col-term">80.00%</td><td class="pcg-col-fe">107.50%</td><td class="pcg-col-extra pcg-col-fe">82.50%</td><td class="pcg-col-extra pcg-col-fe">67.50%</td><td class="pcg-col-gi">52.50%</td><td class="pcg-col-extra pcg-col-gi">32.50%</td><td class="pcg-col-extra pcg-col-gi">22.50%</td><td>50%</td></tr>
-              <tr><td>100</td><td class="pcg-col-term">85.00%</td><td class="pcg-col-extra pcg-col-term">85.00%</td><td class="pcg-col-extra pcg-col-term">80.00%</td><td class="pcg-col-extra pcg-col-term">75.00%</td><td class="pcg-col-fe">105.00%</td><td class="pcg-col-extra pcg-col-fe">80.00%</td><td class="pcg-col-extra pcg-col-fe">65.00%</td><td class="pcg-col-gi">50.00%</td><td class="pcg-col-extra pcg-col-gi">30.00%</td><td class="pcg-col-extra pcg-col-gi">20.00%</td><td>45%</td></tr>
-              <tr><td>95</td><td class="pcg-col-term">80.00%</td><td class="pcg-col-extra pcg-col-term">80.00%</td><td class="pcg-col-extra pcg-col-term">75.00%</td><td class="pcg-col-extra pcg-col-term">70.00%</td><td class="pcg-col-fe">102.50%</td><td class="pcg-col-extra pcg-col-fe">77.50%</td><td class="pcg-col-extra pcg-col-fe">62.50%</td><td class="pcg-col-gi">47.50%</td><td class="pcg-col-extra pcg-col-gi">27.50%</td><td class="pcg-col-extra pcg-col-gi">17.50%</td><td>40%</td></tr>
-              <tr><td>90</td><td class="pcg-col-term">75.00%</td><td class="pcg-col-extra pcg-col-term">75.00%</td><td class="pcg-col-extra pcg-col-term">70.00%</td><td class="pcg-col-extra pcg-col-term">65.00%</td><td class="pcg-col-fe">100.00%</td><td class="pcg-col-extra pcg-col-fe">75.00%</td><td class="pcg-col-extra pcg-col-fe">60.00%</td><td class="pcg-col-gi">45.00%</td><td class="pcg-col-extra pcg-col-gi">25.00%</td><td class="pcg-col-extra pcg-col-gi">15.00%</td><td>35%</td></tr>
-              <tr><td>85</td><td class="pcg-col-term">70.00%</td><td class="pcg-col-extra pcg-col-term">70.00%</td><td class="pcg-col-extra pcg-col-term">65.00%</td><td class="pcg-col-extra pcg-col-term">60.00%</td><td class="pcg-col-fe">97.50%</td><td class="pcg-col-extra pcg-col-fe">72.50%</td><td class="pcg-col-extra pcg-col-fe">57.50%</td><td class="pcg-col-gi">42.50%</td><td class="pcg-col-extra pcg-col-gi">22.50%</td><td class="pcg-col-extra pcg-col-gi">12.50%</td><td>30%</td></tr>
-              <tr><td>80</td><td class="pcg-col-term">65.00%</td><td class="pcg-col-extra pcg-col-term">65.00%</td><td class="pcg-col-extra pcg-col-term">60.00%</td><td class="pcg-col-extra pcg-col-term">55.00%</td><td class="pcg-col-fe">95.00%</td><td class="pcg-col-extra pcg-col-fe">70.00%</td><td class="pcg-col-extra pcg-col-fe">55.00%</td><td class="pcg-col-gi">40.00%</td><td class="pcg-col-extra pcg-col-gi">20.00%</td><td class="pcg-col-extra pcg-col-gi">10.00%</td><td>25%</td></tr>
-              <tr><td>75</td><td class="pcg-col-term">60.00%</td><td class="pcg-col-extra pcg-col-term">60.00%</td><td class="pcg-col-extra pcg-col-term">55.00%</td><td class="pcg-col-extra pcg-col-term">50.00%</td><td class="pcg-col-fe">92.50%</td><td class="pcg-col-extra pcg-col-fe">67.50%</td><td class="pcg-col-extra pcg-col-fe">52.50%</td><td class="pcg-col-gi">37.50%</td><td class="pcg-col-extra pcg-col-gi">17.50%</td><td class="pcg-col-extra pcg-col-gi">7.50%</td><td>20%</td></tr>
-              <tr><td>70</td><td class="pcg-col-term">55.00%</td><td class="pcg-col-extra pcg-col-term">55.00%</td><td class="pcg-col-extra pcg-col-term">50.00%</td><td class="pcg-col-extra pcg-col-term">45.00%</td><td class="pcg-col-fe">90.00%</td><td class="pcg-col-extra pcg-col-fe">65.00%</td><td class="pcg-col-extra pcg-col-fe">50.00%</td><td class="pcg-col-gi">35.00%</td><td class="pcg-col-extra pcg-col-gi">15.00%</td><td class="pcg-col-extra pcg-col-gi">5.00%</td><td>15%</td></tr>
-              <tr><td>65</td><td class="pcg-col-term">55.00%</td><td class="pcg-col-extra pcg-col-term">55.00%</td><td class="pcg-col-extra pcg-col-term">50.00%</td><td class="pcg-col-extra pcg-col-term">45.00%</td><td class="pcg-col-fe">90.00%</td><td class="pcg-col-extra pcg-col-fe">65.00%</td><td class="pcg-col-extra pcg-col-fe">50.00%</td><td class="pcg-col-gi">35.00%</td><td class="pcg-col-extra pcg-col-gi">15.00%</td><td class="pcg-col-extra pcg-col-gi">5.00%</td><td>15%</td></tr>
+              <tr><td>145</td><td class="pcg-col-term">130.00%</td><td class="pcg-col-extra pcg-col-term">130.00%</td><td class="pcg-col-extra pcg-col-term">125.00%</td><td class="pcg-col-extra pcg-col-term">120.00%</td><td class="pcg-col-fe">87.50%</td><td class="pcg-col-gi">72.50%</td><td class="pcg-col-extra pcg-col-gi">52.50%</td><td class="pcg-col-extra pcg-col-gi">42.50%</td><td>90%</td></tr>
+              <tr><td>140</td><td class="pcg-col-term">125.00%</td><td class="pcg-col-extra pcg-col-term">125.00%</td><td class="pcg-col-extra pcg-col-term">120.00%</td><td class="pcg-col-extra pcg-col-term">115.00%</td><td class="pcg-col-fe">85.00%</td><td class="pcg-col-gi">70.00%</td><td class="pcg-col-extra pcg-col-gi">50.00%</td><td class="pcg-col-extra pcg-col-gi">40.00%</td><td>85%</td></tr>
+              <tr><td>135</td><td class="pcg-col-term">120.00%</td><td class="pcg-col-extra pcg-col-term">120.00%</td><td class="pcg-col-extra pcg-col-term">115.00%</td><td class="pcg-col-extra pcg-col-term">110.00%</td><td class="pcg-col-fe">82.50%</td><td class="pcg-col-gi">67.50%</td><td class="pcg-col-extra pcg-col-gi">47.50%</td><td class="pcg-col-extra pcg-col-gi">37.50%</td><td>80%</td></tr>
+              <tr><td>130</td><td class="pcg-col-term">115.00%</td><td class="pcg-col-extra pcg-col-term">115.00%</td><td class="pcg-col-extra pcg-col-term">110.00%</td><td class="pcg-col-extra pcg-col-term">105.00%</td><td class="pcg-col-fe">80.00%</td><td class="pcg-col-gi">65.00%</td><td class="pcg-col-extra pcg-col-gi">45.00%</td><td class="pcg-col-extra pcg-col-gi">35.00%</td><td>75%</td></tr>
+              <tr><td>125</td><td class="pcg-col-term">110.00%</td><td class="pcg-col-extra pcg-col-term">110.00%</td><td class="pcg-col-extra pcg-col-term">105.00%</td><td class="pcg-col-extra pcg-col-term">100.00%</td><td class="pcg-col-fe">77.50%</td><td class="pcg-col-gi">62.50%</td><td class="pcg-col-extra pcg-col-gi">42.50%</td><td class="pcg-col-extra pcg-col-gi">32.50%</td><td>70%</td></tr>
+              <tr><td>120</td><td class="pcg-col-term">105.00%</td><td class="pcg-col-extra pcg-col-term">105.00%</td><td class="pcg-col-extra pcg-col-term">100.00%</td><td class="pcg-col-extra pcg-col-term">95.00%</td><td class="pcg-col-fe">75.00%</td><td class="pcg-col-gi">60.00%</td><td class="pcg-col-extra pcg-col-gi">40.00%</td><td class="pcg-col-extra pcg-col-gi">30.00%</td><td>65%</td></tr>
+              <tr><td>115</td><td class="pcg-col-term">100.00%</td><td class="pcg-col-extra pcg-col-term">100.00%</td><td class="pcg-col-extra pcg-col-term">95.00%</td><td class="pcg-col-extra pcg-col-term">90.00%</td><td class="pcg-col-fe">72.50%</td><td class="pcg-col-gi">57.50%</td><td class="pcg-col-extra pcg-col-gi">37.50%</td><td class="pcg-col-extra pcg-col-gi">27.50%</td><td>60%</td></tr>
+              <tr><td>110</td><td class="pcg-col-term">95.00%</td><td class="pcg-col-extra pcg-col-term">95.00%</td><td class="pcg-col-extra pcg-col-term">90.00%</td><td class="pcg-col-extra pcg-col-term">85.00%</td><td class="pcg-col-fe">70.00%</td><td class="pcg-col-gi">55.00%</td><td class="pcg-col-extra pcg-col-gi">35.00%</td><td class="pcg-col-extra pcg-col-gi">25.00%</td><td>55%</td></tr>
+              <tr><td>105</td><td class="pcg-col-term">90.00%</td><td class="pcg-col-extra pcg-col-term">90.00%</td><td class="pcg-col-extra pcg-col-term">85.00%</td><td class="pcg-col-extra pcg-col-term">80.00%</td><td class="pcg-col-fe">67.50%</td><td class="pcg-col-gi">52.50%</td><td class="pcg-col-extra pcg-col-gi">32.50%</td><td class="pcg-col-extra pcg-col-gi">22.50%</td><td>50%</td></tr>
+              <tr><td>100</td><td class="pcg-col-term">85.00%</td><td class="pcg-col-extra pcg-col-term">85.00%</td><td class="pcg-col-extra pcg-col-term">80.00%</td><td class="pcg-col-extra pcg-col-term">75.00%</td><td class="pcg-col-fe">65.00%</td><td class="pcg-col-gi">50.00%</td><td class="pcg-col-extra pcg-col-gi">30.00%</td><td class="pcg-col-extra pcg-col-gi">20.00%</td><td>45%</td></tr>
+              <tr><td>95</td><td class="pcg-col-term">80.00%</td><td class="pcg-col-extra pcg-col-term">80.00%</td><td class="pcg-col-extra pcg-col-term">75.00%</td><td class="pcg-col-extra pcg-col-term">70.00%</td><td class="pcg-col-fe">62.50%</td><td class="pcg-col-gi">47.50%</td><td class="pcg-col-extra pcg-col-gi">27.50%</td><td class="pcg-col-extra pcg-col-gi">17.50%</td><td>40%</td></tr>
+              <tr><td>90</td><td class="pcg-col-term">75.00%</td><td class="pcg-col-extra pcg-col-term">75.00%</td><td class="pcg-col-extra pcg-col-term">70.00%</td><td class="pcg-col-extra pcg-col-term">65.00%</td><td class="pcg-col-fe">60.00%</td><td class="pcg-col-gi">45.00%</td><td class="pcg-col-extra pcg-col-gi">25.00%</td><td class="pcg-col-extra pcg-col-gi">15.00%</td><td>35%</td></tr>
+              <tr><td>85</td><td class="pcg-col-term">70.00%</td><td class="pcg-col-extra pcg-col-term">70.00%</td><td class="pcg-col-extra pcg-col-term">65.00%</td><td class="pcg-col-extra pcg-col-term">60.00%</td><td class="pcg-col-fe">57.50%</td><td class="pcg-col-gi">42.50%</td><td class="pcg-col-extra pcg-col-gi">22.50%</td><td class="pcg-col-extra pcg-col-gi">12.50%</td><td>30%</td></tr>
+              <tr><td>80</td><td class="pcg-col-term">65.00%</td><td class="pcg-col-extra pcg-col-term">65.00%</td><td class="pcg-col-extra pcg-col-term">60.00%</td><td class="pcg-col-extra pcg-col-term">55.00%</td><td class="pcg-col-fe">55.00%</td><td class="pcg-col-gi">40.00%</td><td class="pcg-col-extra pcg-col-gi">20.00%</td><td class="pcg-col-extra pcg-col-gi">10.00%</td><td>25%</td></tr>
+              <tr><td>75</td><td class="pcg-col-term">60.00%</td><td class="pcg-col-extra pcg-col-term">60.00%</td><td class="pcg-col-extra pcg-col-term">55.00%</td><td class="pcg-col-extra pcg-col-term">50.00%</td><td class="pcg-col-fe">52.50%</td><td class="pcg-col-gi">37.50%</td><td class="pcg-col-extra pcg-col-gi">17.50%</td><td class="pcg-col-extra pcg-col-gi">7.50%</td><td>20%</td></tr>
+              <tr><td>70</td><td class="pcg-col-term">55.00%</td><td class="pcg-col-extra pcg-col-term">55.00%</td><td class="pcg-col-extra pcg-col-term">50.00%</td><td class="pcg-col-extra pcg-col-term">45.00%</td><td class="pcg-col-fe">50.00%</td><td class="pcg-col-gi">35.00%</td><td class="pcg-col-extra pcg-col-gi">15.00%</td><td class="pcg-col-extra pcg-col-gi">5.00%</td><td>15%</td></tr>
+              <tr><td>65</td><td class="pcg-col-term">55.00%</td><td class="pcg-col-extra pcg-col-term">55.00%</td><td class="pcg-col-extra pcg-col-term">50.00%</td><td class="pcg-col-extra pcg-col-term">45.00%</td><td class="pcg-col-fe">50.00%</td><td class="pcg-col-gi">35.00%</td><td class="pcg-col-extra pcg-col-gi">15.00%</td><td class="pcg-col-extra pcg-col-gi">5.00%</td><td>15%</td></tr>
             </tbody>
           </table></div></div>
         </div>
@@ -15189,7 +15084,7 @@
       }
       if (panelName === 'profile') loadProfilePanel();
       if (panelName === 'calculator') {
-        if (currentUser) loadCommissionPipeline();
+        if (currentUser) initCalculatorDefaults();
         if (typeof activatePayTab === 'function') activatePayTab('growth');
       }
       if (panelName === 'dialtracker' && typeof renderDialTracker === 'function') renderDialTracker();
@@ -19049,8 +18944,10 @@
     // ─── COMMISSION + LEADS ROI CALCULATORS ───
     // ─── USER COMP LEVEL (loaded from agent_profiles) ───
     let userCompLevel = null;
-    // ─── COMMISSION PIPELINE ───
-    // Shared compute function: takes a policy + current profile comp, returns pending $
+    // ─── SHARED COMMISSION HELPERS ───
+    // Shared compute function: takes a policy + current profile comp, returns pending $.
+    // Used by the tracker's Profitability section (the commission pipeline UI that
+    // also used this was removed from the pay calculator page).
     function computePolicyPending(p) {
       // Cancelled policies stay in the submitted/AP totals but contribute
       // zero to pending commission. Honors manual override below if the
@@ -19126,107 +19023,14 @@
       return m ? 'Starts ' + m : 'Starts soon';
     }
 
-    let pipelineAllPolicies = [];
-    let pipelineAllDeposits = [];
-    let pdRange = 'mtd';
-    // 'all' | 'upfront' (Underwriting + Approved) | 'backend' (Issue Paid trailer)
-    let pdSide = 'all';
-    let pipelineRange = 'ytd';
-
-    function getPipelineDateRange() {
-      const now = new Date();
-      if (pipelineRange === 'mtd') {
-        return { start: new Date(now.getFullYear(), now.getMonth(), 1), end: now };
-      }
-      if (pipelineRange === 'lastmonth') {
-        return {
-          start: new Date(now.getFullYear(), now.getMonth() - 1, 1),
-          end: new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59),
-        };
-      }
-      // ytd default
-      return { start: new Date(now.getFullYear(), 0, 1), end: now };
-    }
-
-    function renderCommissionPipeline() {
-      const paidEl = document.getElementById('pipelinePaid');
-      const pendingEl = document.getElementById('pipelinePending');
-      const paidSub = document.getElementById('pipelinePaidSub');
-      const pendingSub = document.getElementById('pipelinePendingSub');
-      if (!paidEl) return;
-
-      const { start, end } = getPipelineDateRange();
-
-      // Paid: filter deposits by kpi_date in range
-      const depositsInRange = pipelineAllDeposits.filter(r => {
-        if (!r.kpi_date) return false;
-        const d = new Date(r.kpi_date + 'T00:00:00');
-        return d >= start && d <= end;
-      });
-      const totalPaid = depositsInRange.reduce((s, r) => s + parseFloat(r.deposits || 0), 0);
-
-      // Pending: filter policies by sold date (policy_date) in range
-      const policiesInRange = pipelineAllPolicies.filter(p => {
-        if (!p.policy_date) return false;
-        const d = new Date(p.policy_date + 'T00:00:00');
-        return d >= start && d <= end;
-      });
-      // Split pending into upfront (Underwriting / Approved — the 75%
-       // advance not yet earned) vs backend (Issue Paid — the 25% as-earned
-       // trailer that pays out months 10-12 after effective). Visualising
-       // the split keeps Issue Paid deals legible on the dashboard without
-       // dropping them from pending entirely.
-      let upfrontPending = 0;
-      let backendPending = 0;
-      policiesInRange.forEach(p => {
-        const v = computePolicyPending(p);
-        if (p.status === 'Issue Paid') backendPending += v;
-        else upfrontPending += v;
-      });
-      const totalPending = upfrontPending + backendPending;
-
-      const fmt = n => '$' + Math.round(n).toLocaleString('en-US');
-      const rangeLabel = pipelineRange === 'mtd' ? 'this month' : pipelineRange === 'lastmonth' ? 'last month' : 'year to date';
-      paidEl.textContent = fmt(totalPaid);
-      pendingEl.textContent = fmt(totalPending);
-      paidSub.textContent = depositsInRange.length + ' daily KPI entries (' + rangeLabel + ')';
-      // When some pending is backend (as-earned), surface the split so it's
-      // clear what's upfront vs trailing — otherwise just show the count.
-      if (backendPending > 0) {
-        pendingSub.textContent = fmt(upfrontPending) + ' upfront · ' + fmt(backendPending) + ' backend (as-earned)';
-      } else {
-        pendingSub.textContent = policiesInRange.length + ' policies (' + rangeLabel + ')';
-      }
-    }
-
-    async function loadCommissionPipeline() {
-      const paidEl = document.getElementById('pipelinePaid');
-      const pendingEl = document.getElementById('pipelinePending');
-      const emptyEl = document.getElementById('pipelineEmpty');
-      if (!currentUser) {
-        paidEl.textContent = '—';
-        pendingEl.textContent = '—';
-        if (emptyEl) emptyEl.style.display = 'block';
-        return;
-      }
-      if (emptyEl) emptyEl.style.display = 'none';
-      paidEl.textContent = 'Loading...';
-      pendingEl.textContent = 'Loading...';
+    // Seeds the Monthly Production Calculator with the user's saved comp level
+    // and AP goal when the calculator panel opens. (Previously this lived inside
+    // loadCommissionPipeline, alongside the now-removed commission pipeline UI.)
+    async function initCalculatorDefaults() {
+      if (!currentUser) return;
       const token = accessToken || SUPABASE_KEY;
       const hdrs = { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + token };
       try {
-        const kpiRes = await fetch(SUPABASE_URL + '/rest/v1/daily_kpis?user_id=eq.' + currentUser.id + '&select=kpi_date,deposits&order=kpi_date.desc', { headers: hdrs });
-        const allKpis = await kpiRes.json() || [];
-        // Total Paid sums every deposit the user has logged. (Previously
-        // sliced off the 15 most recent rows, which silently hid recent
-        // deposits from the dashboard.)
-        pipelineAllDeposits = allKpis;
-
-        const polRes = await fetch(SUPABASE_URL + '/rest/v1/policies?user_id=eq.' + currentUser.id + '&select=*', { headers: hdrs });
-        pipelineAllPolicies = await polRes.json() || [];
-
-        renderCommissionPipeline();
-
         // Default the calculator's Monthly AP goal to the Weekly Tracker value
         // (wt_monthly_ap_goals row for current month + agent_name) AND apply the
         // user's saved comp level so the auto net-income calc reflects their
@@ -19282,295 +19086,9 @@
           }
         } catch (e) { console.warn('Monthly AP goal default fetch failed:', e); }
       } catch (e) {
-        console.error('Pipeline load failed:', e);
-        paidEl.textContent = '—';
-        pendingEl.textContent = '—';
+        console.warn('Calculator defaults init failed:', e);
       }
     }
-
-    // Wire up pipeline range buttons
-    document.querySelectorAll('#pipelineRangeBtns .ss-pipeline-range-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('#pipelineRangeBtns .ss-pipeline-range-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        pipelineRange = btn.dataset.pipelineRange;
-        renderCommissionPipeline();
-      });
-    });
-
-    // ─── PIPELINE DETAILS ───
-    function getPdDateRange() {
-      const now = new Date();
-      if (pdRange === 'mtd') {
-        const start = new Date(now.getFullYear(), now.getMonth(), 1);
-        return { start, end: now };
-      }
-      if (pdRange === 'lastmonth') {
-        const start = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-        const end = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59);
-        return { start, end };
-      }
-      if (pdRange === 'ytd') {
-        return { start: new Date(now.getFullYear(), 0, 1), end: now };
-      }
-      if (pdRange === 'all') {
-        return { start: new Date(2000, 0, 1), end: now };
-      }
-      if (pdRange === 'custom') {
-        const from = document.getElementById('pdDateFrom').value;
-        const to = document.getElementById('pdDateTo').value;
-        if (from && to) {
-          const start = new Date(from + 'T00:00:00');
-          const end = new Date(to + 'T23:59:59');
-          return { start, end };
-        }
-        return { start: new Date(now.getFullYear(), 0, 1), end: now };
-      }
-      return { start: new Date(now.getFullYear(), now.getMonth(), 1), end: now };
-    }
-
-    function renderPipelineDetails() {
-      const { start, end } = getPdDateRange();
-
-      // Filter policies by sold date (policy_date)
-      const filtered = pipelineAllPolicies.filter(p => {
-        if (!p.policy_date) return false;
-        const d = new Date(p.policy_date + 'T00:00:00');
-        return d >= start && d <= end;
-      });
-
-      // Summary
-      const soldAP = filtered.reduce((s, p) => s + parseFloat(p.annual_premium || 0), 0);
-      const pending = filtered.reduce((s, p) => s + computePolicyPending(p), 0);
-      const paidInRange = pipelineAllDeposits.filter(r => {
-        if (!r.kpi_date) return false;
-        const d = new Date(r.kpi_date + 'T00:00:00');
-        return d >= start && d <= end;
-      }).reduce((s, r) => s + parseFloat(r.deposits || 0), 0);
-
-      const fmt = n => '$' + Math.round(n).toLocaleString('en-US');
-      document.getElementById('pdSoldAP').textContent = fmt(soldAP);
-      document.getElementById('pdPaid').textContent = fmt(paidInRange);
-      document.getElementById('pdPending').textContent = fmt(pending);
-
-      // Policy list — only those with pending > 0, then optionally split
-      // into upfront (Underwriting/Approved) vs backend (Issue Paid trailer).
-      const withPending = filtered
-        .map(p => ({ p, pending: computePolicyPending(p) }))
-        .filter(x => x.pending > 0)
-        .filter(x => {
-          if (pdSide === 'upfront') return x.p.status !== 'Issue Paid';
-          if (pdSide === 'backend') return x.p.status === 'Issue Paid';
-          return true;
-        })
-        .sort((a, b) => new Date(b.p.policy_date) - new Date(a.p.policy_date));
-
-      const listEl = document.getElementById('pdPolicyList');
-      if (!withPending.length) {
-        const empty = pdSide === 'upfront'
-          ? 'No upfront-pending policies in this range.'
-          : pdSide === 'backend'
-            ? 'No backend (as-earned) policies in this range.'
-            : 'No policies with pending payouts in this range.';
-        listEl.innerHTML = '<div class="ss-pd-empty">' + empty + '</div>';
-        return;
-      }
-
-      const esc = (s) => (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-      // Map product type → simple type bucket for the pill color
-      function productBucket(pt) {
-        const s = (pt || '').toLowerCase();
-        if (s.includes('iul')) return 'iul';
-        if (s.includes('term')) return 'term';
-        if (s.includes('whole') || s.includes('wl')) return 'whole';
-        return 'other';
-      }
-      // Map status → progress percentage so the green progress bar reflects
-      // how close the policy is to being paid out.
-      function statusProgress(st) {
-        const s = (st || '').toLowerCase();
-        if (s.includes('issue') || s.includes('paid')) return 100;
-        if (s.includes('approved')) return 85;
-        if (s.includes('underwriting') || s.includes('uw')) return 55;
-        return 40;
-      }
-      // Table header — Client / Type / Carrier / Status / Submitted / AP / edit
-      let html = '<div class="cd-pd-thead">';
-      html += '<span>Policy</span>';
-      html += '<span>Type</span>';
-      html += '<span>Carrier</span>';
-      html += '<span>Status</span>';
-      html += '<span class="num">Submitted</span>';
-      html += '<span class="num">Annual Premium</span>';
-      html += '<span></span>';
-      html += '</div>';
-      html += '<div class="cd-pd-tbody">';
-      withPending.forEach(({ p, pending }) => {
-        const ap = parseFloat(p.annual_premium || 0);
-        const bucket = productBucket(p.product_type);
-        const progress = statusProgress(p.status);
-        const sold = p.policy_date ? new Date(p.policy_date + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
-        // Issue Paid policies with pending > 0 are showing the as-earned
-        // trailer (25% backend that hasn't dropped to $0 yet). Tag them so
-        // it's obvious that this isn't a fresh upfront pending balance.
-        const isBackend = p.status === 'Issue Paid';
-        const backendBadge = isBackend
-          ? ' <span class="cd-pd-backend-pill" title="As-earned commission \u2014 pays out months 10-12 after effective date">Backend</span>'
-          : '';
-        html += '<div class="ss-pd-row ss-pd-policy cd-pd-row">';
-        html += '<div class="pd-client cd-pd-client">' + esc(p.client_name || 'Unknown') + '<small>' + (p.policy_number ? '#' + esc(p.policy_number) : '') + (p.policy_number && sold ? ' \u00b7 ' : '') + (sold ? 'Sold ' + sold : '') + '</small></div>';
-        html += '<div class="pd-product"><span class="cd-pd-pill cd-pd-pill-' + bucket + '">' + esc(p.product_type || 'Other') + '</span></div>';
-        html += '<div class="pd-carrier cd-pd-muted">' + esc(p.carrier || '\u2014') + '</div>';
-        html += '<div class="pd-status cd-pd-statbar">' +
-          '<div class="cd-pd-statbar-track"><div class="cd-pd-statbar-fill" style="width:' + progress + '%"></div></div>' +
-          '<span class="cd-pd-statbar-label">' + esc(p.status || 'Underwriting') + backendBadge + '</span>' +
-        '</div>';
-        html += '<div class="pd-submitted num cd-pd-muted">' + esc(sold || '\u2014') + '</div>';
-        html += '<div class="pd-ap num">' + fmt(ap) + '</div>';
-        html += '<button class="ss-pd-edit-btn cd-pd-edit-btn" data-pd-edit-id="' + p.id + '" aria-label="Edit policy">' +
-          '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>' +
-        '</button>';
-        html += '</div>';
-      });
-      html += '</div>';
-      // Footer summary
-      const totalAP = withPending.reduce((s, x) => s + parseFloat(x.p.annual_premium || 0), 0);
-      html += '<div class="cd-pd-tfoot">' +
-        '<span>' + withPending.length + ' polic' + (withPending.length === 1 ? 'y' : 'ies') + '</span>' +
-        '<span>Total AP <b>' + fmt(totalAP) + '</b></span>' +
-      '</div>';
-      listEl.innerHTML = html;
-
-      // Wire up edit buttons
-      listEl.querySelectorAll('[data-pd-edit-id]').forEach(btn => {
-        btn.addEventListener('click', () => openPdEdit(btn.dataset.pdEditId));
-      });
-    }
-
-    function populatePdEditDropdowns() {
-      const carrierSel = document.getElementById('pdEditCarrier');
-      const productSel = document.getElementById('pdEditProduct');
-      if (carrierSel.options.length === 0) {
-        CARRIERS.forEach(c => {
-          const o = document.createElement('option'); o.value = c; o.textContent = c;
-          carrierSel.appendChild(o);
-        });
-      }
-      if (productSel.options.length === 0) {
-        PRODUCT_TYPES.forEach(pt => {
-          const o = document.createElement('option'); o.value = pt; o.textContent = pt;
-          productSel.appendChild(o);
-        });
-      }
-    }
-
-    let pdEditId = null;
-    function openPdEdit(id) {
-      const p = pipelineAllPolicies.find(x => String(x.id) === String(id));
-      if (!p) return;
-      pdEditId = id;
-      populatePdEditDropdowns();
-      document.getElementById('pdEditClient').value = p.client_name || '';
-      document.getElementById('pdEditPhone').value = p.phone || '';
-      document.getElementById('pdEditCarrier').value = p.carrier || '';
-      document.getElementById('pdEditProduct').value = p.product_type || '';
-      document.getElementById('pdEditAP').value = p.annual_premium || '';
-      document.getElementById('pdEditPolicyNum').value = p.policy_number || '';
-      document.getElementById('pdEditSoldDate').value = p.policy_date ? p.policy_date.split('T')[0] : '';
-      document.getElementById('pdEditEffDate').value = p.effective_date ? p.effective_date.split('T')[0] : '';
-      document.getElementById('pdEditStatus').value = p.status || 'Underwriting';
-      document.getElementById('pdEditDealComp').value = p.deal_comp || '';
-      document.getElementById('pdEditPendingOverride').value = p.pending_override || '';
-      document.getElementById('pdEditMsg').style.display = 'none';
-      document.getElementById('pdEditOverlay').classList.add('open');
-    }
-
-    async function savePdEdit() {
-      if (!pdEditId || !currentUser) return;
-      const msgEl = document.getElementById('pdEditMsg');
-      const token = accessToken || SUPABASE_KEY;
-      const patchBody = {
-        client_name: document.getElementById('pdEditClient').value,
-        phone: document.getElementById('pdEditPhone').value || null,
-        carrier: document.getElementById('pdEditCarrier').value,
-        product_type: document.getElementById('pdEditProduct').value,
-        annual_premium: parseFloat(document.getElementById('pdEditAP').value) || 0,
-        policy_number: document.getElementById('pdEditPolicyNum').value,
-        policy_date: document.getElementById('pdEditSoldDate').value || null,
-        effective_date: document.getElementById('pdEditEffDate').value || null,
-        status: document.getElementById('pdEditStatus').value,
-        deal_comp: document.getElementById('pdEditDealComp').value ? parseFloat(document.getElementById('pdEditDealComp').value) : null,
-        pending_override: document.getElementById('pdEditPendingOverride').value !== '' ? parseFloat(document.getElementById('pdEditPendingOverride').value) : null
-      };
-      try {
-        const res = await fetch(SUPABASE_URL + '/rest/v1/policies?id=eq.' + pdEditId, {
-          method: 'PATCH',
-          headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
-          body: JSON.stringify(patchBody)
-        });
-        if (!res.ok) throw new Error(await res.text());
-        msgEl.textContent = '✓ Saved';
-        msgEl.style.color = '#16a34a';
-        msgEl.style.display = 'block';
-        // Update the in-memory cache and rerender
-        const idx = pipelineAllPolicies.findIndex(x => String(x.id) === String(pdEditId));
-        if (idx !== -1) pipelineAllPolicies[idx] = Object.assign({}, pipelineAllPolicies[idx], patchBody);
-        setTimeout(() => {
-          document.getElementById('pdEditOverlay').classList.remove('open');
-          renderPipelineDetails();
-          // Also refresh the summary card with current range
-          renderCommissionPipeline();
-        }, 600);
-      } catch (e) {
-        msgEl.textContent = 'Error: ' + e.message;
-        msgEl.style.color = '#dc2626';
-        msgEl.style.display = 'block';
-      }
-    }
-
-    // Wire up details toggle & filter buttons. The drawer now opens INLINE
-    // (right under the Total Paid / Pending stat cards) and the button text
-    // flips between "See details" and "Hide details".
-    (function initPipelineDetails() {
-      const detailsBtn = document.getElementById('pipelineDetailsBtn');
-      const detailsPanel = document.getElementById('pipelineDetails');
-      function setDetailsBtnLabel(open) {
-        if (!detailsBtn) return;
-        // Replace the text node, leave the chevron SVG untouched
-        const svg = detailsBtn.querySelector('svg');
-        detailsBtn.textContent = open ? 'Hide details ' : 'See details ';
-        if (svg) detailsBtn.appendChild(svg);
-        detailsBtn.classList.toggle('open', open);
-      }
-      if (detailsBtn) {
-        detailsBtn.addEventListener('click', () => {
-          const open = !detailsPanel.classList.contains('open');
-          detailsPanel.classList.toggle('open', open);
-          setDetailsBtnLabel(open);
-          if (open) renderPipelineDetails();
-        });
-      }
-
-      // Filter buttons (segmented controls). Two rows live inside the
-      // drawer head — date range and commission type — and each acts
-      // independently, so we only deactivate siblings in the same row.
-      document.querySelectorAll('.cd-pd-drawer-head .ss-pd-filter').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const row = btn.parentElement;
-          row.querySelectorAll('.ss-pd-filter').forEach(b => b.classList.remove('active'));
-          btn.classList.add('active');
-          if (btn.dataset.pdRange) pdRange = btn.dataset.pdRange;
-          if (btn.dataset.pdSide) pdSide = btn.dataset.pdSide;
-          renderPipelineDetails();
-        });
-      });
-
-      // Edit modal
-      const pdEditOverlay = document.getElementById('pdEditOverlay');
-      document.getElementById('pdEditCancel').addEventListener('click', () => pdEditOverlay.classList.remove('open'));
-      pdEditOverlay.addEventListener('click', (e) => { if (e.target === pdEditOverlay) pdEditOverlay.classList.remove('open'); });
-      document.getElementById('pdEditSave').addEventListener('click', savePdEdit);
-    })();
 
     async function loadUserCompLevel() {
       if (!currentUser) return;
@@ -28600,13 +28118,14 @@
                                     <th className="num">AP Written</th>
                                     <th className="num">Lead spend</th>
                                     <th className="num">Deposits</th>
+                                    <th className="dt-fill" aria-hidden="true"></th>
                                   </tr>
                                 </thead>
                                 <tbody>
                                   {weeks.map(wk => (
                                     <React.Fragment key={wk.start.toISOString()}>
                                       <tr className="week-hd">
-                                        <td colSpan="10">{wk.label}</td>
+                                        <td colSpan="11">{wk.label}</td>
                                       </tr>
                                       {wk.days.map(d => {
                                         const lbl = d.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
@@ -28630,6 +28149,7 @@
                                             {cell('annual_premium', 'AP Written', true, 'num', false)}
                                             {cell('lead_spend', 'Lead spend', true, 'num')}
                                             {cell('deposits', 'Deposits', true, 'num')}
+                                            <td className="dt-fill" aria-hidden="true"></td>
                                           </tr>
                                         );
                                       })}
@@ -28644,6 +28164,7 @@
                                         <td data-label="AP Written" className="num">{fmtCurrency(wk.total.annual_premium)}</td>
                                         <td data-label="Lead spend" className="num">{fmtCurrency(wk.total.lead_spend)}</td>
                                         <td data-label="Deposits" className="num">{fmtCurrency(wk.total.deposits)}</td>
+                                        <td className="dt-fill" aria-hidden="true"></td>
                                       </tr>
                                     </React.Fragment>
                                   ))}
