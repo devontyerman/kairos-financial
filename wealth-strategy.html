@@ -73,6 +73,9 @@
         <button onclick="openModal('')" style="display:inline-flex; align-items:center; gap:9px; border:none; cursor:pointer; padding:17px 30px; border-radius:13px; background:linear-gradient(135deg,var(--accent,#0AA6A1),#1668CC); color:#fff; font:700 16px 'Plus Jakarta Sans',sans-serif; box-shadow:0 12px 30px rgba(10,166,161,0.32);">Request an Illustration →</button>
         <span style="font:600 15px 'Plus Jakarta Sans',sans-serif; color:#7C93A3;">free · 3 products · one referral</span>
       </div>
+      <div style="margin-top:20px;">
+        <button onclick="openBooking(false)" style="background:none; border:none; padding:0; cursor:pointer; text-align:left; font:700 15px 'Plus Jakarta Sans',sans-serif; color:#1668CC; text-decoration:underline; text-underline-offset:3px;">Already requested an illustration? Click here if you're ready to book the call →</button>
+      </div>
     </div>
 
     <!-- illustration -->
@@ -302,6 +305,9 @@
       <h2 style="font:700 clamp(36px,6vw,66px) 'Space Grotesk',sans-serif; letter-spacing:-0.03em; line-height:1.02; margin:0 auto 22px; color:#fff; max-width:760px;">Request the illustration. <span style="background:linear-gradient(110deg,#5BD0C8,#6FB4EC); -webkit-background-clip:text; background-clip:text; color:transparent;">Book the call.</span></h2>
       <p style="font:500 17px/1.6 'Plus Jakarta Sans',sans-serif; color:#A7C0D0; max-width:540px; margin:0 auto 32px;">Submit your client's details, a specialist builds the illustration, and you tee up the call. The handoff is your close.</p>
       <button onclick="openModal('')" style="border:none; cursor:pointer; padding:18px 34px; border-radius:13px; background:linear-gradient(135deg,var(--accent,#0AA6A1),#1668CC); color:#fff; font:700 17px 'Plus Jakarta Sans',sans-serif; box-shadow:0 14px 38px rgba(10,166,161,0.4);">Request an Illustration →</button>
+      <div style="margin-top:24px;">
+        <button onclick="openBooking(false)" style="background:none; border:none; padding:0; cursor:pointer; font:700 15px 'Plus Jakarta Sans',sans-serif; color:#5BD0C8; text-decoration:underline; text-underline-offset:3px;">Already requested an illustration? Click here if you're ready to book the call →</button>
+      </div>
     </div>
   </section>
 
@@ -463,8 +469,8 @@
     <div onclick="event.stopPropagation()" style="width:100%; max-width:560px; background:#F4F8FA; border-radius:24px; overflow:hidden; box-shadow:0 30px 80px rgba(0,0,0,0.4);">
       <div style="padding:30px 30px 22px; text-align:center; background:#fff; border-bottom:1px solid #E1EAEF; position:relative;">
         <button onclick="closeBooking()" style="position:absolute; top:18px; right:18px; border:none; cursor:pointer; width:34px; height:34px; border-radius:50%; background:#E8F1F4; color:#4F6B7E; font-size:17px;">✕</button>
-        <div style="width:54px; height:54px; border-radius:50%; background:#E8F4F3; color:var(--accent,#0AA6A1); display:flex; align-items:center; justify-content:center; font-size:26px; margin:0 auto 14px;">✓</div>
-        <div style="font:700 11px 'Plus Jakarta Sans',sans-serif; letter-spacing:.16em; text-transform:uppercase; color:var(--accent,#0AA6A1); margin-bottom:10px;">Illustration request received</div>
+        <div id="kf-booking-check" style="width:54px; height:54px; border-radius:50%; background:#E8F4F3; color:var(--accent,#0AA6A1); display:flex; align-items:center; justify-content:center; font-size:26px; margin:0 auto 14px;">✓</div>
+        <div id="kf-booking-kicker" style="font:700 11px 'Plus Jakarta Sans',sans-serif; letter-spacing:.16em; text-transform:uppercase; color:var(--accent,#0AA6A1); margin-bottom:10px;">Illustration request received</div>
         <h3 style="font:600 30px 'Space Grotesk',sans-serif; letter-spacing:-0.02em; color:#07263F; margin:0 0 8px;">Book a call with an advisor</h3>
         <p style="font:500 15px/1.55 'Plus Jakarta Sans',sans-serif; color:#4F6B7E; margin:0;">Lock in 15 minutes so your specialist can walk your client through the illustration. Pick a time that works.</p>
       </div>
@@ -504,7 +510,9 @@
     document.getElementById("kf-modal").style.display = "none";
     document.body.style.overflow = "";
   }
-  function openBooking(){
+  function openBooking(confirmed){
+    document.getElementById("kf-booking-check").style.display = confirmed ? "flex" : "none";
+    document.getElementById("kf-booking-kicker").textContent = confirmed ? "Illustration request received" : "Ready to book?";
     document.getElementById("kf-booking").style.display = "flex";
     document.body.style.overflow = "hidden";
   }
@@ -610,7 +618,7 @@
       var json = await res.json();
       if(json.success){
         closeModal();
-        openBooking();
+        openBooking(true);
       } else {
         alert("Something went wrong sending your request. Please try again.");
         resetPrimary();
