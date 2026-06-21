@@ -2507,38 +2507,45 @@
     #panel-teamperf .tp-admin-empty { text-align: center; padding: 4rem 1rem; color: #999; font-size: 0.88rem; }
     #panel-teamperf .tp-admin-loading { text-align: center; padding: 3rem; color: #999; }
 
-    /* Tabs — sit at the top of the dark Kairos design as a unified header.
-       No bottom border (each sub-tab has its own header section just below). */
+    /* Tabs — pill bar matching the Pay panel's .pay-tab styling so the UI is
+       congruent across the Sales Hub. Colors are set explicitly per theme
+       because the --tp-* vars live on the tab panels, not this parent bar. */
     #panel-teamperf .tp-admin-tabs {
-      display: flex; gap: 0.25rem;
-      padding: 14px 32px 0 32px;
-      background: var(--tp-bg, #0d0e10);
-      border-bottom: 1px solid var(--tp-hairline, rgba(255,255,255,0.07));
+      display: flex; gap: 8px; flex-wrap: wrap;
+      /* Full-width bg/border (matches the content panel below), but the pills
+         are inset so they line up with the centered 1200px content boxes. */
+      padding: 16px max(32px, calc((100% - 1200px) / 2));
+      background: #0d0e10;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
     }
     #tpatab-performance[data-tp-theme="light"] ~ * .tp-admin-tabs,
     #panel-teamperf:has([data-tp-theme="light"]) .tp-admin-tabs {
       background: #f6f5f1;
       border-bottom-color: rgba(15,12,8,0.08);
     }
-    #panel-teamperf:has([data-tp-theme="light"]) .tp-admin-tab { color: rgba(20,19,15,0.5); }
-    #panel-teamperf:has([data-tp-theme="light"]) .tp-admin-tab:hover { color: rgba(20,19,15,0.85); }
-    #panel-teamperf:has([data-tp-theme="light"]) .tp-admin-tab.active {
-      color: #14130f;
-      border-bottom-color: oklch(0.55 0.16 145);
-    }
     #panel-teamperf .tp-admin-tab {
-      appearance: none; border: 0; background: transparent; cursor: pointer;
-      padding: 12px 18px; margin-bottom: -1px;
-      font-family: 'Geist','Inter',system-ui,sans-serif;
-      font-size: 12px; font-weight: 500; letter-spacing: 0.02em;
-      color: rgba(243,243,241,0.45);
-      border-bottom: 2px solid transparent;
-      transition: color 120ms, border-color 120ms;
+      appearance: none; cursor: pointer;
+      background: #1c1f26;
+      border: 1px solid rgba(255,255,255,0.13);
+      color: rgba(243,243,241,0.72);
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 11px; font-weight: 700;
+      letter-spacing: 0.10em; text-transform: uppercase;
+      border-radius: 100px; padding: 9px 22px;
+      transition: all 120ms;
     }
-    #panel-teamperf .tp-admin-tab:hover { color: rgba(243,243,241,0.85); }
+    #panel-teamperf .tp-admin-tab:hover { color: #f3f3f1; border-color: rgba(255,255,255,0.28); }
     #panel-teamperf .tp-admin-tab.active {
-      color: #f3f3f1;
-      border-bottom-color: oklch(0.72 0.16 145);
+      background: #f3f3f1; color: #0d0e10; border-color: #f3f3f1;
+    }
+    #panel-teamperf:has([data-tp-theme="light"]) .tp-admin-tab {
+      background: #fbfaf6;
+      border-color: rgba(15,12,8,0.16);
+      color: rgba(20,19,15,0.74);
+    }
+    #panel-teamperf:has([data-tp-theme="light"]) .tp-admin-tab:hover { color: #14130f; border-color: rgba(15,12,8,0.3); }
+    #panel-teamperf:has([data-tp-theme="light"]) .tp-admin-tab.active {
+      background: #14130f; color: #f6f5f1; border-color: #14130f;
     }
     #panel-teamperf .tp-admin-panel { display: none; }
     #panel-teamperf .tp-admin-panel.active { display: block; animation: tpPop 0.3s ease; }
@@ -3055,6 +3062,82 @@
       display: grid; place-items: center;
       font-family: var(--tp-mono); font-size: 11px; color: var(--tp-ink-2);
       min-width: 52px; border-right: 1px solid var(--tp-hairline);
+    }
+
+    /* View-mode toggle (Chart ↔ List) */
+    #tpatab-hierarchy .hv-mode-toggle {
+      display: inline-flex; background: var(--tp-surface);
+      border: 1px solid var(--tp-hairline-strong); border-radius: 8px; overflow: hidden;
+    }
+    #tpatab-hierarchy .hv-mode-toggle button {
+      appearance: none; cursor: pointer; background: transparent; border: 0;
+      color: var(--tp-ink-3); padding: 0 12px; height: 30px;
+      display: inline-flex; align-items: center; gap: 6px;
+      font-family: var(--tp-mono); font-size: 11px; letter-spacing: 0.06em;
+      text-transform: uppercase; transition: all 120ms;
+      border-right: 1px solid var(--tp-hairline);
+    }
+    #tpatab-hierarchy .hv-mode-toggle button:last-child { border-right: 0; }
+    #tpatab-hierarchy .hv-mode-toggle button:hover { color: var(--tp-ink-1); }
+    #tpatab-hierarchy .hv-mode-toggle button.on { background: var(--tp-surface-3); color: var(--tp-ink-1); }
+
+    /* List (text) view */
+    #tpatab-hierarchy .hv-list-wrap {
+      flex: 1; position: relative; overflow: auto; min-height: 0;
+      background: var(--tp-surface);
+      border: 1px solid var(--tp-hairline);
+      border-radius: 10px;
+    }
+    #tpatab-hierarchy .hv-list-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 7px 16px; cursor: pointer;
+      border-bottom: 1px solid var(--tp-hairline);
+      transition: background 100ms;
+    }
+    #tpatab-hierarchy .hv-list-row:hover { background: var(--tp-surface-2); }
+    #tpatab-hierarchy .hv-list-row.selected { background: color-mix(in oklch, var(--rb-blue) 14%, var(--tp-surface)); }
+    #tpatab-hierarchy .hv-list-row.search-hit { background: color-mix(in oklch, var(--rb-yellow) 12%, var(--tp-surface)); }
+    #tpatab-hierarchy .hv-list-twisty {
+      appearance: none; border: 0; background: transparent; cursor: pointer;
+      color: var(--tp-ink-3); width: 18px; height: 18px; flex-shrink: 0;
+      display: grid; place-items: center; font-size: 9px; border-radius: 4px;
+      transition: transform 120ms, color 120ms, background 120ms;
+    }
+    #tpatab-hierarchy .hv-list-twisty:hover { color: var(--tp-ink-1); background: var(--tp-surface-3); }
+    #tpatab-hierarchy .hv-list-twisty.spacer { visibility: hidden; }
+    #tpatab-hierarchy .hv-list-rank {
+      flex-shrink: 0; width: 30px; height: 20px; border-radius: 5px;
+      display: grid; place-items: center;
+      font-family: var(--tp-mono); font-size: 9px; font-weight: 700; letter-spacing: 0.04em;
+      color: #fff; box-shadow: 0 0 0 1px var(--tp-hairline-strong);
+    }
+    #tpatab-hierarchy .hv-list-name {
+      font-family: var(--tp-sans); font-size: 13px; color: var(--tp-ink-1);
+      font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    #tpatab-hierarchy .hv-list-tag {
+      font-family: var(--tp-mono); font-size: 9px; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--tp-ink-3); flex-shrink: 0;
+      border: 1px solid var(--tp-hairline-strong); border-radius: 100px; padding: 2px 7px;
+    }
+    #tpatab-hierarchy .hv-list-tag.you {
+      color: var(--tp-ink-1);
+      border-color: color-mix(in oklch, var(--rb-blue) 50%, transparent);
+      background: color-mix(in oklch, var(--rb-blue) 16%, var(--tp-surface));
+    }
+    #tpatab-hierarchy .hv-list-spacer { flex: 1 1 auto; min-width: 12px; }
+    #tpatab-hierarchy .hv-list-meta {
+      font-family: var(--tp-mono); font-size: 11px; color: var(--tp-ink-3);
+      font-variant-numeric: tabular-nums; flex-shrink: 0;
+      min-width: 92px; text-align: right;
+    }
+    #tpatab-hierarchy .hv-list-ap {
+      font-family: var(--tp-mono); font-size: 12px; color: var(--tp-ink-1);
+      font-variant-numeric: tabular-nums; font-weight: 500; flex-shrink: 0;
+      min-width: 84px; text-align: right;
+    }
+    @media (max-width: 720px) {
+      #tpatab-hierarchy .hv-list-meta { display: none; }
     }
 
     /* Canvas */
@@ -5795,9 +5878,7 @@
       margin-bottom: 16px !important;
       display: flex; align-items: center; gap: 10px;
     }
-    #panel-profile.active .ss-form-title svg,
-    #panel-profile.active #profileAdminCard .ss-form-title svg { color: var(--kf-ink-3); }
-    #panel-profile.active #profileAdminCard .ss-form-title { color: var(--kf-ink-1) !important; }
+    #panel-profile.active .ss-form-title svg { color: var(--kf-ink-3); }
     #panel-profile.active .ss-form-card p {
       color: var(--kf-ink-3) !important;
       font-family: var(--kf-sans) !important;
@@ -5866,18 +5947,6 @@
     }
     #panel-profile.active #profileSignOut:hover {
       background: color-mix(in oklch, var(--rb-red) 28%, var(--kf-surface)) !important;
-      box-shadow: none !important;
-    }
-    /* Admin dashboard link — neutral variant */
-    #panel-profile.active #profileAdminCard a.ss-submit {
-      background: var(--kf-surface) !important;
-      color: var(--kf-ink-2) !important;
-      border: 1px solid var(--kf-hairline-strong) !important;
-    }
-    #panel-profile.active #profileAdminCard a.ss-submit:hover {
-      background: var(--kf-surface-2) !important;
-      border-color: var(--kf-ink-3) !important;
-      color: var(--kf-ink-1) !important;
       box-shadow: none !important;
     }
     #panel-profile.active #profileCompMsg,
@@ -14216,19 +14285,6 @@
           <p class="ss-panel-sub">Update your account info and compensation level.</p>
         </div>
 
-        <!-- Admin Dashboard (admin only) -->
-        <div class="ss-form-card" id="profileAdminCard" style="margin-bottom:1.25rem;display:none;">
-          <div class="ss-form-title" style="color:#2d2d35;">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z"/></svg>
-            Admin Access
-          </div>
-          <p style="font-size:0.82rem;color:#666;margin-bottom:0.9rem;">Open the admin sales dashboard to view, edit, and manage all agent policies.</p>
-          <a href="admin-sales.html" class="ss-submit" style="background:#2d2d35;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:0.5rem;">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
-            Open Admin Dashboard
-          </a>
-        </div>
-
         <!-- Comp Level -->
         <div class="ss-form-card" style="margin-bottom:1.25rem;">
           <div class="ss-form-title" style="color:#16a34a;">
@@ -19127,12 +19183,6 @@
       if (userCompLevel) sel.value = userCompLevel;
       // Set current email
       document.getElementById('profileEmail').value = currentUser.email || '';
-      // Show admin dashboard link only for the admin email
-      const adminCard = document.getElementById('profileAdminCard');
-      if (adminCard) {
-        const isAdmin = (currentUser.email || '').toLowerCase() === 'dev@kairos-financial.com';
-        adminCard.style.display = isAdmin ? '' : 'none';
-      }
       // Load saved licenses + carrier numbers
       loadProfileLicenses();
     }
@@ -20745,14 +20795,10 @@
             const apIsBestDay = apActual > 0 && apActual === repBest.bestDay;
             const apCrown = apIsBestDay ? '<span class="wt-crown" title="Best day">👑</span>' : '';
 
+            // Day-to-day shows only the numbers actually entered (Dial Actual,
+            // AP Actual). Per-day goals are kept in the left-hand totals, not here.
             dayCells +=
-              '<td class="wt-day-cell goal first-of-day">' +
-                '<input type="text" inputmode="numeric" data-wt-goal-kind="dial" data-wt-goal-week="' + escHtml(weekKey) + '" data-wt-goal-rep="' + escHtml(row.rep) + '" data-wt-goal-day="' + di + '" value="' + escHtml(dialGoalDisplay) + '" placeholder="0" />' +
-              '</td>' +
-              '<td class="wt-day-cell goal">' +
-                '<input type="text" inputmode="decimal" data-wt-goal-kind="ap" data-wt-goal-week="' + escHtml(weekKey) + '" data-wt-goal-rep="' + escHtml(row.rep) + '" data-wt-goal-day="' + di + '" value="' + escHtml(apGoalDisplay) + '" placeholder="$0" />' +
-              '</td>' +
-              '<td class="wt-day-cell actual ' + dialCls.cls + '">' + escHtml(dialActualDisplay) + dialCls.pct + '</td>' +
+              '<td class="wt-day-cell actual first-of-day ' + dialCls.cls + '">' + escHtml(dialActualDisplay) + dialCls.pct + '</td>' +
               '<td class="wt-day-cell actual ' + apCls.cls + '">' + escHtml(apActualDisplay) + apCls.pct + apCrown + '</td>';
           }
           const weeklyGoalDisplay = (row.weeklyGoal != null) ? '$' + Number(row.weeklyGoal).toLocaleString() : '';
@@ -20819,27 +20865,23 @@
           _mtdProj = projectPace(totalMTD, _dayOfMonth, _daysInMonth);
         }
 
-        // Header rows: each day spans 4 sub-cols (AP Goal/Actual, Dial Goal/Actual)
+        // Header rows: each day spans 2 sub-cols (Dial Actual, AP Actual)
         let dayHeaderHtml = '';
-        DAYS.forEach(d => { dayHeaderHtml += '<th colspan="4">' + d + '</th>'; });
+        DAYS.forEach(d => { dayHeaderHtml += '<th colspan="2">' + d + '</th>'; });
         let subHeaderHtml = '';
         DAYS.forEach(() => {
-          subHeaderHtml += '<th class="wt-sub-goal">Dial Goal</th>' +
-                           '<th class="wt-sub-goal">AP Goal</th>' +
-                           '<th class="wt-sub-actual">Dial Actual</th>' +
+          subHeaderHtml += '<th class="wt-sub-actual">Dial Actual</th>' +
                            '<th class="wt-sub-actual">AP Actual</th>';
         });
-        // Footer: only AP totals. Dial cells render empty so column alignment
-        // stays correct.
+        // Footer: only AP totals. The dial cell renders empty so column
+        // alignment stays correct.
         let footDayHtml = '';
         dayTotals.forEach(dt => {
           footDayHtml += '<td class="wt-foot-empty"></td>' +
-                         '<td>' + escHtml(fmtMoney(dt.apGoal)) + '</td>' +
-                         '<td class="wt-foot-empty"></td>' +
                          '<td>' + escHtml(fmtMoney(dt.apActual)) + '</td>';
         });
 
-        const colCount = 7 + (DAYS.length * 4) + 1; // rank,name,monthlyGoal,mtd,weeklyGoal,wtd,wtdDials + 4*days + ytd
+        const colCount = 7 + (DAYS.length * 2) + 1; // rank,name,monthlyGoal,mtd,weeklyGoal,wtd,wtdDials + 2*days + ytd
 
         const headerHtml =
           '<div class="wt-sheet-header">' +
@@ -25263,21 +25305,50 @@
       }
 
       function hvBuildIndex(profiles) {
+        // Disabled/archived agents (status === 'inactive') are dropped entirely
+        // so they never appear in the org chart.
+        const active = (profiles || []).filter(p => (p.status || 'active') !== 'inactive');
         const byId = new Map();
-        profiles.forEach(p => byId.set(p.user_id, Object.assign({}, p, { children: [] })));
+        active.forEach(p => byId.set(p.user_id, Object.assign({}, p, { children: [] })));
+        // The signed-in owner's node (tagged with _is_admin in hvAttachStats).
+        // Any agent without a still-active manager — brand-new signups, or whose
+        // upline was disabled — is coded directly under the owner.
+        let adminNode = null;
+        for (const a of byId.values()) { if (a._is_admin) { adminNode = a; break; } }
         let roots = [];
         for (const a of byId.values()) {
           if (a.manager_user_id && byId.has(a.manager_user_id)) {
             byId.get(a.manager_user_id).children.push(a);
+          } else if (adminNode && a.user_id !== adminNode.user_id) {
+            adminNode.children.push(a);
           } else {
             roots.push(a);
           }
         }
+        // Rank each person's direct reports by production automatically — the
+        // total AP YTD of their whole line (their own sales + entire downline),
+        // highest first. So the strongest producers/teams float to the top at
+        // every level. Tie-break by name for a stable layout.
+        // Branch totals = a person's own production + their entire downline.
+        // Stored on each node as _branchAp / _branchDeals so the org chart and
+        // list show the whole line's production (personal numbers stay on _ap /
+        // _deals for the click-through detail panel).
+        function computeBranchAp(node) {
+          let ap = node._ap || 0;
+          let deals = node._deals || 0;
+          for (const c of node.children) {
+            const sub = computeBranchAp(c);
+            ap += sub.ap; deals += sub.deals;
+          }
+          node._branchAp = ap;
+          node._branchDeals = deals;
+          return { ap, deals };
+        }
+        roots.forEach(computeBranchAp);
         for (const n of byId.values()) {
           n.children.sort((a, b) => {
-            // Managers first, then by name for stable layout.
-            const am = a.is_manager ? 1 : 0, bm = b.is_manager ? 1 : 0;
-            if (am !== bm) return bm - am;
+            const av = a._branchAp || 0, bv = b._branchAp || 0;
+            if (bv !== av) return bv - av;
             return (a.agent_name || '').localeCompare(b.agent_name || '');
           });
         }
@@ -25411,12 +25482,12 @@
               </div>
               <div className="hv-node-stats">
                 <div className="hv-node-stat">
-                  <div className="hv-node-stat-val">{hvFmtMoney(profile._ap || 0)}</div>
-                  <div className="hv-node-stat-lbl">AP YTD</div>
+                  <div className="hv-node-stat-val">{hvFmtMoney(profile._branchAp != null ? profile._branchAp : (profile._ap || 0))}</div>
+                  <div className="hv-node-stat-lbl">Team AP YTD</div>
                 </div>
                 <div className="hv-node-stat">
-                  <div className="hv-node-stat-val">{profile._deals || 0}</div>
-                  <div className="hv-node-stat-lbl">Deals</div>
+                  <div className="hv-node-stat-val">{profile._branchDeals != null ? profile._branchDeals : (profile._deals || 0)}</div>
+                  <div className="hv-node-stat-lbl">Team Deals</div>
                 </div>
                 <div className="hv-node-stat">
                   <div className="hv-node-stat-val">{roll.downlineCount}</div>
@@ -25581,6 +25652,52 @@
         );
       }
 
+      // Text-based outline of the org. Recursive; indents by depth and lets
+      // each branch collapse so large orgs stay scannable without zooming.
+      function HvListRows({ nodes, depth, byId, selectedId, onSelect, collapsed, onToggle, searchLower }) {
+        return nodes.map(n => {
+          const kids = n.children || [];
+          const hasKids = kids.length > 0;
+          const isCollapsed = collapsed.has(n.user_id);
+          const roll = hvRollup(n.user_id, byId);
+          const rank = hvRankFor(n);
+          const nameMatch = !!searchLower && (n.agent_name || '').toLowerCase().includes(searchLower);
+          const rowCls = 'hv-list-row'
+            + (selectedId === n.user_id ? ' selected' : '')
+            + (nameMatch ? ' search-hit' : '');
+          return (
+            <React.Fragment key={n.user_id}>
+              <div className={rowCls}
+                   style={{ paddingLeft: (depth * 22 + 14) + 'px' }}
+                   onClick={(e) => { e.stopPropagation(); onSelect(n.user_id); }}>
+                {hasKids ? (
+                  <button className="hv-list-twisty"
+                          title={isCollapsed ? 'Expand' : 'Collapse'}
+                          style={{ transform: isCollapsed ? 'rotate(-90deg)' : 'none' }}
+                          onClick={(e) => { e.stopPropagation(); onToggle(n.user_id); }}>▼</button>
+                ) : (
+                  <span className="hv-list-twisty spacer">▼</span>
+                )}
+                <span className="hv-list-rank" style={{ background: rank.color }}>{rank.key}</span>
+                <span className="hv-list-name">{n.agent_name || 'Unnamed'}</span>
+                {n._is_admin
+                  ? <span className="hv-list-tag you">You</span>
+                  : (n.is_manager ? <span className="hv-list-tag">Manager</span> : null)}
+                <span className="hv-list-spacer"></span>
+                <span className="hv-list-meta">{hasKids ? (kids.length + ' direct') : '—'}</span>
+                <span className="hv-list-meta">{roll.downlineCount} downline</span>
+                <span className="hv-list-ap" title="Team AP YTD (incl. downline)">{hvFmtMoney(n._branchAp != null ? n._branchAp : (n._ap || 0))}</span>
+              </div>
+              {hasKids && !isCollapsed && (
+                <HvListRows nodes={kids} depth={depth + 1} byId={byId} selectedId={selectedId}
+                            onSelect={onSelect} collapsed={collapsed} onToggle={onToggle}
+                            searchLower={searchLower} />
+              )}
+            </React.Fragment>
+          );
+        });
+      }
+
       function HierarchyView() {
         const [theme, setTheme] = useState(initialTheme);
         useEffect(() => kfWatchTheme(setTheme), []); // follow the global skin theme
@@ -25592,6 +25709,13 @@
         const [search, setSearch] = useState('');
         const [view, setView] = useState({ x: 80, y: 40, scale: 0.85 });
         const [confirmFor, setConfirmFor] = useState(null); // { profile, grant: bool }
+        const [hvMode, setHvMode] = useState('chart'); // 'chart' | 'list'
+        const [collapsed, setCollapsed] = useState(() => new Set()); // collapsed branch ids in list view
+        const toggleCollapse = (id) => setCollapsed(prev => {
+          const next = new Set(prev);
+          if (next.has(id)) next.delete(id); else next.add(id);
+          return next;
+        });
         const wrapRef = useRef(null);
         const panRef = useRef({ active: false });
         const fittedRef = useRef(false);
@@ -25833,7 +25957,6 @@
             <header className="hv-hdr">
               <div className="hv-hdr-l">
                 <div className="hv-hdr-brand">
-                  <div className="hv-hdr-mark"></div>
                   <div className="hv-hdr-title">Kairos Financial</div>
                   <span className="hv-hdr-sub">· Agent Hierarchy</span>
                 </div>
@@ -25867,16 +25990,30 @@
                 )}
               </div>
               <div className="hv-toolbar-r">
-                <button className="hv-btn" onClick={zoomFit}>Fit</button>
-                <div className="hv-zoom-cluster">
-                  <button onClick={() => zoomBy(-1)} title="Zoom out">−</button>
-                  <div className="hv-zoom-val">{Math.round(view.scale * 100)}%</div>
-                  <button onClick={() => zoomBy(1)} title="Zoom in">+</button>
+                <div className="hv-mode-toggle">
+                  <button className={hvMode === 'chart' ? 'on' : ''} onClick={() => setHvMode('chart')}>Chart</button>
+                  <button className={hvMode === 'list' ? 'on' : ''} onClick={() => setHvMode('list')}>List</button>
                 </div>
+                {hvMode === 'chart' && (
+                  <>
+                    <button className="hv-btn" onClick={zoomFit}>Fit</button>
+                    <div className="hv-zoom-cluster">
+                      <button onClick={() => zoomBy(-1)} title="Zoom out">−</button>
+                      <div className="hv-zoom-val">{Math.round(view.scale * 100)}%</div>
+                      <button onClick={() => zoomBy(1)} title="Zoom in">+</button>
+                    </div>
+                  </>
+                )}
+                {hvMode === 'list' && (
+                  <>
+                    <button className="hv-btn" onClick={() => setCollapsed(new Set())}>Expand all</button>
+                    <button className="hv-btn" onClick={() => setCollapsed(new Set(Array.from(byId.values()).filter(n => n.children.length).map(n => n.user_id)))}>Collapse all</button>
+                  </>
+                )}
               </div>
             </div>
 
-            <div className="hv-canvas-wrap" ref={wrapRef}>
+            <div className="hv-canvas-wrap" ref={wrapRef} style={{ display: hvMode === 'chart' ? '' : 'none' }}>
               <div className="hv-canvas-bg" style={{
                 backgroundSize: (24 * view.scale) + 'px ' + (24 * view.scale) + 'px',
                 backgroundPosition: view.x + 'px ' + view.y + 'px',
@@ -25914,6 +26051,28 @@
                 <div className="hv-overlay-msg">No agents to display.</div>
               )}
             </div>
+
+            {hvMode === 'list' && (
+              <div className="hv-list-wrap" onClick={() => setSelectedId(null)}>
+                {loading && <div className="hv-overlay-msg">Loading hierarchy…</div>}
+                {error && <div className="hv-overlay-msg" style={{color:'var(--tp-neg)'}}>Failed to load: {error}</div>}
+                {!loading && !error && profiles.length === 0 && (
+                  <div className="hv-overlay-msg">No agents to display.</div>
+                )}
+                {!loading && !error && profiles.length > 0 && (
+                  <HvListRows
+                    nodes={roots}
+                    depth={0}
+                    byId={byId}
+                    selectedId={selectedId}
+                    onSelect={setSelectedId}
+                    collapsed={collapsed}
+                    onToggle={toggleCollapse}
+                    searchLower={search.trim().toLowerCase()}
+                  />
+                )}
+              </div>
+            )}
 
             {selected && (
               <HvDetailPanel
