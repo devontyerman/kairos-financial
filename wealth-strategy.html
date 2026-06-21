@@ -551,29 +551,25 @@
           </div>
           <button onclick="closeModal()" style="border:none; cursor:pointer; width:36px; height:36px; border-radius:50%; background:#E8F1F4; color:#4F6B7E; font-size:18px; line-height:1; flex:none;">✕</button>
         </div>
-        <div style="display:flex; gap:5px; margin-bottom:8px;">
-          <div id="kf-bar-0" style="height:4px; border-radius:2px; flex:1;"></div>
-          <div id="kf-bar-1" style="height:4px; border-radius:2px; flex:1;"></div>
-          <div id="kf-bar-2" style="height:4px; border-radius:2px; flex:1;"></div>
-          <div id="kf-bar-3" style="height:4px; border-radius:2px; flex:1;"></div>
-          <div id="kf-bar-4" style="height:4px; border-radius:2px; flex:1;"></div>
-          <div id="kf-bar-5" style="height:4px; border-radius:2px; flex:1;"></div>
-        </div>
-        <div style="display:flex; gap:5px;">
-          <div id="kf-label-0" style="font:500 10px 'Plus Jakarta Sans',sans-serif; letter-spacing:.02em; white-space:nowrap; flex:1; text-align:center;">Client</div>
-          <div id="kf-label-1" style="font:500 10px 'Plus Jakarta Sans',sans-serif; letter-spacing:.02em; white-space:nowrap; flex:1; text-align:center;">Finances</div>
-          <div id="kf-label-2" style="font:500 10px 'Plus Jakarta Sans',sans-serif; letter-spacing:.02em; white-space:nowrap; flex:1; text-align:center;">Medical</div>
-          <div id="kf-label-3" style="font:500 10px 'Plus Jakarta Sans',sans-serif; letter-spacing:.02em; white-space:nowrap; flex:1; text-align:center;">Conditions</div>
-          <div id="kf-label-4" style="font:500 10px 'Plus Jakarta Sans',sans-serif; letter-spacing:.02em; white-space:nowrap; flex:1; text-align:center;">The Why</div>
-          <div id="kf-label-5" style="font:500 10px 'Plus Jakarta Sans',sans-serif; letter-spacing:.02em; white-space:nowrap; flex:1; text-align:center;">Review</div>
-        </div>
+        <div id="kf-bars" style="display:flex; gap:5px; margin-bottom:8px;"></div>
+        <div id="kf-labels" style="display:flex; gap:5px;"></div>
       </div>
 
       <!-- modal body -->
       <div style="padding:26px 28px; max-height:58vh; overflow-y:auto;">
 
-        <!-- STEP 0: CLIENT -->
-        <div data-step="0" style="display:flex; flex-direction:column; gap:20px;">
+        <!-- STEP 0: REFERRING PRODUCER -->
+        <div data-step="0">
+          <div style="font:600 19px 'Space Grotesk',sans-serif; color:#07263F; letter-spacing:-0.01em; margin-bottom:6px;">Who's referring this client?</div>
+          <p style="font:500 14px/1.55 'Plus Jakarta Sans',sans-serif; color:#4F6B7E; margin:0 0 20px;">Enter your name as the referring producer — this is who the commission flows to.</p>
+          <div data-grid2 style="display:grid; grid-template-columns:1fr 1fr; gap:16px 18px;">
+            <label style="display:flex; flex-direction:column; gap:7px;"><span style="font:600 11px 'Plus Jakarta Sans',sans-serif; letter-spacing:.12em; text-transform:uppercase; color:#7C93A3;">Producer first name</span><input id="kf-producerFirst" placeholder="John" style="width:100%; box-sizing:border-box; padding:13px 14px; border:1.5px solid #DCE6EC; border-radius:10px; background:#F4F8FA; font:500 15px 'Plus Jakarta Sans',sans-serif; color:#07263F; outline:none;" /></label>
+            <label style="display:flex; flex-direction:column; gap:7px;"><span style="font:600 11px 'Plus Jakarta Sans',sans-serif; letter-spacing:.12em; text-transform:uppercase; color:#7C93A3;">Producer last name</span><input id="kf-producerLast" placeholder="Doe" style="width:100%; box-sizing:border-box; padding:13px 14px; border:1.5px solid #DCE6EC; border-radius:10px; background:#F4F8FA; font:500 15px 'Plus Jakarta Sans',sans-serif; color:#07263F; outline:none;" /></label>
+          </div>
+        </div>
+
+        <!-- STEP 1: CLIENT -->
+        <div data-step="1" style="display:flex; flex-direction:column; gap:20px;">
           <div>
             <div style="font:600 11px 'Plus Jakarta Sans',sans-serif; letter-spacing:.12em; text-transform:uppercase; color:#7C93A3; margin-bottom:10px;">Which product is this illustration for? <span style="color:var(--accent,#0AA6A1);">*</span></div>
             <select id="kf-product-select" onchange="product=this.value; render();" style="width:100%; box-sizing:border-box; padding:14px; border:1.5px solid #DCE6EC; border-radius:10px; background:#F4F8FA; font:600 15px 'Plus Jakarta Sans',sans-serif; color:#07263F; outline:none; cursor:pointer;">
@@ -599,7 +595,7 @@
         </div>
 
         <!-- STEP 1: FINANCES -->
-        <div data-step="1" style="display:none;">
+        <div data-step="2" style="display:none;">
         <div data-grid2 style="display:grid; grid-template-columns:1fr 1fr; gap:16px 18px;">
           <label style="display:flex; flex-direction:column; gap:7px;"><span style="font:600 11px 'Plus Jakarta Sans',sans-serif; letter-spacing:.12em; text-transform:uppercase; color:#7C93A3;">Annual income</span><input id="kf-income" placeholder="$85,000" style="width:100%; box-sizing:border-box; padding:13px 14px; border:1.5px solid #DCE6EC; border-radius:10px; background:#F4F8FA; font:500 15px 'Plus Jakarta Sans',sans-serif; color:#07263F; outline:none;" /></label>
           <label style="display:flex; flex-direction:column; gap:7px;"><span style="font:600 11px 'Plus Jakarta Sans',sans-serif; letter-spacing:.12em; text-transform:uppercase; color:#7C93A3;">Housing expense (monthly)</span><input id="kf-housing" placeholder="$1,800 mortgage/rent" style="width:100%; box-sizing:border-box; padding:13px 14px; border:1.5px solid #DCE6EC; border-radius:10px; background:#F4F8FA; font:500 15px 'Plus Jakarta Sans',sans-serif; color:#07263F; outline:none;" /></label>
@@ -611,7 +607,7 @@
         </div>
 
         <!-- STEP 2: MEDICAL -->
-        <div data-step="2" style="display:none;">
+        <div data-step="3" style="display:none;">
         <div data-grid2 style="display:grid; grid-template-columns:1fr 1fr; gap:16px 18px;">
           <label style="display:flex; flex-direction:column; gap:7px;"><span style="font:600 11px 'Plus Jakarta Sans',sans-serif; letter-spacing:.12em; text-transform:uppercase; color:#7C93A3;">Smoker / nicotine use</span><select id="kf-smoker" style="width:100%; box-sizing:border-box; padding:13px 14px; border:1.5px solid #DCE6EC; border-radius:10px; background:#F4F8FA; font:500 15px 'Plus Jakarta Sans',sans-serif; color:#07263F; outline:none;"><option value="" disabled selected>Select…</option><option value="No">No</option><option value="Yes">Yes</option><option value="Former">Former</option></select></label>
           <label style="display:flex; flex-direction:column; gap:7px;"><span style="font:600 11px 'Plus Jakarta Sans',sans-serif; letter-spacing:.12em; text-transform:uppercase; color:#7C93A3;">Age</span><input id="kf-age" type="number" placeholder="54" style="width:100%; box-sizing:border-box; padding:13px 14px; border:1.5px solid #DCE6EC; border-radius:10px; background:#F4F8FA; font:500 15px 'Plus Jakarta Sans',sans-serif; color:#07263F; outline:none;" /></label>
@@ -622,14 +618,14 @@
         </div>
 
         <!-- STEP 3: CONDITIONS -->
-        <div data-step="3" style="display:none;">
+        <div data-step="4" style="display:none;">
         <div style="display:flex; flex-direction:column;">
           <label style="display:flex; flex-direction:column; gap:7px;"><span style="font:600 11px 'Plus Jakarta Sans',sans-serif; letter-spacing:.12em; text-transform:uppercase; color:#7C93A3;">Current health conditions</span><textarea id="kf-conditions" placeholder="List each condition, plus when it was diagnosed and how severe it is (mild / moderate / severe / controlled)" style="width:100%; box-sizing:border-box; min-height:150px; resize:vertical; padding:13px 14px; border:1.5px solid #DCE6EC; border-radius:10px; background:#F4F8FA; font:500 15px/1.5 'Plus Jakarta Sans',sans-serif; color:#07263F; outline:none;"></textarea><span style="font:500 12px 'Plus Jakarta Sans',sans-serif; color:#9DB1BE; margin-top:7px;">Include when each condition was diagnosed and its severity here.</span></label>
         </div>
         </div>
 
         <!-- STEP 4: THE WHY -->
-        <div data-step="4" style="display:none;">
+        <div data-step="5" style="display:none;">
         <div style="display:flex; flex-direction:column; gap:10px;">
           <div style="font:600 19px 'Space Grotesk',sans-serif; color:#07263F; letter-spacing:-0.01em;">Their "why"</div>
           <p style="font:500 14px/1.55 'Plus Jakarta Sans',sans-serif; color:#4F6B7E; margin:0 0 4px;">Why is your client looking to put this coverage in place? What is it for? This is the hook the specialist ties the whole call to.</p>
@@ -638,12 +634,13 @@
         </div>
 
         <!-- STEP 5: REVIEW -->
-        <div data-step="5" style="display:none;">
+        <div data-step="6" style="display:none;">
         <div style="display:flex; flex-direction:column; gap:18px;">
           <div style="font:600 19px 'Space Grotesk',sans-serif; color:#07263F; letter-spacing:-0.01em;">Review &amp; submit</div>
           <div style="background:#fff; border:1px solid #E1EAEF; border-radius:16px; overflow:hidden;">
             <div style="padding:13px 18px; background:#E8F1F4; font:700 12px 'Plus Jakarta Sans',sans-serif; letter-spacing:.08em; text-transform:uppercase; color:#4F6B7E;">Product · Client</div>
             <div style="padding:6px 18px;">
+              <div style="display:flex; justify-content:space-between; gap:16px; padding:9px 0; border-bottom:1px solid #EEF4F7; font:500 14px 'Plus Jakarta Sans',sans-serif;"><span style="color:#7C93A3;">Referring producer</span><span id="kf-r-producer" style="color:#07263F; font-weight:700;">—</span></div>
               <div style="display:flex; justify-content:space-between; gap:16px; padding:9px 0; border-bottom:1px solid #EEF4F7; font:500 14px 'Plus Jakarta Sans',sans-serif;"><span style="color:#7C93A3;">Product</span><span id="kf-r-product" style="color:#07263F; font-weight:700;">—</span></div>
               <div id="kf-r-capital-row" style="display:none; justify-content:space-between; gap:16px; padding:9px 0; border-bottom:1px solid #EEF4F7; font:500 14px 'Plus Jakarta Sans',sans-serif;"><span style="color:#7C93A3;">Capital to protect</span><span id="kf-r-capital" style="color:#07263F;">—</span></div>
               <div style="display:flex; justify-content:space-between; gap:16px; padding:9px 0; border-bottom:1px solid #EEF4F7; font:500 14px 'Plus Jakarta Sans',sans-serif;"><span style="color:#7C93A3;">Name</span><span id="kf-r-name" style="color:#07263F;">—</span></div>
@@ -715,15 +712,35 @@
   var WEB3FORMS_ACCESS_KEY = "0ecd0522-64de-4aa0-8906-751bf2161e34";
 
   var FIELDS = ["name","email","phone","beneficiary","income","housing","debts","expenses","lifePolicies","retirement","smoker","age","height","weight","medications","conditions","why"];
+  var TITLES = ["Producer","Client","Finances","Medical","Conditions","The Why","Review"];
+  var LAST_STEP = TITLES.length - 1;
+  var PRODUCT_STEP = 1;
   var currentStep = 0;
   var product = "";
 
+  function buildProgress(){
+    var bars = document.getElementById("kf-bars");
+    var labels = document.getElementById("kf-labels");
+    if(bars.children.length) return;
+    TITLES.forEach(function(t){
+      var b = document.createElement("div");
+      b.style.cssText = "height:4px; border-radius:2px; flex:1;";
+      bars.appendChild(b);
+      var l = document.createElement("div");
+      l.textContent = t;
+      l.style.cssText = "font:500 10px 'Plus Jakarta Sans',sans-serif; letter-spacing:.02em; white-space:nowrap; flex:1; text-align:center;";
+      labels.appendChild(l);
+    });
+  }
+
   function val(id){ var el = document.getElementById("kf-" + id); return el ? el.value.trim() : ""; }
   function disp(id){ var v = val(id); return v ? v : "—"; }
+  function producerName(){ return (val("producerFirst") + " " + val("producerLast")).trim(); }
 
   function openModal(p){
     product = p || "";
     currentStep = 0;
+    buildProgress();
     document.getElementById("kf-product-select").value = product;
     document.getElementById("kf-modal").style.display = "flex";
     document.body.style.overflow = "hidden";
@@ -746,10 +763,10 @@
   function back(){ if(currentStep > 0){ currentStep--; render(); } }
 
   function primaryAction(){
-    var blocked = currentStep === 0 && !product;
+    var blocked = currentStep === PRODUCT_STEP && !product;
     if(blocked) return;
-    if(currentStep === 0 && product === "Annuities" && !validateCapital()) return;
-    if(currentStep === 5){ submitRequest(); }
+    if(currentStep === PRODUCT_STEP && product === "Annuities" && !validateCapital()) return;
+    if(currentStep === LAST_STEP){ submitRequest(); }
     else { currentStep++; render(); }
   }
 
@@ -784,23 +801,23 @@
     document.getElementById("kf-capital-wrap").style.display = isAnnuity ? "" : "none";
     if(!isAnnuity){ document.getElementById("kf-capital-error").style.display = "none"; }
 
-    for(var i = 0; i <= 5; i++){
+    var bars = document.getElementById("kf-bars").children;
+    var labels = document.getElementById("kf-labels").children;
+    for(var i = 0; i <= LAST_STEP; i++){
       document.querySelector('[data-step="' + i + '"]').style.display = (i === currentStep) ? "" : "none";
-      var bar = document.getElementById("kf-bar-" + i);
-      bar.style.background = (i <= currentStep) ? "var(--accent,#0AA6A1)" : "rgba(7,38,63,0.12)";
-      var lbl = document.getElementById("kf-label-" + i);
-      lbl.style.fontWeight = (i === currentStep) ? "700" : "500";
-      lbl.style.color = (i === currentStep) ? "#07263F" : "#9DB1BE";
+      bars[i].style.background = (i <= currentStep) ? "var(--accent,#0AA6A1)" : "rgba(7,38,63,0.12)";
+      labels[i].style.fontWeight = (i === currentStep) ? "700" : "500";
+      labels[i].style.color = (i === currentStep) ? "#07263F" : "#9DB1BE";
     }
 
-    document.getElementById("kf-progress-label").textContent = "Step " + (currentStep + 1) + " of 6";
+    document.getElementById("kf-progress-label").textContent = "Step " + (currentStep + 1) + " of " + TITLES.length;
     document.getElementById("kf-back").style.display = (currentStep > 0) ? "" : "none";
 
-    var blocked = currentStep === 0 && !product;
+    var blocked = currentStep === PRODUCT_STEP && !product;
     document.getElementById("kf-step0-blocked").style.display = blocked ? "" : "none";
 
     var prim = document.getElementById("kf-primary");
-    var isLast = currentStep === 5;
+    var isLast = currentStep === LAST_STEP;
     prim.textContent = isLast ? "Submit request →" : "Continue →";
     prim.style.opacity = blocked ? "0.45" : "1";
     prim.style.cursor = blocked ? "not-allowed" : "pointer";
@@ -809,6 +826,7 @@
   }
 
   function populateReview(){
+    document.getElementById("kf-r-producer").textContent = producerName() || "—";
     document.getElementById("kf-r-product").textContent = product || "—";
     var capRow = document.getElementById("kf-r-capital-row");
     capRow.style.display = (product === "Annuities") ? "flex" : "none";
@@ -848,10 +866,12 @@
     prim.style.opacity = "0.6";
     prim.style.cursor = "wait";
 
+    var producer = producerName();
     var payload = {
       access_key: WEB3FORMS_ACCESS_KEY,
-      subject: "New Illustration Request — " + (product || "Unspecified"),
+      subject: "New Illustration Request — " + (product || "Unspecified") + (producer ? " (from " + producer + ")" : ""),
       from_name: "Kairos Retirement Referrals",
+      "Referring producer": producer || "—",
       Product: product || "—"
     };
     var labels = {
