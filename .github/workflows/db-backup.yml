@@ -1,0 +1,57 @@
+name: Weekly DB backup to R2
+
+# Dumps the full Supabase database (schema + data) and uploads it to a private
+# Cloudflare R2 bucket. Runs weekly, and can be triggered on demand from the
+# Actions tab ("Run workflow"). Nothing is committed to the repo — the dump only
+# ever goes to R2. Independent of the Vercel deploy.
+#
+# Required repo secrets (Settings → Secrets and variables → Actions):
+#   SUPABASE_DB_URL       Postgres connection string (Supabase → Settings →
+#                         Database → Connection string → URI; use the Session
+#                         pooler URI so it works over IPv4 from GitHub).
+#   R2_ACCOUNT_ID         Cloudflare account ID
+#   R2_ACCESS_KEY_ID      R2 API token access key (scoped to the backups bucket)
+#   R2_SECRET_ACCESS_KEY  R2 API token secret
+#   R2_BUCKET             R2 bucket name, e.g. kairos-backups
+
+on:
+  schedule:
+    - cron: '17 7 * * 0'   # Sundays 07:17 UTC ≈ 3:17am ET
+  workflow_dispatch: {}     # manual "Run workflow" button
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Dump database
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: |
+          set -euo pipefail
+          ts="$(date +%Y-%m-%d_%H%M)"
+          echo "Dumping schema…"
+          supabase db dump --db-url "$SUPABASE_DB_URL" -f "kairos-${ts}-schema.sql"
+          echo "Dumping data…"
+          supabase db dump --db-url "$SUPABASE_DB_URL" --data-only -f "kairos-${ts}-data.sql"
+          gzip "kairos-${ts}-schema.sql" "kairos-${ts}-data.sql"
+          ls -lh kairos-${ts}-*.sql.gz
+
+      - name: Upload to R2
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: auto
+          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+          R2_BUCKET: ${{ secrets.R2_BUCKET }}
+        run: |
+          set -euo pipefail
+          aws s3 cp . "s3://${R2_BUCKET}/db-backups/" \
+            --recursive \
+            --exclude "*" --include "kairos-*.sql.gz" \
+            --endpoint-url "https://${R2_ACCOUNT_ID}.r2.cloudflarestorage.com"
+          echo "Backup uploaded to r2://${R2_BUCKET}/db-backups/"
