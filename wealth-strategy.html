@@ -539,7 +539,7 @@
   </footer>
 
   <!-- ============ REQUEST ILLUSTRATION MODAL ============ -->
-  <div id="kf-modal" onclick="closeModal()" style="display:none; position:fixed; inset:0; z-index:200; background:rgba(7,38,63,0.6); backdrop-filter:blur(4px); align-items:flex-start; justify-content:center; padding:28px 16px; overflow-y:auto;">
+  <div id="kf-modal" style="display:none; position:fixed; inset:0; z-index:200; background:rgba(7,38,63,0.6); backdrop-filter:blur(4px); align-items:flex-start; justify-content:center; padding:28px 16px; overflow-y:auto;">
     <div onclick="event.stopPropagation()" style="width:100%; max-width:740px; background:#F4F8FA; border-radius:24px; overflow:hidden; box-shadow:0 30px 80px rgba(0,0,0,0.35); display:flex; flex-direction:column;">
 
       <!-- modal header -->
@@ -672,6 +672,9 @@
 
       </div>
 
+      <!-- form-level error banner -->
+      <div id="kf-form-error" style="display:none; padding:13px 28px; background:#FCEBEA; border-top:1px solid #F1C9C4; font:600 13px/1.45 'Plus Jakarta Sans',sans-serif; color:#C0392B;"></div>
+
       <!-- modal footer -->
       <div style="padding:18px 28px; background:#fff; border-top:1px solid #E1EAEF; display:flex; align-items:center; justify-content:space-between; gap:16px;">
         <span id="kf-progress-label" style="font:600 13px 'Plus Jakarta Sans',sans-serif; color:#9DB1BE;">Step 1 of 6</span>
@@ -766,6 +769,7 @@
     var blocked = currentStep === PRODUCT_STEP && !product;
     if(blocked) return;
     if(currentStep === PRODUCT_STEP && product === "Annuities" && !validateCapital()) return;
+    if(!validateStep(currentStep)) return;
     if(currentStep === LAST_STEP){ submitRequest(); }
     else { currentStep++; render(); }
   }
@@ -794,7 +798,90 @@
     return true;
   }
 
+  // Fields that must be filled out on each step before continuing.
+  // (Product + capital on the Client step are validated separately above.)
+  var STEP_FIELDS = {
+    0: ["producerFirst","producerLast"],
+    1: ["name","email","phone","beneficiary"],
+    2: ["income","housing","debts","expenses","lifePolicies","retirement"],
+    3: ["smoker","age","height","weight","medications"],
+    4: ["conditions"],
+    5: ["why"]
+  };
+
+  function highlightField(id, on){
+    var el = document.getElementById("kf-" + id);
+    if(el) el.style.borderColor = on ? "#C0392B" : "#DCE6EC";
+  }
+  function showFormError(msg, focusId){
+    var box = document.getElementById("kf-form-error");
+    box.textContent = msg;
+    box.style.display = "";
+    if(focusId){ var el = document.getElementById("kf-" + focusId); if(el) el.focus(); }
+  }
+  function clearFormError(){
+    var box = document.getElementById("kf-form-error");
+    box.style.display = "none";
+    box.textContent = "";
+  }
+
+  // Detects whether a free-text answer contains something that looks like a date:
+  // a 4-digit year, a slash/dash numeric date, or a month name followed by a year.
+  function hasDate(text){
+    if(!text) return false;
+    if(/\b(19|20)\d{2}\b/.test(text)) return true;                  // 2018, 2020...
+    if(/\b\d{1,2}\/\d{1,2}\/\d{2,4}\b/.test(text)) return true;     // 3/15/2020, 3/15/20
+    if(/\b\d{1,2}-\d{1,2}-\d{2,4}\b/.test(text)) return true;       // 3-15-2020
+    if(/\b\d{1,2}[\/-]\d{2,4}\b/.test(text)) return true;           // 03/2020, 01/20, 3-2020
+    if(/\b(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?,?\s*'?\d{2,4}\b/i.test(text)) return true; // March 2021, Jan '19
+    return false;
+  }
+
+  function validateStep(step){
+    clearFormError();
+    var fields = STEP_FIELDS[step] || [];
+    fields.forEach(function(f){ highlightField(f, false); });
+
+    // 1) Every field on this step must be filled out.
+    var firstEmpty = null;
+    fields.forEach(function(f){
+      if(!val(f)){ highlightField(f, true); if(!firstEmpty){ firstEmpty = f; } }
+    });
+    if(firstEmpty){
+      showFormError("Please fill out every field on this step before you continue.", firstEmpty);
+      return false;
+    }
+
+    // 2) The producer's name and the client's name cannot be the same.
+    if(step === 1){
+      var pn = producerName().toLowerCase().replace(/\s+/g, " ").trim();
+      var cn = val("name").toLowerCase().replace(/\s+/g, " ").trim();
+      if(pn && cn && pn === cn){
+        highlightField("name", true);
+        showFormError("The producer name and the client name can't be the same. Please enter your client's name here — not your own.", "name");
+        return false;
+      }
+    }
+
+    // 3) Medications listed but no dates detected.
+    if(step === 3 && !hasDate(val("medications"))){
+      highlightField("medications", true);
+      showFormError("We detect you did not enter any dates. Please enter the start dates of the medications and the dosages", "medications");
+      return false;
+    }
+
+    // 4) Health conditions listed but no diagnosis dates detected.
+    if(step === 4 && !hasDate(val("conditions"))){
+      highlightField("conditions", true);
+      showFormError("We noticed you entered health conditions but did not enter the diagnosis dates. Please go back and enter the dates the condition started.", "conditions");
+      return false;
+    }
+
+    return true;
+  }
+
   function render(){
+    clearFormError();
     document.getElementById("kf-product-title").textContent = product || "Select product";
 
     var isAnnuity = product === "Annuities";
