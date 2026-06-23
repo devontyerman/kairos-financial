@@ -12971,12 +12971,12 @@
       <span class="ss-sidebar-user-name" id="sidebarUserName"></span>
     </div>
     <div class="ss-sidebar-grid">
-    <!-- Admin-only Team Dashboard pinned to the top of the rail; visibility is
-         flipped by updateAuthUI() for the admin email only — every other user
-         never sees it. -->
+    <!-- Admin-only Manager Dashboard pinned to the top of the rail; visibility is
+         flipped by updateAuthUI() for the admin email + managers — every other
+         user never sees it. -->
     <button class="ss-sidebar-btn" data-panel="teamperf" id="teamPerfSidebarBtn" style="display:none;">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 4 4 5-5"/></svg>
-      <span>Team Dashboard</span>
+      <span>Manager Dashboard</span>
     </button>
     <button class="ss-sidebar-btn active" data-panel="goals">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
@@ -14138,6 +14138,7 @@
             <button class="tp-admin-tab" data-tpatab="policies">Policies</button>
             <button class="tp-admin-tab" data-tpatab="hierarchy">Agent Hierarchy</button>
             <button class="tp-admin-tab" data-tpatab="agents" data-admin-only="true">Agent Profiles</button>
+            <button class="tp-admin-tab" data-tpatab="discord" data-admin-only="true">Discord</button>
           </div>
 
           <!-- Policies tab — rendered by the React app at #tpPoliciesRoot -->
@@ -14159,9 +14160,166 @@
           <div class="tp-admin-panel" id="tpatab-agents" data-admin-only="true">
             <div id="tpAgentsRoot"></div>
           </div>
+
+          <!-- Discord Scheduler tab — admin-only. Plain HTML on a light surface
+               so it stays readable inside the dark Manager Dashboard. -->
+          <div class="tp-admin-panel" id="tpatab-discord" data-admin-only="true">
+            <div class="dsc-surface">
+              <div id="dscGate" style="display:none;padding:3rem 1rem;text-align:center;color:#666;font-size:0.9rem;">
+                You do not have access to this view.
+              </div>
+              <div id="dscContent" style="display:none;">
+                <div class="dsc-head">
+                  <h2 class="dsc-title">Discord Scheduler</h2>
+                  <p class="dsc-sub">Schedule one-time or recurring messages to your Discord channel. Times are US Eastern.</p>
+                </div>
+
+                <!-- Webhook settings -->
+                <div class="dsc-card" style="margin-bottom:1.1rem;">
+                  <label class="dsc-label" for="dscWebhook">Discord webhook URL</label>
+                  <input type="text" id="dscWebhook" class="dsc-input" placeholder="https://discord.com/api/webhooks/…" />
+                  <div class="dsc-actions">
+                    <button type="button" class="dsc-btn dsc-btn-primary" id="dscWebhookSave">Save webhook</button>
+                    <button type="button" class="dsc-btn dsc-btn-ghost" id="dscTestBtn">Send test message</button>
+                    <span class="dsc-status" id="dscWebhookStatus"></span>
+                  </div>
+                </div>
+
+                <!-- Composer -->
+                <form class="dsc-card dsc-composer" id="dscForm" autocomplete="off">
+                  <input type="hidden" id="dscEditingId" value="" />
+                  <label class="dsc-label" for="dscMessage">Message</label>
+                  <textarea id="dscMessage" class="dsc-textarea" rows="4" placeholder="Type your Discord message… (Shift+Enter for a new line)"></textarea>
+
+                  <div class="dsc-row">
+                    <div class="dsc-field">
+                      <label class="dsc-label" for="dscRecurrence">Repeats</label>
+                      <select id="dscRecurrence" class="dsc-input">
+                        <option value="once">One-time</option>
+                        <option value="daily">Daily</option>
+                        <option value="weekdays">Weekdays (Mon–Fri)</option>
+                        <option value="weekly">Weekly</option>
+                        <option value="monthly">Monthly</option>
+                        <option value="custom">Custom days…</option>
+                      </select>
+                    </div>
+
+                    <div class="dsc-field" id="dscDateField">
+                      <label class="dsc-label" for="dscDate">Date</label>
+                      <input type="date" id="dscDate" class="dsc-input" />
+                    </div>
+
+                    <div class="dsc-field" id="dscWeekdayField" style="display:none;">
+                      <label class="dsc-label" for="dscWeekday">Day of week</label>
+                      <select id="dscWeekday" class="dsc-input">
+                        <option value="0">Sunday</option>
+                        <option value="1">Monday</option>
+                        <option value="2">Tuesday</option>
+                        <option value="3">Wednesday</option>
+                        <option value="4">Thursday</option>
+                        <option value="5">Friday</option>
+                        <option value="6">Saturday</option>
+                      </select>
+                    </div>
+
+                    <div class="dsc-field" id="dscDomField" style="display:none;">
+                      <label class="dsc-label" for="dscDayOfMonth">Day of month</label>
+                      <select id="dscDayOfMonth" class="dsc-input"></select>
+                    </div>
+
+                    <div class="dsc-field">
+                      <label class="dsc-label" for="dscTime">Time (ET)</label>
+                      <input type="time" id="dscTime" class="dsc-input" />
+                    </div>
+                  </div>
+
+                  <!-- Custom-days picker — shown when Repeats = Custom -->
+                  <div id="dscCustomField" style="display:none;margin-top:1.1rem;">
+                    <label class="dsc-label">Repeat on these days</label>
+                    <div class="dsc-daypick" id="dscDayPick">
+                      <button type="button" class="dsc-day" data-day="1">Mon</button>
+                      <button type="button" class="dsc-day" data-day="2">Tue</button>
+                      <button type="button" class="dsc-day" data-day="3">Wed</button>
+                      <button type="button" class="dsc-day" data-day="4">Thu</button>
+                      <button type="button" class="dsc-day" data-day="5">Fri</button>
+                      <button type="button" class="dsc-day" data-day="6">Sat</button>
+                      <button type="button" class="dsc-day" data-day="0">Sun</button>
+                    </div>
+                  </div>
+
+                  <div class="dsc-actions">
+                    <button type="submit" class="dsc-btn dsc-btn-primary" id="dscSubmitBtn">Schedule</button>
+                    <button type="button" class="dsc-btn dsc-btn-ghost" id="dscCancelBtn" style="display:none;">Cancel edit</button>
+                    <span class="dsc-status" id="dscStatus"></span>
+                  </div>
+                </form>
+
+                <!-- Scheduled list -->
+                <div class="dsc-list-head">
+                  <h3 class="dsc-list-title">Scheduled messages</h3>
+                  <button type="button" class="dsc-btn dsc-btn-ghost" id="dscRefreshBtn">Refresh</button>
+                </div>
+                <div id="dscList" class="dsc-list"></div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
+
+    <style>
+      #tpatab-discord { padding: 28px 16px 64px; }
+      #tpatab-discord .dsc-surface { max-width: 860px; margin: 0 auto; background: #f4f4f6; border: 1px solid #e3e3e8; border-radius: 18px; padding: 1.6rem; }
+      #tpatab-discord .dsc-head { margin-bottom: 1.4rem; }
+      #tpatab-discord .dsc-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.4rem; font-weight: 900; color: #1a1a1a; margin: 0; }
+      #tpatab-discord .dsc-sub { font-size: 0.82rem; color: #888; margin: 0.25rem 0 0; }
+      #tpatab-discord .dsc-card { background: #fff; border: 1px solid #e5e5ea; border-radius: 14px; padding: 1.4rem; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+      #tpatab-discord .dsc-label { display: block; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #999; margin-bottom: 0.4rem; }
+      #tpatab-discord .dsc-textarea, #tpatab-discord .dsc-input {
+        width: 100%; font-family: 'Inter', sans-serif; font-size: 0.9rem; color: #1a1a1a;
+        background: #f7f7f9; border: 1px solid #e0e0e5; border-radius: 9px; padding: 0.6rem 0.75rem; box-sizing: border-box; transition: border-color 0.15s, box-shadow 0.15s;
+      }
+      #tpatab-discord .dsc-textarea { resize: vertical; min-height: 90px; line-height: 1.5; }
+      #tpatab-discord .dsc-textarea:focus, #tpatab-discord .dsc-input:focus { outline: none; border-color: #5865F2; box-shadow: 0 0 0 3px rgba(88,101,242,0.15); background: #fff; }
+      #tpatab-discord input.dsc-input[type="time"], #tpatab-discord input.dsc-input[type="date"] { cursor: pointer; }
+      #tpatab-discord select.dsc-input { appearance: none; cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg width='12' height='12' viewBox='0 0 12 12' fill='none' stroke='%23666' stroke-width='2' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolyline points='2 4 6 8 10 4'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 0.7rem center; padding-right: 2rem; }
+      #tpatab-discord .dsc-row { display: flex; flex-wrap: wrap; gap: 0.9rem; margin-top: 1.1rem; }
+      #tpatab-discord .dsc-field { flex: 1 1 160px; min-width: 140px; }
+      #tpatab-discord .dsc-daypick { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+      #tpatab-discord .dsc-day { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.78rem; font-weight: 700; color: #555; background: #f0f0f3; border: 1px solid #e0e0e5; border-radius: 9px; padding: 0.5rem 0.85rem; cursor: pointer; transition: all 0.12s; }
+      #tpatab-discord .dsc-day:hover { border-color: rgba(88,101,242,0.4); color: #1a1a1a; }
+      #tpatab-discord .dsc-day.on { background: #5865F2; color: #fff; border-color: #5865F2; }
+      #tpatab-discord .dsc-actions { display: flex; align-items: center; gap: 0.75rem; margin-top: 1.3rem; flex-wrap: wrap; }
+      #tpatab-discord .dsc-btn { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.82rem; font-weight: 800; border-radius: 9px; border: none; cursor: pointer; padding: 0.6rem 1.3rem; transition: all 0.15s ease; }
+      #tpatab-discord .dsc-btn-primary { background: #5865F2; color: #fff; box-shadow: 0 2px 8px rgba(88,101,242,0.25); }
+      #tpatab-discord .dsc-btn-primary:hover { background: #4752c4; }
+      #tpatab-discord .dsc-btn-primary:disabled { opacity: 0.55; cursor: default; box-shadow: none; }
+      #tpatab-discord .dsc-btn-ghost { background: #e9e9ee; color: #555; }
+      #tpatab-discord .dsc-btn-ghost:hover { background: #deded6; }
+      #tpatab-discord .dsc-status { font-size: 0.8rem; font-weight: 600; }
+      #tpatab-discord .dsc-status.ok { color: #16a34a; }
+      #tpatab-discord .dsc-status.err { color: #dc2626; }
+      #tpatab-discord .dsc-list-head { display: flex; align-items: center; justify-content: space-between; margin: 2rem 0 0.85rem; }
+      #tpatab-discord .dsc-list-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1rem; font-weight: 800; color: #1a1a1a; margin: 0; }
+      #tpatab-discord .dsc-list { display: flex; flex-direction: column; gap: 0.7rem; }
+      #tpatab-discord .dsc-item { background: #fff; border: 1px solid #e5e5ea; border-radius: 12px; padding: 1rem 1.1rem; display: flex; align-items: flex-start; gap: 1rem; }
+      #tpatab-discord .dsc-item.inactive { opacity: 0.6; }
+      #tpatab-discord .dsc-item-body { flex: 1; min-width: 0; }
+      #tpatab-discord .dsc-item-msg { font-size: 0.88rem; color: #1a1a1a; line-height: 1.45; white-space: pre-wrap; word-break: break-word; margin-bottom: 0.5rem; }
+      #tpatab-discord .dsc-item-meta { display: flex; flex-wrap: wrap; gap: 0.4rem 0.6rem; align-items: center; }
+      #tpatab-discord .dsc-chip { display: inline-flex; align-items: center; gap: 0.3rem; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.03em; padding: 0.2rem 0.6rem; border-radius: 100px; background: #f0f0f3; color: #555; }
+      #tpatab-discord .dsc-chip.repeat { background: rgba(88,101,242,0.1); color: #4752c4; }
+      #tpatab-discord .dsc-chip.next { background: rgba(34,197,94,0.1); color: #16a34a; }
+      #tpatab-discord .dsc-chip.paused { background: rgba(249,115,22,0.12); color: #c2410c; }
+      #tpatab-discord .dsc-item-actions { display: flex; gap: 0.4rem; flex-shrink: 0; }
+      #tpatab-discord .dsc-mini { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.7rem; font-weight: 800; border-radius: 7px; border: 1px solid #e0e0e5; background: #fff; color: #555; cursor: pointer; padding: 0.35rem 0.7rem; transition: all 0.15s; }
+      #tpatab-discord .dsc-mini:hover { background: #f5f5f8; color: #1a1a1a; }
+      #tpatab-discord .dsc-mini.danger:hover { background: #fef2f2; color: #dc2626; border-color: #fca5a5; }
+      #tpatab-discord .dsc-empty { text-align: center; color: #999; font-size: 0.85rem; padding: 2rem 1rem; border: 1px dashed #ddd; border-radius: 12px; }
+    </style>
+
+    <!-- Discord Scheduler now lives as a sub-tab inside the Manager Dashboard
+         (#panel-teamperf → #tpatab-discord). See that panel above. -->
 
     <!-- ═══ TRAINING PANEL ═══ -->
     <!-- ═══ TRAINING PANEL (Course Editor design · R2 custom player) ═══ -->
@@ -22253,6 +22411,7 @@
             if (which === 'agents' && window.tpMountAgents) window.tpMountAgents();
             if (which === 'policies' && window.tpMountPolicies) window.tpMountPolicies();
             if (which === 'hierarchy' && window.tpMountHierarchy) window.tpMountHierarchy();
+            if (which === 'discord' && window.discordInit) window.discordInit();
           });
         });
       }
@@ -29587,6 +29746,459 @@
       // before the user navigates to a skinned panel — prevents bg flicker.
       try { kfSkinApply(kfSkinGetTheme()); } catch (e) { /* ignore */ }
     })();
+  </script>
+
+  <!-- ═══ DISCORD SCHEDULER (admin-only) ═══
+       CRUD against discord_scheduled_messages in Supabase. Times are entered as
+       US Eastern and stored as UTC. The actual sending is done by a Trigger.dev
+       task that polls next_run_at — this page never holds the Discord webhook. -->
+  <script>
+  (function () {
+    const DSC_ADMIN_EMAIL = 'dev@kairos-financial.com';
+    const TABLE = 'discord_scheduled_messages';
+    const TZ = 'America/New_York';
+    const WD = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    let wired = false;
+
+    function isAdmin() {
+      const u = window.currentUser;
+      return !!(u && (u.email || '').toLowerCase() === DSC_ADMIN_EMAIL);
+    }
+    function authHeaders(extra) {
+      return Object.assign({
+        'apikey': SUPABASE_KEY,
+        'Authorization': 'Bearer ' + (window.accessToken || SUPABASE_KEY)
+      }, extra || {});
+    }
+    function $(id) { return document.getElementById(id); }
+
+    // ─── Eastern-time helpers ───────────────────────────────────────
+    // Offset (minutes ET is ahead of UTC; negative) at a given UTC instant.
+    function etOffsetMinutes(utcMs) {
+      const dtf = new Intl.DateTimeFormat('en-US', {
+        timeZone: TZ, hour12: false,
+        year: 'numeric', month: '2-digit', day: '2-digit',
+        hour: '2-digit', minute: '2-digit', second: '2-digit'
+      });
+      const p = {};
+      dtf.formatToParts(new Date(utcMs)).forEach(x => { p[x.type] = x.value; });
+      let hh = parseInt(p.hour, 10); if (hh === 24) hh = 0;
+      const asUTC = Date.UTC(+p.year, +p.month - 1, +p.day, hh, +p.minute, +p.second);
+      return (asUTC - utcMs) / 60000;
+    }
+    // Convert an Eastern wall-clock (y, mo[1-12], d, h, mi) to a UTC Date.
+    function etWallToUTC(y, mo, d, h, mi) {
+      const guess = Date.UTC(y, mo - 1, d, h, mi, 0);
+      let utc = guess - etOffsetMinutes(guess) * 60000;
+      utc = guess - etOffsetMinutes(utc) * 60000; // refine across DST edges
+      return new Date(utc);
+    }
+    // Calendar parts of a UTC instant as seen in Eastern.
+    function etCalParts(utcMs) {
+      const dtf = new Intl.DateTimeFormat('en-US', {
+        timeZone: TZ, year: 'numeric', month: '2-digit', day: '2-digit', weekday: 'short'
+      });
+      const p = {};
+      dtf.formatToParts(new Date(utcMs)).forEach(x => { p[x.type] = x.value; });
+      return { y: +p.year, mo: +p.month, d: +p.day };
+    }
+    // Treat {y,mo,d} as a pure calendar date and add n days (DST-free).
+    function addDays(parts, n) {
+      const t = new Date(Date.UTC(parts.y, parts.mo - 1, parts.d) + n * 86400000);
+      return { y: t.getUTCFullYear(), mo: t.getUTCMonth() + 1, d: t.getUTCDate(), wd: t.getUTCDay() };
+    }
+
+    // Compute the next UTC instant a schedule should fire. Returns a Date, or
+    // null if a one-time date/time is in the past.
+    function computeNextRun(rec, opts) {
+      const [h, mi] = (opts.send_time || '00:00').split(':').map(Number);
+      const now = Date.now();
+      if (rec === 'once') {
+        const [y, mo, d] = (opts.send_date || '').split('-').map(Number);
+        if (!y) return null;
+        const inst = etWallToUTC(y, mo, d, h, mi);
+        return inst.getTime() > now ? inst : null;
+      }
+      const days = Array.isArray(opts.days_of_week) ? opts.days_of_week : [];
+      let cur = etCalParts(now);
+      for (let i = 0; i < 400; i++) {
+        const c = addDays(cur, i);
+        let ok = false;
+        if (rec === 'daily') ok = true;
+        else if (rec === 'weekdays') ok = c.wd >= 1 && c.wd <= 5;
+        else if (rec === 'weekly') ok = c.wd === opts.day_of_week;
+        else if (rec === 'monthly') ok = c.d === opts.day_of_month;
+        else if (rec === 'custom') ok = days.indexOf(c.wd) !== -1;
+        if (!ok) continue;
+        const inst = etWallToUTC(c.y, c.mo, c.d, h, mi);
+        if (inst.getTime() > now) return inst;
+      }
+      return null;
+    }
+
+    function fmtNext(iso) {
+      if (!iso) return '—';
+      try {
+        return new Date(iso).toLocaleString('en-US', {
+          timeZone: TZ, weekday: 'short', month: 'short', day: 'numeric',
+          hour: 'numeric', minute: '2-digit'
+        }) + ' ET';
+      } catch (e) { return iso; }
+    }
+    const WD_SHORT = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    function repeatLabel(row) {
+      const t = row.send_time || '';
+      switch (row.recurrence) {
+        case 'daily': return 'Daily at ' + t;
+        case 'weekdays': return 'Weekdays at ' + t;
+        case 'weekly': return 'Every ' + (WD[row.day_of_week] || '?') + ' at ' + t;
+        case 'monthly': return 'Monthly on day ' + row.day_of_month + ' at ' + t;
+        case 'custom': {
+          const days = (row.days_of_week || []).slice().sort((a, b) => ((a + 6) % 7) - ((b + 6) % 7));
+          const names = days.map(d => WD_SHORT[d]).join(', ');
+          return (names || 'Custom') + ' at ' + t;
+        }
+        default: return 'One-time';
+      }
+    }
+
+    function setStatus(msg, kind) {
+      const el = $('dscStatus');
+      if (!el) return;
+      el.textContent = msg || '';
+      el.className = 'dsc-status' + (kind ? ' ' + kind : '');
+    }
+
+    // ─── Form field visibility per recurrence ───────────────────────
+    function syncFields() {
+      const rec = $('dscRecurrence').value;
+      $('dscDateField').style.display = rec === 'once' ? '' : 'none';
+      $('dscWeekdayField').style.display = rec === 'weekly' ? '' : 'none';
+      $('dscDomField').style.display = rec === 'monthly' ? '' : 'none';
+      $('dscCustomField').style.display = rec === 'custom' ? '' : 'none';
+    }
+
+    function getCustomDays() {
+      return Array.prototype.slice.call($('dscDayPick').querySelectorAll('.dsc-day.on'))
+        .map(b => parseInt(b.dataset.day, 10));
+    }
+    function setCustomDays(days) {
+      const set = new Set((days || []).map(Number));
+      $('dscDayPick').querySelectorAll('.dsc-day').forEach(b => {
+        b.classList.toggle('on', set.has(parseInt(b.dataset.day, 10)));
+      });
+    }
+
+    function resetForm() {
+      $('dscEditingId').value = '';
+      $('dscMessage').value = '';
+      $('dscRecurrence').value = 'once';
+      $('dscDate').value = '';
+      $('dscTime').value = '';
+      $('dscWeekday').value = '1';
+      $('dscDayOfMonth').value = '1';
+      setCustomDays([]);
+      $('dscSubmitBtn').textContent = 'Schedule';
+      $('dscCancelBtn').style.display = 'none';
+      syncFields();
+    }
+
+    function setWebhookStatus(msg, kind) {
+      const el = $('dscWebhookStatus');
+      if (!el) return;
+      el.textContent = msg || '';
+      el.className = 'dsc-status' + (kind ? ' ' + kind : '');
+    }
+
+    // ─── Webhook config ─────────────────────────────────────────────
+    async function loadWebhook() {
+      try {
+        const r = await fetch(SUPABASE_URL + '/rest/v1/discord_config?select=webhook_url&id=eq.1',
+          { headers: authHeaders() });
+        if (!r.ok) return;
+        const rows = await r.json();
+        if (rows && rows[0]) $('dscWebhook').value = rows[0].webhook_url || '';
+      } catch (e) { /* silent */ }
+    }
+
+    async function saveWebhook() {
+      const url = $('dscWebhook').value.trim();
+      if (url && !/^https:\/\/(discord|discordapp)\.com\/api\/webhooks\//i.test(url)) {
+        setWebhookStatus('That doesn’t look like a Discord webhook URL.', 'err');
+        return;
+      }
+      setWebhookStatus('Saving…');
+      try {
+        const r = await fetch(SUPABASE_URL + '/rest/v1/discord_config?id=eq.1', {
+          method: 'PATCH',
+          headers: authHeaders({ 'Content-Type': 'application/json', 'Prefer': 'return=minimal' }),
+          body: JSON.stringify({ webhook_url: url, updated_at: new Date().toISOString() })
+        });
+        if (!r.ok) throw new Error('HTTP ' + r.status + ' — ' + (await r.text()));
+        setWebhookStatus('Webhook saved.', 'ok');
+      } catch (e) {
+        setWebhookStatus('Save failed: ' + (e.message || e), 'err');
+      }
+    }
+
+    async function sendTest() {
+      setWebhookStatus('Sending test…');
+      try {
+        const r = await fetch(SUPABASE_URL + '/rest/v1/rpc/discord_send_test', {
+          method: 'POST',
+          headers: authHeaders({ 'Content-Type': 'application/json' }),
+          body: JSON.stringify({ p_message: '✅ Test message from Sales Hub — your Discord scheduler is connected.' })
+        });
+        if (!r.ok) throw new Error('HTTP ' + r.status + ' — ' + (await r.text()));
+        const result = (await r.text()).replace(/"/g, '');
+        if (result === 'no-webhook') setWebhookStatus('Save a webhook first.', 'err');
+        else setWebhookStatus('Test sent — check your Discord channel.', 'ok');
+      } catch (e) {
+        setWebhookStatus('Test failed: ' + (e.message || e), 'err');
+      }
+    }
+
+    // ─── CRUD ───────────────────────────────────────────────────────
+    async function loadList() {
+      const list = $('dscList');
+      list.innerHTML = '<div class="dsc-empty">Loading…</div>';
+      try {
+        const r = await fetch(SUPABASE_URL + '/rest/v1/' + TABLE +
+          '?select=*&order=next_run_at.asc', { headers: authHeaders() });
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        const rows = await r.json();
+        renderList(rows);
+      } catch (e) {
+        list.innerHTML = '<div class="dsc-empty">Could not load schedules. ' +
+          'Has the SQL migration been run? (' + (e.message || e) + ')</div>';
+      }
+    }
+
+    function renderList(rows) {
+      const list = $('dscList');
+      if (!rows || !rows.length) {
+        list.innerHTML = '<div class="dsc-empty">No scheduled messages yet. Compose one above.</div>';
+        return;
+      }
+      list.innerHTML = '';
+      rows.forEach(row => {
+        const item = document.createElement('div');
+        item.className = 'dsc-item' + (row.active ? '' : ' inactive');
+
+        const body = document.createElement('div');
+        body.className = 'dsc-item-body';
+        const msg = document.createElement('div');
+        msg.className = 'dsc-item-msg';
+        msg.textContent = row.message;
+        const meta = document.createElement('div');
+        meta.className = 'dsc-item-meta';
+        meta.innerHTML =
+          '<span class="dsc-chip repeat">' + repeatLabel(row) + '</span>' +
+          (row.active
+            ? '<span class="dsc-chip next">Next: ' + fmtNext(row.next_run_at) + '</span>'
+            : '<span class="dsc-chip paused">Paused</span>') +
+          (row.last_sent_at ? '<span class="dsc-chip">Last sent ' + fmtNext(row.last_sent_at) + '</span>' : '');
+        body.appendChild(msg);
+        body.appendChild(meta);
+
+        const actions = document.createElement('div');
+        actions.className = 'dsc-item-actions';
+        const editBtn = document.createElement('button');
+        editBtn.className = 'dsc-mini';
+        editBtn.textContent = 'Edit';
+        editBtn.onclick = () => startEdit(row);
+        const toggleBtn = document.createElement('button');
+        toggleBtn.className = 'dsc-mini';
+        toggleBtn.textContent = row.active ? 'Pause' : 'Resume';
+        toggleBtn.onclick = () => toggleActive(row);
+        const delBtn = document.createElement('button');
+        delBtn.className = 'dsc-mini danger';
+        delBtn.textContent = 'Delete';
+        delBtn.onclick = () => removeRow(row);
+        actions.appendChild(editBtn);
+        actions.appendChild(toggleBtn);
+        actions.appendChild(delBtn);
+
+        item.appendChild(body);
+        item.appendChild(actions);
+        list.appendChild(item);
+      });
+    }
+
+    function gatherForm() {
+      const rec = $('dscRecurrence').value;
+      const message = $('dscMessage').value.trim();
+      const time = $('dscTime').value;
+      if (!message) { setStatus('Enter a message.', 'err'); return null; }
+      if (!time) { setStatus('Pick a time.', 'err'); return null; }
+      const row = {
+        message: message,
+        recurrence: rec,
+        send_time: time,
+        send_date: null,
+        day_of_week: null,
+        day_of_month: null,
+        days_of_week: null
+      };
+      if (rec === 'once') {
+        if (!$('dscDate').value) { setStatus('Pick a date.', 'err'); return null; }
+        row.send_date = $('dscDate').value;
+      } else if (rec === 'weekly') {
+        row.day_of_week = parseInt($('dscWeekday').value, 10);
+      } else if (rec === 'monthly') {
+        row.day_of_month = parseInt($('dscDayOfMonth').value, 10);
+      } else if (rec === 'custom') {
+        const days = getCustomDays();
+        if (!days.length) { setStatus('Pick at least one day.', 'err'); return null; }
+        row.days_of_week = days;
+      }
+      const next = computeNextRun(rec, row);
+      if (!next) {
+        setStatus(rec === 'once'
+          ? 'That date/time is in the past.'
+          : 'Could not compute next run.', 'err');
+        return null;
+      }
+      row.next_run_at = next.toISOString();
+      return row;
+    }
+
+    async function submitForm(e) {
+      e.preventDefault();
+      const row = gatherForm();
+      if (!row) return;
+      const id = $('dscEditingId').value;
+      const btn = $('dscSubmitBtn');
+      btn.disabled = true;
+      setStatus('Saving…');
+      try {
+        let r;
+        if (id) {
+          r = await fetch(SUPABASE_URL + '/rest/v1/' + TABLE + '?id=eq.' + encodeURIComponent(id), {
+            method: 'PATCH',
+            headers: authHeaders({ 'Content-Type': 'application/json', 'Prefer': 'return=minimal' }),
+            body: JSON.stringify(Object.assign({ updated_at: new Date().toISOString() }, row))
+          });
+        } else {
+          r = await fetch(SUPABASE_URL + '/rest/v1/' + TABLE, {
+            method: 'POST',
+            headers: authHeaders({ 'Content-Type': 'application/json', 'Prefer': 'return=minimal' }),
+            body: JSON.stringify(row)
+          });
+        }
+        if (!r.ok) throw new Error('HTTP ' + r.status + ' — ' + (await r.text()));
+        setStatus(id ? 'Updated.' : 'Scheduled — fires ' + fmtNext(row.next_run_at), 'ok');
+        resetForm();
+        loadList();
+      } catch (err) {
+        setStatus('Save failed: ' + (err.message || err), 'err');
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    function startEdit(row) {
+      $('dscEditingId').value = row.id;
+      $('dscMessage').value = row.message;
+      $('dscRecurrence').value = row.recurrence;
+      $('dscTime').value = row.send_time || '';
+      $('dscDate').value = row.send_date || '';
+      $('dscWeekday').value = String(row.day_of_week != null ? row.day_of_week : 1);
+      $('dscDayOfMonth').value = String(row.day_of_month != null ? row.day_of_month : 1);
+      setCustomDays(row.days_of_week || []);
+      $('dscSubmitBtn').textContent = 'Update';
+      $('dscCancelBtn').style.display = '';
+      syncFields();
+      setStatus('Editing — change fields and hit Update.');
+      $('dscMessage').focus();
+      try { $('tpatab-discord').scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch (e) {}
+    }
+
+    async function toggleActive(row) {
+      try {
+        const patch = { active: !row.active, updated_at: new Date().toISOString() };
+        // Re-arm next_run_at when resuming, in case its time has passed.
+        if (!row.active) {
+          const next = computeNextRun(row.recurrence, row);
+          if (next) patch.next_run_at = next.toISOString();
+        }
+        const r = await fetch(SUPABASE_URL + '/rest/v1/' + TABLE + '?id=eq.' + encodeURIComponent(row.id), {
+          method: 'PATCH',
+          headers: authHeaders({ 'Content-Type': 'application/json', 'Prefer': 'return=minimal' }),
+          body: JSON.stringify(patch)
+        });
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        loadList();
+      } catch (e) { setStatus('Could not update: ' + (e.message || e), 'err'); }
+    }
+
+    async function removeRow(row) {
+      if (!window.confirm('Delete this scheduled message? This cannot be undone.')) return;
+      try {
+        const r = await fetch(SUPABASE_URL + '/rest/v1/' + TABLE + '?id=eq.' + encodeURIComponent(row.id), {
+          method: 'DELETE',
+          headers: authHeaders({ 'Prefer': 'return=minimal' })
+        });
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        if ($('dscEditingId').value === row.id) resetForm();
+        loadList();
+      } catch (e) { setStatus('Could not delete: ' + (e.message || e), 'err'); }
+    }
+
+    function wire() {
+      if (wired) return;
+      wired = true;
+      // Populate day-of-month dropdown 1–31.
+      const dom = $('dscDayOfMonth');
+      for (let i = 1; i <= 31; i++) {
+        const o = document.createElement('option');
+        o.value = String(i); o.textContent = String(i);
+        dom.appendChild(o);
+      }
+      $('dscRecurrence').addEventListener('change', syncFields);
+      $('dscForm').addEventListener('submit', submitForm);
+      $('dscCancelBtn').addEventListener('click', resetForm);
+      $('dscRefreshBtn').addEventListener('click', loadList);
+      $('dscWebhookSave').addEventListener('click', saveWebhook);
+      $('dscTestBtn').addEventListener('click', sendTest);
+      // Custom-days toggles.
+      $('dscDayPick').addEventListener('click', (e) => {
+        const b = e.target.closest('.dsc-day');
+        if (b) b.classList.toggle('on');
+      });
+      // Clicking anywhere in the date/time boxes opens the native picker, not
+      // just the little icon on the right.
+      ['dscTime', 'dscDate'].forEach(id => {
+        const el = $(id);
+        el.addEventListener('click', () => { try { el.showPicker && el.showPicker(); } catch (e) {} });
+        el.addEventListener('focus', () => { try { el.showPicker && el.showPicker(); } catch (e) {} });
+      });
+      // Enter (without Shift) in the message box submits, per the request.
+      $('dscMessage').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          $('dscForm').requestSubmit ? $('dscForm').requestSubmit() : submitForm(new Event('submit'));
+        }
+      });
+      syncFields();
+    }
+
+    // Mounted by the Manager Dashboard tab switcher (Discord sub-tab).
+    window.discordInit = function () {
+      const gate = $('dscGate');
+      const content = $('dscContent');
+      if (!isAdmin()) {
+        if (gate) gate.style.display = '';
+        if (content) content.style.display = 'none';
+        return;
+      }
+      if (gate) gate.style.display = 'none';
+      if (content) content.style.display = '';
+      wire();
+      loadWebhook();
+      loadList();
+    };
+  })();
   </script>
 </body>
 </html>
