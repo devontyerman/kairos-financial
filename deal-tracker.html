@@ -2403,7 +2403,6 @@ function Dashboard({ isAdmin, setter, deals, manualPayments = [], loading, onAdd
                       <th className="num"><button className="sort-btn num" onClick={() => toggleSort('commission')}>Commission{sortIcon('commission')}</button></th>
                       <th><button className="sort-btn" onClick={() => toggleSort('carrier')}>Carrier{sortIcon('carrier')}</button></th>
                       <th><button className="sort-btn" onClick={() => toggleSort('status')}>Status{sortIcon('status')}</button></th>
-                      <th>Chargeback</th>
                       {isAdmin && <th></th>}
                     </tr>
                   </thead>
@@ -2569,12 +2568,7 @@ function DealRow({ deal, isAdmin, onUpdate, onEdit, onRemove }) {
   };
 
   return (
-    <tr className={
-      deal.chargeback ? 'cb-row' :
-      deal.status === 'declined' ? 'declined-row' :
-      deal.status === 'pending_lapse' ? 'lapse-row' :
-      deal.status === 'issued' ? 'issued-row' : ''
-    }>
+    <tr>
       <td>
         <div className="client-cell">
           <span className="avatar">{deal.client.slice(0,1).toUpperCase()}</span>
@@ -2629,22 +2623,6 @@ function DealRow({ deal, isAdmin, onUpdate, onEdit, onRemove }) {
             </div>,
             document.body
           )}
-        </div>
-      </td>
-      <td>
-        <div className="payout-cell">
-          <button
-            className={'toggle-pill cb' + (deal.chargeback ? ' on' : '')}
-            onClick={toggleCB}
-            disabled={!isAdmin}
-            title={
-              !isAdmin ? 'View only' :
-              deal.chargeback ? 'Click to clear chargeback' : 'Click to mark as chargeback'
-            }
-          >
-            <span className={'cb-pulse' + (deal.chargeback ? ' active' : '')}></span>
-            Chargeback
-          </button>
         </div>
       </td>
       {isAdmin && (
