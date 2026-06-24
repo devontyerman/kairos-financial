@@ -1,258 +1,328 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="icon" type="image/png" href="/KF Transparent.png" />
-  <title>Apply — Kairos Financial</title>
-  <link rel="stylesheet" href="css/styles.css" />
-  <style>
-    body {
-      background: #ffffff;
-      margin: 0;
-      padding: 0;
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/png" href="/KF Transparent.png">
+<title>Apply — Kairos Financial</title>
+<meta name="description" content="Apply to join Kairos Financial. No experience required — a real person reviews every application. Tell us about yourself and our recruiting team will reach out.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..500&family=Hanken+Grotesk:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+    body{margin:0}
+    .kf-nav-desktop{display:flex}
+    .kf-nav-burger{display:none}
+    @media (max-width:859px){
+      .kf-nav-desktop{display:none !important}
+      .kf-nav-burger{display:flex !important}
     }
-
-    .apply-header {
-      background: #111111;
-      text-align: center;
-      padding: 1.5rem 1.5rem;
-    }
-
-    .apply-header a {
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: 1.1rem;
-      font-weight: 800;
-      color: #c9a84c;
-      text-decoration: none;
-      letter-spacing: 0.08em;
-    }
-
-    .apply-hero {
-      background: #111111;
-      text-align: center;
-      padding: 3rem 1.5rem 3.5rem;
-    }
-
-    .apply-hero h1 {
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: clamp(1.6rem, 4vw, 2.2rem);
-      font-weight: 800;
-      color: #ffffff;
-      margin: 0 0 0.75rem;
-      letter-spacing: -0.02em;
-    }
-
-    .apply-hero h1 span { color: #c9a84c; }
-
-    .apply-hero p {
-      font-size: 1rem;
-      color: rgba(255,255,255,0.6);
-      max-width: 520px;
-      margin: 0 auto;
-      line-height: 1.6;
-    }
-
-    .apply-notice {
-      max-width: 720px;
-      margin: -1.5rem auto 0;
-      padding: 1.25rem 1.5rem;
-      background: #ffffff;
-      border: 1px solid #e0e0e0;
-      border-radius: 8px;
-      position: relative;
-      z-index: 1;
-    }
-
-    .apply-notice-title {
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: 0.88rem;
-      font-weight: 700;
-      color: #111111;
-      margin-bottom: 0.3rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .apply-notice p {
-      font-size: 0.82rem;
-      color: #555;
-      line-height: 1.55;
-      margin: 0;
-    }
-
-    .apply-steps {
-      display: flex;
-      justify-content: center;
-      gap: 2rem;
-      max-width: 720px;
-      margin: 2rem auto 0;
-      padding: 0 1.5rem;
-    }
-
-    .apply-step {
-      text-align: center;
-      flex: 1;
-    }
-
-    .apply-step-num {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      background: #111111;
-      color: #c9a84c;
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: 0.85rem;
-      font-weight: 800;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 0.5rem;
-    }
-
-    .apply-step h4 {
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: 0.82rem;
-      font-weight: 700;
-      color: #111111;
-      margin: 0 0 0.2rem;
-    }
-
-    .apply-step p {
-      font-size: 0.75rem;
-      color: #888;
-      margin: 0;
-    }
-
-    .apply-divider {
-      width: 60px;
-      height: 3px;
-      background: #c9a84c;
-      border-radius: 2px;
-      margin: 2.5rem auto 0;
-    }
-
-    .apply-container {
-      max-width: 720px;
-      margin: 2rem auto 0;
-      padding: 0 1.5rem 4rem;
-    }
-
-    .apply-container iframe {
-      width: 100% !important;
-      height: 3200px !important;
-      max-height: none !important;
-      overflow: hidden !important;
-      border: none !important;
-      border-radius: 4px;
-      display: block;
-    }
-
-    .apply-footer {
-      background: #111111;
-      text-align: center;
-      padding: 2rem 1.5rem;
-      border-top: 1px solid rgba(255,255,255,0.06);
-    }
-
-    .apply-footer p {
-      font-size: 0.78rem;
-      color: rgba(255,255,255,0.3);
-      margin: 0;
-    }
-
-    .apply-footer span { color: #c9a84c; }
-
-    @media (max-width: 768px) {
-      .apply-container iframe {
-        height: 3400px !important;
-      }
-      .apply-steps {
-        gap: 1rem;
-      }
-      .apply-step h4 { font-size: 0.78rem; }
-      .apply-step p { font-size: 0.7rem; }
-    }
-  </style>
+    .kf-inp{width:100%;box-sizing:border-box;font-family:'Hanken Grotesk',sans-serif;font-size:15.5px;color:#0B1F1D;background:#fff;border:1px solid #D9E3DE;border-radius:12px;padding:13px 15px;outline:none;transition:border-color .16s,box-shadow .16s}
+    .kf-inp:focus{border-color:#0E5450;box-shadow:0 0 0 3px rgba(14,84,80,0.12)}
+    .kf-inp::placeholder{color:#9AA7A2}
+    select.kf-inp{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'><path d='M1 1l5 5 5-5' fill='none' stroke='%235C6B64' stroke-width='1.6'/></svg>");background-repeat:no-repeat;background-position:right 15px center;padding-right:38px}
+</style>
 </head>
 <body>
-
-  <div class="apply-header">
-    <a href="careers.html">KAIROS FINANCIAL</a>
-  </div>
-
-  <div class="apply-hero">
-    <h1>You're One Step Away From<br /><span>Changing Your Future</span></h1>
-    <p>Complete the application below. Be detailed in your responses — the more we know about you, the faster we can get you on a call and moving forward.</p>
-  </div>
-
-  <div class="apply-notice">
-    <div class="apply-notice-title">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-      Please take your time with this application
+<div style="background:#FFFFFF;font-family:'Hanken Grotesk',sans-serif;color:#0B1F1D;overflow-x:hidden">
+  <nav style="position:sticky;top:0;z-index:50;width:100%;background:rgba(255,255,255,0.86);backdrop-filter:saturate(180%) blur(14px);-webkit-backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid #E7EDEA;font-family:'Hanken Grotesk',sans-serif;box-sizing:border-box">
+    <div style="height:70px;padding:0 clamp(24px,4vw,64px);display:flex;align-items:center;justify-content:space-between;box-sizing:border-box">
+      <a href="/" style="display:flex;align-items:center;gap:11px;text-decoration:none;flex-shrink:0">
+        <span style="display:flex;flex-direction:column;line-height:1">
+          <span style="font-weight:700;letter-spacing:0.17em;font-size:14px;color:#0B1F1D">KAIROS</span>
+          <span style="font-weight:500;letter-spacing:0.26em;font-size:8px;color:#6E7E78;margin-top:4px">FINANCIAL &middot; LIFE INSURANCE</span>
+        </span>
+      </a>
+      <div class="kf-nav-desktop" style="align-items:center;gap:4px">
+          <a href="/" style="position:relative;text-decoration:none;font-size:14.5px;font-weight:500;color:#3A4742;padding:9px 12px;border-radius:8px;white-space:nowrap;transition:color .18s,background .18s" data-hover="background:#F1F6F3;color:#0B1F1D">Home</a>
+          <a href="/about" style="position:relative;text-decoration:none;font-size:14.5px;font-weight:500;color:#3A4742;padding:9px 12px;border-radius:8px;white-space:nowrap;transition:color .18s,background .18s" data-hover="background:#F1F6F3;color:#0B1F1D">About</a>
+          <a href="/opportunity" style="position:relative;text-decoration:none;font-size:14.5px;font-weight:500;color:#3A4742;padding:9px 12px;border-radius:8px;white-space:nowrap;transition:color .18s,background .18s" data-hover="background:#F1F6F3;color:#0B1F1D">The Opportunity</a>
+          <a href="/testimonials" style="position:relative;text-decoration:none;font-size:14.5px;font-weight:500;color:#3A4742;padding:9px 12px;border-radius:8px;white-space:nowrap;transition:color .18s,background .18s" data-hover="background:#F1F6F3;color:#0B1F1D">Testimonials</a>
+          <a href="/faq" style="position:relative;text-decoration:none;font-size:14.5px;font-weight:500;color:#3A4742;padding:9px 12px;border-radius:8px;white-space:nowrap;transition:color .18s,background .18s" data-hover="background:#F1F6F3;color:#0B1F1D">FAQ</a>
+        <a href="/apply" style="margin-left:10px;text-decoration:none;background:#0E5450;color:#fff;font-size:14px;font-weight:600;padding:11px 22px;border-radius:999px;white-space:nowrap;transition:background .18s,transform .18s;box-shadow:0 2px 10px rgba(14,84,80,0.22)" data-hover="background:#0A3D3A;transform:translateY(-1px)">Apply Now</a>
+      </div>
+      <button class="kf-nav-burger" onclick="kfToggleMenu()" aria-label="Menu" style="flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:9px">
+        <span style="width:22px;height:2px;background:#0B1F1D;border-radius:2px;display:block"></span>
+        <span style="width:22px;height:2px;background:#0B1F1D;border-radius:2px;display:block"></span>
+        <span style="width:22px;height:2px;background:#0B1F1D;border-radius:2px;display:block"></span>
+      </button>
     </div>
-    <p>Incomplete or vague applications are less likely to receive a callback. Answer each question thoughtfully — this is how we determine who gets an interview.</p>
-  </div>
-
-  <div class="apply-steps">
-    <div class="apply-step">
-      <div class="apply-step-num">1</div>
-      <h4>Fill Out the Form</h4>
-      <p>5 minutes</p>
+    <div id="kfMobileMenu" style="display:none;border-top:1px solid #E7EDEA;padding:10px 22px 22px;flex-direction:column;gap:2px;background:#fff">
+        <a href="/" style="text-decoration:none;font-size:17px;font-weight:500;color:#1B2A26;padding:13px 6px;border-bottom:1px solid #F0F4F2">Home</a>
+        <a href="/about" style="text-decoration:none;font-size:17px;font-weight:500;color:#1B2A26;padding:13px 6px;border-bottom:1px solid #F0F4F2">About</a>
+        <a href="/opportunity" style="text-decoration:none;font-size:17px;font-weight:500;color:#1B2A26;padding:13px 6px;border-bottom:1px solid #F0F4F2">The Opportunity</a>
+        <a href="/testimonials" style="text-decoration:none;font-size:17px;font-weight:500;color:#1B2A26;padding:13px 6px;border-bottom:1px solid #F0F4F2">Testimonials</a>
+        <a href="/faq" style="text-decoration:none;font-size:17px;font-weight:500;color:#1B2A26;padding:13px 6px;border-bottom:1px solid #F0F4F2">FAQ</a>
+      <a href="/apply" style="margin-top:14px;text-align:center;text-decoration:none;background:#0E5450;color:#fff;font-size:16px;font-weight:600;padding:14px;border-radius:999px">Apply Now</a>
     </div>
-    <div class="apply-step">
-      <div class="apply-step-num">2</div>
-      <h4>We Review It</h4>
-      <p>Within 24 hours</p>
+  </nav>
+
+  <!-- VIDEO: watch first -->
+  <section style="max-width:1000px;margin:0 auto;padding:64px 28px 8px;text-align:center">
+    <div style="font-family:'Geist Mono',monospace;font-size:12px;letter-spacing:0.12em;color:#22A89C;margin-bottom:14px">&mdash; WATCH FIRST</div>
+    <h2 style="font-family:'Newsreader',serif;font-weight:300;font-size:clamp(30px,4.6vw,52px);line-height:1.06;letter-spacing:-0.02em;margin:0 0 26px">Watch the Business Overview <span style="font-style:italic;color:#0E5450">before you apply.</span></h2>
+    <div style="position:relative;border-radius:22px;overflow:hidden;aspect-ratio:16/9;background:linear-gradient(150deg,#0E5450 0%,#0A3F3B 55%,#082B28 100%);box-shadow:0 30px 70px -34px rgba(8,43,40,0.55)">
+      <video id="kfVideo" controls preload="none" playsinline style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#082B28" src="https://pub-d5bc34f17058403b931c2da001882d1d.r2.dev/Agency%20Overview%20Compressed.mp4"></video>
+      <div id="kfOverlay" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;box-sizing:border-box;background:linear-gradient(150deg,#0E5450 0%,#0A3F3B 55%,#082B28 100%);cursor:pointer">
+        <div style="position:absolute;right:-80px;top:-80px;width:360px;height:360px;border-radius:50%;background:radial-gradient(circle,rgba(52,194,182,0.26) 0%,rgba(52,194,182,0) 70%)"></div>
+        <div style="position:relative;width:clamp(70px,9vw,100px);height:clamp(70px,9vw,100px);border-radius:50%;background:#34C2B6;display:flex;align-items:center;justify-content:center;box-shadow:0 18px 44px rgba(52,194,182,0.45);margin-bottom:22px">
+          <svg width="34%" height="34%" viewBox="0 0 24 24" fill="#04201D" style="margin-left:8%"><path d="M5 3.5v17l14-8.5z"/></svg>
+        </div>
+        <div style="position:relative;font-family:'Newsreader',serif;font-weight:300;font-size:clamp(22px,3vw,34px);line-height:1.1;color:#fff;max-width:560px">Watch the Business Overview before you apply.</div>
+        <div style="position:relative;margin-top:14px;font-size:clamp(13px,1.5vw,16px);color:#B7CEC9;max-width:420px;line-height:1.5">Click to play &mdash; the application unlocks when the video starts.</div>
+      </div>
     </div>
-    <div class="apply-step">
-      <div class="apply-step-num">3</div>
-      <h4>Get a Callback</h4>
-      <p>Schedule your intro call</p>
+    <div style="margin-top:16px;display:flex;justify-content:center">
+      <button id="kfSpeed" onclick="kfToggleSpeed()" style="cursor:pointer;background:#F4F8F6;border:1px solid #D9E3DE;color:#0E5450;font-family:'Geist Mono',monospace;font-size:13px;font-weight:500;padding:9px 16px;border-radius:999px;transition:background .18s" data-hover="background:#E6F0EC">Speed: 1&times;</button>
     </div>
-  </div>
+  </section>
 
-  <div class="apply-divider"></div>
+  <section style="max-width:1080px;margin:0 auto;padding:24px 28px 84px">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:54px;align-items:start">
 
-  <div class="apply-container">
-    <iframe
-      src="https://api.leadconnectorhq.com/widget/form/ZBKArUldYqC3TJGiw10o"
-      style="width:100%;height:100%;border:none;border-radius:4px"
-      scrolling="no"
-      id="inline-ZBKArUldYqC3TJGiw10o"
-      data-layout="{'id':'INLINE'}"
-      data-trigger-type="alwaysShow"
-      data-trigger-value=""
-      data-activation-type="alwaysActivated"
-      data-activation-value=""
-      data-deactivation-type="neverDeactivate"
-      data-deactivation-value=""
-      data-form-name="Application"
-      data-height="2299"
-      data-layout-iframe-id="inline-ZBKArUldYqC3TJGiw10o"
-      data-form-id="ZBKArUldYqC3TJGiw10o"
-      title="Application"
-    ></iframe>
-    <script src="https://link.msgsndr.com/js/form_embed.js"></script>
-  </div>
+      <!-- LEFT: intro -->
+      <div style="position:sticky;top:100px">
+        <div style="font-family:'Geist Mono',monospace;font-size:12px;letter-spacing:0.12em;color:#22A89C;margin-bottom:16px">&mdash; APPLY TO JOIN</div>
+        <h1 style="font-family:'Newsreader',serif;font-weight:300;font-size:clamp(38px,5.2vw,62px);line-height:1.04;letter-spacing:-0.02em;margin:0 0 22px">Let&rsquo;s start a<br><span style="font-style:italic;color:#0E5450">conversation.</span></h1>
+        <p style="font-size:17px;line-height:1.65;color:#516159;margin:0 0 32px;max-width:420px">Fill out the form and our recruiting team will reach out. No experience required &mdash; just tell us a bit about yourself.</p>
+        <div style="display:flex;flex-direction:column;gap:16px">
+          <div style="display:flex;align-items:center;gap:13px"><span style="width:24px;height:24px;border-radius:50%;background:#E1F0ED;display:flex;align-items:center;justify-content:center;color:#0E5450;font-weight:700;font-size:13px;flex-shrink:0">&checkmark;</span><span style="font-size:15px;color:#2B3A35;font-weight:500">No experience necessary &mdash; we train you</span></div>
+          <div style="display:flex;align-items:center;gap:13px"><span style="width:24px;height:24px;border-radius:50%;background:#E1F0ED;display:flex;align-items:center;justify-content:center;color:#0E5450;font-weight:700;font-size:13px;flex-shrink:0">&checkmark;</span><span style="font-size:15px;color:#2B3A35;font-weight:500">A real person reviews every application</span></div>
+          <div style="display:flex;align-items:center;gap:13px"><span style="width:24px;height:24px;border-radius:50%;background:#E1F0ED;display:flex;align-items:center;justify-content:center;color:#0E5450;font-weight:700;font-size:13px;flex-shrink:0">&checkmark;</span><span style="font-size:15px;color:#2B3A35;font-weight:500">Zero obligation &mdash; just a conversation</span></div>
+        </div>
+      </div>
 
-  <footer class="apply-footer">
-    <p>&copy; 2026 <span>Kairos Financial</span>. All rights reserved.</p>
+      <!-- RIGHT: form / success (locked until video plays) -->
+      <div style="position:relative">
+      <div id="kfFormCard" style="background:#FAFCFB;border:1px solid #EAF0ED;border-radius:24px;padding:clamp(28px,3.5vw,42px);box-shadow:0 24px 50px -36px rgba(11,31,29,0.3);filter:grayscale(1) opacity(0.5);pointer-events:none;transition:filter .3s">
+
+        <div id="kfSuccess" style="display:none;text-align:center;padding:30px 8px">
+          <div style="width:60px;height:60px;border-radius:50%;background:#E1F0ED;display:flex;align-items:center;justify-content:center;color:#0E5450;font-size:28px;margin:0 auto 24px">&checkmark;</div>
+          <h2 style="font-family:'Newsreader',serif;font-weight:400;font-size:30px;margin:0 0 14px;color:#0B1F1D">Application received.</h2>
+          <p style="font-size:16px;line-height:1.6;color:#516159;margin:0 0 28px">Thanks, <span id="kfSuccessName">there</span>. Our recruiting team will review your details and reach out within a few business days.</p>
+          <a href="/" style="text-decoration:none;color:#0E5450;font-weight:600;font-size:15px;border-bottom:2px solid #B7E0DA;padding-bottom:3px" data-hover="border-color:#0E5450">Back to home &rarr;</a>
+        </div>
+
+        <div id="kfForm">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+            <div><label style="display:block;font-size:13px;font-weight:600;color:#3A4742;margin-bottom:7px">First name</label><input id="kf_first" class="kf-inp" type="text" placeholder="Devon"></div>
+            <div><label style="display:block;font-size:13px;font-weight:600;color:#3A4742;margin-bottom:7px">Last name</label><input id="kf_last" class="kf-inp" type="text" placeholder="Tyerman"></div>
+          </div>
+          <div style="margin-bottom:16px">
+            <label style="display:block;font-size:13px;font-weight:600;color:#3A4742;margin-bottom:7px">Email</label><input id="kf_email" class="kf-inp" type="email" placeholder="you@email.com">
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+            <div><label style="display:block;font-size:13px;font-weight:600;color:#3A4742;margin-bottom:7px">Phone</label><input id="kf_phone" class="kf-inp" type="tel" placeholder="(555) 000-0000"></div>
+            <div><label style="display:block;font-size:13px;font-weight:600;color:#3A4742;margin-bottom:7px">State</label><select id="kf_state" class="kf-inp"><option value="">Select your state</option><option value="Alabama">Alabama</option><option value="Alaska">Alaska</option><option value="Arizona">Arizona</option><option value="Arkansas">Arkansas</option><option value="California">California</option><option value="Colorado">Colorado</option><option value="Connecticut">Connecticut</option><option value="Delaware">Delaware</option><option value="Florida">Florida</option><option value="Georgia">Georgia</option><option value="Hawaii">Hawaii</option><option value="Idaho">Idaho</option><option value="Illinois">Illinois</option><option value="Indiana">Indiana</option><option value="Iowa">Iowa</option><option value="Kansas">Kansas</option><option value="Kentucky">Kentucky</option><option value="Louisiana">Louisiana</option><option value="Maine">Maine</option><option value="Maryland">Maryland</option><option value="Massachusetts">Massachusetts</option><option value="Michigan">Michigan</option><option value="Minnesota">Minnesota</option><option value="Mississippi">Mississippi</option><option value="Missouri">Missouri</option><option value="Montana">Montana</option><option value="Nebraska">Nebraska</option><option value="Nevada">Nevada</option><option value="New Hampshire">New Hampshire</option><option value="New Jersey">New Jersey</option><option value="New Mexico">New Mexico</option><option value="New York">New York</option><option value="North Carolina">North Carolina</option><option value="North Dakota">North Dakota</option><option value="Ohio">Ohio</option><option value="Oklahoma">Oklahoma</option><option value="Oregon">Oregon</option><option value="Pennsylvania">Pennsylvania</option><option value="Rhode Island">Rhode Island</option><option value="South Carolina">South Carolina</option><option value="South Dakota">South Dakota</option><option value="Tennessee">Tennessee</option><option value="Texas">Texas</option><option value="Utah">Utah</option><option value="Vermont">Vermont</option><option value="Virginia">Virginia</option><option value="Washington">Washington</option><option value="West Virginia">West Virginia</option><option value="Wisconsin">Wisconsin</option><option value="Wyoming">Wyoming</option><option value="District of Columbia">District of Columbia</option></select></div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+            <div><label style="display:block;font-size:13px;font-weight:600;color:#3A4742;margin-bottom:7px">Licensed already?</label><select id="kf_licensed" class="kf-inp"><option value="">Select one</option><option value="yes">Yes, life-licensed</option><option value="progress">In progress</option><option value="no">Not yet</option></select></div>
+            <div><label style="display:block;font-size:13px;font-weight:600;color:#3A4742;margin-bottom:7px">Sales experience</label><select id="kf_experience" class="kf-inp"><option value="">Select one</option><option value="none">New to sales</option><option value="some">Some experience</option><option value="seasoned">Seasoned (3+ yrs)</option></select></div>
+          </div>
+          <div style="margin-bottom:16px">
+            <label style="display:block;font-size:13px;font-weight:600;color:#3A4742;margin-bottom:7px">Are you looking for full-time or part-time?</label>
+            <select id="kf_commitment" class="kf-inp"><option value="">Select one</option><option value="full">Full-time</option><option value="part">Part-time</option><option value="either">Open to either</option></select>
+          </div>
+          <div style="margin-bottom:8px">
+            <label style="display:block;font-size:13px;font-weight:600;color:#3A4742;margin-bottom:7px">Why you want in &mdash; and what sets you apart</label>
+            <div style="display:flex;align-items:flex-start;gap:10px;padding:12px 14px;margin-bottom:10px;background:#FBF6EC;border:1px solid #EAD9B8;border-radius:10px">
+              <span style="flex-shrink:0;font-size:15px;line-height:1.3">&#9888;&#65039;</span>
+              <span style="font-size:13px;line-height:1.55;color:#7A5A1E">Please write this yourself &mdash; don&rsquo;t use AI to generate your response. It&rsquo;s easy to tell, and those applications are discarded. We genuinely want to get a sense of your personality and who you are.</span>
+            </div>
+            <textarea id="kf_why" class="kf-inp" rows="6" placeholder="In your own words: why do you want to get into this, and why should we choose you? Tell us what drives you, what sets you apart, and a bit about who you are..." style="resize:vertical;min-height:150px"></textarea>
+            <div style="display:flex;justify-content:flex-end;margin-top:7px">
+              <span id="kfWhyCount" style="font-family:'Geist Mono',monospace;font-size:12px;color:#B07A1E">0 / 500 minimum</span>
+            </div>
+          </div>
+          <div id="kfError" style="display:none;margin:14px 0 0;padding:12px 15px;background:#FBEDE9;border:1px solid #F1C9BC;border-radius:10px;font-size:14px;color:#9A3B22"></div>
+          <div id="kfWatchNote" style="margin-top:22px;display:flex;align-items:center;justify-content:center;gap:8px;padding:11px 14px;background:#F1F8F5;border:1px solid #DCEBE5;border-radius:10px;font-family:'Geist Mono',monospace;font-size:12.5px;color:#0E5450;text-align:center">Finish the overview to submit.</div>
+          <button id="kfSubmit" onclick="kfSubmitApply()" disabled style="margin-top:14px;width:100%;cursor:not-allowed;background:#0E5450;color:#fff;font-family:'Hanken Grotesk',sans-serif;font-size:16px;font-weight:600;padding:16px;border:none;border-radius:12px;box-shadow:0 8px 24px rgba(14,84,80,0.26);opacity:0.45;transition:background .18s,transform .18s,opacity .25s">Submit application &rarr;</button>
+          <p style="font-size:12.5px;color:#9AA7A2;text-align:center;margin:16px 0 0;line-height:1.5">By submitting, you agree to be contacted by Kairos Financial about career opportunities.</p>
+        </div>
+      </div>
+        <div id="kfLock" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:30px;box-sizing:border-box;background:rgba(250,252,251,0.72);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);border-radius:24px">
+          <div style="width:54px;height:54px;border-radius:50%;background:#E1F0ED;display:flex;align-items:center;justify-content:center;margin-bottom:18px">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0E5450" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>
+          </div>
+          <div style="font-family:'Newsreader',serif;font-weight:400;font-size:22px;color:#0B1F1D;margin-bottom:8px;max-width:300px;line-height:1.25">Watch the Business Overview before you apply.</div>
+          <div style="font-size:14px;color:#5C6B64;max-width:280px;line-height:1.5">Press play on the video to unlock the application.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <footer style="background:#082B28;color:#CFE0DB;font-family:'Hanken Grotesk',sans-serif;box-sizing:border-box">
+    <div style="padding:72px clamp(24px,4vw,64px) 30px;box-sizing:border-box">
+      <div style="display:flex;flex-wrap:wrap;gap:48px;justify-content:space-between;align-items:flex-start;padding-bottom:54px;border-bottom:1px solid rgba(255,255,255,0.1)">
+        <div style="max-width:360px">
+          <div style="display:flex;align-items:center;gap:11px;margin-bottom:22px">
+            <span style="font-weight:700;letter-spacing:0.17em;font-size:15px;color:#fff">KAIROS</span>
+          </div>
+          <p style="font-family:'Newsreader',serif;font-size:23px;line-height:1.35;color:#EAF3F0;margin:0 0 24px;font-weight:300">Build a life insurance career worth <span style="font-style:italic;color:#7FD8CC">owning.</span></p>
+          <a href="/apply" style="display:inline-flex;align-items:center;gap:9px;text-decoration:none;background:#22A89C;color:#04201D;font-size:14.5px;font-weight:700;padding:12px 22px;border-radius:999px;transition:background .18s" data-hover="background:#34C2B6">Apply to join &rarr;</a>
+        </div>
+        <div style="display:flex;gap:64px;flex-wrap:wrap">
+          <div>
+            <div style="font-size:11px;font-weight:700;letter-spacing:0.18em;color:#5E837C;margin-bottom:18px">EXPLORE</div>
+            <div style="display:flex;flex-direction:column;gap:13px">
+              <a href="/" style="text-decoration:none;color:#CFE0DB;font-size:15px" data-hover="color:#fff">Home</a>
+              <a href="/about" style="text-decoration:none;color:#CFE0DB;font-size:15px" data-hover="color:#fff">About Us</a>
+              <a href="/opportunity" style="text-decoration:none;color:#CFE0DB;font-size:15px" data-hover="color:#fff">The Opportunity</a>
+              <a href="/testimonials" style="text-decoration:none;color:#CFE0DB;font-size:15px" data-hover="color:#fff">Testimonials</a>
+            </div>
+          </div>
+          <div>
+            <div style="font-size:11px;font-weight:700;letter-spacing:0.18em;color:#5E837C;margin-bottom:18px">JOIN US</div>
+            <div style="display:flex;flex-direction:column;gap:13px">
+              <a href="/apply" style="text-decoration:none;color:#CFE0DB;font-size:15px" data-hover="color:#fff">Apply Now</a>
+              <a href="/faq" style="text-decoration:none;color:#CFE0DB;font-size:15px" data-hover="color:#fff">FAQ</a>
+              <a href="/opportunity" style="text-decoration:none;color:#CFE0DB;font-size:15px" data-hover="color:#fff">Compensation</a>
+            </div>
+          </div>
+          <div>
+            <div style="font-size:11px;font-weight:700;letter-spacing:0.18em;color:#5E837C;margin-bottom:18px">GET IN TOUCH</div>
+            <div style="display:flex;flex-direction:column;gap:7px;font-size:15px;line-height:1.5;color:#A9C2BC">
+              <span>Recruiting team</span>
+              <a href="mailto:info@kairos-financial.com" style="text-decoration:none;color:#EAF3F0;font-weight:600;margin-top:6px">info@kairos-financial.com</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between;align-items:center;padding-top:26px">
+        <span style="font-size:13px;color:#6E938B">&copy; 2026 Kairos Financial. All rights reserved.</span>
+        <div style="display:flex;gap:26px">
+          <a href="#" style="text-decoration:none;color:#6E938B;font-size:13px" data-hover="color:#CFE0DB">Privacy Policy</a>
+          <span style="font-size:13px;color:#6E938B">Life insurance &amp; financial services careers</span>
+        </div>
+      </div>
+    </div>
   </footer>
+</div>
+<script>
+(function(){
+  document.querySelectorAll("[data-hover]").forEach(function(el){
+    var base = el.getAttribute("style") || "";
+    var hov = el.getAttribute("data-hover");
+    el.addEventListener("mouseenter", function(){ el.setAttribute("style", base + ";" + hov); });
+    el.addEventListener("mouseleave", function(){ el.setAttribute("style", base); });
+  });
+})();
+function kfToggleMenu(){
+  var m = document.getElementById("kfMobileMenu");
+  if(!m) return;
+  m.style.display = (m.style.display === "flex") ? "none" : "flex";
+}
+</script>
+<script>
+// === Lead delivery: GoHighLevel Inbound Webhook ===
+var KF_GHL_WEBHOOK_URL = "https://services.leadconnectorhq.com/hooks/f9IiSI7t8I2NgPGmAQBq/webhook-trigger/97e62ec9-7e41-468f-81c5-ef3ae3b1396c";
 
-  <script>
-    const iframe = document.getElementById('inline-ZBKArUldYqC3TJGiw10o');
-    if (iframe) {
-      const enforce = () => {
-        iframe.style.setProperty('overflow', 'hidden', 'important');
-        iframe.style.setProperty('height', (window.innerWidth <= 768 ? '3400px' : '3200px'), 'important');
-        iframe.style.setProperty('max-height', 'none', 'important');
-        iframe.setAttribute('scrolling', 'no');
-      };
-      enforce();
-      new MutationObserver(enforce).observe(iframe, { attributes: true, attributeFilter: ['style'] });
-    }
-  </script>
+var KF_KEY_TIME = "kairos_overview_video_time";
+var KF_KEY_DONE = "kairos_overview_completed";
+var KF_GATE = 0.95;            // must watch 95% before submitting
+var kfMaxTime = 0;             // furthest point reached by real playback (anti-skip)
+var kfComplete = false;
+
+function kfUnlockForm(){
+  var lock=document.getElementById("kfLock"), card=document.getElementById("kfFormCard");
+  if(lock) lock.style.display="none";
+  if(card){ card.style.filter="none"; card.style.pointerEvents="auto"; }
+}
+function kfEnableSubmit(){
+  kfComplete = true;
+  var btn=document.getElementById("kfSubmit"), note=document.getElementById("kfWatchNote");
+  if(btn){ btn.disabled=false; btn.style.opacity="1"; btn.style.cursor="pointer"; }
+  if(note) note.style.display="none";
+}
+function kfFmtTime(t){ t=Math.max(0,Math.round(t)); var m=Math.floor(t/60), s=t%60; return m+":"+(s<10?"0":"")+s; }
+function kfToggleSpeed(){
+  var v=document.getElementById("kfVideo"), b=document.getElementById("kfSpeed");
+  if(!v) return;
+  v.playbackRate = (v.playbackRate>=1.25)?1:1.25;
+  if(b) b.textContent = (v.playbackRate>=1.25)?"Speed: 1.25\u00d7":"Speed: 1\u00d7";
+}
+
+(function(){
+  var v=document.getElementById("kfVideo"), o=document.getElementById("kfOverlay");
+  var note=document.getElementById("kfWatchNote");
+  try{ if(localStorage.getItem(KF_KEY_DONE)==="1"){ kfUnlockForm(); kfEnableSubmit(); } }catch(e){}
+  if(v){
+    try{
+      var t=parseFloat(localStorage.getItem(KF_KEY_TIME));
+      if(!isNaN(t)&&t>0&&isFinite(t)){ v.addEventListener("loadedmetadata",function(){ if(t<v.duration-1){ v.currentTime=t; kfMaxTime=t; } },{once:true}); }
+    }catch(e){}
+    if(o) o.addEventListener("click",function(){ o.style.display="none"; try{v.play();}catch(e){} });
+    v.addEventListener("play", kfUnlockForm);
+    v.addEventListener("timeupdate",function(){
+      if(!v.seeking && v.currentTime <= kfMaxTime + 1.0 && v.currentTime > kfMaxTime){ kfMaxTime = v.currentTime; }
+      try{ localStorage.setItem(KF_KEY_TIME, String(v.currentTime)); }catch(e){}
+      if(!kfComplete && v.duration && isFinite(v.duration)){
+        if(kfMaxTime >= v.duration*KF_GATE){ try{ localStorage.setItem(KF_KEY_DONE,"1"); }catch(e){} kfEnableSubmit(); }
+        else if(note){ note.textContent = "Finish the overview to submit \u2014 " + kfFmtTime(v.duration*KF_GATE - kfMaxTime) + " left"; }
+      }
+    });
+    v.addEventListener("seeking",function(){ if(v.currentTime > kfMaxTime + 1.0){ v.currentTime = kfMaxTime; } });
+    v.addEventListener("ended",function(){ try{ localStorage.setItem(KF_KEY_DONE,"1"); }catch(e){} kfEnableSubmit(); });
+  }
+  var why=document.getElementById("kf_why"), counter=document.getElementById("kfWhyCount");
+  function updateCount(){
+    var n=(why.value||"").trim().length;
+    counter.textContent=n+" / 500 minimum";
+    counter.style.color = n>=500 ? "#0E5450" : "#B07A1E";
+  }
+  why.addEventListener("input",updateCount);
+  function block(e){ e.preventDefault(); showError("Pasting is disabled here \u2014 please type your answer in your own words."); }
+  why.addEventListener("paste",block); why.addEventListener("drop",block);
+})();
+
+function showError(msg){
+  var box=document.getElementById("kfError");
+  box.textContent=msg; box.style.display="block";
+}
+function kfFmtPhone(raw){
+  var digits=(raw||"").replace(/\D/g,"");
+  if(digits.length===10) return "+1"+digits;
+  if(digits.length===11 && digits[0]==="1") return "+"+digits;
+  if(raw.trim().indexOf("+")===0) return "+"+digits;
+  return raw.trim();
+}
+function kfSubmitApply(){
+  var btn=document.getElementById("kfSubmit");
+  if(btn.disabled) return;
+  var first=document.getElementById("kf_first").value,
+      last=document.getElementById("kf_last").value,
+      email=document.getElementById("kf_email").value,
+      phone=document.getElementById("kf_phone").value,
+      state=document.getElementById("kf_state").value,
+      licensed=document.getElementById("kf_licensed").value,
+      experience=document.getElementById("kf_experience").value,
+      commitment=document.getElementById("kf_commitment").value,
+      why=document.getElementById("kf_why").value;
+  document.getElementById("kfError").style.display="none";
+  if(!first.trim()||!last.trim()){ showError("Please enter your first and last name."); return; }
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email.trim())){ showError("Please enter a valid email address."); return; }
+  if(!phone.trim()){ showError("Please enter a phone number so we can reach you."); return; }
+  if(!state){ showError("Please select your state."); return; }
+  if(why.trim().length<500){ showError("Please tell us why you\u2019re interested \u2014 a minimum of 500 characters (about a short paragraph). Write it in your own words."); return; }
+
+  btn.disabled=true; btn.textContent="Sending\u2026";
+  var licensedLabels={yes:"Yes, life-licensed",progress:"In progress",no:"Not yet"};
+  var expLabels={none:"New to sales",some:"Some experience",seasoned:"Seasoned (3+ yrs)"};
+  var commitLabels={full:"Full-time",part:"Part-time",either:"Open to either"};
+  var payload={ firstName:first.trim(), lastName:last.trim(), email:email.trim(), phone:kfFmtPhone(phone),
+    state:state.trim(), licensed:licensedLabels[licensed]||"", experience:expLabels[experience]||"",
+    commitment:commitLabels[commitment]||"", message:why.trim(), source:"Website application form" };
+  var configured = KF_GHL_WEBHOOK_URL && KF_GHL_WEBHOOK_URL.indexOf("PASTE_")!==0;
+  function done(){
+    document.getElementById("kfSuccessName").textContent = first.trim() || "there";
+    document.getElementById("kfForm").style.display="none";
+    document.getElementById("kfSuccess").style.display="block";
+    try{ window.scrollTo({top:0,behavior:"smooth"}); }catch(e){ window.scrollTo(0,0); }
+  }
+  if(configured){
+    fetch(KF_GHL_WEBHOOK_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)})
+      .then(done).catch(function(){ btn.disabled=false; btn.textContent="Submit application \u2192"; showError("Something went wrong sending your application. Please try again."); });
+  } else { done(); }
+}
+</script>
 </body>
 </html>

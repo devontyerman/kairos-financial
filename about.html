@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/png" href="/KF Transparent.png">
+<title>About — Kairos Financial</title>
+<meta name="description" content="Kairos Financial is an agency built to help agents win — no MLM, transparent pay, and a real path from new agent to ownership. A note from founder Dev Tyerman.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..500&family=Hanken+Grotesk:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+    body{margin:0}
+    .kf-nav-desktop{display:flex}
+    .kf-nav-burger{display:none}
+    @media (max-width:859px){
+      .kf-nav-desktop{display:none !important}
+      .kf-nav-burger{display:flex !important}
+    }
+</style>
+</head>
+<body>
+<div style="background:#FFFFFF;font-family:'Hanken Grotesk',sans-serif;color:#0B1F1D;overflow-x:hidden">
+  <nav style="position:sticky;top:0;z-index:50;width:100%;background:rgba(255,255,255,0.86);backdrop-filter:saturate(180%) blur(14px);-webkit-backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid #E7EDEA;font-family:'Hanken Grotesk',sans-serif;box-sizing:border-box">
+    <div style="height:70px;padding:0 clamp(24px,4vw,64px);display:flex;align-items:center;justify-content:space-between;box-sizing:border-box">
+      <a href="/" style="display:flex;align-items:center;gap:11px;text-decoration:none;flex-shrink:0">
+        <span style="display:flex;flex-direction:column;line-height:1">
+          <span style="font-weight:700;letter-spacing:0.17em;font-size:14px;color:#0B1F1D">KAIROS</span>
+          <span style="font-weight:500;letter-spacing:0.26em;font-size:8px;color:#6E7E78;margin-top:4px">FINANCIAL &middot; LIFE INSURANCE</span>
+        </span>
+      </a>
+      <div class="kf-nav-desktop" style="align-items:center;gap:4px">
+          <a href="/" style="position:relative;text-decoration:none;font-size:14.5px;font-weight:500;color:#3A4742;padding:9px 12px;border-radius:8px;white-space:nowrap;transition:color .18s,background .18s" data-hover="background:#F1F6F3;color:#0B1F1D">Home</a>
+          <a href="/about" style="position:relative;text-decoration:none;font-size:14.5px;font-weight:500;color:#3A4742;padding:9px 12px;border-radius:8px;white-space:nowrap;transition:color .18s,background .18s" data-hover="background:#F1F6F3;color:#0B1F1D">About<span style="position:absolute;left:13px;right:13px;bottom:2px;height:2px;border-radius:2px;background:#0E5450"></span></a>
+          <a href="/opportunity" style="position:relative;text-decoration:none;font-size:14.5px;font-weight:500;color:#3A4742;padding:9px 12px;border-radius:8px;white-space:nowrap;transition:color .18s,background .18s" data-hover="background:#F1F6F3;color:#0B1F1D">The Opportunity</a>
+          <a href="/testimonials" style="position:relative;text-decoration:none;font-size:14.5px;font-weight:500;color:#3A4742;padding:9px 12px;border-radius:8px;white-space:nowrap;transition:color .18s,background .18s" data-hover="background:#F1F6F3;color:#0B1F1D">Testimonials</a>
+          <a href="/faq" style="position:relative;text-decoration:none;font-size:14.5px;font-weight:500;color:#3A4742;padding:9px 12px;border-radius:8px;white-space:nowrap;transition:color .18s,background .18s" data-hover="background:#F1F6F3;color:#0B1F1D">FAQ</a>
+        <a href="/apply" style="margin-left:10px;text-decoration:none;background:#0E5450;color:#fff;font-size:14px;font-weight:600;padding:11px 22px;border-radius:999px;white-space:nowrap;transition:background .18s,transform .18s;box-shadow:0 2px 10px rgba(14,84,80,0.22)" data-hover="background:#0A3D3A;transform:translateY(-1px)">Apply Now</a>
+      </div>
+      <button class="kf-nav-burger" onclick="kfToggleMenu()" aria-label="Menu" style="flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:9px">
+        <span style="width:22px;height:2px;background:#0B1F1D;border-radius:2px;display:block"></span>
+        <span style="width:22px;height:2px;background:#0B1F1D;border-radius:2px;display:block"></span>
+        <span style="width:22px;height:2px;background:#0B1F1D;border-radius:2px;display:block"></span>
+      </button>
+    </div>
+    <div id="kfMobileMenu" style="display:none;border-top:1px solid #E7EDEA;padding:10px 22px 22px;flex-direction:column;gap:2px;background:#fff">
+        <a href="/" style="text-decoration:none;font-size:17px;font-weight:500;color:#1B2A26;padding:13px 6px;border-bottom:1px solid #F0F4F2">Home</a>
+        <a href="/about" style="text-decoration:none;font-size:17px;font-weight:500;color:#1B2A26;padding:13px 6px;border-bottom:1px solid #F0F4F2">About</a>
+        <a href="/opportunity" style="text-decoration:none;font-size:17px;font-weight:500;color:#1B2A26;padding:13px 6px;border-bottom:1px solid #F0F4F2">The Opportunity</a>
+        <a href="/testimonials" style="text-decoration:none;font-size:17px;font-weight:500;color:#1B2A26;padding:13px 6px;border-bottom:1px solid #F0F4F2">Testimonials</a>
+        <a href="/faq" style="text-decoration:none;font-size:17px;font-weight:500;color:#1B2A26;padding:13px 6px;border-bottom:1px solid #F0F4F2">FAQ</a>
+      <a href="/apply" style="margin-top:14px;text-align:center;text-decoration:none;background:#0E5450;color:#fff;font-size:16px;font-weight:600;padding:14px;border-radius:999px">Apply Now</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section style="max-width:1000px;margin:0 auto;padding:88px 28px 40px;text-align:center">
+    <div style="font-family:'Geist Mono',monospace;font-size:12px;letter-spacing:0.12em;color:#22A89C;margin-bottom:16px">&mdash; ABOUT KAIROS</div>
+    <h1 style="font-family:'Newsreader',serif;font-weight:300;font-size:clamp(40px,6vw,72px);line-height:1.04;letter-spacing:-0.02em;margin:0 0 24px">An agency built to help agents <span style="font-style:italic;color:#0E5450">win.</span></h1>
+    <p style="max-width:680px;margin:0 auto;font-family:'Newsreader',serif;font-weight:300;font-style:italic;font-size:clamp(21px,2.6vw,30px);line-height:1.4;color:#2B3A35">Kairos means the opportune moment &mdash; the right time to act. We built this agency so the right people never miss theirs.</p>
+  </section>
+
+  <!-- FOUNDER STATEMENT -->
+  <section style="max-width:1080px;margin:0 auto;padding:30px 28px 20px">
+    <div style="background:linear-gradient(150deg,#0E5450 0%,#0A3F3B 60%,#082B28 100%);border-radius:26px;padding:clamp(28px,3.6vw,46px);position:relative;overflow:hidden">
+      <div style="position:absolute;left:-50px;bottom:-50px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(52,194,182,0.20),transparent 70%)"></div>
+      <div style="position:relative;display:grid;grid-template-columns:auto 1fr;gap:clamp(22px,3vw,40px);align-items:center">
+        <img src="/assets/recruiting/Color%20PFP.jpeg" alt="Dev Tyerman, Founder of Kairos Financial" style="width:clamp(110px,14vw,150px);height:clamp(110px,14vw,150px);border-radius:50%;object-fit:cover;object-position:center top;border:3px solid rgba(255,255,255,0.18);flex-shrink:0">
+        <div>
+          <div style="font-family:'Geist Mono',monospace;font-size:12px;letter-spacing:0.12em;color:#7FD8CC;margin-bottom:16px">&mdash; A NOTE FROM OUR FOUNDER</div>
+          <p style="font-family:'Newsreader',serif;font-weight:300;font-size:clamp(16px,1.9vw,21px);line-height:1.55;color:#CBDDD9;margin:0 0 16px">I started Kairos because I was tired of the MLM playbook &mdash; where the only way to get ahead is to recruit your friends and family into a downline. That&rsquo;s not how we do it. Here, you make money by helping clients and writing good business &mdash; you never have to recruit a single person to build a great income.</p>
+          <p style="font-family:'Newsreader',serif;font-weight:300;font-size:clamp(16px,1.9vw,21px);line-height:1.55;color:#CBDDD9;margin:0 0 22px">I also believe you should always know exactly how you&rsquo;re paid. No confusing pay scales, no hidden tiers, no fine print. Your commission level is clearly defined and published, so you can see every step before you take it.</p>
+          <div style="display:flex;align-items:center;gap:12px">
+            <span style="font-family:'Newsreader',serif;font-style:italic;font-size:22px;color:#fff">Dev Tyerman</span>
+            <span style="width:5px;height:5px;border-radius:50%;background:#52D6CB;display:block"></span>
+            <span style="font-size:13.5px;color:#9EBDB7;font-weight:600;letter-spacing:0.02em">Founder, Kairos Financial</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- THREE PILLARS -->
+  <section style="max-width:1280px;margin:0 auto;padding:64px 28px">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px">
+      <div style="border:1px solid #EAF0ED;border-radius:20px;padding:34px 30px;background:#FAFCFB"><div style="font-family:'Geist Mono',monospace;font-size:12px;color:#22A89C;margin-bottom:18px">OUR PEOPLE</div><h3 style="font-family:'Newsreader',serif;font-weight:400;font-size:25px;margin:0 0 14px;letter-spacing:-0.01em">We invest in agents</h3><p style="font-size:15px;line-height:1.65;color:#516159;margin:0">We pour our resources into training, mentorship and support &mdash; because when our agents grow, everyone wins.</p></div>
+      <div style="border:1px solid #EAF0ED;border-radius:20px;padding:34px 30px;background:#FAFCFB"><div style="font-family:'Geist Mono',monospace;font-size:12px;color:#22A89C;margin-bottom:18px">OUR PRODUCTS</div><h3 style="font-family:'Newsreader',serif;font-weight:400;font-size:25px;margin:0 0 14px;letter-spacing:-0.01em">Carriers you can trust</h3><p style="font-size:15px;line-height:1.65;color:#516159;margin:0">We partner with A-rated carriers so agents can recommend protection families actually need, with confidence.</p></div>
+      <div style="border:1px solid #EAF0ED;border-radius:20px;padding:34px 30px;background:#FAFCFB"><div style="font-family:'Geist Mono',monospace;font-size:12px;color:#22A89C;margin-bottom:18px">OUR PROMISE</div><h3 style="font-family:'Newsreader',serif;font-weight:400;font-size:25px;margin:0 0 14px;letter-spacing:-0.01em">A real path forward</h3><p style="font-size:15px;line-height:1.65;color:#516159;margin:0">Transparent commissions and a defined route from new agent to owning your own agency &mdash; no smoke, no ceilings.</p></div>
+    </div>
+  </section>
+
+  <!-- MISSION SPLIT -->
+  <section style="max-width:1280px;margin:0 auto;padding:40px 28px 70px">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:54px;align-items:center">
+      <div>
+        <div style="font-family:'Geist Mono',monospace;font-size:12px;letter-spacing:0.12em;color:#22A89C;margin-bottom:16px">&mdash; OUR MISSION</div>
+        <h2 style="font-family:'Newsreader',serif;font-weight:300;font-size:clamp(32px,4.4vw,48px);line-height:1.1;letter-spacing:-0.02em;margin:0 0 22px">Protecting families by <span style="font-style:italic;color:#0E5450">empowering</span> agents.</h2>
+        <p style="font-size:16.5px;line-height:1.68;color:#516159;margin:0 0 18px">Every family deserves a plan that protects the people they love. We believe the best way to reach more of them is to invest deeply in the agents who serve them &mdash; giving them the training, products, and support to do their best work.</p>
+        <p style="font-size:16.5px;line-height:1.68;color:#516159;margin:0">When our agents grow, families are protected and communities are stronger. That alignment is the heart of how Kairos operates.</p>
+      </div>
+      <div style="border-radius:24px;height:460px;position:relative;overflow:hidden">
+        <img src="/assets/recruiting/charlesdeluvio-Lks7vei-eAg-unsplash.jpg" alt="Two colleagues discussing work at a desk" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
+      </div>
+    </div>
+  </section>
+
+  <!-- VALUES STRIP -->
+  <section style="max-width:1280px;margin:0 auto;padding:74px 28px 30px">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:48px;align-items:center">
+      <div>
+        <div style="font-family:'Geist Mono',monospace;font-size:12px;letter-spacing:0.12em;color:#22A89C;margin-bottom:16px">&mdash; WHAT WE STAND FOR</div>
+        <h2 style="font-family:'Newsreader',serif;font-weight:300;font-size:clamp(30px,4vw,44px);line-height:1.1;letter-spacing:-0.02em;margin:0 0 18px">The values that guide every decision.</h2>
+        <p style="font-size:16px;line-height:1.65;color:#516159;margin:0">We keep it simple: do right by families, do right by agents, and keep it honest. These aren&rsquo;t posters on a wall &mdash; they&rsquo;re how we hire, train, and grow.</p>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+          <div style="border:1px solid #EAF0ED;border-radius:16px;padding:28px 24px;background:#FAFCFB;display:flex;flex-direction:column;justify-content:center;min-height:120px"><div style="font-family:'Hanken Grotesk';font-weight:800;font-size:19px;color:#0B1F1D;letter-spacing:0.01em">Integrity</div><div style="font-size:13.5px;color:#7A8983;margin-top:8px;line-height:1.5">Do the right thing, even when no one&rsquo;s watching.</div></div>
+          <div style="border:1px solid #EAF0ED;border-radius:16px;padding:28px 24px;background:#FAFCFB;display:flex;flex-direction:column;justify-content:center;min-height:120px"><div style="font-family:'Hanken Grotesk';font-weight:800;font-size:19px;color:#0B1F1D;letter-spacing:0.01em">Mentorship</div><div style="font-size:13.5px;color:#7A8983;margin-top:8px;line-height:1.5">Everyone teaches, everyone learns.</div></div>
+          <div style="border:1px solid #EAF0ED;border-radius:16px;padding:28px 24px;background:#FAFCFB;display:flex;flex-direction:column;justify-content:center;min-height:120px"><div style="font-family:'Hanken Grotesk';font-weight:800;font-size:19px;color:#0B1F1D;letter-spacing:0.01em">Ownership</div><div style="font-size:13.5px;color:#7A8983;margin-top:8px;line-height:1.5">Build something that&rsquo;s genuinely yours.</div></div>
+          <div style="border:1px solid #EAF0ED;border-radius:16px;padding:28px 24px;background:#FAFCFB;display:flex;flex-direction:column;justify-content:center;min-height:120px"><div style="font-family:'Hanken Grotesk';font-weight:800;font-size:19px;color:#0B1F1D;letter-spacing:0.01em">Service</div><div style="font-size:13.5px;color:#7A8983;margin-top:8px;line-height:1.5">Families first, always.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section style="max-width:1280px;margin:0 auto;padding:60px 28px 84px">
+    <div style="background:linear-gradient(150deg,#0E5450,#0A3F3B 60%,#082B28);border-radius:28px;padding:clamp(40px,5vw,72px);text-align:center;position:relative;overflow:hidden">
+      <div style="position:absolute;right:-50px;bottom:-50px;width:320px;height:320px;border-radius:50%;background:radial-gradient(circle,rgba(52,194,182,0.25),transparent 70%)"></div>
+      <h2 style="position:relative;font-family:'Newsreader',serif;font-weight:300;font-size:clamp(30px,4.4vw,48px);line-height:1.1;color:#fff;margin:0 0 18px">Want to build with us?</h2>
+      <p style="position:relative;font-size:17px;color:#B7CEC9;margin:0 auto 30px;max-width:480px;line-height:1.6">If our mission resonates, we&rsquo;d love to meet you. Start your application today.</p>
+      <a href="/apply" style="position:relative;text-decoration:none;background:#34C2B6;color:#04201D;font-size:16px;font-weight:700;padding:16px 34px;border-radius:999px;display:inline-block;transition:background .18s" data-hover="background:#52D6CB">Apply now &rarr;</a>
+    </div>
+  </section>
+  <footer style="background:#082B28;color:#CFE0DB;font-family:'Hanken Grotesk',sans-serif;box-sizing:border-box">
+    <div style="padding:72px clamp(24px,4vw,64px) 30px;box-sizing:border-box">
+      <div style="display:flex;flex-wrap:wrap;gap:48px;justify-content:space-between;align-items:flex-start;padding-bottom:54px;border-bottom:1px solid rgba(255,255,255,0.1)">
+        <div style="max-width:360px">
+          <div style="display:flex;align-items:center;gap:11px;margin-bottom:22px">
+            <span style="font-weight:700;letter-spacing:0.17em;font-size:15px;color:#fff">KAIROS</span>
+          </div>
+          <p style="font-family:'Newsreader',serif;font-size:23px;line-height:1.35;color:#EAF3F0;margin:0 0 24px;font-weight:300">Build a life insurance career worth <span style="font-style:italic;color:#7FD8CC">owning.</span></p>
+          <a href="/apply" style="display:inline-flex;align-items:center;gap:9px;text-decoration:none;background:#22A89C;color:#04201D;font-size:14.5px;font-weight:700;padding:12px 22px;border-radius:999px;transition:background .18s" data-hover="background:#34C2B6">Apply to join &rarr;</a>
+        </div>
+        <div style="display:flex;gap:64px;flex-wrap:wrap">
+          <div>
+            <div style="font-size:11px;font-weight:700;letter-spacing:0.18em;color:#5E837C;margin-bottom:18px">EXPLORE</div>
+            <div style="display:flex;flex-direction:column;gap:13px">
+              <a href="/" style="text-decoration:none;color:#CFE0DB;font-size:15px" data-hover="color:#fff">Home</a>
+              <a href="/about" style="text-decoration:none;color:#CFE0DB;font-size:15px" data-hover="color:#fff">About Us</a>
+              <a href="/opportunity" style="text-decoration:none;color:#CFE0DB;font-size:15px" data-hover="color:#fff">The Opportunity</a>
+              <a href="/testimonials" style="text-decoration:none;color:#CFE0DB;font-size:15px" data-hover="color:#fff">Testimonials</a>
+            </div>
+          </div>
+          <div>
+            <div style="font-size:11px;font-weight:700;letter-spacing:0.18em;color:#5E837C;margin-bottom:18px">JOIN US</div>
+            <div style="display:flex;flex-direction:column;gap:13px">
+              <a href="/apply" style="text-decoration:none;color:#CFE0DB;font-size:15px" data-hover="color:#fff">Apply Now</a>
+              <a href="/faq" style="text-decoration:none;color:#CFE0DB;font-size:15px" data-hover="color:#fff">FAQ</a>
+              <a href="/opportunity" style="text-decoration:none;color:#CFE0DB;font-size:15px" data-hover="color:#fff">Compensation</a>
+            </div>
+          </div>
+          <div>
+            <div style="font-size:11px;font-weight:700;letter-spacing:0.18em;color:#5E837C;margin-bottom:18px">GET IN TOUCH</div>
+            <div style="display:flex;flex-direction:column;gap:7px;font-size:15px;line-height:1.5;color:#A9C2BC">
+              <span>Recruiting team</span>
+              <a href="mailto:info@kairos-financial.com" style="text-decoration:none;color:#EAF3F0;font-weight:600;margin-top:6px">info@kairos-financial.com</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between;align-items:center;padding-top:26px">
+        <span style="font-size:13px;color:#6E938B">&copy; 2026 Kairos Financial. All rights reserved.</span>
+        <div style="display:flex;gap:26px">
+          <a href="#" style="text-decoration:none;color:#6E938B;font-size:13px" data-hover="color:#CFE0DB">Privacy Policy</a>
+          <span style="font-size:13px;color:#6E938B">Life insurance &amp; financial services careers</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+</div>
+<script>
+(function(){
+  document.querySelectorAll("[data-hover]").forEach(function(el){
+    var base = el.getAttribute("style") || "";
+    var hov = el.getAttribute("data-hover");
+    el.addEventListener("mouseenter", function(){ el.setAttribute("style", base + ";" + hov); });
+    el.addEventListener("mouseleave", function(){ el.setAttribute("style", base); });
+  });
+})();
+function kfToggleMenu(){
+  var m = document.getElementById("kfMobileMenu");
+  if(!m) return;
+  m.style.display = (m.style.display === "flex") ? "none" : "flex";
+}
+</script>
+</body>
+</html>

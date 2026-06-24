@@ -1,157 +1,236 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="icon" type="image/png" href="/KF Transparent.png" />
-  <title>Kairos Financial — Agent Portal</title>
-  <meta name="description" content="Kairos Financial Agent Portal — Resources, tools, and training for our agents." />
-  <link rel="stylesheet" href="css/styles.css" />
-  <style>
-    /* Home-specific styles */
-    .home-sections {
-      background: transparent;
-      position: relative;
-      z-index: 1;
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/png" href="/KF Transparent.png">
+<title>Kairos Financial — Build a Life Insurance Career Worth Owning</title>
+<meta name="description" content="Kairos Financial helps motivated agents build thriving life insurance practices with real mentorship, top-rated carriers, uncapped commissions, and a clear path to agency ownership.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..500&family=Hanken+Grotesk:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+    body{margin:0}
+    .kf-nav-desktop{display:flex}
+    .kf-nav-burger{display:none}
+    @media (max-width:859px){
+      .kf-nav-desktop{display:none !important}
+      .kf-nav-burger{display:flex !important}
     }
-
-    /* Password gate — hero-style layout */
-    .gate-video-wrapper {
-      position: absolute;
-      inset: 0;
-      z-index: 0;
-    }
-    .gate-overlay {
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(
-        180deg,
-        rgba(0,0,0,0.45) 0%,
-        rgba(0,0,0,0.4) 35%,
-        rgba(0,0,0,0.6) 70%,
-        rgba(0,0,0,0.85) 100%
-      );
-      z-index: 1;
-    }
-    .gate-content {
-      position: relative;
-      z-index: 2;
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    .gate-hero-title {
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: clamp(2.8rem, 7vw, 5rem);
-      font-weight: 800;
-      color: #ffffff;
-      letter-spacing: -0.03em;
-      line-height: 1.1;
-      margin-bottom: 0.75rem;
-    }
-    .gate-definition {
-      font-family: 'Inter', sans-serif;
-      font-size: clamp(0.85rem, 1.8vw, 1.05rem);
-      color: rgba(255,255,255,0.85);
-      max-width: 520px;
-      line-height: 1.6;
-      margin-bottom: 2.5rem;
-    }
-    .gate-definition em {
-      color: var(--gold);
-      font-style: italic;
-    }
-    .password-gate-subtitle {
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: 0.82rem;
-      font-weight: 700;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: rgba(255,255,255,0.9);
-      margin-bottom: 1.25rem;
-    }
-
-    /* Hero buttons */
-    .hero-buttons {
-      display: flex;
-      gap: 1rem;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-  </style>
+    @keyframes kfMarquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+    .kf-marquee-track{display:flex;width:max-content;animation:kfMarquee 60s linear infinite}
+    .kf-marquee:hover .kf-marquee-track{animation-play-state:paused}
+</style>
 </head>
 <body>
-
-  <!-- Site content (the agent-side gate now lives on the Sales Hub
-       sign-up form: the access code is required to register, not to
-       browse the marketing pages). -->
-  <div id="siteContent">
-
-  <!-- ============================================================
-       NAVIGATION
-  ============================================================= -->
-  <nav class="nav" id="mainNav">
-    <div class="nav-inner">
-      <a href="index.html" class="nav-logo" style="display:none;">
-        <div class="nav-logo-mark"></div>
-        <span class="nav-logo-text"></span>
+<div style="background:#FFFFFF;font-family:'Hanken Grotesk',sans-serif;color:#0B1F1D;overflow-x:hidden">
+  <nav style="position:sticky;top:0;z-index:50;width:100%;background:rgba(255,255,255,0.86);backdrop-filter:saturate(180%) blur(14px);-webkit-backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid #E7EDEA;font-family:'Hanken Grotesk',sans-serif;box-sizing:border-box">
+    <div style="height:70px;padding:0 clamp(24px,4vw,64px);display:flex;align-items:center;justify-content:space-between;box-sizing:border-box">
+      <a href="/" style="display:flex;align-items:center;gap:11px;text-decoration:none;flex-shrink:0">
+        <span style="display:flex;flex-direction:column;line-height:1">
+          <span style="font-weight:700;letter-spacing:0.17em;font-size:14px;color:#0B1F1D">KAIROS</span>
+          <span style="font-weight:500;letter-spacing:0.26em;font-size:8px;color:#6E7E78;margin-top:4px">FINANCIAL &middot; LIFE INSURANCE</span>
+        </span>
       </a>
-
-      <ul class="nav-links">
-      </ul>
-
-      <button class="nav-hamburger" id="hamburger" aria-label="Toggle menu">
-        <span></span><span></span><span></span>
+      <div class="kf-nav-desktop" style="align-items:center;gap:4px">
+          <a href="/" style="position:relative;text-decoration:none;font-size:14.5px;font-weight:500;color:#3A4742;padding:9px 12px;border-radius:8px;white-space:nowrap;transition:color .18s,background .18s" data-hover="background:#F1F6F3;color:#0B1F1D">Home<span style="position:absolute;left:13px;right:13px;bottom:2px;height:2px;border-radius:2px;background:#0E5450"></span></a>
+          <a href="/about" style="position:relative;text-decoration:none;font-size:14.5px;font-weight:500;color:#3A4742;padding:9px 12px;border-radius:8px;white-space:nowrap;transition:color .18s,background .18s" data-hover="background:#F1F6F3;color:#0B1F1D">About</a>
+          <a href="/opportunity" style="position:relative;text-decoration:none;font-size:14.5px;font-weight:500;color:#3A4742;padding:9px 12px;border-radius:8px;white-space:nowrap;transition:color .18s,background .18s" data-hover="background:#F1F6F3;color:#0B1F1D">The Opportunity</a>
+          <a href="/testimonials" style="position:relative;text-decoration:none;font-size:14.5px;font-weight:500;color:#3A4742;padding:9px 12px;border-radius:8px;white-space:nowrap;transition:color .18s,background .18s" data-hover="background:#F1F6F3;color:#0B1F1D">Testimonials</a>
+          <a href="/faq" style="position:relative;text-decoration:none;font-size:14.5px;font-weight:500;color:#3A4742;padding:9px 12px;border-radius:8px;white-space:nowrap;transition:color .18s,background .18s" data-hover="background:#F1F6F3;color:#0B1F1D">FAQ</a>
+        <a href="/apply" style="margin-left:10px;text-decoration:none;background:#0E5450;color:#fff;font-size:14px;font-weight:600;padding:11px 22px;border-radius:999px;white-space:nowrap;transition:background .18s,transform .18s;box-shadow:0 2px 10px rgba(14,84,80,0.22)" data-hover="background:#0A3D3A;transform:translateY(-1px)">Apply Now</a>
+      </div>
+      <button class="kf-nav-burger" onclick="kfToggleMenu()" aria-label="Menu" style="flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:9px">
+        <span style="width:22px;height:2px;background:#0B1F1D;border-radius:2px;display:block"></span>
+        <span style="width:22px;height:2px;background:#0B1F1D;border-radius:2px;display:block"></span>
+        <span style="width:22px;height:2px;background:#0B1F1D;border-radius:2px;display:block"></span>
       </button>
+    </div>
+    <div id="kfMobileMenu" style="display:none;border-top:1px solid #E7EDEA;padding:10px 22px 22px;flex-direction:column;gap:2px;background:#fff">
+        <a href="/" style="text-decoration:none;font-size:17px;font-weight:500;color:#1B2A26;padding:13px 6px;border-bottom:1px solid #F0F4F2">Home</a>
+        <a href="/about" style="text-decoration:none;font-size:17px;font-weight:500;color:#1B2A26;padding:13px 6px;border-bottom:1px solid #F0F4F2">About</a>
+        <a href="/opportunity" style="text-decoration:none;font-size:17px;font-weight:500;color:#1B2A26;padding:13px 6px;border-bottom:1px solid #F0F4F2">The Opportunity</a>
+        <a href="/testimonials" style="text-decoration:none;font-size:17px;font-weight:500;color:#1B2A26;padding:13px 6px;border-bottom:1px solid #F0F4F2">Testimonials</a>
+        <a href="/faq" style="text-decoration:none;font-size:17px;font-weight:500;color:#1B2A26;padding:13px 6px;border-bottom:1px solid #F0F4F2">FAQ</a>
+      <a href="/apply" style="margin-top:14px;text-align:center;text-decoration:none;background:#0E5450;color:#fff;font-size:16px;font-weight:600;padding:14px;border-radius:999px">Apply Now</a>
     </div>
   </nav>
 
-  <!-- Mobile nav -->
-  <div class="nav-mobile" id="mobileNav">
-  </div>
-
-  <!-- ============================================================
-       HERO — NYC SKYLINE VIDEO
-  ============================================================= -->
-  <section class="hero">
-    <div class="hero-video-wrapper">
-      <div class="hero-video-fallback"></div>
-      <img src="assets/hero-bg.jpg" alt="" class="hero-video" />
+  <!-- HERO -->
+  <section style="max-width:1000px;margin:0 auto;padding:92px 28px 46px;text-align:center">
+    <h1 style="font-family:'Newsreader',serif;font-weight:300;font-size:clamp(44px,7vw,82px);line-height:1.04;letter-spacing:-0.02em;margin:0 0 26px;color:#0B1F1D">Build a career worth<br>owning, for <span style="font-style:italic;color:#0E5450">generations.</span></h1>
+    <p style="max-width:640px;margin:0 auto 38px;font-size:19px;line-height:1.6;color:#516159;font-weight:400">Kairos Financial helps motivated agents build thriving life insurance practices &mdash; with real mentorship, top-rated carriers, uncapped commissions and a clear path to owning your own agency.</p>
+    <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap">
+      <a href="/apply" style="text-decoration:none;background:#0E5450;color:#fff;font-size:16px;font-weight:600;padding:15px 30px;border-radius:999px;box-shadow:0 8px 24px rgba(14,84,80,0.26);white-space:nowrap;transition:transform .18s,background .18s" data-hover="background:#0A3D3A;transform:translateY(-2px)">Apply now</a>
+      <a href="/opportunity" style="text-decoration:none;background:#fff;color:#0B1F1D;font-size:16px;font-weight:600;padding:15px 28px;border-radius:999px;border:1px solid #D9E3DE;white-space:nowrap;transition:border-color .18s,background .18s" data-hover="border-color:#0E5450;background:#F4F8F6">Explore the opportunity &rarr;</a>
     </div>
-
-    <!-- Gradient overlay for text legibility + bottom fade -->
-    <div class="hero-overlay"></div>
-
-    <!-- JS-controlled scroll fade layer -->
-    <div class="hero-scroll-fade"></div>
-
-    <!-- Hero content -->
-    <div class="hero-content">
-      <h1 class="hero-title">
-        Welcome to<br />
-        <span class="hero-title-gold">Kairos</span>
-      </h1>
-
-      <p class="hero-tagline">
-        <strong style="color:#ffffff;">Kairos</strong> <em>(noun)</em><br />
-        The perfect, critical, or opportune moment to take action.<br />
-        A time when conditions align for maximum impact or success.
-      </p>
-
-      <div class="hero-buttons">
-        <a href="saleshub.html" class="btn btn-primary btn-lg">Sales Hub</a>
-      </div>
-    </div>
-
   </section>
 
-  <!-- ============================================================
-       MAIN CONTENT
-  ============================================================= -->
+  <!-- CARRIER MARQUEE -->
+  <section style="padding:50px 0 10px">
+    <div style="text-align:center;font-family:'Geist Mono',monospace;font-size:12px;letter-spacing:0.12em;color:#9AA7A2;margin-bottom:26px">&mdash; CARRIERS WE REPRESENT</div>
+    <div class="kf-marquee" style="position:relative;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 7%,#000 93%,transparent 100%);mask-image:linear-gradient(90deg,transparent 0,#000 7%,#000 93%,transparent 100%)">
+      <div class="kf-marquee-track"><span style="flex:none;display:flex;align-items:center;justify-content:center;height:30px;padding:0 30px;font-family:'Hanken Grotesk',sans-serif;font-weight:800;font-size:18px;letter-spacing:0.01em;color:#A6B4AE;white-space:nowrap">Aetna</span><span style="flex:none;display:flex;align-items:center;justify-content:center;height:30px;padding:0 30px;font-family:'Hanken Grotesk',sans-serif;font-weight:800;font-size:18px;letter-spacing:0.01em;color:#A6B4AE;white-space:nowrap">AHL</span><span style="flex:none;display:flex;align-items:center;justify-content:center;height:30px;padding:0 30px;font-family:'Hanken Grotesk',sans-serif;font-weight:800;font-size:18px;letter-spacing:0.01em;color:#A6B4AE;white-space:nowrap">Allstate</span><span style="flex:none;display:flex;align-items:center;justify-content:center;height:30px;padding:0 30px;font-family:'Hanken Grotesk',sans-serif;font-weight:800;font-size:18px;letter-spacing:0.01em;color:#A6B4AE;white-space:nowrap">AmAm</span><span style="flex:none;display:flex;align-items:center;justify-content:center;height:30px;padding:0 30px;font-family:'Hanken Grotesk',sans-serif;font-weight:800;font-size:18px;letter-spacing:0.01em;color:#A6B4AE;white-space:nowrap">Americo</span><span style="flex:none;display:flex;align-items:center;justify-content:center;height:30px;padding:0 30px;font-family:'Hanken Grotesk',sans-serif;font-weight:800;font-size:18px;letter-spacing:0.01em;color:#A6B4AE;white-space:nowrap">Ameritas</span><span style="flex:none;display:flex;align-items:center;justify-content:center;height:30px;padding:0 30px;font-family:'Hanken Grotesk',sans-serif;font-weight:800;font-size:18px;letter-spacing:0.01em;color:#A6B4AE;white-space:nowrap">Baltimore Life</span><span style="flex:none;display:flex;align-items:center;justify-content:center;height:30px;padding:0 30px;font-family:'Hanken Grotesk',sans-serif;font-weight:800;font-size:18px;letter-spacing:0.01em;color:#A6B4AE;white-space:nowrap">Banner</span><span style="flex:none;display:flex;align-items:center;justify-content:center;height:30px;padding:0 30px;font-family:'Hanken Grotesk',sans-serif;font-weight:800;font-size:18px;letter-spacing:0.01em;color:#A6B4AE;white-space:nowrap">Chubb</span><span style="flex:none;display:flex;align-items:center;justify-content:center;height:30px;padding:0 30px;font-family:'Hanken Grotesk',sans-serif;font-weight:800;font-size:18px;letter-spacing:0.01em;color:#A6B4AE;white-space:nowrap">CICA</span><span style="flex:none;display:flex;align-items:center;justify-content:center;height:30px;padding:0 30px;font-family:'Hanken Grotesk',sans-serif;font-weight:800;font-size:18px;letter-spacing:0.01em;color:#A6B4AE;white-space:nowrap">Corebridge</span><span style="flex:none;display:flex;align-items:center;justify-content:center;height:30px;padding:0 30px;font-family:'Hanken Grotesk',sans-serif;font-weight:800;font-size:18px;letter-spacing:0.01em;color:#A6B4AE;white-space:nowrap">Ethos</span><span style="flex:none;display:flex;align-items:center;justify-content:center;height:30px;padding:0 30px;font-family:'Hanken Grotesk',sans-serif;font-weight:800;font-size:18px;letter-spacing:0.01em;color:#A6B4AE;white-space:nowrap">F&G</span><span style="flex:none;display:flex;align-items:center;justify-content:center;height:30px;padding:0 30px;font-family:'Hanken Grotesk',sans-serif;font-weight:800;font-size:18px;letter-spacing:0.01em;color:#A6B4AE;white-space:nowrap">Foresters</span><span style="flex:none;display:flex;align-items:center;justify-content:center;height:30px;padding:0 30px;font-family:'Hanken Grotesk',sans-serif;font-weight:800;font-size:18px;letter-spacing:0.01em;color:#A6B4AE;white-space:nowrap">GTL</span><span style="flex:none;display:flex;align-items:center;justify-content:center;height:30px;padding:0 30px;font-family:'Hanken Grotesk',sans-serif;font-weight:800;font-size:18px;letter-spacing:0.01em;color:#A6B4AE;white-space:nowrap">InstaBrain</span><span style="flex:none;display:flex;align-items:center;justify-content:center;height:30px;padding:0 30px;font-family:'Hanken Grotesk',sans-serif;font-weight:800;font-size:18px;letter-spacing:0.01em;color:#A6B4AE;white-space:nowrap">KCL</span><span style="flex:none;display:flex;align-items:center;justify-content:center;height:30px;padding:0 30px;font-family:'Hanken Grotesk',sans-serif;font-weight:800;font-size:18px;letter-spacing:0.01em;color:#A6B4AE;white-space:nowrap">Ladder</span><span style="flex:none;display:flex;align-items:center;justify-content:center;height:30px;padding:0 30px;font-family:'Hanken Grotesk',sans-serif;font-weight:800;font-size:18px;letter-spacing:0.01em;color:#A6B4AE;white-space:nowrap">Liberty Bankers</span><span style="flex:none;display:flex;align-items:center;justify-content:center;height:30px;padding:0 30px;font-family:'Hanken Grotesk',sans-serif;font-weight:800;font-size:18px;letter-spacing:0.01em;color:#A6B4AE;white-space:nowrap">LifeX</span><span style="flex:none;display:flex;align-items:center;justify-content:center;height:30px;padding:0 30px;font-family:'Hanken Grotesk',sans-serif;font-weight:800;font-size:18px;letter-spacing:0.01em;color:#A6B4AE;white-space:nowrap">Royal Neighbors</span><span style="flex:none;display:flex;align-items:center;justify-content:center;height:30px;padding:0 30px;font-family:'Hanken Grotesk',sans-serif;font-weight:800;font-size:18px;letter-spacing:0.01em;color:#A6B4AE;white-space:nowrap">SBLI</span><span style="flex:none;display:flex;align-items:center;justify-content:center;height:30px;padding:0 30px;font-family:'Hanken Grotesk',sans-serif;font-weight:800;font-size:18px;letter-spacing:0.01em;color:#A6B4AE;white-space:nowrap">Transamerica</span><span style="flex:none;display:flex;align-items:center;justify-content:center;height:30px;padding:0 30px;font-family:'Hanken Grotesk',sans-serif;font-weight:800;font-size:18px;letter-spacing:0.01em;color:#A6B4AE;white-space:nowrap">Trinity</span><span style="flex:none;display:flex;align-items:center;justify-content:center;height:30px;padding:0 30px;font-family:'Hanken Grotesk',sans-serif;font-weight:800;font-size:18px;letter-spacing:0.01em;color:#A6B4AE;white-space:nowrap">UHL</span><span style="flex:none;display:flex;align-items:center;justify-content:center;height:30px;padding:0 30px;font-family:'Hanken Grotesk',sans-serif;font-weight:800;font-size:18px;letter-spacing:0.01em;color:#A6B4AE;white-space:nowrap">United Health</span><span style="flex:none;display:flex;align-items:center;justify-content:center;height:30px;padding:0 30px;font-family:'Hanken Grotesk',sans-serif;font-weight:800;font-size:18px;letter-spacing:0.01em;color:#A6B4AE;white-space:nowrap">Mutual of Omaha</span><span style="flex:none;display:flex;align-items:center;justify-content:center;height:30px;padding:0 30px;font-family:'Hanken Grotesk',sans-serif;font-weight:800;font-size:18px;letter-spacing:0.01em;color:#A6B4AE;white-space:nowrap">Lafayette</span><span style="flex:none;display:flex;align-items:center;justify-content:center;height:30px;padding:0 30px;font-family:'Hanken Grotesk',sans-serif;font-weight:800;font-size:18px;letter-spacing:0.01em;color:#A6B4AE;white-space:nowrap">Aetna</span><span style="flex:none;display:flex;align-items:center;justify-content:center;height:30px;padding:0 30px;font-family:'Hanken Grotesk',sans-serif;font-weight:800;font-size:18px;letter-spacing:0.01em;color:#A6B4AE;white-space:nowrap">AHL</span><span style="flex:none;display:flex;align-items:center;justify-content:center;height:30px;padding:0 30px;font-family:'Hanken Grotesk',sans-serif;font-weight:800;font-size:18px;letter-spacing:0.01em;color:#A6B4AE;white-space:nowrap">Allstate</span><span style="flex:none;display:flex;align-items:center;justify-content:center;height:30px;padding:0 30px;font-family:'Hanken Grotesk',sans-serif;font-weight:800;font-size:18px;letter-spacing:0.01em;color:#A6B4AE;white-space:nowrap">AmAm</span><span style="flex:none;display:flex;align-items:center;justify-content:center;height:30px;padding:0 30px;font-family:'Hanken Grotesk',sans-serif;font-weight:800;font-size:18px;letter-spacing:0.01em;color:#A6B4AE;white-space:nowrap">Americo</span><span style="flex:none;display:flex;align-items:center;justify-content:center;height:30px;padding:0 30px;font-family:'Hanken Grotesk',sans-serif;font-weight:800;font-size:18px;letter-spacing:0.01em;color:#A6B4AE;white-space:nowrap">Ameritas</span><span style="flex:none;display:flex;align-items:center;justify-content:center;height:30px;padding:0 30px;font-family:'Hanken Grotesk',sans-serif;font-weight:800;font-size:18px;letter-spacing:0.01em;color:#A6B4AE;white-space:nowrap">Baltimore Life</span><span style="flex:none;display:flex;align-items:center;justify-content:center;height:30px;padding:0 30px;font-family:'Hanken Grotesk',sans-serif;font-weight:800;font-size:18px;letter-spacing:0.01em;color:#A6B4AE;white-space:nowrap">Banner</span><span style="flex:none;display:flex;align-items:center;justify-content:center;height:30px;padding:0 30px;font-family:'Hanken Grotesk',sans-serif;font-weight:800;font-size:18px;letter-spacing:0.01em;color:#A6B4AE;white-space:nowrap">Chubb</span><span style="flex:none;display:flex;align-items:center;justify-content:center;height:30px;padding:0 30px;font-family:'Hanken Grotesk',sans-serif;font-weight:800;font-size:18px;letter-spacing:0.01em;color:#A6B4AE;white-space:nowrap">CICA</span><span style="flex:none;display:flex;align-items:center;justify-content:center;height:30px;padding:0 30px;font-family:'Hanken Grotesk',sans-serif;font-weight:800;font-size:18px;letter-spacing:0.01em;color:#A6B4AE;white-space:nowrap">Corebridge</span><span style="flex:none;display:flex;align-items:center;justify-content:center;height:30px;padding:0 30px;font-family:'Hanken Grotesk',sans-serif;font-weight:800;font-size:18px;letter-spacing:0.01em;color:#A6B4AE;white-space:nowrap">Ethos</span><span style="flex:none;display:flex;align-items:center;justify-content:center;height:30px;padding:0 30px;font-family:'Hanken Grotesk',sans-serif;font-weight:800;font-size:18px;letter-spacing:0.01em;color:#A6B4AE;white-space:nowrap">F&G</span><span style="flex:none;display:flex;align-items:center;justify-content:center;height:30px;padding:0 30px;font-family:'Hanken Grotesk',sans-serif;font-weight:800;font-size:18px;letter-spacing:0.01em;color:#A6B4AE;white-space:nowrap">Foresters</span><span style="flex:none;display:flex;align-items:center;justify-content:center;height:30px;padding:0 30px;font-family:'Hanken Grotesk',sans-serif;font-weight:800;font-size:18px;letter-spacing:0.01em;color:#A6B4AE;white-space:nowrap">GTL</span><span style="flex:none;display:flex;align-items:center;justify-content:center;height:30px;padding:0 30px;font-family:'Hanken Grotesk',sans-serif;font-weight:800;font-size:18px;letter-spacing:0.01em;color:#A6B4AE;white-space:nowrap">InstaBrain</span><span style="flex:none;display:flex;align-items:center;justify-content:center;height:30px;padding:0 30px;font-family:'Hanken Grotesk',sans-serif;font-weight:800;font-size:18px;letter-spacing:0.01em;color:#A6B4AE;white-space:nowrap">KCL</span><span style="flex:none;display:flex;align-items:center;justify-content:center;height:30px;padding:0 30px;font-family:'Hanken Grotesk',sans-serif;font-weight:800;font-size:18px;letter-spacing:0.01em;color:#A6B4AE;white-space:nowrap">Ladder</span><span style="flex:none;display:flex;align-items:center;justify-content:center;height:30px;padding:0 30px;font-family:'Hanken Grotesk',sans-serif;font-weight:800;font-size:18px;letter-spacing:0.01em;color:#A6B4AE;white-space:nowrap">Liberty Bankers</span><span style="flex:none;display:flex;align-items:center;justify-content:center;height:30px;padding:0 30px;font-family:'Hanken Grotesk',sans-serif;font-weight:800;font-size:18px;letter-spacing:0.01em;color:#A6B4AE;white-space:nowrap">LifeX</span><span style="flex:none;display:flex;align-items:center;justify-content:center;height:30px;padding:0 30px;font-family:'Hanken Grotesk',sans-serif;font-weight:800;font-size:18px;letter-spacing:0.01em;color:#A6B4AE;white-space:nowrap">Royal Neighbors</span><span style="flex:none;display:flex;align-items:center;justify-content:center;height:30px;padding:0 30px;font-family:'Hanken Grotesk',sans-serif;font-weight:800;font-size:18px;letter-spacing:0.01em;color:#A6B4AE;white-space:nowrap">SBLI</span><span style="flex:none;display:flex;align-items:center;justify-content:center;height:30px;padding:0 30px;font-family:'Hanken Grotesk',sans-serif;font-weight:800;font-size:18px;letter-spacing:0.01em;color:#A6B4AE;white-space:nowrap">Transamerica</span><span style="flex:none;display:flex;align-items:center;justify-content:center;height:30px;padding:0 30px;font-family:'Hanken Grotesk',sans-serif;font-weight:800;font-size:18px;letter-spacing:0.01em;color:#A6B4AE;white-space:nowrap">Trinity</span><span style="flex:none;display:flex;align-items:center;justify-content:center;height:30px;padding:0 30px;font-family:'Hanken Grotesk',sans-serif;font-weight:800;font-size:18px;letter-spacing:0.01em;color:#A6B4AE;white-space:nowrap">UHL</span><span style="flex:none;display:flex;align-items:center;justify-content:center;height:30px;padding:0 30px;font-family:'Hanken Grotesk',sans-serif;font-weight:800;font-size:18px;letter-spacing:0.01em;color:#A6B4AE;white-space:nowrap">United Health</span><span style="flex:none;display:flex;align-items:center;justify-content:center;height:30px;padding:0 30px;font-family:'Hanken Grotesk',sans-serif;font-weight:800;font-size:18px;letter-spacing:0.01em;color:#A6B4AE;white-space:nowrap">Mutual of Omaha</span><span style="flex:none;display:flex;align-items:center;justify-content:center;height:30px;padding:0 30px;font-family:'Hanken Grotesk',sans-serif;font-weight:800;font-size:18px;letter-spacing:0.01em;color:#A6B4AE;white-space:nowrap">Lafayette</span></div>
+    </div>
+  </section>
 
-  </div><!-- /siteContent -->
+  <!-- HERO IMAGE BAND + floating stats -->
+  <section style="max-width:1280px;margin:0 auto;padding:0 28px 30px">
+    <div style="position:relative;border-radius:26px;overflow:hidden;height:clamp(380px,52vw,600px);background:#0A3F3B;box-shadow:0 30px 70px -30px rgba(8,43,40,0.6)">
+      <img src="/assets/recruiting/charles-forerunner-3fPXt37X6UQ-unsplash.jpg" alt="Professionals overlooking a city skyline" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
+      <div style="position:absolute;inset:0;background:linear-gradient(0deg, rgba(7,48,44,0.30), rgba(7,48,44,0.52)), linear-gradient(250deg, rgba(7,48,44,0.82) 0%, rgba(7,48,44,0.30) 60%, rgba(7,48,44,0.12) 100%)"></div>
+      <div style="position:absolute;right:30px;top:28px;text-align:right;color:#EAF3F0">
+        <div style="font-family:'Newsreader',serif;font-style:italic;font-weight:300;font-size:clamp(22px,2.6vw,30px);line-height:1.25;max-width:320px">&ldquo;The opportunity to build something that&rsquo;s truly yours.&rdquo;</div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:18px;margin:-58px auto 0;max-width:1080px;position:relative;z-index:2">
+      <div style="background:#fff;border:1px solid #EAF0ED;border-radius:18px;padding:24px 24px 22px;box-shadow:0 18px 40px -24px rgba(11,31,29,0.28)"><div style="font-family:'Newsreader',serif;font-weight:400;font-size:34px;line-height:1;color:#0E5450">Uncapped</div><div style="margin-top:10px;font-size:13.5px;line-height:1.4;color:#5C6B64;font-weight:500">Commission &mdash; no ceiling on what you earn</div></div>
+      <div style="background:#fff;border:1px solid #EAF0ED;border-radius:18px;padding:24px 24px 22px;box-shadow:0 18px 40px -24px rgba(11,31,29,0.28)"><div style="font-family:'Newsreader',serif;font-weight:400;font-size:34px;line-height:1;color:#0E5450">100%</div><div style="margin-top:10px;font-size:13.5px;line-height:1.4;color:#5C6B64;font-weight:500">Remote-friendly, work from anywhere</div></div>
+      <div style="background:#fff;border:1px solid #EAF0ED;border-radius:18px;padding:24px 24px 22px;box-shadow:0 18px 40px -24px rgba(11,31,29,0.28)"><div style="font-family:'Newsreader',serif;font-weight:400;font-size:34px;line-height:1;color:#0E5450">1-on-1</div><div style="margin-top:10px;font-size:13.5px;line-height:1.4;color:#5C6B64;font-weight:500">Mentorship from day one</div></div>
+      <div style="background:#fff;border:1px solid #EAF0ED;border-radius:18px;padding:24px 24px 22px;box-shadow:0 18px 40px -24px rgba(11,31,29,0.28)"><div style="font-family:'Newsreader',serif;font-weight:400;font-size:34px;line-height:1;color:#0E5450">A-rated</div><div style="margin-top:10px;font-size:13.5px;line-height:1.4;color:#5C6B64;font-weight:500">Top carriers and products</div></div>
+    </div>
+  </section>
 
-  <script src="js/main.js"></script>
+  <!-- WHY KAIROS -->
+  <section style="max-width:1280px;margin:0 auto;padding:88px 28px 30px">
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:18px;margin-bottom:42px">
+      <div>
+        <div style="font-family:'Geist Mono',monospace;font-size:12px;letter-spacing:0.12em;color:#22A89C;margin-bottom:14px">&mdash; WHY AGENTS CHOOSE KAIROS</div>
+        <h2 style="font-family:'Newsreader',serif;font-weight:300;font-size:clamp(32px,4.4vw,50px);line-height:1.08;letter-spacing:-0.02em;margin:0;max-width:640px">Everything you need to <span style="font-style:italic;color:#0E5450">grow</span> &mdash; and nothing holding you back.</h2>
+      </div>
+      <a href="/opportunity" style="text-decoration:none;color:#0E5450;font-weight:600;font-size:15px;border-bottom:2px solid #B7E0DA;padding-bottom:3px" data-hover="border-color:#0E5450">See the full opportunity &rarr;</a>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px">
+      <a href="/opportunity" style="text-decoration:none;display:block;background:#F6F9F7;border:1px solid #EAF0ED;border-radius:20px;padding:26px 22px;transition:transform .2s,box-shadow .2s,background .2s" data-hover="transform:translateY(-4px);box-shadow:0 22px 44px -28px rgba(11,31,29,0.3);background:#fff"><div style="width:44px;height:44px;border-radius:12px;background:#E3F0EC;display:flex;align-items:center;justify-content:center;margin-bottom:22px;font-family:'Geist Mono',monospace;font-weight:500;color:#0E5450;font-size:15px">01</div><h3 style="font-size:19px;font-weight:700;margin:0 0 10px;color:#0B1F1D;letter-spacing:-0.01em">Uncapped commission</h3><p style="font-size:14.5px;line-height:1.55;color:#5C6B64;margin:0">Your income has no ceiling. Transparent commissions mean you&rsquo;re paid directly on the value you create for families.</p></a>
+      <a href="/opportunity" style="text-decoration:none;display:block;background:#F6F9F7;border:1px solid #EAF0ED;border-radius:20px;padding:26px 22px;transition:transform .2s,box-shadow .2s,background .2s" data-hover="transform:translateY(-4px);box-shadow:0 22px 44px -28px rgba(11,31,29,0.3);background:#fff"><div style="width:44px;height:44px;border-radius:12px;background:#E8EEDF;display:flex;align-items:center;justify-content:center;margin-bottom:22px;font-family:'Geist Mono',monospace;font-weight:500;color:#0E5450;font-size:15px">02</div><h3 style="font-size:19px;font-weight:700;margin:0 0 10px;color:#0B1F1D;letter-spacing:-0.01em">Training &amp; mentorship</h3><p style="font-size:14.5px;line-height:1.55;color:#5C6B64;margin:0">A proven onboarding path and 1-on-1 mentorship. You&rsquo;re never left to figure it out alone.</p></a>
+      <a href="/opportunity" style="text-decoration:none;display:block;background:#F6F9F7;border:1px solid #EAF0ED;border-radius:20px;padding:26px 22px;transition:transform .2s,box-shadow .2s,background .2s" data-hover="transform:translateY(-4px);box-shadow:0 22px 44px -28px rgba(11,31,29,0.3);background:#fff"><div style="width:44px;height:44px;border-radius:12px;background:#E3F0EC;display:flex;align-items:center;justify-content:center;margin-bottom:22px;font-family:'Geist Mono',monospace;font-weight:500;color:#0E5450;font-size:15px">03</div><h3 style="font-size:19px;font-weight:700;margin:0 0 10px;color:#0B1F1D;letter-spacing:-0.01em">Flexible &amp; remote</h3><p style="font-size:14.5px;line-height:1.55;color:#5C6B64;margin:0">Work from anywhere on your own schedule. Build your business around your life &mdash; not the other way around.</p></a>
+      <a href="/opportunity" style="text-decoration:none;display:block;background:#F6F9F7;border:1px solid #EAF0ED;border-radius:20px;padding:26px 22px;transition:transform .2s,box-shadow .2s,background .2s" data-hover="transform:translateY(-4px);box-shadow:0 22px 44px -28px rgba(11,31,29,0.3);background:#fff"><div style="width:44px;height:44px;border-radius:12px;background:#E8EEDF;display:flex;align-items:center;justify-content:center;margin-bottom:22px;font-family:'Geist Mono',monospace;font-weight:500;color:#0E5450;font-size:15px">04</div><h3 style="font-size:19px;font-weight:700;margin:0 0 10px;color:#0B1F1D;letter-spacing:-0.01em">Path to ownership</h3><p style="font-size:14.5px;line-height:1.55;color:#5C6B64;margin:0">A clear route from agent to building and owning your own agency, with overrides on the team you grow.</p></a>
+      <a href="/opportunity" style="text-decoration:none;display:block;background:#F6F9F7;border:1px solid #EAF0ED;border-radius:20px;padding:26px 22px;transition:transform .2s,box-shadow .2s,background .2s" data-hover="transform:translateY(-4px);box-shadow:0 22px 44px -28px rgba(11,31,29,0.3);background:#fff"><div style="width:44px;height:44px;border-radius:12px;background:#E3F0EC;display:flex;align-items:center;justify-content:center;margin-bottom:22px;font-family:'Geist Mono',monospace;font-weight:500;color:#0E5450;font-size:15px">05</div><h3 style="font-size:19px;font-weight:700;margin:0 0 10px;color:#0B1F1D;letter-spacing:-0.01em">Top-rated carriers</h3><p style="font-size:14.5px;line-height:1.55;color:#5C6B64;margin:0">Represent A-rated carriers and products clients actually want, so you can recommend with confidence.</p></a>
+    </div>
+  </section>
+
+  <!-- CAREER PATH BAND -->
+  <section style="max-width:1280px;margin:0 auto;padding:44px 28px">
+    <div style="background:linear-gradient(150deg,#0E5450 0%,#0A3F3B 58%,#082B28 100%);border-radius:28px;padding:clamp(24px,3vw,40px);position:relative;overflow:hidden">
+      <div style="position:absolute;right:-60px;top:-60px;width:360px;height:360px;border-radius:50%;background:radial-gradient(circle,rgba(52,194,182,0.28) 0%,rgba(52,194,182,0) 70%)"></div>
+      <div style="position:relative">
+        <div style="font-family:'Geist Mono',monospace;font-size:12px;letter-spacing:0.12em;color:#7FD8CC;margin-bottom:16px">&mdash; YOUR PATH AT KAIROS</div>
+        <h2 style="font-family:'Newsreader',serif;font-weight:300;font-size:clamp(30px,4vw,46px);line-height:1.1;color:#fff;margin:0 0 12px;max-width:620px">From new agent to agency owner.</h2>
+        <p style="font-size:16px;line-height:1.6;color:#B7CEC9;margin:0 0 26px;max-width:520px">A defined, transparent path. You&rsquo;re never stuck &mdash; every level unlocks more income, more support, and more ownership.</p>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px">
+          <div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:16px;padding:18px 20px"><div style="font-family:'Geist Mono',monospace;font-size:12px;color:#7FD8CC;margin-bottom:10px">STEP 01</div><div style="font-family:'Newsreader',serif;font-weight:400;font-size:20px;line-height:1.1;color:#fff;margin-bottom:6px">New Agent</div><div style="font-size:14px;line-height:1.55;color:#9EBDB7">Get licensed and trained. Start writing business with full mentorship and a proven sales process.</div></div>
+          <div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:16px;padding:18px 20px"><div style="font-family:'Geist Mono',monospace;font-size:12px;color:#7FD8CC;margin-bottom:10px">STEP 02</div><div style="font-family:'Newsreader',serif;font-weight:400;font-size:20px;line-height:1.1;color:#fff;margin-bottom:6px">Leader</div><div style="font-size:14px;line-height:1.55;color:#9EBDB7">We help you build a team and grow as a leader &mdash; with bonuses for mentoring. We build it for you, so you never recruit.</div></div>
+          <div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:16px;padding:18px 20px"><div style="font-family:'Geist Mono',monospace;font-size:12px;color:#7FD8CC;margin-bottom:10px">STEP 03</div><div style="font-family:'Newsreader',serif;font-weight:400;font-size:20px;line-height:1.1;color:#fff;margin-bottom:6px">Agency Owner</div><div style="font-size:14px;line-height:1.55;color:#9EBDB7">Build and lead your own team. Own your book, your brand, and the agency you build.</div></div>
+          <div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:16px;padding:18px 20px"><div style="font-family:'Geist Mono',monospace;font-size:12px;color:#7FD8CC;margin-bottom:10px">STEP 04</div><div style="font-family:'Newsreader',serif;font-weight:400;font-size:20px;line-height:1.1;color:#fff;margin-bottom:6px">Equity Partner</div><div style="font-size:14px;line-height:1.55;color:#9EBDB7">Share in the equity of the business you&rsquo;ve helped grow &mdash; the top of the path at Kairos.</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EDITORIAL / WHO THRIVES -->
+  <section style="max-width:1280px;margin:0 auto;padding:70px 28px">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:54px;align-items:center">
+      <div style="border-radius:24px;height:440px;position:relative;overflow:hidden;box-shadow:0 24px 50px -34px rgba(11,31,29,0.4)">
+        <img src="/assets/recruiting/annie-spratt-QckxruozjRg-unsplash.jpg" alt="A team collaborating around a table" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
+      </div>
+      <div>
+        <div style="font-family:'Geist Mono',monospace;font-size:12px;letter-spacing:0.12em;color:#22A89C;margin-bottom:16px">&mdash; WHO THRIVES HERE</div>
+        <h2 style="font-family:'Newsreader',serif;font-weight:300;font-size:clamp(30px,4vw,46px);line-height:1.12;letter-spacing:-0.02em;margin:0 0 22px">You don&rsquo;t need experience. You need <span style="font-style:italic;color:#0E5450">drive.</span></h2>
+        <p style="font-size:16.5px;line-height:1.65;color:#516159;margin:0 0 26px">Some of our best agents came from outside the industry. What they share is a willingness to learn, a desire to help families, and the discipline to follow a proven process. We handle the training &mdash; you bring the work ethic.</p>
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div style="display:flex;align-items:center;gap:14px"><span style="width:24px;height:24px;border-radius:50%;background:#E1F0ED;display:flex;align-items:center;justify-content:center;color:#0E5450;font-weight:700;font-size:13px;flex-shrink:0">&checkmark;</span><span style="font-size:15.5px;color:#2B3A35;font-weight:500">Coachable and willing to follow a proven process</span></div>
+          <div style="display:flex;align-items:center;gap:14px"><span style="width:24px;height:24px;border-radius:50%;background:#E1F0ED;display:flex;align-items:center;justify-content:center;color:#0E5450;font-weight:700;font-size:13px;flex-shrink:0">&checkmark;</span><span style="font-size:15.5px;color:#2B3A35;font-weight:500">Genuinely motivated to help families protect their future</span></div>
+          <div style="display:flex;align-items:center;gap:14px"><span style="width:24px;height:24px;border-radius:50%;background:#E1F0ED;display:flex;align-items:center;justify-content:center;color:#0E5450;font-weight:700;font-size:13px;flex-shrink:0">&checkmark;</span><span style="font-size:15.5px;color:#2B3A35;font-weight:500">Self-disciplined enough to thrive with flexibility</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS PREVIEW -->
+  <section style="max-width:1280px;margin:0 auto;padding:54px 28px 30px">
+    <div style="text-align:center;margin-bottom:46px">
+      <div style="font-family:'Geist Mono',monospace;font-size:12px;letter-spacing:0.12em;color:#22A89C;margin-bottom:14px">&mdash; FROM OUR AGENTS</div>
+      <h2 style="font-family:'Newsreader',serif;font-weight:300;font-size:clamp(32px,4.4vw,50px);line-height:1.08;letter-spacing:-0.02em;margin:0">Built by agents, for agents.</h2>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:20px">
+      <div style="border:1px solid #EAF0ED;border-radius:22px;padding:32px 30px;background:#fff;display:flex;flex-direction:column;box-shadow:0 18px 40px -30px rgba(11,31,29,0.22)"><div style="color:#D9A23B;font-size:16px;letter-spacing:3px;margin-bottom:20px">&starf;&starf;&starf;&starf;&starf;</div><p style="font-family:'Newsreader',serif;font-weight:300;font-size:20px;line-height:1.5;color:#1B2A26;margin:0 0 24px;flex:1">&ldquo;I came from solar, making over $500,000 a year, but I wanted into this industry because here I actually own it &mdash; I&rsquo;m not building something for somebody else.&rdquo;</p><div style="display:flex;align-items:center;gap:14px;border-top:1px solid #EEF2F0;padding-top:20px"><span style="width:44px;height:44px;border-radius:50%;background:#0E5450;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;flex-shrink:0;font-family:'Hanken Grotesk'">LE</span><div><div style="font-size:15px;font-weight:700;color:#0B1F1D">Lachlan Evans</div><div style="font-size:13px;color:#5C6B64">Agent at Kairos</div></div></div></div>
+      <div style="border:1px solid #EAF0ED;border-radius:22px;padding:32px 30px;background:#fff;display:flex;flex-direction:column;box-shadow:0 18px 40px -30px rgba(11,31,29,0.22)"><div style="color:#D9A23B;font-size:16px;letter-spacing:3px;margin-bottom:20px">&starf;&starf;&starf;&starf;&starf;</div><p style="font-family:'Newsreader',serif;font-weight:300;font-size:20px;line-height:1.5;color:#1B2A26;margin:0 0 24px;flex:1">&ldquo;The flexibility changed my life. I get to build my schedule around my life &mdash; I was even able to move back home and live and work from Canada.&rdquo;</p><div style="display:flex;align-items:center;gap:14px;border-top:1px solid #EEF2F0;padding-top:20px"><span style="width:44px;height:44px;border-radius:50%;background:#15756D;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;flex-shrink:0;font-family:'Hanken Grotesk'">NM</span><div><div style="font-size:15px;font-weight:700;color:#0B1F1D">Nathan Marks</div><div style="font-size:13px;color:#5C6B64">Agent at Kairos</div></div></div></div>
+      <div style="border:1px solid #EAF0ED;border-radius:22px;padding:32px 30px;background:#fff;display:flex;flex-direction:column;box-shadow:0 18px 40px -30px rgba(11,31,29,0.22)"><div style="color:#D9A23B;font-size:16px;letter-spacing:3px;margin-bottom:20px">&starf;&starf;&starf;&starf;&starf;</div><p style="font-family:'Newsreader',serif;font-weight:300;font-size:20px;line-height:1.5;color:#1B2A26;margin:0 0 24px;flex:1">&ldquo;I used to be a millwright at a sawmill, working 12-hour days &mdash; sometimes seven days a week, mostly six. I&rsquo;m just thankful for the opportunity to work from home and have more financial freedom. Thankful for Devon for putting in the time and effort; it&rsquo;s definitely changed the game for me.&rdquo;</p><div style="display:flex;align-items:center;gap:14px;border-top:1px solid #EEF2F0;padding-top:20px"><span style="width:44px;height:44px;border-radius:50%;background:#11605A;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;flex-shrink:0;font-family:'Hanken Grotesk'">AM</span><div><div style="font-size:15px;font-weight:700;color:#0B1F1D">Aiden Moore</div><div style="font-size:13px;color:#5C6B64">Agent at Kairos</div></div></div></div>
+    </div>
+    <div style="text-align:center;margin-top:36px">
+      <a href="/testimonials" style="text-decoration:none;color:#0E5450;font-weight:600;font-size:15px;border-bottom:2px solid #B7E0DA;padding-bottom:3px" data-hover="border-color:#0E5450">Read more agent stories &rarr;</a>
+    </div>
+  </section>
+
+  <!-- CTA BAND -->
+  <section style="max-width:1280px;margin:0 auto;padding:80px 28px">
+    <div style="text-align:center;border:1px solid #E6EDE9;border-radius:28px;padding:clamp(44px,6vw,80px) 28px;background:radial-gradient(120% 140% at 50% 0%,#F4F8F6 0%,#fff 60%)">
+      <h2 style="font-family:'Newsreader',serif;font-weight:300;font-size:clamp(34px,5vw,58px);line-height:1.06;letter-spacing:-0.02em;margin:0 0 20px">Your next chapter<br>starts here.</h2>
+      <p style="font-size:18px;color:#516159;margin:0 auto 34px;max-width:520px;line-height:1.6">Tell us a little about yourself. If it&rsquo;s a fit, we&rsquo;ll set up a conversation &mdash; no pressure, no obligation.</p>
+      <a href="/apply" style="text-decoration:none;background:#0E5450;color:#fff;font-size:17px;font-weight:600;padding:17px 38px;border-radius:999px;box-shadow:0 10px 30px rgba(14,84,80,0.28);white-space:nowrap;transition:transform .18s,background .18s;display:inline-block" data-hover="background:#0A3D3A;transform:translateY(-2px)">Apply now &rarr;</a>
+    </div>
+  </section>
+  <footer style="background:#082B28;color:#CFE0DB;font-family:'Hanken Grotesk',sans-serif;box-sizing:border-box">
+    <div style="padding:72px clamp(24px,4vw,64px) 30px;box-sizing:border-box">
+      <div style="display:flex;flex-wrap:wrap;gap:48px;justify-content:space-between;align-items:flex-start;padding-bottom:54px;border-bottom:1px solid rgba(255,255,255,0.1)">
+        <div style="max-width:360px">
+          <div style="display:flex;align-items:center;gap:11px;margin-bottom:22px">
+            <span style="font-weight:700;letter-spacing:0.17em;font-size:15px;color:#fff">KAIROS</span>
+          </div>
+          <p style="font-family:'Newsreader',serif;font-size:23px;line-height:1.35;color:#EAF3F0;margin:0 0 24px;font-weight:300">Build a life insurance career worth <span style="font-style:italic;color:#7FD8CC">owning.</span></p>
+          <a href="/apply" style="display:inline-flex;align-items:center;gap:9px;text-decoration:none;background:#22A89C;color:#04201D;font-size:14.5px;font-weight:700;padding:12px 22px;border-radius:999px;transition:background .18s" data-hover="background:#34C2B6">Apply to join &rarr;</a>
+        </div>
+        <div style="display:flex;gap:64px;flex-wrap:wrap">
+          <div>
+            <div style="font-size:11px;font-weight:700;letter-spacing:0.18em;color:#5E837C;margin-bottom:18px">EXPLORE</div>
+            <div style="display:flex;flex-direction:column;gap:13px">
+              <a href="/" style="text-decoration:none;color:#CFE0DB;font-size:15px" data-hover="color:#fff">Home</a>
+              <a href="/about" style="text-decoration:none;color:#CFE0DB;font-size:15px" data-hover="color:#fff">About Us</a>
+              <a href="/opportunity" style="text-decoration:none;color:#CFE0DB;font-size:15px" data-hover="color:#fff">The Opportunity</a>
+              <a href="/testimonials" style="text-decoration:none;color:#CFE0DB;font-size:15px" data-hover="color:#fff">Testimonials</a>
+            </div>
+          </div>
+          <div>
+            <div style="font-size:11px;font-weight:700;letter-spacing:0.18em;color:#5E837C;margin-bottom:18px">JOIN US</div>
+            <div style="display:flex;flex-direction:column;gap:13px">
+              <a href="/apply" style="text-decoration:none;color:#CFE0DB;font-size:15px" data-hover="color:#fff">Apply Now</a>
+              <a href="/faq" style="text-decoration:none;color:#CFE0DB;font-size:15px" data-hover="color:#fff">FAQ</a>
+              <a href="/opportunity" style="text-decoration:none;color:#CFE0DB;font-size:15px" data-hover="color:#fff">Compensation</a>
+            </div>
+          </div>
+          <div>
+            <div style="font-size:11px;font-weight:700;letter-spacing:0.18em;color:#5E837C;margin-bottom:18px">GET IN TOUCH</div>
+            <div style="display:flex;flex-direction:column;gap:7px;font-size:15px;line-height:1.5;color:#A9C2BC">
+              <span>Recruiting team</span>
+              <a href="mailto:info@kairos-financial.com" style="text-decoration:none;color:#EAF3F0;font-weight:600;margin-top:6px">info@kairos-financial.com</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between;align-items:center;padding-top:26px">
+        <span style="font-size:13px;color:#6E938B">&copy; 2026 Kairos Financial. All rights reserved.</span>
+        <div style="display:flex;gap:26px">
+          <a href="#" style="text-decoration:none;color:#6E938B;font-size:13px" data-hover="color:#CFE0DB">Privacy Policy</a>
+          <span style="font-size:13px;color:#6E938B">Life insurance &amp; financial services careers</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+</div>
+<script>
+(function(){
+  document.querySelectorAll("[data-hover]").forEach(function(el){
+    var base = el.getAttribute("style") || "";
+    var hov = el.getAttribute("data-hover");
+    el.addEventListener("mouseenter", function(){ el.setAttribute("style", base + ";" + hov); });
+    el.addEventListener("mouseleave", function(){ el.setAttribute("style", base); });
+  });
+})();
+function kfToggleMenu(){
+  var m = document.getElementById("kfMobileMenu");
+  if(!m) return;
+  m.style.display = (m.style.display === "flex") ? "none" : "flex";
+}
+</script>
 </body>
 </html>
