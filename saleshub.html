@@ -16274,6 +16274,10 @@
         deal_comp: dealCompSnapshot || null,
         status: document.getElementById('policyStatus').value
       };
+      // Stamp whether the deal was approved the same day it was submitted.
+      // Immutable point-of-sale signal for the tracker's Approval Rate — a deal
+      // sent to underwriting stays false even if it's approved later.
+      data.approved_on_submit = data.status === 'Approved';
 
       // Refresh JWT if it's near/past expiry — avoids "PGRST303 JWT expired"
       // when the page has been open for over an hour.
@@ -26336,6 +26340,8 @@
                 policy_date: policyDate,
                 effective_date: effectiveDate || null,
                 status,
+                // Immutable same-day-approval flag for the tracker's Approval Rate.
+                approved_on_submit: status === 'Approved',
               })
             });
             if (!res.ok) throw new Error('save failed (' + res.status + ')');
@@ -27156,11 +27162,18 @@
         const metricsFor = (r) => {
           const kp = kpis.filter(k => inR(k.kpi_date, r));
           const dials = kp.reduce((s,x)=>s+(parseFloat(x.dials)||0),0);
+          const answers = kp.reduce((s,x)=>s+(parseFloat(x.answers)||0),0);
           const pres = kp.reduce((s,x)=>s+(parseFloat(x.presentations)||0),0);
           const deposits = kp.reduce((s,x)=>s+(parseFloat(x.deposits)||0),0);
           const leadSpend = kp.reduce((s,x)=>s+(parseFloat(x.lead_spend)||0),0);
           const pol = policies.filter(p => inR(p.policy_date, r));
           const deals = pol.length;
+          // Approval rate: a deal counts only if it was approved the SAME DAY it
+          // was submitted (approved_on_submit, stamped at insert). A deal sent to
+          // underwriting never counts here, even if it gets approved later.
+          const approvedSameDay = pol.filter(p => p.approved_on_submit === true).length;
+          // Immediate draft: policy is effective the same date it was sold.
+          const immediateDraft = pol.filter(p => p.effective_date && p.policy_date && p.effective_date === p.policy_date).length;
           let pSub = 0, pRem = 0;
           pol.forEach(p => { const v = computePolicyPending(p); if (p.status === 'Issue Paid') pRem += v; else pSub += v; });
           const apSub = pol.reduce((s,p)=>s+parseFloat(p.annual_premium||0),0);
@@ -27172,8 +27185,14 @@
           const oneOffTotal = oneOff.reduce((s,e)=>s+parseFloat(e.amount||0),0);
           // Marketing expenses count as ad spend alongside lead spend for ROAS.
           const marketingSpend = oneOff.filter(e => e.category === 'Marketing').reduce((s,e)=>s+parseFloat(e.amount||0),0);
-          return { dials, pres, deposits, leadSpend, deals, pSub, pRem, apSub, apIss, avgComm, oneOff, oneOffTotal, marketingSpend,
-                   closeRatio: pres > 0 ? deals/pres : 0, dts: dials > 0 ? deals/dials : 0 };
+          return { dials, answers, pres, deposits, leadSpend, deals, approvedSameDay, immediateDraft, pSub, pRem, apSub, apIss, avgComm, oneOff, oneOffTotal, marketingSpend,
+                   closeRatio: pres > 0 ? deals/pres : 0, dts: dials > 0 ? deals/dials : 0,
+                   avgAP: deals > 0 ? apSub/deals : 0,
+                   approvalRate: deals > 0 ? approvedSameDay/deals : 0,
+                   immediateDraftRate: deals > 0 ? immediateDraft/deals : 0,
+                   presentationRate: answers > 0 ? pres/answers : 0,
+                   apPerDial: dials > 0 ? apSub/dials : 0,
+                   apPerAnswer: answers > 0 ? apSub/answers : 0 };
         };
         const cur = metricsFor(sel.range);
         const prev = sel.prev ? metricsFor(sel.prev) : null;
@@ -27426,7 +27445,7 @@
               </div>
               <div style={kpiCard}>
                 <div style={kpiLbl}>Close ratio<span style={tickStyle(tClose.up)}>{tClose.text}</span></div>
-                <div style={kpiVal}>{(cur.closeRatio*100).toFixed(1)}%</div>
+                <div style={{ ...kpiVal, color: cur.pres > 0 ? (cur.closeRatio >= 0.25 ? T.pos : T.neg) : T.ink1 }}>{(cur.closeRatio*100).toFixed(1)}%</div>
                 <div style={kpiSub}><b style={{ color:T.ink1, fontWeight:500 }}>{cur.deals.toLocaleString('en-US')}</b> of {Math.round(cur.pres).toLocaleString('en-US')} pres.</div>
               </div>
               <div style={kpiCard}>
@@ -27435,9 +27454,42 @@
                 <div style={kpiSub}>{dialPerSale} dials &rarr; 1 deal</div>
               </div>
               <div style={kpiCard}>
-                <div style={kpiLbl}>Avg commission<span style={tickStyle(tAvg.up)}>{tAvg.text}</span></div>
-                <div style={kpiVal}>{usd0(cur.avgComm)}</div>
-                <div style={kpiSub}>per issued policy</div>
+                <div style={kpiLbl}>Avg annual premium</div>
+                <div style={{ ...kpiVal, color: cur.deals > 0 ? (cur.avgAP >= 1000 ? T.pos : T.neg) : T.ink1 }}>{cur.deals > 0 ? usd0(cur.avgAP) : '—'}</div>
+                <div style={kpiSub}>per deal</div>
+              </div>
+              <div style={kpiCard}>
+                <div style={kpiLbl}>Approval rate</div>
+                <div style={{ ...kpiVal, color: cur.deals > 0 ? (cur.approvalRate >= 0.9 ? T.pos : T.neg) : T.ink1 }}>{cur.deals > 0 ? (cur.approvalRate*100).toFixed(1)+'%' : '—'}</div>
+                <div style={kpiSub}><b style={{ color:T.ink1, fontWeight:500 }}>{cur.approvedSameDay.toLocaleString('en-US')}</b> of {cur.deals.toLocaleString('en-US')} same-day</div>
+              </div>
+              <div style={kpiCard}>
+                <div style={kpiLbl}>Immediate draft</div>
+                <div style={{ ...kpiVal, color: cur.deals > 0 ? (cur.immediateDraftRate >= 0.30 ? T.pos : T.neg) : T.ink1 }}>{cur.deals > 0 ? (cur.immediateDraftRate*100).toFixed(1)+'%' : '—'}</div>
+                <div style={kpiSub}><b style={{ color:T.ink1, fontWeight:500 }}>{cur.immediateDraft.toLocaleString('en-US')}</b> of {cur.deals.toLocaleString('en-US')} same-day effective</div>
+              </div>
+              <div style={kpiCard}>
+                <div style={kpiLbl}>Presentation rate</div>
+                <div style={{ ...kpiVal, color: cur.answers > 0 ? (cur.presentationRate >= 0.10 ? T.pos : T.neg) : T.ink1 }}>{cur.answers > 0 ? (cur.presentationRate*100).toFixed(1)+'%' : '—'}</div>
+                <div style={kpiSub}><b style={{ color:T.ink1, fontWeight:500 }}>{Math.round(cur.pres).toLocaleString('en-US')}</b> of {Math.round(cur.answers).toLocaleString('en-US')} answers</div>
+              </div>
+            </div>
+
+            {/* EARNED PER ACTIVITY */}
+            <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 4px 12px', flexWrap:'wrap', gap:8 }}>
+              <div style={monoLabel}>Earned Per Activity &middot; {periodLabel}</div>
+              <div style={{ fontFamily:MONO, fontSize:11, color:T.ink3 }}>annual premium produced per touch</div>
+            </div>
+            <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(190px,1fr))', gap:16, marginBottom:24 }}>
+              <div style={kpiCard}>
+                <div style={kpiLbl}>AP per dial</div>
+                <div style={kpiVal}>{cur.dials > 0 ? usd0(cur.apPerDial) : '—'}</div>
+                <div style={kpiSub}>annual premium / dial made</div>
+              </div>
+              <div style={kpiCard}>
+                <div style={kpiLbl}>AP per answer</div>
+                <div style={kpiVal}>{cur.answers > 0 ? usd0(cur.apPerAnswer) : '—'}</div>
+                <div style={kpiSub}>annual premium / phone answered</div>
               </div>
             </div>
 
@@ -27612,7 +27664,7 @@
             const targetId = (isAdmin && viewAsUserId) ? viewAsUserId : u.id;
             const [profilesRes, policiesRes] = await Promise.all([
               fetch(SUPABASE_URL + '/rest/v1/agent_profiles?select=user_id,agent_name,annual_goal,comp_level&user_id=eq.' + targetId, { headers: HDRS }),
-              fetch(SUPABASE_URL + '/rest/v1/policies?select=id,user_id,sales_rep,client_name,phone,annual_premium,policy_date,created_at,carrier,status,product_type,policy_number,effective_date&user_id=eq.' + targetId + '&order=policy_date.desc', { headers: HDRS }),
+              fetch(SUPABASE_URL + '/rest/v1/policies?select=id,user_id,sales_rep,client_name,phone,annual_premium,policy_date,created_at,carrier,status,product_type,policy_number,effective_date,approved_on_submit&user_id=eq.' + targetId + '&order=policy_date.desc', { headers: HDRS }),
             ]);
             const profiles = profilesRes.ok ? await profilesRes.json() : [];
             const policiesData = policiesRes.ok ? await policiesRes.json() : [];
