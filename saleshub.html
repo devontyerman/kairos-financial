@@ -14990,7 +14990,7 @@
       const sel = document.getElementById(id);
       items.forEach(item => { const opt = document.createElement('option'); opt.value = item; opt.textContent = item; sel.appendChild(opt); });
     }
-    populateSelect('carrier', CARRIERS);
+    populateSelect('carrier', [...CARRIERS, 'Other']);
     populateSelect('productType', PRODUCT_TYPES);
 
     // Live phone formatting
