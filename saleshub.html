@@ -24988,6 +24988,7 @@
                     <select className="tp-dr-input" value={draft.carrier || ''} onChange={e => update('carrier', e.target.value)}>
                       <option value="">— Select carrier —</option>
                       {CARRIER_LIST.map(c => <option key={c} value={c}>{c}</option>)}
+                      <option value="Other">Other</option>
                     </select>
                   </div>
                   <div className="tp-dr-field" style={{marginTop:10}}>
@@ -26438,6 +26439,7 @@
                     <select className="tk-mod-select" value={carrier} onChange={e => setCarrier(e.target.value)} required>
                       <option value="">Select carrier…</option>
                       {CARRIER_LIST.map(c => <option key={c} value={c}>{c}</option>)}
+                      <option value="Other">Other</option>
                     </select>
                   </div>
                   <div className="tk-mod-field">
