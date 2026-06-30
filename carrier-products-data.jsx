@@ -263,7 +263,7 @@ const PRODUCTS = [
     method: "",
     timeline: "",
     links: [
-      { kind: "rg", label: "Running Guide", href: "https://drive.google.com/file/d/16tVnf0XyaVVXEJwej3g-7PuDT2L-l2QN/view?usp=sharing" }
+      { kind: "uw", label: "Underwriting Guide", href: "https://drive.google.com/file/d/16tVnf0XyaVVXEJwej3g-7PuDT2L-l2QN/view?usp=sharing" }
     ]
   },
   {
