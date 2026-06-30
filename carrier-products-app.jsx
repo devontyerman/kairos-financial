@@ -11,7 +11,8 @@ const LINK_KIND = {
   uw: "UW",
   pg: "PG",
   kc: "KC",
-  vid: "VID"
+  vid: "VID",
+  rg: "RG"
 };
 
 // Derive a 1-line summary from the first string note (or first pull-quote text).

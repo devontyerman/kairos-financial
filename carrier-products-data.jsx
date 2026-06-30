@@ -262,7 +262,9 @@ const PRODUCTS = [
     ageRange: "",
     method: "",
     timeline: "",
-    links: []
+    links: [
+      { kind: "rg", label: "Running Guide", href: "https://drive.google.com/file/d/16tVnf0XyaVVXEJwej3g-7PuDT2L-l2QN/view?usp=sharing" }
+    ]
   },
   {
     id: "moo-term-express",
