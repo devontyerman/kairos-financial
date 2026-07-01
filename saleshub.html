@@ -8214,6 +8214,12 @@
     #panel-goals .tk-carrier-row .name { flex: 1; font-size: 13px; color: var(--tk-ink-1); display: flex; align-items: center; gap: 10px; }
     #panel-goals .tk-carrier-row .pct { font-family: var(--tk-mono); font-size: 12px; color: var(--tk-ink-2); width: 56px; text-align: right; }
     #panel-goals .tk-carrier-row .ap { font-family: var(--tk-mono); font-size: 11px; color: var(--tk-ink-3); width: 70px; text-align: right; }
+    #panel-goals .tk-carrier-row .issued { font-family: var(--tk-mono); font-size: 11px; color: var(--tk-pos); width: 70px; text-align: right; }
+    #panel-goals .tk-carrier-head { padding: 0 0 6px; margin-bottom: 4px; border-bottom: 1px solid var(--tk-hairline); }
+    #panel-goals .tk-carrier-head .name,
+    #panel-goals .tk-carrier-head .ap,
+    #panel-goals .tk-carrier-head .issued,
+    #panel-goals .tk-carrier-head .pct { font-family: var(--tk-mono); font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--tk-ink-3); }
     #panel-goals .tk-carrier-track {
       height: 4px; background: var(--tk-surface-3);
       border-radius: 99px; overflow: hidden; margin-top: 6px;
@@ -27975,15 +27981,20 @@
         const tfDeals = policies.filter(p => { const d = policyDate(p); return d && (tfRange[1] ? (d >= tfRange[0] && d <= tfRange[1]) : d >= tfRange[0]); }).length;
         // Carrier Mix — filtered by the selected timeframe (not hardcoded YTD).
         const tfCarrierMap = {};
+        const tfCarrierIssuedMap = {};   // Issue Paid premium only, per carrier
         policies.forEach(p => {
           if (!p.carrier) return;
           const d = policyDate(p);
           if (!d) return;
           if (tfRange[1] ? (d >= tfRange[0] && d <= tfRange[1]) : d >= tfRange[0]) {
-            tfCarrierMap[p.carrier] = (tfCarrierMap[p.carrier] || 0) + parseFloat(p.annual_premium || 0);
+            const ap = parseFloat(p.annual_premium || 0);
+            tfCarrierMap[p.carrier] = (tfCarrierMap[p.carrier] || 0) + ap;
+            if (p.status === 'Issue Paid') {
+              tfCarrierIssuedMap[p.carrier] = (tfCarrierIssuedMap[p.carrier] || 0) + ap;
+            }
           }
         });
-        const tfCarriers = Object.entries(tfCarrierMap).map(([name, ap]) => ({ name, ap })).sort((a, b) => b.ap - a.ap);
+        const tfCarriers = Object.entries(tfCarrierMap).map(([name, ap]) => ({ name, ap, issued: tfCarrierIssuedMap[name] || 0 })).sort((a, b) => b.ap - a.ap);
         const tfTotalCarrierAP = tfCarriers.reduce((s, c) => s + c.ap, 0);
         const conversion = k.dials > 0 ? (tfDeals / k.dials) * 100 : 0;
         const roi = k.leadSpend > 0 ? ((k.deposits - k.leadSpend) / k.leadSpend) * 100 : 0;
@@ -28290,11 +28301,19 @@
               <div className="tk-card" style={{gridColumn:'span 12', order:2}}>
                 <div className="tk-card-hd tk-card-hd-center">
                   <div className="tk-card-title tk-card-title-lg">Carrier Mix</div>
-                  <div className="tk-hdr-sub" style={{fontFamily:'var(--tk-mono)', fontSize:11, textTransform:'uppercase', letterSpacing:'0.06em'}}>{tfLabel} · by premium</div>
+                  <div className="tk-hdr-sub" style={{fontFamily:'var(--tk-mono)', fontSize:11, textTransform:'uppercase', letterSpacing:'0.06em'}}>{tfLabel} · submitted vs issued</div>
                 </div>
                 {tfCarriers.length === 0 ? (
                   <div style={{padding:'24px 0', color:'var(--tk-ink-3)', fontFamily:'var(--tk-mono)', fontSize:11}}>No policies in this timeframe.</div>
-                ) : tfCarriers.map(c => {
+                ) : (
+                  <>
+                  <div className="tk-carrier-row tk-carrier-head">
+                    <span className="name">Carrier</span>
+                    <span className="ap">Submitted</span>
+                    <span className="issued">Issued</span>
+                    <span className="pct">Mix</span>
+                  </div>
+                  {tfCarriers.map(c => {
                   const color = carrierColorByName(c.name);
                   const pct = tfTotalCarrierAP > 0 ? (c.ap / tfTotalCarrierAP * 100) : 0;
                   return (
@@ -28302,6 +28321,7 @@
                       <div className="tk-carrier-row">
                         <span className="name"><span className="tk-dot" style={{background: color}}></span>{c.name}</span>
                         <span className="ap">{fmtCurrency(c.ap, {compact:true})}</span>
+                        <span className="issued">{c.issued > 0 ? fmtCurrency(c.issued, {compact:true}) : '—'}</span>
                         <span className="pct">{pct.toFixed(1)}%</span>
                       </div>
                       <div className="tk-carrier-track">
@@ -28309,7 +28329,9 @@
                       </div>
                     </div>
                   );
-                })}
+                  })}
+                  </>
+                )}
               </div>
 
               <div style={{gridColumn:'span 12', order:1}}>
