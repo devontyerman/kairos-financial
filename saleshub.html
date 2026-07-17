@@ -16791,7 +16791,11 @@
       notAuth.style.display = 'none'; content.style.display = 'block';
 
       const viewUserId = adminViewUserId || currentUser.id;
-      const token = adminViewUserId ? SUPABASE_KEY : (accessToken || SUPABASE_KEY);
+      // Always read as the signed-in user (their JWT). Row-level security grants
+      // admins/managers the agent rows they're allowed to see; the old anon-key
+      // fallback for "viewing another agent" closes with the read lockdown.
+      await ensureValidAccessToken();
+      const token = accessToken || SUPABASE_KEY;
       let rows = [];
       try {
         const res = await fetch(SUPABASE_URL + '/rest/v1/policies?user_id=eq.' + viewUserId + '&order=created_at.desc', {
@@ -18928,7 +18932,10 @@
 
       var viewingOther = !!adminViewUserId;
       var viewId = adminViewUserId || currentUser.id;
-      var goalToken = viewingOther ? SUPABASE_KEY : (accessToken || SUPABASE_KEY);
+      // Always read as the signed-in user (JWT); RLS handles admin/manager
+      // visibility. No more anon-key fallback for viewing another agent.
+      await ensureValidAccessToken();
+      var goalToken = accessToken || SUPABASE_KEY;
 
       // Hide goal input when viewing other agents (read-only)
       var goalInputRow = document.querySelector('.ss-goal-input-row');
@@ -20512,8 +20519,12 @@
       async function fetchAllPolicies() {
         // PostgREST default cap is 1000 rows — explicit Range header lifts it so we
         // don't lose recent submissions when the table grows past 1k.
-        const res = await fetch(SUPABASE_URL + '/rest/v1/policies?select=user_id,sales_rep,annual_premium,policy_date&order=policy_date.desc', {
-          headers: anonHdrs({ 'Range-Unit': 'items', 'Range': '0-49999' })
+        // Read the safe leaderboard feed (rep + premium + dates, NO client PII)
+        // as the signed-in user. The raw policies table is owner/manager/admin
+        // only after the read lockdown; this view stays readable to all logins.
+        await window.ensureValidAccessToken?.();
+        const res = await fetch(SUPABASE_URL + '/rest/v1/policies_leaderboard?select=user_id,sales_rep,annual_premium,policy_date&order=policy_date.desc', {
+          headers: Object.assign({ apikey: SUPABASE_KEY, Authorization: 'Bearer ' + (window.accessToken || SUPABASE_KEY) }, { 'Range-Unit': 'items', 'Range': '0-49999' })
         });
         if (!res.ok && res.status !== 206) throw new Error('Failed to fetch policies (' + res.status + ')');
         const rows = await res.json();
@@ -22501,6 +22512,15 @@
       const policyWriteHeaders = () => Object.assign({}, HDRS_WRITE, {
         'Authorization': 'Bearer ' + (window.accessToken || SUPABASE_KEY)
       });
+      // Phase 3 of the RLS lockdown: READ policies as the signed-in user (JWT),
+      // so the read policies apply — a rep sees only their own rows, a manager
+      // their downline, the admin everything. The leaderboard reads the safe
+      // `policies_leaderboard` feed (no client PII) with these; the admin/manager
+      // "view an agent" screens read the base table with these and let RLS
+      // filter. Refresh the token first (window.ensureValidAccessToken).
+      const authReadHeaders = (extra) => Object.assign({}, HDRS, {
+        'Authorization': 'Bearer ' + (window.accessToken || SUPABASE_KEY)
+      }, extra || {});
       const TOTAL_TRAINING_VIDEOS = 25;
 
       // All carriers we currently sell — extends the design's 5-color rainbow
@@ -22584,8 +22604,12 @@
         // Include every column the Policies tab renders — earlier this was
         // missing client_name/phone/policy_number/effective_date/id, which made
         // those columns show "—" and edits unable to PATCH by id.
+        // Manager Dashboard — all reps' deals incl. PII. Read as the signed-in
+        // user; RLS returns everything for the admin, the manager's downline for
+        // a manager, and (defensively) only own rows for anyone else.
+        await window.ensureValidAccessToken?.();
         const res = await fetch(SUPABASE_URL + '/rest/v1/policies?select=id,user_id,sales_rep,client_name,phone,annual_premium,policy_date,created_at,carrier,status,product_type,policy_number,effective_date&order=created_at.desc', {
-          headers: Object.assign({}, HDRS, { 'Range-Unit': 'items', 'Range': '0-49999' })
+          headers: authReadHeaders({ 'Range-Unit': 'items', 'Range': '0-49999' })
         });
         if (!res.ok && res.status !== 206) throw new Error('policies fetch ' + res.status);
         return res.json();
@@ -24400,7 +24424,8 @@
           let cancelled = false;
           (async () => {
             try {
-              const r = await fetch(SUPABASE_URL + '/rest/v1/policies?select=id&user_id=eq.' + encodeURIComponent(deleteFor.user_id), { headers: HDRS });
+              await window.ensureValidAccessToken?.();
+              const r = await fetch(SUPABASE_URL + '/rest/v1/policies?select=id&user_id=eq.' + encodeURIComponent(deleteFor.user_id), { headers: authReadHeaders() });
               const rows = r.ok ? await r.json() : [];
               if (!cancelled) setDeleteCount(Array.isArray(rows) ? rows.length : 0);
             } catch (e) { if (!cancelled) setDeleteCount(0); }
@@ -27716,9 +27741,12 @@
             if (!u || !u.id) { setError('Sign in to view your tracker.'); if (!quiet) setLoading(false); return; }
             // Effective viewing target: admin can override; everyone else is locked to themselves.
             const targetId = (isAdmin && viewAsUserId) ? viewAsUserId : u.id;
+            // Read deals as the signed-in user; RLS lets an admin/manager see the
+            // agent they're viewing, and a rep see only themselves.
+            await window.ensureValidAccessToken?.();
             const [profilesRes, policiesRes] = await Promise.all([
               fetch(SUPABASE_URL + '/rest/v1/agent_profiles?select=user_id,agent_name,annual_goal,comp_level&user_id=eq.' + targetId, { headers: HDRS }),
-              fetch(SUPABASE_URL + '/rest/v1/policies?select=id,user_id,sales_rep,client_name,phone,annual_premium,policy_date,created_at,carrier,status,product_type,policy_number,effective_date,approved_on_submit&user_id=eq.' + targetId + '&order=policy_date.desc', { headers: HDRS }),
+              fetch(SUPABASE_URL + '/rest/v1/policies?select=id,user_id,sales_rep,client_name,phone,annual_premium,policy_date,created_at,carrier,status,product_type,policy_number,effective_date,approved_on_submit&user_id=eq.' + targetId + '&order=policy_date.desc', { headers: authReadHeaders() }),
             ]);
             const profiles = profilesRes.ok ? await profilesRes.json() : [];
             const policiesData = policiesRes.ok ? await policiesRes.json() : [];
@@ -28732,9 +28760,12 @@
             // so timeframe switching is instant. Range header lifts the
             // PostgREST 1000-row default cap.
             const yearStartYMD = new Date().getFullYear() + '-01-01';
+            // Safe feed (rep + premium + dates, no client PII), read as the
+            // signed-in user. Same columns/totals as before; raw table is locked.
+            await window.ensureValidAccessToken?.();
             const res = await fetch(
-              SUPABASE_URL + '/rest/v1/policies?select=sales_rep,user_id,annual_premium,policy_date,created_at&policy_date=gte.' + yearStartYMD + '&order=policy_date.desc',
-              { headers: Object.assign({}, HDRS, { 'Range-Unit': 'items', 'Range': '0-49999' }) }
+              SUPABASE_URL + '/rest/v1/policies_leaderboard?select=sales_rep,user_id,annual_premium,policy_date,created_at&policy_date=gte.' + yearStartYMD + '&order=policy_date.desc',
+              { headers: authReadHeaders({ 'Range-Unit': 'items', 'Range': '0-49999' }) }
             );
             if (!res.ok && res.status !== 206) throw new Error('policies fetch ' + res.status);
             const data = await res.json();
@@ -29278,9 +29309,10 @@
           try {
             const u = window.currentUser;
             if (!u || !u.id) { setError('Sign in to view your book of business.'); setLoading(false); return; }
+            await window.ensureValidAccessToken?.();
             const [profilesRes, policiesRes] = await Promise.all([
               fetch(SUPABASE_URL + '/rest/v1/agent_profiles?select=user_id,agent_name&user_id=eq.' + u.id, { headers: HDRS }),
-              fetch(SUPABASE_URL + '/rest/v1/policies?select=id,user_id,sales_rep,client_name,phone,annual_premium,policy_date,created_at,carrier,status,product_type,policy_number,effective_date&user_id=eq.' + u.id + '&order=policy_date.desc', { headers: Object.assign({}, HDRS, { 'Range-Unit': 'items', 'Range': '0-49999' }) }),
+              fetch(SUPABASE_URL + '/rest/v1/policies?select=id,user_id,sales_rep,client_name,phone,annual_premium,policy_date,created_at,carrier,status,product_type,policy_number,effective_date&user_id=eq.' + u.id + '&order=policy_date.desc', { headers: authReadHeaders({ 'Range-Unit': 'items', 'Range': '0-49999' }) }),
             ]);
             const profiles = profilesRes.ok ? await profilesRes.json() : [];
             const policiesData = (policiesRes.ok || policiesRes.status === 206) ? await policiesRes.json() : [];
