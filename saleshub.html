@@ -13008,6 +13008,10 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
       <span>Products</span>
     </button>
+    <button class="ss-sidebar-btn" data-panel="eappguides">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><path d="M9 14l2 2 4-4"/></svg>
+      <span>E-App Guides</span>
+    </button>
     <button class="ss-sidebar-btn" data-panel="worksheet">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/></svg>
       <span>Digital Worksheet</span>
@@ -13314,6 +13318,15 @@
     <!-- ═══ CARRIER PRODUCTS PANEL ═══ -->
     <div class="ss-panel" id="panel-products">
       <iframe src="carrier-products.html" class="cp-iframe" id="carrierProductsFrame" title="Carrier Products"></iframe>
+    </div>
+
+    <!-- ═══ E-APP GUIDES PANEL ═══
+         Standalone page in an iframe (same pattern as Products above). The
+         page carries its own design-system CSS with generic selectors that
+         would collide with the hub's if inlined; the frame isolates them.
+         eapp-guides.html sizes this iframe itself via window.frameElement. -->
+    <div class="ss-panel" id="panel-eappguides">
+      <iframe src="eapp-guides.html" class="cp-iframe" id="eappGuidesFrame" title="E-App Guides &amp; Summaries"></iframe>
     </div>
 
     <!-- ═══ DIGITAL WORKSHEET PANEL ═══ -->

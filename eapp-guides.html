@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>E-App Guides — Kairos Financial</title>
+<meta name="robots" content="noindex, nofollow" />
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/eapp-guides.css">
+</head>
+<body>
+<div class="eag-shell">
+  <header class="eag-header">
+    <div class="eag-brand">KAIROS FINANCIAL</div>
+    <div class="eag-header-tag">AGENT RESOURCES</div>
+  </header>
+
+  <section class="eag-hero">
+    <div class="eag-hero-inner">
+      <div class="eag-kicker">KAIROS FINANCIAL · AGENT RESOURCES</div>
+      <h1 class="eag-title">E-APP GUIDES</h1>
+    </div>
+  </section>
+
+  <main class="eag-main">
+    <div class="eag-grid" id="eagGrid"></div>
+  </main>
+
+  <footer class="eag-footer">
+    <div class="eag-footer-inner">
+      <div class="eag-footer-brand">KAIROS FINANCIAL</div>
+      <div class="eag-footer-note">Guide content courtesy of Family First Life &mdash; FFL E-App Guides. Used with permission.</div>
+    </div>
+  </footer>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  // Guides are hosted here now — one page per carrier under eapp-guides/, with
+  // the source's own anchor ids preserved so the e-signature links deep-link
+  // straight to that section. `external: true` marks links that genuinely
+  // belong off-site (the VA card points at va.gov).
+  var G = 'eapp-guides/';
+
+  var carriers = [
+    { id: 'aetna', name: 'Aetna',
+      logo: 'https://commons.wikimedia.org/wiki/Special:FilePath/1_Heart_Aetna_logo_sm_rgb_violet.svg',
+      guides: [
+        { label: 'E-APPLICATION GUIDE', href: G + 'aetna-eapp-tutorial.html' },
+        { label: 'E-SIGNATURE GUIDE', href: G + 'aetna-eapp-tutorial.html#aetna-signature-code' }] },
+
+    { id: 'american-amicable', name: 'American Amicable',
+      logo: 'https://static.wixstatic.com/media/ca5012_a7d8b82a2b7b44a78b28cf3d7daa1905~mv2.png/v1/fill/w_475,h_158,al_c,q_85,enc_avif,quality_auto/ca5012_a7d8b82a2b7b44a78b28cf3d7daa1905~mv2.png',
+      guides: [
+        { label: 'E-APPLICATION GUIDE', href: G + 'amam-eapp-tutorial.html' },
+        { label: 'E-SIGNATURE GUIDE', href: G + 'amam-eapp-tutorial.html#amam-signature-guide' }] },
+
+    { id: 'americo', name: 'Americo',
+      logo: 'https://static.wixstatic.com/media/ca5012_6c068c4412ab4662b70b2ec7d075e9c5~mv2.png/v1/fill/w_517,h_103,al_c,q_85,enc_avif,quality_auto/cropped-Americologo_red_289-2_edited.png',
+      guides: [
+        { label: 'E-APPLICATION GUIDE', href: G + 'americo-eapp-tutorial.html' },
+        { label: 'E-SIGNATURE #1 GUIDE', href: G + 'americo-eapp-tutorial.html#americo-esign-1' },
+        { label: 'E-SIGNATURE #2 GUIDE', href: G + 'americo-eapp-tutorial.html#americoesign2' }] },
+
+    { id: 'corebridge', name: 'Corebridge',
+      logo: 'https://static.wixstatic.com/media/ca5012_a303c26d549b468bbd593a146dabb2ee~mv2.png/v1/crop/x_0,y_4,w_1200,h_388/fill/w_561,h_181,al_c,q_85,enc_avif,quality_auto/ca5012_a303c26d549b468bbd593a146dabb2ee~mv2.png',
+      guides: [
+        { label: 'E-APPLICATION GUIDE', href: G + 'corebridge-eapp-tutorial.html' },
+        { label: 'E-SIGNATURE #1 GUIDE', href: G + 'corebridge-eapp-tutorial.html#esign-1' },
+        { label: 'E-SIGNATURE #2 GUIDE', href: G + 'corebridge-eapp-tutorial.html#esign-2' }] },
+
+    { id: 'liberty-bankers', name: 'Liberty Bankers',
+      logo: 'https://static.wixstatic.com/media/ca5012_e5766fa25f0f4ba9aaa823e7a373ceeb~mv2.png/v1/fill/w_600,h_125,al_c,q_85,enc_avif,quality_auto/ca5012_e5766fa25f0f4ba9aaa823e7a373ceeb~mv2.png',
+      guides: [
+        { label: 'E-APPLICATION GUIDE', href: G + 'liberty-bankers.html' },
+        { label: 'E-SIGNATURE GUIDE', href: G + 'liberty-bankers.html#esign' }] },
+
+    { id: 'mutual-of-omaha', name: 'Mutual of Omaha',
+      logo: 'https://static.wixstatic.com/media/ca5012_7cfbb4f498b04f01935b22e4f8b0f61f~mv2.png/v1/fill/w_520,h_94,al_c,q_85,enc_avif,quality_auto/ca5012_7cfbb4f498b04f01935b22e4f8b0f61f~mv2.png',
+      guides: [
+        { label: 'E-APPLICATION GUIDE', href: G + 'mutual-eapp-tutorial.html' },
+        { label: 'E-SIGN #1 GUIDE (HIPPA)', href: G + 'mutual-eapp-tutorial.html#hippasignature' },
+        { label: 'E-SIGN #2 GUIDE (FINAL SIG.)', href: G + 'mutual-eapp-tutorial.html#esignguide2' }] },
+
+    { id: 'national-life-group', name: 'National Life Group',
+      logo: 'https://static.wixstatic.com/media/ca5012_027600c204e445f4aaab590ab317b0cb~mv2.png/v1/crop/x_145,y_132,w_1266,h_351/fill/w_544,h_151,al_c,q_85,enc_avif,quality_auto/ca5012_027600c204e445f4aaab590ab317b0cb~mv2.png',
+      guides: [
+        { label: 'E-APPLICATION GUIDE', href: G + 'producttraining.html' }] },
+
+    { id: 'royal-neighbors', name: 'Royal Neighbors',
+      logo: 'https://static.wixstatic.com/media/ca5012_23009622248b4717997a30d0657625c0~mv2.png/v1/crop/x_18,y_103,w_582,h_150/fill/w_546,h_141,al_c,q_85,enc_avif,quality_auto/ca5012_23009622248b4717997a30d0657625c0~mv2.png',
+      guides: [
+        { label: 'E-APPLICATION GUIDE', href: G + 'royal-neighbors-eapp-tutorial.html' },
+        { label: 'E-SIGNATURE GUIDE', href: G + 'royal-neighbors-eapp-tutorial.html#e-signature-guide' }] },
+
+    // Transamerica runs two separate products with their own guide pages, so
+    // they get a card each rather than one card mixing six links.
+    { id: 'transamerica-solutions', name: 'Transamerica — Solutions',
+      logo: 'https://static.wixstatic.com/media/ca5012_b77ac18ba8df46e6957f30091af033b8~mv2.png/v1/fill/w_551,h_200,al_c,q_85,enc_avif,quality_auto/ca5012_b77ac18ba8df46e6957f30091af033b8~mv2.png',
+      badge: 'SOLUTIONS',
+      guides: [
+        { label: 'E-APPLICATION GUIDE', href: G + 'transamerica-solutions-eapp-guide.html' },
+        { label: 'E-SIGNATURE GUIDE', href: G + 'transamerica-solutions-eapp-guide.html#trans-solutions-esign' }] },
+
+    // Express has two headed signature sections — "EXPRESS SIGNATURE GUIDE 1"
+    // and "FINAL SIGNATURE GUIDE". The source also carried a third link
+    // (#2ndexpresssignature) that jumped into the middle of the signature
+    // sequence with no heading of its own; that step is covered inline by the
+    // e-application walkthrough, so it is not surfaced as a separate guide.
+    { id: 'transamerica-express', name: 'Transamerica — Express',
+      logo: 'https://static.wixstatic.com/media/ca5012_b77ac18ba8df46e6957f30091af033b8~mv2.png/v1/fill/w_551,h_200,al_c,q_85,enc_avif,quality_auto/ca5012_b77ac18ba8df46e6957f30091af033b8~mv2.png',
+      badge: 'EXPRESS',
+      guides: [
+        { label: 'E-APPLICATION GUIDE', href: G + 'transamerica-express-eapp-tutorial.html' },
+        { label: 'E-SIGNATURE GUIDE', href: G + 'transamerica-express-eapp-tutorial.html#1-trans-express-signature-guide' },
+        { label: 'FINAL E-SIGNATURE GUIDE', href: G + 'transamerica-express-eapp-tutorial.html#final-trans-signature' }] },
+
+    // VA plan details live on va.gov and stay external by design.
+    { id: 'va-life', name: "Veteran's Affairs Life",
+      logo: 'https://static.wixstatic.com/media/ca5012_4705cd80498947739d099600cef9da13~mv2.jpg/v1/fill/w_600,h_177,al_c,q_80,enc_avif,quality_auto/ca5012_4705cd80498947739d099600cef9da13~mv2.jpg',
+      groupOne: 'PLAN DETAILS',
+      guides: [
+        { label: 'BURIAL BENEFIT — PLAN DETAILS', href: 'https://www.benefits.va.gov/compensation/claims-special-burial.asp', external: true },
+        { label: 'VA LIFE — DETAILS & RATES', href: 'https://www.va.gov/life-insurance/options-eligibility/valife/', external: true },
+        { label: 'GROUP LIFE — DETAILS & RATES', href: 'https://www.va.gov/life-insurance/options-eligibility/vgli/', external: true }] }
+  ];
+
+  function el(tag, className, text) {
+    var n = document.createElement(tag);
+    if (className) n.className = className;
+    if (text != null) n.textContent = text;
+    return n;
+  }
+
+  function buildCard(c) {
+    var card = el('article', 'eag-card');
+    card.id = c.id;
+
+    var logoSlot = el('div', 'eag-logo-slot');
+    var img = document.createElement('img');
+    img.src = c.logo;
+    img.alt = c.name;
+    img.loading = 'lazy';
+    // Logos are still hotlinked from third-party CDNs — fall back to the
+    // carrier name rather than a broken-image icon if one stops resolving.
+    img.onerror = function () {
+      logoSlot.replaceChildren(el('div', 'eag-logo-fallback', c.name));
+    };
+    logoSlot.appendChild(img);
+    // Two carriers can share a logo (Transamerica Solutions vs Express), so a
+    // badge is the only thing telling those cards apart at a glance.
+    if (c.badge) logoSlot.appendChild(el('span', 'eag-badge', c.badge));
+    card.appendChild(logoSlot);
+
+    var guides = el('div', 'eag-group');
+    guides.appendChild(el('div', 'eag-group-label', c.groupOne || 'E-APP GUIDES'));
+    c.guides.forEach(function (g) {
+      var a = el('a', 'eag-guide-link', g.label);
+      a.href = g.href;
+      // Internal guides load in place (inside the hub panel when framed);
+      // only genuinely external destinations open a new tab.
+      if (g.external) { a.target = '_blank'; a.rel = 'noopener noreferrer'; }
+      guides.appendChild(a);
+    });
+    card.appendChild(guides);
+
+    return card;
+  }
+
+  var grid = document.getElementById('eagGrid');
+  grid.replaceChildren.apply(grid, carriers.map(buildCard));
+})();
+</script>
+<script src="js/eapp-guide-frame.js"></script>
+</body>
+</html>

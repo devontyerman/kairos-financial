@@ -1,0 +1,191 @@
+/* ─── E-App Guides ───────────────────────────────────────────────────────────
+   Shared by eapp-guides.html (the index) and eapp-guides/*.html (the guides).
+   Tokens ported from the "Modernist" Claude Design system.
+
+   Only ever linked from those standalone pages, which saleshub.html loads in
+   an iframe — so the generic selectors below (body, h1, .eg-row) stay isolated
+   from the hub's own CSS. Do not link this from saleshub.html directly.
+   ────────────────────────────────────────────────────────────────────────── */
+
+/* ── Guide-page text faces ──
+   The source site uses Wix's "helvetica-w01-roman" / "helvetica-w01-bold".
+   Those encode weight in the FAMILY NAME, not font-weight: the roman face has
+   no bold variant, so font-weight:700 on it still renders regular, while the
+   bold family renders bold at any weight. Wix's own markup leans on this —
+   body copy is roman@700 (regular on screen), labels are bold@700.
+
+   Mapping both to plain "Helvetica" gave every 700 a real bold face, which
+   made our text heavier and re-wrapped every paragraph. These two faces
+   reproduce Wix's behaviour with metric-compatible system fonts (measured
+   within 0.2% of the originals) and no licensed font to redistribute:
+   declaring font-weight:100 900 makes each face claim every weight, so the
+   browser never substitutes or synthesises a bold. */
+@font-face {
+  font-family: 'ffl-roman';
+  src: local('Helvetica'), local('Arial'), local('Liberation Sans'), local('Nimbus Sans');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'ffl-bold';
+  src: local('Helvetica Bold'), local('Helvetica-Bold'), local('Arial Bold'),
+       local('Arial-BoldMT'), local('Liberation Sans Bold');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --color-bg: #f3f2f2;
+  --color-text: #201e1d;
+  --color-accent: #ec3013;
+  --color-divider: color-mix(in srgb, #201e1d 40%, transparent);
+  --color-neutral-300: #d7d3d3;
+  --color-neutral-700: #605d5d;
+  --color-accent-600: #dd2b0f;
+  --color-accent-700: #ae1800;
+  --font-heading: "Archivo", system-ui, sans-serif;
+  --font-body: "Archivo", system-ui, sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.55;
+}
+img { display: block; max-width: 100%; }
+:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+
+.eag-shell { min-height: 100vh; display: flex; flex-direction: column; }
+
+/* ─── shared chrome ─── */
+.eag-header {
+  display: flex; align-items: center; justify-content: space-between; gap: 24px;
+  padding: 16px 32px; border-bottom: 2px solid var(--color-divider);
+}
+.eag-brand { font-family: var(--font-heading); font-weight: 700; font-size: 18px; letter-spacing: 0.04em; }
+.eag-header-tag { font-size: 12px; font-weight: 600; letter-spacing: 0.1em; color: var(--color-neutral-700); }
+
+.eag-hero { padding: 56px 32px 40px; border-bottom: 2px solid var(--color-divider); }
+.eag-hero-inner { max-width: 1200px; margin: 0 auto; }
+.eag-kicker { font-size: 12px; font-weight: 700; letter-spacing: 0.14em; color: var(--color-accent-700); margin-bottom: 12px; }
+.eag-title { font-family: var(--font-heading); font-size: 52px; line-height: 1.05; margin: 0; letter-spacing: -0.01em; font-weight: 800; }
+
+.eag-footer { background: var(--color-accent); color: #fff; padding: 32px; margin-top: auto; }
+.eag-footer-inner { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.eag-footer-brand { font-family: var(--font-heading); font-weight: 700; letter-spacing: 0.06em; }
+.eag-footer-note { font-size: 13px; max-width: 640px; }
+
+/* ─── index: carrier grid ─── */
+.eag-main { max-width: 1200px; margin: 0 auto; padding: 40px 32px 80px; width: 100%; flex: 1; }
+.eag-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 2px; background: var(--color-divider); border: 2px solid var(--color-divider);
+}
+.eag-card { background: var(--color-bg); padding: 28px; display: flex; flex-direction: column; gap: 20px; }
+.eag-logo-slot { height: 64px; display: flex; align-items: flex-start; }
+.eag-logo-slot img { max-height: 56px; max-width: 240px; object-fit: contain; object-position: left; }
+.eag-logo-fallback { font-family: var(--font-heading); font-size: 22px; font-weight: 700; }
+/* Distinguishes cards that share a carrier logo (Transamerica Solutions vs Express). */
+.eag-badge {
+  align-self: flex-start;
+  margin-left: auto;
+  font-size: 10px; font-weight: 700; letter-spacing: 0.12em;
+  padding: 3px 7px; white-space: nowrap;
+  color: var(--color-bg); background: var(--color-accent);
+}
+.eag-group { display: flex; flex-direction: column; gap: 8px; }
+.eag-group-label { font-size: 11px; font-weight: 700; letter-spacing: 0.14em; color: var(--color-neutral-700); }
+.eag-guide-link {
+  display: block; font-size: 13px; font-weight: 600; letter-spacing: 0.05em;
+  text-decoration: none; padding: 9px 12px; border: 2px solid var(--color-text);
+  text-align: left; color: var(--color-text);
+  transition: border-color 0.12s ease, color 0.12s ease;
+}
+.eag-guide-link:hover { border-color: var(--color-accent); color: var(--color-accent-600); }
+
+/* ─── guide pages ─── */
+.eg-bar {
+  display: flex; align-items: center; gap: 16px;
+  padding: 12px 32px; border-bottom: 2px solid var(--color-divider);
+}
+.eg-back {
+  font-size: 12px; font-weight: 700; letter-spacing: 0.1em;
+  text-decoration: none; color: var(--color-text);
+  border: 2px solid var(--color-text); padding: 7px 12px;
+  transition: border-color 0.12s ease, color 0.12s ease;
+}
+.eg-back:hover { border-color: var(--color-accent); color: var(--color-accent-600); }
+.eg-crumb { font-size: 12px; font-weight: 600; letter-spacing: 0.1em; color: var(--color-neutral-700); }
+
+/* ── exact canvas ──
+   The source is a fixed ~950px absolutely-positioned canvas. We reproduce it
+   verbatim: .eg-canvas keeps the source's intrinsic pixel size and every child
+   carries its measured left/top. NOTHING here may reflow — no grid, no flex,
+   no width:100% on images — or captions drift from their screenshots. Narrow
+   viewports scale the whole canvas via transform (see js/eapp-canvas.js). */
+.eg-stage {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  background: #fff;
+  /* No `flex:1` here: flex-basis:0 would override the explicit pixel height
+     that js/eapp-canvas.js sets, and since .eg-canvas is absolutely positioned
+     it contributes no height of its own — the page would collapse to one
+     viewport and the whole guide would be unreachable. */
+}
+.eg-canvas {
+  position: absolute;
+  top: 0; left: 50%;
+  background: #fff;
+  transform-origin: top center;
+}
+.eg-i {
+  position: absolute;
+  z-index: 1;
+  display: block;
+  max-width: none; /* must defeat any inherited img { max-width:100% } */
+}
+/* Framed screenshot: the wrapper carries the source's border; box-sizing
+   (border-box, set globally above) keeps the image at its original size. */
+.eg-f {
+  position: absolute;
+  z-index: 1;
+}
+/* Video sits in the canvas at the source's own rect (the NLG guide). */
+.eg-v { position: absolute; z-index: 1; display: block; background: #000; }
+/* Translucent scrim the source paints over a paused video's poster. Same
+   z-index as .eg-v and emitted after it, so it layers on top; the play button
+   (.eg-s, z-index 2) stays above both. Hidden once playback starts. */
+.eg-vscrim { position: absolute; z-index: 1; pointer-events: none; }
+.eg-f img { display: block; width: 100%; height: 100%; max-width: none; }
+.eg-s {
+  position: absolute;
+  z-index: 2; /* arrow shapes point at the screenshots beneath them */
+}
+.eg-s svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.eg-t {
+  position: absolute;
+  z-index: 3; /* numbered badges are text layered above shapes + screenshots */
+}
+/* Text keeps the source's own inlined computed styles; only guard against a
+   stray UA default leaking in where the source had none. */
+.eg-t img { display: inline; }
+
+/* Zero-height marker: preserves the source's #esign-style deep links. */
+.eg-anchor { position: absolute; left: 0; display: block; width: 1px; height: 0; overflow: hidden; }
+
+
+@media (max-width: 640px) {
+  .eag-title { font-size: 34px; }
+  .eag-hero { padding: 36px 20px 28px; }
+  .eag-main, .eg-main { padding: 28px 20px 56px; }
+  .eag-header, .eg-bar { padding: 14px 20px; }
+  .eag-grid { grid-template-columns: 1fr; }
+  .eg-section { font-size: 24px; }
+}
