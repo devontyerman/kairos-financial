@@ -13028,10 +13028,6 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
       <span>Weekly Tracker</span>
     </button>
-    <button class="ss-sidebar-btn" data-panel="profile">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-      <span>Profile</span>
-    </button>
     </div>
 
     <!-- Mobile dropdown menu (inside sidebar, no z-index issues) -->
@@ -13048,6 +13044,10 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
         Toolkit
       </a>
+      <a href="#" data-panel="profile" class="ss-nav-panel-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        Profile
+      </a>
     </div>
 
     <!-- Page links (always visible below grid) -->
@@ -13063,6 +13063,10 @@
       <a href="https://app.insurancetoolkits.com/fex/quoter" target="_blank" rel="noopener noreferrer">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
         Toolkit
+      </a>
+      <a href="#" data-panel="profile" class="ss-nav-panel-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        Profile
       </a>
     </div>
     <button class="ss-sidebar-collapse" id="ssCollapseBtn" type="button" aria-label="Collapse sidebar" title="Collapse sidebar">
@@ -17998,6 +18002,23 @@
             } catch (profileErr) { console.warn('Profile fallback insert failed:', profileErr); }
           }
 
+          // ── Notify admin of the new signup (pending approval) ──
+          // Posts to the signup-approval webhook with a link to review/approve.
+          // Skipped on localhost so testing signups don't ping the channel.
+          try {
+            if (!/^(localhost|127\.0\.0\.1|\[::1\]|0\.0\.0\.0)$/.test(location.hostname)) {
+              const SIGNUP_WEBHOOK = 'https://discord.com/api/webhooks/1527790116595171338/DalH66G_wOQaeDtrs738w7ZgiwxEOdHcsuvnzURF7VOHJ7RX3q8CUbz8fhmkRlW17aBD';
+              fetch(SIGNUP_WEBHOOK, {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ embeds: [{
+                  title: '🆕 New signup — pending approval',
+                  description: '**' + name + '**\n' + email + '\n\n[→ Review & approve in the Sales Hub](https://kairos-financial.com/saleshub.html)\nManager Dashboard → Agents → **Approve**.',
+                  color: 16766720
+                }] })
+              }).catch(() => {});
+            }
+          } catch (e) { /* notification is best-effort, never blocks signup */ }
+
           // If Supabase returns a session (email confirm disabled), auto-login
           if (result.access_token) {
             accessToken = result.access_token;
@@ -18011,9 +18032,9 @@
             // Show welcome success modal
             modalIcon.className = 'ss-modal-icon success';
             modalIcon.innerHTML = '<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
-            modalTitle.textContent = 'Welcome to Sales Hub!';
+            modalTitle.textContent = 'Account created!';
             modalAP.style.display = 'none';
-            modalSub.textContent = "Your account has been created and you're signed in. You're all set to start submitting deals and tracking your KPIs.";
+            modalSub.textContent = "Your account has been created and is pending approval by an admin. You'll get full access to the Sales Hub as soon as you're approved — we've been notified.";
             modalBtns.innerHTML = '<button class="ss-modal-btn primary" id="signupWelcomeClose">Let\'s Go</button>';
             modal.classList.add('open');
             document.getElementById('signupWelcomeClose').addEventListener('click', () => { modal.classList.remove('open'); });
@@ -21697,13 +21718,6 @@
             { slug: 'purchase-licenses', title: 'How to Purchase Additional Insurance Licenses', file: 'How to Purchase State Insurance Licenses.mp4', duration: 0, desc: '', resources: [NIPR_LINK] },
             { slug: 'after-state-license', title: 'After State License, Next Steps Checklist', file: 'After State License, Next Steps Checklist 📄.mp4', duration: 107, desc: '', resources: [CARRIER_CONTRACT_EMAILS] }
           ]},
-          { title: 'CRM Guide', videos: [
-            { slug: 'how-to-buy-crm', title: 'How to Buy CRM', file: 'How to Buy CRM.mp4', duration: 166, desc: '', resources: [CRM_LINK] },
-            { slug: 'crm-setup', title: 'CRM Setup', file: 'CRM Setup.mp4', duration: 974, desc: '', resources: [] },
-            { slug: 'calendar-setup', title: 'Calendar Setup', file: 'Calendar Setup.mp4', duration: 342, desc: '', resources: [] },
-            { slug: 'wavv-setup', title: 'WAVV Setup', file: 'WAVV Setup.mp4', duration: 266, desc: '', resources: [WAVV, WAVV_COURSE] },
-            { slug: 'atp-registration', title: 'A2P Guide', file: 'How to Complete ATP Registration Setup ✅.mp4', duration: 164, desc: '', resources: [A2P_GUIDE] }
-          ]},
           { title: 'Sales & Presentation', videos: [
             { slug: 'call-intro-script', title: 'Intro', file: 'Mastering Your Call Intro Script.mp4', duration: 1496, desc: '', resources: [SCRIPT_PDF] },
             { slug: 'insurance-presentation', title: 'Presentation', file: 'Insurance Presentation.mp4', duration: 1523, desc: '', resources: [SCRIPT_PDF] },
@@ -21713,6 +21727,16 @@
             { slug: 'product-selection', title: 'Product Selection', file: 'Product Selection.mp4', duration: 828, desc: '', resources: [] },
             { slug: 'underwriting-guide', title: 'Underwriting Guide', file: 'Underwriting Guide.mp4', duration: 1154, desc: '', resources: [] },
             { slug: 'carrier-applications-portal', title: 'Carrier Applications, Quotes, and Portal Tips', file: 'Carrier Applications, Quotes, and Portal Tips.mp4', duration: 533, desc: '', resources: [] }
+          ]},
+          // CRM Guide is OPTIONAL — not required to pass the training gate. It comes
+          // after the three required sections (New Agent Steps, Licensing, Sales &
+          // Presentation). `optional: true` excludes it from the gate's "all done" check.
+          { title: 'CRM Guide', optional: true, videos: [
+            { slug: 'how-to-buy-crm', title: 'How to Buy CRM', file: 'How to Buy CRM.mp4', duration: 166, desc: '', resources: [CRM_LINK] },
+            { slug: 'crm-setup', title: 'CRM Setup', file: 'CRM Setup.mp4', duration: 974, desc: '', resources: [] },
+            { slug: 'calendar-setup', title: 'Calendar Setup', file: 'Calendar Setup.mp4', duration: 342, desc: '', resources: [] },
+            { slug: 'wavv-setup', title: 'WAVV Setup', file: 'WAVV Setup.mp4', duration: 266, desc: '', resources: [WAVV, WAVV_COURSE] },
+            { slug: 'atp-registration', title: 'A2P Guide', file: 'How to Complete ATP Registration Setup ✅.mp4', duration: 164, desc: '', resources: [A2P_GUIDE] }
           ]}
         ]
       };
@@ -21727,6 +21751,9 @@
       let granted = true;               // existing account → full access (default true until known)
       let trainingComplete = true;      // Hub gate flag
       let dbGranted = false;            // admin "Grant access" override (agent_profiles.training_complete)
+      let dbApproved = true;            // admin approval (agent_profiles.approved). Fail OPEN: only false
+                                        // when the DB explicitly says approved=false (new unapproved signup).
+      let isApproved = true;            // computed gate flag — false blocks the whole hub with an "awaiting approval" screen
 
       // ── DOM ──
       const $ = (id) => document.getElementById(id);
@@ -21824,8 +21851,8 @@
         try {
           // Honor an admin "Grant access" (agent_profiles.training_complete) for THIS user.
           await window.ensureValidAccessToken?.();
-        const pr = await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?user_id=eq.' + window.currentUser.id + '&select=training_complete', { headers: { apikey: SUPABASE_KEY, Authorization: 'Bearer ' + (window.accessToken || SUPABASE_KEY) } });
-          if (pr.ok) { const prows = await pr.json(); dbGranted = Array.isArray(prows) && prows[0] && prows[0].training_complete === true; }
+        const pr = await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?user_id=eq.' + window.currentUser.id + '&select=training_complete,approved', { headers: { apikey: SUPABASE_KEY, Authorization: 'Bearer ' + (window.accessToken || SUPABASE_KEY) } });
+          if (pr.ok) { const prows = await pr.json(); const prow = Array.isArray(prows) ? prows[0] : null; dbGranted = !!(prow && prow.training_complete === true); dbApproved = !(prow && prow.approved === false); }
         } catch (e) { /* offline → no override */ }
       }
       async function postComplete(slug) {
@@ -21847,9 +21874,14 @@
         const ct = (u && u.created_at) ? Date.parse(u.created_at) : NaN;
         // Fail OPEN: no user, missing/unparseable date → treat as existing rep (full access).
         granted = !u || isNaN(ct) || ct < Date.parse(GO_LIVE_CUTOFF) || dbGranted;
-        const all = flat();
-        const allDone = all.length > 0 && all.every(o => completed.has(o.v.slug));
+        // Only the REQUIRED sections (not the optional CRM Guide) gate access.
+        const requiredVids = curriculum.sections.filter(s => !s.optional).flatMap(s => s.videos);
+        const allDone = requiredVids.length > 0 && requiredVids.every(v => completed.has(v.slug));
         trainingComplete = granted || allDone;
+        // Approval takes precedence over training: an unapproved account is
+        // blocked entirely. Fail OPEN — approved unless the DB explicitly said
+        // approved=false, and the admin/owner is always approved.
+        isApproved = !u || dbApproved || (u && u.id === ADMIN_USER_ID);
       }
       function ensureGate() {
         if (gateEl) return gateEl;
@@ -21869,10 +21901,36 @@
         gateEl.querySelector('.kf-gate-btn').addEventListener('click', () => { if (typeof activatePanel === 'function') activatePanel('training'); });
         return gateEl;
       }
+      function ensureApprovalGate() {
+        let el = document.getElementById('approvalGate');
+        if (el) return el;
+        el = document.createElement('div');
+        el.className = 'ss-training-gate';   // reuse the training-gate styling
+        el.id = 'approvalGate';
+        el.innerHTML =
+          '<div class="ss-training-gate-box">' +
+            '<div class="kf-gate-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>' +
+            '<h3 class="kf-gate-title">Account awaiting approval</h3>' +
+            '<p class="kf-gate-sub">Your account was created and is pending approval by an admin. You’ll get full access as soon as you’re approved — no need to do anything.</p>' +
+          '</div>';
+        document.body.appendChild(el);
+        return el;
+      }
       function applyTrainingGate() {
+        const ag = ensureApprovalGate();
         const g = ensureGate();
         const sidebarBtns = document.querySelectorAll('.ss-sidebar-btn[data-panel]');
         const externalLinks = document.querySelectorAll('.ss-nav-links a[href^="http"], .ss-mobile-menu a[href^="http"]');
+        // Approval gate takes precedence — an unapproved account is fully blocked
+        // (not even training or profile), until an admin approves it.
+        if (!isApproved) {
+          g.classList.remove('active');
+          ag.classList.add('active');
+          sidebarBtns.forEach(b => b.classList.add('training-locked'));
+          externalLinks.forEach(a => a.classList.add('training-locked'));
+          return;
+        }
+        ag.classList.remove('active');
         if (trainingComplete) {
           g.classList.remove('active');
           sidebarBtns.forEach(b => b.classList.remove('training-locked'));
@@ -22638,7 +22696,7 @@
       }
       async function fetchAgentProfiles() {
         await window.ensureValidAccessToken?.();
-        const res = await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?select=user_id,agent_name,comp_level,training_complete,annual_goal,manager_user_id,is_manager,state_licenses,carrier_numbers,status&order=agent_name.asc', { headers: authReadHeaders() });
+        const res = await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?select=user_id,agent_name,comp_level,training_complete,annual_goal,manager_user_id,is_manager,state_licenses,carrier_numbers,status,approved&order=agent_name.asc', { headers: authReadHeaders() });
         if (!res.ok) return [];
         return res.json();
       }
@@ -22802,6 +22860,7 @@
             status: p.status || 'active',
             compLevel: p.comp_level || null,
             trainingComplete: p.training_complete === true,
+            approved: p.approved !== false,   // fail-open: treat missing/true as approved
             annualGoal: parseFloat(p.annual_goal) || 0,
             apYTD, apMTD, apWTD,
             dealsYTD, dealsMTD, dealsWTD,
@@ -24335,6 +24394,42 @@
           reload();
         };
 
+        // Approve (or un-approve) a new signup. Flips agent_profiles.approved;
+        // an unapproved account is blocked at the "awaiting approval" gate.
+        const toggleApprove = async (uid, current) => {
+          const next = !current;
+          const prof = profiles.find(p => p.user_id === uid) || {};
+          const who = prof.agent_name || 'this agent';
+          if (typeof window.showConfirmModal === 'function') {
+            const ok = await window.showConfirmModal({
+              title: next ? 'Approve this account?' : 'Revoke approval?',
+              message: next
+                ? 'Approve ' + who + '? They’ll be able to sign in and use the Sales Hub (subject to the training gate).'
+                : 'Revoke ' + who + '’s approval? They keep their login but are blocked at the "awaiting approval" screen until you approve them again.',
+              confirmText: next ? 'Approve' : 'Revoke approval',
+              cancelText: 'Cancel',
+              variant: next ? 'info' : 'danger',
+              icon: next ? '✓' : '⚠️'
+            });
+            if (!ok) return;
+          }
+          try {
+            await window.ensureValidAccessToken?.();
+            const r = await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?user_id=eq.' + uid, {
+              method: 'PATCH', headers: writeHdrs({ Prefer: 'return=minimal' }),
+              body: JSON.stringify({ approved: next })
+            });
+            if (!r.ok && r.status !== 204) {
+              const txt = await r.text().catch(() => '');
+              console.error('[approve] PATCH failed', r.status, txt);
+              try { alert('Could not update approval (' + r.status + ').'); } catch (_) {}
+              return;
+            }
+            if (typeof reload === 'function') reload();
+            else if (typeof refresh === 'function') refresh();
+          } catch (e) { console.error('[approve] threw', e); }
+        };
+
         const toggleAccess = async (uid, current) => {
           const next = !current;
           const prof = profiles.find(p => p.user_id === uid) || {};
@@ -24421,8 +24516,9 @@
         const [deleting, setDeleting] = useState(false);
         const [deleteCount, setDeleteCount] = useState(null); // # policies (null = loading)
         const [alsoDeleteData, setAlsoDeleteData] = useState(false);
+        const [archiveInstead, setArchiveInstead] = useState(false); // no-data agent: archive (keep profile) instead of delete
         const [confirmText, setConfirmText] = useState('');
-        const askDelete = (p) => { setDeleteFor(p); setDeleteCount(null); setAlsoDeleteData(false); setConfirmText(''); };
+        const askDelete = (p) => { setDeleteFor(p); setDeleteCount(null); setAlsoDeleteData(false); setArchiveInstead(false); setConfirmText(''); };
 
         // Count the agent's policies whenever the remove dialog opens.
         useEffect(() => {
@@ -24444,7 +24540,8 @@
           const cnt = deleteCount || 0;
           const hasPolicies = cnt > 0;
           if (hasPolicies && alsoDeleteData && confirmText.trim().toUpperCase() !== 'DELETE') return;
-          const rpc = !hasPolicies ? 'delete_agent_user'
+          const rpc = (!hasPolicies && archiveInstead) ? 'archive_agent_user'
+                    : !hasPolicies ? 'delete_agent_user'
                     : alsoDeleteData ? 'delete_agent_user_and_data'
                     : 'archive_agent_user';
           setDeleting(true);
@@ -24562,6 +24659,8 @@
                             <td>
                               {p.status === 'inactive' ? (
                                 <span className="tp-agent-status" style={{background:'color-mix(in oklch, var(--tp-neg) 16%, transparent)', color:'var(--tp-neg)'}}>Archived</span>
+                              ) : p.approved === false ? (
+                                <span className="tp-agent-status" style={{background:'color-mix(in oklch, #f59e0b 18%, transparent)', color:'#b45309'}}>Awaiting approval</span>
                               ) : (
                                 <span className={'tp-agent-status ' + (isComplete ? 'active' : 'training')}>
                                   {isComplete ? 'Active' : 'In training'}
@@ -24593,6 +24692,7 @@
               const live = profiles.find(x => x.user_id === editFor.user_id) || editFor;
               const draft = draftFor(editFor.user_id, live);
               const isComplete = live.training_complete === true;
+              const isApproved = live.approved !== false;   // fail-open: missing/true = approved
               // Granted access counts as all videos complete.
               const vCount = isComplete ? TOTAL_TRAINING_VIDEOS : (videoCounts[editFor.user_id] || 0);
               const pct = Math.min(100, Math.round((vCount / TOTAL_TRAINING_VIDEOS) * 100));
@@ -24643,6 +24743,20 @@
                         </div>
                         <div className="tp-progress-track" style={{marginTop:10}}>
                           <div className="tp-progress-fill" style={{width:pct + '%', background: pct >= 100 ? 'var(--rb-green)' : 'linear-gradient(90deg, var(--rb-purple), var(--rb-blue))'}}></div>
+                        </div>
+                      </div>
+                      <div className="hv-form-section">
+                        <div className="hv-form-section-hd">
+                          <div>
+                            <div className="hv-form-section-lbl">Account approval</div>
+                            <div className="hv-form-section-meta">
+                              {isApproved ? 'Approved — can sign in and use the hub.' : 'New signup, awaiting your approval. They’re blocked until you approve.'}
+                            </div>
+                          </div>
+                          <button type="button" className={'hv-btn ' + (isApproved ? 'danger' : 'primary')}
+                            onClick={() => toggleApprove(editFor.user_id, isApproved)}>
+                            {isApproved ? 'Revoke approval' : 'Approve'}
+                          </button>
                         </div>
                       </div>
                       <div className="hv-form-section">
@@ -24728,7 +24842,7 @@
               const loadingCnt = deleteCount === null;
               const cnt = deleteCount || 0;
               const hasPolicies = cnt > 0;
-              const willHardDelete = !hasPolicies || alsoDeleteData;
+              const willHardDelete = (!hasPolicies && !archiveInstead) || alsoDeleteData;
               const needType = hasPolicies && alsoDeleteData;
               const mgr = deleteFor.manager_user_id ? ((profiles.find(x => x.user_id === deleteFor.manager_user_id) || {}).agent_name || 'their manager') : 'top of org';
               const canConfirm = !loadingCnt && !deleting && (!needType || confirmText.trim().toUpperCase() === 'DELETE');
@@ -24741,12 +24855,30 @@
                       <p style={{margin:0, color:'var(--tp-ink-2)'}}>Checking their policies…</p>
                     ) : !hasPolicies ? (
                       <>
-                        <p style={{margin:'0 0 10px'}}><b>No policies on file — safe to fully delete.</b></p>
-                        <ul style={{margin:'0 0 12px', paddingLeft:18, color:'var(--tp-ink-2)', fontSize:13, lineHeight:1.6}}>
-                          <li><b style={{color:'var(--tp-ink-1)'}}>Remove</b> their login, profile, daily KPI activity, and training</li>
-                          <li><b style={{color:'var(--tp-ink-1)'}}>Reparent</b> any reports to <b style={{color:'var(--tp-ink-1)'}}>{mgr}</b></li>
-                        </ul>
-                        <p style={{margin:0, color:'var(--tp-ink-3)', fontSize:12}}>This cannot be undone.</p>
+                        {archiveInstead ? (
+                          <>
+                            <p style={{margin:'0 0 10px'}}>No policies on file. This agent will be <b>archived</b>:</p>
+                            <ul style={{margin:'0 0 12px', paddingLeft:18, color:'var(--tp-ink-2)', fontSize:13, lineHeight:1.6}}>
+                              <li><b style={{color:'var(--tp-ink-1)'}}>Disable</b> their login immediately + hide from all dashboards</li>
+                              <li><b style={{color:'var(--tp-ink-1)'}}>Keep</b> their profile so you can restore them later</li>
+                              <li><b style={{color:'var(--tp-ink-1)'}}>Reparent</b> any reports to <b style={{color:'var(--tp-ink-1)'}}>{mgr}</b></li>
+                              <li><span style={{color:'var(--tp-ink-3)'}}>Reversible — you can unarchive them later</span></li>
+                            </ul>
+                          </>
+                        ) : (
+                          <>
+                            <p style={{margin:'0 0 10px'}}><b>No policies on file — safe to fully delete.</b></p>
+                            <ul style={{margin:'0 0 12px', paddingLeft:18, color:'var(--tp-ink-2)', fontSize:13, lineHeight:1.6}}>
+                              <li><b style={{color:'var(--tp-ink-1)'}}>Remove</b> their login, profile, daily KPI activity, and training</li>
+                              <li><b style={{color:'var(--tp-ink-1)'}}>Reparent</b> any reports to <b style={{color:'var(--tp-ink-1)'}}>{mgr}</b></li>
+                            </ul>
+                            <p style={{margin:'0 0 12px', color:'var(--tp-ink-3)', fontSize:12}}>This cannot be undone.</p>
+                          </>
+                        )}
+                        <label style={{display:'flex', alignItems:'flex-start', gap:8, fontSize:13, color:'var(--tp-ink-2)', cursor:'pointer', padding:'10px 12px', border:'1px solid var(--tp-hairline)', borderRadius:8}}>
+                          <input type="checkbox" checked={archiveInstead} onChange={e => setArchiveInstead(e.target.checked)} style={{marginTop:2, flex:'0 0 auto'}} />
+                          <span><b style={{color:'var(--tp-ink-1)'}}>Archive instead of deleting</b> — keep their profile and just revoke access, so you can bring them back later (for someone who may return).</span>
+                        </label>
                       </>
                     ) : (
                       <>
