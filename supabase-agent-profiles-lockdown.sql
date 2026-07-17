@@ -47,11 +47,10 @@ create policy "Admin and upline read profiles" on public.agent_profiles
 
 
 -- ############################################################################
--- SECTION 2 — DO NOT RUN YET. The lock. Run only AFTER the site code is
--- deployed + verified (names via roster view; comp/own reads via login token).
+-- SECTION 2 — the lock. APPLIED after the code was deployed + verified.
 -- ############################################################################
---
--- begin;
--- drop policy if exists "Anon read all profiles" on public.agent_profiles;
--- commit;
+
+begin;
+drop policy if exists "Anon read all profiles" on public.agent_profiles;
+commit;
 -- ============================================================================
