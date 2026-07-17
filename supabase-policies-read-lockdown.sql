@@ -63,19 +63,19 @@ create policy "Admin and upline read" on public.policies
 
 
 -- ############################################################################
--- SECTION 3 — DO NOT RUN YET. The actual read lock. Run only AFTER the website
--- code has been deployed + verified (leaderboard via feed, all deal reads via
--- login). Left commented for review.
+-- SECTION 3 — the read lock. APPLIED after the website code was deployed and
+-- verified (leaderboard via feed; all deal reads via login; admin screens
+-- confirmed working; exposed key confirmed unable to read raw deals).
 -- ############################################################################
---
--- begin;
--- -- Remove the anonymous "read everything" hole. After this, reading a raw
--- -- deal requires a login, and RLS returns: own rows for a rep, downline for a
--- -- manager, everything for the admin. The leaderboard reads the safe feed.
--- drop policy if exists "Allow reads" on public.policies;
---
--- -- Tidy: strip the default PUBLIC execute on the helper so only logged-in
--- -- users can call it (it only ever returns false for anon anyway).
--- revoke execute on function public.kf_is_upline_of(uuid) from public, anon;
--- commit;
+
+begin;
+-- Remove the anonymous "read everything" hole. After this, reading a raw deal
+-- requires a login, and RLS returns: own rows for a rep, downline for a
+-- manager, everything for the admin. The leaderboard reads the safe feed.
+drop policy if exists "Allow reads" on public.policies;
+
+-- Tidy: strip the default PUBLIC execute on the helper so only logged-in users
+-- can call it (it only ever returns false for anon anyway).
+revoke execute on function public.kf_is_upline_of(uuid) from public, anon;
+commit;
 -- ============================================================================
