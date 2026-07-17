@@ -15250,14 +15250,24 @@
           if (d.user) currentUser = d.user;
           localStorage.setItem('sb_access_token', d.access_token);
           if (d.refresh_token) localStorage.setItem('sb_refresh_token', d.refresh_token);
+          // Mirror the refreshed token to window so the React IIFE write paths
+          // (policies submit/edit/delete) send the CURRENT token, not the stale
+          // one captured at login. updateAuthUI() isn't called on refresh, so
+          // without this the mirror at line ~15096 would go stale after an hour.
+          window.accessToken = accessToken;
+          window.currentUser = currentUser;
         } else {
           // Refresh failed — wipe the bad tokens so the next login flow starts clean
           accessToken = null;
           localStorage.removeItem('sb_access_token');
           localStorage.removeItem('sb_refresh_token');
+          window.accessToken = null;
         }
       } catch (e) { console.error('Token refresh failed:', e); }
     }
+    // Exposed so the React write paths can refresh an expiring token before a
+    // policies write (an expired JWT 401s even while RLS is still open).
+    window.ensureValidAccessToken = ensureValidAccessToken;
 
     // Logout
     function doLogout() {
@@ -16317,9 +16327,12 @@
         result = { ok: false, error: err.message };
       }
       if (result.ok) {
-        // Check Discord toggle — if off, skip the webhook entirely
+        // Check Discord toggle — if off, skip the webhook entirely. Also never
+        // notify the team Discord from a dev/localhost session, so submit tests
+        // don't spam the channel.
         const discordToggle = document.getElementById('discordNotifyToggle');
-        const shouldPost = discordToggle ? discordToggle.checked : true;
+        const isDevHost = /^(localhost|127\.0\.0\.1|\[::1\]|0\.0\.0\.0)$/.test(location.hostname);
+        const shouldPost = (discordToggle ? discordToggle.checked : true) && !isDevHost;
         // ─── DISCORD WEBHOOK ───
         try {
           if (!shouldPost) throw new Error('Discord notify disabled for this submission');
@@ -22478,6 +22491,16 @@
       // this IIFE runs in the same window so they're accessible via globalThis.
       const HDRS = { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY };
       const HDRS_WRITE = Object.assign({}, HDRS, { 'Content-Type': 'application/json', 'Prefer': 'return=minimal' });
+      // Phase 1 of the policies RLS lockdown: writes to `policies` go out as the
+      // signed-in rep (their JWT) instead of the anon key, so row-level security
+      // can enforce "a rep edits/deletes only their own deals." Call
+      // window.ensureValidAccessToken() first to refresh an expiring token, then
+      // use these headers. Falls back to the anon key only when signed out — the
+      // global auth gate prevents that for real users. See
+      // supabase-policies-rls-lockdown.sql. Reads still use HDRS (anon) for now.
+      const policyWriteHeaders = () => Object.assign({}, HDRS_WRITE, {
+        'Authorization': 'Bearer ' + (window.accessToken || SUPABASE_KEY)
+      });
       const TOTAL_TRAINING_VIDEOS = 25;
 
       // All carriers we currently sell — extends the design's 5-color rainbow
@@ -25155,8 +25178,9 @@
 
         const handleSave = async (draft) => {
           try {
+            await window.ensureValidAccessToken?.();
             await fetch(SUPABASE_URL + '/rest/v1/policies?id=eq.' + draft.id, {
-              method: 'PATCH', headers: HDRS_WRITE,
+              method: 'PATCH', headers: policyWriteHeaders(),
               body: JSON.stringify({
                 client_name: draft.client_name,
                 phone: draft.phone || null,
@@ -25178,7 +25202,8 @@
         const handleDelete = async (p) => {
           if (!confirm('Delete this policy permanently?')) return;
           try {
-            await fetch(SUPABASE_URL + '/rest/v1/policies?id=eq.' + p.id, { method: 'DELETE', headers: HDRS_WRITE });
+            await window.ensureValidAccessToken?.();
+            await fetch(SUPABASE_URL + '/rest/v1/policies?id=eq.' + p.id, { method: 'DELETE', headers: policyWriteHeaders() });
             reload();
           } catch (e) { console.error('Policy delete failed:', e); }
         };
@@ -26345,9 +26370,10 @@
           }
           setSaving(true);
           try {
+            await window.ensureValidAccessToken?.();
             const res = await fetch(SUPABASE_URL + '/rest/v1/policies', {
               method: 'POST',
-              headers: HDRS_WRITE,
+              headers: policyWriteHeaders(),
               body: JSON.stringify({
                 user_id: userId || null,
                 sales_rep: agentName,
@@ -26405,13 +26431,20 @@
                 effectiveLine
               ].filter(Boolean).join('\n');
 
-              const dRes = await fetch(DISCORD_WEBHOOK, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ content: discordMsg })
-              });
-              if (!dRes.ok) console.error('Discord webhook returned', dRes.status, await dRes.text());
-              else console.log('Discord webhook posted (', dRes.status, ')');
+              // Never notify the team Discord from a dev/localhost session, so
+              // submit tests don't spam the channel. (This form has no notify
+              // toggle, so the host check is the guard.)
+              if (/^(localhost|127\.0\.0\.1|\[::1\]|0\.0\.0\.0)$/.test(location.hostname)) {
+                console.log('[dev] Discord webhook skipped on localhost');
+              } else {
+                const dRes = await fetch(DISCORD_WEBHOOK, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ content: discordMsg })
+                });
+                if (!dRes.ok) console.error('Discord webhook returned', dRes.status, await dRes.text());
+                else console.log('Discord webhook posted (', dRes.status, ')');
+              }
             } catch (e) { console.error('Discord webhook failed:', e); }
 
             setToast({ kind: 'ok', msg: '✓ Deal submitted' });
@@ -29334,8 +29367,9 @@
 
         const handleSave = async (draft) => {
           try {
+            await window.ensureValidAccessToken?.();
             await fetch(SUPABASE_URL + '/rest/v1/policies?id=eq.' + draft.id, {
-              method: 'PATCH', headers: HDRS_WRITE,
+              method: 'PATCH', headers: policyWriteHeaders(),
               body: JSON.stringify({
                 client_name: draft.client_name,
                 phone: draft.phone || null,
@@ -29355,7 +29389,8 @@
         const handleDelete = async (p) => {
           if (!confirm('Delete this policy permanently?')) return;
           try {
-            await fetch(SUPABASE_URL + '/rest/v1/policies?id=eq.' + p.id, { method: 'DELETE', headers: HDRS_WRITE });
+            await window.ensureValidAccessToken?.();
+            await fetch(SUPABASE_URL + '/rest/v1/policies?id=eq.' + p.id, { method: 'DELETE', headers: policyWriteHeaders() });
             setOpenPolicy(null);
             reload();
           } catch (e) { console.error('Policy delete failed:', e); }
@@ -29367,8 +29402,9 @@
           const prev = policies;
           setPolicies(rows => rows.map(x => x.id === p.id ? Object.assign({}, x, body) : x));
           try {
+            await window.ensureValidAccessToken?.();
             const res = await fetch(SUPABASE_URL + '/rest/v1/policies?id=eq.' + p.id, {
-              method: 'PATCH', headers: HDRS_WRITE, body: JSON.stringify(body)
+              method: 'PATCH', headers: policyWriteHeaders(), body: JSON.stringify(body)
             });
             if (!res.ok) throw new Error('PATCH failed: ' + res.status);
           } catch (e) {
