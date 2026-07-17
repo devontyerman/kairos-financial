@@ -49,14 +49,13 @@ create policy "KPI update own or admin" on public.daily_kpis
 
 
 -- ############################################################################
--- SECTION 2 — DO NOT RUN YET. The lock. Run only AFTER the website code is
--- deployed + verified (all KPI reads/writes on the login token).
+-- SECTION 2 — the lock. APPLIED after the code was deployed + verified.
 -- ############################################################################
---
--- begin;
--- drop policy if exists "Anon can read KPIs"   on public.daily_kpis;
--- drop policy if exists "Anyone can read KPIs" on public.daily_kpis;  -- public/true — also a hole
--- drop policy if exists "Anon can insert KPIs" on public.daily_kpis;
--- drop policy if exists "Anon can update KPIs" on public.daily_kpis;
--- commit;
+
+begin;
+drop policy if exists "Anon can read KPIs"   on public.daily_kpis;
+drop policy if exists "Anyone can read KPIs" on public.daily_kpis;  -- public/true — also a hole
+drop policy if exists "Anon can insert KPIs" on public.daily_kpis;
+drop policy if exists "Anon can update KPIs" on public.daily_kpis;
+commit;
 -- ============================================================================
