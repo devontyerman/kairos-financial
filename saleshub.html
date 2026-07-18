@@ -2910,19 +2910,32 @@
     #tpatab-performance .tp-legend > div { display: flex; align-items: center; gap: 6px; }
 
     /* KPI panel */
-    #tpatab-performance .tp-kpi-panel { grid-column: span 7; }
+    #tpatab-performance .tp-kpi-panel { grid-column: span 7; display: flex; flex-direction: column; }
     #tpatab-performance .tp-kpi-grid {
       display: grid; grid-template-columns: repeat(5, 1fr); gap: 1px;
       background: var(--tp-hairline);
       border: 1px solid var(--tp-hairline);
       border-radius: var(--tp-radius);
       overflow: hidden;
+      flex: 1; grid-auto-rows: minmax(150px, 1fr);
     }
     #tpatab-performance .tp-kpi-cell {
       background: var(--tp-surface);
-      padding: 16px 18px 18px;
-      display: flex; flex-direction: column; gap: 8px;
-      position: relative; min-height: 110px;
+      padding: 34px 14px 16px;
+      display: flex; flex-direction: column; gap: 6px;
+      justify-content: center; align-items: center; text-align: center;
+      position: relative; min-height: 0; min-width: 0;
+    }
+    /* Uniform internal rhythm so every box lines up: the label is pinned to the
+       same top position in every cell (so titles never drift to different
+       heights), and the data below is vertically centered. A reserved two-line
+       slot for the sub keeps short/long subs at the same height. */
+    #tpatab-performance .tp-kpi-cell .tp-kpi-lbl {
+      position: absolute; top: 14px; left: 12px; right: 12px; margin: 0;
+      white-space: nowrap; justify-content: center;
+    }
+    #tpatab-performance .tp-kpi-cell:not(.featured) .tp-kpi-sub {
+      min-height: 2.6em; display: flex; align-items: center; justify-content: center;
     }
     #tpatab-performance .tp-kpi-lbl {
       font-family: var(--tp-mono); font-size: 10px;
@@ -2940,6 +2953,9 @@
     #tpatab-performance .tp-kpi-cell.featured { grid-column: span 1; background: var(--tp-surface-2); }
     #tpatab-performance .tp-kpi-cell.featured .tp-kpi-val { font-size: 30px; }
     #tpatab-performance .tp-ring-wrap { display: flex; align-items: center; gap: 14px; }
+    /* In the uniform KPI grid the columns are narrow, so stack the ring above
+       its text (instead of beside it) to stay centered and uncramped. */
+    #tpatab-performance .tp-kpi-cell.featured .tp-ring-wrap { flex-direction: column; gap: 8px; }
     #tpatab-performance .tp-ring-text { display: flex; flex-direction: column; gap: 2px; }
 
     /* ─── Agent Hierarchy tab ──────────────────────────────────────────
@@ -7509,6 +7525,43 @@
       background: var(--lb-surface-3); color: var(--lb-ink-1);
       box-shadow: 0 1px 0 var(--lb-hairline-strong) inset;
     }
+    /* Timeframe dropdown (matches the policies-page dropdown, in leaderboard tokens) */
+    #panel-leaderboard .lb-filter-group { display: flex; flex-direction: column; gap: 6px; }
+    #panel-leaderboard .lb-filter-label-sm {
+      font-family: var(--lb-mono); font-size: 9px;
+      text-transform: uppercase; letter-spacing: 0.1em; color: var(--lb-ink-3);
+    }
+    #panel-leaderboard .lb-dropdown { position: relative; z-index: 1; }
+    #panel-leaderboard .lb-dropdown.open { z-index: 200; }
+    #panel-leaderboard .lb-dropdown-btn {
+      appearance: none; display: inline-flex; align-items: center; gap: 8px;
+      padding: 8px 12px; background: var(--lb-surface); border: 1px solid var(--lb-hairline);
+      color: var(--lb-ink-1); cursor: pointer; border-radius: 8px;
+      font-family: var(--lb-sans); font-size: 12px; min-width: 180px;
+      justify-content: space-between; transition: all 120ms;
+    }
+    #panel-leaderboard .lb-dropdown-btn:hover { border-color: var(--lb-hairline-strong); }
+    #panel-leaderboard .lb-dropdown-btn .chev { color: var(--lb-ink-3); display: inline-flex; }
+    #panel-leaderboard .lb-dropdown-panel {
+      position: absolute; top: calc(100% + 4px); left: 0; z-index: 200;
+      background: var(--lb-surface); border: 1px solid var(--lb-hairline-strong);
+      border-radius: 8px; padding: 6px; min-width: 200px; max-height: 320px; overflow-y: auto;
+      box-shadow: 0 16px 40px rgba(0,0,0,0.4), 0 4px 12px rgba(0,0,0,0.2);
+    }
+    #panel-leaderboard .lb-dropdown-panel .opt {
+      display: flex; align-items: center; gap: 10px; padding: 8px 10px;
+      border-radius: 5px; cursor: pointer; font-size: 12px; color: var(--lb-ink-1);
+    }
+    #panel-leaderboard .lb-dropdown-panel .opt:hover { background: var(--lb-surface-2); }
+    #panel-leaderboard .lb-dropdown-panel .opt.on { background: color-mix(in oklch, var(--rb-blue) 10%, var(--lb-surface-2)); }
+    #panel-leaderboard .lb-dropdown-panel .opt-radio {
+      width: 14px; height: 14px; border-radius: 99px;
+      border: 1px solid var(--lb-hairline-strong); flex-shrink: 0; position: relative;
+    }
+    #panel-leaderboard .lb-dropdown-panel .opt.on .opt-radio { border-color: var(--rb-blue); }
+    #panel-leaderboard .lb-dropdown-panel .opt.on .opt-radio::after {
+      content: ""; position: absolute; inset: 3px; border-radius: 99px; background: var(--rb-blue);
+    }
     #panel-leaderboard .lb-search {
       display: inline-flex; align-items: center; gap: 8px;
       padding: 7px 12px;
@@ -8679,15 +8732,15 @@
       flex-wrap: wrap; margin-bottom: 18px;
       position: relative; z-index: 50;
     }
-    #tpatab-policies .tp-filter-group { display: flex; flex-direction: column; gap: 6px; }
-    #tpatab-policies .tp-filter-label-sm {
+    #tpatab-policies .tp-filter-group, #tpatab-performance .tp-filter-group { display: flex; flex-direction: column; gap: 6px; }
+    #tpatab-policies .tp-filter-label-sm, #tpatab-performance .tp-filter-label-sm {
       font-family: var(--tp-mono); font-size: 9px;
       text-transform: uppercase; letter-spacing: 0.1em;
       color: var(--tp-ink-4);
     }
-    #tpatab-policies .tp-dropdown { position: relative; z-index: 1; }
-    #tpatab-policies .tp-dropdown.open { z-index: 200; }
-    #tpatab-policies .tp-dropdown-btn {
+    #tpatab-policies .tp-dropdown, #tpatab-performance .tp-dropdown { position: relative; z-index: 1; }
+    #tpatab-policies .tp-dropdown.open, #tpatab-performance .tp-dropdown.open { z-index: 200; }
+    #tpatab-policies .tp-dropdown-btn, #tpatab-performance .tp-dropdown-btn {
       appearance: none;
       display: inline-flex; align-items: center; gap: 8px;
       padding: 8px 12px;
@@ -8699,46 +8752,47 @@
       justify-content: space-between;
       transition: all 120ms;
     }
-    #tpatab-policies .tp-dropdown-btn:hover { border-color: var(--tp-hairline-strong); }
-    #tpatab-policies .tp-dropdown-btn .chev { color: var(--tp-ink-3); display: inline-flex; }
-    #tpatab-policies .tp-dropdown-panel {
-      position: absolute; top: calc(100% + 4px); left: 0;
+    #tpatab-policies .tp-dropdown-btn:hover, #tpatab-performance .tp-dropdown-btn:hover { border-color: var(--tp-hairline-strong); }
+    #tpatab-policies .tp-dropdown-btn .chev, #tpatab-performance .tp-dropdown-btn .chev { color: var(--tp-ink-3); display: inline-flex; }
+    #tpatab-policies .tp-dropdown-panel, #tpatab-performance .tp-dropdown-panel {
+      position: absolute; top: calc(100% + 4px); right: 0;
       z-index: 200;
       background: var(--tp-surface); border: 1px solid var(--tp-hairline-strong);
       border-radius: 8px; padding: 6px;
       min-width: 240px; max-height: 320px; overflow-y: auto;
       box-shadow: 0 16px 40px rgba(0,0,0,0.4), 0 4px 12px rgba(0,0,0,0.2);
     }
-    #tpatab-policies .tp-dropdown-panel .opt {
+    #tpatab-policies .tp-dropdown-panel { left: 0; right: auto; }
+    #tpatab-policies .tp-dropdown-panel .opt, #tpatab-performance .tp-dropdown-panel .opt {
       display: flex; align-items: center; gap: 10px;
       padding: 8px 10px; border-radius: 5px; cursor: pointer;
       font-size: 12px; color: var(--tp-ink-1);
     }
-    #tpatab-policies .tp-dropdown-panel .opt:hover { background: var(--tp-surface-2); }
-    #tpatab-policies .tp-dropdown-panel .opt.on { background: color-mix(in oklch, var(--rb-blue) 10%, var(--tp-surface-2)); }
-    #tpatab-policies .tp-dropdown-panel .opt .check {
+    #tpatab-policies .tp-dropdown-panel .opt:hover, #tpatab-performance .tp-dropdown-panel .opt:hover { background: var(--tp-surface-2); }
+    #tpatab-policies .tp-dropdown-panel .opt.on, #tpatab-performance .tp-dropdown-panel .opt.on { background: color-mix(in oklch, var(--rb-blue) 10%, var(--tp-surface-2)); }
+    #tpatab-policies .tp-dropdown-panel .opt .check, #tpatab-performance .tp-dropdown-panel .opt .check {
       width: 14px; height: 14px; border-radius: 4px;
       border: 1px solid var(--tp-hairline-strong);
       display: grid; place-items: center; flex-shrink: 0;
       background: var(--tp-surface); color: white;
     }
-    #tpatab-policies .tp-dropdown-panel .opt.on .check {
+    #tpatab-policies .tp-dropdown-panel .opt.on .check, #tpatab-performance .tp-dropdown-panel .opt.on .check {
       background: var(--rb-blue); border-color: var(--rb-blue);
     }
-    #tpatab-policies .tp-dropdown-panel .opt-radio {
+    #tpatab-policies .tp-dropdown-panel .opt-radio, #tpatab-performance .tp-dropdown-panel .opt-radio {
       width: 14px; height: 14px; border-radius: 99px;
       border: 1px solid var(--tp-hairline-strong); flex-shrink: 0;
       position: relative;
     }
-    #tpatab-policies .tp-dropdown-panel .opt.on .opt-radio { border-color: var(--rb-blue); }
-    #tpatab-policies .tp-dropdown-panel .opt.on .opt-radio::after {
+    #tpatab-policies .tp-dropdown-panel .opt.on .opt-radio, #tpatab-performance .tp-dropdown-panel .opt.on .opt-radio { border-color: var(--rb-blue); }
+    #tpatab-policies .tp-dropdown-panel .opt.on .opt-radio::after, #tpatab-performance .tp-dropdown-panel .opt.on .opt-radio::after {
       content: ""; position: absolute; inset: 3px;
       border-radius: 99px; background: var(--rb-blue);
     }
-    #tpatab-policies .tp-dropdown-panel .opt .opt-meta {
+    #tpatab-policies .tp-dropdown-panel .opt .opt-meta, #tpatab-performance .tp-dropdown-panel .opt .opt-meta {
       margin-left: auto; font-family: var(--tp-mono); font-size: 10px; color: var(--tp-ink-4);
     }
-    #tpatab-policies .tp-dropdown-panel .sep { height: 1px; background: var(--tp-hairline); margin: 4px 0; }
+    #tpatab-policies .tp-dropdown-panel .sep, #tpatab-performance .tp-dropdown-panel .sep { height: 1px; background: var(--tp-hairline); margin: 4px 0; }
 
     /* KPI strip on the policies tab */
     #tpatab-policies .tp-kpi-strip {
@@ -12982,7 +13036,7 @@
          user never sees it. -->
     <button class="ss-sidebar-btn" data-panel="teamperf" id="teamPerfSidebarBtn" style="display:none;">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 4 4 5-5"/></svg>
-      <span>Manager Dashboard</span>
+      <span>Agency Hub</span>
     </button>
     <button class="ss-sidebar-btn active" data-panel="goals">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
@@ -18012,7 +18066,7 @@
                 method: 'POST', headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ embeds: [{
                   title: '🆕 New signup — pending approval',
-                  description: '**' + name + '**\n' + email + '\n\n[→ Review & approve in the Sales Hub](https://kairos-financial.com/saleshub.html)\nManager Dashboard → Agents → **Approve**.',
+                  description: '**' + name + '**\n' + email + '\n\n[→ Review & approve in the Sales Hub](https://kairos-financial.com/saleshub.html)\nAgency Hub → Agents → **Approve**.',
                   color: 16766720
                 }] })
               }).catch(() => {});
@@ -22589,7 +22643,18 @@
       // palette to cover all 15 by cycling through CSS rainbow tokens.
       const CARRIER_LIST = ['Aetna', 'American Amicable', 'Americo', 'Banner', 'Chubb', 'CICA', 'Corebridge', 'Ethos', 'F&G', 'Foresters', 'InstaBrain', 'KCL', 'Liberty', 'Life X', 'Mutual of Omaha', 'NLG', 'Royal Neighbors', 'Transamerica'];
       const RAINBOW_TOKENS = ['var(--rb-green)', 'var(--rb-yellow)', 'var(--rb-orange)', 'var(--rb-red)', 'var(--rb-purple)', 'var(--rb-blue)'];
+      // Brand color per carrier (overrides the positional rainbow palette).
+      const CARRIER_COLORS = {
+        'Ethos': 'var(--rb-green)',
+        'Mutual of Omaha': 'var(--rb-blue)',
+        'Corebridge': 'var(--rb-purple)',
+        'Transamerica': 'var(--rb-red)',
+        'American Amicable': 'oklch(0.78 0.1 235)',
+        'Aetna': 'var(--rb-purple)',
+        'CICA': 'var(--rb-blue)',
+      };
       const carrierColor = (name) => {
+        if (CARRIER_COLORS[name]) return CARRIER_COLORS[name];
         const idx = CARRIER_LIST.indexOf(name);
         return idx >= 0 ? RAINBOW_TOKENS[idx % RAINBOW_TOKENS.length] : RAINBOW_TOKENS[0];
       };
@@ -23991,8 +24056,8 @@
           { lbl: 'Deposits', val: fmtCurrency(s.deposits, {compact:true}), sub: <>{(s.deposits / Math.max(s.ap, 1) * 100).toFixed(0)}% <span style={{color:'var(--tp-ink-4)'}}>of AP collected</span></>, hue: HUES.deposits },
         ];
         return (
-          <div className="tp-kpi-panel">
-            <div className="tp-card-hd" style={{padding:'0 4px 12px'}}>
+          <div className="tp-card tp-kpi-panel">
+            <div className="tp-card-hd">
               <div className="tp-card-title">KPI tracking · {isTeam ? 'Team total' : scope.name}</div>
               <div className="tp-card-meta">{timeframe} · live from daily KPIs</div>
             </div>
@@ -24049,11 +24114,17 @@
         const rows = (agents || []).filter(a => a.status !== 'inactive' && a.id !== '__norep__').map((a, i) => {
           const v = scopedView(a, timeframe, customRange) || {};
           return {
-            id: a.id, name: a.name, initials: a.initials, color: RAINBOW_TOKENS[i % RAINBOW_TOKENS.length],
+            id: a.id, name: a.name, initials: a.initials, color: '#7c828e',
             dials: v.dials || 0, answers: v.answers || 0, appointments: v.appointments || 0,
             presentations: v.presentations || 0, deals: v.deals || 0, leadSpend: v.leadSpend || 0,
             deposits: v.deposits || 0, ap: v.ap || 0, avgPremium: v.avgPremium || 0, roi: v.roi || 0,
           };
+        }).filter(r => (r.ap || 0) > 0);   // only agents who wrote premium this timeframe
+        // Avatar colors: gold / silver / bronze for the top 3 premium writers,
+        // one neutral tone for everyone else (random hues were meaningless).
+        const KF_MEDALS = ['#e0b83f', '#b8bcc4', '#c17d45'];
+        [...rows].sort((a, b) => (b.ap || 0) - (a.ap || 0)).forEach((r, i) => {
+          if (i < 3) r.color = KF_MEDALS[i];
         });
         rows.sort((x, y) => {
           if (sortKey === 'name') { const r = String(x.name).localeCompare(String(y.name)); return sortDir === 'asc' ? r : -r; }
@@ -24070,14 +24141,15 @@
         return (
           <div className="tp-card tp-lb" style={{gridColumn:'span 12'}}>
             <div className="tp-lb-hd">
-              <div className="tp-card-title">KPIs by rep · {tfLabel}</div>
-              <div className="tp-card-meta">Each rep's totals for the selected timeframe</div>
+              <div className="tp-card-title">Agent Report · {tfLabel}</div>
+              <div className="tp-card-meta">Ranked by premium written · top to bottom</div>
             </div>
             <div className="tp-rep-scroll">
               <table className="tp-rep-table">
                 <thead>
                   <tr>
                     <th onClick={() => setSort('name')}>Agent {arrow('name')}</th>
+                    <th onClick={() => setSort('ap')}>Premium written {arrow('ap')}</th>
                     <th onClick={() => setSort('dials')}>Dials {arrow('dials')}</th>
                     <th onClick={() => setSort('answers')}>Answers {arrow('answers')}</th>
                     <th onClick={() => setSort('appointments')}>Appts {arrow('appointments')}</th>
@@ -24086,13 +24158,12 @@
                     <th onClick={() => setSort('leadSpend')}>Lead spend {arrow('leadSpend')}</th>
                     <th onClick={() => setSort('deposits')}>Deposits {arrow('deposits')}</th>
                     <th onClick={() => setSort('roi')}>ROI {arrow('roi')}</th>
-                    <th onClick={() => setSort('ap')}>AP written {arrow('ap')}</th>
                     <th onClick={() => setSort('avgPremium')}>Avg premium {arrow('avgPremium')}</th>
                   </tr>
                 </thead>
                 <tbody>
                   {rows.length === 0 ? (
-                    <tr><td colSpan="11" style={{textAlign:'center', color:'var(--tp-ink-3)', padding:'18px 0'}}>No agents yet.</td></tr>
+                    <tr><td colSpan="11" style={{textAlign:'center', color:'var(--tp-ink-3)', padding:'18px 0'}}>No premium written in this timeframe.</td></tr>
                   ) : rows.map(r => (
                     <tr key={r.id}>
                       <td>
@@ -24101,6 +24172,7 @@
                           <span className="tp-agt-name">{r.name}</span>
                         </div>
                       </td>
+                      <td>{fmtCurrency(r.ap, {compact:true})}</td>
                       <td>{fmtNum(r.dials)}</td>
                       <td>{fmtNum(r.answers)}</td>
                       <td>{fmtNum(r.appointments)}</td>
@@ -24109,7 +24181,6 @@
                       <td>{fmtCurrency(r.leadSpend, {compact:true})}</td>
                       <td>{fmtCurrency(r.deposits, {compact:true})}</td>
                       <td style={{color: r.leadSpend > 0 ? (r.roi >= 0 ? 'var(--tp-pos)' : 'var(--tp-neg)') : 'var(--tp-ink-3)'}}>{r.leadSpend > 0 ? ((r.roi >= 0 ? '+' : '') + r.roi.toFixed(0) + '%') : '—'}</td>
-                      <td>{fmtCurrency(r.ap, {compact:true})}</td>
                       <td>{r.avgPremium > 0 ? fmtCurrency(r.avgPremium, {compact:true}) : '—'}</td>
                     </tr>
                   ))}
@@ -24118,6 +24189,7 @@
                   <tfoot>
                     <tr>
                       <td>Team total</td>
+                      <td>{fmtCurrency(tot.ap, {compact:true})}</td>
                       <td>{fmtNum(tot.dials)}</td>
                       <td>{fmtNum(tot.answers)}</td>
                       <td>{fmtNum(tot.appointments)}</td>
@@ -24126,7 +24198,6 @@
                       <td>{fmtCurrency(tot.leadSpend, {compact:true})}</td>
                       <td>{fmtCurrency(tot.deposits, {compact:true})}</td>
                       <td style={{color: tot.leadSpend > 0 ? (totRoi >= 0 ? 'var(--tp-pos)' : 'var(--tp-neg)') : 'var(--tp-ink-3)'}}>{tot.leadSpend > 0 ? ((totRoi >= 0 ? '+' : '') + totRoi.toFixed(0) + '%') : '—'}</td>
-                      <td>{fmtCurrency(tot.ap, {compact:true})}</td>
                       <td>{totAvg > 0 ? fmtCurrency(totAvg, {compact:true}) : '—'}</td>
                     </tr>
                   </tfoot>
@@ -28143,6 +28214,7 @@
         const carriers = Object.entries(carrierMap).map(([name, ap]) => ({ name, ap })).sort((a, b) => b.ap - a.ap);
         const totalCarrierAP = carriers.reduce((s, c) => s + c.ap, 0);
         const carrierColorByName = (name) => {
+          if (CARRIER_COLORS[name]) return CARRIER_COLORS[name];
           const idx = CARRIER_LIST.indexOf(name);
           return idx >= 0 ? RAINBOW_TOKENS[idx % RAINBOW_TOKENS.length] : RAINBOW_TOKENS[0];
         };
@@ -28873,6 +28945,39 @@
         return s % RAINBOW_TOKENS.length;
       }
 
+      function LbDropdown({ label, value, onChange, options, width }) {
+        const [open, setOpen] = useState(false);
+        const ref = useRef(null);
+        useEffect(() => {
+          const onClick = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
+          if (open) document.addEventListener('mousedown', onClick);
+          return () => document.removeEventListener('mousedown', onClick);
+        }, [open]);
+        const sel = options.find(o => o.id === value);
+        const display = sel ? sel.label : 'Select';
+        return (
+          <div className="lb-filter-group">
+            <span className="lb-filter-label-sm">{label}</span>
+            <div className={'lb-dropdown' + (open ? ' open' : '')} ref={ref}>
+              <button className="lb-dropdown-btn" onClick={() => setOpen(v => !v)} style={{minWidth: width || 180}}>
+                <span style={{whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis'}}>{display}</span>
+                <span className="chev"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
+              </button>
+              {open && (
+                <div className="lb-dropdown-panel">
+                  {options.map(op => (
+                    <div key={op.id} className={'opt' + (op.id === value ? ' on' : '')} onClick={() => { onChange(op.id); setOpen(false); }}>
+                      <span className="opt-radio"></span>
+                      <span>{op.label}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        );
+      }
+
       function LeaderboardView() {
         const [theme, setTheme] = useState(lbInitialTheme());
         useEffect(() => kfWatchTheme(setTheme), []); // follow the global skin theme
@@ -29008,11 +29113,8 @@
             </header>
 
             <div className="lb-bar">
-              <div className="lb-tf-segment">
-                {LB_PERIODS.map(p => (
-                  <button key={p.key} className={period === p.key ? 'on' : ''} onClick={() => setPeriod(p.key)}>{p.label}</button>
-                ))}
-              </div>
+              <LbDropdown label="Timeframe" value={period} onChange={setPeriod} width={160}
+                options={LB_PERIODS.map(p => ({ id: p.key, label: p.label }))} />
               <div className="lb-search">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
                 <input type="text" placeholder="Search reps…" value={search} onChange={e => setSearch(e.target.value)} />
