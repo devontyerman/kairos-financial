@@ -884,6 +884,33 @@ th .sort-btn { font-family: var(--mono); font-size: 10px; font-weight: 500; colo
 .inline-date-edit::-webkit-inner-spin-button,
 .inline-date-edit::-webkit-clear-button { display: none; }
 
+/* ─── Inline text (notes) ─── */
+.inline-text {
+  background: transparent;
+  border: 1px dashed transparent;
+  padding: 3px 8px;
+  border-radius: 5px;
+  font-size: 12.5px;
+  color: var(--ink-1);
+  text-align: left;
+  max-width: 320px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.inline-text:hover:not(:disabled) { border-color: var(--hairline-strong); background: var(--surface-2); }
+.inline-text:disabled { cursor: default; }
+.inline-text .muted { color: var(--ink-4); }
+.inline-text-edit {
+  border: 1px solid var(--rb-blue);
+  background: var(--bg);
+  color: var(--ink-1);
+  padding: 4px 8px;
+  border-radius: 5px;
+  outline: none;
+  font-size: 12.5px;
+  width: 240px;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--rb-blue) 18%, transparent);
+}
+
 /* ─── Manual payments panel ─── */
 .manual-section {
   display: flex; flex-direction: column; gap: 14px;
@@ -1795,6 +1822,24 @@ function App() {
       showToast(e.message || 'Could not remove payment.', true);
     }
   }
+  async function adminUpdateManualPayment(id, patch) {
+    const body = {};
+    if ('date' in patch) body.payment_date = patch.date || todayISO();
+    if ('amount' in patch) body.amount = Number(patch.amount) || 0;
+    if ('note' in patch) body.note = patch.note ? patch.note.trim() : null;
+    // Optimistic update
+    setAdminManualPayments(m => m.map(x => x.id === id ? { ...x, ...patch } : x));
+    try {
+      const rows = await supaRest('/deal_tracker_manual_payments?id=eq.' + id, {
+        method: 'PATCH', token: adminToken, body,
+      });
+      const updated = Array.isArray(rows) ? rows[0] : rows;
+      if (updated) setAdminManualPayments(m => m.map(x => x.id === id ? manualPaymentFromRow(updated) : x));
+    } catch (e) {
+      showToast(e.message || 'Update failed; reloading.', true);
+      loadAdmin();
+    }
+  }
 
   // ── Render gates ──
   if (mode === 'gate-rep') {
@@ -1864,6 +1909,7 @@ function App() {
         onRemoveDeal={adminRemoveDeal}
         onAddManualPayment={adminAddManualPayment}
         onRemoveManualPayment={adminRemoveManualPayment}
+        onUpdateManualPayment={adminUpdateManualPayment}
       />
       <Toast t={toast} />
     </div>
@@ -2227,7 +2273,7 @@ function RepRow({ setter, active, onRename, onChangeCode, onRemove }) {
 }
 
 // ============== DASHBOARD ==============
-function Dashboard({ isAdmin, setter, deals, manualPayments = [], loading, onAddDeal, onUpdateDeal, onRemoveDeal, onAddManualPayment, onRemoveManualPayment }) {
+function Dashboard({ isAdmin, setter, deals, manualPayments = [], loading, onAddDeal, onUpdateDeal, onRemoveDeal, onAddManualPayment, onRemoveManualPayment, onUpdateManualPayment }) {
   const [filterStatus, setFilterStatus] = useState('all');
   const [dateFilter, setDateFilter] = useState('all');
   const [search, setSearch] = useState('');
@@ -2469,6 +2515,7 @@ function Dashboard({ isAdmin, setter, deals, manualPayments = [], loading, onAdd
           dateFilterLabel={DATE_FILTER_OPTIONS.find(o => o.id === dateFilter)?.label || 'All time'}
           onAdd={onAddManualPayment}
           onRemove={onRemoveManualPayment}
+          onUpdate={onUpdateManualPayment}
         />
       )}
 
@@ -2820,6 +2867,42 @@ function InlineDate({ value, editable, onChange }) {
   );
 }
 
+// ============== INLINE TEXT ==============
+function InlineText({ value, editable, onChange, placeholder }) {
+  const [editing, setEditing] = useState(false);
+  const [v, setV] = useState(value || '');
+  useEffect(() => { setV(value || ''); }, [value]);
+
+  if (!editing) {
+    return (
+      <button
+        className={'inline-text' + (value ? ' has-value' : '')}
+        onClick={() => editable && setEditing(true)}
+        disabled={!editable}
+        title={editable ? 'Click to edit' : undefined}
+      >
+        {value || <span className="muted">{editable ? (placeholder || '+ add') : '—'}</span>}
+      </button>
+    );
+  }
+  const commit = () => { onChange(v.trim()); setEditing(false); };
+  return (
+    <input
+      autoFocus
+      className="inline-text-edit"
+      type="text"
+      value={v}
+      onChange={e => setV(e.target.value)}
+      onBlur={commit}
+      onKeyDown={e => {
+        if (e.key === 'Enter') commit();
+        if (e.key === 'Escape') { setV(value || ''); setEditing(false); }
+      }}
+      placeholder={placeholder || ''}
+    />
+  );
+}
+
 // ============== DEAL FORM ==============
 // ============== CARRIER SELECT ==============
 // Dropdown of existing carriers + "+ Add new carrier" option that swaps to a text input.
@@ -3017,7 +3100,7 @@ function Field({ label, hint, children }) {
 
 // ============== MANUAL PAYMENTS PANEL ==============
 // Admin-managed payouts. This is the only source of the Paid out KPI.
-function ManualPaymentsPanel({ isAdmin, hasSetter, payments, totalAll, totalCount, dateFilterLabel, onAdd, onRemove }) {
+function ManualPaymentsPanel({ isAdmin, hasSetter, payments, totalAll, totalCount, dateFilterLabel, onAdd, onRemove, onUpdate }) {
   const [date, setDate] = useState(todayISO());
   const [amount, setAmount] = useState('');
   const [note, setNote] = useState('');
@@ -3114,9 +3197,28 @@ function ManualPaymentsPanel({ isAdmin, hasSetter, payments, totalAll, totalCoun
             <tbody>
               {payments.map(p => (
                 <tr key={p.id} className="manual-row">
-                  <td className="muted">{fmtDate(p.date)}</td>
-                  <td className="num strong">{fmt(p.amount)}</td>
-                  <td className="muted">{p.note || '—'}</td>
+                  <td>
+                    <InlineDate
+                      value={p.date || ''}
+                      editable={isAdmin}
+                      onChange={(v) => onUpdate(p.id, { date: v })}
+                    />
+                  </td>
+                  <td className="num">
+                    <InlineMoney
+                      value={p.amount || 0}
+                      editable={isAdmin}
+                      onChange={(v) => onUpdate(p.id, { amount: v })}
+                    />
+                  </td>
+                  <td>
+                    <InlineText
+                      value={p.note || ''}
+                      editable={isAdmin}
+                      placeholder="+ add note"
+                      onChange={(v) => onUpdate(p.id, { note: v })}
+                    />
+                  </td>
                   {isAdmin && (
                     <td style={{ textAlign: 'right' }}>
                       <button
