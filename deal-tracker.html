@@ -850,6 +850,40 @@ th .sort-btn { font-family: var(--mono); font-size: 10px; font-weight: 500; colo
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--rb-blue) 18%, transparent);
 }
 
+/* ─── Inline date ─── */
+.inline-date {
+  background: transparent;
+  border: 1px dashed transparent;
+  padding: 3px 8px;
+  border-radius: 5px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--ink-2);
+  text-align: left;
+  white-space: nowrap;
+}
+.inline-date:hover:not(:disabled) { border-color: var(--hairline-strong); background: var(--surface-2); }
+.inline-date:disabled { cursor: default; }
+.inline-date.has-value { color: var(--ink-1); }
+.inline-date .muted { color: var(--ink-4); }
+.inline-date-edit {
+  border: 1px solid var(--rb-blue);
+  background: var(--bg);
+  color: var(--ink-1);
+  padding: 3px 26px 3px 8px;
+  border-radius: 5px;
+  outline: none;
+  font-family: var(--mono);
+  font-size: 12px;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--rb-blue) 18%, transparent);
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect x='3' y='4' width='18' height='18' rx='2' ry='2'/><line x1='16' y1='2' x2='16' y2='6'/><line x1='8' y1='2' x2='8' y2='6'/><line x1='3' y1='10' x2='21' y2='10'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+}
+.inline-date-edit::-webkit-calendar-picker-indicator { opacity: 0; cursor: pointer; }
+.inline-date-edit::-webkit-inner-spin-button,
+.inline-date-edit::-webkit-clear-button { display: none; }
+
 /* ─── Manual payments panel ─── */
 .manual-section {
   display: flex; flex-direction: column; gap: 14px;
@@ -2575,9 +2609,27 @@ function DealRow({ deal, isAdmin, onUpdate, onEdit, onRemove }) {
           <span className="client-name">{deal.client}</span>
         </div>
       </td>
-      <td className="muted mono">{fmtDate(deal.date)}</td>
-      <td className="muted mono">{fmtDate(deal.effectiveDate)}</td>
-      <td className="num strong">{deal.ap == null ? <span className="muted">—</span> : fmt(deal.ap)}</td>
+      <td>
+        <InlineDate
+          value={deal.date || ''}
+          editable={isAdmin}
+          onChange={(v) => onUpdate({ date: v })}
+        />
+      </td>
+      <td>
+        <InlineDate
+          value={deal.effectiveDate || ''}
+          editable={isAdmin}
+          onChange={(v) => onUpdate({ effectiveDate: v })}
+        />
+      </td>
+      <td className="num">
+        <InlineMoney
+          value={deal.ap == null ? 0 : deal.ap}
+          editable={isAdmin}
+          onChange={(v) => onUpdate({ ap: v })}
+        />
+      </td>
       <td className="num">
         <InlineMoney
           value={deal.commission || 0}
@@ -2729,6 +2781,42 @@ function InlineMoney({ value, editable, onChange }) {
         }}
       />
     </div>
+  );
+}
+
+// ============== INLINE DATE ==============
+function InlineDate({ value, editable, onChange }) {
+  const [editing, setEditing] = useState(false);
+  const [v, setV] = useState(value || '');
+  useEffect(() => { setV(value || ''); }, [value]);
+
+  if (!editing) {
+    return (
+      <button
+        className={'inline-date' + (value ? ' has-value' : '')}
+        onClick={() => editable && setEditing(true)}
+        disabled={!editable}
+        title={editable ? 'Click to edit date' : undefined}
+      >
+        {value ? fmtDate(value) : <span className="muted">{editable ? '+ add' : '—'}</span>}
+      </button>
+    );
+  }
+  const commit = () => { onChange(v || null); setEditing(false); };
+  return (
+    <input
+      autoFocus
+      className="inline-date-edit"
+      type="date"
+      value={v}
+      onClick={e => { try { e.currentTarget.showPicker?.(); } catch (_) {} }}
+      onChange={e => setV(e.target.value)}
+      onBlur={commit}
+      onKeyDown={e => {
+        if (e.key === 'Enter') commit();
+        if (e.key === 'Escape') { setV(value || ''); setEditing(false); }
+      }}
+    />
   );
 }
 
