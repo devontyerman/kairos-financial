@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Kairos — Comp Grid</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Spline+Sans+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --pine:#e6f3f6;
+    --pine-deep:#f2f9fb;
+    --pine-card:#ffffff;
+    --pine-edge:rgba(12,74,94,.16);
+    --pine-edge-strong:rgba(12,74,94,.30);
+    --gold:#0e8fa8;
+    --gold-bright:#0a7590;
+    --gold-dim:#4aa9bc;
+    --ivory:#0b3a3c;
+    --ivory-dim:#3d6f6c;
+    --sage:#0f8f7e;
+    --sage-dim:#5fa398;
+    --maxw:1160px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{background:var(--pine-deep);}
+  body{
+    font-family:"Bricolage Grotesque",system-ui,sans-serif;
+    color:var(--ivory);
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+    background:
+      radial-gradient(1100px 500px at 85% -10%, rgba(16,163,143,.16), transparent 60%),
+      radial-gradient(800px 500px at 0% 0%, rgba(108,201,219,.28), transparent 55%),
+      linear-gradient(176deg,#e0f3ef 0%, #eaf8f6 45%, #f2fbfa 100%);
+    background-attachment:fixed;
+  }
+  a{color:var(--gold);}a:hover{color:var(--gold-bright);}
+  .mono{font-family:"Spline Sans Mono",monospace;}
+  .stage{max-width:var(--maxw);margin:0 auto;padding:46px 40px 56px;}
+
+  /* masthead */
+  .masthead{display:flex;align-items:center;justify-content:space-between;padding-bottom:20px;border-bottom:1px solid var(--pine-edge);}
+  .brand{display:flex;align-items:center;gap:13px;}
+  .mark{width:32px;height:32px;flex:none;position:relative;}
+  .mark::before{content:"";position:absolute;inset:0;border:1.5px solid var(--gold);border-radius:50%;}
+  .mark::after{content:"";position:absolute;left:50%;top:50%;width:12px;height:12px;transform:translate(-50%,-50%) rotate(45deg);background:linear-gradient(140deg,var(--gold-bright),var(--gold));box-shadow:0 0 16px rgba(216,166,62,.5);}
+  .wordmark{font-weight:800;font-size:23px;letter-spacing:.22em;line-height:1;}
+  .brand .sub{font-family:"Spline Sans Mono",monospace;font-size:10px;letter-spacing:.30em;color:var(--sage);margin-top:5px;}
+  .stamp{font-family:"Spline Sans Mono",monospace;font-size:10.5px;letter-spacing:.24em;color:var(--sage-dim);text-transform:uppercase;}
+
+  /* title */
+  .titleblock{padding:40px 0 30px;display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap;}
+  h1{
+    font-weight:800;font-size:clamp(52px,8vw,100px);line-height:.92;
+    letter-spacing:-.025em;text-transform:uppercase;
+  }
+  h1 em{font-style:normal;color:var(--gold);}
+
+  /* section label */
+  .seclab{display:flex;align-items:center;gap:14px;margin:34px 0 14px;}
+  .seclab .t{font-weight:800;font-size:15px;letter-spacing:.26em;text-transform:uppercase;}
+  .seclab .t.gold{color:var(--gold);}
+  .seclab .t.sage{color:var(--sage);}
+  .seclab .ln{flex:1;height:1px;background:var(--pine-edge);}
+  .seclab .r{font-family:"Spline Sans Mono",monospace;font-size:10.5px;letter-spacing:.20em;color:var(--sage-dim);text-transform:uppercase;}
+
+  /* tables */
+  .tbl{border:1px solid var(--pine-edge);border-radius:14px;overflow:hidden;background:rgba(255,255,255,.85);box-shadow:0 30px 60px -40px rgba(9,74,94,.35);}
+  .trow{display:grid;align-items:center;padding:0 24px;min-height:62px;position:relative;transition:background .18s;}
+  .trow + .trow{border-top:1px solid rgba(12,74,94,.10);}
+  .trow:hover{background:rgba(14,143,168,.06);}
+  .tbl.bld .trow{grid-template-columns:120px 1fr;gap:18px;}
+  .tbl.prod .trow{grid-template-columns:120px 1fr auto;gap:18px;}
+  .pct{font-weight:800;font-size:30px;letter-spacing:-.01em;font-variant-numeric:tabular-nums;color:var(--gold-bright);}
+  .pct sup{font-size:15px;font-weight:700;color:var(--gold-bright);vertical-align:.5em;margin-left:1px;}
+  .amt{font-weight:700;font-size:26px;letter-spacing:-.01em;font-variant-numeric:tabular-nums;}
+  .req{font-family:"Spline Sans Mono",monospace;font-size:10.5px;line-height:1.5;letter-spacing:.08em;color:var(--sage);text-transform:uppercase;text-align:right;max-width:280px;}
+  .trow.equity{
+    background:linear-gradient(90deg,rgba(16,163,143,.15),rgba(14,143,168,.03) 70%);
+    border-bottom:1px solid rgba(16,163,143,.35);
+  }
+  .trow.equity:hover{background:rgba(14,143,168,.18);}
+  .trow.equity .pct{color:var(--gold-bright);font-size:24px;letter-spacing:.10em;}
+  .trow.equity .amt{color:var(--gold-bright);}
+  .trow.equity .req{color:var(--gold-dim);}
+  .pill{
+    display:inline-flex;align-items:center;gap:9px;justify-self:start;
+    border:1px solid var(--pine-edge-strong);border-radius:999px;
+    padding:8px 16px;font-weight:700;font-size:12px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--gold);background:rgba(14,143,168,.07);
+  }
+  .pill::before{content:"";width:6px;height:6px;background:var(--gold);transform:rotate(45deg);}
+
+  /* two-col fine print */
+  .notes{display:grid;grid-template-columns:1.2fr 1fr;gap:40px;margin-top:40px;}
+  .notes h2{font-weight:800;font-size:14px;letter-spacing:.26em;text-transform:uppercase;color:var(--sage);margin-bottom:14px;display:flex;align-items:center;gap:12px;}
+  .notes h2::after{content:"";flex:1;height:1px;background:var(--pine-edge);}
+  .fine{display:grid;gap:11px;}
+  .fine p{display:flex;gap:10px;font-size:12px;line-height:1.65;color:var(--ivory-dim);font-weight:400;}
+  .fine p .n{font-family:"Spline Sans Mono",monospace;font-size:10.5px;color:var(--gold-dim);flex:none;padding-top:2px;}
+
+  footer{margin-top:40px;padding-top:18px;border-top:1px solid var(--pine-edge);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-family:"Spline Sans Mono",monospace;font-size:10px;letter-spacing:.22em;color:var(--sage-dim);text-transform:uppercase;}
+  footer .dot{color:var(--gold);}
+
+  @media(max-width:780px){
+    .stage{padding:30px 18px 44px;}
+    .tbl.bld .trow{grid-template-columns:86px 1fr;}
+    .req{display:none;}
+    .pct{font-size:22px;}
+    .amt{font-size:19px;}
+    .notes{grid-template-columns:1fr;gap:30px;}
+    .stamp{display:none;}
+  }
+</style>
+</head>
+<body>
+  <div class="stage">
+
+    <header class="masthead">
+      <div class="brand">
+        <div>
+          <div class="wordmark">KAIROS</div>
+          <div class="sub">FINANCIAL</div>
+        </div>
+      </div>
+      <div class="stamp">COMP GRID</div>
+    </header>
+
+    <div class="titleblock">
+      <h1>Compensation<br /><em>Grid</em></h1>
+    </div>
+
+    <div class="seclab">
+      <span class="t gold">Leader Levels</span>
+      <span class="ln"></span>
+      <span class="r">115% – Equity</span>
+    </div>
+    <section class="tbl bld" id="bld"></section>
+
+    <div class="seclab">
+      <span class="t sage">Producer Levels</span>
+      <span class="ln"></span>
+      <span class="r">80% – 110%</span>
+    </div>
+    <section class="tbl prod" id="prod"></section>
+
+    <div class="notes">
+      <div style="grid-column:1/-1">
+        <h2>Requirements</h2>
+        <div class="fine">
+          <p><span class="n">01</span>After reaching a level, you must hit at least that level — or the level directly below it — at least once every three months, or you drop down one level.</p>
+          <p><span class="n">02</span>You can move up only one level at a time, one month at a time. Comp levels cannot be skipped.</p>
+          <p><span class="n">03</span>All agents start at an 80% level unless approved by corporate staff. Exceptions require proof of current production and persistency, at the discretion of corporate staff.</p>
+          <p><span class="n">04</span>Production months end at the end of each calendar month. Split policies count 100% toward the writing agent.</p>
+          <p><span class="n">05</span>A minimum 75% persistency over 12 months is required for all promotions.</p>
+          <p><span class="n">06</span>Agents may be hired directly to your hierarchy once the 90% level has been achieved.</p>
+          <p><span class="n">07</span>First leg percentage — if your first leg makes up 75%–100% of your volume, only 25% of that leg's volume counts toward earning promotions. Between 50%–75%, only 50% counts. Below 50%, 100% of the volume counts.</p>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <span>KAIROS FINANCIAL <span class="dot">◆</span> COMPENSATION GRID</span>
+      <span>ISSUED PAID PRODUCTION <span class="dot">◆</span> MONTHLY</span>
+    </footer>
+
+  </div>
+
+<script>
+  const BLD=[
+    {pct:'EQUITY', amt:3000000, req:'15 direct agents each issue paying $25K+ a month', equity:true},
+    {pct:145, amt:2000000, req:'15 direct agents each issue paying $25K+ a month'},
+    {pct:140, amt:1500000, req:'15 direct agents each issue paying $25K+ a month'},
+    {pct:135, amt:1000000, req:'15 direct agents each issue paying $25K+ a month'},
+    {pct:130, amt:750000,  req:'15 direct agents each issue paying $25K+ a month'},
+    {pct:125, amt:500000,  req:'10 direct agents each issue paying $25K+ a month'},
+    {pct:120, amt:250000,  req:'5 direct agents each issue paying $25K+ a month'},
+    {pct:115, amt:100000,  req:'5 direct agents each issue paying $25K+ a month'},
+  ];
+  const PROD=[
+    {pct:110, amt:60000},
+    {pct:105, amt:50000},
+    {pct:100, amt:40000},
+    {pct:95,  amt:30000},
+    {pct:90,  amt:20000},
+    {pct:85,  amt:10000},
+    {pct:80,  pill:'Starting Contract Rate'},
+  ];
+  const money=v=>'$'+v.toLocaleString('en-US');
+  const pc=p=>typeof p==='number'?`${p}<sup>%</sup>`:p;
+
+  document.getElementById('bld').innerHTML=BLD.map(r=>
+    `<div class="trow${r.equity?' equity':''}"><span class="pct">${pc(r.pct)}</span><span class="amt">${money(r.amt)}</span></div>`
+  ).join('');
+  document.getElementById('prod').innerHTML=PROD.map(r=>
+    `<div class="trow"><span class="pct">${pc(r.pct)}</span>${r.amt?`<span class="amt">${money(r.amt)}</span>`:''}${r.pill?`<span class="pill">${r.pill}</span>`:''}</div>`
+  ).join('');
+</script>
+</body>
+</html>
