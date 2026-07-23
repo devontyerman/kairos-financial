@@ -6319,6 +6319,8 @@
     @media (max-width: 768px) {
       #panel-leaderboard.active .lb-podium { grid-template-columns: 1fr !important; gap: 10px !important; }
       #panel-leaderboard.active .lb-podium > * { transform: none !important; }
+      #panel-leaderboard.active .lb-podium-row { grid-template-columns: 1fr !important; align-items: stretch !important; }
+      #panel-leaderboard.active .lb-podium-card { order: 0 !important; min-height: 0 !important; }
       #panel-leaderboard.active .lb-filter,
       #panel-leaderboard.active .lb-filter-row { flex-wrap: wrap !important; gap: 8px !important; }
       #panel-leaderboard.active .lb-stat-strip { grid-template-columns: 1fr 1fr !important; gap: 8px !important; }
@@ -7620,7 +7622,7 @@
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 14px;
-      align-items: stretch;
+      align-items: end;   /* classic podium: shorter cards drop to the bottom */
     }
     #panel-leaderboard .lb-podium-card {
       border: 1px solid var(--lb-hairline-strong);
@@ -7637,22 +7639,25 @@
       inset: 0 0 auto 0; height: 3px;
       background: var(--lb-accent, var(--rb-blue));
     }
-    #panel-leaderboard .lb-podium-card.gold   { --lb-accent: var(--rb-yellow); }
-    #panel-leaderboard .lb-podium-card.silver { --lb-accent: var(--rb-blue); }
-    #panel-leaderboard .lb-podium-card.bronze { --lb-accent: var(--rb-orange); }
+    /* Metallic medal colors + classic podium: #1 center & tallest, #2 left &
+       mid-height, #3 right & shortest. Visual order set with `order`; DOM order
+       stays 1-2-3 so mobile stacks correctly. */
+    #panel-leaderboard .lb-podium-card.gold   { --lb-accent: #e0b83f; order: 2; min-height: 340px; }
+    #panel-leaderboard .lb-podium-card.silver { --lb-accent: #c2c6cc; order: 1; min-height: 292px; }
+    #panel-leaderboard .lb-podium-card.bronze { --lb-accent: #c17d45; order: 3; min-height: 250px; }
     #panel-leaderboard .lb-podium-card.gold {
       background:
-        radial-gradient(380px 240px at 80% -20%, color-mix(in oklch, var(--rb-yellow) 14%, transparent), transparent 60%),
+        radial-gradient(380px 240px at 80% -20%, color-mix(in oklch, var(--lb-accent) 16%, transparent), transparent 60%),
         var(--lb-surface-2);
     }
     #panel-leaderboard .lb-podium-card.silver {
       background:
-        radial-gradient(380px 240px at 80% -20%, color-mix(in oklch, var(--rb-blue) 10%, transparent), transparent 60%),
+        radial-gradient(380px 240px at 80% -20%, color-mix(in oklch, var(--lb-accent) 12%, transparent), transparent 60%),
         var(--lb-surface-2);
     }
     #panel-leaderboard .lb-podium-card.bronze {
       background:
-        radial-gradient(380px 240px at 80% -20%, color-mix(in oklch, var(--rb-orange) 10%, transparent), transparent 60%),
+        radial-gradient(380px 240px at 80% -20%, color-mix(in oklch, var(--lb-accent) 12%, transparent), transparent 60%),
         var(--lb-surface-2);
     }
     /* Rank numeral — same size on every card */
@@ -14515,6 +14520,9 @@
               <option value="">Not set</option>
             </select>
           </div>
+          <div id="profileCompLockNote" style="display:none;font-size:0.8rem;color:#64748b;text-align:center;margin-top:0.4rem;">
+            🔒 Your comp level is set by your admin. Contact them to update it.
+          </div>
           <button class="ss-submit" type="button" id="profileCompSave" style="background:#16a34a;">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
             Save Comp Level
@@ -19428,6 +19436,12 @@
     }
 
     // ─── PROFILE PANEL ───
+    // Only the admin may edit comp level. Agents see it read-only — comp level
+    // is set for them by the admin via the Team/Agency Hub panels.
+    const PROFILE_ADMIN_EMAILS = ['dev@kairos-financial.com'];
+    function isProfileAdmin() {
+      return PROFILE_ADMIN_EMAILS.includes(((currentUser && currentUser.email) || '').toLowerCase());
+    }
     async function loadProfilePanel() {
       if (!currentUser) return;
       // Populate comp level dropdown
@@ -19441,6 +19455,18 @@
       }
       // Set current value
       if (userCompLevel) sel.value = userCompLevel;
+      // Lock comp level for non-admins (read-only)
+      const compSaveBtn = document.getElementById('profileCompSave');
+      const compLockNote = document.getElementById('profileCompLockNote');
+      if (isProfileAdmin()) {
+        sel.disabled = false;
+        if (compSaveBtn) compSaveBtn.style.display = '';
+        if (compLockNote) compLockNote.style.display = 'none';
+      } else {
+        sel.disabled = true;
+        if (compSaveBtn) compSaveBtn.style.display = 'none';
+        if (compLockNote) compLockNote.style.display = 'block';
+      }
       // Set current email
       document.getElementById('profileEmail').value = currentUser.email || '';
       // Load saved licenses + carrier numbers
@@ -19450,6 +19476,8 @@
     // Save comp level
     document.getElementById('profileCompSave').addEventListener('click', async () => {
       if (!currentUser) return;
+      // Comp level is admin-only — agents cannot change their own.
+      if (!isProfileAdmin()) return;
       const compVal = document.getElementById('profileCompLevel').value;
       const msgEl = document.getElementById('profileCompMsg');
       const token = accessToken || SUPABASE_KEY;
@@ -21731,7 +21759,6 @@
       const GO_LIVE_CUTOFF = '2026-06-04T05:00:00Z';
 
       const DISCORD = [
-        { kind: 'discord', label: 'Disruption Group Discord', href: 'https://discord.gg/7jRu7r3FnC' },
         { kind: 'discord', label: 'Kairos Discord', href: 'https://discord.gg/HDAvgbD4cJ' }
       ];
       const SCRIPT_PDF = { kind: 'pdf', label: 'Sales Call Script', sub: 'PDF', href: 'assets/Documents/Script.pdf' };
@@ -21755,7 +21782,6 @@
       const SALES_RECORDINGS_LINK = { kind: 'link', label: 'Sales recordings', sub: 'Google Drive folder', href: 'https://drive.google.com/drive/folders/1OQ3d2pjj2oHqD9lxbXMnwG2xwLBj_R_J?usp=sharing' };
       const EO_INSURANCE_LINK = { kind: 'link', label: 'Click here to get errors and omissions insurance', sub: '', href: 'https://refer.nextinsurance.com/syhdg5x' };
       const NIPR_LINK = { kind: 'link', label: 'Purchase your additional state licenses', sub: 'nipr.com', href: 'https://nipr.com/' };
-      const ZOOM_3PM_TRAINING = { kind: 'link', label: '3 PM Eastern Training', sub: 'Zoom meeting', href: 'https://us06web.zoom.us/j/83831507469?pwd=6MnKDFyzETvkMWB1zTvs7pvxOrLWT6.1' };
       const TEAM_MEETING_NOTE = { kind: 'note', label: 'Kairos team meeting — 11 AM EST in Discord' };
 
       // ── Curriculum. file = exact R2 object name. slug = stable progress key. ──
@@ -21764,7 +21790,8 @@
         sections: [
           { title: 'New Agent Steps', videos: [
             { slug: 'first-90-days', title: 'First 90 Days Expectations for Agents', file: 'First 90 Days Expectations for Agents.mp4', duration: 538, desc: '', resources: [] },
-            { slug: 'navigating-discord', title: 'Navigating Discord', file: 'Discord and Team Meeting Schedule Overview.mp4', duration: 0, desc: '', resources: [...DISCORD, ZOOM_3PM_TRAINING, TEAM_MEETING_NOTE] },
+            // Kairos Discord only (Disruption Group link + 3 PM Zoom link removed per admin)
+            { slug: 'navigating-discord', title: 'Navigating Discord', file: 'Discord and Team Meeting Schedule Overview.mp4', duration: 0, desc: '', resources: [...DISCORD, TEAM_MEETING_NOTE] },
             { slug: 'submit-a-sale', title: 'How to Submit a Sale', file: 'How to Submit a Sale in Discord 🚀.mp4', duration: 115, desc: '', resources: DISCORD }
           ]},
           { title: 'Licensing', videos: [
@@ -29060,7 +29087,8 @@
             r.rankMove = prevRank ? (prevRank - r.rank) : 0;
             r.you = meName && (r.name === meName || (r.user_id && window.currentUser && r.user_id === window.currentUser.id));
             r.initials = lbInitialsOf(r.name);
-            r.hue = RAINBOW_TOKENS[lbHueIdx(r.name)];
+            // Top 3 get gold / silver / bronze; everyone else one neutral tone.
+            r.hue = r.rank === 1 ? '#e0b83f' : r.rank === 2 ? '#c2c6cc' : r.rank === 3 ? '#c17d45' : '#7c828e';
           });
           return curList;
         }, [policies, period]);
