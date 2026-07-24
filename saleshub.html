@@ -3558,7 +3558,7 @@
     }
     #tpatab-agents .tp-input:focus, #tpatab-agents .tp-select:focus { outline: none; border-color: color-mix(in oklch, var(--rb-blue) 50%, transparent); }
     #tpatab-agents .tp-select option { background: var(--tp-surface); color: var(--tp-ink-1); }
-    #tpatab-agents .tp-btn {
+    #tpatab-agents .tp-btn, #tpatab-performance .tp-btn {
       appearance: none; border: 1px solid var(--tp-hairline-strong);
       background: var(--tp-surface-2); color: var(--tp-ink-1);
       padding: 6px 12px; border-radius: 6px;
@@ -3566,7 +3566,7 @@
       letter-spacing: 0.04em; text-transform: uppercase;
       cursor: pointer; transition: all 120ms;
     }
-    #tpatab-agents .tp-btn:hover { border-color: var(--tp-ink-3); }
+    #tpatab-agents .tp-btn:hover, #tpatab-performance .tp-btn:hover { border-color: var(--tp-ink-3); }
     #tpatab-agents .tp-btn.primary {
       background: color-mix(in oklch, var(--rb-blue) 25%, var(--tp-surface-2));
       border-color: color-mix(in oklch, var(--rb-blue) 50%, transparent);
@@ -11961,7 +11961,7 @@
 
     /* Light-mode flip — when the universal theme is set to light */
     html[data-kf-theme="light"] .ss-sidebar {
-      background: #f0f5f2 !important;
+      background: #fcfcfc !important;
       border-right-color: rgba(15,12,8,0.08) !important;
     }
     html[data-kf-theme="light"] .ss-sidebar-btn {
@@ -12993,6 +12993,109 @@
   <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin></script>
+  <!-- ═══ Recruiter-HQ-style sidebar restyle: brand chip, nav dropdown,
+       bottom profile. Loaded last in <head> so order-ties resolve here.
+       Dark values are the ungated default (matching the sidebar's existing
+       dark !important block); light is gated by html[data-kf-theme="light"]. ═══ -->
+  <style id="ss-nav-restyle">
+    /* Pill nav items (match the Recruiter HQ nav look) */
+    .ss-sidebar-btn, .ss-nav-links a, .ss-navsub-btn { border-radius: 11px; }
+    .ss-sidebar-btn { padding: 9px 11px; }
+
+    /* Top brand: little gradient mark + Kairos Financial */
+    .kf-brand { display: flex; align-items: center; gap: 11px; padding: 18px 6px 14px; width: 100%; }
+    .kf-brand-mark {
+      width: 34px; height: 34px; border-radius: 10px; flex: none;
+      background: linear-gradient(135deg,#A1CB35,#65DCD5);
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-weight: 700; font-size: 16px; font-family: 'Inter',system-ui,sans-serif;
+    }
+    .kf-brand-text { min-width: 0; line-height: 1.2; }
+    .kf-brand-name { font-family: 'Inter',system-ui,sans-serif; font-weight: 700; font-size: 15px; letter-spacing: -0.01em; color: #f3f3f1; white-space: nowrap; }
+    .kf-brand-sub { font-size: 11.5px; font-weight: 500; color: rgba(243,243,241,0.5); white-space: nowrap; }
+    html[data-kf-theme="light"] .kf-brand-name { color: #0a1410; }
+    html[data-kf-theme="light"] .kf-brand-sub { color: rgba(20,19,15,0.5); }
+
+    /* Recruiter HQ nav group + dropdown */
+    .ss-navgroup { display: flex; flex-direction: column; width: 100%; }
+    .ss-navgroup .ss-sidebar-btn { position: relative; }
+    .ss-navgroup-chev { margin-left: auto; width: 14px !important; height: 14px !important; transition: transform 0.16s ease; opacity: 0.6; }
+    .ss-navgroup.open .ss-navgroup-chev { transform: rotate(180deg); }
+    .ss-navsub { display: none; flex-direction: column; gap: 2px; padding: 3px 0 5px 0; margin-left: 15px; border-left: 1px solid rgba(243,243,241,0.12); padding-left: 9px; }
+    .ss-navgroup.open .ss-navsub { display: flex; }
+    html[data-kf-theme="light"] .ss-navsub { border-left-color: rgba(20,19,15,0.12); }
+    .ss-navsub-btn {
+      display: flex; align-items: center; width: 100%; text-align: left;
+      background: transparent; border: none; cursor: pointer;
+      padding: 7px 11px; font-family: 'Geist','Inter',system-ui,sans-serif;
+      font-size: 12.5px; font-weight: 500; color: rgba(243,243,241,0.62);
+    }
+    .ss-navsub-btn:hover { color: #f3f3f1; background: #1c1f26; }
+    .ss-navsub-btn.active { color: #f3f3f1; background: #232730; font-weight: 600; }
+    html[data-kf-theme="light"] .ss-navsub-btn { color: rgba(20,19,15,0.66); }
+    html[data-kf-theme="light"] .ss-navsub-btn:hover { color: #0a1410; background: rgba(15,12,8,0.06); }
+    html[data-kf-theme="light"] .ss-navsub-btn.active { color: #0a1410; background: rgba(15,12,8,0.10); }
+
+    /* Bottom profile chip (name lives here now) */
+    .ss-profile-chip {
+      display: flex; align-items: center; gap: 10px; width: 100%;
+      margin-top: 8px; padding: 9px 8px; border-radius: 12px;
+      border-top: 1px solid rgba(255,255,255,0.07);
+      text-decoration: none; cursor: pointer; flex-shrink: 0;
+    }
+    .ss-profile-chip:hover { background: #1c1f26; }
+    .ss-profile-av {
+      width: 32px; height: 32px; border-radius: 50%; flex: none;
+      background: #2a3313; color: #b9dd5e;
+      display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px;
+      font-family: 'Inter',system-ui,sans-serif;
+    }
+    .ss-profile-meta { min-width: 0; line-height: 1.2; }
+    .ss-profile-name { font-family: 'Inter',system-ui,sans-serif; font-size: 13px; font-weight: 600; color: #f3f3f1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .ss-profile-role { font-size: 11.5px; color: rgba(243,243,241,0.5); }
+    html[data-kf-theme="light"] .ss-profile-chip { border-top-color: rgba(15,12,8,0.10); }
+    html[data-kf-theme="light"] .ss-profile-chip:hover { background: rgba(15,12,8,0.06); }
+    html[data-kf-theme="light"] .ss-profile-av { background: #eff6d9; color: #5f7f10; }
+    html[data-kf-theme="light"] .ss-profile-name { color: #0a1410; }
+    html[data-kf-theme="light"] .ss-profile-role { color: rgba(20,19,15,0.5); }
+
+    /* Collapsed rail: icons-only. Hide text/sub/chev, center the chip avatar. */
+    .ss-sidebar.collapsed .kf-brand-text,
+    .ss-sidebar.collapsed .ss-navgroup-chev,
+    .ss-sidebar.collapsed .ss-navsub,
+    .ss-sidebar.collapsed .ss-profile-meta { display: none; }
+    .ss-sidebar.collapsed .kf-brand { justify-content: center; gap: 0; padding: 16px 0 12px; }
+    .ss-sidebar.collapsed .ss-profile-chip { justify-content: center; padding: 9px 0; }
+    @media (max-width: 768px) {
+      .ss-sidebar.collapsed .kf-brand-text { display: block; }
+    }
+
+    /* ── Combined "Agency HQ" dropdown: section labels + admin-only items ── */
+    .ss-navsub-label { font-size: 10px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: rgba(243,243,241,0.4); padding: 9px 11px 3px; }
+    .ss-navsub-label:first-child { padding-top: 2px; }
+    html[data-kf-theme="light"] .ss-navsub-label { color: rgba(20,19,15,0.42); }
+
+    /* ── Sidebar footer: pinned to the very bottom (theme toggle + profile) ── */
+    .ss-sidebar-footer { margin-top: auto; width: 100%; display: flex; flex-direction: column; gap: 6px; padding-top: 10px; }
+    .ss-sidebar-footer .ss-profile-chip { margin-top: 0; }
+    .ss-theme-toggle {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      width: 100%; padding: 9px 11px; border-radius: 11px; cursor: pointer;
+      background: transparent; border: 1px solid rgba(255,255,255,0.10); color: rgba(243,243,241,0.72);
+    }
+    .ss-theme-toggle:hover { background: #1c1f26; color: #f3f3f1; }
+    .ss-theme-toggle svg { width: 16px; height: 16px; }
+    .ss-sidebar.collapsed .ss-theme-toggle { padding: 9px 0; }
+    html[data-kf-theme="light"] .ss-theme-toggle { border-color: rgba(15,12,8,0.14); color: rgba(20,19,15,0.72); }
+    html[data-kf-theme="light"] .ss-theme-toggle:hover { background: rgba(15,12,8,0.06); color: #0a1410; }
+
+    /* ── One theme toggle to rule them all: hide every per-panel toggle ── */
+    .tp-theme-toggle, .hv-theme-toggle, .bob-theme-toggle, .lb-theme-toggle,
+    .tk-theme-toggle, .tve-theme-toggle, .wt-theme-toggle, .kf-gate-theme,
+    .kf-hdr-r { display: none !important; }
+    /* Agency Hub pages are navigated from the sidebar dropdown now, not in-panel tabs */
+    #panel-teamperf .tp-admin-tabs { display: none !important; }
+  </style>
 </head>
 <body>
 
@@ -13044,22 +13147,42 @@
   <!-- SIDEBAR NAV -->
   <nav class="ss-sidebar" id="ssSidebar">
     <div class="ss-sidebar-header">
-      <div class="ss-sidebar-logo">
-        <img class="kf-logo-img" src="assets/Sales%20Hub%20Logo.png" alt="Sales Hub" />
+      <div class="kf-brand">
+        <div class="kf-brand-mark">K</div>
+        <div class="kf-brand-text">
+          <div class="kf-brand-name">Kairos Financial</div>
+          <div class="kf-brand-sub" id="ssBrandSub">Sales Hub</div>
+        </div>
       </div>
       <button class="ss-sidebar-hamburger" id="ssHamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
     </div>
-    <div class="ss-sidebar-user" id="sidebarUser">
-      <span class="ss-sidebar-user-name" id="sidebarUserName"></span>
-    </div>
     <div class="ss-sidebar-grid">
-    <!-- Admin-only Manager Dashboard pinned to the top of the rail; visibility is
-         flipped by updateAuthUI() for the admin email + managers — every other
-         user never sees it. -->
-    <button class="ss-sidebar-btn" data-panel="teamperf" id="teamPerfSidebarBtn" style="display:none;">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 4 4 5-5"/></svg>
-      <span>Agency Hub</span>
-    </button>
+    <!-- Agency HQ — combined recruiting pipeline + agency admin. Managers + admin
+         only (visibility flipped by updateAuthUI()). Clicking opens the panel AND
+         expands the dropdown; each sub-item routes to its panel via hqNav(). The
+         old standalone "Agency Hub" button was folded in here. -->
+    <div class="ss-navgroup" id="rhqNavGroup" style="display:none;">
+      <!-- No data-panel: the generic nav listener ignores this; hqToggle() below
+           handles the click so the dropdown can collapse while you stay on the page. -->
+      <button class="ss-sidebar-btn" id="recruiterHqSidebarBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+        <span>Agency HQ</span>
+        <svg class="ss-navgroup-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div class="ss-navsub" id="rhqNavSub">
+        <div class="ss-navsub-label">Agency</div>
+        <button class="ss-navsub-btn" data-nav="tp:performance">Performance Dashboard</button>
+        <button class="ss-navsub-btn" data-nav="tp:policies">Policies</button>
+        <button class="ss-navsub-btn" data-nav="tp:hierarchy">Agent Hierarchy</button>
+        <button class="ss-navsub-btn hq-admin-only" data-nav="tp:agents" style="display:none;">Agent Profiles</button>
+        <button class="ss-navsub-btn hq-admin-only" data-nav="tp:discord" style="display:none;">Discord</button>
+        <div class="ss-navsub-label">Recruiting</div>
+        <button class="ss-navsub-btn" data-nav="rhq:dashboard">Dashboard</button>
+        <button class="ss-navsub-btn" data-nav="rhq:board">Pipeline</button>
+        <button class="ss-navsub-btn" data-nav="rhq:list">Recruits</button>
+        <button class="ss-navsub-btn" data-nav="rhq:leaders">Leaderboard</button>
+      </div>
+    </div>
     <button class="ss-sidebar-btn active" data-panel="goals">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
       <span>Tracker</span>
@@ -13140,9 +13263,18 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
         Toolkit
       </a>
-      <a href="#" data-panel="profile" class="ss-nav-panel-link">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-        Profile
+    </div>
+    <!-- Sidebar footer pinned to the very bottom: the single dark-mode toggle
+         (uses the global .kf-skin-theme-toggle handler) + the profile chip.
+         name/initials/role are filled in by updateAuthUI(). -->
+    <div class="ss-sidebar-footer">
+      <button type="button" class="ss-theme-toggle kf-skin-theme-toggle" aria-label="Toggle theme" title="Toggle theme"></button>
+      <a href="#" class="ss-profile-chip" id="ssProfileChip" style="display:none;" onclick="activatePanel('profile');return false;">
+        <div class="ss-profile-av" id="ssProfileAv">–</div>
+        <div class="ss-profile-meta">
+          <div class="ss-profile-name" id="ssProfileName">—</div>
+          <div class="ss-profile-role" id="ssProfileRole">Agent</div>
+        </div>
       </a>
     </div>
     <button class="ss-sidebar-collapse" id="ssCollapseBtn" type="button" aria-label="Collapse sidebar" title="Collapse sidebar">
@@ -14233,6 +14365,14 @@
     <!-- ═══ WEEKLY TRACKER PANEL (admin-only, populated by JS) ═══ -->
     <div class="ss-panel" id="panel-weeklytracker"></div>
 
+    <!-- ═══ RECRUITER HQ PANEL (managers + admin) ═══
+         Sidebar gate hides this panel for regular agents; the JS gate inside
+         mountRecruiterHq() is the actual access control. React island mounts
+         at #recruiterHqRoot. -->
+    <div class="ss-panel" id="panel-recruiterhq">
+      <div id="recruiterHqRoot"></div>
+    </div>
+
     <!-- ═══ TEAM PERFORMANCE PANEL (admin-only — moved from admin-sales.html) ═══
          Sidebar gate hides this panel for non-admins; the JS gate inside
          loadTeamPerf() is the actual access control. -->
@@ -15179,6 +15319,7 @@
       const sidebarUserName = document.getElementById('sidebarUserName');
       const wtBtn = document.getElementById('weeklyTrackerSidebarBtn');
       const tpBtn = document.getElementById('teamPerfSidebarBtn');
+      const rhqBtn = document.getElementById('rhqNavGroup');
       // Mirror to window so other <script> blocks (e.g. the Team Performance
       // IIFE) can read the current user — `let currentUser` is module-scoped
       // and not visible across script tags.
@@ -15192,6 +15333,17 @@
         authName.textContent = name;
         if (sidebarUserName) sidebarUserName.textContent = name;
         if (sidebarUser) sidebarUser.classList.add('visible');
+        // Bottom sidebar profile chip (name lives here now).
+        (function () {
+          const pc = document.getElementById('ssProfileChip');
+          const pn = document.getElementById('ssProfileName');
+          const pa = document.getElementById('ssProfileAv');
+          const pr = document.getElementById('ssProfileRole');
+          if (pn) pn.textContent = name;
+          if (pa) pa.textContent = (name || '?').trim().split(/\s+/).map(w => w[0]).slice(0, 2).join('').toUpperCase() || '?';
+          if (pr) pr.textContent = (currentUser.email || '').toLowerCase() === 'dev@kairos-financial.com' ? 'Admin' : 'Agent';
+          if (pc) pc.style.display = 'flex';
+        })();
         authBar.style.display = 'flex';
         authPrompt.style.display = 'none';
         saleForm.style.opacity = '1';
@@ -15211,10 +15363,14 @@
         const isWtAdmin = WT_ADMIN_EMAILS.includes((currentUser.email || '').toLowerCase());
         if (wtBtn) wtBtn.style.display = isWtAdmin ? '' : 'none';
         if (tpBtn) tpBtn.style.display = isWtAdmin ? '' : 'none';
+        // Agency HQ: admin always; managers revealed by the is_manager fetch below.
+        if (rhqBtn) rhqBtn.style.display = isWtAdmin ? '' : 'none';
+        // Admin-only Agency HQ dropdown items (Agent Profiles, Discord).
+        document.querySelectorAll('#rhqNavSub .hq-admin-only').forEach(el => { el.style.display = isWtAdmin ? '' : 'none'; });
         // Managers (agent_profiles.is_manager === true) also get the Team
         // Dashboard sidebar button, but NOT the Weekly Tracker. Async because
         // it needs a profile fetch — reveal once we know.
-        if (!isWtAdmin && tpBtn && currentUser.id) {
+        if (!isWtAdmin && (tpBtn || rhqBtn) && currentUser.id) {
           (async () => {
             try {
               const r = await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?select=is_manager&user_id=eq.' + encodeURIComponent(currentUser.id) + '&limit=1', {
@@ -15223,7 +15379,10 @@
               if (!r.ok) return;
               const rows = await r.json();
               if (rows && rows[0] && rows[0].is_manager === true) {
-                tpBtn.style.display = '';
+                if (tpBtn) tpBtn.style.display = '';
+                if (rhqBtn) rhqBtn.style.display = '';
+                const pr = document.getElementById('ssProfileRole');
+                if (pr && pr.textContent !== 'Admin') pr.textContent = 'Manager';
               }
             } catch (e) { /* silent — sidebar just stays hidden */ }
           })();
@@ -15268,6 +15427,9 @@
         if (globalGate) globalGate.style.display = 'flex';
         if (wtBtn) wtBtn.style.display = 'none';
         if (tpBtn) tpBtn.style.display = 'none';
+        if (rhqBtn) rhqBtn.style.display = 'none';
+        const _pc = document.getElementById('ssProfileChip');
+        if (_pc) _pc.style.display = 'none';
       }
     }
 
@@ -15392,6 +15554,34 @@
       if (btn) btn.classList.add('active');
       const panel = document.getElementById('panel-' + panelName);
       if (panel) panel.classList.add('active');
+      // Agency HQ dropdown + brand subtitle + parent-button active state.
+      // We do NOT force the dropdown open here — the parent button toggles it
+      // (window.hqToggle) so you can collapse it while staying on the page. It
+      // only auto-collapses when you navigate AWAY to a non-HQ panel.
+      (function () {
+        const grp = document.getElementById('rhqNavGroup');
+        const sub = document.getElementById('ssBrandSub');
+        const parentBtn = document.getElementById('recruiterHqSidebarBtn');
+        const inHQ = (panelName === 'recruiterhq' || panelName === 'teamperf');
+        if (inHQ) {
+          if (sub) sub.textContent = 'Agency HQ';
+          if (parentBtn) parentBtn.classList.add('active');
+          const subBtns = document.querySelectorAll('#rhqNavSub .ss-navsub-btn');
+          let target = null;
+          if (panelName === 'recruiterhq') {
+            const anyRhq = Array.prototype.some.call(subBtns, b => b.classList.contains('active') && (b.getAttribute('data-nav') || '').indexOf('rhq:') === 0);
+            if (!anyRhq) target = 'rhq:dashboard';
+          } else {
+            const at = document.querySelector('#panel-teamperf .tp-admin-tab.active');
+            target = 'tp:' + (at ? at.dataset.tpatab : 'performance');
+          }
+          if (target) subBtns.forEach(b => b.classList.toggle('active', b.getAttribute('data-nav') === target));
+        } else {
+          if (grp) grp.classList.remove('open');
+          if (sub) sub.textContent = 'Sales Hub';
+          if (parentBtn) parentBtn.classList.remove('active');
+        }
+      })();
       if (panelName === 'leaderboard' && window.lbMountLeaderboard) {
         try { window.lbMountLeaderboard(); } catch (e) { console.error('Leaderboard mount failed:', e); }
       }
@@ -15415,6 +15605,9 @@
       if (panelName === 'teamperf' && typeof window.loadTeamPerf === 'function') {
         try { window.loadTeamPerf(); } catch (e) { console.error('Team Performance load threw:', e); }
       }
+      if (panelName === 'recruiterhq' && typeof window.mountRecruiterHq === 'function') {
+        try { window.mountRecruiterHq(); } catch (e) { console.error('Recruiter HQ mount failed:', e); }
+      }
       const KF_SKIN_PANELS = ['compgrid', 'carriers', 'leadvendors', 'resources', 'training', 'calculator', 'dialtracker', 'profile'];
       if (KF_SKIN_PANELS.indexOf(panelName) !== -1) {
         document.documentElement.setAttribute('data-kf-active', 'true');
@@ -15425,6 +15618,62 @@
       try { history.replaceState(null, '', '#' + panelName); } catch (e) { /* ignore */ }
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
+
+    // Agency HQ sub-nav: switch the Agency Hub tab programmatically. Mirrors the
+    // in-panel tab click handler but is timing-robust (doesn't need the tab's
+    // click listener to be attached yet — loadTeamPerf wires those async).
+    window.tpSetTab = function (which) {
+      const tabs = document.querySelectorAll('#panel-teamperf .tp-admin-tab');
+      if (!tabs.length) return;
+      tabs.forEach(t => t.classList.toggle('active', t.dataset.tpatab === which));
+      document.querySelectorAll('#panel-teamperf .tp-admin-panel').forEach(p => p.classList.toggle('active', p.id === 'tpatab-' + which));
+      if (which === 'performance' && window.tpMountDashboard) window.tpMountDashboard();
+      if (which === 'agents' && window.tpMountAgents) window.tpMountAgents();
+      if (which === 'policies' && window.tpMountPolicies) window.tpMountPolicies();
+      if (which === 'hierarchy' && window.tpMountHierarchy) window.tpMountHierarchy();
+      if (which === 'discord' && window.discordInit) window.discordInit();
+    };
+    // Last-selected Agency HQ page — restored when you re-open the dropdown.
+    window.__hqLast = 'tp:performance';
+    // Route a dropdown item ("rhq:board" / "tp:policies") to its panel + view/tab.
+    window.hqNav = function (targetKey) {
+      const parts = (targetKey || '').split(':');
+      const kind = parts[0], key = parts[1];
+      window.__hqLast = targetKey;
+      if (kind === 'rhq') {
+        activatePanel('recruiterhq');
+        if (window.rhqSetView) { try { window.rhqSetView(key); } catch (e) { /* island not mounted yet */ } }
+      } else if (kind === 'tp') {
+        activatePanel('teamperf');
+        if (window.tpSetTab) { try { window.tpSetTab(key); } catch (e) {} }
+      }
+      const grp = document.getElementById('rhqNavGroup');
+      if (grp) grp.classList.add('open');
+      document.querySelectorAll('#rhqNavSub .ss-navsub-btn').forEach(b =>
+        b.classList.toggle('active', b.getAttribute('data-nav') === targetKey));
+    };
+    // Parent "Agency HQ" button: toggle the dropdown. On an HQ page it just
+    // collapses/expands and keeps you there; elsewhere it opens and restores the
+    // page you had selected last.
+    window.hqToggle = function () {
+      const grp = document.getElementById('rhqNavGroup');
+      if (!grp) return;
+      const rp = document.getElementById('panel-recruiterhq');
+      const tpp = document.getElementById('panel-teamperf');
+      const onHQ = (rp && rp.classList.contains('active')) || (tpp && tpp.classList.contains('active'));
+      if (onHQ) {
+        grp.classList.toggle('open');
+      } else {
+        grp.classList.add('open');
+        window.hqNav(window.__hqLast || 'tp:performance');
+      }
+    };
+    document.addEventListener('click', function (e) {
+      const b = e.target.closest && e.target.closest('.ss-navsub-btn[data-nav]');
+      if (b) { e.preventDefault(); window.hqNav(b.getAttribute('data-nav')); return; }
+      const p = e.target.closest && e.target.closest('#recruiterHqSidebarBtn');
+      if (p) { e.preventDefault(); window.hqToggle(); }
+    });
 
     // ─── Pay panel tab system (Growth Track / Pay Calculator / Product Comp / Bonus) ───
     // Move the legacy #panel-compgrid into the Pay panel as the "Product Comp" tab pane.
@@ -24159,6 +24408,7 @@
       function TeamKpiByRep({ agents, timeframe, customRange }) {
         const [sortKey, setSortKey] = useState('ap');
         const [sortDir, setSortDir] = useState('desc');
+        const [showAll, setShowAll] = useState(false); // include agents with no deals this timeframe
         const setSort = (k) => {
           if (k === sortKey) setSortDir(d => d === 'asc' ? 'desc' : 'asc');
           else { setSortKey(k); setSortDir(k === 'name' ? 'asc' : 'desc'); }
@@ -24173,7 +24423,7 @@
             presentations: v.presentations || 0, deals: v.deals || 0, leadSpend: v.leadSpend || 0,
             deposits: v.deposits || 0, ap: v.ap || 0, avgPremium: v.avgPremium || 0, roi: v.roi || 0,
           };
-        }).filter(r => (r.ap || 0) > 0);   // only agents who wrote premium this timeframe
+        }).filter(r => showAll || (r.ap || 0) > 0);   // premium writers only, unless "Show all agents" is on
         // Avatar colors: gold / silver / bronze for the top 3 premium writers,
         // one neutral tone for everyone else (random hues were meaningless).
         const KF_MEDALS = ['#e0b83f', '#b8bcc4', '#c17d45'];
@@ -24195,8 +24445,13 @@
         return (
           <div className="tp-card tp-lb" style={{gridColumn:'span 12'}}>
             <div className="tp-lb-hd">
-              <div className="tp-card-title">Agent Report · {tfLabel}</div>
-              <div className="tp-card-meta">Ranked by premium written · top to bottom</div>
+              <div>
+                <div className="tp-card-title">Agent Report · {tfLabel}</div>
+                <div className="tp-card-meta">{showAll ? 'All agents · includes reps with no deals this timeframe' : 'Premium writers only · ranked top to bottom'}</div>
+              </div>
+              <button type="button" className="tp-btn" onClick={() => setShowAll(v => !v)}>
+                {showAll ? 'Premium writers only' : 'Show all agents'}
+              </button>
             </div>
             <div className="tp-rep-scroll">
               <table className="tp-rep-table">
@@ -24217,7 +24472,7 @@
                 </thead>
                 <tbody>
                   {rows.length === 0 ? (
-                    <tr><td colSpan="11" style={{textAlign:'center', color:'var(--tp-ink-3)', padding:'18px 0'}}>No premium written in this timeframe.</td></tr>
+                    <tr><td colSpan="11" style={{textAlign:'center', color:'var(--tp-ink-3)', padding:'18px 0'}}>{showAll ? 'No agents to show.' : 'No premium written in this timeframe.'}</td></tr>
                   ) : rows.map(r => (
                     <tr key={r.id}>
                       <td>
@@ -30653,6 +30908,832 @@
       wire();
       loadWebhook();
       loadList();
+    };
+  })();
+  </script>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       RECRUITER HQ — recruiting pipeline (managers + admin)
+       React island mounted lazily at #recruiterHqRoot by window.mountRecruiterHq.
+       Data model in supabase-recruiter-hq-migration.sql. Reads/writes go through
+       the signed-in JWT so RLS scopes rows to the caller's downline.
+       ═══════════════════════════════════════════════════════════════════════ -->
+  <script type="text/babel" data-presets="env,react">
+  (function () {
+    if (!window.React || !window.ReactDOM) return;
+    const { useState, useMemo, useEffect, useRef, useCallback } = React;
+
+    // ── config ──────────────────────────────────────────────────────────────
+    const STAGES = ['Recruiting', 'Studying', 'Exam passed', 'Contracting', 'Fully licensed'];
+    // Stall threshold (days in stage) before a recruit is flagged. Index by stage.
+    const STALL_DAYS = [10, 21, 14, 10, 99999];
+    const ADMIN_EMAILS = ['dev@kairos-financial.com'];
+    const ADMIN_UID = 'be364ef5-8426-4587-b8b8-9328b02055a7';
+    const TZ_OPTS = ['Eastern', 'Central', 'Mountain', 'Pacific'];
+
+    // ── low-level helpers ────────────────────────────────────────────────────
+    const authHeaders = (extra) => Object.assign(
+      { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + (window.accessToken || SUPABASE_KEY) },
+      extra || {}
+    );
+    const writeHeaders = () => authHeaders({ 'Content-Type': 'application/json', 'Prefer': 'return=representation' });
+    const rest = (path, opts) => fetch(SUPABASE_URL + '/rest/v1/' + path, opts);
+    async function ensureToken() { try { if (window.ensureValidAccessToken) await window.ensureValidAccessToken(); } catch (e) {} }
+    async function getJSON(path) { const r = await rest(path, { headers: authHeaders() }); return r.ok ? r.json() : []; }
+
+    function daysSince(iso) { if (!iso) return 0; return Math.max(0, Math.floor((Date.now() - new Date(iso).getTime()) / 86400000)); }
+    function daysBetween(a, b) { if (!a || !b) return 0; return Math.max(0, Math.round((new Date(b).getTime() - new Date(a).getTime()) / 86400000)); }
+    function daysUntil(iso) { if (!iso) return null; return Math.ceil((new Date(iso + 'T00:00:00').getTime() - Date.now()) / 86400000); }
+    function initials(name) {
+      const p = (name || '').trim().split(/\s+/);
+      return ((p[0] || '')[0] || '') + ((p[p.length - 1] || '')[0] || '') || '?';
+    }
+    function money(n) { return '$' + Math.round(n || 0).toLocaleString(); }
+    function moneyK(n) { n = n || 0; return n >= 1000 ? '$' + (n / 1000).toFixed(n >= 10000 ? 0 : 1) + 'k' : '$' + Math.round(n); }
+    function fmtDate(iso) { if (!iso) return ''; const d = new Date(iso); return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }); }
+    function fmtDay(iso) { if (!iso) return ''; const d = new Date(iso); return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }); }
+    function ago(iso) {
+      const s = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
+      if (s < 60) return 'just now';
+      const m = Math.floor(s / 60); if (m < 60) return m + 'm ago';
+      const h = Math.floor(m / 60); if (h < 24) return h + 'h ago';
+      const d = Math.floor(h / 24); if (d < 7) return d + 'd ago';
+      return fmtDay(iso);
+    }
+    function isoWeek(iso) {
+      const d = new Date(iso); d.setHours(0, 0, 0, 0);
+      d.setDate(d.getDate() + 3 - ((d.getDay() + 6) % 7));
+      const week1 = new Date(d.getFullYear(), 0, 4);
+      const wk = 1 + Math.round(((d - week1) / 86400000 - 3 + ((week1.getDay() + 6) % 7)) / 7);
+      return d.getFullYear() + '-W' + String(wk).padStart(2, '0');
+    }
+
+    // ── scoped styles (design palette, tracks the app's data-kf-theme) ────────
+    const CSS = `
+    #recruiterHqRoot .rhq {
+      --bg:#F6F6F4;--sf:#FFFFFF;--sf2:#F0F0ED;--bd:#E7E7E2;--tx:#2E2B2B;--tx2:#454040;--tx3:#9C9694;
+      --ac:#A1CB35;--acOn:#232B07;--acDeep:#5F7F10;--acSoft:#EFF6D9;
+      --sh:0 1px 2px rgba(40,38,30,.05),0 4px 16px rgba(40,38,30,.06);
+      --s0b:#E0F5F6;--s0f:#1F8A90;--s1b:#EFF7DA;--s1f:#5F7F10;--s2b:#FFF3CD;--s2f:#93700A;--s3b:#FEE1E1;--s3f:#D31A1A;--s4b:#F0E2F8;--s4f:#792CA2;
+      --wb:#FFE9D6;--wf:#C25400;--db:#FDE0E0;--df:#D90000;
+      font-family:'Inter','Instrument Sans',system-ui,sans-serif;color:var(--tx);
+    }
+    html[data-kf-theme="dark"] #recruiterHqRoot .rhq {
+      --bg:#121110;--sf:#1B1A18;--sf2:#242220;--bd:#2F2D2A;--tx:#F4F3F1;--tx2:#B3AFAB;--tx3:#736F6B;
+      --acOn:#1A2005;--acDeep:#B9DD5E;--acSoft:#2A3313;--sh:0 1px 2px rgba(0,0,0,.4),0 6px 20px rgba(0,0,0,.35);
+      --s0b:#123638;--s0f:#7FD9DE;--s1b:#28330F;--s1f:#C6E378;--s2b:#3B3110;--s2f:#FED24F;--s3b:#421515;--s3f:#FF7A7A;--s4b:#31153F;--s4f:#C77BE8;
+      --wb:#3D2412;--wf:#FF9A4D;--db:#421515;--df:#FF6B6B;
+    }
+    #recruiterHqRoot .rhq * { box-sizing:border-box; }
+    #recruiterHqRoot .rhq { padding:26px 30px 60px; max-width:1180px; margin:0 auto; }
+    .rhq h1 { margin:0; font-size:25px; font-weight:700; letter-spacing:-0.02em; }
+    .rhq-sub { color:var(--tx2); font-size:13.5px; margin-top:3px; }
+    .rhq-head { display:flex; align-items:flex-end; justify-content:space-between; gap:16px; margin-bottom:22px; flex-wrap:wrap; }
+    .rhq-tabs { display:flex; gap:4px; background:var(--sf2); border:1px solid var(--bd); border-radius:14px; padding:5px; margin-bottom:22px; width:fit-content; max-width:100%; overflow-x:auto; }
+    .rhq-tab { border:none; background:transparent; color:var(--tx2); font-size:13.5px; font-weight:600; padding:9px 16px; border-radius:10px; cursor:pointer; white-space:nowrap; }
+    .rhq-tab:hover { color:var(--tx); }
+    .rhq-tab.on { background:var(--sf); color:var(--tx); box-shadow:var(--sh); }
+    .rhq-btn { padding:10px 18px; border-radius:999px; border:none; background:var(--ac); color:var(--acOn); font-size:13.5px; font-weight:700; cursor:pointer; box-shadow:var(--sh); }
+    .rhq-btn:hover { filter:brightness(1.08); }
+    .rhq-btn.ghost { background:transparent; color:var(--tx2); border:1px solid var(--bd); box-shadow:none; font-weight:600; }
+    .rhq-btn.ghost:hover { background:var(--sf2); filter:none; }
+    .rhq-btn.warn { background:transparent; border:1px solid var(--wb); color:var(--wf); box-shadow:none; font-weight:600; }
+    .rhq-btn.warn:hover { background:var(--wb); filter:none; }
+    .rhq-btn.danger { background:transparent; border:1px solid var(--db); color:var(--df); box-shadow:none; font-weight:600; }
+    .rhq-btn.danger:hover { background:var(--db); filter:none; }
+    .rhq-btn.sm { padding:8px 14px; font-size:12.5px; }
+    .rhq-sel, .rhq-inp, .rhq-ta { padding:10px 13px; border-radius:11px; border:1px solid var(--bd); background:var(--sf); color:var(--tx); font-size:13.5px; font-family:inherit; }
+    .rhq-sel { cursor:pointer; font-weight:600; }
+    .rhq-ta { line-height:1.5; resize:vertical; width:100%; }
+    .rhq-card { background:var(--sf); border:1px solid var(--bd); border-radius:16px; box-shadow:var(--sh); }
+    .rhq-card.pad { padding:20px 22px; }
+    .rhq-grid4 { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; }
+    .rhq-grid3 { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+    .rhq-kpi-l { font-size:12px; font-weight:600; color:var(--tx3); text-transform:uppercase; letter-spacing:0.05em; }
+    .rhq-kpi-v { font-size:29px; font-weight:700; letter-spacing:-0.02em; margin-top:5px; }
+    .rhq-kpi-s { font-size:12px; color:var(--tx3); margin-top:3px; }
+    .rhq-av { border-radius:50%; background:var(--acSoft); color:var(--acDeep); display:flex; align-items:center; justify-content:center; font-weight:700; flex:none; }
+    .rhq-chip { display:inline-flex; align-items:center; padding:3px 10px; border-radius:999px; font-size:11.5px; font-weight:700; white-space:nowrap; }
+    .rhq-stg0 { background:var(--s0b); color:var(--s0f); } .rhq-dot0 { background:var(--s0f); }
+    .rhq-stg1 { background:var(--s1b); color:var(--s1f); } .rhq-dot1 { background:var(--s1f); }
+    .rhq-stg2 { background:var(--s2b); color:var(--s2f); } .rhq-dot2 { background:var(--s2f); }
+    .rhq-stg3 { background:var(--s3b); color:var(--s3f); } .rhq-dot3 { background:var(--s3f); }
+    .rhq-stg4 { background:var(--s4b); color:var(--s4f); } .rhq-dot4 { background:var(--s4f); }
+    .rhq-dot { width:9px; height:9px; border-radius:50%; flex:none; }
+    .rhq-sectitle { font-size:15px; font-weight:700; }
+    .rhq-row { border-bottom:1px solid var(--bd); }
+    .rhq-row:last-child { border-bottom:none; }
+    .rhq-rowhover:hover { background:var(--sf2); }
+    .rhq-muted { color:var(--tx3); font-size:13px; }
+    .rhq-label { font-size:11px; font-weight:700; color:var(--tx3); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:6px; }
+    .rhq-modalwrap { position:fixed; inset:0; background:rgba(20,18,15,0.5); display:flex; align-items:center; justify-content:center; z-index:9000; padding:24px; }
+    .rhq-modal { width:580px; max-width:100%; max-height:calc(100vh - 60px); overflow-y:auto; background:var(--sf); border:1px solid var(--bd); border-radius:20px; padding:24px 26px; box-shadow:0 24px 60px rgba(0,0,0,0.3); }
+    .rhq-cols { display:grid; grid-template-columns:1.4fr 1fr; gap:14px; align-items:start; }
+    .rhq-cols-prof { display:grid; grid-template-columns:1fr 1.25fr; gap:14px; align-items:start; }
+    .rhq-scroll { overflow-x:auto; }
+    .rhq-board { display:flex; gap:14px; overflow-x:auto; align-items:flex-start; padding-bottom:10px; }
+    .rhq-col { flex:0 0 250px; background:var(--sf2); border:1px solid var(--bd); border-radius:15px; padding:12px; }
+    .rhq-col.drag { outline:2px dashed var(--ac); outline-offset:-4px; }
+    .rhq-pcard { background:var(--sf); border:1px solid var(--bd); border-radius:13px; padding:12px 13px; cursor:grab; box-shadow:var(--sh); }
+    .rhq-pcard:hover { border-color:var(--ac); }
+    .rhq-gate { padding:3rem 1rem; text-align:center; color:var(--tx3); font-size:0.95rem; }
+    .rhq-step { height:6px; border-radius:4px; background:var(--sf2); }
+    @media (max-width:900px){ #recruiterHqRoot .rhq{ padding:18px 14px 50px; } .rhq-grid4{ grid-template-columns:repeat(2,1fr);} .rhq-cols,.rhq-cols-prof{ grid-template-columns:1fr; } }
+    @media (max-width:560px){ .rhq-grid4,.rhq-grid3{ grid-template-columns:1fr; } }
+    `;
+    function ensureCSS() {
+      if (document.getElementById('rhq-styles')) return;
+      const s = document.createElement('style'); s.id = 'rhq-styles'; s.textContent = CSS;
+      document.head.appendChild(s);
+    }
+
+    // ── small presentational bits ─────────────────────────────────────────────
+    function Avatar({ name, size = 34, fs }) {
+      return <div className="rhq-av" style={{ width: size, height: size, fontSize: fs || Math.round(size * 0.36) }}>{initials(name)}</div>;
+    }
+    function DayBadge({ days, stage }) {
+      const thr = STALL_DAYS[stage] || 14;
+      const cls = stage === 4 ? 'rhq-stg1' : days > thr ? 'rhq-stg3' : days > thr * 0.6 ? 'rhq-stg2' : 'rhq-stg1';
+      return <span className={'rhq-chip ' + cls}>{days}d</span>;
+    }
+    function StageChip({ stage }) { return <span className={'rhq-chip rhq-stg' + stage}>{STAGES[stage]}</span>; }
+
+    // ── data hook ─────────────────────────────────────────────────────────────
+    function useRecruiterData() {
+      const [recruits, setRecruits] = useState(null);
+      const [roster, setRoster] = useState([]);
+      const [activity, setActivity] = useState([]);
+      const [err, setErr] = useState(null);
+
+      const reload = useCallback(async () => {
+        try {
+          const [rc, rs, ac] = await Promise.all([
+            getJSON('recruits?select=*&order=stage_entered_at.asc'),
+            getJSON('agent_profiles?select=user_id,agent_name,is_manager,manager_user_id&order=agent_name.asc'),
+            getJSON('recruit_stage_events?select=stage,status,created_at,recruits(full_name)&order=created_at.desc&limit=12')
+          ]);
+          setRecruits(Array.isArray(rc) ? rc : []);
+          setRoster(Array.isArray(rs) ? rs : []);
+          setActivity(Array.isArray(ac) ? ac : []);
+        } catch (e) { setErr(String(e)); setRecruits([]); }
+      }, []);
+
+      useEffect(() => { reload(); }, [reload]);
+      return { recruits, roster, activity, err, reload, setRecruits };
+    }
+
+    // ── mutations ─────────────────────────────────────────────────────────────
+    async function patchRecruit(id, body) {
+      await ensureToken();
+      const r = await rest('recruits?id=eq.' + id, { method: 'PATCH', headers: writeHeaders(), body: JSON.stringify(body) });
+      return r.ok ? (await r.json())[0] : null;
+    }
+    async function insertRecruit(body) {
+      await ensureToken();
+      const r = await rest('recruits', { method: 'POST', headers: writeHeaders(), body: JSON.stringify(body) });
+      return r.ok ? (await r.json())[0] : null;
+    }
+    async function deleteRecruit(id) {
+      await ensureToken();
+      return (await rest('recruits?id=eq.' + id, { method: 'DELETE', headers: authHeaders() })).ok;
+    }
+    async function addNote(recruit_id, body, author) {
+      await ensureToken();
+      const r = await rest('recruit_notes', { method: 'POST', headers: writeHeaders(), body: JSON.stringify({ recruit_id, body, author_user_id: author }) });
+      return r.ok ? (await r.json())[0] : null;
+    }
+
+    // ══════════════════════════════════════════════════════════════════════════
+    //  MAIN COMPONENT
+    // ══════════════════════════════════════════════════════════════════════════
+    function RecruiterHQ() {
+      const me = window.currentUser || {};
+      const myEmail = (me.email || '').toLowerCase();
+      const isAdmin = ADMIN_EMAILS.includes(myEmail) || me.id === ADMIN_UID;
+
+      const { recruits, roster, activity, err, reload } = useRecruiterData();
+      const [view, setView] = useState('dashboard');           // dashboard|board|list|leaders
+      const [selId, setSelId] = useState(null);                // open profile
+      // Sub-nav now lives in the Sales Hub sidebar dropdown; expose a setter so
+      // its buttons can switch the view. Assigned during render so it's ready
+      // immediately after the synchronous initial mount.
+      window.rhqSetView = (v) => { setSelId(null); setView(v); };
+      const [showAdd, setShowAdd] = useState(false);
+      const [mgrFilter, setMgrFilter] = useState('all');       // admin recruiter filter
+      const [search, setSearch] = useState('');
+      const [chip, setChip] = useState('all');                 // all | stage:N | abandoned
+
+      const rosterMap = useMemo(() => {
+        const m = {}; roster.forEach(r => { m[r.user_id] = r; }); return m;
+      }, [roster]);
+      const recruiterName = useCallback((uid) => (rosterMap[uid] && rosterMap[uid].agent_name) || (uid === me.id ? (me.user_metadata && me.user_metadata.name) || 'You' : '—'), [rosterMap, me]);
+
+      // Managers the current user can credit recruits to (self + visible managers).
+      const recruiterOptions = useMemo(() => {
+        const opts = [];
+        const seen = {};
+        if (me.id) { opts.push({ id: me.id, name: recruiterName(me.id) }); seen[me.id] = 1; }
+        roster.filter(r => r.is_manager).forEach(r => { if (!seen[r.user_id]) { opts.push({ id: r.user_id, name: r.agent_name }); seen[r.user_id] = 1; } });
+        return opts;
+      }, [roster, me, recruiterName]);
+
+      const list = recruits || [];
+      const filteredByMgr = useMemo(() => (isAdmin && mgrFilter !== 'all') ? list.filter(r => r.recruiter_user_id === mgrFilter) : list, [list, isAdmin, mgrFilter]);
+      const active = useMemo(() => filteredByMgr.filter(r => r.status === 'active'), [filteredByMgr]);
+
+      const sel = useMemo(() => list.find(r => r.id === selId) || null, [list, selId]);
+
+      const openProfile = (id) => { setSelId(id); };
+      const back = () => setSelId(null);
+
+      async function afterMutate() { await reload(); }
+
+      // loading / gate
+      if (recruits === null) return <div className="rhq"><div className="rhq-gate">Loading Recruiter HQ…</div></div>;
+      if (err) return <div className="rhq"><div className="rhq-gate">Couldn’t load Recruiter HQ.<br /><span style={{ fontSize: 12 }}>{err}</span></div></div>;
+
+      if (sel) return <Profile sel={sel} isAdmin={isAdmin} me={me} roster={roster} rosterMap={rosterMap} recruiterName={recruiterName}
+        recruiterOptions={recruiterOptions} onBack={back} onChanged={afterMutate} />;
+
+      const mgrOpts = (() => {
+        const ids = {}; list.forEach(r => { if (r.recruiter_user_id) ids[r.recruiter_user_id] = 1; });
+        return Object.keys(ids).map(id => ({ id, name: recruiterName(id) })).sort((a, b) => a.name.localeCompare(b.name));
+      })();
+
+      const header = (title, sub) => (
+        <div className="rhq-head">
+          <div><h1>{title}</h1><div className="rhq-sub">{sub}</div></div>
+          <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
+            {isAdmin && mgrOpts.length > 0 &&
+              <select className="rhq-sel" value={mgrFilter} onChange={e => setMgrFilter(e.target.value)}>
+                <option value="all">All recruiters</option>
+                {mgrOpts.map(o => <option key={o.id} value={o.id}>{o.name}</option>)}
+              </select>}
+            <button className="rhq-btn" onClick={() => setShowAdd(true)}>+ Add recruit</button>
+          </div>
+        </div>
+      );
+
+      return (
+        <div className="rhq">
+          {view === 'dashboard' && <Dashboard active={active} all={filteredByMgr} activity={activity} header={header} onOpen={openProfile} />}
+          {view === 'board' && <Board active={active} header={header} recruiterName={recruiterName} onOpen={openProfile} onDrop={async (id, stage) => { await patchRecruit(id, { stage }); afterMutate(); }} />}
+          {view === 'list' && <RecruitList rows={filteredByMgr} header={header} search={search} setSearch={setSearch} chip={chip} setChip={setChip} recruiterName={recruiterName} onOpen={openProfile} />}
+          {view === 'leaders' && <Leaderboard rows={filteredByMgr} recruiterName={recruiterName} />}
+
+          {showAdd && <AddRecruit me={me} recruiterOptions={recruiterOptions} onClose={() => setShowAdd(false)} onSaved={async () => { setShowAdd(false); await afterMutate(); }} />}
+        </div>
+      );
+    }
+
+    // ── DASHBOARD ─────────────────────────────────────────────────────────────
+    function Dashboard({ active, all, activity, header, onOpen }) {
+      const licensed = all.filter(r => r.stage === 4 && r.status === 'active').length;
+      const studying = active.filter(r => r.stage === 1 || r.stage === 2).length;
+      const stalled = active.filter(r => r.stage < 4 && daysSince(r.stage_entered_at) > STALL_DAYS[r.stage]);
+      const inPipeline = active.filter(r => r.stage < 4).length;
+      const kpis = [
+        { l: 'In pipeline', v: inPipeline, s: 'active, not yet licensed' },
+        { l: 'Licensed', v: licensed, s: 'fully licensed agents' },
+        { l: 'Studying / exam', v: studying, s: 'in pre-licensing' },
+        { l: 'Stalled', v: stalled.length, s: 'past follow-up threshold' }
+      ];
+      const funnel = STAGES.map((name, i) => ({ name, count: active.filter(r => r.stage === i).length }));
+      const fmax = Math.max(1, ...funnel.map(f => f.count));
+      const exams = active.filter(r => r.exam_date && daysUntil(r.exam_date) !== null && daysUntil(r.exam_date) >= 0)
+        .sort((a, b) => a.exam_date.localeCompare(b.exam_date)).slice(0, 5);
+      const today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+
+      return (
+        <div>
+          {header('Dashboard', today + ' · ' + inPipeline + ' recruits in the pipeline')}
+          <div className="rhq-grid4" style={{ marginBottom: 14 }}>
+            {kpis.map((k, i) =>
+              <div key={i} className="rhq-card pad">
+                <div className="rhq-kpi-l">{k.l}</div>
+                <div className="rhq-kpi-v">{k.v}</div>
+                <div className="rhq-kpi-s">{k.s}</div>
+              </div>)}
+          </div>
+          <div className="rhq-cols">
+            <div className="rhq-card pad">
+              <div className="rhq-sectitle" style={{ marginBottom: 16 }}>Pipeline funnel</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                {funnel.map((f, i) =>
+                  <div key={i} style={{ display: 'grid', gridTemplateColumns: '108px 1fr 28px', gap: 12, alignItems: 'center' }}>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--tx2)' }}>{f.name}</div>
+                    <div style={{ height: 24, background: 'var(--sf2)', borderRadius: 8, overflow: 'hidden' }}>
+                      <div className={'rhq-dot' + i} style={{ height: '100%', width: (f.count / fmax * 100) + '%', minWidth: f.count ? 6 : 0, borderRadius: 8 }}></div>
+                    </div>
+                    <div style={{ fontSize: 13.5, fontWeight: 700, textAlign: 'right' }}>{f.count}</div>
+                  </div>)}
+              </div>
+              <div className="rhq-sectitle" style={{ margin: '24px 0 12px' }}>Recent activity</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                {activity.length === 0 && <div className="rhq-muted">No recent stage changes.</div>}
+                {activity.map((a, i) => {
+                  const nm = a.recruits && a.recruits.full_name || 'Recruit';
+                  return <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '7px 2px' }}>
+                    <Avatar name={nm} size={30} />
+                    <div style={{ fontSize: 13.5, flex: 1, minWidth: 0 }}><strong style={{ fontWeight: 600 }}>{nm}</strong> <span style={{ color: 'var(--tx2)' }}>moved to</span> <span style={{ fontWeight: 600 }}>{a.status === 'abandoned' ? 'Abandoned' : STAGES[a.stage]}</span></div>
+                    <div style={{ fontSize: 12, color: 'var(--tx3)' }}>{ago(a.created_at)}</div>
+                  </div>;
+                })}
+              </div>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+              <div className="rhq-card pad">
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+                  <div className="rhq-sectitle">Needs attention</div>
+                  <span className="rhq-chip rhq-stg3">{stalled.length} stalled</span>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  {stalled.length === 0 && <div className="rhq-muted">Nothing stalled — nice.</div>}
+                  {stalled.slice(0, 6).map(r =>
+                    <div key={r.id} className="rhq-rowhover" onClick={() => onOpen(r.id)} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '9px 11px', borderRadius: 12, cursor: 'pointer', border: '1px solid var(--bd)' }}>
+                      <Avatar name={r.full_name} size={32} />
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontSize: 13.5, fontWeight: 600 }}>{r.full_name}</div>
+                        <div style={{ fontSize: 12, color: 'var(--tx3)' }}>{STAGES[r.stage]}</div>
+                      </div>
+                      <DayBadge days={daysSince(r.stage_entered_at)} stage={r.stage} />
+                    </div>)}
+                </div>
+              </div>
+              <div className="rhq-card pad">
+                <div className="rhq-sectitle" style={{ marginBottom: 12 }}>Upcoming exams</div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  {exams.length === 0 && <div className="rhq-muted">No exams scheduled.</div>}
+                  {exams.map(r => {
+                    const dn = daysUntil(r.exam_date);
+                    return <div key={r.id} className="rhq-rowhover" onClick={() => onOpen(r.id)} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '9px 11px', borderRadius: 12, cursor: 'pointer', border: '1px solid var(--bd)' }}>
+                      <Avatar name={r.full_name} size={32} />
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontSize: 13.5, fontWeight: 600 }}>{r.full_name}</div>
+                        <div style={{ fontSize: 12, color: 'var(--tx3)' }}>{fmtDate(r.exam_date)}</div>
+                      </div>
+                      <span className="rhq-chip rhq-stg2">{dn === 0 ? 'today' : 'in ' + dn + 'd'}</span>
+                    </div>;
+                  })}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // ── PIPELINE BOARD ────────────────────────────────────────────────────────
+    function Board({ active, header, recruiterName, onOpen, onDrop }) {
+      const dragId = useRef(null);
+      const [over, setOver] = useState(null);
+      const cols = STAGES.map((name, i) => ({ name, i, recruits: active.filter(r => r.stage === i) }));
+      return (
+        <div>
+          {header('Pipeline', 'Drag a card between stages, or click to open the recruit')}
+          <div className="rhq-board">
+            {cols.map(col =>
+              <div key={col.i} className={'rhq-col' + (over === col.i ? ' drag' : '')}
+                onDragOver={e => { e.preventDefault(); setOver(col.i); }}
+                onDragLeave={() => setOver(o => o === col.i ? null : o)}
+                onDrop={() => { setOver(null); if (dragId.current != null) { onDrop(dragId.current, col.i); dragId.current = null; } }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '2px 4px 12px' }}>
+                  <span className={'rhq-dot rhq-dot' + col.i}></span>
+                  <span style={{ fontSize: 13, fontWeight: 700 }}>{col.name}</span>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--tx3)', marginLeft: 'auto' }}>{col.recruits.length}</span>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8, minHeight: 50 }}>
+                  {col.recruits.map(r =>
+                    <div key={r.id} className="rhq-pcard" draggable onDragStart={() => { dragId.current = r.id; }} onClick={() => onOpen(r.id)}>
+                      <div style={{ fontSize: 14, fontWeight: 600, letterSpacing: '-0.01em' }}>{r.full_name}</div>
+                      <div style={{ fontSize: 12, color: 'var(--tx3)', marginTop: 2 }}>via {recruiterName(r.recruiter_user_id)}{r.city ? ' · ' + r.city + (r.state ? ', ' + r.state : '') : ''}</div>
+                      <div style={{ marginTop: 10 }}><DayBadge days={daysSince(r.stage_entered_at)} stage={r.stage} /></div>
+                    </div>)}
+                </div>
+              </div>)}
+          </div>
+        </div>
+      );
+    }
+
+    // ── RECRUITS LIST ─────────────────────────────────────────────────────────
+    function RecruitList({ rows, header, search, setSearch, chip, setChip, recruiterName, onOpen }) {
+      const chips = [{ k: 'all', l: 'All active' }].concat(STAGES.map((s, i) => ({ k: 'stage:' + i, l: s }))).concat([{ k: 'abandoned', l: 'Abandoned' }]);
+      const q = search.trim().toLowerCase();
+      const filtered = rows.filter(r => {
+        if (chip === 'abandoned') { if (r.status !== 'abandoned') return false; }
+        else if (chip.startsWith('stage:')) { if (r.status !== 'active' || r.stage !== +chip.split(':')[1]) return false; }
+        else { if (r.status !== 'active') return false; }
+        if (!q) return true;
+        return [r.full_name, r.email, r.city, r.state, recruiterName(r.recruiter_user_id)].some(v => (v || '').toLowerCase().includes(q));
+      });
+      return (
+        <div>
+          {header('Recruits', filtered.length + ' shown')}
+          <div style={{ display: 'flex', gap: 10, alignItems: 'center', marginBottom: 16, flexWrap: 'wrap' }}>
+            <input className="rhq-inp" style={{ flex: 1, minWidth: 220, maxWidth: 340 }} value={search} onChange={e => setSearch(e.target.value)} placeholder="Search name, email, city, recruiter…" />
+            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+              {chips.map(c =>
+                <button key={c.k} className={'rhq-btn sm ' + (chip === c.k ? '' : 'ghost')} onClick={() => setChip(c.k)}>{c.l}</button>)}
+            </div>
+          </div>
+          <div className="rhq-card rhq-scroll">
+            <div style={{ minWidth: 720 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '2.2fr 1.1fr 1.1fr 1.1fr 1.1fr 0.8fr', gap: 12, padding: '12px 20px', borderBottom: '1px solid var(--bd)', fontSize: 11.5, fontWeight: 700, color: 'var(--tx3)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                <div>Recruit</div><div>Location</div><div>Phone</div><div>Recruiter</div><div>Stage</div><div>In stage</div>
+              </div>
+              {filtered.length === 0 && <div style={{ padding: '22px 20px' }} className="rhq-muted">No recruits match.</div>}
+              {filtered.map(r =>
+                <div key={r.id} className="rhq-row rhq-rowhover" onClick={() => onOpen(r.id)} style={{ display: 'grid', gridTemplateColumns: '2.2fr 1.1fr 1.1fr 1.1fr 1.1fr 0.8fr', gap: 12, padding: '13px 20px', alignItems: 'center', cursor: 'pointer' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12, minWidth: 0 }}>
+                    <Avatar name={r.full_name} />
+                    <div style={{ minWidth: 0 }}>
+                      <div style={{ fontSize: 13.5, fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{r.full_name}</div>
+                      <div style={{ fontSize: 12, color: 'var(--tx3)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{r.email || '—'}</div>
+                    </div>
+                  </div>
+                  <div style={{ fontSize: 13, color: 'var(--tx2)' }}>{r.city ? r.city + (r.state ? ', ' + r.state : '') : (r.state || '—')}</div>
+                  <div style={{ fontSize: 13, color: 'var(--tx2)' }}>{r.phone || '—'}</div>
+                  <div style={{ fontSize: 13, color: 'var(--tx2)' }}>{recruiterName(r.recruiter_user_id)}</div>
+                  <div>{r.status === 'abandoned' ? <span className="rhq-chip rhq-stg3">Abandoned</span> : <StageChip stage={r.stage} />}</div>
+                  <div>{r.status === 'abandoned' ? <span className="rhq-muted">—</span> : <DayBadge days={daysSince(r.stage_entered_at)} stage={r.stage} />}</div>
+                </div>)}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // ── LEADERBOARD ───────────────────────────────────────────────────────────
+    function Leaderboard({ rows, recruiterName }) {
+      const byRec = {};
+      rows.forEach(r => {
+        if (!r.recruiter_user_id) return;
+        const g = byRec[r.recruiter_user_id] || (byRec[r.recruiter_user_id] = { active: 0, licensed: 0, stalled: 0, sumDays: 0, licCount: 0 });
+        if (r.status === 'active') {
+          g.active++;
+          if (r.stage === 4) { g.licensed++; g.sumDays += daysBetween(r.created_at, r.stage_entered_at); g.licCount++; }
+          else if (daysSince(r.stage_entered_at) > STALL_DAYS[r.stage]) g.stalled++;
+        }
+      });
+      const leaders = Object.keys(byRec).map(id => {
+        const g = byRec[id];
+        return { id, name: recruiterName(id), active: g.active, licensed: g.licensed, stalled: g.stalled, avg: g.licCount ? Math.round(g.sumDays / g.licCount) : null };
+      }).sort((a, b) => b.licensed - a.licensed || (a.avg == null ? 1 : b.avg == null ? -1 : a.avg - b.avg) || b.active - a.active);
+
+      return (
+        <div>
+          <div style={{ marginBottom: 20 }}><h1>Leaderboard</h1><div className="rhq-sub">Recruiter performance · abandoned recruits excluded</div></div>
+          <div className="rhq-card rhq-scroll">
+            <div style={{ minWidth: 640 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '56px 2fr 1fr 1fr 1.3fr 1fr', gap: 12, padding: '12px 20px', borderBottom: '1px solid var(--bd)', fontSize: 11.5, fontWeight: 700, color: 'var(--tx3)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                <div>Rank</div><div>Recruiter</div><div>Active</div><div>Licensed</div><div>Avg days to license</div><div>Stalled</div>
+              </div>
+              {leaders.length === 0 && <div style={{ padding: '22px 20px' }} className="rhq-muted">No recruiter activity yet.</div>}
+              {leaders.map((l, i) =>
+                <div key={l.id} className="rhq-row" style={{ display: 'grid', gridTemplateColumns: '56px 2fr 1fr 1fr 1.3fr 1fr', gap: 12, padding: '15px 20px', alignItems: 'center' }}>
+                  <div style={{ fontWeight: 700, color: i < 3 ? 'var(--acDeep)' : 'var(--tx3)' }}>{i + 1}</div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                    <Avatar name={l.name} />
+                    <div style={{ fontSize: 13.5, fontWeight: 600 }}>{l.name}</div>
+                  </div>
+                  <div style={{ fontSize: 14, fontWeight: 700 }}>{l.active}</div>
+                  <div><span className="rhq-chip rhq-stg4">{l.licensed}</span></div>
+                  <div style={{ fontSize: 13.5, color: 'var(--tx2)', fontWeight: 600 }}>{l.avg == null ? '—' : l.avg + 'd'}</div>
+                  <div style={{ fontSize: 13.5, fontWeight: 600 }}>{l.stalled}</div>
+                </div>)}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // ── ADD RECRUIT MODAL ─────────────────────────────────────────────────────
+    function AddRecruit({ me, recruiterOptions, onClose, onSaved }) {
+      const [f, setF] = useState({ full_name: '', email: '', phone: '', city: '', state: '', timezone: 'Central', recruiter_user_id: me.id || '', exam_date: '' });
+      const [busy, setBusy] = useState(false);
+      const set = (k) => (e) => setF(s => Object.assign({}, s, { [k]: e.target.value }));
+      const save = async () => {
+        if (!f.full_name.trim()) return;
+        setBusy(true);
+        const body = {
+          full_name: f.full_name.trim(), email: f.email.trim() || null, phone: f.phone.trim() || null,
+          city: f.city.trim() || null, state: f.state.trim() || null, timezone: f.timezone,
+          recruiter_user_id: f.recruiter_user_id || null, exam_date: f.exam_date || null,
+          stage: 0, status: 'active', created_by: me.id || null
+        };
+        const row = await insertRecruit(body);
+        setBusy(false);
+        if (row) onSaved(); else alert('Could not add the recruit. Check your access and try again.');
+      };
+      const F = ({ label, k, type }) => (
+        <div><div className="rhq-label">{label}</div><input className="rhq-inp" style={{ width: '100%' }} type={type || 'text'} value={f[k]} onChange={set(k)} /></div>
+      );
+      return (
+        <div className="rhq-modalwrap" onClick={onClose}>
+          <div className="rhq rhq-modal" onClick={e => e.stopPropagation()} style={{ padding: 0 }}>
+            <div style={{ padding: '24px 26px' }}>
+              <div style={{ fontSize: 18, fontWeight: 700, marginBottom: 18 }}>Add recruit</div>
+              <div className="rhq-grid3" style={{ marginBottom: 12 }}>
+                <div style={{ gridColumn: '1 / -1' }}><div className="rhq-label">Full name</div><input className="rhq-inp" style={{ width: '100%' }} value={f.full_name} onChange={set('full_name')} placeholder="First Last" autoFocus /></div>
+                {F({ label: 'Email', k: 'email' })}
+                {F({ label: 'Phone', k: 'phone' })}
+                <div><div className="rhq-label">Recruiter</div>
+                  <select className="rhq-sel" style={{ width: '100%' }} value={f.recruiter_user_id} onChange={set('recruiter_user_id')}>
+                    {recruiterOptions.map(o => <option key={o.id} value={o.id}>{o.name}</option>)}
+                  </select></div>
+                {F({ label: 'City', k: 'city' })}
+                {F({ label: 'State', k: 'state' })}
+                <div><div className="rhq-label">Timezone</div>
+                  <select className="rhq-sel" style={{ width: '100%' }} value={f.timezone} onChange={set('timezone')}>
+                    {TZ_OPTS.map(t => <option key={t} value={t}>{t}</option>)}
+                  </select></div>
+                {F({ label: 'Exam date', k: 'exam_date', type: 'date' })}
+              </div>
+              <div className="rhq-muted" style={{ marginBottom: 16 }}>New recruits start in <strong>Recruiting</strong>. They’ll auto-link to their Sales Hub account by email or name when they sign up.</div>
+              <div style={{ display: 'flex', gap: 10 }}>
+                <button className="rhq-btn" disabled={busy} onClick={save}>{busy ? 'Adding…' : 'Add recruit'}</button>
+                <button className="rhq-btn ghost" onClick={onClose}>Cancel</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // ── RECRUIT PROFILE (drill-in) ────────────────────────────────────────────
+    function Profile({ sel, isAdmin, me, roster, rosterMap, recruiterName, recruiterOptions, onBack, onChanged }) {
+      const [notes, setNotes] = useState([]);
+      const [events, setEvents] = useState([]);
+      const [prod, setProd] = useState(null);        // {totalAp,count,bestDay,bestWeek} | null
+      const [lic, setLic] = useState({ state_licenses: [], carrier_numbers: [] });
+      const [noteDraft, setNoteDraft] = useState('');
+      const [editing, setEditing] = useState(false);
+      const [ed, setEd] = useState({});
+      const [confirm, setConfirm] = useState(null);   // 'advance'|'abandon'|'delete'|null
+      const [goals, setGoals] = useState({ goal_90: sel.goal_90 || '', goal_year1: sel.goal_year1 || '', goal_long_term: sel.goal_long_term || '', their_why: sel.their_why || '' });
+      const [linkId, setLinkId] = useState('');
+
+      useEffect(() => {
+        let live = true;
+        (async () => {
+          const [nt, ev] = await Promise.all([
+            getJSON('recruit_notes?select=*&recruit_id=eq.' + sel.id + '&order=created_at.desc'),
+            getJSON('recruit_stage_events?select=*&recruit_id=eq.' + sel.id + '&order=created_at.asc')
+          ]);
+          if (!live) return;
+          setNotes(nt); setEvents(ev);
+        })();
+        return () => { live = false; };
+      }, [sel.id]);
+
+      // Live Sales Hub data once linked to an account.
+      useEffect(() => {
+        let live = true;
+        if (!sel.linked_user_id) { setProd(null); setLic({ state_licenses: [], carrier_numbers: [] }); return; }
+        (async () => {
+          const [pol, prof] = await Promise.all([
+            getJSON('policies?select=annual_premium,policy_date,status&user_id=eq.' + sel.linked_user_id + '&limit=5000'),
+            getJSON('agent_profiles?select=state_licenses,carrier_numbers&user_id=eq.' + sel.linked_user_id + '&limit=1')
+          ]);
+          if (!live) return;
+          const days = {}, weeks = {}; let total = 0, count = 0;
+          (pol || []).forEach(p => {
+            const ap = Number(p.annual_premium) || 0; total += ap; count++;
+            if (p.policy_date) { days[p.policy_date] = (days[p.policy_date] || 0) + ap; const w = isoWeek(p.policy_date); weeks[w] = (weeks[w] || 0) + ap; }
+          });
+          const bestDay = Object.keys(days).reduce((a, k) => days[k] > a.v ? { k, v: days[k] } : a, { k: null, v: 0 });
+          const bestWeek = Object.keys(weeks).reduce((a, k) => weeks[k] > a.v ? { k, v: weeks[k] } : a, { k: null, v: 0 });
+          setProd({ totalAp: total, count, bestDay, bestWeek });
+          const pr = (prof && prof[0]) || {};
+          setLic({ state_licenses: Array.isArray(pr.state_licenses) ? pr.state_licenses : [], carrier_numbers: Array.isArray(pr.carrier_numbers) ? pr.carrier_numbers : [] });
+        })();
+        return () => { live = false; };
+      }, [sel.linked_user_id]);
+
+      const startEdit = () => { setEd({ full_name: sel.full_name || '', email: sel.email || '', phone: sel.phone || '', city: sel.city || '', state: sel.state || '', timezone: sel.timezone || 'Central', recruiter_user_id: sel.recruiter_user_id || '', exam_date: sel.exam_date || '', stage: sel.stage }); setEditing(true); };
+      const setEK = (k) => (e) => setEd(s => Object.assign({}, s, { [k]: e.target.value }));
+
+      const doPatch = async (body) => { await patchRecruit(sel.id, body); await onChanged(); };
+      const saveEdit = async () => {
+        await doPatch({ full_name: ed.full_name.trim(), email: ed.email.trim() || null, phone: ed.phone.trim() || null, city: ed.city.trim() || null, state: ed.state.trim() || null, timezone: ed.timezone, recruiter_user_id: ed.recruiter_user_id || null, exam_date: ed.exam_date || null, stage: Number(ed.stage) });
+        setEditing(false);
+      };
+      const saveGoals = () => doPatch({ goal_90: goals.goal_90 || null, goal_year1: goals.goal_year1 || null, goal_long_term: goals.goal_long_term || null, their_why: goals.their_why || null });
+      const advance = async () => { await doPatch({ stage: Math.min(4, sel.stage + 1) }); setConfirm(null); };
+      const abandon = async () => { await doPatch({ status: 'abandoned', abandoned_at: new Date().toISOString() }); setConfirm(null); };
+      const restore = async () => { await doPatch({ status: 'active', abandoned_at: null }); };
+      const remove = async () => { await deleteRecruit(sel.id); setConfirm(null); onBack(); onChanged(); };
+      const postNote = async () => {
+        const b = noteDraft.trim(); if (!b) return;
+        const row = await addNote(sel.id, b, me.id);
+        if (row) { setNotes(n => [row, ...n]); setNoteDraft(''); }
+      };
+      const linkAccount = async () => {
+        if (!linkId) return;
+        await patchRecruit(sel.id, { linked_user_id: linkId, link_status: 'confirmed' });
+        // Recruiter becomes the linked agent's manager (mirrors signup auto-link).
+        if (sel.recruiter_user_id) { await ensureToken(); try { await rest('agent_profiles?user_id=eq.' + linkId, { method: 'PATCH', headers: writeHeaders(), body: JSON.stringify({ manager_user_id: sel.recruiter_user_id }) }); } catch (e) {} }
+        await onChanged();
+      };
+
+      const linkedProfile = sel.linked_user_id && rosterMap[sel.linked_user_id];
+      const abandoned = sel.status === 'abandoned';
+      const stats = prod ? [
+        { l: 'Best day', v: moneyK(prod.bestDay.v), s: prod.bestDay.k ? fmtDate(prod.bestDay.k) : '—' },
+        { l: 'Best week', v: moneyK(prod.bestWeek.v), s: prod.bestWeek.k || '—' },
+        { l: 'Total AP', v: moneyK(prod.totalAp), s: prod.count + ' policies' }
+      ] : null;
+      // accounts available to link (unlinked recruit only): visible roster not already the recruit
+      const linkable = roster.filter(r => r.user_id !== me.id || true);
+
+      return (
+        <div className="rhq">
+          <button className="rhq-btn ghost sm" onClick={onBack} style={{ marginBottom: 14 }}>← Back</button>
+
+          {/* header card */}
+          <div className="rhq-card pad" style={{ marginBottom: 14 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
+              <Avatar name={sel.full_name} size={54} fs={18} />
+              <div style={{ flex: 1, minWidth: 200 }}>
+                <div style={{ fontSize: 21, fontWeight: 700, letterSpacing: '-0.02em' }}>{sel.full_name}</div>
+                <div style={{ fontSize: 13, color: 'var(--tx2)', marginTop: 2 }}>
+                  {[sel.city && (sel.city + (sel.state ? ', ' + sel.state : '')), sel.timezone, sel.email, sel.phone].filter(Boolean).join(' · ')}
+                  {' · via ' + recruiterName(sel.recruiter_user_id)}
+                </div>
+              </div>
+              {sel.exam_date && !abandoned && sel.stage < 3 && <span className="rhq-chip rhq-stg2">Exam {fmtDate(sel.exam_date)}</span>}
+              {!abandoned && <StageChip stage={sel.stage} />}
+              {abandoned
+                ? <>
+                  <span className="rhq-chip rhq-stg3">Abandoned{sel.abandoned_at ? ' · ' + fmtDate(sel.abandoned_at) : ''}</span>
+                  <button className="rhq-btn sm" onClick={restore}>Restore to pipeline</button>
+                </>
+                : sel.stage < 4 && (confirm === 'advance'
+                  ? <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'var(--sf2)', borderRadius: 999, padding: '5px 6px 5px 14px' }}>
+                    <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--tx2)' }}>Move to {STAGES[sel.stage + 1]}?</span>
+                    <button className="rhq-btn sm" onClick={advance}>Confirm</button>
+                    <button className="rhq-btn ghost sm" onClick={() => setConfirm(null)}>Cancel</button>
+                  </span>
+                  : <button className="rhq-btn sm" onClick={() => setConfirm('advance')}>Advance to {STAGES[sel.stage + 1]} →</button>)}
+              <button className="rhq-btn ghost sm" onClick={editing ? () => setEditing(false) : startEdit}>{editing ? 'Close' : 'Edit'}</button>
+            </div>
+            {/* stage stepper */}
+            {!abandoned &&
+              <div style={{ display: 'flex', gap: 4, marginTop: 20 }}>
+                {STAGES.map((s, i) =>
+                  <div key={i} style={{ flex: 1 }}>
+                    <div className={'rhq-step ' + (i <= sel.stage ? 'rhq-dot' + i : '')} style={i <= sel.stage ? {} : {}}></div>
+                    <div style={{ fontSize: 11, marginTop: 6, fontWeight: i === sel.stage ? 700 : 500, color: i <= sel.stage ? 'var(--tx2)' : 'var(--tx3)' }}>{s}</div>
+                  </div>)}
+              </div>}
+          </div>
+
+          {/* edit panel */}
+          {editing &&
+            <div className="rhq-card pad" style={{ marginBottom: 14 }}>
+              <div className="rhq-sectitle" style={{ marginBottom: 16 }}>Edit agent info</div>
+              <div className="rhq-grid3">
+                {[['Full name', 'full_name'], ['Email', 'email'], ['Phone', 'phone'], ['City', 'city'], ['State', 'state']].map(([l, k]) =>
+                  <div key={k}><div className="rhq-label">{l}</div><input className="rhq-inp" style={{ width: '100%' }} value={ed[k]} onChange={setEK(k)} /></div>)}
+                <div><div className="rhq-label">Timezone</div><select className="rhq-sel" style={{ width: '100%' }} value={ed.timezone} onChange={setEK('timezone')}>{TZ_OPTS.map(t => <option key={t}>{t}</option>)}</select></div>
+                <div><div className="rhq-label">Recruiter</div><select className="rhq-sel" style={{ width: '100%' }} value={ed.recruiter_user_id} onChange={setEK('recruiter_user_id')}>{recruiterOptions.map(o => <option key={o.id} value={o.id}>{o.name}</option>)}</select></div>
+                <div><div className="rhq-label">Stage</div><select className="rhq-sel" style={{ width: '100%' }} value={ed.stage} onChange={setEK('stage')}>{STAGES.map((s, i) => <option key={i} value={i}>{s}</option>)}</select></div>
+                <div><div className="rhq-label">Exam date</div><input className="rhq-inp" type="date" style={{ width: '100%' }} value={ed.exam_date || ''} onChange={setEK('exam_date')} /></div>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 18, flexWrap: 'wrap' }}>
+                <button className="rhq-btn" onClick={saveEdit}>Save changes</button>
+                <button className="rhq-btn ghost" onClick={() => setEditing(false)}>Cancel</button>
+                <div style={{ marginLeft: 'auto', display: 'flex', gap: 10 }}>
+                  {!abandoned && (confirm === 'abandon'
+                    ? <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'var(--wb)', borderRadius: 999, padding: '5px 6px 5px 14px' }}>
+                      <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--wf)' }}>Abandon?</span>
+                      <button className="rhq-btn sm" style={{ background: 'var(--wf)', color: '#fff' }} onClick={abandon}>Abandon</button>
+                      <button className="rhq-btn ghost sm" onClick={() => setConfirm(null)}>Cancel</button>
+                    </span>
+                    : <button className="rhq-btn warn" onClick={() => setConfirm('abandon')}>Abandon agent</button>)}
+                </div>
+              </div>
+              <div className="rhq-muted" style={{ marginTop: 12 }}>Abandoning keeps the recruit and their notes in the Abandoned list in case they re-apply, and archives their linked Sales Hub agent. Agents are only permanently deleted from the Agency section.</div>
+            </div>}
+
+          {/* link prompt for unlinked / ambiguous recruits */}
+          {(!sel.linked_user_id) &&
+            <div className="rhq-card pad" style={{ marginBottom: 14, borderColor: sel.link_status === 'ambiguous' ? 'var(--s2f)' : 'var(--bd)' }}>
+              <div className="rhq-sectitle" style={{ marginBottom: 4 }}>{sel.link_status === 'ambiguous' ? 'Confirm Sales Hub account' : 'Link a Sales Hub account'}</div>
+              <div className="rhq-muted" style={{ marginBottom: 12 }}>{sel.link_status === 'ambiguous' ? 'More than one account matched this name — pick the right one to link.' : 'No account yet. Recruits auto-link on signup; you can also link manually.'}</div>
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                <select className="rhq-sel" value={linkId} onChange={e => setLinkId(e.target.value)} style={{ minWidth: 240 }}>
+                  <option value="">Select an account…</option>
+                  {linkable.map(r => <option key={r.user_id} value={r.user_id}>{r.agent_name}</option>)}
+                </select>
+                <button className="rhq-btn" disabled={!linkId} onClick={linkAccount}>Link account</button>
+              </div>
+            </div>}
+
+          {/* goals */}
+          <div className="rhq-card pad" style={{ marginBottom: 14 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+              <div className="rhq-sectitle">Goals</div>
+              <button className="rhq-btn ghost sm" onClick={saveGoals}>Save goals</button>
+            </div>
+            <div className="rhq-grid3">
+              {[['First 90 days', 'goal_90', 'e.g. Pass the state exam, write first 3 policies…'], ['Year one', 'goal_year1', 'e.g. $60k in commissions, recruit 2 agents…'], ['Long term', 'goal_long_term', 'e.g. Build an agency, replace day-job income…']].map(([l, k, ph]) =>
+                <div key={k}><div className="rhq-label">{l}</div><textarea className="rhq-ta" rows={4} value={goals[k]} placeholder={ph} onChange={e => setGoals(s => Object.assign({}, s, { [k]: e.target.value }))}></textarea></div>)}
+            </div>
+            <div style={{ marginTop: 14 }}><div className="rhq-label">Their why</div><textarea className="rhq-ta" rows={2} value={goals.their_why} placeholder="Why are they doing this?" onChange={e => setGoals(s => Object.assign({}, s, { their_why: e.target.value }))}></textarea></div>
+          </div>
+
+          {/* production (linked only) */}
+          <div className="rhq-card pad" style={{ marginBottom: 14 }}>
+            <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 14 }}>
+              <div className="rhq-sectitle">Production records</div>
+              <div className="rhq-muted">{linkedProfile ? 'Live from Sales Hub' : 'No linked account yet'}</div>
+            </div>
+            {stats
+              ? <div className="rhq-grid3">{stats.map((s, i) =>
+                <div key={i} style={{ background: 'var(--sf2)', borderRadius: 13, padding: '15px 17px' }}>
+                  <div className="rhq-kpi-l">{s.l}</div>
+                  <div style={{ fontSize: 22, fontWeight: 700, letterSpacing: '-0.02em', marginTop: 5 }}>{s.v}</div>
+                  <div className="rhq-kpi-s">{s.s}</div>
+                </div>)}</div>
+              : <div className="rhq-muted">Sales stats appear here once this recruit is linked to a Sales Hub account.</div>}
+          </div>
+
+          <div className="rhq-cols-prof">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+              {/* licenses & carriers */}
+              <div className="rhq-card pad">
+                <div className="rhq-sectitle" style={{ marginBottom: 3 }}>Licenses &amp; carriers</div>
+                <div className="rhq-muted" style={{ marginBottom: 13 }}>Synced from their profile</div>
+                {(lic.state_licenses.length === 0 && lic.carrier_numbers.length === 0)
+                  ? <div className="rhq-muted">No state licenses or carrier numbers yet.</div>
+                  : <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                    {lic.state_licenses.map((l, i) =>
+                      <div key={'s' + i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '9px 12px', border: '1px solid var(--bd)', borderRadius: 11 }}>
+                        <span className="rhq-chip rhq-stg1" style={{ minWidth: 34, justifyContent: 'center' }}>{l.state}</span>
+                        <span style={{ fontSize: 12.5, fontWeight: 600, flex: 1 }}>Lic. {l.number}</span>
+                      </div>)}
+                    {lic.carrier_numbers.map((c, i) =>
+                      <div key={'c' + i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '9px 12px', border: '1px solid var(--bd)', borderRadius: 11 }}>
+                        <span style={{ fontSize: 12.5, fontWeight: 600, flex: 1 }}>{c.carrier}</span>
+                        <span className="rhq-muted">#{c.number}</span>
+                      </div>)}
+                  </div>}
+              </div>
+              {/* stage history */}
+              <div className="rhq-card pad">
+                <div className="rhq-sectitle" style={{ marginBottom: 14 }}>Stage history</div>
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  {events.length === 0 && <div className="rhq-muted">No history yet.</div>}
+                  {events.slice().reverse().map((t, i) =>
+                    <div key={t.id} style={{ display: 'flex', gap: 12 }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                        <span className={'rhq-dot rhq-dot' + t.stage} style={{ width: 11, height: 11 }}></span>
+                        {i < events.length - 1 && <span style={{ width: 2, flex: 1, background: 'var(--bd)', minHeight: 22 }}></span>}
+                      </div>
+                      <div style={{ paddingBottom: 18 }}>
+                        <div style={{ fontSize: 13.5, fontWeight: 600 }}>{t.status === 'abandoned' ? 'Abandoned' : STAGES[t.stage]}</div>
+                        <div className="rhq-muted" style={{ marginTop: 2 }}>{fmtDate(t.created_at)}</div>
+                      </div>
+                    </div>)}
+                </div>
+              </div>
+            </div>
+            {/* notes */}
+            <div className="rhq-card pad">
+              <div className="rhq-sectitle" style={{ marginBottom: 14 }}>Notes</div>
+              <div style={{ display: 'flex', gap: 8, marginBottom: 14 }}>
+                <input className="rhq-inp" style={{ flex: 1 }} value={noteDraft} onChange={e => setNoteDraft(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') postNote(); }} placeholder="Log a call, text, or update…" />
+                <button className="rhq-btn" onClick={postNote}>Add</button>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {notes.length === 0 && <div className="rhq-muted">No notes yet.</div>}
+                {notes.map(n =>
+                  <div key={n.id} style={{ background: 'var(--sf2)', borderRadius: 12, padding: '12px 14px' }}>
+                    <div style={{ fontSize: 13.5, lineHeight: 1.5 }}>{n.body}</div>
+                    <div className="rhq-muted" style={{ marginTop: 6 }}>{recruiterName(n.author_user_id)} · {ago(n.created_at)}</div>
+                  </div>)}
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // ── mount ─────────────────────────────────────────────────────────────────
+    let rhqRoot = null;
+    window.mountRecruiterHq = function () {
+      ensureCSS();
+      const el = document.getElementById('recruiterHqRoot');
+      if (!el) return;
+      // Access gate: only admin or managers reach the page (sidebar already hides
+      // the button, but guard the content too).
+      const me = window.currentUser || {};
+      const isAdmin = ADMIN_EMAILS.includes((me.email || '').toLowerCase()) || me.id === ADMIN_UID;
+      if (!rhqRoot) rhqRoot = ReactDOM.createRoot(el);
+      if (!me.id) { rhqRoot.render(<div className="rhq"><div className="rhq-gate">Sign in to view Recruiter HQ.</div></div>); return; }
+      rhqRoot.render(<RecruiterHQ />);
     };
   })();
   </script>
