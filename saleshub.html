@@ -13174,7 +13174,6 @@
         <button class="ss-navsub-btn" data-nav="tp:performance">Performance Dashboard</button>
         <button class="ss-navsub-btn" data-nav="tp:policies">Policies</button>
         <button class="ss-navsub-btn" data-nav="tp:hierarchy">Agent Hierarchy</button>
-        <button class="ss-navsub-btn hq-admin-only" data-nav="tp:agents" style="display:none;">Agent Profiles</button>
         <button class="ss-navsub-btn hq-admin-only" data-nav="tp:discord" style="display:none;">Discord</button>
         <div class="ss-navsub-label">Recruiting</div>
         <button class="ss-navsub-btn" data-nav="rhq:dashboard">Dashboard</button>
@@ -22100,6 +22099,26 @@
 
       // ── State ──
       const curriculum = CURRICULUM;
+      // Expose the required-video slugs so Recruiter HQ can show training progress
+      // and define "100% complete" the same way this gate does (non-optional only).
+      window.KF_TRAINING_REQUIRED = CURRICULUM.sections.filter(s => !s.optional).flatMap(s => s.videos.map(v => v.slug));
+      let _traineePromoted = false;
+      // When the rep finishes all required videos, promote their Recruiter HQ
+      // recruit from Training → Fully licensed (server-side, scoped to themselves).
+      async function maybePromoteTrainee() {
+        if (_traineePromoted) return;
+        const req = window.KF_TRAINING_REQUIRED || [];
+        if (!req.length || !req.every(s => completed.has(s))) return;
+        _traineePromoted = true;
+        try {
+          if (window.ensureValidAccessToken) await window.ensureValidAccessToken();
+          await fetch(SUPABASE_URL + '/rest/v1/rpc/kf_promote_trainee_to_licensed', {
+            method: 'POST',
+            headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + (window.accessToken || SUPABASE_KEY), 'Content-Type': 'application/json' },
+            body: '{}'
+          });
+        } catch (e) { /* non-fatal */ }
+      }
       let completed = new Set();        // slugs done (Supabase video_progress)
       let resumePos = {};               // { slug: seconds } resume point (localStorage, per device)
       let currentSlug = null;
@@ -22583,6 +22602,7 @@
         updateScrub();
         computeGate();
         applyTrainingGate();
+        maybePromoteTrainee();
         const f = flat();
         const idx = f.findIndex(o => o.v.slug === slug);
         if (idx >= 0 && idx < f.length - 1) {
@@ -30924,9 +30944,16 @@
     const { useState, useMemo, useEffect, useRef, useCallback } = React;
 
     // ── config ──────────────────────────────────────────────────────────────
-    const STAGES = ['Recruiting', 'Studying', 'Exam passed', 'Contracting', 'Fully licensed'];
-    // Stall threshold (days in stage) before a recruit is flagged. Index by stage.
-    const STALL_DAYS = [10, 21, 14, 10, 99999];
+    // Stage VALUES never got renumbered: 4 stays "Fully licensed" so nothing in
+    // the DB shifted. "Training" was added as value 5. The pipeline is DISPLAYED
+    // in STAGE_FLOW order (Training sits between Contracting and Fully licensed).
+    const STAGES = ['Recruiting', 'Studying', 'Exam passed', 'Contracting', 'Fully licensed', 'Training'];
+    const STAGE_FLOW = [0, 1, 2, 3, 5, 4];   // display / progression order
+    const FULLY_LICENSED = 4, TRAINING = 5;
+    const flowIdx = (s) => { const i = STAGE_FLOW.indexOf(s); return i < 0 ? 0 : i; };
+    const nextStage = (s) => STAGE_FLOW[flowIdx(s) + 1];   // undefined at the end
+    // Stall threshold (days in stage) before a recruit is flagged. Index by stage value.
+    const STALL_DAYS = [10, 21, 14, 10, 99999, 30];   // [.. , Fully licensed(no stall), Training]
     const ADMIN_EMAILS = ['dev@kairos-financial.com'];
     const ADMIN_UID = 'be364ef5-8426-4587-b8b8-9328b02055a7';
     const TZ_OPTS = ['Eastern', 'Central', 'Mountain', 'Pacific'];
@@ -30974,14 +31001,14 @@
       --bg:#F6F6F4;--sf:#FFFFFF;--sf2:#F0F0ED;--bd:#E7E7E2;--tx:#2E2B2B;--tx2:#454040;--tx3:#9C9694;
       --ac:#A1CB35;--acOn:#232B07;--acDeep:#5F7F10;--acSoft:#EFF6D9;
       --sh:0 1px 2px rgba(40,38,30,.05),0 4px 16px rgba(40,38,30,.06);
-      --s0b:#E0F5F6;--s0f:#1F8A90;--s1b:#EFF7DA;--s1f:#5F7F10;--s2b:#FFF3CD;--s2f:#93700A;--s3b:#FEE1E1;--s3f:#D31A1A;--s4b:#F0E2F8;--s4f:#792CA2;
+      --s0b:#E0F5F6;--s0f:#1F8A90;--s1b:#EFF7DA;--s1f:#5F7F10;--s2b:#FFF3CD;--s2f:#93700A;--s3b:#FEE1E1;--s3f:#D31A1A;--s4b:#F0E2F8;--s4f:#792CA2;--s5b:#E4E8FD;--s5f:#3B4DB8;
       --wb:#FFE9D6;--wf:#C25400;--db:#FDE0E0;--df:#D90000;
       font-family:'Inter','Instrument Sans',system-ui,sans-serif;color:var(--tx);
     }
     html[data-kf-theme="dark"] #recruiterHqRoot .rhq {
       --bg:#121110;--sf:#1B1A18;--sf2:#242220;--bd:#2F2D2A;--tx:#F4F3F1;--tx2:#B3AFAB;--tx3:#736F6B;
       --acOn:#1A2005;--acDeep:#B9DD5E;--acSoft:#2A3313;--sh:0 1px 2px rgba(0,0,0,.4),0 6px 20px rgba(0,0,0,.35);
-      --s0b:#123638;--s0f:#7FD9DE;--s1b:#28330F;--s1f:#C6E378;--s2b:#3B3110;--s2f:#FED24F;--s3b:#421515;--s3f:#FF7A7A;--s4b:#31153F;--s4f:#C77BE8;
+      --s0b:#123638;--s0f:#7FD9DE;--s1b:#28330F;--s1f:#C6E378;--s2b:#3B3110;--s2f:#FED24F;--s3b:#421515;--s3f:#FF7A7A;--s4b:#31153F;--s4f:#C77BE8;--s5b:#1E2450;--s5f:#8B9BF0;
       --wb:#3D2412;--wf:#FF9A4D;--db:#421515;--df:#FF6B6B;
     }
     #recruiterHqRoot .rhq * { box-sizing:border-box; }
@@ -31019,6 +31046,7 @@
     .rhq-stg2 { background:var(--s2b); color:var(--s2f); } .rhq-dot2 { background:var(--s2f); }
     .rhq-stg3 { background:var(--s3b); color:var(--s3f); } .rhq-dot3 { background:var(--s3f); }
     .rhq-stg4 { background:var(--s4b); color:var(--s4f); } .rhq-dot4 { background:var(--s4f); }
+    .rhq-stg5 { background:var(--s5b); color:var(--s5f); } .rhq-dot5 { background:var(--s5f); }
     .rhq-dot { width:9px; height:9px; border-radius:50%; flex:none; }
     .rhq-sectitle { font-size:15px; font-weight:700; }
     .rhq-row { border-bottom:1px solid var(--bd); }
@@ -31190,15 +31218,15 @@
     function Dashboard({ active, all, activity, header, onOpen }) {
       const licensed = all.filter(r => r.stage === 4 && r.status === 'active').length;
       const studying = active.filter(r => r.stage === 1 || r.stage === 2).length;
-      const stalled = active.filter(r => r.stage < 4 && daysSince(r.stage_entered_at) > STALL_DAYS[r.stage]);
-      const inPipeline = active.filter(r => r.stage < 4).length;
+      const stalled = active.filter(r => r.stage !== FULLY_LICENSED && daysSince(r.stage_entered_at) > STALL_DAYS[r.stage]);
+      const inPipeline = active.filter(r => r.stage !== FULLY_LICENSED).length;
       const kpis = [
         { l: 'In pipeline', v: inPipeline, s: 'active, not yet licensed' },
         { l: 'Licensed', v: licensed, s: 'fully licensed agents' },
         { l: 'Studying / exam', v: studying, s: 'in pre-licensing' },
         { l: 'Stalled', v: stalled.length, s: 'past follow-up threshold' }
       ];
-      const funnel = STAGES.map((name, i) => ({ name, count: active.filter(r => r.stage === i).length }));
+      const funnel = STAGE_FLOW.map(i => ({ name: STAGES[i], stage: i, count: active.filter(r => r.stage === i).length }));
       const fmax = Math.max(1, ...funnel.map(f => f.count));
       const exams = active.filter(r => r.exam_date && daysUntil(r.exam_date) !== null && daysUntil(r.exam_date) >= 0)
         .sort((a, b) => a.exam_date.localeCompare(b.exam_date)).slice(0, 5);
@@ -31223,7 +31251,7 @@
                   <div key={i} style={{ display: 'grid', gridTemplateColumns: '108px 1fr 28px', gap: 12, alignItems: 'center' }}>
                     <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--tx2)' }}>{f.name}</div>
                     <div style={{ height: 24, background: 'var(--sf2)', borderRadius: 8, overflow: 'hidden' }}>
-                      <div className={'rhq-dot' + i} style={{ height: '100%', width: (f.count / fmax * 100) + '%', minWidth: f.count ? 6 : 0, borderRadius: 8 }}></div>
+                      <div className={'rhq-dot' + f.stage} style={{ height: '100%', width: (f.count / fmax * 100) + '%', minWidth: f.count ? 6 : 0, borderRadius: 8 }}></div>
                     </div>
                     <div style={{ fontSize: 13.5, fontWeight: 700, textAlign: 'right' }}>{f.count}</div>
                   </div>)}
@@ -31287,7 +31315,7 @@
     function Board({ active, header, recruiterName, onOpen, onDrop }) {
       const dragId = useRef(null);
       const [over, setOver] = useState(null);
-      const cols = STAGES.map((name, i) => ({ name, i, recruits: active.filter(r => r.stage === i) }));
+      const cols = STAGE_FLOW.map(i => ({ name: STAGES[i], i, recruits: active.filter(r => r.stage === i) }));
       return (
         <div>
           {header('Pipeline', 'Drag a card between stages, or click to open the recruit')}
@@ -31318,7 +31346,7 @@
 
     // ── RECRUITS LIST ─────────────────────────────────────────────────────────
     function RecruitList({ rows, header, search, setSearch, chip, setChip, recruiterName, onOpen }) {
-      const chips = [{ k: 'all', l: 'All active' }].concat(STAGES.map((s, i) => ({ k: 'stage:' + i, l: s }))).concat([{ k: 'abandoned', l: 'Abandoned' }]);
+      const chips = [{ k: 'all', l: 'All active' }].concat(STAGE_FLOW.map(i => ({ k: 'stage:' + i, l: STAGES[i] }))).concat([{ k: 'abandoned', l: 'Archived / abandoned' }]);
       const q = search.trim().toLowerCase();
       const filtered = rows.filter(r => {
         if (chip === 'abandoned') { if (r.status !== 'abandoned') return false; }
@@ -31473,6 +31501,15 @@
       const [confirm, setConfirm] = useState(null);   // 'advance'|'abandon'|'delete'|null
       const [goals, setGoals] = useState({ goal_90: sel.goal_90 || '', goal_year1: sel.goal_year1 || '', goal_long_term: sel.goal_long_term || '', their_why: sel.their_why || '' });
       const [linkId, setLinkId] = useState('');
+      // Admin-only Sales Hub account state (approval, training, comp, remove flow)
+      const [acct, setAcct] = useState(null);            // linked agent_profiles fields
+      const [videoDone, setVideoDone] = useState(null);  // Set of completed video slugs
+      const [removeOpen, setRemoveOpen] = useState(false);
+      const [rmHasPolicies, setRmHasPolicies] = useState(null);
+      const [rmDeleteData, setRmDeleteData] = useState(false);
+      const [rmArchiveInstead, setRmArchiveInstead] = useState(false);
+      const [rmText, setRmText] = useState('');
+      const [rmBusy, setRmBusy] = useState(false);
 
       useEffect(() => {
         let live = true;
@@ -31487,29 +31524,37 @@
         return () => { live = false; };
       }, [sel.id]);
 
-      // Live Sales Hub data once linked to an account.
+      // Live Sales Hub data once linked to an account. Production (policies) loads
+      // for anyone who can see the profile; the account fields + training-video
+      // progress + licenses load only for the admin (the account panel is admin-only).
       useEffect(() => {
         let live = true;
-        if (!sel.linked_user_id) { setProd(null); setLic({ state_licenses: [], carrier_numbers: [] }); return; }
+        if (!sel.linked_user_id) { setProd(null); setLic({ state_licenses: [], carrier_numbers: [] }); setAcct(null); setVideoDone(null); return; }
         (async () => {
-          const [pol, prof] = await Promise.all([
-            getJSON('policies?select=annual_premium,policy_date,status&user_id=eq.' + sel.linked_user_id + '&limit=5000'),
-            getJSON('agent_profiles?select=state_licenses,carrier_numbers&user_id=eq.' + sel.linked_user_id + '&limit=1')
-          ]);
+          const jobs = [getJSON('policies?select=annual_premium,policy_date,status&user_id=eq.' + sel.linked_user_id + '&limit=5000')];
+          if (isAdmin) {
+            jobs.push(getJSON('agent_profiles?select=state_licenses,carrier_numbers,approved,training_complete,comp_level,status&user_id=eq.' + sel.linked_user_id + '&limit=1'));
+            jobs.push(getJSON('video_progress?select=video_id&user_id=eq.' + sel.linked_user_id));
+          }
+          const res = await Promise.all(jobs);
           if (!live) return;
           const days = {}, weeks = {}; let total = 0, count = 0;
-          (pol || []).forEach(p => {
+          (res[0] || []).forEach(p => {
             const ap = Number(p.annual_premium) || 0; total += ap; count++;
             if (p.policy_date) { days[p.policy_date] = (days[p.policy_date] || 0) + ap; const w = isoWeek(p.policy_date); weeks[w] = (weeks[w] || 0) + ap; }
           });
           const bestDay = Object.keys(days).reduce((a, k) => days[k] > a.v ? { k, v: days[k] } : a, { k: null, v: 0 });
           const bestWeek = Object.keys(weeks).reduce((a, k) => weeks[k] > a.v ? { k, v: weeks[k] } : a, { k: null, v: 0 });
           setProd({ totalAp: total, count, bestDay, bestWeek });
-          const pr = (prof && prof[0]) || {};
-          setLic({ state_licenses: Array.isArray(pr.state_licenses) ? pr.state_licenses : [], carrier_numbers: Array.isArray(pr.carrier_numbers) ? pr.carrier_numbers : [] });
+          if (isAdmin) {
+            const pr = (res[1] && res[1][0]) || {};
+            setLic({ state_licenses: Array.isArray(pr.state_licenses) ? pr.state_licenses : [], carrier_numbers: Array.isArray(pr.carrier_numbers) ? pr.carrier_numbers : [] });
+            setAcct({ approved: pr.approved, training_complete: pr.training_complete, comp_level: pr.comp_level, status: pr.status });
+            setVideoDone(new Set((res[2] || []).map(v => v.video_id)));
+          }
         })();
         return () => { live = false; };
-      }, [sel.linked_user_id]);
+      }, [sel.linked_user_id, isAdmin]);
 
       const startEdit = () => { setEd({ full_name: sel.full_name || '', email: sel.email || '', phone: sel.phone || '', city: sel.city || '', state: sel.state || '', timezone: sel.timezone || 'Central', recruiter_user_id: sel.recruiter_user_id || '', exam_date: sel.exam_date || '', stage: sel.stage }); setEditing(true); };
       const setEK = (k) => (e) => setEd(s => Object.assign({}, s, { [k]: e.target.value }));
@@ -31520,7 +31565,7 @@
         setEditing(false);
       };
       const saveGoals = () => doPatch({ goal_90: goals.goal_90 || null, goal_year1: goals.goal_year1 || null, goal_long_term: goals.goal_long_term || null, their_why: goals.their_why || null });
-      const advance = async () => { await doPatch({ stage: Math.min(4, sel.stage + 1) }); setConfirm(null); };
+      const advance = async () => { const n = nextStage(sel.stage); if (n !== undefined) await doPatch({ stage: n }); setConfirm(null); };
       const abandon = async () => { await doPatch({ status: 'abandoned', abandoned_at: new Date().toISOString() }); setConfirm(null); };
       const restore = async () => { await doPatch({ status: 'active', abandoned_at: null }); };
       const remove = async () => { await deleteRecruit(sel.id); setConfirm(null); onBack(); onChanged(); };
@@ -31536,6 +31581,38 @@
         if (sel.recruiter_user_id) { await ensureToken(); try { await rest('agent_profiles?user_id=eq.' + linkId, { method: 'PATCH', headers: writeHeaders(), body: JSON.stringify({ manager_user_id: sel.recruiter_user_id }) }); } catch (e) {} }
         await onChanged();
       };
+
+      // Admin-only account mutations on the linked agent_profiles row.
+      const patchAgent = async (body) => { await ensureToken(); const r = await rest('agent_profiles?user_id=eq.' + sel.linked_user_id, { method: 'PATCH', headers: writeHeaders(), body: JSON.stringify(body) }); return r.ok; };
+      const setApproved = async (val) => { setAcct(a => Object.assign({}, a, { approved: val })); await patchAgent({ approved: val }); };
+      const setTraining = async (val) => { setAcct(a => Object.assign({}, a, { training_complete: val })); await patchAgent({ training_complete: val }); };
+      const setComp = async (val) => { const cv = val ? parseInt(val) : null; setAcct(a => Object.assign({}, a, { comp_level: cv })); await patchAgent({ comp_level: cv }); };
+      const openRemove = async () => {
+        setRemoveOpen(true); setRmHasPolicies(null); setRmDeleteData(false); setRmArchiveInstead(false); setRmText('');
+        const rows = await getJSON('policies?select=id&user_id=eq.' + sel.linked_user_id + '&limit=1');
+        setRmHasPolicies((rows || []).length > 0);
+      };
+      const confirmRemove = async () => {
+        const rpc = (!rmHasPolicies && rmArchiveInstead) ? 'archive_agent_user'
+          : !rmHasPolicies ? 'delete_agent_user'
+            : rmDeleteData ? 'delete_agent_user_and_data'
+              : 'archive_agent_user';
+        if (rmHasPolicies && rmDeleteData && rmText.trim().toUpperCase() !== 'DELETE') return;
+        setRmBusy(true); await ensureToken();
+        const r = await rest('rpc/' + rpc, { method: 'POST', headers: writeHeaders(), body: JSON.stringify({ target_user_id: sel.linked_user_id }) });
+        setRmBusy(false);
+        if (!r.ok) { alert('Remove failed (' + r.status + '). Check your admin access.'); return; }
+        setRemoveOpen(false);
+        // delete → recruit is cascade-removed; archive → recruit is abandoned (trigger).
+        onBack(); onChanged();
+      };
+
+      // Training-video progress (required, non-optional videos define 100%).
+      const reqSlugs = (typeof window !== 'undefined' && window.KF_TRAINING_REQUIRED) || [];
+      const trainReqTotal = reqSlugs.length;
+      const doneReq = (videoDone && trainReqTotal) ? reqSlugs.filter(s => videoDone.has(s)).length : (videoDone ? videoDone.size : 0);
+      const trainPct = trainReqTotal ? Math.round(doneReq / trainReqTotal * 100) : 0;
+      const trainingComplete = trainReqTotal > 0 && doneReq >= trainReqTotal;
 
       const linkedProfile = sel.linked_user_id && rosterMap[sel.linked_user_id];
       const abandoned = sel.status === 'abandoned';
@@ -31569,23 +31646,23 @@
                   <span className="rhq-chip rhq-stg3">Abandoned{sel.abandoned_at ? ' · ' + fmtDate(sel.abandoned_at) : ''}</span>
                   <button className="rhq-btn sm" onClick={restore}>Restore to pipeline</button>
                 </>
-                : sel.stage < 4 && (confirm === 'advance'
+                : nextStage(sel.stage) !== undefined && (confirm === 'advance'
                   ? <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'var(--sf2)', borderRadius: 999, padding: '5px 6px 5px 14px' }}>
-                    <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--tx2)' }}>Move to {STAGES[sel.stage + 1]}?</span>
+                    <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--tx2)' }}>Move to {STAGES[nextStage(sel.stage)]}?</span>
                     <button className="rhq-btn sm" onClick={advance}>Confirm</button>
                     <button className="rhq-btn ghost sm" onClick={() => setConfirm(null)}>Cancel</button>
                   </span>
-                  : <button className="rhq-btn sm" onClick={() => setConfirm('advance')}>Advance to {STAGES[sel.stage + 1]} →</button>)}
+                  : <button className="rhq-btn sm" onClick={() => setConfirm('advance')}>Advance to {STAGES[nextStage(sel.stage)]} →</button>)}
               <button className="rhq-btn ghost sm" onClick={editing ? () => setEditing(false) : startEdit}>{editing ? 'Close' : 'Edit'}</button>
             </div>
             {/* stage stepper */}
             {!abandoned &&
               <div style={{ display: 'flex', gap: 4, marginTop: 20 }}>
-                {STAGES.map((s, i) =>
-                  <div key={i} style={{ flex: 1 }}>
-                    <div className={'rhq-step ' + (i <= sel.stage ? 'rhq-dot' + i : '')} style={i <= sel.stage ? {} : {}}></div>
-                    <div style={{ fontSize: 11, marginTop: 6, fontWeight: i === sel.stage ? 700 : 500, color: i <= sel.stage ? 'var(--tx2)' : 'var(--tx3)' }}>{s}</div>
-                  </div>)}
+                {STAGE_FLOW.map((st) => { const done = flowIdx(st) <= flowIdx(sel.stage); return (
+                  <div key={st} style={{ flex: 1 }}>
+                    <div className={'rhq-step ' + (done ? 'rhq-dot' + st : '')}></div>
+                    <div style={{ fontSize: 11, marginTop: 6, fontWeight: st === sel.stage ? 700 : 500, color: done ? 'var(--tx2)' : 'var(--tx3)' }}>{STAGES[st]}</div>
+                  </div>); })}
               </div>}
           </div>
 
@@ -31598,7 +31675,7 @@
                   <div key={k}><div className="rhq-label">{l}</div><input className="rhq-inp" style={{ width: '100%' }} value={ed[k]} onChange={setEK(k)} /></div>)}
                 <div><div className="rhq-label">Timezone</div><select className="rhq-sel" style={{ width: '100%' }} value={ed.timezone} onChange={setEK('timezone')}>{TZ_OPTS.map(t => <option key={t}>{t}</option>)}</select></div>
                 <div><div className="rhq-label">Recruiter</div><select className="rhq-sel" style={{ width: '100%' }} value={ed.recruiter_user_id} onChange={setEK('recruiter_user_id')}>{recruiterOptions.map(o => <option key={o.id} value={o.id}>{o.name}</option>)}</select></div>
-                <div><div className="rhq-label">Stage</div><select className="rhq-sel" style={{ width: '100%' }} value={ed.stage} onChange={setEK('stage')}>{STAGES.map((s, i) => <option key={i} value={i}>{s}</option>)}</select></div>
+                <div><div className="rhq-label">Stage</div><select className="rhq-sel" style={{ width: '100%' }} value={ed.stage} onChange={setEK('stage')}>{STAGE_FLOW.map(i => <option key={i} value={i}>{STAGES[i]}</option>)}</select></div>
                 <div><div className="rhq-label">Exam date</div><input className="rhq-inp" type="date" style={{ width: '100%' }} value={ed.exam_date || ''} onChange={setEK('exam_date')} /></div>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 18, flexWrap: 'wrap' }}>
@@ -31617,8 +31694,8 @@
               <div className="rhq-muted" style={{ marginTop: 12 }}>Abandoning keeps the recruit and their notes in the Abandoned list in case they re-apply, and archives their linked Sales Hub agent. Agents are only permanently deleted from the Agency section.</div>
             </div>}
 
-          {/* link prompt for unlinked / ambiguous recruits */}
-          {(!sel.linked_user_id) &&
+          {/* link prompt for unlinked / ambiguous recruits — admin only */}
+          {(!sel.linked_user_id) && isAdmin &&
             <div className="rhq-card pad" style={{ marginBottom: 14, borderColor: sel.link_status === 'ambiguous' ? 'var(--s2f)' : 'var(--bd)' }}>
               <div className="rhq-sectitle" style={{ marginBottom: 4 }}>{sel.link_status === 'ambiguous' ? 'Confirm Sales Hub account' : 'Link a Sales Hub account'}</div>
               <div className="rhq-muted" style={{ marginBottom: 12 }}>{sel.link_status === 'ambiguous' ? 'More than one account matched this name — pick the right one to link.' : 'No account yet. Recruits auto-link on signup; you can also link manually.'}</div>
@@ -31628,6 +31705,71 @@
                   {linkable.map(r => <option key={r.user_id} value={r.user_id}>{r.agent_name}</option>)}
                 </select>
                 <button className="rhq-btn" disabled={!linkId} onClick={linkAccount}>Link account</button>
+              </div>
+            </div>}
+
+          {/* Sales Hub account — admin only (merged from the old Agency → Agent Profiles page) */}
+          {sel.linked_user_id && isAdmin && acct &&
+            <div className="rhq-card pad" style={{ marginBottom: 14 }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14, flexWrap: 'wrap', gap: 8 }}>
+                <div className="rhq-sectitle">Sales Hub account</div>
+                <span className={'rhq-chip ' + (acct.status === 'inactive' ? 'rhq-stg3' : acct.approved === false ? 'rhq-stg2' : 'rhq-stg1')}>{acct.status === 'inactive' ? 'Archived' : acct.approved === false ? 'Awaiting approval' : 'Active'}</span>
+              </div>
+              <div className="rhq-grid3">
+                <div style={{ background: 'var(--sf2)', borderRadius: 13, padding: '14px 16px' }}>
+                  <div className="rhq-label">Account approval</div>
+                  <div style={{ fontSize: 15, fontWeight: 700, margin: '4px 0 10px' }}>{acct.approved === false ? 'Not approved' : 'Approved'}</div>
+                  {acct.approved === false
+                    ? <button className="rhq-btn sm" onClick={() => setApproved(true)}>Approve</button>
+                    : <button className="rhq-btn ghost sm" onClick={() => setApproved(false)}>Revoke</button>}
+                </div>
+                <div style={{ background: 'var(--sf2)', borderRadius: 13, padding: '14px 16px' }}>
+                  <div className="rhq-label">Training access</div>
+                  <div style={{ fontSize: 15, fontWeight: 700, margin: '4px 0 10px' }}>{acct.training_complete ? 'Full access' : 'Locked to training'}</div>
+                  {acct.training_complete
+                    ? <button className="rhq-btn ghost sm" onClick={() => setTraining(false)}>Lock to training</button>
+                    : <button className="rhq-btn sm" onClick={() => setTraining(true)}>Grant access</button>}
+                </div>
+                <div style={{ background: 'var(--sf2)', borderRadius: 13, padding: '14px 16px' }}>
+                  <div className="rhq-label">Comp level</div>
+                  <select className="rhq-sel" style={{ width: '100%', marginTop: 4 }} value={acct.comp_level || ''} onChange={e => setComp(e.target.value)}>
+                    <option value="">—</option>
+                    {Array.from({ length: 17 }, (_, k) => 65 + k * 5).map(n => <option key={n} value={n}>{n}%</option>)}
+                  </select>
+                </div>
+              </div>
+              <div style={{ marginTop: 14 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 6 }}>
+                  <div className="rhq-label" style={{ marginBottom: 0 }}>Training videos</div>
+                  <div className="rhq-muted">{trainReqTotal ? (doneReq + ' / ' + trainReqTotal + ' required' + (trainingComplete ? ' · complete' : '')) : (doneReq + ' completed')}</div>
+                </div>
+                <div style={{ height: 10, background: 'var(--sf2)', borderRadius: 6, overflow: 'hidden' }}>
+                  <div className={trainingComplete ? 'rhq-dot1' : 'rhq-dot5'} style={{ height: '100%', width: trainPct + '%', borderRadius: 6 }}></div>
+                </div>
+                <div className="rhq-muted" style={{ marginTop: 6 }}>At 100% of required videos they auto-advance to Fully licensed.</div>
+              </div>
+              <div style={{ marginTop: 16, borderTop: '1px solid var(--bd)', paddingTop: 14 }}>
+                {!removeOpen
+                  ? <button className="rhq-btn danger" onClick={openRemove}>Remove agent…</button>
+                  : <div style={{ background: 'var(--sf2)', borderRadius: 12, padding: '14px 16px' }}>
+                    <div style={{ fontSize: 13.5, fontWeight: 700, marginBottom: 8 }}>Remove {sel.full_name}?</div>
+                    {rmHasPolicies === null
+                      ? <div className="rhq-muted">Checking their book of business…</div>
+                      : rmHasPolicies
+                        ? <div>
+                          <div className="rhq-muted" style={{ marginBottom: 10 }}>They have policies on file — by default they’re <strong>archived</strong> (login disabled, data kept).</div>
+                          <label style={{ display: 'flex', gap: 8, alignItems: 'center', fontSize: 13, marginBottom: 8 }}><input type="checkbox" checked={rmDeleteData} onChange={e => setRmDeleteData(e.target.checked)} /> Permanently delete the agent AND all their data</label>
+                          {rmDeleteData && <input className="rhq-inp" style={{ width: '100%', marginBottom: 10 }} placeholder="Type DELETE to confirm" value={rmText} onChange={e => setRmText(e.target.value)} />}
+                        </div>
+                        : <div>
+                          <div className="rhq-muted" style={{ marginBottom: 10 }}>No policies on file — by default the account is <strong>permanently deleted</strong>.</div>
+                          <label style={{ display: 'flex', gap: 8, alignItems: 'center', fontSize: 13, marginBottom: 8 }}><input type="checkbox" checked={rmArchiveInstead} onChange={e => setRmArchiveInstead(e.target.checked)} /> Just archive instead (keep the profile)</label>
+                        </div>}
+                    <div style={{ display: 'flex', gap: 8, marginTop: 6 }}>
+                      <button className="rhq-btn danger" disabled={rmBusy || rmHasPolicies === null || (rmHasPolicies && rmDeleteData && rmText.trim().toUpperCase() !== 'DELETE')} onClick={confirmRemove}>{rmBusy ? 'Working…' : (rmHasPolicies ? (rmDeleteData ? 'Delete + data' : 'Archive agent') : (rmArchiveInstead ? 'Archive agent' : 'Delete agent'))}</button>
+                      <button className="rhq-btn ghost" onClick={() => setRemoveOpen(false)}>Cancel</button>
+                    </div>
+                  </div>}
               </div>
             </div>}
 
@@ -31662,8 +31804,8 @@
 
           <div className="rhq-cols-prof">
             <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-              {/* licenses & carriers */}
-              <div className="rhq-card pad">
+              {/* licenses & carriers — admin only (part of the account data) */}
+              {isAdmin && <div className="rhq-card pad">
                 <div className="rhq-sectitle" style={{ marginBottom: 3 }}>Licenses &amp; carriers</div>
                 <div className="rhq-muted" style={{ marginBottom: 13 }}>Synced from their profile</div>
                 {(lic.state_licenses.length === 0 && lic.carrier_numbers.length === 0)
@@ -31680,7 +31822,7 @@
                         <span className="rhq-muted">#{c.number}</span>
                       </div>)}
                   </div>}
-              </div>
+              </div>}
               {/* stage history */}
               <div className="rhq-card pad">
                 <div className="rhq-sectitle" style={{ marginBottom: 14 }}>Stage history</div>
