@@ -30967,6 +30967,22 @@
     const rest = (path, opts) => fetch(SUPABASE_URL + '/rest/v1/' + path, opts);
     async function ensureToken() { try { if (window.ensureValidAccessToken) await window.ensureValidAccessToken(); } catch (e) {} }
     async function getJSON(path) { const r = await rest(path, { headers: authHeaders() }); return r.ok ? r.json() : []; }
+    // Ping the same Discord channel the signup bot uses when a recruit is added.
+    // Best-effort, and skipped on localhost so test adds don't notify.
+    function notifyRecruitAdded(name, recruiterName) {
+      try {
+        if (/^(localhost|127\.0\.0\.1|\[::1\]|0\.0\.0\.0)$/.test(location.hostname)) return;
+        const SIGNUP_WEBHOOK = 'https://discord.com/api/webhooks/1527790116595171338/DalH66G_wOQaeDtrs738w7ZgiwxEOdHcsuvnzURF7VOHJ7RX3q8CUbz8fhmkRlW17aBD';
+        fetch(SIGNUP_WEBHOOK, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ embeds: [{
+            title: '🆕 New agent added',
+            description: '**' + name + '**\nRecruiter: ' + (recruiterName || 'Unassigned'),
+            color: 10603829
+          }] })
+        }).catch(() => {});
+      } catch (e) { /* best-effort */ }
+    }
 
     function daysSince(iso) { if (!iso) return 0; return Math.max(0, Math.floor((Date.now() - new Date(iso).getTime()) / 86400000)); }
     function daysBetween(a, b) { if (!a || !b) return 0; return Math.max(0, Math.round((new Date(b).getTime() - new Date(a).getTime()) / 86400000)); }
@@ -31012,7 +31028,10 @@
       --wb:#3D2412;--wf:#FF9A4D;--db:#421515;--df:#FF6B6B;
     }
     #recruiterHqRoot .rhq * { box-sizing:border-box; }
-    #recruiterHqRoot .rhq { padding:26px 30px 60px; max-width:1180px; margin:0 auto; }
+    #recruiterHqRoot .rhq { padding:26px 34px 60px; max-width:1180px; margin:0 auto; }
+    /* Main list/board/dashboard/leaderboard views fill the page more; the drill-in
+       profile keeps the narrower reading width. */
+    #recruiterHqRoot .rhq.rhq-wide { max-width:1680px; }
     .rhq h1 { margin:0; font-size:25px; font-weight:700; letter-spacing:-0.02em; }
     .rhq-sub { color:var(--tx2); font-size:13.5px; margin-top:3px; }
     .rhq-head { display:flex; align-items:flex-end; justify-content:space-between; gap:16px; margin-bottom:22px; flex-wrap:wrap; }
@@ -31059,8 +31078,11 @@
     .rhq-cols { display:grid; grid-template-columns:1.4fr 1fr; gap:14px; align-items:start; }
     .rhq-cols-prof { display:grid; grid-template-columns:1fr 1.25fr; gap:14px; align-items:start; }
     .rhq-scroll { overflow-x:auto; }
-    .rhq-board { display:flex; gap:14px; overflow-x:auto; align-items:flex-start; padding-bottom:10px; }
-    .rhq-col { flex:0 0 250px; background:var(--sf2); border:1px solid var(--bd); border-radius:15px; padding:12px; }
+    /* Board fills the viewport so the PAGE doesn't scroll — stage headers stay put
+       and only the cards inside each column scroll (see .rhq-col-cards). */
+    .rhq-board { display:flex; gap:14px; overflow-x:auto; align-items:stretch; padding-bottom:10px; height:calc(100vh - 205px); min-height:360px; }
+    .rhq-col { flex:1 0 250px; background:var(--sf2); border:1px solid var(--bd); border-radius:15px; padding:12px; display:flex; flex-direction:column; min-height:0; }
+    .rhq-col-cards { display:flex; flex-direction:column; gap:8px; overflow-y:auto; flex:1; min-height:50px; margin:0 -4px; padding:0 4px; }
     .rhq-col.drag { outline:2px dashed var(--ac); outline-offset:-4px; }
     .rhq-pcard { background:var(--sf); border:1px solid var(--bd); border-radius:13px; padding:12px 13px; cursor:grab; box-shadow:var(--sh); }
     .rhq-pcard:hover { border-color:var(--ac); }
@@ -31203,7 +31225,7 @@
       );
 
       return (
-        <div className="rhq">
+        <div className="rhq rhq-wide">
           {view === 'dashboard' && <Dashboard active={active} all={filteredByMgr} activity={activity} header={header} onOpen={openProfile} />}
           {view === 'board' && <Board active={active} header={header} recruiterName={recruiterName} onOpen={openProfile} onDrop={async (id, stage) => { await patchRecruit(id, { stage }); afterMutate(); }} />}
           {view === 'list' && <RecruitList rows={filteredByMgr} header={header} search={search} setSearch={setSearch} chip={chip} setChip={setChip} recruiterName={recruiterName} onOpen={openProfile} />}
@@ -31251,7 +31273,7 @@
                   <div key={i} style={{ display: 'grid', gridTemplateColumns: '108px 1fr 28px', gap: 12, alignItems: 'center' }}>
                     <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--tx2)' }}>{f.name}</div>
                     <div style={{ height: 24, background: 'var(--sf2)', borderRadius: 8, overflow: 'hidden' }}>
-                      <div className={'rhq-dot' + f.stage} style={{ height: '100%', width: (f.count / fmax * 100) + '%', minWidth: f.count ? 6 : 0, borderRadius: 8 }}></div>
+                      <div style={{ height: '100%', width: (f.count / fmax * 100) + '%', minWidth: f.count ? 6 : 0, borderRadius: 8, background: 'var(--ac)' }}></div>
                     </div>
                     <div style={{ fontSize: 13.5, fontWeight: 700, textAlign: 'right' }}>{f.count}</div>
                   </div>)}
@@ -31322,15 +31344,16 @@
           <div className="rhq-board">
             {cols.map(col =>
               <div key={col.i} className={'rhq-col' + (over === col.i ? ' drag' : '')}
+                style={{ background: 'var(--s' + col.i + 'b)', borderColor: 'var(--s' + col.i + 'f)' }}
                 onDragOver={e => { e.preventDefault(); setOver(col.i); }}
                 onDragLeave={() => setOver(o => o === col.i ? null : o)}
                 onDrop={() => { setOver(null); if (dragId.current != null) { onDrop(dragId.current, col.i); dragId.current = null; } }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '2px 4px 12px' }}>
                   <span className={'rhq-dot rhq-dot' + col.i}></span>
-                  <span style={{ fontSize: 13, fontWeight: 700 }}>{col.name}</span>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--s' + col.i + 'f)' }}>{col.name}</span>
                   <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--tx3)', marginLeft: 'auto' }}>{col.recruits.length}</span>
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 8, minHeight: 50 }}>
+                <div className="rhq-col-cards">
                   {col.recruits.map(r =>
                     <div key={r.id} className="rhq-pcard" draggable onDragStart={() => { dragId.current = r.id; }} onClick={() => onOpen(r.id)}>
                       <div style={{ fontSize: 14, fontWeight: 600, letterSpacing: '-0.01em' }}>{r.full_name}</div>
@@ -31452,7 +31475,11 @@
         };
         const row = await insertRecruit(body);
         setBusy(false);
-        if (row) onSaved(); else alert('Could not add the recruit. Check your access and try again.');
+        if (row) {
+          const recN = (recruiterOptions.find(o => o.id === f.recruiter_user_id) || {}).name || 'Unassigned';
+          notifyRecruitAdded(f.full_name.trim(), recN);
+          onSaved();
+        } else alert('Could not add the recruit. Check your access and try again.');
       };
       const F = ({ label, k, type }) => (
         <div><div className="rhq-label">{label}</div><input className="rhq-inp" style={{ width: '100%' }} type={type || 'text'} value={f[k]} onChange={set(k)} /></div>
@@ -31510,6 +31537,7 @@
       const [rmArchiveInstead, setRmArchiveInstead] = useState(false);
       const [rmText, setRmText] = useState('');
       const [rmBusy, setRmBusy] = useState(false);
+      const [stageOpen, setStageOpen] = useState(false);   // quick stage picker on the header chip
 
       useEffect(() => {
         let live = true;
@@ -31566,6 +31594,7 @@
       };
       const saveGoals = () => doPatch({ goal_90: goals.goal_90 || null, goal_year1: goals.goal_year1 || null, goal_long_term: goals.goal_long_term || null, their_why: goals.their_why || null });
       const advance = async () => { const n = nextStage(sel.stage); if (n !== undefined) await doPatch({ stage: n }); setConfirm(null); };
+      const pickStage = async (n) => { setStageOpen(false); if (n !== sel.stage) await doPatch({ stage: n }); };
       const abandon = async () => { await doPatch({ status: 'abandoned', abandoned_at: new Date().toISOString() }); setConfirm(null); };
       const restore = async () => { await doPatch({ status: 'active', abandoned_at: null }); };
       const remove = async () => { await deleteRecruit(sel.id); setConfirm(null); onBack(); onChanged(); };
@@ -31607,12 +31636,20 @@
         onBack(); onChanged();
       };
 
-      // Training-video progress (required, non-optional videos define 100%).
+      // Training-video progress. "Complete" = finished the current required videos,
+      // OR admin-granted access, OR completed the OLD pre-revamp training. The R2
+      // revamp renamed/expanded the videos, so legacy completions are stored under
+      // old slugs; we grandfather them (same as the training re-check migration).
       const reqSlugs = (typeof window !== 'undefined' && window.KF_TRAINING_REQUIRED) || [];
+      const OLD_CORE_SLUGS = ['watch-first-new-agents', 'discord-walkthrough', 'submit-new-sale', 'script-sales-presentation', 'buy-state-licenses', 'next-steps-licenses'];
       const trainReqTotal = reqSlugs.length;
-      const doneReq = (videoDone && trainReqTotal) ? reqSlugs.filter(s => videoDone.has(s)).length : (videoDone ? videoDone.size : 0);
-      const trainPct = trainReqTotal ? Math.round(doneReq / trainReqTotal * 100) : 0;
-      const trainingComplete = trainReqTotal > 0 && doneReq >= trainReqTotal;
+      const doneReq = (videoDone && trainReqTotal) ? reqSlugs.filter(s => videoDone.has(s)).length : 0;
+      const legacyDone = videoDone ? OLD_CORE_SLUGS.filter(s => videoDone.has(s)).length >= 4 : false;
+      const newVideosDone = trainReqTotal > 0 && doneReq >= trainReqTotal;
+      const adminGranted = !!(acct && acct.training_complete === true);
+      const trainingComplete = newVideosDone || adminGranted || legacyDone;
+      const legacyComplete = trainingComplete && !newVideosDone && !adminGranted;  // done via prior training
+      const trainPct = trainingComplete ? 100 : (trainReqTotal ? Math.round(doneReq / trainReqTotal * 100) : 0);
 
       const linkedProfile = sel.linked_user_id && rosterMap[sel.linked_user_id];
       const abandoned = sel.status === 'abandoned';
@@ -31640,7 +31677,19 @@
                 </div>
               </div>
               {sel.exam_date && !abandoned && sel.stage < 3 && <span className="rhq-chip rhq-stg2">Exam {fmtDate(sel.exam_date)}</span>}
-              {!abandoned && <StageChip stage={sel.stage} />}
+              {!abandoned &&
+                <span style={{ position: 'relative', display: 'inline-flex' }}>
+                  <span className={'rhq-chip rhq-stg' + sel.stage} style={{ cursor: 'pointer', gap: 4 }} onClick={() => setStageOpen(o => !o)} title="Click to change stage">{STAGES[sel.stage]} ▾</span>
+                  {stageOpen && <>
+                    <div onClick={() => setStageOpen(false)} style={{ position: 'fixed', inset: 0, zIndex: 40 }}></div>
+                    <div style={{ position: 'absolute', top: '100%', left: 0, marginTop: 6, zIndex: 50, background: 'var(--sf)', border: '1px solid var(--bd)', borderRadius: 12, boxShadow: 'var(--sh)', padding: 5, minWidth: 170 }}>
+                      {STAGE_FLOW.map(i =>
+                        <div key={i} className="rhq-rowhover" onClick={() => pickStage(i)} style={{ display: 'flex', alignItems: 'center', gap: 9, padding: '8px 11px', borderRadius: 8, cursor: 'pointer', fontSize: 13, fontWeight: i === sel.stage ? 700 : 500, background: i === sel.stage ? 'var(--sf2)' : 'transparent' }}>
+                          <span className={'rhq-dot rhq-dot' + i}></span>{STAGES[i]}
+                        </div>)}
+                    </div>
+                  </>}
+                </span>}
               {abandoned
                 ? <>
                   <span className="rhq-chip rhq-stg3">Abandoned{sel.abandoned_at ? ' · ' + fmtDate(sel.abandoned_at) : ''}</span>
@@ -31741,12 +31790,13 @@
               <div style={{ marginTop: 14 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 6 }}>
                   <div className="rhq-label" style={{ marginBottom: 0 }}>Training videos</div>
-                  <div className="rhq-muted">{trainReqTotal ? (doneReq + ' / ' + trainReqTotal + ' required' + (trainingComplete ? ' · complete' : '')) : (doneReq + ' completed')}</div>
+                  <div className="rhq-muted">{adminGranted ? 'Full access granted' : legacyComplete ? 'Completed (prior training)' : trainReqTotal ? (doneReq + ' / ' + trainReqTotal + ' required' + (newVideosDone ? ' · complete' : '')) : (doneReq + ' completed')}</div>
                 </div>
                 <div style={{ height: 10, background: 'var(--sf2)', borderRadius: 6, overflow: 'hidden' }}>
                   <div className={trainingComplete ? 'rhq-dot1' : 'rhq-dot5'} style={{ height: '100%', width: trainPct + '%', borderRadius: 6 }}></div>
                 </div>
-                <div className="rhq-muted" style={{ marginTop: 6 }}>At 100% of required videos they auto-advance to Fully licensed.</div>
+                {!trainingComplete && <div className="rhq-muted" style={{ marginTop: 6 }}>At 100% of required videos they auto-advance to Fully licensed.</div>}
+                {legacyComplete && <div className="rhq-muted" style={{ marginTop: 6 }}>Completed the previous training curriculum (before the video revamp).</div>}
               </div>
               <div style={{ marginTop: 16, borderTop: '1px solid var(--bd)', paddingTop: 14 }}>
                 {!removeOpen
