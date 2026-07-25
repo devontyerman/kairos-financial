@@ -25091,9 +25091,9 @@
         const [deleting, setDeleting] = useState(false);
         const [deleteCount, setDeleteCount] = useState(null); // # policies (null = loading)
         const [alsoDeleteData, setAlsoDeleteData] = useState(false);
-        const [archiveInstead, setArchiveInstead] = useState(false); // no-data agent: archive (keep profile) instead of delete
+        const [archiveInstead, setArchiveInstead] = useState(true); // default to archive (safe) even with no policies — delete is opt-in
         const [confirmText, setConfirmText] = useState('');
-        const askDelete = (p) => { setDeleteFor(p); setDeleteCount(null); setAlsoDeleteData(false); setArchiveInstead(false); setConfirmText(''); };
+        const askDelete = (p) => { setDeleteFor(p); setDeleteCount(null); setAlsoDeleteData(false); setArchiveInstead(true); setConfirmText(''); };
 
         // Count the agent's policies whenever the remove dialog opens.
         useEffect(() => {
@@ -31084,7 +31084,7 @@
     // Stage VALUES never got renumbered: 4 stays "Fully licensed" so nothing in
     // the DB shifted. "Training" was added as value 5. The pipeline is DISPLAYED
     // in STAGE_FLOW order (Training sits between Contracting and Fully licensed).
-    const STAGES = ['Recruiting', 'Studying', 'Exam passed', 'Contracting', 'Fully licensed', 'Training'];
+    const STAGES = ['Recruiting', 'Studying', 'Exam passed', 'Contracting', 'Active Agent', 'Training'];
     const STAGE_FLOW = [0, 1, 2, 3, 5, 4];   // display / progression order
     const FULLY_LICENSED = 4, TRAINING = 5;
     const flowIdx = (s) => { const i = STAGE_FLOW.indexOf(s); return i < 0 ? 0 : i; };
@@ -31165,10 +31165,14 @@
       --wb:#3D2412;--wf:#FF9A4D;--db:#421515;--df:#FF6B6B;
     }
     #recruiterHqRoot .rhq * { box-sizing:border-box; }
-    #recruiterHqRoot .rhq { padding:26px 34px 60px; max-width:1180px; margin:0 auto; }
-    /* Main list/board/dashboard/leaderboard views fill the page more; the drill-in
-       profile keeps the narrower reading width. */
-    #recruiterHqRoot .rhq.rhq-wide { max-width:1680px; }
+    #recruiterHqRoot .rhq { padding:22px 12px 56px; max-width:1180px; margin:0 auto; }
+    /* Main list/board/dashboard/leaderboard views fill the page more (condensed
+       horizontal whitespace); the drill-in profile keeps a narrower reading width. */
+    #recruiterHqRoot .rhq.rhq-wide { max-width:2100px; }
+    /* Minimal side gap: cancel .ss-main's horizontal padding so the recruiting
+       pages sit right up against the sidebar with only a small gutter. */
+    #panel-recruiterhq.active { margin-left:-2rem; margin-right:-2rem; }
+    @media (max-width:900px){ #panel-recruiterhq.active { margin-left:-0.75rem; margin-right:-0.75rem; } }
     .rhq h1 { margin:0; font-size:25px; font-weight:700; letter-spacing:-0.02em; }
     .rhq-sub { color:var(--tx2); font-size:13.5px; margin-top:3px; }
     .rhq-head { display:flex; align-items:flex-end; justify-content:space-between; gap:16px; margin-bottom:22px; flex-wrap:wrap; }
@@ -31395,6 +31399,11 @@
         return Object.keys(ids).map(id => ({ id, name: recruiterName(id) })).sort((a, b) => a.name.localeCompare(b.name));
       })();
 
+      // Dashboard is home; clicking a stat/funnel bar jumps to the recruits list
+      // pre-filtered to that slice.
+      const goToList = (chipVal) => { setSelId(null); setChip(chipVal || 'all'); setView('list'); };
+      const goToBoard = () => { setSelId(null); setView('board'); };
+
       const header = (title, sub) => (
         <div className="rhq-head">
           <div><h1>{title}</h1><div className="rhq-sub">{sub}</div></div>
@@ -31411,27 +31420,32 @@
 
       return (
         <div className="rhq rhq-wide">
-          {view === 'dashboard' && <Dashboard active={active} all={filteredByMgr} activity={activity} header={header} onOpen={openProfile} />}
-          {view === 'board' && <Board active={active} header={header} recruiterName={recruiterName} onOpen={openProfile} onDrop={async (id, stage) => { await patchRecruit(id, { stage }); afterMutate(); }} />}
-          {view === 'list' && <RecruitList rows={filteredByMgr} header={header} search={search} setSearch={setSearch} chip={chip} setChip={setChip} recruiterName={recruiterName} onOpen={openProfile} />}
+          {/* Dashboard is home. On the other views show a Back button (works even
+              with the sidebar collapsed). */}
+          {view !== 'dashboard' &&
+            <button className="rhq-btn ghost sm" style={{ marginBottom: 14 }}
+              onClick={() => { setSelId(null); setView('dashboard'); }}>← Dashboard</button>}
+          {view === 'dashboard' && <Dashboard active={active} all={filteredByMgr} activity={activity} header={header} onOpen={openProfile} onFilter={goToList} onBoard={goToBoard} />}
+          {view === 'board' && <Board active={active} header={header} isAdmin={isAdmin} recruiterName={recruiterName} onOpen={openProfile} onDrop={async (id, stage) => { await patchRecruit(id, { stage }); afterMutate(); }} />}
+          {view === 'list' && <RecruitList rows={filteredByMgr} header={header} isAdmin={isAdmin} search={search} setSearch={setSearch} chip={chip} setChip={setChip} recruiterName={recruiterName} onOpen={openProfile} />}
           {view === 'leaders' && <Leaderboard rows={filteredByMgr} recruiterName={recruiterName} />}
 
-          {showAdd && <AddRecruit me={me} recruiterOptions={recruiterOptions} onClose={() => setShowAdd(false)} onSaved={async () => { setShowAdd(false); await afterMutate(); }} />}
+          {showAdd && <AddRecruit me={me} isAdmin={isAdmin} recruiterOptions={recruiterOptions} onClose={() => setShowAdd(false)} onSaved={async () => { setShowAdd(false); await afterMutate(); }} />}
         </div>
       );
     }
 
     // ── DASHBOARD ─────────────────────────────────────────────────────────────
-    function Dashboard({ active, all, activity, header, onOpen }) {
+    function Dashboard({ active, all, activity, header, onOpen, onFilter, onBoard }) {
       const licensed = all.filter(r => r.stage === 4 && r.status === 'active').length;
       const totalAgents = active.length;   // every active (non-abandoned) agent, licensed included
       const stalled = active.filter(r => r.stage !== FULLY_LICENSED && daysSince(r.stage_entered_at) > STALL_DAYS[r.stage]);
       const inPipeline = active.filter(r => r.stage !== FULLY_LICENSED).length;   // active, not yet licensed
       const kpis = [
-        { l: 'Total agents', v: totalAgents, s: 'active · excludes archived' },
-        { l: 'Licensed', v: licensed, s: 'fully licensed agents' },
-        { l: 'In pipeline', v: inPipeline, s: 'active, not yet licensed' },
-        { l: 'Stalled', v: stalled.length, s: 'past follow-up threshold' }
+        { l: 'Total agents', v: totalAgents, s: 'active · excludes archived', chip: 'all' },
+        { l: 'Active Agents', v: licensed, s: 'active agents', chip: 'stage:4' },
+        { l: 'In pipeline', v: inPipeline, s: 'active, not yet licensed', chip: 'pipeline' },
+        { l: 'Stalled', v: stalled.length, s: 'past follow-up threshold', chip: 'stalled' }
       ];
       const funnel = STAGE_FLOW.map(i => ({ name: STAGES[i], stage: i, count: active.filter(r => r.stage === i).length }));
       const fmax = Math.max(1, ...funnel.map(f => f.count));
@@ -31444,7 +31458,10 @@
           {header('Dashboard', today + ' · ' + inPipeline + ' recruits in the pipeline')}
           <div className="rhq-grid4" style={{ marginBottom: 14 }}>
             {kpis.map((k, i) =>
-              <div key={i} className="rhq-card pad">
+              <div key={i} className={'rhq-card pad' + (onFilter ? ' rhq-rowhover' : '')}
+                onClick={onFilter ? () => onFilter(k.chip) : undefined}
+                style={onFilter ? { cursor: 'pointer' } : undefined}
+                title={onFilter ? 'View these recruits' : undefined}>
                 <div className="rhq-kpi-l">{k.l}</div>
                 <div className="rhq-kpi-v">{k.v}</div>
                 <div className="rhq-kpi-s">{k.s}</div>
@@ -31452,16 +31469,18 @@
           </div>
           <div className="rhq-cols">
             <div className="rhq-card pad">
-              <div className="rhq-sectitle" style={{ marginBottom: 16 }}>Pipeline funnel</div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                {funnel.map((f, i) =>
-                  <div key={i} style={{ display: 'grid', gridTemplateColumns: '108px 1fr 28px', gap: 12, alignItems: 'center' }}>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--tx2)' }}>{f.name}</div>
-                    <div style={{ height: 24, background: 'var(--sf2)', borderRadius: 8, overflow: 'hidden' }}>
-                      <div style={{ height: '100%', width: (f.count / fmax * 100) + '%', minWidth: f.count ? 6 : 0, borderRadius: 8, background: 'var(--ac)' }}></div>
-                    </div>
-                    <div style={{ fontSize: 13.5, fontWeight: 700, textAlign: 'right' }}>{f.count}</div>
-                  </div>)}
+              <div onClick={onBoard ? onBoard : undefined} title={onBoard ? 'Open the pipeline' : undefined} style={onBoard ? { cursor: 'pointer' } : undefined}>
+                <div className="rhq-sectitle" style={{ marginBottom: 16, display: 'flex', alignItems: 'center' }}>Pipeline funnel{onBoard && <span style={{ marginLeft: 'auto', fontSize: 12, fontWeight: 700, color: 'var(--ac)' }}>Open pipeline →</span>}</div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                  {funnel.map((f, i) =>
+                    <div key={i} style={{ display: 'grid', gridTemplateColumns: '108px 1fr 28px', gap: 12, alignItems: 'center' }}>
+                      <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--tx2)' }}>{f.name}</div>
+                      <div style={{ height: 24, background: 'var(--sf2)', borderRadius: 8, overflow: 'hidden' }}>
+                        <div style={{ height: '100%', width: (f.count / fmax * 100) + '%', minWidth: f.count ? 6 : 0, borderRadius: 8, background: 'var(--ac)' }}></div>
+                      </div>
+                      <div style={{ fontSize: 13.5, fontWeight: 700, textAlign: 'right' }}>{f.count}</div>
+                    </div>)}
+                </div>
               </div>
               <div className="rhq-sectitle" style={{ margin: '24px 0 12px' }}>Recent activity</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
@@ -31519,7 +31538,7 @@
     }
 
     // ── PIPELINE BOARD ────────────────────────────────────────────────────────
-    function Board({ active, header, recruiterName, onOpen, onDrop }) {
+    function Board({ active, header, isAdmin, recruiterName, onOpen, onDrop }) {
       const dragId = useRef(null);
       const [over, setOver] = useState(null);
       const cols = STAGE_FLOW.map(i => ({ name: STAGES[i], i, recruits: active.filter(r => r.stage === i) }));
@@ -31542,7 +31561,7 @@
                   {col.recruits.map(r =>
                     <div key={r.id} className="rhq-pcard" draggable onDragStart={() => { dragId.current = r.id; }} onClick={() => onOpen(r.id)}>
                       <div style={{ fontSize: 14, fontWeight: 600, letterSpacing: '-0.01em' }}>{r.full_name}</div>
-                      <div style={{ fontSize: 12, color: 'var(--tx3)', marginTop: 2 }}>via {recruiterName(r.recruiter_user_id)}{r.city ? ' · ' + r.city + (r.state ? ', ' + r.state : '') : ''}</div>
+                      <div style={{ fontSize: 12, color: 'var(--tx3)', marginTop: 2 }}>{[isAdmin && ('via ' + recruiterName(r.recruiter_user_id)), r.city && (r.city + (r.state ? ', ' + r.state : ''))].filter(Boolean).join(' · ')}</div>
                       <div style={{ marginTop: 10 }}><DayBadge days={daysSince(r.stage_entered_at)} stage={r.stage} /></div>
                     </div>)}
                 </div>
@@ -31553,15 +31572,19 @@
     }
 
     // ── RECRUITS LIST ─────────────────────────────────────────────────────────
-    function RecruitList({ rows, header, search, setSearch, chip, setChip, recruiterName, onOpen }) {
-      const chips = [{ k: 'all', l: 'All active' }].concat(STAGE_FLOW.map(i => ({ k: 'stage:' + i, l: STAGES[i] }))).concat([{ k: 'abandoned', l: 'Archived / abandoned' }]);
+    function RecruitList({ rows, header, isAdmin, search, setSearch, chip, setChip, recruiterName, onOpen }) {
+      const chips = [{ k: 'all', l: 'All active' }, { k: 'pipeline', l: 'In pipeline' }, { k: 'stalled', l: 'Stalled' }]
+        .concat(STAGE_FLOW.map(i => ({ k: 'stage:' + i, l: STAGES[i] })))
+        .concat([{ k: 'abandoned', l: 'Archived / abandoned' }]);
       const q = search.trim().toLowerCase();
       const filtered = rows.filter(r => {
         if (chip === 'abandoned') { if (r.status !== 'abandoned') return false; }
+        else if (chip === 'pipeline') { if (r.status !== 'active' || r.stage === FULLY_LICENSED) return false; }
+        else if (chip === 'stalled') { if (r.status !== 'active' || r.stage === FULLY_LICENSED || daysSince(r.stage_entered_at) <= STALL_DAYS[r.stage]) return false; }
         else if (chip.startsWith('stage:')) { if (r.status !== 'active' || r.stage !== +chip.split(':')[1]) return false; }
         else { if (r.status !== 'active') return false; }
         if (!q) return true;
-        return [r.full_name, r.email, r.city, r.state, recruiterName(r.recruiter_user_id)].some(v => (v || '').toLowerCase().includes(q));
+        return [r.full_name, r.email, r.city, r.state, isAdmin && recruiterName(r.recruiter_user_id)].some(v => (v || '').toLowerCase().includes(q));
       });
       const isMobile = useIsMobile();
       return (
@@ -31582,7 +31605,7 @@
                     <Avatar name={r.full_name} size={42} />
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ fontSize: 14.5, fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{r.full_name}</div>
-                      <div style={{ fontSize: 12.5, color: 'var(--tx3)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', marginTop: 1 }}>{[r.city && (r.city + (r.state ? ', ' + r.state : '')), recruiterName(r.recruiter_user_id)].filter(Boolean).join(' · ') || (r.email || '—')}</div>
+                      <div style={{ fontSize: 12.5, color: 'var(--tx3)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', marginTop: 1 }}>{[r.city && (r.city + (r.state ? ', ' + r.state : '')), isAdmin && recruiterName(r.recruiter_user_id)].filter(Boolean).join(' · ') || (r.email || '—')}</div>
                       <div style={{ display: 'flex', gap: 6, alignItems: 'center', marginTop: 8, flexWrap: 'wrap' }}>
                         {r.status === 'abandoned' ? <span className="rhq-chip rhq-stg3">Archived</span> : <StageChip stage={r.stage} />}
                         {r.status !== 'abandoned' && <DayBadge days={daysSince(r.stage_entered_at)} stage={r.stage} />}
@@ -31593,12 +31616,12 @@
               </div>
             : <div className="rhq-card rhq-scroll">
               <div style={{ minWidth: 720 }}>
-                <div style={{ display: 'grid', gridTemplateColumns: '2.2fr 1.1fr 1.1fr 1.1fr 1.1fr 0.8fr', gap: 12, padding: '12px 20px', borderBottom: '1px solid var(--bd)', fontSize: 11.5, fontWeight: 700, color: 'var(--tx3)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-                  <div>Recruit</div><div>Location</div><div>Phone</div><div>Recruiter</div><div>Stage</div><div>In stage</div>
+                <div style={{ display: 'grid', gridTemplateColumns: isAdmin ? '2.2fr 1.1fr 1.1fr 1.1fr 1.1fr 0.8fr' : '2.2fr 1.1fr 1.1fr 1.1fr 0.8fr', gap: 12, padding: '12px 20px', borderBottom: '1px solid var(--bd)', fontSize: 11.5, fontWeight: 700, color: 'var(--tx3)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                  <div>Recruit</div><div>Location</div><div>Phone</div>{isAdmin && <div>Recruiter</div>}<div>Stage</div><div>In stage</div>
                 </div>
                 {filtered.length === 0 && <div style={{ padding: '22px 20px' }} className="rhq-muted">No recruits match.</div>}
                 {filtered.map(r =>
-                  <div key={r.id} className="rhq-row rhq-rowhover" onClick={() => onOpen(r.id)} style={{ display: 'grid', gridTemplateColumns: '2.2fr 1.1fr 1.1fr 1.1fr 1.1fr 0.8fr', gap: 12, padding: '13px 20px', alignItems: 'center', cursor: 'pointer' }}>
+                  <div key={r.id} className="rhq-row rhq-rowhover" onClick={() => onOpen(r.id)} style={{ display: 'grid', gridTemplateColumns: isAdmin ? '2.2fr 1.1fr 1.1fr 1.1fr 1.1fr 0.8fr' : '2.2fr 1.1fr 1.1fr 1.1fr 0.8fr', gap: 12, padding: '13px 20px', alignItems: 'center', cursor: 'pointer' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 12, minWidth: 0 }}>
                       <Avatar name={r.full_name} />
                       <div style={{ minWidth: 0 }}>
@@ -31608,7 +31631,7 @@
                     </div>
                     <div style={{ fontSize: 13, color: 'var(--tx2)' }}>{r.city ? r.city + (r.state ? ', ' + r.state : '') : (r.state || '—')}</div>
                     <div style={{ fontSize: 13, color: 'var(--tx2)' }}>{r.phone || '—'}</div>
-                    <div style={{ fontSize: 13, color: 'var(--tx2)' }}>{recruiterName(r.recruiter_user_id)}</div>
+                    {isAdmin && <div style={{ fontSize: 13, color: 'var(--tx2)' }}>{recruiterName(r.recruiter_user_id)}</div>}
                     <div>{r.status === 'abandoned' ? <span className="rhq-chip rhq-stg3">Abandoned</span> : <StageChip stage={r.stage} />}</div>
                     <div>{r.status === 'abandoned' ? <span className="rhq-muted">—</span> : <DayBadge days={daysSince(r.stage_entered_at)} stage={r.stage} />}</div>
                   </div>)}
@@ -31682,7 +31705,7 @@
     }
 
     // ── ADD RECRUIT MODAL ─────────────────────────────────────────────────────
-    function AddRecruit({ me, recruiterOptions, onClose, onSaved }) {
+    function AddRecruit({ me, isAdmin, recruiterOptions, onClose, onSaved }) {
       const [f, setF] = useState({ full_name: '', email: '', phone: '', city: '', state: '', timezone: 'Central', recruiter_user_id: me.id || '', exam_date: '' });
       const [busy, setBusy] = useState(false);
       const set = (k) => (e) => setF(s => Object.assign({}, s, { [k]: e.target.value }));
@@ -31715,10 +31738,10 @@
                 <div style={{ gridColumn: '1 / -1' }}><div className="rhq-label">Full name</div><input className="rhq-inp" style={{ width: '100%' }} value={f.full_name} onChange={set('full_name')} placeholder="First Last" autoFocus /></div>
                 {F({ label: 'Email', k: 'email' })}
                 {F({ label: 'Phone', k: 'phone' })}
-                <div><div className="rhq-label">Recruiter</div>
+                {isAdmin && <div><div className="rhq-label">Recruiter</div>
                   <select className="rhq-sel" style={{ width: '100%' }} value={f.recruiter_user_id} onChange={set('recruiter_user_id')}>
                     {recruiterOptions.map(o => <option key={o.id} value={o.id}>{o.name}</option>)}
-                  </select></div>
+                  </select></div>}
                 {F({ label: 'City', k: 'city' })}
                 {F({ label: 'State', k: 'state' })}
                 <div><div className="rhq-label">Timezone</div>
@@ -31806,12 +31829,21 @@
         return () => { live = false; };
       }, [sel.linked_user_id, isAdmin]);
 
-      const startEdit = () => { setEd({ full_name: sel.full_name || '', email: sel.email || '', phone: sel.phone || '', city: sel.city || '', state: sel.state || '', timezone: sel.timezone || 'Central', recruiter_user_id: sel.recruiter_user_id || '', exam_date: sel.exam_date || '', stage: sel.stage }); setEditing(true); };
+      const startEdit = () => { setEd({ full_name: sel.full_name || '', email: sel.email || '', phone: sel.phone || '', city: sel.city || '', state: sel.state || '', timezone: sel.timezone || 'Central', recruiter_user_id: sel.recruiter_user_id || '', exam_date: sel.exam_date || '', stage: sel.stage, upline_user_id: (sel.linked_user_id && rosterMap[sel.linked_user_id]) ? (rosterMap[sel.linked_user_id].manager_user_id || '') : '' }); setEditing(true); };
       const setEK = (k) => (e) => setEd(s => Object.assign({}, s, { [k]: e.target.value }));
 
       const doPatch = async (body) => { await patchRecruit(sel.id, body); await onChanged(); };
       const saveEdit = async () => {
         await doPatch({ full_name: ed.full_name.trim(), email: ed.email.trim() || null, phone: ed.phone.trim() || null, city: ed.city.trim() || null, state: ed.state.trim() || null, timezone: ed.timezone, recruiter_user_id: ed.recruiter_user_id || null, exam_date: ed.exam_date || null, stage: Number(ed.stage) });
+        // Upline = the linked Sales Hub account's manager_user_id — the real org
+        // hierarchy (separate from the recruiter credit). Admin + linked only.
+        if (isAdmin && sel.linked_user_id) {
+          const curMgr = (rosterMap[sel.linked_user_id] && rosterMap[sel.linked_user_id].manager_user_id) || '';
+          const newMgr = (ed.upline_user_id === sel.linked_user_id) ? '' : (ed.upline_user_id || '');
+          if (newMgr !== curMgr) {
+            try { await ensureToken(); await rest('agent_profiles?user_id=eq.' + sel.linked_user_id, { method: 'PATCH', headers: writeHeaders(), body: JSON.stringify({ manager_user_id: newMgr || null }) }); await onChanged(); } catch (e) { console.error('upline update failed', e); }
+          }
+        }
         setEditing(false);
       };
       const saveGoals = () => doPatch({ goal_90: goals.goal_90 || null, goal_year1: goals.goal_year1 || null, goal_long_term: goals.goal_long_term || null, their_why: goals.their_why || null });
@@ -31844,11 +31876,12 @@
         setRmHasPolicies((rows || []).length > 0);
       };
       const confirmRemove = async () => {
-        const rpc = (!rmHasPolicies && rmArchiveInstead) ? 'archive_agent_user'
-          : !rmHasPolicies ? 'delete_agent_user'
-            : rmDeleteData ? 'delete_agent_user_and_data'
-              : 'archive_agent_user';
-        if (rmHasPolicies && rmDeleteData && rmText.trim().toUpperCase() !== 'DELETE') return;
+        // Default is ALWAYS archive (nothing deleted) — permanent delete is an
+        // explicit opt-in that requires typing DELETE, whether or not they have
+        // policies. Prevents accidental deletion on a misclick.
+        const rpc = !rmDeleteData ? 'archive_agent_user'
+          : (rmHasPolicies ? 'delete_agent_user_and_data' : 'delete_agent_user');
+        if (rmDeleteData && rmText.trim().toUpperCase() !== 'DELETE') return;
         setRmBusy(true); await ensureToken();
         const r = await rest('rpc/' + rpc, { method: 'POST', headers: writeHeaders(), body: JSON.stringify({ target_user_id: sel.linked_user_id }) });
         setRmBusy(false);
@@ -31895,7 +31928,7 @@
                 <div style={{ fontSize: 21, fontWeight: 700, letterSpacing: '-0.02em' }}>{sel.full_name}</div>
                 <div style={{ fontSize: 13, color: 'var(--tx2)', marginTop: 2 }}>
                   {[sel.city && (sel.city + (sel.state ? ', ' + sel.state : '')), sel.timezone, sel.email, sel.phone].filter(Boolean).join(' · ')}
-                  {' · via ' + recruiterName(sel.recruiter_user_id)}
+                  {isAdmin ? ' · via ' + recruiterName(sel.recruiter_user_id) : ''}
                 </div>
               </div>
               {sel.exam_date && !abandoned && sel.stage < 3 && <span className="rhq-chip rhq-stg2">Exam {fmtDate(sel.exam_date)}</span>}
@@ -31945,7 +31978,11 @@
                 {[['Full name', 'full_name'], ['Email', 'email'], ['Phone', 'phone'], ['City', 'city'], ['State', 'state']].map(([l, k]) =>
                   <div key={k}><div className="rhq-label">{l}</div><input className="rhq-inp" style={{ width: '100%' }} value={ed[k]} onChange={setEK(k)} /></div>)}
                 <div><div className="rhq-label">Timezone</div><select className="rhq-sel" style={{ width: '100%' }} value={ed.timezone} onChange={setEK('timezone')}>{TZ_OPTS.map(t => <option key={t}>{t}</option>)}</select></div>
-                <div><div className="rhq-label">Recruiter</div><select className="rhq-sel" style={{ width: '100%' }} value={ed.recruiter_user_id} onChange={setEK('recruiter_user_id')}>{recruiterOptions.map(o => <option key={o.id} value={o.id}>{o.name}</option>)}</select></div>
+                {isAdmin && <div><div className="rhq-label">Recruiter <span style={{ color: 'var(--tx3)', fontWeight: 400 }}>· pipeline credit</span></div><select className="rhq-sel" style={{ width: '100%' }} value={ed.recruiter_user_id} onChange={setEK('recruiter_user_id')}>{recruiterOptions.map(o => <option key={o.id} value={o.id}>{o.name}</option>)}</select></div>}
+                {isAdmin && sel.linked_user_id && <div><div className="rhq-label">Upline <span style={{ color: 'var(--tx3)', fontWeight: 400 }}>· Sales Hub hierarchy</span></div><select className="rhq-sel" style={{ width: '100%' }} value={ed.upline_user_id || ''} onChange={setEK('upline_user_id')}>
+                  <option value="">— None (top of org) —</option>
+                  {roster.filter(o => o.user_id !== sel.linked_user_id).map(o => <option key={o.user_id} value={o.user_id}>{o.agent_name}</option>)}
+                </select></div>}
                 <div><div className="rhq-label">Stage</div><select className="rhq-sel" style={{ width: '100%' }} value={ed.stage} onChange={setEK('stage')}>{STAGE_FLOW.map(i => <option key={i} value={i}>{STAGES[i]}</option>)}</select></div>
                 <div><div className="rhq-label">Exam date</div><input className="rhq-inp" type="date" style={{ width: '100%' }} value={ed.exam_date || ''} onChange={setEK('exam_date')} /></div>
               </div>
@@ -32026,7 +32063,7 @@
                 <div style={{ height: 10, background: 'var(--sf2)', borderRadius: 6, overflow: 'hidden' }}>
                   <div className={trainingComplete ? 'rhq-dot1' : 'rhq-dot5'} style={{ height: '100%', width: trainPct + '%', borderRadius: 6 }}></div>
                 </div>
-                {!trainingComplete && <div className="rhq-muted" style={{ marginTop: 6 }}>At 100% of required videos they auto-advance to Fully licensed.</div>}
+                {!trainingComplete && <div className="rhq-muted" style={{ marginTop: 6 }}>At 100% of required videos they auto-advance to Active Agent.</div>}
                 {legacyComplete && <div className="rhq-muted" style={{ marginTop: 6 }}>Completed the previous training curriculum (before the video revamp).</div>}
               </div>
               <div style={{ marginTop: 16, borderTop: '1px solid var(--bd)', paddingTop: 14 }}>
@@ -32036,18 +32073,13 @@
                     <div style={{ fontSize: 13.5, fontWeight: 700, marginBottom: 8 }}>Remove {sel.full_name}?</div>
                     {rmHasPolicies === null
                       ? <div className="rhq-muted">Checking their book of business…</div>
-                      : rmHasPolicies
-                        ? <div>
-                          <div className="rhq-muted" style={{ marginBottom: 10 }}>They have policies on file — by default they’re <strong>archived</strong> (login disabled, data kept).</div>
-                          <label style={{ display: 'flex', gap: 8, alignItems: 'center', fontSize: 13, marginBottom: 8 }}><input type="checkbox" checked={rmDeleteData} onChange={e => setRmDeleteData(e.target.checked)} /> Permanently delete the agent AND all their data</label>
+                      : <div>
+                          <div className="rhq-muted" style={{ marginBottom: 10 }}>By default this agent is <strong>archived</strong> (login disabled, all data kept). Nothing is deleted unless you check the box below.</div>
+                          <label style={{ display: 'flex', gap: 8, alignItems: 'center', fontSize: 13, marginBottom: 8 }}><input type="checkbox" checked={rmDeleteData} onChange={e => setRmDeleteData(e.target.checked)} /> Permanently delete the agent{rmHasPolicies ? ' AND all their data' : ''}</label>
                           {rmDeleteData && <input className="rhq-inp" style={{ width: '100%', marginBottom: 10 }} placeholder="Type DELETE to confirm" value={rmText} onChange={e => setRmText(e.target.value)} />}
-                        </div>
-                        : <div>
-                          <div className="rhq-muted" style={{ marginBottom: 10 }}>No policies on file — by default the account is <strong>permanently deleted</strong>.</div>
-                          <label style={{ display: 'flex', gap: 8, alignItems: 'center', fontSize: 13, marginBottom: 8 }}><input type="checkbox" checked={rmArchiveInstead} onChange={e => setRmArchiveInstead(e.target.checked)} /> Just archive instead (keep the profile)</label>
                         </div>}
                     <div style={{ display: 'flex', gap: 8, marginTop: 6 }}>
-                      <button className="rhq-btn danger" disabled={rmBusy || rmHasPolicies === null || (rmHasPolicies && rmDeleteData && rmText.trim().toUpperCase() !== 'DELETE')} onClick={confirmRemove}>{rmBusy ? 'Working…' : (rmHasPolicies ? (rmDeleteData ? 'Delete + data' : 'Archive agent') : (rmArchiveInstead ? 'Archive agent' : 'Delete agent'))}</button>
+                      <button className={'rhq-btn' + (rmDeleteData ? ' danger' : '')} disabled={rmBusy || rmHasPolicies === null || (rmDeleteData && rmText.trim().toUpperCase() !== 'DELETE')} onClick={confirmRemove}>{rmBusy ? 'Working…' : (rmDeleteData ? (rmHasPolicies ? 'Delete + data' : 'Delete agent') : 'Archive agent')}</button>
                       <button className="rhq-btn ghost" onClick={() => setRemoveOpen(false)}>Cancel</button>
                     </div>
                   </div>}

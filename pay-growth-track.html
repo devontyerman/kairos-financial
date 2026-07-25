@@ -231,7 +231,9 @@
     {pct:95,  amt:30000},
     {pct:90,  amt:20000},
     {pct:85,  amt:10000},
-    {pct:80,  pill:'Starting Contract Rate'},
+    {pct:80,  amt:5000},
+    {pct:75,  amt:2500},
+    {pct:70,  pill:'Starting Contract Rate'},
   ];
   const money=v=>'$'+v.toLocaleString('en-US');
   const pc=p=>typeof p==='number'?`${p}<sup>%</sup>`:p;
@@ -240,7 +242,7 @@
     `<div class="trow${r.equity?' equity':''}"><span class="pct">${pc(r.pct)}</span><span class="amt">${money(r.amt)}</span></div>`
   ).join('');
   document.getElementById('prod').innerHTML=PROD.map(r=>
-    `<div class="trow"><span class="pct">${pc(r.pct)}</span>${r.amt?`<span class="amt">${money(r.amt)}</span>`:''}${r.pill?`<span class="pill">${r.pill}</span>`:''}</div>`
+    `<div class="trow"><span class="pct">${pc(r.pct)}</span>${r.amt?`<span class="amt">${money(r.amt)}</span>`:(r.req?`<span class="amt">${r.req}</span>`:'')}${r.pill?`<span class="pill">${r.pill}</span>`:''}</div>`
   ).join('');
 </script>
 </body>
