@@ -51,7 +51,7 @@
   <link rel="preconnect" href="https://esm.sh" crossorigin />
   <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Libre+Caslon+Text:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Libre+Caslon+Text:wght@400;700&family=Inter:wght@400;500;600;700&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/styles.css" />
   <style>
     html { font-size: 20px !important; }
@@ -414,8 +414,8 @@
       gap: 0.6rem;
     }
     .dt-card {
-      --dt-c: #16a34a;
-      --dt-c-soft: rgba(22,163,74,0.08);
+      --dt-c: var(--rb-green);
+      --dt-c-soft: color-mix(in oklch, var(--rb-green) 10%, transparent);
       position: relative;
       background: #ffffff;
       border: 1px solid #e5e5ea;
@@ -587,7 +587,7 @@
       margin-bottom: 1rem;
       display: flex; align-items: center; gap: 0.5rem;
     }
-    .dt-submit-title svg { color: #16a34a; }
+    .dt-submit-title svg { color: var(--rb-green); }
     .dt-submit-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -4021,10 +4021,10 @@
       white-space: nowrap;
     }
     #panel-policies .bob-status-badge .s-dot { width: 6px; height: 6px; border-radius: 99px; display: inline-block; }
-    #panel-policies .bob-status-underwriting { color: var(--rb-yellow); background: color-mix(in oklch, var(--rb-yellow) 14%, transparent); border-color: color-mix(in oklch, var(--rb-yellow) 32%, transparent); }
-    #panel-policies .bob-status-approved    { color: var(--rb-green);  background: color-mix(in oklch, var(--rb-green) 12%, transparent);  border-color: color-mix(in oklch, var(--rb-green) 28%, transparent); }
-    #panel-policies .bob-status-paid        { color: var(--rb-purple); background: color-mix(in oklch, var(--rb-purple) 14%, transparent); border-color: color-mix(in oklch, var(--rb-purple) 32%, transparent); }
-    #panel-policies .bob-status-cancelled   { color: var(--rb-red);    background: color-mix(in oklch, var(--rb-red) 10%, transparent);    border-color: color-mix(in oklch, var(--rb-red) 28%, transparent); text-decoration: line-through; text-decoration-thickness: 1px; }
+    #panel-policies .bob-status-underwriting { color: var(--s2f); background: var(--s2b); border-color: color-mix(in oklch, var(--s2r) 30%, transparent); }
+    #panel-policies .bob-status-approved    { color: var(--s1f); background: var(--s1b); border-color: color-mix(in oklch, var(--s1r) 30%, transparent); }
+    #panel-policies .bob-status-paid        { color: var(--s4f); background: var(--s4b); border-color: color-mix(in oklch, var(--s4r) 30%, transparent); }
+    #panel-policies .bob-status-cancelled   { color: var(--s3f); background: var(--s3b); border-color: color-mix(in oklch, var(--s3r) 30%, transparent); text-decoration: line-through; text-decoration-thickness: 1px; }
 
     #panel-policies .bob-age-pill {
       display: inline-flex; align-items: center;
@@ -4094,7 +4094,7 @@
     .bob-modal-layer {
       position: fixed; inset: 0; z-index: 10000;
       display: grid; place-items: center; padding: 24px;
-      font-family: 'Geist','Inter',system-ui,sans-serif;
+      font-family: 'Instrument Sans','Inter',system-ui,sans-serif;
     }
     .bob-modal-layer[data-bob-theme="light"] {
       --bob-bg: #f6f5f1; --bob-bg-2: #efece5; --bob-surface: #ffffff;
@@ -8911,10 +8911,10 @@
       white-space: nowrap;
     }
     #tpatab-policies .tp-status-badge .s-dot { width: 6px; height: 6px; border-radius: 99px; display: inline-block; }
-    #tpatab-policies .tp-status-underwriting { color: var(--rb-yellow); background: color-mix(in oklch, var(--rb-yellow) 14%, transparent); border-color: color-mix(in oklch, var(--rb-yellow) 32%, transparent); }
-    #tpatab-policies .tp-status-approved    { color: var(--rb-green);  background: color-mix(in oklch, var(--rb-green) 12%, transparent);  border-color: color-mix(in oklch, var(--rb-green) 28%, transparent); }
-    #tpatab-policies .tp-status-paid        { color: var(--rb-purple); background: color-mix(in oklch, var(--rb-purple) 14%, transparent); border-color: color-mix(in oklch, var(--rb-purple) 32%, transparent); }
-    #tpatab-policies .tp-status-cancelled   { color: var(--rb-red);    background: color-mix(in oklch, var(--rb-red) 10%, transparent);    border-color: color-mix(in oklch, var(--rb-red) 28%, transparent); text-decoration: line-through; text-decoration-thickness: 1px; }
+    #tpatab-policies .tp-status-underwriting { color: var(--s2f); background: var(--s2b); border-color: color-mix(in oklch, var(--s2r) 30%, transparent); }
+    #tpatab-policies .tp-status-approved    { color: var(--s1f); background: var(--s1b); border-color: color-mix(in oklch, var(--s1r) 30%, transparent); }
+    #tpatab-policies .tp-status-paid        { color: var(--s4f); background: var(--s4b); border-color: color-mix(in oklch, var(--s4r) 30%, transparent); }
+    #tpatab-policies .tp-status-cancelled   { color: var(--s3f); background: var(--s3b); border-color: color-mix(in oklch, var(--s3r) 30%, transparent); text-decoration: line-through; text-decoration-thickness: 1px; }
 
     /* Row actions */
     #tpatab-policies .tp-actions-cell { position: relative; text-align: right; }
@@ -13103,6 +13103,33 @@
        Dark = default; light keys off the app-wide html[data-kf-theme="light"].
        ═══════════════════════════════════════════════════════════════════════ -->
   <style id="kf-design-unify">
+    /* ── Unified status-color system ──────────────────────────────────────
+       Each status has: raw (--sNr, for solid fills — dots, bars, progress),
+       a pale tint (--sNb, badge/chip background) and a darkened variant
+       (--sNf, badge/chip text). Rule: badges = tint bg + darkened text; never
+       the raw color behind text. Dark is the app default; light overrides via
+       html[data-kf-theme="light"] (the app has no .dark class). */
+    :root {
+      --s0r:#71C9CE; --s1r:#B2D959; --s2r:#FED24F; --s3r:#FB4B4B; --s4r:#792CA2;
+      --s0b:#123638; --s0f:#7FD9DE;
+      --s1b:#28330F; --s1f:#C6E378;
+      --s2b:#3B3110; --s2f:#FED24F;
+      --s3b:#421515; --s3f:#FF7A7A;
+      --s4b:#31153F; --s4f:#C77BE8;
+      --nb:#242220; --nf:#B3AFAB;
+      --wb:#3D2412; --wf:#FF9A4D;
+      --db:#421515; --df:#FF6B6B;
+    }
+    html[data-kf-theme="light"] {
+      --s0b:#E0F5F6; --s0f:#1F8A90;
+      --s1b:#EFF7DA; --s1f:#5F7F10;
+      --s2b:#FFF3CD; --s2f:#93700A;
+      --s3b:#FEE1E1; --s3f:#D31A1A;
+      --s4b:#F0E2F8; --s4f:#792CA2;
+      --nb:#F0F0ED; --nf:#454040;
+      --wb:#FFE9D6; --wf:#C25400;
+      --db:#FDE0E0; --df:#D90000;
+    }
     #tpatab-performance, #tpatab-agents, #tpatab-policies, #tpatab-hierarchy,
     #panel-goals, #panel-policies, #panel-leaderboard, #panel-carriers, #panel-resources, #panel-dialtracker {
       --tp-bg:#121110;--tp-bg-2:#1B1A18;--tp-surface:#1B1A18;--tp-surface-2:#242220;--tp-surface-3:#2F2D2A;--tp-hairline:#2F2D2A;--tp-hairline-strong:#3A3835;--tp-ink-1:#F4F3F1;--tp-ink-2:#B3AFAB;--tp-ink-3:#736F6B;--tp-ink-4:#55524F;
@@ -13110,11 +13137,11 @@
       --bob-bg:#121110;--bob-bg-2:#1B1A18;--bob-surface:#1B1A18;--bob-surface-2:#242220;--bob-surface-3:#2F2D2A;--bob-hairline:#2F2D2A;--bob-hairline-strong:#3A3835;--bob-ink-1:#F4F3F1;--bob-ink-2:#B3AFAB;--bob-ink-3:#736F6B;--bob-ink-4:#55524F;
       --lb-bg:#121110;--lb-bg-2:#1B1A18;--lb-surface:#1B1A18;--lb-surface-2:#242220;--lb-surface-3:#2F2D2A;--lb-hairline:#2F2D2A;--lb-hairline-strong:#3A3835;--lb-ink-1:#F4F3F1;--lb-ink-2:#B3AFAB;--lb-ink-3:#736F6B;--lb-ink-4:#55524F;
       --kf-bg:#121110;--kf-bg-2:#1B1A18;--kf-surface:#1B1A18;--kf-surface-2:#242220;--kf-surface-3:#2F2D2A;--kf-hairline:#2F2D2A;--kf-hairline-strong:#3A3835;--kf-ink-1:#F4F3F1;--kf-ink-2:#B3AFAB;--kf-ink-3:#736F6B;--kf-ink-4:#55524F;
-      --tp-sans:'Inter','Instrument Sans',system-ui,sans-serif;--tp-mono:'Inter','Instrument Sans',system-ui,sans-serif;--tp-radius:14px;--tp-radius-sm:10px;
-      --tk-sans:'Inter','Instrument Sans',system-ui,sans-serif;--tk-mono:'Inter','Instrument Sans',system-ui,sans-serif;--tk-radius:14px;
-      --bob-sans:'Inter','Instrument Sans',system-ui,sans-serif;--bob-mono:'Inter','Instrument Sans',system-ui,sans-serif;--bob-radius:14px;
-      --lb-sans:'Inter','Instrument Sans',system-ui,sans-serif;--lb-mono:'Inter','Instrument Sans',system-ui,sans-serif;--lb-radius:14px;
-      --kf-sans:'Inter','Instrument Sans',system-ui,sans-serif;--kf-mono:'Inter','Instrument Sans',system-ui,sans-serif;--kf-radius:14px;
+      --tp-sans:'Instrument Sans','Inter',system-ui,sans-serif;--tp-mono:'Instrument Sans','Inter',system-ui,sans-serif;--tp-radius:14px;--tp-radius-sm:10px;
+      --tk-sans:'Instrument Sans','Inter',system-ui,sans-serif;--tk-mono:'Instrument Sans','Inter',system-ui,sans-serif;--tk-radius:14px;
+      --bob-sans:'Instrument Sans','Inter',system-ui,sans-serif;--bob-mono:'Instrument Sans','Inter',system-ui,sans-serif;--bob-radius:14px;
+      --lb-sans:'Instrument Sans','Inter',system-ui,sans-serif;--lb-mono:'Instrument Sans','Inter',system-ui,sans-serif;--lb-radius:14px;
+      --kf-sans:'Instrument Sans','Inter',system-ui,sans-serif;--kf-mono:'Instrument Sans','Inter',system-ui,sans-serif;--kf-radius:14px;
     }
     html[data-kf-theme="light"] #tpatab-performance, html[data-kf-theme="light"] #tpatab-agents, html[data-kf-theme="light"] #tpatab-policies, html[data-kf-theme="light"] #tpatab-hierarchy,
     html[data-kf-theme="light"] #panel-goals, html[data-kf-theme="light"] #panel-policies, html[data-kf-theme="light"] #panel-leaderboard, html[data-kf-theme="light"] #panel-carriers, html[data-kf-theme="light"] #panel-resources, html[data-kf-theme="light"] #panel-dialtracker {
@@ -13178,7 +13205,7 @@
     #panel-worksheet { --cwf-ink:#F4F3F1;--cwf-ink-soft:#B3AFAB;--cwf-muted:#736F6B;--cwf-rule:#2F2D2A;--cwf-rule-soft:#242220;--cwf-navy:#B9DD5E;--cwf-navy-deep:#C6E378;--cwf-gold:#B9DD5E;--cwf-gold-soft:#2A3313;--cwf-paper:#1B1A18;--cwf-field-bg:#242220;--cwf-focus:#B9DD5E; }
     html[data-kf-theme="light"] #panel-worksheet { --cwf-ink:#2E2B2B;--cwf-ink-soft:#454040;--cwf-muted:#9C9694;--cwf-rule:#E7E7E2;--cwf-rule-soft:#F0F0ED;--cwf-navy:#5F7F10;--cwf-navy-deep:#4A6210;--cwf-gold:#5F7F10;--cwf-gold-soft:#EFF6D9;--cwf-paper:#FFFFFF;--cwf-field-bg:#FFFFFF;--cwf-focus:#5F7F10; }
     #panel-worksheet .cwf-card { border-radius: 16px !important; border: 1px solid var(--cwf-rule) !important; box-shadow: 0 1px 2px rgba(0,0,0,.04), 0 4px 16px rgba(0,0,0,.06) !important; }
-    #panel-worksheet .cwf-brand-text h1, #panel-worksheet .cwf-sec-title, #panel-worksheet .cwf-sec-num { font-family: 'Inter','Instrument Sans',system-ui,sans-serif !important; }
+    #panel-worksheet .cwf-brand-text h1, #panel-worksheet .cwf-sec-title, #panel-worksheet .cwf-sec-num { font-family: 'Instrument Sans','Inter',system-ui,sans-serif !important; }
 
     /* Carriers: top-to-bottom rows (name · phone · hours); no "Direct Line" badge,
        glow, or chevron. */
@@ -13201,9 +13228,9 @@
       #panel-carriers.active #carrierGrid .sh-carrier-tile { grid-template-columns: 1fr; gap: 4px; }
     }
 
-    /* Resources: the blue tag/button accent → turquoise (#65DCD5). */
-    #panel-resources { --rb-blue: #65DCD5; }
-    html[data-kf-theme="light"] #panel-resources { --rb-blue: #65DCD5; }
+    /* Resources: the blue tag/button accent → unified teal (status s0). */
+    #panel-resources { --rb-blue: var(--s0r); }
+    html[data-kf-theme="light"] #panel-resources { --rb-blue: var(--s0r); }
 
     /* Book of Business: status filter is a row of toggle chips (All Policies /
        Underwriting / Approved & Pending / Fully Issued) — mirrors the Recruits
@@ -13212,21 +13239,60 @@
     #panel-policies .bob-chip {
       padding:9px 16px; border-radius:999px; border:1px solid var(--bob-hairline-strong);
       background:transparent; color:var(--bob-ink-2);
-      font-family:'Inter','Instrument Sans',system-ui,sans-serif; font-size:13px; font-weight:600;
+      font-family:'Instrument Sans','Inter',system-ui,sans-serif; font-size:13px; font-weight:600;
       cursor:pointer; white-space:nowrap; transition:background .12s ease, color .12s ease, border-color .12s ease;
     }
     #panel-policies .bob-chip:hover { color:var(--bob-ink-1); background:var(--bob-surface-2); }
-    #panel-policies .bob-chip.on { background:#A1CB35; color:#232B07; border-color:#A1CB35; font-weight:700; }
-    #panel-policies .bob-chip.on:hover { background:#A1CB35; filter:brightness(1.05); }
+    #panel-policies .bob-chip.on { background:var(--s1r); color:#232B07; border-color:var(--s1r); font-weight:700; }
+    #panel-policies .bob-chip.on:hover { background:var(--s1r); filter:brightness(1.05); }
+    /* iOS-style red count badge on the in-progress status toggle chips. */
+    #panel-policies .bob-chip { position:relative; }
+    #panel-policies .bob-chip .bob-chip-count {
+      display:inline-flex; align-items:center; justify-content:center;
+      min-width:18px; height:18px; padding:0 5px; margin-left:7px;
+      border-radius:999px; background:var(--s3r); color:#fff;
+      font-size:11px; font-weight:700; line-height:1; vertical-align:middle;
+    }
+    #panel-policies .bob-chip.on .bob-chip-count { background:#fff; color:var(--s3f); }
     /* Status badges (Book of Business + Agency HQ Policies tab) → Recruiting
        chip typography (Inter, 11.5px/700, sentence case) while keeping the
        colored dot + status tint. */
     #panel-policies .bob-status-badge,
     #tpatab-policies .tp-status-badge {
-      font-family:'Inter','Instrument Sans',system-ui,sans-serif !important;
+      font-family:'Instrument Sans','Inter',system-ui,sans-serif !important;
       font-size:11.5px !important; font-weight:700 !important;
       text-transform:none !important; letter-spacing:0 !important;
       padding:3px 10px 3px 9px !important;
+    }
+
+    /* Badge status dots use the RAW status color (solid fill), overriding the
+       inline hue so the dot pops against the pale tint background. */
+    #panel-policies .bob-status-underwriting .s-dot,
+    #tpatab-policies .tp-status-underwriting .s-dot { background: var(--s2r) !important; }
+    #panel-policies .bob-status-approved .s-dot,
+    #tpatab-policies .tp-status-approved .s-dot { background: var(--s1r) !important; }
+    #panel-policies .bob-status-paid .s-dot,
+    #tpatab-policies .tp-status-paid .s-dot { background: var(--s4r) !important; }
+    #panel-policies .bob-status-cancelled .s-dot,
+    #tpatab-policies .tp-status-cancelled .s-dot { background: var(--s3r) !important; }
+
+    /* Instrument Sans everywhere on the eight redesigned pages — including all
+       small subtext, mono numbers, table cells, badges, and portaled modals
+       (drawers/edit dialogs render outside their panel). This blanket catches
+       the remaining hardcoded families (Geist, JetBrains Mono, Plus Jakarta
+       Sans) that don't route through the --*-sans variables. */
+    #panel-policies, #panel-policies *,
+    #tpatab-policies, #tpatab-policies *,
+    #tpatab-hierarchy, #tpatab-hierarchy *,
+    #tpatab-performance, #tpatab-performance *,
+    #panel-dialtracker, #panel-dialtracker *,
+    #panel-leaderboard, #panel-leaderboard *,
+    #panel-carriers, #panel-carriers *,
+    #panel-resources, #panel-resources *,
+    .bob-modal-layer, .bob-modal-layer *,
+    .tp-drawer, .tp-drawer *,
+    .tp-ae-modal, .tp-ae-modal * {
+      font-family:'Instrument Sans','Inter',system-ui,sans-serif !important;
     }
   </style>
 </head>
@@ -16353,11 +16419,11 @@
     // ─── DIAL TRACKER ───
     const DT_KEY = 'dialTrackerData';
     const DT_CATEGORIES = [
-      { key: 'dials',         label: 'Dials',                goal: 300, target: 'kpiDials',         c: '#166534', cs: 'rgba(22,101,52,0.10)' },
-      { key: 'answers',       label: 'Answers',              goal: 30,  target: 'kpiAnswers',       c: '#15803d', cs: 'rgba(21,128,61,0.12)' },
-      { key: 'appointments',  label: 'Appointments Booked',  goal: 0,   target: 'kpiAppointments',  c: '#16a34a', cs: 'rgba(22,163,74,0.12)' },
-      { key: 'presentations', label: 'Presentations',        goal: 3,   target: 'kpiPresentations', c: '#22c55e', cs: 'rgba(34,197,94,0.14)' },
-      { key: 'closes',        label: 'Closes',               goal: 0,   target: 'kpiDeals',         c: '#4ade80', cs: 'rgba(74,222,128,0.18)' }
+      { key: 'dials',         label: 'Dials',                goal: 300, target: 'kpiDials',         c: 'var(--rb-green)', cs: 'color-mix(in oklch, var(--rb-green) 12%, transparent)' },
+      { key: 'answers',       label: 'Answers',              goal: 30,  target: 'kpiAnswers',       c: 'var(--rb-green)', cs: 'color-mix(in oklch, var(--rb-green) 12%, transparent)' },
+      { key: 'appointments',  label: 'Appointments Booked',  goal: 0,   target: 'kpiAppointments',  c: 'var(--rb-green)', cs: 'color-mix(in oklch, var(--rb-green) 12%, transparent)' },
+      { key: 'presentations', label: 'Presentations',        goal: 3,   target: 'kpiPresentations', c: 'var(--rb-green)', cs: 'color-mix(in oklch, var(--rb-green) 12%, transparent)' },
+      { key: 'closes',        label: 'Closes',               goal: 0,   target: 'kpiDeals',         c: 'var(--rb-green)', cs: 'color-mix(in oklch, var(--rb-green) 12%, transparent)' }
     ];
     function dtDefaults() {
       const o = {};
@@ -30276,13 +30342,16 @@
                 <div className="bob-chip-row">
                   {[
                     { k: 'all', label: 'All Policies', statuses: BOB_STATUSES },
-                    { k: 'Underwriting', label: 'Underwriting', statuses: ['Underwriting'] },
-                    { k: 'Approved', label: 'Approved & Pending', statuses: ['Approved'] },
+                    { k: 'Underwriting', label: 'Underwriting', statuses: ['Underwriting'], count: policies.filter(p => p.status === 'Underwriting').length },
+                    { k: 'Approved', label: 'Approved & Pending', statuses: ['Approved'], count: policies.filter(p => p.status === 'Approved').length },
                     { k: 'Issue Paid', label: 'Fully Issued', statuses: ['Issue Paid'] },
                   ].map(chip => {
                     const on = chip.statuses.length === filters.statuses.length && chip.statuses.every(s => filters.statuses.includes(s));
                     return <button key={chip.k} type="button" className={'bob-chip' + (on ? ' on' : '')}
-                      onClick={() => { setFilters(f => Object.assign({}, f, { statuses: chip.statuses.slice() })); setPage(0); }}>{chip.label}</button>;
+                      onClick={() => { setFilters(f => Object.assign({}, f, { statuses: chip.statuses.slice() })); setPage(0); }}>
+                      {chip.label}
+                      {chip.count > 0 ? <span className="bob-chip-count">{chip.count}</span> : null}
+                    </button>;
                   })}
                 </div>
 
@@ -31046,7 +31115,7 @@
       --sh:0 1px 2px rgba(40,38,30,.05),0 4px 16px rgba(40,38,30,.06);
       --s0b:#E0F5F6;--s0f:#1F8A90;--s1b:#EFF7DA;--s1f:#5F7F10;--s2b:#FFF3CD;--s2f:#93700A;--s3b:#FEE1E1;--s3f:#D31A1A;--s4b:#F0E2F8;--s4f:#792CA2;--s5b:#E4E8FD;--s5f:#3B4DB8;
       --wb:#FFE9D6;--wf:#C25400;--db:#FDE0E0;--df:#D90000;
-      font-family:'Inter','Instrument Sans',system-ui,sans-serif;color:var(--tx);
+      font-family:'Instrument Sans','Inter',system-ui,sans-serif;color:var(--tx);
     }
     html[data-kf-theme="dark"] #recruiterHqRoot .rhq {
       --bg:#121110;--sf:#1B1A18;--sf2:#242220;--bd:#2F2D2A;--tx:#F4F3F1;--tx2:#B3AFAB;--tx3:#736F6B;
