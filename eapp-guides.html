@@ -25,7 +25,6 @@
 <div class="eag-shell">
   <section class="eag-hero">
     <div class="eag-hero-inner">
-      <div class="eag-kicker">KAIROS FINANCIAL · AGENT RESOURCES</div>
       <h1 class="eag-title">E-APP GUIDES</h1>
     </div>
   </section>
@@ -36,7 +35,6 @@
 
   <footer class="eag-footer">
     <div class="eag-footer-inner">
-      <div class="eag-footer-brand">KAIROS FINANCIAL</div>
       <div class="eag-footer-note">Guide content courtesy of Family First Life &mdash; FFL E-App Guides. Used with permission.</div>
     </div>
   </footer>
@@ -166,7 +164,9 @@
     guides.appendChild(el('div', 'eag-group-label', c.groupOne || 'E-APP GUIDES'));
     c.guides.forEach(function (g) {
       var a = el('a', 'eag-guide-link', g.label);
-      a.href = g.href;
+      // Cache-bust internal guide HTML (?v=2 before any #anchor) so an old
+      // cached copy of a guide page can't linger. External URLs are left as-is.
+      a.href = g.external ? g.href : g.href.replace(/(\.html)(#|$)/, '$1?v=2$2');
       // Internal guides load in place (inside the hub panel when framed);
       // only genuinely external destinations open a new tab.
       if (g.external) { a.target = '_blank'; a.rel = 'noopener noreferrer'; }

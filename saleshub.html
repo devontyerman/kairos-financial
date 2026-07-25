@@ -347,7 +347,7 @@
        expanded + collapsed states so the button doesn't visibly jump. */
     .ss-sidebar-collapse {
       position: absolute;
-      bottom: 12px;
+      top: 14px;
       right: 12px;
       width: 24px;
       height: 24px;
@@ -2738,7 +2738,7 @@
     #tpatab-performance .tp-ap-delta {
       display: inline-flex; align-items: center; gap: 4px;
       font-family: var(--tp-mono); font-size: 12px;
-      padding: 3px 8px; border-radius: 4px;
+      padding: 3px 10px; border-radius: 999px;
     }
     #tpatab-performance .tp-ap-delta.pos { color: var(--tp-pos); background: color-mix(in oklch, var(--tp-pos) 14%, transparent); }
     #tpatab-performance .tp-ap-delta.neg { color: var(--tp-neg); background: color-mix(in oklch, var(--tp-neg) 14%, transparent); }
@@ -3211,7 +3211,7 @@
       box-shadow: 0 0 0 1px color-mix(in oklch, var(--rb-yellow) 70%, transparent);
     }
     #tpatab-hierarchy .hv-node-stripe {
-      width: 4px; flex-shrink: 0; background: var(--rank-color, var(--rb-blue));
+      width: 4px; flex-shrink: 0; background: var(--rank-color, var(--s0f));
     }
     #tpatab-hierarchy .hv-node-body {
       flex: 1; padding: 12px 14px;
@@ -3239,7 +3239,7 @@
     }
     #tpatab-hierarchy .hv-node-rank .hv-rank-dot {
       width: 5px; height: 5px; border-radius: 99px;
-      background: var(--rank-color, var(--rb-blue));
+      background: var(--rank-color, var(--s0f));
       display: inline-block;
     }
     #tpatab-hierarchy .hv-node-stats {
@@ -4022,8 +4022,8 @@
     }
     #panel-policies .bob-status-badge .s-dot { width: 6px; height: 6px; border-radius: 99px; display: inline-block; }
     #panel-policies .bob-status-underwriting { color: var(--s2f); background: var(--s2b); border-color: color-mix(in oklch, var(--s2r) 30%, transparent); }
-    #panel-policies .bob-status-approved    { color: var(--s1f); background: var(--s1b); border-color: color-mix(in oklch, var(--s1r) 30%, transparent); }
-    #panel-policies .bob-status-paid        { color: var(--s4f); background: var(--s4b); border-color: color-mix(in oklch, var(--s4r) 30%, transparent); }
+    #panel-policies .bob-status-approved    { color: var(--s4f); background: var(--s4b); border-color: color-mix(in oklch, var(--s4r) 30%, transparent); }
+    #panel-policies .bob-status-paid        { color: var(--s1f); background: var(--s1b); border-color: color-mix(in oklch, var(--s1r) 30%, transparent); }
     #panel-policies .bob-status-cancelled   { color: var(--s3f); background: var(--s3b); border-color: color-mix(in oklch, var(--s3r) 30%, transparent); text-decoration: line-through; text-decoration-thickness: 1px; }
 
     #panel-policies .bob-age-pill {
@@ -7973,10 +7973,11 @@
     #panel-goals .tk-filter-pill {
       display: inline-flex; align-items: center; gap: 8px;
       padding: 7px 12px 7px 14px; border-radius: 99px;
-      background: color-mix(in oklch, var(--rb-blue) 14%, transparent);
-      border: 1px solid color-mix(in oklch, var(--rb-blue) 32%, transparent);
-      color: var(--tk-ink-1); font-size: 12px;
+      background: var(--s0b);
+      border: 1px solid color-mix(in oklch, var(--s0r) 40%, transparent);
+      color: var(--s0f); font-size: 12px;
     }
+    #panel-goals .tk-filter-pill b { color: var(--s0f); }
 
     /* Cards / grid */
     #panel-goals .tk-grid { display: grid; gap: 16px; }
@@ -8032,7 +8033,7 @@
     #panel-goals .tk-ap-delta {
       display: inline-flex; align-items: center; gap: 4px;
       font-family: var(--tk-mono); font-size: 12px;
-      padding: 3px 8px; border-radius: 4px;
+      padding: 3px 10px; border-radius: 999px;
     }
     #panel-goals .tk-ap-delta.pos { color: var(--tk-pos); background: color-mix(in oklch, var(--tk-pos) 14%, transparent); }
     #panel-goals .tk-ap-delta.neg { color: var(--tk-neg); background: color-mix(in oklch, var(--tk-neg) 14%, transparent); }
@@ -8051,17 +8052,17 @@
     #panel-goals .tk-action-btn {
       appearance: none; background: var(--tk-surface-2);
       color: var(--tk-ink-1);
-      padding: 7px 14px; border-radius: 8px;
-      font-family: var(--tk-mono); font-size: 11px;
+      padding: 7px 16px; border-radius: 999px;
+      font-family: var(--tk-mono); font-size: 11px; font-weight: 700;
       letter-spacing: 0.08em; text-transform: uppercase;
       cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
       transition: all 120ms;
     }
     #panel-goals .tk-action-btn .tk-plus { font-size: 14px; line-height: 1; }
-    #panel-goals .tk-action-btn.green { border: 1px solid var(--rb-green); background: color-mix(in oklch, var(--rb-green) 18%, transparent); }
-    #panel-goals .tk-action-btn.green:hover { background: color-mix(in oklch, var(--rb-green) 32%, transparent); }
-    #panel-goals .tk-action-btn.blue  { border: 1px solid var(--rb-blue);  background: color-mix(in oklch, var(--rb-blue) 18%, transparent); }
-    #panel-goals .tk-action-btn.blue:hover  { background: color-mix(in oklch, var(--rb-blue) 32%, transparent); }
+    #panel-goals .tk-action-btn.green { border: 1px solid var(--s1r); background: var(--s1b); color: var(--s1f); }
+    #panel-goals .tk-action-btn.green:hover { background: var(--s1b); filter: brightness(1.12); }
+    #panel-goals .tk-action-btn.blue  { border: 1px solid var(--s0r); background: var(--s0b); color: var(--s0f); }
+    #panel-goals .tk-action-btn.blue:hover  { background: var(--s0b); filter: brightness(1.12); }
 
     /* Annual / MTD segmented control on the goal-line chart */
     #panel-goals .tk-seg {
@@ -8407,17 +8408,17 @@
     .tk-mod-btn {
       appearance: none; border: 1px solid var(--tk-hairline-strong);
       background: var(--tk-surface); color: var(--tk-ink-1);
-      padding: 9px 16px; border-radius: 8px;
+      padding: 9px 18px; border-radius: 999px;
       font-family: var(--tk-sans); font-size: 12px; font-weight: 500;
       cursor: pointer; transition: all 120ms;
     }
     .tk-mod-btn:hover { background: var(--tk-surface-3); }
     .tk-mod-btn.ghost { background: transparent; }
     .tk-mod-btn.primary {
-      background: var(--rb-green); border-color: var(--rb-green);
-      color: #0d0e10; font-weight: 600;
+      background: var(--s1b); border-color: color-mix(in oklch, var(--s1r) 40%, transparent);
+      color: var(--s1f); font-weight: 700;
     }
-    .tk-mod-btn.primary.blue { background: var(--rb-blue); border-color: var(--rb-blue); }
+    .tk-mod-btn.primary.blue { background: var(--s0b); border-color: color-mix(in oklch, var(--s0r) 40%, transparent); color: var(--s0f); }
     .tk-mod-btn.primary:hover { opacity: 0.9; }
     .tk-mod-toast {
       padding: 10px 14px; margin: 0 24px 0; border-radius: 7px;
@@ -8807,16 +8808,17 @@
 
     /* KPI strip on the policies tab */
     #tpatab-policies .tp-kpi-strip {
-      display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px;
-      background: var(--tp-hairline);
-      border: 1px solid var(--tp-hairline);
-      border-radius: var(--tp-radius);
-      overflow: hidden;
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px;
+      background: transparent;
+      border: none;
       margin-bottom: 18px;
     }
-    #tpatab-policies .tp-kpi-strip .tp-kpi-cell { min-height: 88px; padding: 14px 18px; background: var(--tp-surface); display:flex; flex-direction:column; gap:8px; }
+    #tpatab-policies .tp-kpi-strip .tp-kpi-cell { min-height: 88px; padding: 20px 22px; background: var(--tp-surface); display:flex; flex-direction:column; gap:8px; border: 1px solid var(--tp-hairline); border-radius: 16px; box-shadow: 0 1px 2px rgba(0,0,0,.04), 0 4px 16px rgba(0,0,0,.06); }
+    /* Policies stat labels: bold + no color dot for readability. */
+    #tpatab-policies .tp-kpi-strip .tp-kpi-lbl { font-weight: 700; color: var(--tp-ink-2); }
+    #tpatab-policies .tp-kpi-strip .tp-kpi-lbl .swatch { display: none; }
     #tpatab-policies .tp-kpi-strip .tp-kpi-lbl { font-family: var(--tp-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--tp-ink-3); display: flex; align-items: center; gap: 6px; }
-    #tpatab-policies .tp-kpi-strip .tp-kpi-lbl .swatch { width: 6px; height: 6px; border-radius: 2px; display: inline-block; }
+    #tpatab-policies .tp-kpi-strip .tp-kpi-lbl .swatch { display: none; }
     #tpatab-policies .tp-kpi-strip .tp-kpi-val { font-family: var(--tp-mono); font-size: 22px; font-weight: 500; color: var(--tp-ink-1); letter-spacing: -0.01em; font-variant-numeric: tabular-nums; line-height: 1; margin-top: 4px; }
     #tpatab-policies .tp-kpi-strip .tp-kpi-sub { font-family: var(--tp-mono); font-size: 11px; color: var(--tp-ink-3); }
     #tpatab-policies .tp-kpi-strip .tp-kpi-sub b { color: var(--tp-ink-1); font-weight: 500; }
@@ -8912,8 +8914,8 @@
     }
     #tpatab-policies .tp-status-badge .s-dot { width: 6px; height: 6px; border-radius: 99px; display: inline-block; }
     #tpatab-policies .tp-status-underwriting { color: var(--s2f); background: var(--s2b); border-color: color-mix(in oklch, var(--s2r) 30%, transparent); }
-    #tpatab-policies .tp-status-approved    { color: var(--s1f); background: var(--s1b); border-color: color-mix(in oklch, var(--s1r) 30%, transparent); }
-    #tpatab-policies .tp-status-paid        { color: var(--s4f); background: var(--s4b); border-color: color-mix(in oklch, var(--s4r) 30%, transparent); }
+    #tpatab-policies .tp-status-approved    { color: var(--s4f); background: var(--s4b); border-color: color-mix(in oklch, var(--s4r) 30%, transparent); }
+    #tpatab-policies .tp-status-paid        { color: var(--s1f); background: var(--s1b); border-color: color-mix(in oklch, var(--s1r) 30%, transparent); }
     #tpatab-policies .tp-status-cancelled   { color: var(--s3f); background: var(--s3b); border-color: color-mix(in oklch, var(--s3r) 30%, transparent); text-decoration: line-through; text-decoration-thickness: 1px; }
 
     /* Row actions */
@@ -9308,6 +9310,9 @@
     }
     .ss-submit:hover { transform: translateY(-2px); box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
     .ss-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+    /* Submit-modal buttons on the unified palette: deal = green pair, KPIs = teal pair. */
+    #submitBtn { background: var(--s1b); color: var(--s1f); }
+    #kpiSubmitBtn { background: var(--s0b); color: var(--s0f); }
     .ss-msg { margin-top: 1rem; padding: 0.75rem 1rem; border-radius: var(--radius-md); font-size: 0.82rem; font-weight: 600; display: none; }
     .ss-msg.success { display: block; background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.2); color: #15803d; }
     .ss-msg.error { display: block; background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.2); color: #ef4444; }
@@ -13270,30 +13275,38 @@
     #panel-policies .bob-status-underwriting .s-dot,
     #tpatab-policies .tp-status-underwriting .s-dot { background: var(--s2r) !important; }
     #panel-policies .bob-status-approved .s-dot,
-    #tpatab-policies .tp-status-approved .s-dot { background: var(--s1r) !important; }
+    #tpatab-policies .tp-status-approved .s-dot { background: var(--s4r) !important; }
     #panel-policies .bob-status-paid .s-dot,
-    #tpatab-policies .tp-status-paid .s-dot { background: var(--s4r) !important; }
+    #tpatab-policies .tp-status-paid .s-dot { background: var(--s1r) !important; }
     #panel-policies .bob-status-cancelled .s-dot,
     #tpatab-policies .tp-status-cancelled .s-dot { background: var(--s3r) !important; }
 
-    /* Instrument Sans everywhere on the eight redesigned pages — including all
-       small subtext, mono numbers, table cells, badges, and portaled modals
-       (drawers/edit dialogs render outside their panel). This blanket catches
-       the remaining hardcoded families (Geist, JetBrains Mono, Plus Jakarta
-       Sans) that don't route through the --*-sans variables. */
-    #panel-policies, #panel-policies *,
-    #tpatab-policies, #tpatab-policies *,
-    #tpatab-hierarchy, #tpatab-hierarchy *,
-    #tpatab-performance, #tpatab-performance *,
-    #panel-dialtracker, #panel-dialtracker *,
-    #panel-leaderboard, #panel-leaderboard *,
-    #panel-carriers, #panel-carriers *,
-    #panel-resources, #panel-resources *,
-    .bob-modal-layer, .bob-modal-layer *,
-    .tp-drawer, .tp-drawer *,
-    .tp-ae-modal, .tp-ae-modal * {
-      font-family:'Instrument Sans','Inter',system-ui,sans-serif !important;
+    /* Instrument Sans everywhere across the whole Sales Hub — every panel,
+       modal, table cell, small subtext, mono number, KPI, and badge. This
+       overrides all the remaining hardcoded families (Geist, JetBrains Mono,
+       Plus Jakarta Sans) that don't route through the --*-sans variables.
+       Scoped to @media screen so the Digital Worksheet PDF export (@media
+       print / #cwf-print-host) keeps its own document typography. */
+    @media screen {
+      body, body * {
+        font-family:'Instrument Sans','Inter',system-ui,sans-serif !important;
+      }
     }
+
+    /* Discord Scheduler: a light-designed admin tool. Sync it to the app theme
+       (light = standard page bg, dark = dark surfaces) and flatten the inner
+       grey card so it's one clean sheet like the other pages. */
+    #tpatab-discord { background: #F6F6F4 !important; }
+    #tpatab-discord .dsc-surface { background: transparent !important; border: none !important; padding-top: 0 !important; }
+    html[data-kf-theme="dark"] #tpatab-discord { background: #121110 !important; }
+    html[data-kf-theme="dark"] #tpatab-discord .dsc-card { background:#1B1A18 !important; border-color:#2F2D2A !important; box-shadow:none !important; }
+    html[data-kf-theme="dark"] #tpatab-discord .dsc-title { color:#F4F3F1 !important; }
+    html[data-kf-theme="dark"] #tpatab-discord .dsc-sub { color:#B3AFAB !important; }
+    html[data-kf-theme="dark"] #tpatab-discord .dsc-label { color:#9C9694 !important; }
+    html[data-kf-theme="dark"] #tpatab-discord .dsc-textarea,
+    html[data-kf-theme="dark"] #tpatab-discord .dsc-input { background:#242220 !important; border-color:#2F2D2A !important; color:#F4F3F1 !important; }
+    html[data-kf-theme="dark"] #tpatab-discord .dsc-day { background:#242220 !important; border-color:#2F2D2A !important; color:#B3AFAB !important; }
+    html[data-kf-theme="dark"] #tpatab-discord .dsc-btn-ghost { background:#242220 !important; color:#F4F3F1 !important; }
   </style>
 </head>
 <body>
@@ -13411,7 +13424,7 @@
     </button>
     <button class="ss-sidebar-btn" data-panel="worksheet">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/></svg>
-      <span>Digital Worksheet</span>
+      <span>Client Worksheet</span>
     </button>
     <button class="ss-sidebar-btn" data-panel="carriers">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>
@@ -13736,7 +13749,7 @@
          would collide with the hub's if inlined; the frame isolates them.
          eapp-guides.html sizes this iframe itself via window.frameElement. -->
     <div class="ss-panel" id="panel-eappguides">
-      <iframe src="eapp-guides.html" class="cp-iframe" id="eappGuidesFrame" title="E-App Guides &amp; Summaries"></iframe>
+      <iframe src="eapp-guides.html?v=2" class="cp-iframe" id="eappGuidesFrame" title="E-App Guides &amp; Summaries"></iframe>
     </div>
 
     <!-- State License Costs — opened inside the hub (keeps the left sidebar) -->
@@ -13753,11 +13766,8 @@
 
             <header class="cwf-head">
               <div class="cwf-brand">
-                <div class="cwf-mark" aria-hidden="true"></div>
                 <div class="cwf-brand-text">
-                  <div class="cwf-eyebrow">Confidential · Client Intake</div>
-                  <h1>Client Needs Analysis</h1>
-                  <p>Please complete every applicable field. Information is kept confidential and used only to prepare your personalized recommendation.</p>
+                  <h1>Client Worksheet</h1>
                 </div>
               </div>
               <div class="cwf-meta">
@@ -13915,15 +13925,21 @@
     <!-- ═══ COMMISSION CALCULATOR PANEL ═══ -->
     <div class="ss-panel" id="panel-calculator">
 
-      <!-- Pay section temporarily under construction -->
-      <div class="pay-under-construction">
+      <!-- Pay section temporarily under construction (hidden for the admin, who
+           gets the real page + a reminder banner via updateAuthUI). -->
+      <div class="pay-under-construction" id="payUnderConstruction">
         <div class="puc-icon">🚧</div>
         <h2>Under construction</h2>
         <p>We're working on this. It'll be back up.</p>
       </div>
 
-      <!-- Pay tabs + panes hidden while under construction (DOM kept intact) -->
-      <div hidden>
+      <!-- Pay tabs + panes. Hidden for everyone by default; updateAuthUI reveals
+           it for the admin only (id below), keeping other agents on the notice. -->
+      <div hidden id="payRealContent">
+      <!-- Admin-only reminder: this page is live for you but hidden for agents. -->
+      <div id="payAdminBanner" style="display:none; margin-bottom:16px; padding:11px 16px; border-radius:12px; background:var(--s2b); color:var(--s2f); border:1px solid color-mix(in oklch, var(--s2r) 40%, transparent); font-weight:700; font-size:13.5px; align-items:center; gap:9px;">
+        <span style="font-size:15px;">🔒</span> Admin preview — the Pay page is still <strong>under construction and hidden from all other agents</strong>. Only you can see it.
+      </div>
       <!-- Pay panel tab bar -->
       <div class="pay-tabs" role="tablist" aria-label="Pay sections">
         <button type="button" class="pay-tab on" data-tab="growth" role="tab">Growth Track</button>
@@ -15536,6 +15552,14 @@
         const isWtAdmin = WT_ADMIN_EMAILS.includes((currentUser.email || '').toLowerCase());
         if (wtBtn) wtBtn.style.display = isWtAdmin ? '' : 'none';
         if (tpBtn) tpBtn.style.display = isWtAdmin ? '' : 'none';
+        // Pay page: unlocked for the admin only (with a reminder banner); every
+        // other agent keeps seeing the "under construction" notice.
+        const _payUC = document.getElementById('payUnderConstruction');
+        const _payReal = document.getElementById('payRealContent');
+        const _payBanner = document.getElementById('payAdminBanner');
+        if (_payUC) _payUC.style.display = isWtAdmin ? 'none' : '';
+        if (_payReal) { if (isWtAdmin) _payReal.removeAttribute('hidden'); else _payReal.setAttribute('hidden', ''); }
+        if (_payBanner) _payBanner.style.display = isWtAdmin ? 'flex' : 'none';
         // Agency HQ: admin always; managers revealed by the is_manager fetch below.
         if (rhqBtn) rhqBtn.style.display = isWtAdmin ? '' : 'none';
         // Admin-only Agency HQ dropdown items (Agent Profiles, Discord).
@@ -23121,16 +23145,17 @@
       // All carriers we currently sell — extends the design's 5-color rainbow
       // palette to cover all 15 by cycling through CSS rainbow tokens.
       const CARRIER_LIST = ['Aetna', 'American Amicable', 'Americo', 'Banner', 'Chubb', 'CICA', 'Corebridge', 'Ethos', 'F&G', 'Foresters', 'InstaBrain', 'KCL', 'Liberty', 'Life X', 'Mutual of Omaha', 'NLG', 'Royal Neighbors', 'Transamerica'];
-      const RAINBOW_TOKENS = ['var(--rb-green)', 'var(--rb-yellow)', 'var(--rb-orange)', 'var(--rb-red)', 'var(--rb-purple)', 'var(--rb-blue)'];
+      // Unified status palette (theme-aware --s*f foreground colors).
+      const RAINBOW_TOKENS = ['var(--s1f)', 'var(--s2f)', 'var(--s0f)', 'var(--s3f)', 'var(--s4f)'];
       // Brand color per carrier (overrides the positional rainbow palette).
       const CARRIER_COLORS = {
-        'Ethos': 'var(--rb-green)',
-        'Mutual of Omaha': 'var(--rb-blue)',
-        'Corebridge': 'var(--rb-purple)',
-        'Transamerica': 'var(--rb-red)',
-        'American Amicable': 'oklch(0.78 0.1 235)',
-        'Aetna': 'var(--rb-purple)',
-        'CICA': 'var(--rb-blue)',
+        'Ethos': 'var(--s1f)',
+        'Mutual of Omaha': 'var(--s0f)',
+        'Corebridge': 'var(--s4f)',
+        'Transamerica': 'var(--s3f)',
+        'American Amicable': 'var(--s0f)',
+        'Aetna': 'var(--s4f)',
+        'CICA': 'var(--s0f)',
       };
       const carrierColor = (name) => {
         if (CARRIER_COLORS[name]) return CARRIER_COLORS[name];
@@ -23804,28 +23829,10 @@
         </svg>
       );
 
-      function Header({ theme, onToggleTheme, agentCount, subtitle }) {
-        const today = new Date();
-        const dateStr = today.toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric', year:'numeric' });
-        return (
-          <header className="tp-hdr">
-            <div className="tp-hdr-l">
-              <div className="tp-hdr-brand">
-                <div className="tp-hdr-title">Kairos Financial</div>
-                <span className="tp-hdr-sub">· {subtitle}</span>
-              </div>
-              <div className="tp-hdr-sub" style={{marginTop:6, marginLeft:34}}>
-                {agentCount} producers · Life &amp; Final Expense Division
-              </div>
-            </div>
-            <div className="tp-hdr-r">
-              <div className="tp-hdr-time"><b>{dateStr}</b></div>
-              <button className="tp-theme-toggle" onClick={onToggleTheme} aria-label="Toggle theme">
-                {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
-              </button>
-            </div>
-          </header>
-        );
+      function Header() {
+        // Removed: the "Kairos Financial · Team Performance / N producers /
+        // date" masthead is intentionally gone for a cleaner dashboard top.
+        return null;
       }
 
       // ─── AP Hero ────────────────────────────────────────────────────────
@@ -24520,10 +24527,10 @@
                           : (timeframe === 'MTD' || timeframe === 'LM') ? 22
                           : timeframe === 'YTD' ? 220 : 1;
         const HUES = {
-          dials: 'var(--rb-green)', answers: 'var(--rb-yellow)',
-          appointments: 'var(--rb-orange)', presentations: 'var(--rb-red)',
-          deals: 'var(--rb-purple)', leadSpend: 'var(--rb-blue)',
-          deposits: 'var(--rb-green)', roi: 'var(--rb-orange)', dialToDeal: 'var(--rb-purple)',
+          dials: 'var(--s1f)', answers: 'var(--s2f)',
+          appointments: 'var(--s0f)', presentations: 'var(--s3f)',
+          deals: 'var(--s4f)', leadSpend: 'var(--s0f)',
+          deposits: 'var(--s1f)', roi: 'var(--s0f)', dialToDeal: 'var(--s4f)',
         };
         const cells = [
           { lbl: 'Dials', val: fmtNum(s.dials), sub: <>{(s.dials / dayDivisor).toFixed(0)} <span style={{color:'var(--tp-ink-4)'}}>/ business day</span></>, hue: HUES.dials },
@@ -24808,14 +24815,12 @@
             />
             <div className="tp-filter-bar">
               <div style={{display:'flex', alignItems:'center', gap:12}}>
-                {scope && scope.id !== '__team__' ? (
+                {scope && scope.id !== '__team__' && (
                   <div className="tp-filter-pill">
                     <span style={{color:'var(--tp-ink-3)'}}>Filtered to</span>
                     <b>{scope.name}</b>
                     <button className="x" onClick={() => setActiveId(null)} aria-label="Clear filter">×</button>
                   </div>
-                ) : (
-                  <div className="tp-hdr-sub">All {agents.filter(a => a.status !== 'inactive' && a.id !== '__norep__').length} agents</div>
                 )}
               </div>
               <div style={{display:'flex', alignItems:'center', gap:14}}>
@@ -24835,7 +24840,6 @@
                     Exclude my production
                   </button>
                 )}
-                <div className="tp-hdr-sub">Last sync · {new Date().toLocaleTimeString('en-US', {hour:'numeric', minute:'2-digit'})}</div>
               </div>
             </div>
             <div className="tp-grid tp-grid-12">
@@ -25480,8 +25484,8 @@
       const POLICY_STATUSES = ['Underwriting', 'Approved', 'Issue Paid'];
       const POLICY_STATUS_HUE = {
         'Underwriting': 'var(--rb-yellow)',
-        'Approved':     'var(--rb-green)',
-        'Issue Paid':   'var(--rb-purple)',
+        'Approved':     'var(--rb-purple)',
+        'Issue Paid':   'var(--rb-green)',
         'Cancelled':    'var(--rb-red)',
       };
       const POLICY_STATUS_CLASS = {
@@ -26206,9 +26210,9 @@
       // hvAttachStats since admin identity lives in the email check, not the
       // agent_profiles table.
       function hvRankFor(profile) {
-        if (profile && profile._is_admin) return { key: 'ADM', label: 'Admin', color: 'var(--rb-purple)' };
-        if (profile && profile.is_manager) return { key: 'MGR', label: 'Manager', color: 'var(--rb-blue)' };
-        return { key: 'AGT', label: 'Agent', color: 'var(--rb-yellow)' };
+        if (profile && profile._is_admin) return { key: 'ADM', label: 'Admin', color: 'var(--s4f)' };
+        if (profile && profile.is_manager) return { key: 'MGR', label: 'Manager', color: 'var(--s0f)' };
+        return { key: 'AGT', label: 'Agent', color: 'var(--s2f)' };
       }
       function hvAvatarTint(profile) {
         return 'color-mix(in oklch, ' + hvRankFor(profile).color + ' 22%, var(--tp-surface-2))';
@@ -27725,14 +27729,11 @@
             <div className="tk-heat-cal">
               {cells.map((c, i) => {
                 if (c.empty) return <div key={i} className="tk-heat-day empty"></div>;
-                // Color scale: more activity → green, less → red. A weekday that
-                // has fully passed with nothing logged is flagged red (missed day).
-                const dow = new Date(year, month, c.day).getDay();
-                const missed = (dow >= 1 && dow <= 5) && !c.isFuture && !c.isToday && c.lvl === 0;
-                const bg = c.lvl === 0
-                  ? (missed ? 'var(--rb-red)' : 'var(--tk-surface-3)')
-                  : 'color-mix(in oklch, var(--rb-green) ' + [0,20,40,60,80,100][c.lvl] + '%, var(--rb-red))';
-                const heatFg = c.lvl >= 4 ? '#0d0e10' : ((c.lvl === 0 && !missed) ? 'var(--tk-ink-3)' : '#fff');
+                // Color scale: no activity = no color, ramping through an olive
+                // green gradient (light → dark) as activity increases. No red.
+                const HEAT = [null, '#EFF5D2', '#C6D870', '#8FA31E', '#556B2F', '#556B2F'];
+                const bg = c.lvl === 0 ? 'var(--tk-surface-3)' : HEAT[c.lvl];
+                const heatFg = c.lvl === 0 ? 'var(--tk-ink-3)' : (c.lvl <= 2 ? '#26340d' : '#ffffff');
                 const clickable = !c.isFuture && !viewingOther && typeof onDayClick === 'function';
                 const showTip = isMobile && activeDay === c.day; // mobile: tip only shows for the tapped day
                 const cls = 'tk-heat-day' +
@@ -27845,17 +27846,17 @@
           surface:'rgba(22,24,29,0.6)', surface2:'rgba(28,31,38,0.56)', surface3:'#232730',
           hairline:'rgba(255,255,255,0.07)', hairlineStrong:'rgba(255,255,255,0.13)',
           ink1:'#f3f3f1', ink2:'rgba(243,243,241,0.72)', ink3:'rgba(243,243,241,0.45)', ink4:'rgba(243,243,241,0.28)',
-          pos:'oklch(0.78 0.16 145)', neg:'oklch(0.70 0.18 25)', accentText:'#0d0e10',
-          green:'oklch(0.72 0.16 145)', yellow:'oklch(0.82 0.14 90)', orange:'oklch(0.74 0.16 50)',
-          red:'oklch(0.66 0.18 25)', purple:'oklch(0.62 0.15 305)', blue:'oklch(0.68 0.13 240)',
+          pos:'var(--s1f)', neg:'var(--s3f)', accentText:'#0d0e10',
+          green:'var(--s1r)', yellow:'oklch(0.82 0.14 90)', orange:'oklch(0.74 0.16 50)',
+          red:'var(--s3r)', purple:'oklch(0.62 0.15 305)', blue:'oklch(0.68 0.13 240)',
           teal:'oklch(0.70 0.13 190)', magenta:'oklch(0.64 0.16 340)', gray:'rgba(243,243,241,0.45)',
         } : {
           surface:'rgba(255,255,255,0.62)', surface2:'rgba(251,250,246,0.55)', surface3:'#f1efe8',
           hairline:'rgba(15,12,8,0.08)', hairlineStrong:'rgba(15,12,8,0.16)',
           ink1:'#14130f', ink2:'rgba(20,19,15,0.74)', ink3:'rgba(20,19,15,0.5)', ink4:'rgba(20,19,15,0.32)',
-          pos:'oklch(0.55 0.14 145)', neg:'oklch(0.55 0.18 25)', accentText:'#ffffff',
-          green:'oklch(0.55 0.15 145)', yellow:'oklch(0.70 0.14 85)', orange:'oklch(0.62 0.16 50)',
-          red:'oklch(0.55 0.17 25)', purple:'oklch(0.50 0.15 305)', blue:'oklch(0.55 0.13 240)',
+          pos:'var(--s1f)', neg:'var(--s3f)', accentText:'#ffffff',
+          green:'var(--s1r)', yellow:'oklch(0.70 0.14 85)', orange:'oklch(0.62 0.16 50)',
+          red:'var(--s3r)', purple:'oklch(0.50 0.15 305)', blue:'oklch(0.55 0.13 240)',
           teal:'oklch(0.50 0.13 190)', magenta:'oklch(0.50 0.16 340)', gray:'rgba(20,19,15,0.5)',
         };
       }
@@ -27981,9 +27982,9 @@
         const div = bizDays(sel.range);
 
         // ── ticker (period-over-period). Gray zero when no prior history. ──
-        const tickStyle = (up) => ({ fontFamily:MONO, fontSize:10, fontWeight:500, padding:'2px 6px', borderRadius:5, whiteSpace:'nowrap',
+        const tickStyle = (up) => ({ fontFamily:MONO, fontSize:10, fontWeight:500, padding:'2px 8px', borderRadius:999, whiteSpace:'nowrap',
           color: up===null ? T.ink3 : (up ? T.pos : T.neg),
-          background: up===null ? T.surface3 : ('color-mix(in oklch, ' + (up ? T.pos : T.neg) + ' 16%, transparent)') });
+          background: up===null ? T.surface3 : (up ? 'var(--s1b)' : 'var(--s3b)') });
         const tick = (c, p) => { if (prev == null || !p) return { text:'0.0%', up:null }; const dd = (c-p)/p*100; const up = dd >= 0; return { text:(up?'▲ ':'▼ ')+Math.abs(dd).toFixed(1)+'%', up }; };
         const tCalls = tick(cur.dials, prev ? prev.dials : 0);
         const tPres  = tick(cur.pres, prev ? prev.pres : 0);
@@ -28096,7 +28097,7 @@
               </div>
               <div style={{ display:'flex', alignItems:'baseline', justifyContent:'center', gap:24, flexWrap:'wrap', marginBottom:20 }}>
                 <div style={{ fontFamily:MONO, fontSize:'clamp(34px,5vw,44px)', fontWeight:500, color:T.ink1, letterSpacing:'-.02em', fontVariantNumeric:'tabular-nums', lineHeight:1 }}>{usd0(pipelineTotal)}</div>
-                <div style={{ display:'inline-flex', alignItems:'center', gap:4, fontFamily:MONO, fontSize:12, padding:'3px 8px', borderRadius:4, ...(pipeDelta.up===null ? { color:T.ink3, background:T.surface3 } : { color: pipeDelta.up ? T.pos : T.neg, background:'color-mix(in oklch, '+(pipeDelta.up?T.pos:T.neg)+' 14%, transparent)' }) }}>
+                <div style={{ display:'inline-flex', alignItems:'center', gap:4, fontFamily:MONO, fontSize:12, padding:'3px 10px', borderRadius:999, ...(pipeDelta.up===null ? { color:T.ink3, background:T.surface3 } : { color: pipeDelta.up ? T.pos : T.neg, background:'color-mix(in oklch, '+(pipeDelta.up?T.pos:T.neg)+' 14%, transparent)' }) }}>
                   {pipeDelta.text}<span style={{ color:T.ink3, marginLeft:6 }}>vs prior {sel.word}</span>
                 </div>
               </div>
@@ -28111,12 +28112,12 @@
                 </div>
               </div>
               <div style={{ display:'flex', height:14, borderRadius:99, background:T.surface3, overflow:'hidden' }}>
-                <div style={{ width: (pipelineTotal>0 ? (cur.pSub/pipelineTotal*100) : 0)+'%', background:T.blue }}></div>
+                <div style={{ width: (pipelineTotal>0 ? (cur.pSub/pipelineTotal*100) : 0)+'%', background:'var(--s0f)' }}></div>
                 <div style={{ width: (pipelineTotal>0 ? (cur.pRem/pipelineTotal*100) : 0)+'%', background:T.green }}></div>
               </div>
               <div style={{ display:'flex', flexWrap:'wrap', justifyContent:'center', gap:48, marginTop:18 }}>
                 <div>
-                  <div style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:8 }}><span style={{ width:8, height:8, borderRadius:2, background:T.blue }}></span><span style={{ fontSize:12, color:T.ink2 }}>Submitted &middot; awaiting payout</span></div>
+                  <div style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:8 }}><span style={{ width:8, height:8, borderRadius:2, background:'var(--s0f)' }}></span><span style={{ fontSize:12, color:T.ink2 }}>Submitted &middot; awaiting payout</span></div>
                   <div style={{ fontFamily:MONO, fontSize:20, fontWeight:500, color:T.ink1, marginTop:6, fontVariantNumeric:'tabular-nums' }}>{usd0(cur.pSub)}</div>
                 </div>
                 <div>
@@ -28883,9 +28884,8 @@
               {/* Annual Premium Goal hero */}
               <div className="tk-card tk-ap-hero" style={{gridColumn:'span 12', order:0}}>
                 <div className="tk-card-hd tk-card-hd-center" style={{marginBottom:8}}>
-                  <div className="tk-card-title tk-card-title-lg">Goal Tracker</div>
                   {!viewingOther && (
-                    <div style={{display:'flex', alignItems:'center', gap:10, flexWrap:'wrap'}}>
+                    <div style={{display:'flex', alignItems:'center', gap:10, flexWrap:'wrap', padding:'14px 0'}}>
                       <button className="tk-action-btn green" onClick={() => setShowDealModal(true)}>
                         <span className="tk-plus">+</span> Submit Deal
                       </button>
@@ -29021,8 +29021,8 @@
                     <div style={{display:'flex', alignItems:'center', gap:8}}>
                       <span style={{fontFamily:'var(--tk-mono)', fontSize:10, color:'var(--tk-ink-4)', textTransform:'uppercase', letterSpacing:'0.06em'}}>Less</span>
                       <div style={{display:'flex', gap:3}}>
-                        {[1,2,3,4,5].map(lvl => (
-                          <div key={lvl} style={{width:12, height:12, borderRadius:3, background:'color-mix(in oklch, var(--rb-green) ' + [20,40,60,80,100][lvl-1] + '%, var(--rb-red))'}}></div>
+                        {['var(--tk-surface-3)','#EFF5D2','#C6D870','#8FA31E','#556B2F'].map((col, i) => (
+                          <div key={i} style={{width:12, height:12, borderRadius:3, background:col, border: i===0 ? '1px solid var(--tk-hairline-strong)' : 'none'}}></div>
                         ))}
                       </div>
                       <span style={{fontFamily:'var(--tk-mono)', fontSize:10, color:'var(--tk-ink-4)', textTransform:'uppercase', letterSpacing:'0.06em'}}>More</span>
@@ -29738,8 +29738,8 @@
       const BOB_EDIT_STATUSES = BOB_STATUSES;
       const BOB_STATUS_HUE = {
         'Underwriting': 'var(--rb-yellow)',
-        'Approved':     'var(--rb-green)',
-        'Issue Paid':   'var(--rb-purple)',
+        'Approved':     'var(--rb-purple)',
+        'Issue Paid':   'var(--rb-green)',
         'Cancelled':    'var(--rb-red)',
       };
       const BOB_STATUS_CLASS = {
@@ -31911,17 +31911,26 @@
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 18, flexWrap: 'wrap' }}>
                 <button className="rhq-btn" onClick={saveEdit}>Save changes</button>
                 <button className="rhq-btn ghost" onClick={() => setEditing(false)}>Cancel</button>
-                <div style={{ marginLeft: 'auto', display: 'flex', gap: 10 }}>
-                  {!abandoned && (confirm === 'abandon'
+                <div style={{ marginLeft: 'auto', display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                  {!abandoned && confirm !== 'delete' && (confirm === 'abandon'
                     ? <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'var(--wb)', borderRadius: 999, padding: '5px 6px 5px 14px' }}>
                       <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--wf)' }}>Abandon?</span>
                       <button className="rhq-btn sm" style={{ background: 'var(--wf)', color: '#fff' }} onClick={abandon}>Abandon</button>
                       <button className="rhq-btn ghost sm" onClick={() => setConfirm(null)}>Cancel</button>
                     </span>
                     : <button className="rhq-btn warn" onClick={() => setConfirm('abandon')}>Abandon agent</button>)}
+                  {/* Permanent delete for recruits with no linked Sales Hub account —
+                      linked agents are deleted via the account panel's "Remove agent". */}
+                  {isAdmin && !sel.linked_user_id && confirm !== 'abandon' && (confirm === 'delete'
+                    ? <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'var(--db)', borderRadius: 999, padding: '5px 6px 5px 14px' }}>
+                      <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--df)' }}>Delete forever?</span>
+                      <button className="rhq-btn sm" style={{ background: 'var(--df)', color: '#fff' }} onClick={remove}>Delete</button>
+                      <button className="rhq-btn ghost sm" onClick={() => setConfirm(null)}>Cancel</button>
+                    </span>
+                    : <button className="rhq-btn danger" onClick={() => setConfirm('delete')}>Delete permanently</button>)}
                 </div>
               </div>
-              <div className="rhq-muted" style={{ marginTop: 12 }}>Abandoning keeps the recruit and their notes in the Abandoned list in case they re-apply, and archives their linked Sales Hub agent. Agents are only permanently deleted from the Agency section.</div>
+              <div className="rhq-muted" style={{ marginTop: 12 }}>Abandoning keeps the recruit and their notes in the Abandoned list in case they re-apply, and archives their linked Sales Hub agent. {isAdmin && !sel.linked_user_id ? 'Delete permanently removes this recruit and their notes from the pipeline for good (no Sales Hub account is linked).' : 'Agents with a Sales Hub account are permanently deleted via “Remove agent” in their account panel.'}</div>
             </div>}
 
           {/* link prompt for unlinked / ambiguous recruits — admin only */}

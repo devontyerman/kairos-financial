@@ -179,20 +179,6 @@ function App() {
   return (
     <>
       <header className="top">
-        <div className="top-row">
-          <div className="wordmark">Products<span className="dot">.</span></div>
-          <div className="spacer" />
-          <label className="search">
-            <span className="glyph">⌕</span>
-            <input
-              id="searchbox"
-              placeholder="Search carrier, product, condition…"
-              value={q}
-              onChange={(e) => setQ(e.target.value)} />
-
-            <span className="kbd">⌘K</span>
-          </label>
-        </div>
         <div className="filter-row">
           <button className="pill" data-active={filter === "all"} onClick={() => setFilter("all")}>
             All <span className="count">{counts.all}</span>
