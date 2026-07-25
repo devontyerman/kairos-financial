@@ -13204,6 +13204,30 @@
     /* Resources: the blue tag/button accent → turquoise (#65DCD5). */
     #panel-resources { --rb-blue: #65DCD5; }
     html[data-kf-theme="light"] #panel-resources { --rb-blue: #65DCD5; }
+
+    /* Book of Business: status filter is a row of toggle chips (All Policies /
+       Underwriting / Approved & Pending / Fully Issued) — mirrors the Recruits
+       page filter pills. */
+    #panel-policies .bob-chip-row { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:18px; }
+    #panel-policies .bob-chip {
+      padding:9px 16px; border-radius:999px; border:1px solid var(--bob-hairline-strong);
+      background:transparent; color:var(--bob-ink-2);
+      font-family:'Inter','Instrument Sans',system-ui,sans-serif; font-size:13px; font-weight:600;
+      cursor:pointer; white-space:nowrap; transition:background .12s ease, color .12s ease, border-color .12s ease;
+    }
+    #panel-policies .bob-chip:hover { color:var(--bob-ink-1); background:var(--bob-surface-2); }
+    #panel-policies .bob-chip.on { background:#A1CB35; color:#232B07; border-color:#A1CB35; font-weight:700; }
+    #panel-policies .bob-chip.on:hover { background:#A1CB35; filter:brightness(1.05); }
+    /* Status badges (Book of Business + Agency HQ Policies tab) → Recruiting
+       chip typography (Inter, 11.5px/700, sentence case) while keeping the
+       colored dot + status tint. */
+    #panel-policies .bob-status-badge,
+    #tpatab-policies .tp-status-badge {
+      font-family:'Inter','Instrument Sans',system-ui,sans-serif !important;
+      font-size:11.5px !important; font-weight:700 !important;
+      text-transform:none !important; letter-spacing:0 !important;
+      padding:3px 10px 3px 9px !important;
+    }
   </style>
 </head>
 <body>
@@ -29640,9 +29664,10 @@
       const BOB_PRODUCT_TYPES = ['Whole Life', 'Term', 'IUL', 'GIWL', 'Health/Accidental'];
       // Full status universe — drives the filter dropdown options.
       const BOB_STATUSES = ['Underwriting', 'Approved', 'Issue Paid', 'Cancelled'];
-      // Default selection on first load and on "Reset filters" — Cancelled
-      // is intentionally unchecked so cancelled deals hide by default.
-      const BOB_DEFAULT_STATUSES = ['Underwriting', 'Approved', 'Issue Paid'];
+      // Default selection on first load and on "Reset filters" — the "All
+      // Policies" chip mirrors the full status universe, so it reads as active
+      // on load and cancelled policies are reachable there.
+      const BOB_DEFAULT_STATUSES = BOB_STATUSES;
       // Edit-modal status picker mirrors the full universe.
       const BOB_EDIT_STATUSES = BOB_STATUSES;
       const BOB_STATUS_HUE = {
@@ -30247,63 +30272,18 @@
               <div className="bob-loading">{error}</div>
             ) : (
               <div>
-                {/* Needs Attention */}
-                <div className={'bob-attn-card yellow'}>
-                  <div className="bob-attn-hd">
-                    <span className="bob-attn-dot" style={{background:'var(--rb-yellow)'}}></span>
-                    <div className="bob-attn-title">Needs attention</div>
-                    <div className="bob-attn-count"><b>{needsAttention.length}</b> {needsAttention.length === 1 ? 'policy' : 'policies'}</div>
-                    <div className="bob-attn-sub">Currently in underwriting · sorted by oldest first</div>
-                  </div>
-                  {needsAttention.length === 0 ? (
-                    <div className="bob-attn-empty">No policies in underwriting. You're all caught up.</div>
-                  ) : (
-                    <AttentionTable
-                      rows={needsAttention}
-                      accent="yellow"
-                      onAdvance={(p) => setConfirmAdvance({
-                        policy: p,
-                        next: 'Approved',
-                        title: 'Mark policy as approved?',
-                        body: <>Move <b style={{color:'var(--bob-ink-1)'}}>{p.client_name || 'this policy'}</b> from Underwriting to <b style={{color:'var(--bob-ink-1)'}}>Approved</b>. You can change it back anytime from the edit modal.</>,
-                        confirmLabel: 'Mark approved',
-                        accent: 'green',
-                      })}
-                      advanceLabel="Mark approved"
-                    />
-                  )}
-                </div>
-
-                {/* Approved Not Issued — same criteria as the legacy effective-date reminder */}
-                <div className="bob-attn-card orange">
-                  <div className="bob-attn-hd">
-                    <span className="bob-attn-dot" style={{background:'var(--rb-orange)'}}></span>
-                    <div className="bob-attn-title">Approved but not issued</div>
-                    <div className="bob-attn-count"><b>{approvedNotIssued.length}</b> {approvedNotIssued.length === 1 ? 'policy' : 'policies'}</div>
-                    <div className="bob-attn-sub">Approved 5+ days ago · awaiting issue / first payment</div>
-                  </div>
-                  {approvedNotIssued.length === 0 ? (
-                    <div className="bob-attn-empty">Nothing waiting on issue. Nice.</div>
-                  ) : (
-                    <AttentionTable
-                      rows={approvedNotIssued}
-                      accent="orange"
-                      onAdvance={(p) => setConfirmAdvance({
-                        policy: p,
-                        next: 'Issue Paid',
-                        title: 'Mark policy as issue paid?',
-                        body: <>Move <b style={{color:'var(--bob-ink-1)'}}>{p.client_name || 'this policy'}</b> from Approved to <b style={{color:'var(--bob-ink-1)'}}>Issue Paid</b>. This is the final stage in the pipeline.</>,
-                        confirmLabel: 'Mark issue paid',
-                        accent: 'purple',
-                      })}
-                      advanceLabel="Mark issue paid"
-                    />
-                  )}
-                </div>
-
-                {/* Section divider */}
-                <div className="bob-section-rule">
-                  <span className="bob-section-rule-lbl">Full book of business</span>
+                {/* Status toggles — same pattern as the Recruits page */}
+                <div className="bob-chip-row">
+                  {[
+                    { k: 'all', label: 'All Policies', statuses: BOB_STATUSES },
+                    { k: 'Underwriting', label: 'Underwriting', statuses: ['Underwriting'] },
+                    { k: 'Approved', label: 'Approved & Pending', statuses: ['Approved'] },
+                    { k: 'Issue Paid', label: 'Fully Issued', statuses: ['Issue Paid'] },
+                  ].map(chip => {
+                    const on = chip.statuses.length === filters.statuses.length && chip.statuses.every(s => filters.statuses.includes(s));
+                    return <button key={chip.k} type="button" className={'bob-chip' + (on ? ' on' : '')}
+                      onClick={() => { setFilters(f => Object.assign({}, f, { statuses: chip.statuses.slice() })); setPage(0); }}>{chip.label}</button>;
+                  })}
                 </div>
 
                 {/* Filters */}
@@ -30311,9 +30291,6 @@
                   <BobDropdown label="Timeframe" value={filters.timeframe}
                     onChange={v => setFilters(f => Object.assign({}, f, { timeframe: v }))}
                     options={tfOpts} width={170} />
-                  <BobDropdown label="Status" value={filters.statuses} multi
-                    onChange={v => setFilters(f => Object.assign({}, f, { statuses: v }))}
-                    options={statusOpts} width={170} />
                   <BobDropdown label="Carrier" value={filters.carriers} multi
                     onChange={v => setFilters(f => Object.assign({}, f, { carriers: v }))}
                     options={carrierOpts} width={200} />
@@ -30321,22 +30298,6 @@
                   <div className="bob-filter-group">
                     <span className="bob-filter-label-sm">&nbsp;</span>
                     <div style={{display:'flex', gap:8, alignItems:'center'}}>
-                      {cancelledCount > 0 && (
-                        <button className={'bob-button' + (showCancelled ? '' : ' ghost')} onClick={() => setShowCancelled(!showCancelled)}
-                          title={showCancelled ? 'Hide cancelled policies' : 'Show cancelled policies'}
-                          style={showCancelled ? {
-                            color: 'var(--rb-red)',
-                            borderColor: 'color-mix(in oklch, var(--rb-red) 40%, transparent)',
-                            background: 'color-mix(in oklch, var(--rb-red) 14%, transparent)',
-                          } : null}>
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            {showCancelled
-                              ? <><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></>
-                              : <><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></>}
-                          </svg>
-                          <span>{showCancelled ? 'Hide' : 'Show'} cancelled ({cancelledCount})</span>
-                        </button>
-                      )}
                       {!isCleared && (
                         <button className="bob-button ghost" onClick={() => setFilters({timeframe:'ytd', statuses: BOB_DEFAULT_STATUSES.slice(), carriers: CARRIER_LIST.slice(), customFrom:'', customTo:''})}
                           style={{padding:'8px 12px', fontSize:11, fontFamily:'var(--bob-mono)', textTransform:'uppercase', letterSpacing:'0.06em'}}>
