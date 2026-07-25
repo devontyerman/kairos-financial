@@ -11625,11 +11625,6 @@
         border-radius: 0;
       }
       .ss-sidebar.mobile-open .ss-sidebar-grid { display: flex; }
-      /* Bottom footer (profile chip + dark-mode toggle) only appears inside the
-         open dropdown — hidden when the mobile nav is closed so it doesn't eat
-         vertical space on the top bar. */
-      .ss-sidebar-footer { display: none; }
-      .ss-sidebar.mobile-open .ss-sidebar-footer { display: flex; }
       /* Default: hide the desktop user/cogwheel row on mobile when the
          sidebar is collapsed. Show it when the user opens the menu so
          the cogwheel (Profile + Log out) is reachable on phones. */
@@ -13073,6 +13068,11 @@
     .ss-sidebar.collapsed .ss-profile-chip { justify-content: center; padding: 9px 0; }
     @media (max-width: 768px) {
       .ss-sidebar.collapsed .kf-brand-text { display: block; }
+      /* Footer (profile chip + dark-mode toggle) only appears inside the OPEN
+         dropdown — hidden on the collapsed mobile top bar so it doesn't waste
+         vertical space. Defined here (last stylesheet in <head>) so it wins. */
+      .ss-sidebar-footer { display: none; }
+      .ss-sidebar.mobile-open .ss-sidebar-footer { display: flex; }
     }
 
     /* ── Combined "Agency HQ" dropdown: section labels + admin-only items ── */
@@ -16460,30 +16460,6 @@
         });
       });
     }
-
-    // ─── Swipe from the left edge to OPEN the mobile nav; swipe left to CLOSE ───
-    // Natural phone gesture. Only active on mobile; edge-start avoids hijacking
-    // the pipeline's horizontal card swipes (which start mid-screen).
-    (function () {
-      const isMobile = () => window.matchMedia && window.matchMedia('(max-width:768px)').matches;
-      const openNav = () => { ssHamburger?.classList.add('open'); ssMobileMenu?.classList.add('open'); ssSidebarEl?.classList.add('mobile-open'); };
-      const closeNav = () => { ssHamburger?.classList.remove('open'); ssMobileMenu?.classList.remove('open'); ssSidebarEl?.classList.remove('mobile-open'); };
-      let sx = 0, sy = 0, tracking = false, fromEdge = false;
-      document.addEventListener('touchstart', (e) => {
-        if (!isMobile() || e.touches.length !== 1) { tracking = false; return; }
-        const t = e.touches[0];
-        sx = t.clientX; sy = t.clientY; tracking = true; fromEdge = sx <= 28;
-      }, { passive: true });
-      document.addEventListener('touchmove', (e) => {
-        if (!tracking || e.touches.length !== 1) return;
-        const t = e.touches[0], dx = t.clientX - sx, dy = t.clientY - sy;
-        if (Math.abs(dy) > Math.abs(dx)) { tracking = false; return; }   // vertical scroll — ignore
-        const isOpen = ssSidebarEl && ssSidebarEl.classList.contains('mobile-open');
-        if (!isOpen && fromEdge && dx > 55) { openNav(); tracking = false; }
-        else if (isOpen && dx < -55) { closeNav(); tracking = false; }
-      }, { passive: true });
-      document.addEventListener('touchend', () => { tracking = false; }, { passive: true });
-    })();
 
     // ─── SIDEBAR COLLAPSE (desktop) ───
     // Persists to localStorage so the choice survives reloads. Restored on
