@@ -13319,6 +13319,69 @@
     html[data-kf-theme="dark"] #tpatab-discord .dsc-input { background:#242220 !important; border-color:#2F2D2A !important; color:#F4F3F1 !important; }
     html[data-kf-theme="dark"] #tpatab-discord .dsc-day { background:#242220 !important; border-color:#2F2D2A !important; color:#B3AFAB !important; }
     html[data-kf-theme="dark"] #tpatab-discord .dsc-btn-ghost { background:#242220 !important; color:#F4F3F1 !important; }
+
+    /* ═══ Profile page → Recruiting (.rhq) look. Pure UI: the existing form-card
+       markup is retargeted to the recruiting design — Instrument Sans, the .rhq
+       palette (light + dark), 16px cards, pill accent-green buttons, rounded
+       inputs. No markup or JS changes. ═══ */
+    #panel-profile.active {
+      /* dark is the app default; light overridden below */
+      --kf-bg:#121110;--kf-surface:#1B1A18;--kf-surface-2:#242220;--kf-hairline:#2F2D2A;--kf-hairline-strong:#3A3835;
+      --kf-ink-1:#F4F3F1;--kf-ink-2:#B3AFAB;--kf-ink-3:#736F6B;--kf-ink-4:#55524F;
+      --kf-sans:'Instrument Sans','Inter',system-ui,sans-serif;--kf-mono:'Instrument Sans','Inter',system-ui,sans-serif;--kf-radius:16px;
+      --pf-ac:#A1CB35;--pf-acOn:#232B07;--pf-sh:0 1px 2px rgba(0,0,0,.4),0 6px 20px rgba(0,0,0,.35);
+      --db:#421515;--df:#FF6B6B;
+    }
+    html[data-kf-theme="light"] #panel-profile.active {
+      --kf-bg:#F6F6F4;--kf-surface:#FFFFFF;--kf-surface-2:#F0F0ED;--kf-hairline:#E7E7E2;--kf-hairline-strong:#D8D7D2;
+      --kf-ink-1:#2E2B2B;--kf-ink-2:#454040;--kf-ink-3:#9C9694;--kf-ink-4:#BFBBB7;
+      --pf-acOn:#232B07;--pf-sh:0 1px 2px rgba(40,38,30,.05),0 4px 16px rgba(40,38,30,.06);
+      --db:#FDE0E0;--df:#D90000;
+    }
+    /* cards → rhq-card (soft shadow, 20/22 padding; 16px radius via --kf-radius) */
+    #panel-profile.active .ss-form-card { box-shadow:var(--pf-sh) !important; padding:20px 22px !important; }
+    /* section title → rhq-sectitle (15/700); icon in accent */
+    #panel-profile.active .ss-form-title { font-size:15px !important; font-weight:700 !important; letter-spacing:-0.01em !important; }
+    #panel-profile.active .ss-form-title svg { color:var(--pf-ac) !important; }
+    /* labels → rhq-label (11/700, 0.06em) */
+    #panel-profile.active .ss-label { font-size:11px !important; font-weight:700 !important; letter-spacing:0.06em !important; }
+    /* inputs → rhq-inp (11px radius, surface bg, accent focus) */
+    #panel-profile.active .ss-input, #panel-profile.active .ss-select {
+      border-radius:11px !important; background:var(--kf-surface) !important; border:1px solid var(--kf-hairline) !important;
+      padding:10px 13px !important; font-size:13.5px !important;
+    }
+    #panel-profile.active .ss-input:focus, #panel-profile.active .ss-select:focus {
+      border-color:var(--pf-ac) !important; box-shadow:0 0 0 3px color-mix(in oklch, var(--pf-ac) 22%, transparent) !important;
+    }
+    /* primary buttons → rhq-btn (pill, accent green) */
+    #panel-profile.active .ss-submit {
+      background:var(--pf-ac) !important; color:var(--pf-acOn) !important; border:none !important;
+      border-radius:999px !important; font-family:var(--kf-sans) !important; font-size:13.5px !important; font-weight:700 !important;
+      letter-spacing:0 !important; text-transform:none !important; box-shadow:var(--pf-sh) !important; padding:10px 18px !important;
+    }
+    #panel-profile.active .ss-submit:hover { background:var(--pf-ac) !important; filter:brightness(1.08) !important; }
+    /* sign out → rhq-btn.danger */
+    #panel-profile.active #profileSignOut {
+      background:transparent !important; color:var(--df) !important;
+      border:1px solid color-mix(in oklch, var(--df) 40%, transparent) !important; box-shadow:none !important;
+    }
+    #panel-profile.active #profileSignOut:hover { background:var(--db) !important; filter:none !important; }
+    /* licenses add/edit/cancel → rhq-btn.ghost pill */
+    #panel-profile.active .lic-add-btn, #panel-profile.active .lic-edit-btn, #panel-profile.active .lic-cancel-btn {
+      border-radius:999px !important; font-family:var(--kf-sans) !important; font-size:12px !important; font-weight:600 !important;
+      letter-spacing:0 !important; text-transform:none !important; padding:8px 14px !important;
+      background:transparent !important; border:1px solid var(--kf-hairline) !important; color:var(--kf-ink-2) !important;
+    }
+    #panel-profile.active .lic-add-btn:hover, #panel-profile.active .lic-edit-btn:hover, #panel-profile.active .lic-cancel-btn:hover {
+      background:var(--kf-surface-2) !important; border-color:var(--kf-hairline-strong) !important; color:var(--kf-ink-1) !important;
+    }
+    /* license view rows + badges → rhq surfaces/chips */
+    #panel-profile.active .lic-view-row { border-radius:11px !important; background:var(--kf-surface-2) !important; border:1px solid var(--kf-hairline) !important; }
+    #panel-profile.active .lic-view-label { font-family:var(--kf-sans) !important; font-size:11px !important; font-weight:700 !important; letter-spacing:0.06em !important; }
+    #panel-profile.active .lic-view-key, #panel-profile.active .lic-view-val { font-family:var(--kf-sans) !important; }
+    #panel-profile.active .lic-view-badge { border-radius:999px !important; background:var(--s1b) !important; color:var(--s1f) !important; font-family:var(--kf-sans) !important; font-weight:700 !important; }
+    #panel-profile.active .lic-row .ss-input { border-radius:11px !important; }
+    #panel-profile.active .lic-remove { border-radius:9px !important; }
   </style>
 </head>
 <body>
