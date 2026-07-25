@@ -13070,9 +13070,11 @@
       .ss-sidebar.collapsed .kf-brand-text { display: block; }
       /* Footer (profile chip + dark-mode toggle) only appears inside the OPEN
          dropdown — hidden on the collapsed mobile top bar so it doesn't waste
-         vertical space. Defined here (last stylesheet in <head>) so it wins. */
-      .ss-sidebar-footer { display: none; }
-      .ss-sidebar.mobile-open .ss-sidebar-footer { display: flex; }
+         vertical space. !important beats the base `.ss-sidebar-footer{display:flex}`
+         rule that follows later in this stylesheet; the higher-specificity
+         .mobile-open rule still wins to reveal it when the menu is open. */
+      .ss-sidebar-footer { display: none !important; }
+      .ss-sidebar.mobile-open .ss-sidebar-footer { display: flex !important; }
     }
 
     /* ── Combined "Agency HQ" dropdown: section labels + admin-only items ── */
