@@ -36,17 +36,41 @@
   font-display: swap;
 }
 
+/* Matched to the Recruiting (.rhq) design system so the E-App Guides feel part
+   of the same app. Dark mode syncs to the hub theme via localStorage (see the
+   inline script in eapp-guides.html) — this is a same-origin iframe. */
 :root {
-  --color-bg: #f3f2f2;
-  --color-text: #201e1d;
-  --color-accent: #ec3013;
-  --color-divider: color-mix(in srgb, #201e1d 40%, transparent);
-  --color-neutral-300: #d7d3d3;
-  --color-neutral-700: #605d5d;
-  --color-accent-600: #dd2b0f;
-  --color-accent-700: #ae1800;
-  --font-heading: "Archivo", system-ui, sans-serif;
-  --font-body: "Archivo", system-ui, sans-serif;
+  --color-bg: #F6F6F4;
+  --color-surface: #FFFFFF;
+  --color-surface-2: #F0F0ED;
+  --color-text: #2E2B2B;
+  --color-text-2: #454040;
+  --color-text-3: #9C9694;
+  --color-border: #E7E7E2;
+  --color-accent: #5F7F10;
+  --color-accent-soft: #EFF6D9;
+  --radius: 16px;
+  --shadow: 0 1px 2px rgba(40,38,30,.05), 0 4px 16px rgba(40,38,30,.06);
+  --font-heading: 'Inter', 'Instrument Sans', system-ui, sans-serif;
+  --font-body: 'Inter', 'Instrument Sans', system-ui, sans-serif;
+  /* legacy aliases so existing rules keep resolving */
+  --color-divider: var(--color-border);
+  --color-neutral-300: var(--color-border);
+  --color-neutral-700: var(--color-text-3);
+  --color-accent-600: var(--color-accent);
+  --color-accent-700: var(--color-accent);
+}
+:root[data-theme="dark"] {
+  --color-bg: #121110;
+  --color-surface: #1B1A18;
+  --color-surface-2: #242220;
+  --color-text: #F4F3F1;
+  --color-text-2: #B3AFAB;
+  --color-text-3: #736F6B;
+  --color-border: #2F2D2A;
+  --color-accent: #B9DD5E;
+  --color-accent-soft: #2A3313;
+  --shadow: 0 1px 2px rgba(0,0,0,.4), 0 6px 20px rgba(0,0,0,.35);
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -66,17 +90,18 @@ img { display: block; max-width: 100%; }
 /* ─── shared chrome ─── */
 .eag-header {
   display: flex; align-items: center; justify-content: space-between; gap: 24px;
-  padding: 16px 32px; border-bottom: 2px solid var(--color-divider);
+  padding: 16px 32px; border-bottom: 1px solid var(--color-border);
+  background: var(--color-surface);
 }
-.eag-brand { font-family: var(--font-heading); font-weight: 700; font-size: 18px; letter-spacing: 0.04em; }
-.eag-header-tag { font-size: 12px; font-weight: 600; letter-spacing: 0.1em; color: var(--color-neutral-700); }
+.eag-brand { font-family: var(--font-heading); font-weight: 700; font-size: 18px; letter-spacing: -0.01em; }
+.eag-header-tag { font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-text-3); }
 
-.eag-hero { padding: 56px 32px 40px; border-bottom: 2px solid var(--color-divider); }
+.eag-hero { padding: 40px 32px 32px; border-bottom: 1px solid var(--color-border); }
 .eag-hero-inner { max-width: 1200px; margin: 0 auto; }
-.eag-kicker { font-size: 12px; font-weight: 700; letter-spacing: 0.14em; color: var(--color-accent-700); margin-bottom: 12px; }
-.eag-title { font-family: var(--font-heading); font-size: 52px; line-height: 1.05; margin: 0; letter-spacing: -0.01em; font-weight: 800; }
+.eag-kicker { font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-accent); margin-bottom: 12px; }
+.eag-title { font-family: var(--font-heading); font-size: 40px; line-height: 1.08; margin: 0; letter-spacing: -0.02em; font-weight: 700; }
 
-.eag-footer { background: var(--color-accent); color: #fff; padding: 32px; margin-top: auto; }
+.eag-footer { background: var(--color-surface); color: var(--color-text-2); border-top: 1px solid var(--color-border); padding: 28px 32px; margin-top: auto; }
 .eag-footer-inner { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
 .eag-footer-brand { font-family: var(--font-heading); font-weight: 700; letter-spacing: 0.06em; }
 .eag-footer-note { font-size: 13px; max-width: 640px; }
@@ -84,10 +109,10 @@ img { display: block; max-width: 100%; }
 /* ─── index: carrier grid ─── */
 .eag-main { max-width: 1200px; margin: 0 auto; padding: 40px 32px 80px; width: 100%; flex: 1; }
 .eag-grid {
-  display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-  gap: 2px; background: var(--color-divider); border: 2px solid var(--color-divider);
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px; background: transparent; border: none;
 }
-.eag-card { background: var(--color-bg); padding: 28px; display: flex; flex-direction: column; gap: 20px; }
+.eag-card { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius); box-shadow: var(--shadow); padding: 22px 24px; display: flex; flex-direction: column; gap: 18px; }
 .eag-logo-slot { height: 64px; display: flex; align-items: flex-start; }
 .eag-logo-slot img { max-height: 56px; max-width: 240px; object-fit: contain; object-position: left; }
 .eag-logo-fallback { font-family: var(--font-heading); font-size: 22px; font-weight: 700; }
@@ -95,33 +120,35 @@ img { display: block; max-width: 100%; }
 .eag-badge {
   align-self: flex-start;
   margin-left: auto;
-  font-size: 10px; font-weight: 700; letter-spacing: 0.12em;
-  padding: 3px 7px; white-space: nowrap;
-  color: var(--color-bg); background: var(--color-accent);
+  font-size: 10px; font-weight: 700; letter-spacing: 0.08em;
+  padding: 3px 9px; white-space: nowrap; border-radius: 999px;
+  color: var(--color-accent); background: var(--color-accent-soft);
 }
 .eag-group { display: flex; flex-direction: column; gap: 8px; }
-.eag-group-label { font-size: 11px; font-weight: 700; letter-spacing: 0.14em; color: var(--color-neutral-700); }
+.eag-group-label { font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-text-3); }
 .eag-guide-link {
-  display: block; font-size: 13px; font-weight: 600; letter-spacing: 0.05em;
-  text-decoration: none; padding: 9px 12px; border: 2px solid var(--color-text);
-  text-align: left; color: var(--color-text);
-  transition: border-color 0.12s ease, color 0.12s ease;
+  display: block; font-size: 13px; font-weight: 600; letter-spacing: 0.01em;
+  text-decoration: none; padding: 10px 13px; border: 1px solid var(--color-border);
+  border-radius: 10px; text-align: left; color: var(--color-text-2); background: var(--color-surface);
+  transition: border-color 0.12s ease, color 0.12s ease, background 0.12s ease;
 }
-.eag-guide-link:hover { border-color: var(--color-accent); color: var(--color-accent-600); }
+.eag-guide-link:hover { border-color: var(--color-accent); color: var(--color-accent); background: var(--color-accent-soft); }
 
 /* ─── guide pages ─── */
 .eg-bar {
   display: flex; align-items: center; gap: 16px;
-  padding: 12px 32px; border-bottom: 2px solid var(--color-divider);
+  padding: 14px 32px; border-bottom: 1px solid var(--color-border);
+  background: var(--color-surface);
 }
 .eg-back {
-  font-size: 12px; font-weight: 700; letter-spacing: 0.1em;
-  text-decoration: none; color: var(--color-text);
-  border: 2px solid var(--color-text); padding: 7px 12px;
-  transition: border-color 0.12s ease, color 0.12s ease;
+  font-size: 12px; font-weight: 600; letter-spacing: 0.02em;
+  text-decoration: none; color: var(--color-text-2);
+  border: 1px solid var(--color-border); border-radius: 999px; padding: 8px 15px;
+  background: var(--color-surface);
+  transition: border-color 0.12s ease, color 0.12s ease, background 0.12s ease;
 }
-.eg-back:hover { border-color: var(--color-accent); color: var(--color-accent-600); }
-.eg-crumb { font-size: 12px; font-weight: 600; letter-spacing: 0.1em; color: var(--color-neutral-700); }
+.eg-back:hover { border-color: var(--color-accent); color: var(--color-accent); background: var(--color-accent-soft); }
+.eg-crumb { font-size: 12px; font-weight: 600; letter-spacing: 0.04em; color: var(--color-text-3); }
 
 /* ── exact canvas ──
    The source is a fixed ~950px absolutely-positioned canvas. We reproduce it

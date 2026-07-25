@@ -5,18 +5,24 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>E-App Guides — Kairos Financial</title>
 <meta name="robots" content="noindex, nofollow" />
+<script>
+  // Sync to the hub's light/dark theme. Same-origin iframe → reads the shared
+  // localStorage key the Sales Hub writes, and updates live on the storage event.
+  (function () {
+    function apply() { var t = 'dark'; try { t = localStorage.getItem('kf_skin_theme_v1') || 'dark'; } catch (e) {} document.documentElement.setAttribute('data-theme', t); }
+    apply();
+    window.addEventListener('storage', function (e) { if (!e || e.key === 'kf_skin_theme_v1' || e.key === null) apply(); });
+    window.addEventListener('pageshow', apply);
+    document.addEventListener('visibilitychange', function () { if (!document.hidden) apply(); });
+  })();
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/eapp-guides.css">
 </head>
 <body>
 <div class="eag-shell">
-  <header class="eag-header">
-    <div class="eag-brand">KAIROS FINANCIAL</div>
-    <div class="eag-header-tag">AGENT RESOURCES</div>
-  </header>
-
   <section class="eag-hero">
     <div class="eag-hero-inner">
       <div class="eag-kicker">KAIROS FINANCIAL · AGENT RESOURCES</div>

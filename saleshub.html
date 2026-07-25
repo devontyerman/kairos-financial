@@ -876,7 +876,7 @@
       min-height: 800px;
       border: 0;
       display: block;
-      background: #FAF7F0;
+      background: transparent;
     }
 
     /* Page links below sidebar grid — match the panel-button rhythm
@@ -13103,6 +13103,112 @@
     /* Agency Hub pages are navigated from the sidebar dropdown now, not in-panel tabs */
     #panel-teamperf .tp-admin-tabs { display: none !important; }
   </style>
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       DESIGN UNIFICATION LAYER — single source of truth.
+       Retargets the shared "editorial-financial" token systems used by
+       Agency HQ (--tp-*), Tracker (--tk-*), Book of Biz (--bob-*),
+       Leaders (--lb-*) and the Carriers/Resources panels (--kf-*) to the
+       Recruiting (.rhq) palette + Inter + unified radius, and flattens the
+       grain/glow textures — so the whole CRM reads as one design system.
+       Tokens + surface flattening only; no markup, logic, or data touched.
+       Dark = default; light keys off the app-wide html[data-kf-theme="light"].
+       ═══════════════════════════════════════════════════════════════════════ -->
+  <style id="kf-design-unify">
+    #tpatab-performance, #tpatab-agents, #tpatab-policies, #tpatab-hierarchy,
+    #panel-goals, #panel-policies, #panel-leaderboard, #panel-carriers, #panel-resources, #panel-dialtracker {
+      --tp-bg:#121110;--tp-bg-2:#1B1A18;--tp-surface:#1B1A18;--tp-surface-2:#242220;--tp-surface-3:#2F2D2A;--tp-hairline:#2F2D2A;--tp-hairline-strong:#3A3835;--tp-ink-1:#F4F3F1;--tp-ink-2:#B3AFAB;--tp-ink-3:#736F6B;--tp-ink-4:#55524F;
+      --tk-bg:#121110;--tk-bg-2:#1B1A18;--tk-surface:#1B1A18;--tk-surface-2:#242220;--tk-surface-3:#2F2D2A;--tk-hairline:#2F2D2A;--tk-hairline-strong:#3A3835;--tk-ink-1:#F4F3F1;--tk-ink-2:#B3AFAB;--tk-ink-3:#736F6B;--tk-ink-4:#55524F;
+      --bob-bg:#121110;--bob-bg-2:#1B1A18;--bob-surface:#1B1A18;--bob-surface-2:#242220;--bob-surface-3:#2F2D2A;--bob-hairline:#2F2D2A;--bob-hairline-strong:#3A3835;--bob-ink-1:#F4F3F1;--bob-ink-2:#B3AFAB;--bob-ink-3:#736F6B;--bob-ink-4:#55524F;
+      --lb-bg:#121110;--lb-bg-2:#1B1A18;--lb-surface:#1B1A18;--lb-surface-2:#242220;--lb-surface-3:#2F2D2A;--lb-hairline:#2F2D2A;--lb-hairline-strong:#3A3835;--lb-ink-1:#F4F3F1;--lb-ink-2:#B3AFAB;--lb-ink-3:#736F6B;--lb-ink-4:#55524F;
+      --kf-bg:#121110;--kf-bg-2:#1B1A18;--kf-surface:#1B1A18;--kf-surface-2:#242220;--kf-surface-3:#2F2D2A;--kf-hairline:#2F2D2A;--kf-hairline-strong:#3A3835;--kf-ink-1:#F4F3F1;--kf-ink-2:#B3AFAB;--kf-ink-3:#736F6B;--kf-ink-4:#55524F;
+      --tp-sans:'Inter','Instrument Sans',system-ui,sans-serif;--tp-mono:'Inter','Instrument Sans',system-ui,sans-serif;--tp-radius:14px;--tp-radius-sm:10px;
+      --tk-sans:'Inter','Instrument Sans',system-ui,sans-serif;--tk-mono:'Inter','Instrument Sans',system-ui,sans-serif;--tk-radius:14px;
+      --bob-sans:'Inter','Instrument Sans',system-ui,sans-serif;--bob-mono:'Inter','Instrument Sans',system-ui,sans-serif;--bob-radius:14px;
+      --lb-sans:'Inter','Instrument Sans',system-ui,sans-serif;--lb-mono:'Inter','Instrument Sans',system-ui,sans-serif;--lb-radius:14px;
+      --kf-sans:'Inter','Instrument Sans',system-ui,sans-serif;--kf-mono:'Inter','Instrument Sans',system-ui,sans-serif;--kf-radius:14px;
+    }
+    html[data-kf-theme="light"] #tpatab-performance, html[data-kf-theme="light"] #tpatab-agents, html[data-kf-theme="light"] #tpatab-policies, html[data-kf-theme="light"] #tpatab-hierarchy,
+    html[data-kf-theme="light"] #panel-goals, html[data-kf-theme="light"] #panel-policies, html[data-kf-theme="light"] #panel-leaderboard, html[data-kf-theme="light"] #panel-carriers, html[data-kf-theme="light"] #panel-resources, html[data-kf-theme="light"] #panel-dialtracker {
+      --tp-bg:#F6F6F4;--tp-bg-2:#F0F0ED;--tp-surface:#FFFFFF;--tp-surface-2:#F0F0ED;--tp-surface-3:#E7E7E2;--tp-hairline:#E7E7E2;--tp-hairline-strong:#D8D7D2;--tp-ink-1:#2E2B2B;--tp-ink-2:#454040;--tp-ink-3:#9C9694;--tp-ink-4:#BFBBB7;
+      --tk-bg:#F6F6F4;--tk-bg-2:#F0F0ED;--tk-surface:#FFFFFF;--tk-surface-2:#F0F0ED;--tk-surface-3:#E7E7E2;--tk-hairline:#E7E7E2;--tk-hairline-strong:#D8D7D2;--tk-ink-1:#2E2B2B;--tk-ink-2:#454040;--tk-ink-3:#9C9694;--tk-ink-4:#BFBBB7;
+      --bob-bg:#F6F6F4;--bob-bg-2:#F0F0ED;--bob-surface:#FFFFFF;--bob-surface-2:#F0F0ED;--bob-surface-3:#E7E7E2;--bob-hairline:#E7E7E2;--bob-hairline-strong:#D8D7D2;--bob-ink-1:#2E2B2B;--bob-ink-2:#454040;--bob-ink-3:#9C9694;--bob-ink-4:#BFBBB7;
+      --lb-bg:#F6F6F4;--lb-bg-2:#F0F0ED;--lb-surface:#FFFFFF;--lb-surface-2:#F0F0ED;--lb-surface-3:#E7E7E2;--lb-hairline:#E7E7E2;--lb-hairline-strong:#D8D7D2;--lb-ink-1:#2E2B2B;--lb-ink-2:#454040;--lb-ink-3:#9C9694;--lb-ink-4:#BFBBB7;
+      --kf-bg:#F6F6F4;--kf-bg-2:#F0F0ED;--kf-surface:#FFFFFF;--kf-surface-2:#F0F0ED;--kf-surface-3:#E7E7E2;--kf-hairline:#E7E7E2;--kf-hairline-strong:#D8D7D2;--kf-ink-1:#2E2B2B;--kf-ink-2:#454040;--kf-ink-3:#9C9694;--kf-ink-4:#BFBBB7;
+    }
+    /* Data-viz + up/down colors → the pipeline stage palette (green = positive/
+       darkest, red = negative/darkest; amber/orange/purple/blue for the rest). */
+    #tpatab-performance, #tpatab-agents, #tpatab-policies, #tpatab-hierarchy,
+    #panel-goals, #panel-policies, #panel-leaderboard, #panel-carriers, #panel-resources, #panel-dialtracker {
+      --rb-green:#C6E378;--rb-yellow:#FED24F;--rb-orange:#7FD9DE;--rb-red:#FF7A7A;--rb-purple:#C77BE8;--rb-blue:#8B9BF0;
+      --tp-pos:#C6E378;--tp-neg:#FF7A7A;--tk-pos:#C6E378;--tk-neg:#FF7A7A;--bob-pos:#C6E378;--bob-neg:#FF7A7A;--lb-pos:#C6E378;--lb-neg:#FF7A7A;
+    }
+    html[data-kf-theme="light"] #tpatab-performance, html[data-kf-theme="light"] #tpatab-agents, html[data-kf-theme="light"] #tpatab-policies, html[data-kf-theme="light"] #tpatab-hierarchy,
+    html[data-kf-theme="light"] #panel-goals, html[data-kf-theme="light"] #panel-policies, html[data-kf-theme="light"] #panel-leaderboard, html[data-kf-theme="light"] #panel-carriers, html[data-kf-theme="light"] #panel-resources, html[data-kf-theme="light"] #panel-dialtracker {
+      --rb-green:#5F7F10;--rb-yellow:#93700A;--rb-orange:#1F8A90;--rb-red:#D31A1A;--rb-purple:#792CA2;--rb-blue:#3B4DB8;
+      --tp-pos:#5F7F10;--tp-neg:#D31A1A;--tk-pos:#5F7F10;--tk-neg:#D31A1A;--bob-pos:#5F7F10;--bob-neg:#D31A1A;--lb-pos:#5F7F10;--lb-neg:#D31A1A;
+    }
+    /* Flat surfaces: drop the film-grain texture + radial accent glows to match
+       Recruiting's clean flat look (scoped to the redesigned panels only). */
+    #tpatab-performance, #tpatab-agents, #tpatab-policies, #tpatab-hierarchy,
+    #panel-goals.active, #panel-policies.active, #panel-leaderboard.active,
+    #panel-carriers.active, #panel-resources.active, #panel-dialtracker.active { background-image:none !important; }
+    #tpatab-performance::before, #tpatab-agents::before, #tpatab-policies::before { display:none !important; }
+
+    /* ── Targeted component fixes ── */
+    /* Policies: one default (green) avatar instead of a different color per agent. */
+    #tpatab-policies .tp-avatar {
+      background: color-mix(in srgb, var(--rb-green) 16%, var(--tp-surface-2)) !important;
+      border-color: color-mix(in srgb, var(--rb-green) 34%, transparent) !important;
+      color: var(--rb-green) !important;
+    }
+    /* Agent Hierarchy: stop the node card from clipping the downline-count badge
+       that hangs off its bottom edge. */
+    #tpatab-hierarchy .hv-node { overflow: visible !important; }
+    /* Leaders: tint the whole podium card with its medal color (not just a wash). */
+    #panel-leaderboard .lb-podium-card.gold,
+    #panel-leaderboard .lb-podium-card.silver,
+    #panel-leaderboard .lb-podium-card.bronze {
+      background: color-mix(in srgb, var(--lb-accent) 15%, var(--lb-surface)) !important;
+      border-color: color-mix(in srgb, var(--lb-accent) 48%, var(--lb-hairline-strong)) !important;
+    }
+    #panel-leaderboard .lb-podium-card.gold { background: color-mix(in srgb, var(--lb-accent) 20%, var(--lb-surface)) !important; }
+
+    /* Dial Tracker: fonts now inherit Inter via the --kf remap above; scale the
+       oversized "Submit to KPIs" card down to match the rest of the UI. */
+    #panel-dialtracker.active .dt-submit-card { padding: 18px 20px !important; }
+    #panel-dialtracker.active .dt-submit-title { font-size: 13px !important; gap: 8px !important; margin-bottom: 14px !important; }
+    #panel-dialtracker.active .dt-submit-title svg { width: 15px !important; height: 15px !important; }
+    #panel-dialtracker.active .dt-submit-grid { gap: 12px !important; }
+    #panel-dialtracker.active .dt-submit-card .ss-label { margin-bottom: 5px !important; }
+    #panel-dialtracker.active .dt-submit-card .ss-input { padding: 9px 12px !important; font-size: 13px !important; height: auto !important; line-height: 1.3 !important; }
+    #panel-dialtracker.active .dt-submit-actions { margin-top: 16px !important; gap: 10px !important; }
+    #panel-dialtracker.active .dt-submit-card .ss-submit { padding: 10px 18px !important; font-size: 12.5px !important; }
+
+    /* Digital Worksheet → Recruiting palette + Inter + flat cards, with dark mode
+       (its --cwf-* tokens were light-only). */
+    #panel-worksheet { --cwf-ink:#F4F3F1;--cwf-ink-soft:#B3AFAB;--cwf-muted:#736F6B;--cwf-rule:#2F2D2A;--cwf-rule-soft:#242220;--cwf-navy:#B9DD5E;--cwf-navy-deep:#C6E378;--cwf-gold:#B9DD5E;--cwf-gold-soft:#2A3313;--cwf-paper:#1B1A18;--cwf-field-bg:#242220;--cwf-focus:#B9DD5E; }
+    html[data-kf-theme="light"] #panel-worksheet { --cwf-ink:#2E2B2B;--cwf-ink-soft:#454040;--cwf-muted:#9C9694;--cwf-rule:#E7E7E2;--cwf-rule-soft:#F0F0ED;--cwf-navy:#5F7F10;--cwf-navy-deep:#4A6210;--cwf-gold:#5F7F10;--cwf-gold-soft:#EFF6D9;--cwf-paper:#FFFFFF;--cwf-field-bg:#FFFFFF;--cwf-focus:#5F7F10; }
+    #panel-worksheet .cwf-card { border-radius: 16px !important; border: 1px solid var(--cwf-rule) !important; box-shadow: 0 1px 2px rgba(0,0,0,.04), 0 4px 16px rgba(0,0,0,.06) !important; }
+    #panel-worksheet .cwf-brand-text h1, #panel-worksheet .cwf-sec-title, #panel-worksheet .cwf-sec-num { font-family: 'Inter','Instrument Sans',system-ui,sans-serif !important; }
+
+    /* Carriers: top-to-bottom rows (name · phone · hours); no "Direct Line" badge,
+       glow, or chevron. */
+    #panel-carriers.active #carrierGrid { display: flex !important; flex-direction: column; gap: 8px; }
+    #panel-carriers.active #carrierGrid .sh-carrier-tile {
+      display: grid !important; grid-template-columns: 1.4fr 1.1fr 1.9fr; align-items: center; gap: 18px;
+      min-height: 0 !important; padding: 15px 20px !important; transform: none !important;
+    }
+    #panel-carriers.active #carrierGrid .sh-carrier-tile::before,
+    #panel-carriers.active #carrierGrid .sh-carrier-tile::after { content: none !important; display: none !important; }
+    #panel-carriers.active #carrierGrid .sh-carrier-tile:hover { transform: none !important; }
+    #panel-carriers.active .sh-carrier-name-cell { font-weight: 600; font-size: 14px; color: var(--kf-ink-1); }
+    #panel-carriers.active .sh-carrier-name-cell::before { display: none !important; }
+    #panel-carriers.active .sh-carrier-phone-cell { font-size: 13px; color: var(--kf-ink-2); }
+    #panel-carriers.active .sh-carrier-hours-cell { font-size: 13px; color: var(--kf-ink-3); }
+    @media (max-width: 640px) {
+      #panel-carriers.active #carrierGrid .sh-carrier-tile { grid-template-columns: 1fr; gap: 4px; }
+    }
+  </style>
 </head>
 <body>
 
@@ -13545,6 +13651,11 @@
          eapp-guides.html sizes this iframe itself via window.frameElement. -->
     <div class="ss-panel" id="panel-eappguides">
       <iframe src="eapp-guides.html" class="cp-iframe" id="eappGuidesFrame" title="E-App Guides &amp; Summaries"></iframe>
+    </div>
+
+    <!-- State License Costs — opened inside the hub (keeps the left sidebar) -->
+    <div class="ss-panel" id="panel-statelicense">
+      <iframe src="state-license-costs.html" class="cp-iframe" id="stateLicenseFrame" title="State License Costs"></iframe>
     </div>
 
     <!-- ═══ DIGITAL WORKSHEET PANEL ═══ -->
@@ -14192,46 +14303,16 @@
 
         <!-- Carrier grid (visible by default) — same card style as Lead Vendors -->
         <div class="sh-vendors-grid" id="carrierGrid">
-          <div class="sh-vendor-card sh-carrier-tile" data-carrier-id="aetna">
-            <div class="sh-vendor-top"><div class="sh-vendor-name">Aetna</div><span class="sh-vendor-badge">Direct Line</span></div>
-            <div class="sh-vendor-desc">(866) 272-6630 · Mon–Fri, 8:00 AM – 5:00 PM CT</div>
-          </div>
-          <div class="sh-vendor-card sh-carrier-tile" data-carrier-id="american-amicable">
-            <div class="sh-vendor-top"><div class="sh-vendor-name">American Amicable</div><span class="sh-vendor-badge">Direct Line</span></div>
-            <div class="sh-vendor-desc">(800) 736-7311 · Mon–Fri, 8:00 AM – 4:45 PM CT</div>
-          </div>
-          <div class="sh-vendor-card sh-carrier-tile" data-carrier-id="americo">
-            <div class="sh-vendor-top"><div class="sh-vendor-name">Americo</div><span class="sh-vendor-badge">Direct Line</span></div>
-            <div class="sh-vendor-desc">(800) 231-0801 · Mon–Fri, 8:00 AM – 5:00 PM CT</div>
-          </div>
-          <div class="sh-vendor-card sh-carrier-tile" data-carrier-id="corebridge">
-            <div class="sh-vendor-top"><div class="sh-vendor-name">Corebridge</div><span class="sh-vendor-badge">Direct Line</span></div>
-            <div class="sh-vendor-desc">(800) 247-8837 · Mon–Fri, 7:00 AM – 8:00 PM CT</div>
-          </div>
-          <div class="sh-vendor-card sh-carrier-tile" data-carrier-id="ethos">
-            <div class="sh-vendor-top"><div class="sh-vendor-name">Ethos</div><span class="sh-vendor-badge">Direct Line</span></div>
-            <div class="sh-vendor-desc">(415) 498-1734 · Mon–Fri, 8:00 AM – 6:00 PM ET</div>
-          </div>
-          <div class="sh-vendor-card sh-carrier-tile" data-carrier-id="foresters">
-            <div class="sh-vendor-top"><div class="sh-vendor-name">Foresters</div><span class="sh-vendor-badge">Direct Line</span></div>
-            <div class="sh-vendor-desc">(866) 466-7166 · Mon–Fri, 9:00 AM – 6:00 PM ET</div>
-          </div>
-          <div class="sh-vendor-card sh-carrier-tile" data-carrier-id="instabrain">
-            <div class="sh-vendor-top"><div class="sh-vendor-name">Instabrain</div><span class="sh-vendor-badge">Direct Line</span></div>
-            <div class="sh-vendor-desc">(800) 835-5095 · Mon–Fri, 8:30 AM – 7:00 PM ET</div>
-          </div>
-          <div class="sh-vendor-card sh-carrier-tile" data-carrier-id="mutual-of-omaha">
-            <div class="sh-vendor-top"><div class="sh-vendor-name">Mutual of Omaha</div><span class="sh-vendor-badge">Direct Line</span></div>
-            <div class="sh-vendor-desc">(800) 228-7104 · Mon–Fri, 8:00 AM – 5:00 PM CT</div>
-          </div>
-          <div class="sh-vendor-card sh-carrier-tile" data-carrier-id="transamerica">
-            <div class="sh-vendor-top"><div class="sh-vendor-name">Transamerica</div><span class="sh-vendor-badge">Direct Line</span></div>
-            <div class="sh-vendor-desc">(877) 234-4848 · Mon–Fri, 8:00 AM – 7:00 PM ET</div>
-          </div>
-          <div class="sh-vendor-card sh-carrier-tile" data-carrier-id="royal-neighbors">
-            <div class="sh-vendor-top"><div class="sh-vendor-name">Royal Neighbors</div><span class="sh-vendor-badge">Direct Line</span></div>
-            <div class="sh-vendor-desc">(309) 788-4561 · Mon–Fri, 8:00 AM – 5:00 PM CT</div>
-          </div>
+          <div class="sh-vendor-card sh-carrier-tile" data-carrier-id="aetna"><div class="name sh-carrier-name-cell">Aetna</div><div class="sh-carrier-phone-cell">(866) 272-6630</div><div class="sh-carrier-hours-cell">Mon–Fri, 8:00 AM – 5:00 PM CT</div></div>
+          <div class="sh-vendor-card sh-carrier-tile" data-carrier-id="american-amicable"><div class="name sh-carrier-name-cell">American Amicable</div><div class="sh-carrier-phone-cell">(800) 736-7311</div><div class="sh-carrier-hours-cell">Mon–Fri, 8:00 AM – 4:45 PM CT</div></div>
+          <div class="sh-vendor-card sh-carrier-tile" data-carrier-id="americo"><div class="name sh-carrier-name-cell">Americo</div><div class="sh-carrier-phone-cell">(800) 231-0801</div><div class="sh-carrier-hours-cell">Mon–Fri, 8:00 AM – 5:00 PM CT</div></div>
+          <div class="sh-vendor-card sh-carrier-tile" data-carrier-id="corebridge"><div class="name sh-carrier-name-cell">Corebridge</div><div class="sh-carrier-phone-cell">(800) 247-8837</div><div class="sh-carrier-hours-cell">Mon–Fri, 7:00 AM – 8:00 PM CT</div></div>
+          <div class="sh-vendor-card sh-carrier-tile" data-carrier-id="ethos"><div class="name sh-carrier-name-cell">Ethos</div><div class="sh-carrier-phone-cell">(415) 498-1734</div><div class="sh-carrier-hours-cell">Mon–Fri, 8:00 AM – 6:00 PM ET</div></div>
+          <div class="sh-vendor-card sh-carrier-tile" data-carrier-id="foresters"><div class="name sh-carrier-name-cell">Foresters</div><div class="sh-carrier-phone-cell">(866) 466-7166</div><div class="sh-carrier-hours-cell">Mon–Fri, 9:00 AM – 6:00 PM ET</div></div>
+          <div class="sh-vendor-card sh-carrier-tile" data-carrier-id="instabrain"><div class="name sh-carrier-name-cell">Instabrain</div><div class="sh-carrier-phone-cell">(800) 835-5095</div><div class="sh-carrier-hours-cell">Mon–Fri, 8:30 AM – 7:00 PM ET</div></div>
+          <div class="sh-vendor-card sh-carrier-tile" data-carrier-id="mutual-of-omaha"><div class="name sh-carrier-name-cell">Mutual of Omaha</div><div class="sh-carrier-phone-cell">(800) 228-7104</div><div class="sh-carrier-hours-cell">Mon–Fri, 8:00 AM – 5:00 PM CT</div></div>
+          <div class="sh-vendor-card sh-carrier-tile" data-carrier-id="transamerica"><div class="name sh-carrier-name-cell">Transamerica</div><div class="sh-carrier-phone-cell">(877) 234-4848</div><div class="sh-carrier-hours-cell">Mon–Fri, 8:00 AM – 7:00 PM ET</div></div>
+          <div class="sh-vendor-card sh-carrier-tile" data-carrier-id="royal-neighbors"><div class="name sh-carrier-name-cell">Royal Neighbors</div><div class="sh-carrier-phone-cell">(309) 788-4561</div><div class="sh-carrier-hours-cell">Mon–Fri, 8:00 AM – 5:00 PM CT</div></div>
         </div>
 
         <!-- Carrier detail view (shown when a carrier is clicked) -->
@@ -14326,7 +14407,7 @@
             Guides & Tools
           </div>
           <div class="sh-resources-grid">
-            <a href="state-license-costs.html" class="sh-resource-card">
+            <a href="#" onclick="activatePanel('statelicense');return false;" class="sh-resource-card">
               <div class="sh-resource-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l8-4v18"/><path d="M19 21V11l-6-4"/></svg></div>
               <div><div class="sh-resource-title">State License Costs</div><div class="sh-resource-desc">Licensing fees by state for insurance agent applications.</div><span class="sh-resource-tag">Reference</span></div>
             </a>
