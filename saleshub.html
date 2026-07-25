@@ -15896,10 +15896,13 @@
     function activatePayTab(tab) {
       const panel = document.getElementById('panel-calculator');
       if (!panel) return;
-      panel.querySelectorAll(':scope > .pay-tabs .pay-tab').forEach(b => {
+      // Tabs + panes now live inside #payRealContent (the admin-gated wrapper),
+      // so scope the queries there instead of to direct children of the panel.
+      const payScope = document.getElementById('payRealContent') || panel;
+      payScope.querySelectorAll(':scope > .pay-tabs .pay-tab').forEach(b => {
         b.classList.toggle('on', b.dataset.tab === tab);
       });
-      panel.querySelectorAll(':scope > .pay-tab-pane').forEach(p => {
+      payScope.querySelectorAll(':scope > .pay-tab-pane').forEach(p => {
         p.classList.toggle('active', p.dataset.pane === tab);
       });
       // Iframes laid out at 0 width while their pane was hidden — defer the
