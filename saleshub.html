@@ -4046,17 +4046,16 @@
     #panel-policies .bob-btn-icon:hover { color: var(--bob-ink-1); border-color: var(--bob-hairline-strong); background: var(--bob-surface-3); }
     #panel-policies .bob-advance-btn { padding: 6px 10px; font-size: 11px; }
     #panel-policies .bob-advance-btn svg { flex: none; }
-    /* Mobile: pin the actions column (Mark approved / Mark issue paid / Edit) to
-       the right so it stays visible while the wide policy table scrolls. */
-    @media (max-width: 640px) {
-      #panel-policies .bob-pt tbody td:last-child,
-      #panel-policies .bob-pt thead th:last-child {
-        position: sticky; right: 0; z-index: 2;
-        background: var(--bob-surface);
-        box-shadow: -10px 0 12px -10px rgba(0,0,0,.28);
-      }
-      #panel-policies .bob-pt tbody tr:hover td:last-child { background: var(--bob-surface-2); }
+    /* Pin the actions column (Mark approved / Mark issue paid / Edit) to the
+       right edge at ALL widths, so the buttons can never scroll off-screen when
+       the wide policy table overflows (narrow desktop, expanded sidebar, mobile). */
+    #panel-policies .bob-pt tbody td:last-child,
+    #panel-policies .bob-pt thead th:last-child {
+      position: sticky; right: 0; z-index: 2;
     }
+    #panel-policies .bob-pt tbody td:last-child { background: var(--bob-surface); box-shadow: -10px 0 12px -10px rgba(0,0,0,.20); }
+    #panel-policies .bob-pt thead th:last-child { background: var(--bob-surface); }
+    #panel-policies .bob-pt tbody tr:hover td:last-child { background: var(--bob-surface-2); }
 
     #panel-policies .bob-pt-foot {
       display: flex; align-items: center; justify-content: space-between;
