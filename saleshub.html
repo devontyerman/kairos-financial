@@ -7660,9 +7660,9 @@
     /* Metallic medal colors + classic podium: #1 center & tallest, #2 left &
        mid-height, #3 right & shortest. Visual order set with `order`; DOM order
        stays 1-2-3 so mobile stacks correctly. */
-    #panel-leaderboard .lb-podium-card.gold   { --lb-accent: #e0b83f; order: 2; min-height: 340px; }
-    #panel-leaderboard .lb-podium-card.silver { --lb-accent: #c2c6cc; order: 1; min-height: 292px; }
-    #panel-leaderboard .lb-podium-card.bronze { --lb-accent: #c17d45; order: 3; min-height: 250px; }
+    #panel-leaderboard .lb-podium-card.gold   { --lb-accent: #e0b83f; order: 2; min-height: 300px; }
+    #panel-leaderboard .lb-podium-card.silver { --lb-accent: #c2c6cc; order: 1; min-height: 262px; }
+    #panel-leaderboard .lb-podium-card.bronze { --lb-accent: #c17d45; order: 3; min-height: 226px; }
     #panel-leaderboard .lb-podium-card.gold {
       background:
         radial-gradient(380px 240px at 80% -20%, color-mix(in oklch, var(--lb-accent) 16%, transparent), transparent 60%),
@@ -7848,7 +7848,15 @@
     }
 
     @media (max-width: 1180px) {
-      #panel-leaderboard .lb-podium-row { grid-template-columns: 1fr; }
+      /* Stacked podium: drop the staggered fixed heights and tighten the spacing
+         so the three cards aren't unnecessarily tall sitting on top of each other. */
+      #panel-leaderboard .lb-podium-row { grid-template-columns: 1fr; align-items: stretch; }
+      #panel-leaderboard .lb-podium-card { min-height: 0 !important; order: 0 !important; padding: 15px 18px; }
+      #panel-leaderboard .lb-podium-medal { margin-bottom: 10px; }
+      #panel-leaderboard .lb-podium-agt { margin-bottom: 12px; }
+      #panel-leaderboard .lb-podium-avatar { width: 38px; height: 38px; }
+      #panel-leaderboard .lb-podium-rank { font-size: 44px; top: 12px; right: 18px; }
+      #panel-leaderboard .lb-podium-stats { padding-top: 12px; }
     }
     @media (max-width: 768px) {
       #panel-leaderboard.active { margin: -0.75rem -0.75rem -3rem; padding: 16px 12px 24px; min-height: calc(100vh - 0.75rem); }
@@ -13489,8 +13497,262 @@
     #panel-profile.active .lic-row .ss-input { border-radius:11px !important; }
     #panel-profile.active .lic-remove { border-radius:9px !important; }
   </style>
+  <style id="kairosLandingStyles">
+    /* ─────────────────────────────────────────────────────────────
+       Kairos cosmic landing — the logged-out entry screen.
+       Three.js starfield + nebula behind two scroll sections:
+       "KAIROS" (with the definition) → scroll → "SALES HUB" (Enter).
+       Shown only when signed out; updateAuthUI() toggles it.
+       ───────────────────────────────────────────────────────────── */
+    .kairos-landing {
+      position: fixed;
+      inset: 0;
+      z-index: 9000;
+      background: #000005;
+      overflow-x: hidden;
+      overflow-y: auto;
+      scroll-snap-type: y proximity;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: none;
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
+      color: #fff;
+      scrollbar-width: none;       /* Firefox — hide the scroll track */
+      -ms-overflow-style: none;    /* old Edge */
+    }
+    .kairos-landing::-webkit-scrollbar { width: 0; height: 0; display: none; }
+    .kairos-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+      display: block;
+    }
+    /* subtle vignette so text stays legible over bright stars */
+    .kairos-landing::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      background: radial-gradient(ellipse at center, transparent 45%, rgba(0,0,5,0.55) 100%);
+    }
+    /* bottom fade — masks the atmosphere's horizon glow so the very bottom edge
+       stays clean black instead of showing a faint blue bar */
+    .kairos-landing::before {
+      content: '';
+      position: fixed;
+      left: 0; right: 0; bottom: 0;
+      height: 110px;
+      z-index: 1;
+      pointer-events: none;
+      background: linear-gradient(to top, #000005 0%, rgba(0,0,5,0.9) 22%, transparent 100%);
+    }
+    .kairos-section {
+      position: relative;
+      z-index: 2;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 2rem 1.5rem;
+      scroll-snap-align: center;
+    }
+    .kairos-title {
+      margin: 0;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      line-height: 0.98;
+      font-size: clamp(2.6rem, 10vw, 8.5rem);
+      color: #fff;
+      text-shadow: 0 0 40px rgba(120,170,255,0.35), 0 0 90px rgba(80,120,255,0.18);
+    }
+    .kairos-title .kairos-char { display: inline-block; will-change: transform, opacity; }
+    .kairos-title .kairos-line2 { display: block; }
+    .kairos-def {
+      margin: 2rem auto 0;
+      max-width: 640px;
+      font-size: clamp(1rem, 1.5vw, 1.3rem);
+      line-height: 1.6;
+      font-style: italic;
+      color: rgba(255,255,255,0.8);
+      text-shadow: 0 2px 20px rgba(0,0,0,0.6);
+    }
+    /* ── SALES HUB / Enter panel ── */
+    .kairos-enter-wrap {
+      margin-top: 2.3rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.4rem;
+      width: min(288px, 84vw);
+    }
+    .kairos-login {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      opacity: 0;
+      transform: translateY(14px);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+    .kairos-login.show { opacity: 1; transform: translateY(0); }
+    .kairos-login[hidden] { display: none; }
+    .kairos-forgot-hint {
+      margin: 0 0 0.15rem;
+      font-size: 0.82rem;
+      line-height: 1.5;
+      color: rgba(255,255,255,0.72);
+    }
+    .kairos-login input {
+      width: 100%;
+      box-sizing: border-box;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.22);
+      border-radius: 9px;
+      padding: 0.6rem 0.8rem;
+      color: #fff;
+      font: inherit;
+      font-size: 0.85rem;
+      outline: none;
+      transition: border-color 0.2s ease, background 0.2s ease;
+    }
+    .kairos-login input::placeholder { color: rgba(255,255,255,0.5); }
+    .kairos-login input:focus {
+      border-color: rgba(150,190,255,0.9);
+      background: rgba(255,255,255,0.12);
+    }
+    .kairos-login-submit {
+      margin-top: 0.15rem;
+      cursor: pointer;
+      border: none;
+      border-radius: 9px;
+      padding: 0.62rem 1rem;
+      font: inherit;
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      color: #05070f;
+      background: linear-gradient(180deg, #ffffff, #d7e3ff);
+      transition: filter 0.2s ease, transform 0.15s ease;
+    }
+    .kairos-login-submit:hover { filter: brightness(1.05); }
+    .kairos-login-submit:active { transform: scale(0.98); }
+    .kairos-login-submit:disabled { opacity: 0.6; cursor: default; }
+    .kairos-login-foot {
+      display: flex;
+      justify-content: center;
+      margin-top: 0.15rem;
+    }
+    .kairos-forgot {
+      color: rgba(180,200,255,0.85);
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .kairos-forgot:hover { color: #fff; text-decoration: underline; }
+    .kairos-login-msg {
+      display: none;
+      font-size: 0.82rem;
+      line-height: 1.4;
+      border-radius: 8px;
+      padding: 0.55rem 0.75rem;
+      text-align: center;
+    }
+    .kairos-login-msg.show { display: block; }
+    .kairos-login-msg.error { background: rgba(220,60,60,0.18); color: #ffb4b4; border: 1px solid rgba(220,60,60,0.35); }
+    .kairos-login-msg.success { background: rgba(60,200,120,0.16); color: #b6ffcf; border: 1px solid rgba(60,200,120,0.35); }
+    /* ── Scroll indicator (bottom center) ── */
+    .kairos-scroll-ind {
+      position: fixed;
+      left: 50%;
+      bottom: 1.8rem;
+      transform: translateX(-50%);
+      z-index: 3;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.6rem;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+    }
+    .kairos-scroll-ind .kairos-scroll-text {
+      font-size: 0.7rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.65);
+      padding-left: 0.35em;
+    }
+    @media (max-width: 640px) {
+      .kairos-title { letter-spacing: 0.08em; }
+    }
+  </style>
 </head>
 <body>
+
+  <!-- ── Kairos cosmic landing (logged-out entry screen) ──
+       Full-screen Three.js scene with two scroll sections. Shown while
+       signed out; hidden by updateAuthUI()/kfLandingHide() on sign-in. -->
+  <div id="kairosLanding" class="kairos-landing" aria-label="Sales Hub sign in">
+    <canvas id="kairosCanvas" class="kairos-canvas"></canvas>
+
+    <!-- Section 1 — KAIROS + definition -->
+    <section class="kairos-section" id="kairosSec1">
+      <h1 class="kairos-title" id="kairosTitle1" data-text="KAIROS">KAIROS</h1>
+      <p class="kairos-def">"The opportune and decisive moment when action has the greatest impact. The right time to act."</p>
+    </section>
+
+    <!-- Section 2 — SALES HUB + Enter → login -->
+    <section class="kairos-section" id="kairosSec2">
+      <h1 class="kairos-title" id="kairosTitle2" data-text="SALES HUB">SALES<span class="kairos-line2">HUB</span></h1>
+      <div class="kairos-enter-wrap">
+        <form class="kairos-login show" id="kairosLoginForm" autocomplete="on">
+          <input type="email" id="kairosEmail" name="email" placeholder="Email" autocomplete="username" required />
+          <input type="password" id="kairosPassword" name="password" placeholder="Password" autocomplete="current-password" required />
+          <button type="submit" class="kairos-login-submit" id="kairosLoginSubmit">Log In</button>
+          <div class="kairos-login-foot">
+            <a href="#" class="kairos-forgot" id="kairosForgot">Forgot password?</a>
+          </div>
+          <div class="kairos-login-msg" id="kairosLoginMsg"></div>
+        </form>
+
+        <!-- Inline forgot-password view — replaces the login fields in place
+             (no modal). Wired to window.kfSendPasswordReset(). -->
+        <form class="kairos-login" id="kairosForgotForm" autocomplete="on" hidden>
+          <p class="kairos-forgot-hint">Enter your email and we'll send you a reset link.</p>
+          <input type="email" id="kairosForgotEmail" name="email" placeholder="Email" autocomplete="username" required />
+          <button type="submit" class="kairos-login-submit" id="kairosForgotSubmit">Send Reset Link</button>
+          <div class="kairos-login-foot">
+            <a href="#" class="kairos-forgot" id="kairosForgotBack">← Back to sign in</a>
+          </div>
+          <div class="kairos-login-msg" id="kairosForgotMsg"></div>
+        </form>
+      </div>
+    </section>
+
+    <!-- Scroll indicator -->
+    <div class="kairos-scroll-ind" id="kairosScrollInd">
+      <span class="kairos-scroll-text">Scroll</span>
+    </div>
+  </div>
+  <script>
+    /* Prevent a flash of the landing for already-signed-in users:
+       hide it synchronously if a session token exists. updateAuthUI()
+       corrects this either way once the session check resolves. */
+    (function () {
+      try {
+        if (localStorage.getItem('sb_access_token')) {
+          var el = document.getElementById('kairosLanding');
+          if (el) el.style.display = 'none';
+        }
+      } catch (e) {}
+    })();
+  </script>
 
   <nav class="nav scrolled" id="mainNav">
     <div class="nav-inner">
@@ -13565,7 +13827,7 @@
       <div class="ss-navsub" id="rhqNavSub">
         <div class="ss-navsub-label">Agency</div>
         <button class="ss-navsub-btn" data-nav="tp:performance">Performance Dashboard</button>
-        <button class="ss-navsub-btn" data-nav="tp:policies">Policies</button>
+        <button class="ss-navsub-btn" data-nav="tp:policies">Agency Policies</button>
         <button class="ss-navsub-btn" data-nav="tp:hierarchy">Agent Hierarchy</button>
         <button class="ss-navsub-btn hq-admin-only" data-nav="tp:discord" style="display:none;">Discord</button>
         <div class="ss-navsub-label">Recruiting</div>
@@ -14763,7 +15025,7 @@
         <div id="tpContent" style="display:none;">
           <div class="tp-admin-tabs">
             <button class="tp-admin-tab active" data-tpatab="performance">Performance Dashboard</button>
-            <button class="tp-admin-tab" data-tpatab="policies">Policies</button>
+            <button class="tp-admin-tab" data-tpatab="policies">Agency Policies</button>
             <button class="tp-admin-tab" data-tpatab="hierarchy">Agent Hierarchy</button>
             <button class="tp-admin-tab" data-tpatab="agents" data-admin-only="true">Agent Profiles</button>
             <button class="tp-admin-tab" data-tpatab="discord" data-admin-only="true">Discord</button>
@@ -15775,6 +16037,7 @@
         if (_lbAuthWrap) _lbAuthWrap.style.display = 'block';
         if (signupLink) signupLink.style.display = 'none';
         if (globalGate) globalGate.style.display = 'none';
+        if (window.kfLandingHide) window.kfLandingHide();
         // Show admin-only Weekly Tracker + Team Performance for the owner
         const WT_ADMIN_EMAILS = ['dev@kairos-financial.com'];
         const isWtAdmin = WT_ADMIN_EMAILS.includes((currentUser.email || '').toLowerCase());
@@ -15851,7 +16114,11 @@
         if (_lbNotAuth2) _lbNotAuth2.style.display = 'block';
         if (_lbAuthWrap2) _lbAuthWrap2.style.display = 'none';
         if (signupLink) signupLink.style.display = 'block';
-        if (globalGate) globalGate.style.display = 'flex';
+        // The Kairos cosmic landing is now the logged-out screen, so the old
+        // "Sign in required" gate stays hidden (it shares z-index 9000 and
+        // would otherwise paint on top of the landing).
+        if (globalGate) globalGate.style.display = 'none';
+        if (window.kfLandingShow) window.kfLandingShow();
         if (wtBtn) wtBtn.style.display = 'none';
         if (tpBtn) tpBtn.style.display = 'none';
         if (rhqBtn) rhqBtn.style.display = 'none';
@@ -18558,23 +18825,13 @@
       loginMsg.style.display = 'block';
     }
 
-    document.getElementById('loginForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const btn = document.getElementById('loginBtn');
-      btn.disabled = true;
-      loginMsg.className = 'ss-signup-msg';
-      loginMsg.style.display = 'none';
-      loginMsg.textContent = '';
-
-      const email = (document.getElementById('loginEmail').value || '').trim();
-      const password = document.getElementById('loginPassword').value || '';
-
-      if (!email || !password) {
-        showLoginMsg('Please enter both email and password.', 'error');
-        btn.disabled = false;
-        return;
-      }
-
+    // Shared login core — used by BOTH the modal login form and the Kairos
+    // landing "Enter" panel. Sets tokens + currentUser and refreshes the UI
+    // on success. Returns { ok } or { ok:false, error }.
+    async function kfPerformLogin(email, password) {
+      email = (email || '').trim();
+      password = password || '';
+      if (!email || !password) return { ok: false, error: 'Please enter both email and password.' };
       try {
         const res = await fetch(SUPABASE_URL + '/auth/v1/token?grant_type=password', {
           method: 'POST',
@@ -18583,24 +18840,58 @@
         });
         let result = {};
         try { result = await res.json(); } catch (parseErr) { result = {}; }
-
         if (res.ok && result.access_token) {
           accessToken = result.access_token;
           currentUser = result.user;
           localStorage.setItem('sb_access_token', result.access_token);
           localStorage.setItem('sb_refresh_token', result.refresh_token);
-          signupOverlay.classList.remove('open');
           updateAuthUI();
-          btn.disabled = false;
-        } else {
-          const errMsg = result.error_description || result.msg || result.error || ('Invalid email or password (HTTP ' + res.status + ').');
-          console.error('Login failed:', res.status, result);
-          showLoginMsg(errMsg, 'error');
+          return { ok: true };
         }
+        console.error('Login failed:', res.status, result);
+        return { ok: false, error: result.error_description || result.msg || result.error || ('Invalid email or password (HTTP ' + res.status + ').') };
       } catch (err) {
         console.error('Login request error:', err);
-        showLoginMsg('Connection error: ' + (err && err.message ? err.message : 'Please try again.'), 'error');
+        return { ok: false, error: 'Connection error: ' + (err && err.message ? err.message : 'Please try again.') };
       }
+    }
+    window.kfPerformLogin = kfPerformLogin;
+
+    // Shared password-reset core — used by the Kairos landing's inline
+    // "Forgot password" view (and available to the modal flow).
+    async function kfSendPasswordReset(email) {
+      email = (email || '').trim();
+      if (!email) return { ok: false, error: 'Please enter your email.' };
+      try {
+        const redirectTo = encodeURIComponent(window.location.origin + window.location.pathname);
+        const res = await fetch(SUPABASE_URL + '/auth/v1/recover?redirect_to=' + redirectTo, {
+          method: 'POST',
+          headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email })
+        });
+        if (res.ok) return { ok: true, message: "If an account exists for that email, a reset link has been sent. Check your inbox (and spam folder)." };
+        const result = await res.json().catch(() => ({}));
+        return { ok: false, error: result.error_description || result.msg || ('Could not send reset email (HTTP ' + res.status + ').') };
+      } catch (err) {
+        return { ok: false, error: 'Connection error: ' + (err && err.message ? err.message : 'Please try again.') };
+      }
+    }
+    window.kfSendPasswordReset = kfSendPasswordReset;
+
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('loginBtn');
+      btn.disabled = true;
+      loginMsg.className = 'ss-signup-msg';
+      loginMsg.style.display = 'none';
+      loginMsg.textContent = '';
+
+      const r = await kfPerformLogin(
+        document.getElementById('loginEmail').value,
+        document.getElementById('loginPassword').value
+      );
+      if (r.ok) signupOverlay.classList.remove('open');
+      else showLoginMsg(r.error, 'error');
       btn.disabled = false;
     });
 
@@ -33813,6 +34104,466 @@
     }
     setTimeout(check, 1200);
   })();
+  </script>
+
+  <!-- ── Kairos cosmic landing engine (Three.js + GSAP) ──
+       Adapted from the "horizon-hero-section" React component into vanilla
+       JS for this static single-file app. Two scroll sections only
+       (KAIROS → SALES HUB); the "Enter" button reveals the real Supabase
+       login (window.kfPerformLogin). Loaded from esm.sh like the other
+       dynamic-import module in this file. -->
+  <script type="module">
+    (async () => {
+      const landing = document.getElementById('kairosLanding');
+      const canvas  = document.getElementById('kairosCanvas');
+      if (!landing || !canvas) return;
+
+      let THREE, gsap;
+      try {
+        [THREE, gsap] = await Promise.all([
+          import('https://esm.sh/three@0.160.0'),
+          import('https://esm.sh/gsap@3.12.5').then(m => m.gsap || m.default || m)
+        ]);
+      } catch (err) {
+        console.error('Kairos landing: failed to load three/gsap', err);
+        return; // landing still shows text; just no 3D backdrop
+      }
+
+      // ── Scene refs ──
+      const refs = {
+        scene: null, camera: null, renderer: null,
+        stars: [], nebula: null, mountains: [], atmosphere: null,
+        animationId: null, running: false, inited: false,
+        targetX: 0, targetY: 30, targetZ: 320
+      };
+      const smooth = { x: 0, y: 30, z: 320 };
+      const camPositions = [
+        { x: 0, y: 30, z: 320 },   // KAIROS
+        { x: 0, y: 38, z: -60 }    // SALES HUB
+      ];
+
+      function createStarField() {
+        const starCount = 5000;
+        for (let i = 0; i < 3; i++) {
+          const geometry = new THREE.BufferGeometry();
+          const positions = new Float32Array(starCount * 3);
+          const colors = new Float32Array(starCount * 3);
+          const sizes = new Float32Array(starCount);
+          const rMin = 260, rMax = 1200;
+          const rMin3 = rMin*rMin*rMin, rSpan = rMax*rMax*rMax - rMin3;
+          for (let j = 0; j < starCount; j++) {
+            // Volume-weighted radius (cube root) so stars fill the shell evenly.
+            // The field is re-centered on the camera every frame (see animate),
+            // so the camera always sits at the center of a symmetric star ball —
+            // that prevents the "plane through camera + field-center" from cutting
+            // a dense great-circle that collapses into a bright vertical streak.
+            const radius = Math.cbrt(rMin3 + Math.random() * rSpan);
+            const theta = Math.random() * Math.PI * 2;
+            const phi = Math.acos(Math.random() * 2 - 1);
+            positions[j*3]   = radius * Math.sin(phi) * Math.cos(theta);
+            positions[j*3+1] = radius * Math.sin(phi) * Math.sin(theta);
+            positions[j*3+2] = radius * Math.cos(phi);
+            const color = new THREE.Color();
+            const c = Math.random();
+            if (c < 0.7) color.setHSL(0, 0, 0.8 + Math.random() * 0.2);
+            else if (c < 0.9) color.setHSL(0.08, 0.5, 0.8);
+            else color.setHSL(0.6, 0.5, 0.8);
+            colors[j*3] = color.r; colors[j*3+1] = color.g; colors[j*3+2] = color.b;
+            sizes[j] = Math.random() * 2 + 0.5;
+          }
+          geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+          geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+          geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+          const material = new THREE.ShaderMaterial({
+            uniforms: { time: { value: 0 }, depth: { value: i } },
+            vertexShader: `
+              attribute float size;
+              attribute vec3 color;
+              varying vec3 vColor;
+              uniform float time;
+              uniform float depth;
+              void main() {
+                vColor = color;
+                vec3 pos = position;
+                float angle = time * 0.05 * (1.0 - depth * 0.3);
+                mat2 rot = mat2(cos(angle), -sin(angle), sin(angle), cos(angle));
+                pos.xy = rot * pos.xy;
+                vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
+                // Cull stars at/behind the camera and clamp the sprite size —
+                // a star passing very close would otherwise blow up to a giant
+                // additive sprite and smear into a bright vertical streak down
+                // the center of the scene.
+                float dz = -mvPosition.z;
+                gl_Position = projectionMatrix * mvPosition;
+                // Fade a star out as it nears dead-center of the screen so none
+                // ever sits behind the title as a stray white dot. Uses the real
+                // projected position each frame, so it tracks the moving camera.
+                vec2 ndc = gl_Position.xy / gl_Position.w;
+                float centerFade = smoothstep(0.02, 0.09, length(ndc));
+                gl_PointSize = (dz > 1.0 ? min(size * (300.0 / dz), 14.0) : 0.0) * centerFade;
+              }
+            `,
+            fragmentShader: `
+              varying vec3 vColor;
+              void main() {
+                float dist = length(gl_PointCoord - vec2(0.5));
+                if (dist > 0.5) discard;
+                float opacity = 1.0 - smoothstep(0.0, 0.5, dist);
+                gl_FragColor = vec4(vColor, opacity);
+              }
+            `,
+            transparent: true,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false
+          });
+          const stars = new THREE.Points(geometry, material);
+          refs.scene.add(stars);
+          refs.stars.push(stars);
+        }
+      }
+
+      function createNebula() {
+        const geometry = new THREE.PlaneGeometry(8000, 4000, 100, 100);
+        const material = new THREE.ShaderMaterial({
+          uniforms: {
+            time: { value: 0 },
+            color1: { value: new THREE.Color(0x0033ff) },
+            color2: { value: new THREE.Color(0xff0066) },
+            opacity: { value: 0.32 }
+          },
+          vertexShader: `
+            varying vec2 vUv;
+            varying float vElevation;
+            uniform float time;
+            void main() {
+              vUv = uv;
+              vec3 pos = position;
+              float elevation = sin(pos.x * 0.01 + time) * cos(pos.y * 0.01 + time) * 20.0;
+              pos.z += elevation;
+              vElevation = elevation;
+              gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+            }
+          `,
+          fragmentShader: `
+            uniform vec3 color1;
+            uniform vec3 color2;
+            uniform float opacity;
+            uniform float time;
+            varying vec2 vUv;
+            varying float vElevation;
+            void main() {
+              float mixFactor = sin(vUv.x * 10.0 + time) * cos(vUv.y * 10.0 + time);
+              vec3 color = mix(color1, color2, mixFactor * 0.5 + 0.5);
+              float alpha = opacity * (1.0 - length(vUv - 0.5) * 2.0);
+              alpha *= 1.0 + vElevation * 0.01;
+              gl_FragColor = vec4(color, alpha);
+            }
+          `,
+          transparent: true,
+          blending: THREE.AdditiveBlending,
+          side: THREE.DoubleSide,
+          depthWrite: false
+        });
+        const nebula = new THREE.Mesh(geometry, material);
+        nebula.position.z = -1050;
+        refs.scene.add(nebula);
+        refs.nebula = nebula;
+      }
+
+      function createMountains() {
+        const layers = [
+          { distance: -50,  height: 60,  color: 0x1a1a2e, opacity: 1 },
+          { distance: -100, height: 80,  color: 0x16213e, opacity: 0.8 },
+          { distance: -150, height: 100, color: 0x0f3460, opacity: 0.6 },
+          { distance: -200, height: 120, color: 0x0a4668, opacity: 0.4 }
+        ];
+        layers.forEach((layer, index) => {
+          const points = [];
+          const segments = 50;
+          for (let i = 0; i <= segments; i++) {
+            const x = (i / segments - 0.5) * 1000;
+            const y = Math.sin(i * 0.1) * layer.height +
+                      Math.sin(i * 0.05) * layer.height * 0.5 +
+                      Math.random() * layer.height * 0.2 - 100;
+            points.push(new THREE.Vector2(x, y));
+          }
+          points.push(new THREE.Vector2(5000, -300));
+          points.push(new THREE.Vector2(-5000, -300));
+          const shape = new THREE.Shape(points);
+          const geometry = new THREE.ShapeGeometry(shape);
+          const material = new THREE.MeshBasicMaterial({
+            color: layer.color, transparent: true, opacity: layer.opacity, side: THREE.DoubleSide
+          });
+          const mountain = new THREE.Mesh(geometry, material);
+          mountain.position.z = layer.distance;
+          mountain.position.y = layer.distance;
+          mountain.userData = { baseZ: layer.distance, index };
+          refs.scene.add(mountain);
+          refs.mountains.push(mountain);
+        });
+      }
+
+      function createAtmosphere() {
+        const geometry = new THREE.SphereGeometry(600, 32, 32);
+        const material = new THREE.ShaderMaterial({
+          uniforms: { time: { value: 0 } },
+          vertexShader: `
+            varying vec3 vNormal;
+            void main() {
+              vNormal = normalize(normalMatrix * normal);
+              gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+            }
+          `,
+          fragmentShader: `
+            varying vec3 vNormal;
+            uniform float time;
+            void main() {
+              float intensity = pow(0.7 - dot(vNormal, vec3(0.0, 0.0, 1.0)), 2.0);
+              vec3 atmosphere = vec3(0.3, 0.6, 1.0) * intensity;
+              float pulse = sin(time * 2.0) * 0.1 + 0.9;
+              atmosphere *= pulse;
+              gl_FragColor = vec4(atmosphere, intensity * 0.25);
+            }
+          `,
+          side: THREE.BackSide,
+          blending: THREE.AdditiveBlending,
+          transparent: true
+        });
+        refs.atmosphere = new THREE.Mesh(geometry, material);
+        refs.scene.add(refs.atmosphere);
+      }
+
+      function sizeRenderer() {
+        const w = window.innerWidth, h = window.innerHeight;
+        refs.camera.aspect = w / h;
+        refs.camera.updateProjectionMatrix();
+        refs.renderer.setSize(w, h);
+      }
+
+      function animate() {
+        if (!refs.running) return;
+        refs.animationId = requestAnimationFrame(animate);
+        const time = Date.now() * 0.001;
+
+        refs.stars.forEach((s) => { if (s.material.uniforms) s.material.uniforms.time.value = time; });
+        if (refs.nebula && refs.nebula.material.uniforms) refs.nebula.material.uniforms.time.value = time * 0.5;
+        if (refs.atmosphere && refs.atmosphere.material.uniforms) refs.atmosphere.material.uniforms.time.value = time;
+
+        const k = 0.05;
+        smooth.x += (refs.targetX - smooth.x) * k;
+        smooth.y += (refs.targetY - smooth.y) * k;
+        smooth.z += (refs.targetZ - smooth.z) * k;
+        const floatX = Math.sin(time * 0.1) * 2;
+        const floatY = Math.cos(time * 0.15) * 1;
+        refs.camera.position.set(smooth.x + floatX, smooth.y + floatY, smooth.z);
+        refs.camera.lookAt(0, 10, -600);
+
+        // Keep the star ball centered on the camera so the sky stays symmetric —
+        // this is what prevents a dense great-circle of stars from collapsing
+        // edge-on into a bright vertical streak down the center of the scene.
+        refs.stars.forEach((s) => s.position.copy(refs.camera.position));
+
+        refs.mountains.forEach((m, i) => {
+          const p = 1 + i * 0.5;
+          m.position.x = Math.sin(time * 0.1) * 2 * p;
+          m.position.y = 50 + Math.cos(time * 0.15) * 1 * p;
+        });
+
+        refs.renderer.render(refs.scene, refs.camera);
+      }
+
+      function ensureInit() {
+        if (refs.inited) return;
+        refs.scene = new THREE.Scene();
+        refs.scene.fog = new THREE.FogExp2(0x000000, 0.00025);
+        refs.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 2000);
+        refs.camera.position.set(0, 20, 100);
+        refs.renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+        refs.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        refs.renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        refs.renderer.toneMappingExposure = 0.62;
+        createStarField();
+        createNebula();
+        createMountains();
+        createAtmosphere();
+        sizeRenderer();
+        refs.inited = true;
+      }
+
+      function start() {
+        if (refs.running) return;
+        refs.running = true;
+        animate();
+      }
+      function stop() {
+        refs.running = false;
+        if (refs.animationId) cancelAnimationFrame(refs.animationId);
+        refs.animationId = null;
+      }
+
+      // ── Scroll → camera target + indicator fade ──
+      const scrollInd = document.getElementById('kairosScrollInd');
+      function onScroll() {
+        const maxScroll = landing.scrollHeight - landing.clientHeight;
+        const progress = maxScroll > 0 ? Math.min(landing.scrollTop / maxScroll, 1) : 0;
+        const a = camPositions[0], b = camPositions[1];
+        refs.targetX = a.x + (b.x - a.x) * progress;
+        refs.targetY = a.y + (b.y - a.y) * progress;
+        refs.targetZ = a.z + (b.z - a.z) * progress;
+        if (scrollInd) scrollInd.style.opacity = String(Math.max(0, 1 - progress * 2.2));
+      }
+      landing.addEventListener('scroll', onScroll, { passive: true });
+      window.addEventListener('resize', () => { if (refs.inited) sizeRenderer(); });
+
+      // ── Intro title animation (split KAIROS into chars) ──
+      let introPlayed = false;
+      function splitTitle(el) {
+        if (!el || el.dataset.split === '1') return;
+        const text = el.getAttribute('data-text') || el.textContent;
+        el.dataset.split = '1';
+        el.innerHTML = '';
+        [...text].forEach((ch) => {
+          const span = document.createElement('span');
+          span.className = 'kairos-char';
+          span.textContent = ch === ' ' ? ' ' : ch;
+          el.appendChild(span);
+        });
+      }
+      function playIntro() {
+        if (introPlayed) return;
+        introPlayed = true;
+        const t1 = document.getElementById('kairosTitle1');
+        splitTitle(t1);
+        try {
+          gsap.from(t1.querySelectorAll('.kairos-char'), {
+            y: 160, opacity: 0, duration: 1.4, stagger: 0.05, ease: 'power4.out'
+          });
+          gsap.from('#kairosSec1 .kairos-def', { y: 40, opacity: 0, duration: 1, delay: 0.6, ease: 'power3.out' });
+        } catch (e) { /* gsap optional */ }
+      }
+
+      // ── Login card (shown automatically under SALES HUB) → real Supabase auth ──
+      const loginForm = document.getElementById('kairosLoginForm');
+      const emailInp = document.getElementById('kairosEmail');
+      const passInp = document.getElementById('kairosPassword');
+      const submitBtn = document.getElementById('kairosLoginSubmit');
+      const msgEl = document.getElementById('kairosLoginMsg');
+      const forgotLink = document.getElementById('kairosForgot');
+      // Inline forgot-password view (replaces the login fields in place).
+      const forgotForm = document.getElementById('kairosForgotForm');
+      const forgotEmailInp = document.getElementById('kairosForgotEmail');
+      const forgotSubmit = document.getElementById('kairosForgotSubmit');
+      const forgotMsgEl = document.getElementById('kairosForgotMsg');
+      const forgotBack = document.getElementById('kairosForgotBack');
+
+      function showMsg(text, type) {
+        if (!msgEl) return;
+        msgEl.textContent = text;
+        msgEl.className = 'kairos-login-msg show ' + (type || 'error');
+      }
+      function clearMsg() { if (msgEl) msgEl.className = 'kairos-login-msg'; }
+      function showForgotMsg(text, type) {
+        if (!forgotMsgEl) return;
+        forgotMsgEl.textContent = text;
+        forgotMsgEl.className = 'kairos-login-msg show ' + (type || 'error');
+      }
+      function clearForgotMsg() { if (forgotMsgEl) forgotMsgEl.className = 'kairos-login-msg'; }
+
+      // Cross-fade between the login and forgot views in place (no modal).
+      function swapForms(from, to, focusEl) {
+        if (!from || !to) return;
+        from.classList.remove('show');
+        setTimeout(() => {
+          from.hidden = true;
+          to.hidden = false;
+          requestAnimationFrame(() => to.classList.add('show'));
+          setTimeout(() => { if (focusEl) focusEl.focus(); }, 220);
+        }, 340); // let the outgoing form finish fading (transition is 0.4s)
+      }
+
+      function resetLoginPanel() {
+        // Always return to the login view when the landing (re)appears.
+        if (forgotForm) { forgotForm.hidden = true; forgotForm.classList.remove('show'); }
+        if (loginForm) { loginForm.hidden = false; loginForm.classList.add('show'); }
+        clearMsg();
+        clearForgotMsg();
+      }
+
+      if (loginForm) {
+        loginForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          clearMsg();
+          if (typeof window.kfPerformLogin !== 'function') {
+            showMsg('Still loading — please try again in a moment.', 'error');
+            return;
+          }
+          if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Signing in…'; }
+          const r = await window.kfPerformLogin(emailInp ? emailInp.value : '', passInp ? passInp.value : '');
+          if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Log In'; }
+          if (!r.ok) showMsg(r.error || 'Sign in failed.', 'error');
+          // On success, updateAuthUI() → kfLandingHide() takes over.
+        });
+      }
+
+      // Forgot password → fade the login fields out, fade the reset field in.
+      if (forgotLink) {
+        forgotLink.addEventListener('click', (e) => {
+          e.preventDefault();
+          if (forgotEmailInp && emailInp && emailInp.value) forgotEmailInp.value = emailInp.value;
+          clearMsg();
+          clearForgotMsg();
+          swapForms(loginForm, forgotForm, forgotEmailInp);
+        });
+      }
+      if (forgotBack) {
+        forgotBack.addEventListener('click', (e) => {
+          e.preventDefault();
+          clearForgotMsg();
+          swapForms(forgotForm, loginForm, emailInp);
+        });
+      }
+      if (forgotForm) {
+        forgotForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          clearForgotMsg();
+          if (typeof window.kfSendPasswordReset !== 'function') {
+            showForgotMsg('Still loading — please try again in a moment.', 'error');
+            return;
+          }
+          if (forgotSubmit) { forgotSubmit.disabled = true; forgotSubmit.textContent = 'Sending…'; }
+          const r = await window.kfSendPasswordReset(forgotEmailInp ? forgotEmailInp.value : '');
+          if (forgotSubmit) { forgotSubmit.disabled = false; forgotSubmit.textContent = 'Send Reset Link'; }
+          showForgotMsg(r.ok ? r.message : r.error, r.ok ? 'success' : 'error');
+        });
+      }
+
+      // ── Public show/hide (called by updateAuthUI) ──
+      window.kfLandingShow = function () {
+        landing.style.display = '';
+        // Suppress the legacy "Sign in required" gate — the landing replaces it.
+        const gate = document.getElementById('globalAuthGate');
+        if (gate) gate.style.display = 'none';
+        resetLoginPanel();
+        landing.scrollTop = 0;
+        if (scrollInd) scrollInd.style.opacity = '1';
+        onScroll();
+        // 3D backdrop is best-effort — if WebGL is unavailable the KAIROS /
+        // SALES HUB text + login still work over the plain dark background.
+        try { ensureInit(); start(); playIntro(); }
+        catch (e) { console.error('Kairos landing: 3D backdrop unavailable', e); }
+      };
+      window.kfLandingHide = function () {
+        stop();
+        landing.style.display = 'none';
+      };
+
+      // ── Self-init: show only when there's no signed-in session yet.
+      // (updateAuthUI() has the final say once the session check resolves.) ──
+      const hasSession = (() => { try { return !!localStorage.getItem('sb_access_token'); } catch (e) { return false; } })();
+      if (!hasSession && !window.currentUser) {
+        window.kfLandingShow();
+      }
+    })();
   </script>
 </body>
 </html>
