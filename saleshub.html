@@ -13585,7 +13585,8 @@
         <p class="kf-gate-sub">Sign in to access the Sales Hub.</p>
         <div class="kf-gate-actions">
           <button type="button" class="kf-gate-btn primary" onclick="document.querySelector('.ss-signup-overlay').classList.add('open');switchAuthTab('login');">Log In</button>
-          <button type="button" class="kf-gate-btn ghost" onclick="document.querySelector('.ss-signup-overlay').classList.add('open');switchAuthTab('signup');">Sign Up</button>
+          <!-- Sign Up removed: the Sales Hub is invite-only. New agents get a
+               "Send Sales Hub Invite" email from Recruiter HQ. -->
         </div>
       </div>
     </div>
@@ -13611,7 +13612,7 @@
           <p>You must be signed in to submit a sale.</p>
           <div class="ss-auth-prompt-btns">
             <button class="ss-auth-prompt-btn login" id="promptLogin">Log In</button>
-            <button class="ss-auth-prompt-btn signup" id="promptSignup">Sign Up</button>
+            <!-- Sign Up removed — invite-only. -->
           </div>
         </div>
 
@@ -13751,8 +13752,10 @@
               </button>
             </div>
           </div>
-          <div class="ss-signup-link">
-            First deal? <a id="openSignup">Sign up here.</a>
+          <!-- "Sign up here" removed — the Sales Hub is invite-only. New agents
+               receive a Sales Hub invite from Recruiter HQ. -->
+          <div class="ss-signup-link" style="display:none;">
+            <a id="openSignup" style="display:none;"></a>
           </div>
 
           <!-- Discord notify toggle (lower right, default ON) -->
@@ -14939,6 +14942,39 @@
           <p class="ss-panel-sub">Update your account info and compensation level.</p>
         </div>
 
+        <!-- Personal Information (name, photo, phone, NPN) -->
+        <div class="ss-form-card" style="margin-bottom:1.25rem;">
+          <div class="ss-form-title" style="color:#0891b2;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            Personal Information
+          </div>
+          <div style="display:flex;align-items:center;gap:16px;margin-bottom:1.1rem;flex-wrap:wrap;">
+            <div id="profileAvatarWrap" style="width:72px;height:72px;border-radius:50%;background:#e2f0d0;color:#5F7F10;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:24px;flex:none;background-size:cover;background-position:center;">?</div>
+            <label class="lic-add-btn" style="cursor:pointer;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4z"/></svg>
+              Change photo
+              <input type="file" id="profileAvatarInput" accept="image/*" style="display:none;">
+            </label>
+          </div>
+          <div class="ss-field full">
+            <label class="ss-label">Full Name</label>
+            <input class="ss-input" type="text" id="profileName" placeholder="First Last" />
+          </div>
+          <div class="ss-field full">
+            <label class="ss-label">Phone Number</label>
+            <input class="ss-input" type="tel" id="profilePhone" placeholder="(555) 123-4567" />
+          </div>
+          <div class="ss-field full">
+            <label class="ss-label">NPN <span style="color:#94a3b8;font-weight:400;">· National Producer Number</span></label>
+            <input class="ss-input" type="text" inputmode="numeric" id="profileNpn" placeholder="e.g. 18223344" />
+          </div>
+          <button class="ss-submit" type="button" id="profilePersonalSave" style="background:#0891b2;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            Save
+          </button>
+          <div id="profilePersonalMsg" style="margin-top:0.6rem;font-size:0.8rem;text-align:center;display:none;"></div>
+        </div>
+
         <!-- Comp Level -->
         <div class="ss-form-card" style="margin-bottom:1.25rem;">
           <div class="ss-form-title" style="color:#16a34a;">
@@ -15168,7 +15204,7 @@
       <button class="ss-signup-close" id="signupClose">&times;</button>
       <div class="ss-auth-tabs">
         <button class="ss-auth-tab active" data-auth-tab="login">Log In</button>
-        <button class="ss-auth-tab" data-auth-tab="signup">Sign Up</button>
+        <!-- Sign Up tab removed — the Sales Hub is invite-only. -->
       </div>
 
       <!-- LOGIN FORM -->
@@ -15813,10 +15849,9 @@
       signupOverlay.classList.add('open');
       switchAuthTab('login');
     });
-    document.getElementById('promptSignup').addEventListener('click', () => {
-      signupOverlay.classList.add('open');
-      switchAuthTab('signup');
-    });
+    // promptSignup removed (invite-only) — guard in case the element is absent.
+    const _promptSignup = document.getElementById('promptSignup');
+    if (_promptSignup) _promptSignup.addEventListener('click', () => { signupOverlay.classList.add('open'); switchAuthTab('signup'); });
 
     // ─── SIDEBAR NAV ───
     function activatePanel(panelName) {
@@ -18466,6 +18501,33 @@
       switchAuthTab('reset');
     })();
 
+    // ─── MAGIC-LINK / INVITE LOGIN (Recruiter HQ "Send Sales Hub Invite") ───
+    // A recruit clicks the invite email link and lands here with tokens in the
+    // URL fragment (type=magiclink|signup|invite). Establish the session so the
+    // onboarding overlay (which keys off agent_profiles.onboarding_completed)
+    // takes over automatically. Recovery links are handled above; skip those.
+    (function handleMagicLinkHash() {
+      const hash = window.location.hash || '';
+      if (!hash || hash.indexOf('access_token=') === -1) return;
+      const params = new URLSearchParams(hash.replace(/^#/, ''));
+      const type = params.get('type');
+      if (type === 'recovery') return;   // handled by handleRecoveryHash()
+      const at = params.get('access_token');
+      const rt = params.get('refresh_token');
+      if (!at) return;
+      try { history.replaceState(null, '', window.location.pathname + window.location.search); } catch (e) {}
+      (async () => {
+        try {
+          accessToken = at;
+          localStorage.setItem('sb_access_token', at);
+          if (rt) localStorage.setItem('sb_refresh_token', rt);
+          const res = await fetch(SUPABASE_URL + '/auth/v1/user', { headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + at } });
+          if (res.ok) { currentUser = await res.json(); }
+          updateAuthUI();   // reveals the hub; onboarding overlay self-shows if needed
+        } catch (e) { console.error('Magic-link login failed:', e); }
+      })();
+    })();
+
     document.getElementById('resetForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const btn = document.getElementById('resetBtn');
@@ -20004,7 +20066,103 @@
       document.getElementById('profileEmail').value = currentUser.email || '';
       // Load saved licenses + carrier numbers
       loadProfileLicenses();
+      // Load name / phone / NPN / avatar
+      loadProfilePersonal();
     }
+
+    // Shrink an image in the browser before upload: scale to <= maxDim on the
+    // long edge and re-encode as JPEG. A 10MB phone photo becomes ~50-100KB, so
+    // avatars stay tiny + consistent regardless of what the agent picks. Falls
+    // back to the original file if anything goes wrong. Exposed for the onboarding
+    // island to reuse.
+    async function kfDownscaleImage(file, maxDim, quality) {
+      maxDim = maxDim || 512; quality = quality || 0.85;
+      if (!file || !/^image\//.test(file.type || '')) return file;
+      try {
+        const dataUrl = await new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = rej; r.readAsDataURL(file); });
+        const img = await new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = dataUrl; });
+        const scale = Math.min(1, maxDim / Math.max(img.width, img.height));
+        const w = Math.max(1, Math.round(img.width * scale)), h = Math.max(1, Math.round(img.height * scale));
+        const canvas = document.createElement('canvas'); canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        const blob = await new Promise((res) => canvas.toBlob(res, 'image/jpeg', quality));
+        if (!blob) return file;
+        return new File([blob], 'avatar.jpg', { type: 'image/jpeg' });
+      } catch (e) { return file; }
+    }
+    window.kfDownscaleImage = kfDownscaleImage;
+
+    // ─── PROFILE · Personal info (name, phone, NPN, avatar) ───
+    function renderProfileAvatar(url, name) {
+      const wrap = document.getElementById('profileAvatarWrap');
+      if (!wrap) return;
+      if (url) { wrap.style.backgroundImage = 'url(' + url + ')'; wrap.textContent = ''; }
+      else {
+        wrap.style.backgroundImage = '';
+        const parts = (name || '').trim().split(/\s+/);
+        wrap.textContent = (((parts[0] || '')[0] || '') + ((parts[parts.length - 1] || '')[0] || '')).toUpperCase() || '?';
+      }
+    }
+    async function loadProfilePersonal() {
+      if (!currentUser) return;
+      try {
+        await window.ensureValidAccessToken?.();
+        const r = await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?user_id=eq.' + currentUser.id + '&select=agent_name,phone,npn,avatar_url&limit=1', {
+          headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + (accessToken || SUPABASE_KEY) }
+        });
+        const rows = r.ok ? await r.json() : [];
+        const p = (rows && rows[0]) || {};
+        const name = p.agent_name || (currentUser.user_metadata && currentUser.user_metadata.name) || '';
+        const nameEl = document.getElementById('profileName'); if (nameEl) nameEl.value = name;
+        const phoneEl = document.getElementById('profilePhone'); if (phoneEl) phoneEl.value = p.phone || '';
+        const npnEl = document.getElementById('profileNpn'); if (npnEl) npnEl.value = p.npn || '';
+        renderProfileAvatar(p.avatar_url || null, name);
+      } catch (e) { console.error('loadProfilePersonal failed', e); }
+    }
+    (function wireProfilePersonal() {
+      const saveBtn = document.getElementById('profilePersonalSave');
+      const fileInput = document.getElementById('profileAvatarInput');
+      const showMsg = (text, ok) => { const m = document.getElementById('profilePersonalMsg'); if (!m) return; m.textContent = text; m.style.color = ok ? '#16a34a' : '#dc2626'; m.style.display = 'block'; if (ok) setTimeout(() => { m.style.display = 'none'; }, 3000); };
+      if (saveBtn) saveBtn.addEventListener('click', async () => {
+        if (!currentUser) return;
+        const name = (document.getElementById('profileName').value || '').trim();
+        const phone = (document.getElementById('profilePhone').value || '').trim();
+        const npn = (document.getElementById('profileNpn').value || '').trim();
+        try {
+          await window.ensureValidAccessToken?.();
+          const token = accessToken || SUPABASE_KEY;
+          const r = await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?user_id=eq.' + currentUser.id, {
+            method: 'PATCH',
+            headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+            body: JSON.stringify({ agent_name: name || null, phone: phone || null, npn: npn || null })
+          });
+          if (!r.ok) throw new Error('HTTP ' + r.status);
+          // Keep the linked recruit row in sync (best-effort; RLS allows own row).
+          try { await fetch(SUPABASE_URL + '/rest/v1/recruits?linked_user_id=eq.' + currentUser.id, { method: 'PATCH', headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' }, body: JSON.stringify({ full_name: name || null, phone: phone || null }) }); } catch (e) {}
+          renderProfileAvatar(null, name);
+          loadProfilePersonal();
+          showMsg('✓ Saved', true);
+        } catch (e) { showMsg('Error saving: ' + e.message, false); }
+      });
+      if (fileInput) fileInput.addEventListener('change', async () => {
+        let file = fileInput.files && fileInput.files[0];
+        if (!file || !currentUser) return;
+        if (file.size > 15 * 1024 * 1024) { showMsg('That image is too large (over 15 MB). Please choose a smaller photo.', false); fileInput.value = ''; return; }
+        showMsg('Uploading photo…', true);
+        try {
+          file = await kfDownscaleImage(file, 512, 0.85);   // shrink before upload
+          await window.ensureValidAccessToken?.();
+          const token = accessToken || SUPABASE_KEY;
+          const path = currentUser.id + '/avatar_' + Date.now() + '.jpg';
+          const up = await fetch(SUPABASE_URL + '/storage/v1/object/avatars/' + path, { method: 'POST', headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + token, 'Content-Type': 'image/jpeg', 'x-upsert': 'true' }, body: file });
+          if (!up.ok) throw new Error('upload HTTP ' + up.status);
+          const publicUrl = SUPABASE_URL + '/storage/v1/object/public/avatars/' + path;
+          await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?user_id=eq.' + currentUser.id, { method: 'PATCH', headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' }, body: JSON.stringify({ avatar_url: publicUrl }) });
+          renderProfileAvatar(publicUrl, document.getElementById('profileName').value || '');
+          showMsg('✓ Photo updated', true);
+        } catch (e) { showMsg('Photo upload failed. Run the onboarding migration (avatars bucket) first.', false); }
+      });
+    })();
 
     // Save comp level
     document.getElementById('profileCompSave').addEventListener('click', async () => {
@@ -31157,6 +31315,11 @@
     const ADMIN_EMAILS = ['dev@kairos-financial.com'];
     const ADMIN_UID = 'be364ef5-8426-4587-b8b8-9328b02055a7';
     const TZ_OPTS = ['Eastern', 'Central', 'Mountain', 'Pacific'];
+    // Mirrors the onboarding island's STEPS (last index = done). Kept here so the
+    // dashboard/profile can show a new agent's onboarding progress.
+    const ONB_LABELS = ['Account', 'Welcome', 'Profile', 'Photo', 'Goals', 'Commitment', 'License / NPN', 'States', 'E&O', 'Discord', 'CRM', 'Meetings', 'Training', 'Done'];
+    const ONB_LAST = ONB_LABELS.length - 1;   // 13
+    const onbPct = (step) => Math.min(100, Math.round((Number(step) || 0) / ONB_LAST * 100));
 
     // ── low-level helpers ────────────────────────────────────────────────────
     const authHeaders = (extra) => Object.assign(
@@ -31371,7 +31534,7 @@
         try {
           const [rc, rs, ac] = await Promise.all([
             getJSON('recruits?select=*&order=stage_entered_at.asc'),
-            getJSON('agent_profiles?select=user_id,agent_name,is_manager,manager_user_id&order=agent_name.asc'),
+            getJSON('agent_profiles?select=user_id,agent_name,is_manager,manager_user_id,onboarding_completed,onboarding_step,avatar_url&order=agent_name.asc'),
             getJSON('recruit_stage_events?select=stage,status,created_at,recruits(full_name)&order=created_at.desc&limit=12')
           ]);
           setRecruits(Array.isArray(rc) ? rc : []);
@@ -31403,6 +31566,22 @@
       await ensureToken();
       const r = await rest('recruit_notes', { method: 'POST', headers: writeHeaders(), body: JSON.stringify({ recruit_id, body, author_user_id: author }) });
       return r.ok ? (await r.json())[0] : null;
+    }
+    // Send a Sales Hub invite: Supabase emails the recruit a magic link that
+    // creates their account (if new) and logs them in on saleshub.html, where the
+    // onboarding overlay takes over. Uses the anon key + /auth/v1/otp — no admin
+    // key, no server. redirect_to must be allow-listed in Supabase Auth → URL
+    // Configuration (add your prod + localhost saleshub URLs there).
+    async function sendSalesHubInvite(email, name) {
+      const redirect = location.origin + location.pathname;
+      try {
+        const r = await fetch(SUPABASE_URL + '/auth/v1/otp?redirect_to=' + encodeURIComponent(redirect), {
+          method: 'POST',
+          headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: email, create_user: true, data: { name: name || null } })
+        });
+        return r.ok;
+      } catch (e) { console.error('[invite] send failed', e); return false; }
     }
 
     // ══════════════════════════════════════════════════════════════════════════
@@ -31442,6 +31621,13 @@
       const list = recruits || [];
       const filteredByMgr = useMemo(() => (isAdmin && mgrFilter !== 'all') ? list.filter(r => r.recruiter_user_id === mgrFilter) : list, [list, isAdmin, mgrFilter]);
       const active = useMemo(() => filteredByMgr.filter(r => r.status === 'active'), [filteredByMgr]);
+
+      // Invited agents currently mid-onboarding: linked account exists but its
+      // onboarding_completed is explicitly false. (null/true → not shown.)
+      const onboardingList = useMemo(() => filteredByMgr
+        .filter(r => r.status === 'active' && r.linked_user_id && rosterMap[r.linked_user_id] && rosterMap[r.linked_user_id].onboarding_completed === false)
+        .map(r => { const p = rosterMap[r.linked_user_id]; const step = Number(p.onboarding_step) || 0; return { id: r.id, name: r.full_name, avatar: p.avatar_url, step, label: ONB_LABELS[step] || '—', pct: onbPct(step) }; })
+        .sort((a, b) => b.pct - a.pct), [filteredByMgr, rosterMap]);
 
       const sel = useMemo(() => list.find(r => r.id === selId) || null, [list, selId]);
 
@@ -31488,7 +31674,7 @@
           {view !== 'dashboard' &&
             <button className="rhq-btn ghost sm" style={{ marginBottom: 14 }}
               onClick={() => { setSelId(null); setView('dashboard'); }}>← Dashboard</button>}
-          {view === 'dashboard' && <Dashboard active={active} all={filteredByMgr} activity={activity} header={header} onOpen={openProfile} onFilter={goToList} onBoard={goToBoard} />}
+          {view === 'dashboard' && <Dashboard active={active} all={filteredByMgr} activity={activity} onboarding={onboardingList} header={header} onOpen={openProfile} onFilter={goToList} onBoard={goToBoard} />}
           {view === 'board' && <Board active={active} header={header} isAdmin={isAdmin} recruiterName={recruiterName} onOpen={openProfile} onDrop={async (id, stage) => { await patchRecruit(id, { stage }); afterMutate(); }} />}
           {view === 'list' && <RecruitList rows={filteredByMgr} header={header} isAdmin={isAdmin} search={search} setSearch={setSearch} chip={chip} setChip={setChip} recruiterName={recruiterName} onOpen={openProfile} />}
           {view === 'leaders' && <Leaderboard rows={filteredByMgr} recruiterName={recruiterName} />}
@@ -31499,7 +31685,8 @@
     }
 
     // ── DASHBOARD ─────────────────────────────────────────────────────────────
-    function Dashboard({ active, all, activity, header, onOpen, onFilter, onBoard }) {
+    function Dashboard({ active, all, activity, onboarding, header, onOpen, onFilter, onBoard }) {
+      onboarding = onboarding || [];
       const licensed = all.filter(r => r.stage === 4 && r.status === 'active').length;
       const totalAgents = active.length;   // every active (non-abandoned) agent, licensed included
       const stalled = active.filter(r => r.stage !== FULLY_LICENSED && daysSince(r.stage_entered_at) > STALL_DAYS[r.stage]);
@@ -31592,6 +31779,28 @@
                       <span className="rhq-chip rhq-stg2">{dn === 0 ? 'today' : 'in ' + dn + 'd'}</span>
                     </div>;
                   })}
+                </div>
+              </div>
+              {/* Onboarding progress — new invited agents mid-flow. */}
+              <div className="rhq-card pad">
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+                  <div className="rhq-sectitle">Onboarding progress</div>
+                  <span className="rhq-chip rhq-stg5">{onboarding.length} in progress</span>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  {onboarding.length === 0 && <div className="rhq-muted">No agents currently onboarding. Send a recruit a Sales Hub invite from their profile to start one.</div>}
+                  {onboarding.map(o =>
+                    <div key={o.id} className="rhq-rowhover" onClick={() => onOpen(o.id)} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '9px 11px', borderRadius: 12, cursor: 'pointer', border: '1px solid var(--bd)' }}>
+                      <Avatar name={o.name} size={32} />
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontSize: 13.5, fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{o.name}</div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
+                          <div style={{ flex: 1, height: 6, borderRadius: 99, background: 'var(--sf2)', overflow: 'hidden', maxWidth: 130 }}><div style={{ height: '100%', width: o.pct + '%', borderRadius: 99, background: 'var(--ac)' }}></div></div>
+                          <span style={{ fontSize: 11.5, color: 'var(--tx3)' }}>{o.label}</span>
+                        </div>
+                      </div>
+                      <span className="rhq-chip rhq-stg5">{o.pct}%</span>
+                    </div>)}
                 </div>
               </div>
             </div>
@@ -31836,6 +32045,8 @@
       const [confirm, setConfirm] = useState(null);   // 'advance'|'abandon'|'delete'|null
       const [goals, setGoals] = useState({ goal_90: sel.goal_90 || '', goal_year1: sel.goal_year1 || '', goal_long_term: sel.goal_long_term || '', their_why: sel.their_why || '' });
       const [linkId, setLinkId] = useState('');
+      const [inviteBusy, setInviteBusy] = useState(false);
+      const [inviteMsg, setInviteMsg] = useState('');
       // Admin-only Sales Hub account state (approval, training, comp, remove flow)
       const [acct, setAcct] = useState(null);            // linked agent_profiles fields
       const [videoDone, setVideoDone] = useState(null);  // Set of completed video slugs
@@ -31869,7 +32080,7 @@
         (async () => {
           const jobs = [getJSON('policies?select=annual_premium,policy_date,status&user_id=eq.' + sel.linked_user_id + '&limit=5000')];
           if (isAdmin) {
-            jobs.push(getJSON('agent_profiles?select=state_licenses,carrier_numbers,approved,training_complete,comp_level,status&user_id=eq.' + sel.linked_user_id + '&limit=1'));
+            jobs.push(getJSON('agent_profiles?select=state_licenses,carrier_numbers,approved,training_complete,comp_level,status,npn,avatar_url,signed_name,signed_at,licensed,onboarding_completed,onboarding_step&user_id=eq.' + sel.linked_user_id + '&limit=1'));
             jobs.push(getJSON('video_progress?select=video_id&user_id=eq.' + sel.linked_user_id));
           }
           const res = await Promise.all(jobs);
@@ -31885,7 +32096,7 @@
           if (isAdmin) {
             const pr = (res[1] && res[1][0]) || {};
             setLic({ state_licenses: Array.isArray(pr.state_licenses) ? pr.state_licenses : [], carrier_numbers: Array.isArray(pr.carrier_numbers) ? pr.carrier_numbers : [] });
-            setAcct({ approved: pr.approved, training_complete: pr.training_complete, comp_level: pr.comp_level, status: pr.status });
+            setAcct({ approved: pr.approved, training_complete: pr.training_complete, comp_level: pr.comp_level, status: pr.status, npn: pr.npn, avatar_url: pr.avatar_url, signed_name: pr.signed_name, signed_at: pr.signed_at, licensed: pr.licensed, onboarding_completed: pr.onboarding_completed, onboarding_step: pr.onboarding_step });
             setVideoDone(new Set((res[2] || []).map(v => v.video_id)));
           }
         })();
@@ -31926,6 +32137,19 @@
         // Recruiter becomes the linked agent's manager (mirrors signup auto-link).
         if (sel.recruiter_user_id) { await ensureToken(); try { await rest('agent_profiles?user_id=eq.' + linkId, { method: 'PATCH', headers: writeHeaders(), body: JSON.stringify({ manager_user_id: sel.recruiter_user_id }) }); } catch (e) {} }
         await onChanged();
+      };
+      const sendInvite = async () => {
+        if (!sel.email) return;
+        setInviteBusy(true); setInviteMsg('');
+        const ok = await sendSalesHubInvite(sel.email, sel.full_name);
+        setInviteBusy(false);
+        if (ok) {
+          setInviteMsg('Invite sent to ' + sel.email + '. They’ll get an email with a link to create their account and start onboarding.');
+          const row = await addNote(sel.id, 'Sales Hub invite sent to ' + sel.email, me.id);
+          if (row) setNotes(n => [row, ...n]);
+        } else {
+          setInviteMsg('Could not send the invite. Check the email address, and that this site’s URL is allow-listed in Supabase Auth → URL Configuration.');
+        }
       };
 
       // Admin-only account mutations on the linked agent_profiles row.
@@ -32032,6 +32256,24 @@
                   </div>); })}
               </div>}
           </div>
+
+          {/* Sales Hub invite — for recruits with no account yet. Adding a recruit
+              never emails them; this is the deliberate hand-off when they're ready. */}
+          {!sel.linked_user_id && !abandoned &&
+            <div className="rhq-card pad" style={{ marginBottom: 14 }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, flexWrap: 'wrap', marginBottom: 4 }}>
+                <div className="rhq-sectitle">Sales Hub invite</div>
+                {sel.email && <span className="rhq-chip rhq-stg2" style={{ opacity: .9 }}>No account yet</span>}
+              </div>
+              <div className="rhq-muted" style={{ marginBottom: 12 }}>Email {(sel.full_name || '').split(' ')[0] || 'them'} a secure link to create their Sales Hub account and start onboarding. They set their own password during the flow.</div>
+              {!sel.email
+                ? <div className="rhq-muted">Add an email address (Edit) before you can send an invite.</div>
+                : <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
+                    <button className="rhq-btn" disabled={inviteBusy} onClick={sendInvite}>{inviteBusy ? 'Sending…' : 'Send Sales Hub invite'}</button>
+                    <span className="rhq-muted">{sel.email}</span>
+                  </div>}
+              {inviteMsg && <div className="rhq-muted" style={{ marginTop: 10, color: 'var(--tx2)' }}>{inviteMsg}</div>}
+            </div>}
 
           {/* edit panel */}
           {editing &&
@@ -32162,6 +32404,48 @@
             <div style={{ marginTop: 14 }}><div className="rhq-label">Their why</div><textarea className="rhq-ta" rows={2} value={goals.their_why} placeholder="Why are they doing this?" onChange={e => setGoals(s => Object.assign({}, s, { their_why: e.target.value }))}></textarea></div>
           </div>
 
+          {/* Onboarding & personal details — synced from what the agent entered
+              during their onboarding flow (recruits row + linked account). */}
+          {(() => {
+            const arr = (x) => Array.isArray(x) ? x.filter(Boolean) : [];
+            const skills = arr(sel.skills), quits = arr(sel.give_ups);
+            const details = [
+              ['NPN', acct && acct.npn], ['Date of birth', sel.dob ? fmtDate(sel.dob) : null],
+              ['ZIP', sel.zip], ['Resident state', sel.resident_state],
+              ['Vision (3–5 yrs)', sel.vision],
+            ].filter(d => d[1]);
+            const onbActive = acct && acct.onboarding_completed === false;
+            const hasAny = details.length || skills.length || quits.length || onbActive || (acct && acct.signed_at);
+            if (!hasAny) return null;
+            return (
+              <div className="rhq-card pad" style={{ marginBottom: 14 }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14, flexWrap: 'wrap', gap: 8 }}>
+                  <div className="rhq-sectitle">Onboarding &amp; personal details</div>
+                  {acct && (acct.onboarding_completed === true
+                    ? <span className="rhq-chip rhq-stg1">Onboarding complete</span>
+                    : onbActive ? <span className="rhq-chip rhq-stg5">Onboarding · {ONB_LABELS[Number(acct.onboarding_step) || 0] || '—'} · {onbPct(acct.onboarding_step)}%</span> : null)}
+                </div>
+                {onbActive &&
+                  <div style={{ height: 8, background: 'var(--sf2)', borderRadius: 6, overflow: 'hidden', marginBottom: 14 }}>
+                    <div style={{ height: '100%', width: onbPct(acct.onboarding_step) + '%', borderRadius: 6, background: 'var(--ac)' }}></div>
+                  </div>}
+                {details.length > 0 &&
+                  <div className="rhq-grid3" style={{ marginBottom: (skills.length || quits.length) ? 14 : 0 }}>
+                    {details.map(([l, v]) => <div key={l} style={{ background: 'var(--sf2)', borderRadius: 13, padding: '12px 15px' }}><div className="rhq-kpi-l">{l}</div><div style={{ fontSize: 14, fontWeight: 600, marginTop: 4, wordBreak: 'break-word' }}>{v}</div></div>)}
+                  </div>}
+                {(skills.length > 0 || quits.length > 0) &&
+                  <div className="rhq-grid2" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(220px,1fr))', gap: 12 }}>
+                    {skills.length > 0 && <div><div className="rhq-label">Skills / habits to improve</div><ul style={{ margin: '6px 0 0', paddingLeft: 18, fontSize: 13, color: 'var(--tx2)', lineHeight: 1.6 }}>{skills.map((s, i) => <li key={i}>{s}</li>)}</ul></div>}
+                    {quits.length > 0 && <div><div className="rhq-label">Willing to give up</div><ul style={{ margin: '6px 0 0', paddingLeft: 18, fontSize: 13, color: 'var(--tx2)', lineHeight: 1.6 }}>{quits.map((s, i) => <li key={i}>{s}</li>)}</ul></div>}
+                  </div>}
+                {acct && acct.signed_at &&
+                  <div style={{ marginTop: 14, display: 'flex', alignItems: 'center', gap: 10, padding: '11px 14px', borderRadius: 12, background: 'var(--s1b)' }}>
+                    <span style={{ fontSize: 13, color: 'var(--s1f)', fontWeight: 600 }}>✍️ 90-day commitment signed by {acct.signed_name} · {fmtDate(acct.signed_at)}</span>
+                  </div>}
+              </div>
+            );
+          })()}
+
           {/* production (linked only) */}
           <div className="rhq-card pad" style={{ marginBottom: 14 }}>
             <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 14 }}>
@@ -32253,6 +32537,760 @@
       if (!me.id) { rhqRoot.render(<div className="rhq"><div className="rhq-gate">Sign in to view Recruiter HQ.</div></div>); return; }
       rhqRoot.render(<RecruiterHQ />);
     };
+  })();
+  </script>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       AGENT ONBOARDING — invite-only guided first-login flow.
+       Full-screen overlay (self-mounts above every gate) shown to any logged-in
+       account whose agent_profiles.onboarding_completed is not true. Existing
+       agents are grandfathered (migration sets it true) so they never see it.
+       Data model: supabase-agent-onboarding-migration.sql. Personal info + goals
+       write to the agent's own linked `recruits` row (the same row Recruiter HQ
+       shows — one source of truth); account/licensing to `agent_profiles`.
+       Drop real video URLs + links in KFO_CONFIG below.
+       ═══════════════════════════════════════════════════════════════════════ -->
+  <script type="text/babel" data-presets="env,react">
+  (function () {
+    if (!window.React || !window.ReactDOM) return;
+    const { useState, useEffect, useRef, useCallback } = React;
+
+    // TEST MODE. While true, every "you must fill this in" gate is BYPASSED so you
+    // can click straight through the flow to test it. false = ENFORCE all required
+    // fields (required inputs, watched videos, checked boxes). LIVE: enforced.
+    const KFO_TEST_MODE = false;
+
+    // ── CONFIG · edit these as content becomes available ─────────────────────
+    // videos: null = styled placeholder slot with simulated playback. Drop any
+    // <video>-playable URL (R2 mp4, etc.) to make it a real, watch-gated player.
+    const KFO_CONFIG = {
+      videos: {
+        welcome: null,   // Welcome video
+        states:  null,   // How to purchase additional states
+        eo:      null,   // How to purchase E&O insurance
+        crm:     null,   // How to sign up for the CRM
+      },
+      links: {
+        eo:       '#',   // TODO: E&O provider signup URL
+        discord1: '#',   // TODO: Discord server 1 invite
+        discord2: '#',   // TODO: Discord server 2 invite
+        crm:      '#',   // TODO: CRM signup URL
+      },
+      statesToBuy: ['Texas', 'Florida', 'Georgia', 'North Carolina', 'Ohio'],
+      // Each meeting becomes an "Add to Google Calendar" button (pre-filled,
+      // recurring). Fill in: title, day (full weekday), time (24h, local to tz),
+      // durationMin, tz (Eastern/Central/Mountain/Pacific or IANA), freq
+      // (WEEKLY | BIWEEKLY | MONTHLY), and optional location (Zoom link) + details.
+      meetings: [
+        { title: 'Team training call', days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'], time: '17:00', durationMin: 60, tz: 'Eastern', freq: 'WEEKLY', location: '', details: '' },
+        { title: 'Morning team huddle', days: ['Monday', 'Wednesday', 'Friday'], time: '11:00', durationMin: 30, tz: 'Eastern', freq: 'WEEKLY', location: '', details: '' },
+        { title: 'New agent onboarding', days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'], anchorDay: 'Monday', time: '10:00', durationMin: 60, tz: 'Eastern', freq: 'WEEKLY', count: 5, note: 'Your first week only', location: '', details: '' },
+      ],
+      studyTips: [
+        'Study tip slot 1 — content coming soon',
+        'Study tip slot 2 — content coming soon',
+        'Study tip slot 3 — content coming soon',
+      ],
+    };
+
+    const US_STATES = ['Alabama','Alaska','Arizona','Arkansas','California','Colorado','Connecticut','Delaware','District of Columbia','Florida','Georgia','Hawaii','Idaho','Illinois','Indiana','Iowa','Kansas','Kentucky','Louisiana','Maine','Maryland','Massachusetts','Michigan','Minnesota','Mississippi','Missouri','Montana','Nebraska','Nevada','New Hampshire','New Jersey','New Mexico','New York','North Carolina','North Dakota','Ohio','Oklahoma','Oregon','Pennsylvania','Rhode Island','South Carolina','South Dakota','Tennessee','Texas','Utah','Vermont','Virginia','Washington','West Virginia','Wisconsin','Wyoming'];
+
+    // Ordered flow. Account is FIRST so a magic-link (passwordless) invitee sets
+    // a real password immediately. `training` hands off to the R2 training system.
+    const STEPS = [
+      { id: 'account',  label: 'Account' },
+      { id: 'welcome',  label: 'Welcome' },
+      { id: 'profile',  label: 'Profile' },
+      { id: 'photo',    label: 'Photo' },
+      { id: 'goals',    label: 'Goals' },
+      { id: 'commit',   label: 'Commitment' },
+      { id: 'license',  label: 'License / NPN' },
+      { id: 'states',   label: 'States' },
+      { id: 'eo',       label: 'E&O' },
+      { id: 'discord',  label: 'Discord' },
+      { id: 'crm',      label: 'CRM' },
+      { id: 'meeting',  label: 'Meetings' },
+      { id: 'training', label: 'Training' },
+      { id: 'done',     label: 'Done' },
+    ];
+    const idxOf = (id) => Math.max(0, STEPS.findIndex(s => s.id === id));
+
+    // ── Google Calendar "add recurring event" link builder (multi-day) ───────
+    const TZ_MAP = { Eastern: 'America/New_York', Central: 'America/Chicago', Mountain: 'America/Denver', Pacific: 'America/Los_Angeles' };
+    const DOW = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const ABBR = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const BYDAY = ['SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA'];
+    const WEEKDAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+    const pad2 = (n) => String(n).padStart(2, '0');
+    function ianaTz(tz) { return TZ_MAP[tz] || tz || 'America/New_York'; }
+    function meetingDays(m) { return (m.days && m.days.length) ? m.days : (m.day ? [m.day] : ['Monday']); }
+    function fmtTimeLabel(time) { const [h, m] = (time || '').split(':').map(Number); if (isNaN(h)) return time || ''; return (((h + 11) % 12) + 1) + ':' + pad2(m || 0) + ' ' + (h >= 12 ? 'PM' : 'AM'); }
+    function daysLabel(days) {
+      if (days.length === 5 && WEEKDAYS.every(d => days.indexOf(d) >= 0)) return 'Weekdays (Mon–Fri)';
+      if (days.length === 1) return days[0] + 's';
+      return days.map(d => ABBR[DOW.indexOf(d)]).join(' / ');
+    }
+    // Anchor = the soonest upcoming date among the meeting's weekdays.
+    function anchorYMD(days) {
+      const targets = days.map(d => DOW.indexOf(d)).filter(i => i >= 0);
+      if (!targets.length) return '20260101';
+      const now = new Date();
+      let best = 7; targets.forEach(t => { const off = (t - now.getDay() + 7) % 7; if (off < best) best = off; });
+      const d = new Date(now); d.setDate(now.getDate() + (best === 7 ? 0 : best));
+      return d.getFullYear() + pad2(d.getMonth() + 1) + pad2(d.getDate());
+    }
+    function mtgWhen(m) {
+      const days = meetingDays(m);
+      let base = daysLabel(days);
+      if (m.freq === 'BIWEEKLY') base = 'Every other week · ' + base;
+      if (m.freq === 'MONTHLY') base = 'Monthly · ' + base;
+      const extra = m.note ? ' · ' + m.note : '';
+      return base + ' · ' + fmtTimeLabel(m.time) + (m.tz ? ' ' + m.tz : '') + extra;
+    }
+    function gcalUrl(m) {
+      const days = meetingDays(m);
+      // anchorDay forces the series to start on the next occurrence of that day
+      // (e.g. always the upcoming Monday), instead of the soonest of `days`.
+      const ymd = anchorYMD(m.anchorDay ? [m.anchorDay] : days);
+      const [h, mm] = (m.time || '09:00').split(':').map(Number);
+      const dur = m.durationMin || 60;
+      const endTot = (h * 60 + (mm || 0) + dur);
+      const start = ymd + 'T' + pad2(h) + pad2(mm || 0) + '00';
+      const end = ymd + 'T' + pad2(Math.floor(endTot / 60) % 24) + pad2(endTot % 60) + '00';
+      const byday = days.map(d => BYDAY[DOW.indexOf(d)]).filter(Boolean).join(',');
+      let rrule;
+      if (m.freq === 'BIWEEKLY') rrule = 'RRULE:FREQ=WEEKLY;INTERVAL=2;BYDAY=' + byday;
+      else if (m.freq === 'MONTHLY') rrule = 'RRULE:FREQ=MONTHLY;BYDAY=1' + byday.split(',')[0];
+      else rrule = 'RRULE:FREQ=WEEKLY;BYDAY=' + byday;
+      if (m.count) rrule += ';COUNT=' + m.count;   // e.g. first-week-only = 5 sessions
+      const p = new URLSearchParams();
+      p.set('action', 'TEMPLATE'); p.set('text', m.title || 'Meeting');
+      p.set('dates', start + '/' + end); p.set('ctz', ianaTz(m.tz)); p.set('recur', rrule);
+      if (m.details) p.set('details', m.details);
+      if (m.location) p.set('location', m.location);
+      return 'https://calendar.google.com/calendar/render?' + p.toString();
+    }
+
+    // ── REST helpers (raw Supabase, signed-in JWT) ───────────────────────────
+    const tok = () => window.accessToken || SUPABASE_KEY;
+    const rHeaders = (extra) => Object.assign({ 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + tok() }, extra || {});
+    const wHeaders = () => rHeaders({ 'Content-Type': 'application/json', 'Prefer': 'return=minimal' });
+    async function ensureTok() { try { if (window.ensureValidAccessToken) await window.ensureValidAccessToken(); } catch (e) {} }
+    async function getRows(path) { try { const r = await fetch(SUPABASE_URL + '/rest/v1/' + path, { headers: rHeaders() }); return r.ok ? await r.json() : []; } catch (e) { return []; } }
+
+    const uid = () => (window.currentUser && window.currentUser.id) || null;
+    async function patchAgent(body) { await ensureTok(); try { await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?user_id=eq.' + uid(), { method: 'PATCH', headers: wHeaders(), body: JSON.stringify(body) }); } catch (e) { console.error('[onb] patchAgent', e); } }
+    let HAS_RECRUIT = false;
+    async function patchRecruit(body) { if (!HAS_RECRUIT) return; await ensureTok(); try { await fetch(SUPABASE_URL + '/rest/v1/recruits?linked_user_id=eq.' + uid(), { method: 'PATCH', headers: wHeaders(), body: JSON.stringify(body) }); } catch (e) { console.error('[onb] patchRecruit', e); } }
+
+    function splitName(n) { const p = (n || '').trim().split(/\s+/).filter(Boolean); return { first: p[0] || '', last: p.slice(1).join(' ') || '' }; }
+    function initialsOf(f, l) { return ((f || '')[0] || '') + ((l || '')[0] || '') || '?'; }
+    const jarr = (x) => Array.isArray(x) ? x : [];
+
+    function blank() {
+      return {
+        first: '', last: '', phone: '', email: '', password: '', password2: '',
+        city: '', st: '', zip: '', resState: '', dob: '',
+        photo: null,
+        why: '', stg: ['', '', ''], ltg: ['', '', ''], vision: '', skills: ['', '', ''], quits: ['', '', ''],
+        signedName: '', signedAt: null,
+        licensed: null, npn: '',
+        checks: { eo: false, d1: false, d2: false, crm: false, cal: false },
+        videos: {}, stateBuys: {},
+        step: 0, furthest: 0,
+      };
+    }
+
+    // Load agent_profiles + linked recruit row → merged flow state.
+    async function loadState() {
+      const d = blank();
+      const u = window.currentUser || {};
+      d.email = u.email || '';
+      const nm = splitName((u.user_metadata && u.user_metadata.name) || '');
+      d.first = nm.first; d.last = nm.last;
+      const [aps, rcs] = await Promise.all([
+        getRows('agent_profiles?select=agent_name,phone,avatar_url,npn,licensed,signed_name,signed_at,onboarding_step,onboarding_checks,onboarding_videos,state_buys,onboarding_completed&user_id=eq.' + uid() + '&limit=1'),
+        getRows('recruits?select=*&linked_user_id=eq.' + uid() + '&limit=1'),
+      ]);
+      const ap = aps[0] || {};
+      if (ap.agent_name) { const s = splitName(ap.agent_name); d.first = s.first; d.last = s.last; }
+      d.phone = ap.phone || d.phone;
+      d.photo = ap.avatar_url || null;
+      d.npn = ap.npn || '';
+      d.licensed = (ap.licensed === true) ? true : (ap.licensed === false ? false : null);
+      d.signedName = ap.signed_name || '';
+      d.signedAt = ap.signed_at || null;
+      d.checks = Object.assign(d.checks, ap.onboarding_checks || {});
+      d.videos = Object.assign({}, ap.onboarding_videos || {});
+      d.stateBuys = Object.assign({}, ap.state_buys || {});
+      d.step = Number(ap.onboarding_step) || 0;
+      d.furthest = d.step;
+      const rc = rcs[0] || null;
+      HAS_RECRUIT = !!rc;
+      if (rc) {
+        d.city = rc.city || ''; d.st = rc.state || ''; d.zip = rc.zip || '';
+        d.resState = rc.resident_state || ''; d.dob = rc.dob || '';
+        d.phone = d.phone || rc.phone || '';
+        d.why = rc.their_why || '';
+        d.vision = rc.vision || '';
+        const pad3 = (a) => { a = jarr(a).slice(0, 3); while (a.length < 3) a.push(''); return a; };
+        d.stg = pad3(rc.st_goals); d.ltg = pad3(rc.lt_goals);
+        d.skills = pad3(rc.skills); d.quits = pad3(rc.give_ups);
+      }
+      return d;
+    }
+
+    // ══ Video box (placeholder = simulated; real url = watch-gated) ═══════════
+    function VideoBox({ url, slot, big, done, onDone }) {
+      const [pct, setPct] = useState(done ? 100 : 0);
+      const [playing, setPlaying] = useState(false);
+      const vref = useRef(null); const timer = useRef(null);
+      useEffect(() => () => { if (timer.current) clearInterval(timer.current); }, []);
+      const finish = () => { setPct(100); setPlaying(false); if (timer.current) clearInterval(timer.current); onDone && onDone(); };
+      const toggle = () => {
+        if (url) { const v = vref.current; if (!v) return; if (v.paused) { v.play(); setPlaying(true); } else { v.pause(); setPlaying(false); } return; }
+        // placeholder: simulate ~10s of playback
+        if (playing) { setPlaying(false); if (timer.current) clearInterval(timer.current); return; }
+        setPlaying(true);
+        timer.current = setInterval(() => setPct(p => { const n = Math.min(100, p + 2.5); if (n >= 100) finish(); return n; }), 250);
+      };
+      const mm = (s) => { s = Math.max(0, Math.floor(s || 0)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
+      return (
+        <div className="kfo-card" style={{ overflow: 'hidden', padding: 0 }}>
+          <div style={{ position: 'relative', aspectRatio: '16 / 9', background: 'repeating-linear-gradient(45deg,#1C1B1A,#1C1B1A 14px,#242322 14px,#242322 28px)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            {url && <video ref={vref} src={url} playsInline onTimeUpdate={e => { const v = e.target; if (v.duration) setPct(Math.min(100, v.currentTime / v.duration * 100)); }} onEnded={finish} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain', background: '#000' }} />}
+            <button onClick={toggle} style={{ position: 'relative', width: big ? 66 : 58, height: big ? 66 : 58, borderRadius: '50%', border: 'none', background: 'var(--ac)', color: 'var(--acOn)', fontSize: 18, cursor: 'pointer', boxShadow: '0 4px 20px rgba(0,0,0,.35)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{playing ? '❚❚' : '►'}</button>
+            <div style={{ position: 'absolute', left: 14, bottom: 11, fontFamily: 'ui-monospace,Menlo,monospace', fontSize: 11, color: 'rgba(255,255,255,.5)' }}>{url ? '' : 'VIDEO SLOT · ' + slot}</div>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px' }}>
+            <div style={{ flex: 1, height: 6, borderRadius: 99, background: 'var(--sf2)', overflow: 'hidden' }}><div style={{ height: '100%', width: pct + '%', background: 'var(--ac)', borderRadius: 99 }}></div></div>
+            <span style={{ fontSize: 11.5, fontWeight: 700, color: pct >= 100 ? 'var(--acDeep)' : 'var(--tx3)', whiteSpace: 'nowrap' }}>{pct >= 100 ? 'Watched ✓' : Math.round(pct) + '%'}</span>
+          </div>
+        </div>
+      );
+    }
+
+    // ── small UI atoms ───────────────────────────────────────────────────────
+    const Field = ({ label, children }) => (<div><div className="kfo-lbl">{label}</div>{children}</div>);
+    const H = ({ title, sub }) => (<div><h1 className="kfo-h1">{title}</h1>{sub && <div className="kfo-sub">{sub}</div>}</div>);
+    const NextBtn = ({ on, disabled, children }) => (<button className="kfo-btn" disabled={disabled} onClick={on} style={disabled ? { opacity: .5, cursor: 'not-allowed' } : null}>{children || 'Continue →'}</button>);
+
+    // ══════════════════════════════════════════════════════════════════════════
+    //  MAIN
+    // ══════════════════════════════════════════════════════════════════════════
+    function Onboarding({ initial, onFinish }) {
+      const [d, setD] = useState(initial);
+      const [busy, setBusy] = useState(false);
+      const [err, setErr] = useState('');
+      const cur = STEPS[d.step] ? STEPS[d.step].id : 'welcome';
+      const set = (patch) => setD(s => Object.assign({}, s, patch));
+      const setArr = (key, i) => (e) => setD(s => { const a = s[key].slice(); a[i] = e.target.value; return Object.assign({}, s, { [key]: a }); });
+      const fullName = ((d.first || '') + ' ' + (d.last || '')).trim();
+      // req(cond): in TEST MODE always passes; otherwise requires the condition.
+      const req = (cond) => KFO_TEST_MODE ? true : !!cond;
+      const allFilled = (arr) => jarr(arr).every(x => (x || '').trim());
+
+      const persist = useCallback(async (extra) => {
+        await patchAgent(Object.assign({ onboarding_step: d.step, onboarding_checks: d.checks, onboarding_videos: d.videos, state_buys: d.stateBuys }, extra || {}));
+      }, [d.step, d.checks, d.videos, d.stateBuys]);
+
+      const goto = async (stepId, extraSave) => {
+        const ni = idxOf(stepId);
+        const nf = Math.max(d.furthest, ni);
+        setD(s => Object.assign({}, s, { step: ni, furthest: nf }));
+        setErr('');
+        await patchAgent(Object.assign({ onboarding_step: ni, onboarding_checks: d.checks, onboarding_videos: d.videos, state_buys: d.stateBuys }, extraSave || {}));
+        try { document.getElementById('kfoScroll').scrollTop = 0; } catch (e) {}
+      };
+      const next = (extraSave) => { const ni = Math.min(STEPS.length - 1, d.step + 1); goto(STEPS[ni].id, extraSave); };
+
+      const markVideo = (slot) => setD(s => Object.assign({}, s, { videos: Object.assign({}, s.videos, { [slot]: 100 }) }));
+
+      // ── step savers ──
+      const saveAccount = async () => {
+        setErr('');
+        const firstPass = d.furthest <= idxOf('account');
+        if (!KFO_TEST_MODE) {
+          if (!d.first.trim() || !d.last.trim()) return setErr('Please enter your first and last name.');
+          if (!d.phone.trim()) return setErr('Please enter your phone number.');
+          // First time through, a password is REQUIRED — the invite logged them in
+          // passwordless, so without one they couldn't log back in normally later.
+          if (firstPass) {
+            if (!d.password || d.password.length < 6) return setErr('Please create a password (at least 6 characters) so you can log in next time.');
+            if (d.password !== d.password2) return setErr('Passwords don’t match.');
+          }
+        }
+        if (d.password || d.password2) {   // if they typed one, still validate it
+          if (d.password.length < 6) return setErr('Password must be at least 6 characters.');
+          if (d.password !== d.password2) return setErr('Passwords don’t match.');
+        }
+        setBusy(true);
+        const nm = (d.first.trim() + ' ' + d.last.trim()).trim();
+        try {
+          if (d.password) {
+            await ensureTok();
+            const r = await fetch(SUPABASE_URL + '/auth/v1/user', { method: 'PUT', headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + tok(), 'Content-Type': 'application/json' }, body: JSON.stringify({ password: d.password, data: { name: nm } }) });
+            if (!r.ok) { setBusy(false); return setErr('Could not set your password — please try again.'); }
+          }
+          await patchAgent({ agent_name: nm, phone: d.phone.trim() || null });
+          await patchRecruit({ full_name: nm, phone: d.phone.trim() || null });
+        } catch (e) { setBusy(false); return setErr('Something went wrong saving your account.'); }
+        setBusy(false); next();
+      };
+      const saveProfile = async () => {
+        setErr('');
+        if (!KFO_TEST_MODE && (!d.city.trim() || !d.st || !d.zip.trim() || !d.resState || !d.dob)) return setErr('Please fill out every field before continuing.');
+        setBusy(true);
+        await patchRecruit({ city: d.city.trim() || null, state: d.st || null, zip: d.zip.trim() || null, resident_state: d.resState || null, dob: d.dob || null });
+        setBusy(false); next();
+      };
+      const saveGoals = async () => {
+        setErr('');
+        if (!KFO_TEST_MODE && (!d.why.trim() || !d.vision.trim() || !allFilled(d.stg) || !allFilled(d.ltg) || !allFilled(d.skills) || !allFilled(d.quits)))
+          return setErr('Please complete every field — your why, all goals, skills, and things to give up.');
+        setBusy(true);
+        const clean = (a) => jarr(a).map(x => (x || '').trim()).filter(Boolean);
+        const stg = clean(d.stg), ltg = clean(d.ltg);
+        await patchRecruit({
+          their_why: d.why.trim() || null, vision: d.vision.trim() || null,
+          st_goals: stg, lt_goals: ltg, skills: clean(d.skills), give_ups: clean(d.quits),
+          // mirror readable summaries into the legacy single-line goal fields so
+          // existing Recruiter HQ / dashboard views stay coherent.
+          goal_90: stg.join(' · ') || null, goal_year1: ltg.join(' · ') || null, goal_long_term: d.vision.trim() || null,
+        });
+        setBusy(false); next();
+      };
+      const saveCommit = async () => {
+        const at = new Date().toISOString();
+        set({ signedAt: at });
+        await patchAgent({ signed_name: d.signedName.trim(), signed_at: at });
+        next();
+      };
+      const saveNpn = async () => { setBusy(true); await patchAgent({ npn: d.npn.trim() || null, licensed: true }); setBusy(false); next(); };
+      const setLicensed = async (v) => { set({ licensed: v }); await patchAgent({ licensed: v }); };
+
+      const uploadPhoto = async (file) => {
+        if (!file) return;
+        setErr('');
+        if (file.size > 15 * 1024 * 1024) return setErr('That image is too large (over 15 MB). Please choose a smaller photo.');
+        setBusy(true);
+        // instant local preview
+        try { const rd = new FileReader(); rd.onload = () => set({ photo: rd.result }); rd.readAsDataURL(file); } catch (e) {}
+        try {
+          if (window.kfDownscaleImage) file = await window.kfDownscaleImage(file, 512, 0.85);   // shrink before upload
+          await ensureTok();
+          const path = uid() + '/avatar_' + Date.now() + '.jpg';
+          const up = await fetch(SUPABASE_URL + '/storage/v1/object/avatars/' + path, { method: 'POST', headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + tok(), 'Content-Type': 'image/jpeg', 'x-upsert': 'true' }, body: file });
+          if (up.ok) {
+            const publicUrl = SUPABASE_URL + '/storage/v1/object/public/avatars/' + path;
+            set({ photo: publicUrl });
+            await patchAgent({ avatar_url: publicUrl });
+          } else { setErr('Photo upload failed — you can add it later from your profile.'); }
+        } catch (e) { setErr('Photo upload failed — you can add it later from your profile.'); }
+        setBusy(false);
+      };
+
+      const finish = async () => {
+        setBusy(true);
+        await patchAgent({ onboarding_completed: true, approved: true, onboarding_step: idxOf('done') });
+        setBusy(false);
+        onFinish && onFinish();
+      };
+
+      // progress %
+      const pct = Math.round(d.furthest / (STEPS.length - 1) * 100);
+
+      // ── step rail ──
+      const rail = (
+        <div className="kfo-rail">
+          {STEPS.filter(s => s.id !== 'done').map((s) => {
+            const i = idxOf(s.id); const active = i === d.step; const doneStep = i < d.furthest;
+            const reachable = i <= d.furthest;
+            return (
+              <button key={s.id} onClick={() => reachable && goto(s.id)} className={'kfo-pill' + (active ? ' on' : '') + (doneStep ? ' done' : '')} disabled={!reachable} style={!reachable ? { opacity: .5, cursor: 'not-allowed' } : null}>
+                <span className="kfo-pill-mark">{doneStep ? '✓' : (i + 1)}</span>{s.label}
+              </button>
+            );
+          })}
+        </div>
+      );
+
+      // ── per-step body ──
+      let body = null;
+      if (cur === 'welcome') body = (
+        <div className="kfo-screen">
+          <H title="Welcome to Kairos Financial" sub="Start with this short video from the team — then we'll get your account set up." />
+          <VideoBox url={KFO_CONFIG.videos.welcome} slot="welcome" big done={d.videos.welcome >= 100} onDone={() => markVideo('welcome')} />
+          <div className="kfo-actions">
+            <NextBtn on={() => next()} disabled={!req(d.videos.welcome >= 100)}>Continue →</NextBtn>
+            <span className="kfo-hint">{d.videos.welcome >= 100 ? 'Nice — let’s keep going.' : 'Watch the video to continue.'}</span>
+          </div>
+        </div>
+      );
+      else if (cur === 'account') body = (
+        <div className="kfo-screen">
+          <H title="Set up your account" sub="Confirm your details and choose a password so you can log back in any time." />
+          <div className="kfo-card">
+            <div className="kfo-grid2">
+              <Field label="First name"><input className="kfo-inp" value={d.first} onChange={e => set({ first: e.target.value })} placeholder="Jordan" /></Field>
+              <Field label="Last name"><input className="kfo-inp" value={d.last} onChange={e => set({ last: e.target.value })} placeholder="Ellis" /></Field>
+              <Field label="Phone number · required"><input className="kfo-inp" type="tel" value={d.phone} onChange={e => set({ phone: e.target.value })} placeholder="(555) 201-8834" /></Field>
+              <Field label="Email"><input className="kfo-inp" value={d.email} disabled style={{ opacity: .7 }} /></Field>
+              <Field label="Create a password · required"><input className="kfo-inp" type="password" value={d.password} onChange={e => set({ password: e.target.value })} placeholder="Min 6 characters" /></Field>
+              <Field label="Confirm password · required"><input className="kfo-inp" type="password" value={d.password2} onChange={e => set({ password2: e.target.value })} placeholder="Re-enter password" /></Field>
+            </div>
+            <div className="kfo-note">You logged in from your invite link. Setting a password lets you sign in normally next time.</div>
+          </div>
+          {err && <div className="kfo-err">{err}</div>}
+          <div className="kfo-actions"><NextBtn on={saveAccount} disabled={busy}>{busy ? 'Saving…' : 'Save & continue →'}</NextBtn></div>
+        </div>
+      );
+      else if (cur === 'profile') body = (
+        <div className="kfo-screen">
+          <H title="Complete your profile" sub="A few details we need for licensing and contracting." />
+          <div className="kfo-card">
+            <div className="kfo-grid2">
+              <Field label="City"><input className="kfo-inp" value={d.city} onChange={e => set({ city: e.target.value })} placeholder="Austin" /></Field>
+              <Field label="State"><select className="kfo-inp" value={d.st} onChange={e => set({ st: e.target.value })}><option value="">Select…</option>{US_STATES.map(u => <option key={u} value={u}>{u}</option>)}</select></Field>
+              <Field label="ZIP"><input className="kfo-inp" value={d.zip} onChange={e => set({ zip: e.target.value })} placeholder="78701" /></Field>
+              <Field label="Resident state (licensing)"><select className="kfo-inp" value={d.resState} onChange={e => set({ resState: e.target.value })}><option value="">Select…</option>{US_STATES.map(u => <option key={u} value={u}>{u}</option>)}</select></Field>
+              <Field label="Date of birth"><input className="kfo-inp" type="date" value={d.dob} onChange={e => set({ dob: e.target.value })} /></Field>
+            </div>
+          </div>
+          <div className="kfo-actions"><NextBtn on={saveProfile} disabled={busy}>{busy ? 'Saving…' : 'Save & continue →'}</NextBtn></div>
+        </div>
+      );
+      else if (cur === 'photo') body = (
+        <div className="kfo-screen">
+          <H title="Add a profile photo" sub="This becomes your profile picture across our tools. A clear, friendly headshot works best." />
+          <div className="kfo-card" style={{ display: 'flex', alignItems: 'center', gap: 22, flexWrap: 'wrap' }}>
+            {d.photo
+              ? <div role="img" aria-label="Profile preview" style={{ width: 112, height: 112, borderRadius: '50%', backgroundImage: 'url(' + d.photo + ')', backgroundSize: 'cover', backgroundPosition: 'center', flex: 'none' }}></div>
+              : <div style={{ width: 112, height: 112, borderRadius: '50%', background: 'var(--acSoft)', color: 'var(--acDeep)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: 32, flex: 'none' }}>{initialsOf(d.first, d.last)}</div>}
+            <div style={{ flex: 1, minWidth: 220 }}>
+              <label className="kfo-btn ghost" style={{ cursor: 'pointer', display: 'inline-flex' }}>{d.photo ? 'Change photo' : 'Upload a photo'}<input type="file" accept="image/*" onChange={e => uploadPhoto(e.target.files && e.target.files[0])} style={{ display: 'none' }} /></label>
+              <div className="kfo-hint" style={{ marginTop: 10 }}>{busy ? 'Uploading…' : 'JPG or PNG. Stored to your profile.'}</div>
+              {err && <div className="kfo-err" style={{ marginTop: 8 }}>{err}</div>}
+            </div>
+          </div>
+          <div className="kfo-actions">
+            <NextBtn on={() => { if (!req(d.photo)) return setErr('Please upload a profile photo to continue.'); next(); }} disabled={busy}>Continue →</NextBtn>
+            <span className="kfo-hint">{d.photo ? 'Looking good.' : (KFO_TEST_MODE ? 'You can also skip and add it later.' : 'A profile photo is required.')}</span>
+            {KFO_TEST_MODE && !d.photo && <button className="kfo-link" onClick={() => next()}>Skip for now</button>}
+          </div>
+        </div>
+      );
+      else if (cur === 'goals') {
+        const meter = (t, min) => { const w = (t || '').trim().split(/\s+/).filter(Boolean).length; return w >= min ? w + ' words ✓' : w + ' / ' + min + ' words'; };
+        // Plain function (NOT a component) so typing doesn't remount + drop focus.
+        const goalList = (keyName, phs) => (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 14 }}>
+            {d[keyName].map((v, i) => <input key={i} className="kfo-inp" value={v} onChange={setArr(keyName, i)} placeholder={phs[i] || ('Item ' + (i + 1))} />)}
+          </div>
+        );
+        body = (
+          <div className="kfo-screen">
+            <H title="Set your goals" sub="Take your time here. What you write becomes the foundation of your first 90 days — and your mentor will go over it with you." />
+            <div className="kfo-card">
+              <div className="kfo-cardtitle">What is your why?</div>
+              <div className="kfo-carddesc">Not just money. What will this change for your life, your family, and your future? Write at least a couple of sentences.</div>
+              <textarea className="kfo-inp" rows={5} value={d.why} onChange={e => set({ why: e.target.value })} placeholder="I'm doing this because…" style={{ resize: 'vertical' }} />
+              <div className="kfo-meter">{meter(d.why, 20)}</div>
+            </div>
+            <div className="kfo-card"><div className="kfo-cardtitle">Three short-term goals · first 90 days</div>{goalList('stg', ['Short-term goal 1', 'Short-term goal 2', 'Short-term goal 3'])}</div>
+            <div className="kfo-card"><div className="kfo-cardtitle">Three long-term goals · first year</div>{goalList('ltg', ['Long-term goal 1', 'Long-term goal 2', 'Long-term goal 3'])}</div>
+            <div className="kfo-card">
+              <div className="kfo-cardtitle">Where do you see yourself in 3–5 years?</div>
+              <textarea className="kfo-inp" rows={4} value={d.vision} onChange={e => set({ vision: e.target.value })} placeholder="In three to five years…" style={{ resize: 'vertical', marginTop: 12 }} />
+              <div className="kfo-meter">{meter(d.vision, 15)}</div>
+            </div>
+            <div className="kfo-card"><div className="kfo-cardtitle">Three skills or habits you want to improve</div><div className="kfo-carddesc">They don't have to be sales skills — anything that makes you a better version of yourself.</div>{goalList('skills', ['Skill / habit 1', 'Skill / habit 2', 'Skill / habit 3'])}</div>
+            <div className="kfo-card"><div className="kfo-cardtitle">Three things you're willing to give up</div><div className="kfo-carddesc">Bad habits, vices, distractions — what will you trade for your goals?</div>{goalList('quits', ['Willing to give up 1', 'Willing to give up 2', 'Willing to give up 3'])}</div>
+            <div className="kfo-actions"><NextBtn on={saveGoals} disabled={busy}>{busy ? 'Saving…' : 'Save my goals →'}</NextBtn></div>
+          </div>
+        );
+      }
+      else if (cur === 'commit') {
+        const signed = !!d.signedAt;
+        const canSign = d.signedName.trim().length >= 3;
+        body = (
+          <div className="kfo-screen" style={{ maxWidth: 620, margin: '0 auto' }}>
+            <div className="kfo-card" style={{ padding: '30px' }}>
+              <div style={{ width: 44, height: 44, borderRadius: '50%', background: 'var(--acSoft)', color: 'var(--acDeep)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: 19, marginBottom: 16 }}>90</div>
+              <h1 className="kfo-h1" style={{ fontSize: 23 }}>Your commitment to yourself</h1>
+              <div className="kfo-para">This is a difficult career — and the first 90 days are the most difficult. We're here to support you at every step, but the one person who can't quit on you is <em>you</em>.</div>
+              <div className="kfo-para">By typing your name below, you're giving your word to yourself: <strong>no matter how tough it gets over the next 90 days, you will not give up.</strong> Everything you just wrote down is on the other side.</div>
+              <div style={{ marginTop: 22 }}>
+                <div className="kfo-lbl">Type your full name to sign</div>
+                <input className="kfo-inp" value={d.signedName} onChange={e => set({ signedName: e.target.value })} placeholder={fullName || 'Your full name'} style={{ fontSize: 16, fontWeight: 600 }} disabled={signed} />
+              </div>
+              {!signed
+                ? <button className="kfo-btn" style={Object.assign({ marginTop: 18 }, canSign ? null : { opacity: .5, cursor: 'not-allowed' })} disabled={!canSign} onClick={saveCommit}>I give my word — commit to 90 days</button>
+                : <>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 20, padding: '14px 16px', borderRadius: 12, background: 'var(--acSoft)' }}>
+                    <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'var(--ac)', color: 'var(--acOn)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, flex: 'none' }}>✓</div>
+                    <div style={{ fontSize: 13, color: 'var(--acDeep)', fontWeight: 600 }}>Signed by {d.signedName} · {new Date(d.signedAt).toLocaleDateString()}</div>
+                  </div>
+                  <button className="kfo-btn" style={{ marginTop: 16 }} onClick={() => next()}>Continue →</button>
+                </>}
+            </div>
+          </div>
+        );
+      }
+      else if (cur === 'license') {
+        body = (
+          <div className="kfo-screen">
+            <H title="Your insurance license" sub="We need your National Producer Number (NPN) to continue." />
+            {d.licensed === null && (
+              <div className="kfo-card">
+                <div className="kfo-cardtitle" style={{ marginBottom: 16 }}>Do you already have your insurance license?</div>
+                <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+                  <button className="kfo-choice" onClick={() => setLicensed(true)}>Yes — I have my NPN<span>Enter it and keep going</span></button>
+                  <button className="kfo-choice" onClick={() => setLicensed(false)}>Not yet<span>I still need to pass my exam</span></button>
+                </div>
+              </div>
+            )}
+            {d.licensed === true && (
+              <div className="kfo-card" style={{ maxWidth: 460 }}>
+                <div className="kfo-lbl">National Producer Number</div>
+                <input className="kfo-inp" value={d.npn} inputMode="numeric" onChange={e => set({ npn: e.target.value.replace(/[^0-9]/g, '') })} placeholder="e.g. 18223344" style={{ fontSize: 15, fontWeight: 600 }} />
+                <div className="kfo-hint" style={{ marginTop: 8 }}>Numbers only. Find it at nipr.com if you're not sure.</div>
+                <div className="kfo-actions">
+                  <NextBtn on={saveNpn} disabled={busy || !req(d.npn.trim())}>{busy ? 'Saving…' : 'Save NPN & continue →'}</NextBtn>
+                  <button className="kfo-btn ghost" onClick={() => setLicensed(null)}>Back</button>
+                </div>
+              </div>
+            )}
+            {d.licensed === false && (
+              <div className="kfo-card">
+                <span className="kfo-badge">Paused until you're licensed</span>
+                <div className="kfo-para">No problem — pass your state exam first, then come back here with your National Producer Number. Your progress is saved, and everything you've written stays right where you left it.</div>
+                <div className="kfo-cardtitle" style={{ marginTop: 20 }}>Tips for studying for the exam</div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 10 }}>
+                  {KFO_CONFIG.studyTips.map((t, i) => <div key={i} style={{ padding: '10px 13px', border: '1px dashed var(--bd)', borderRadius: 11, fontSize: 13, color: 'var(--tx3)', fontFamily: 'ui-monospace,Menlo,monospace' }}>{t}</div>)}
+                </div>
+                <button className="kfo-btn" style={{ marginTop: 20 }} onClick={() => setLicensed(true)}>I have my NPN now →</button>
+              </div>
+            )}
+          </div>
+        );
+      }
+      else if (cur === 'states') {
+        const toggle = (name) => setD(s => Object.assign({}, s, { stateBuys: Object.assign({}, s.stateBuys, { [name]: !s.stateBuys[name] }) }));
+        body = (
+          <div className="kfo-screen">
+            <H title="Purchase additional states" sub="Watch how to add non-resident state licenses, then check each one off as you purchase it." />
+            <VideoBox url={KFO_CONFIG.videos.states} slot="states" done={d.videos.states >= 100} onDone={() => markVideo('states')} />
+            <div className="kfo-card">
+              <div className="kfo-cardtitle">States to purchase</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 12 }}>
+                {KFO_CONFIG.statesToBuy.map((name) => { const on = !!d.stateBuys[name]; return (
+                  <button key={name} onClick={() => toggle(name)} className="kfo-checkrow">
+                    <span className={'kfo-box' + (on ? ' on' : '')}>{on ? '✓' : ''}</span>
+                    <span style={{ fontWeight: 600 }}>{name}</span>
+                    <span style={{ marginLeft: 'auto', fontSize: 12, color: 'var(--tx3)' }}>{on ? 'Purchased' : 'Pending'}</span>
+                  </button>); })}
+              </div>
+            </div>
+            <div className="kfo-actions"><NextBtn on={() => next()} disabled={!req(d.videos.states >= 100)}>Continue →</NextBtn><span className="kfo-hint">{KFO_TEST_MODE ? 'Check off states as you buy them — you can return to this later.' : 'Watch the walkthrough to continue.'}</span></div>
+          </div>
+        );
+      }
+      else if (cur === 'eo') body = (
+        <div className="kfo-screen">
+          <H title="Errors & Omissions insurance" sub="Every agent needs an active E&O policy. Watch the walkthrough, then purchase yours." />
+          <VideoBox url={KFO_CONFIG.videos.eo} slot="eo" done={d.videos.eo >= 100} onDone={() => markVideo('eo')} />
+          <div className="kfo-card" style={{ display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap' }}>
+            <a className="kfo-btn ghost" href={KFO_CONFIG.links.eo} target="_blank" rel="noopener">Open E&O signup ↗</a>
+            <label className="kfo-check"><input type="checkbox" checked={!!d.checks.eo} onChange={e => setD(s => Object.assign({}, s, { checks: Object.assign({}, s.checks, { eo: e.target.checked }) }))} /> I've purchased my E&O policy</label>
+          </div>
+          <div className="kfo-actions"><NextBtn on={() => next()} disabled={!req(d.videos.eo >= 100 && d.checks.eo)}>Continue →</NextBtn>{!KFO_TEST_MODE && <span className="kfo-hint">Watch the walkthrough and confirm your E&O policy.</span>}</div>
+        </div>
+      );
+      else if (cur === 'discord') body = (
+        <div className="kfo-screen">
+          <H title="Join our Discord" sub="This is where the team lives — announcements, training, and daily wins. Join both servers." />
+          <div className="kfo-card">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}><a className="kfo-btn ghost" href={KFO_CONFIG.links.discord1} target="_blank" rel="noopener">Join Discord server 1 ↗</a><label className="kfo-check"><input type="checkbox" checked={!!d.checks.d1} onChange={e => setD(s => Object.assign({}, s, { checks: Object.assign({}, s.checks, { d1: e.target.checked }) }))} /> Joined</label></div>
+              <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}><a className="kfo-btn ghost" href={KFO_CONFIG.links.discord2} target="_blank" rel="noopener">Join Discord server 2 ↗</a><label className="kfo-check"><input type="checkbox" checked={!!d.checks.d2} onChange={e => setD(s => Object.assign({}, s, { checks: Object.assign({}, s.checks, { d2: e.target.checked }) }))} /> Joined</label></div>
+            </div>
+          </div>
+          <div className="kfo-actions"><NextBtn on={() => next()} disabled={!req(d.checks.d1 && d.checks.d2)}>Continue →</NextBtn>{!KFO_TEST_MODE && <span className="kfo-hint">Join both servers and check them off.</span>}</div>
+        </div>
+      );
+      else if (cur === 'crm') body = (
+        <div className="kfo-screen">
+          <H title="Sign up for the CRM" sub="Your CRM keeps every lead and client in one place. Watch the walkthrough, then create your account." />
+          <VideoBox url={KFO_CONFIG.videos.crm} slot="crm" done={d.videos.crm >= 100} onDone={() => markVideo('crm')} />
+          <div className="kfo-card" style={{ display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap' }}>
+            <a className="kfo-btn ghost" href={KFO_CONFIG.links.crm} target="_blank" rel="noopener">Open CRM signup ↗</a>
+            <label className="kfo-check"><input type="checkbox" checked={!!d.checks.crm} onChange={e => setD(s => Object.assign({}, s, { checks: Object.assign({}, s.checks, { crm: e.target.checked }) }))} /> I've created my CRM account</label>
+          </div>
+          <div className="kfo-actions"><NextBtn on={() => next()} disabled={!req(d.videos.crm >= 100 && d.checks.crm)}>Continue →</NextBtn>{!KFO_TEST_MODE && <span className="kfo-hint">Watch the walkthrough and confirm your CRM account.</span>}</div>
+        </div>
+      );
+      else if (cur === 'meeting') body = (
+        <div className="kfo-screen">
+          <H title="Your meeting schedule" sub="Put these on your calendar — showing up is the fastest way to ramp." />
+          <div className="kfo-card">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {KFO_CONFIG.meetings.map((m, i) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '13px 15px', border: '1px solid var(--bd)', borderRadius: 12, flexWrap: 'wrap' }}>
+                  <div style={{ width: 34, height: 34, borderRadius: 9, background: 'var(--acSoft)', color: 'var(--acDeep)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, flex: 'none' }}>📅</div>
+                  <div style={{ flex: 1, minWidth: 150 }}><div style={{ fontWeight: 600, fontSize: 14 }}>{m.title}</div><div className="kfo-hint">{mtgWhen(m)}</div></div>
+                  <a className="kfo-btn ghost" href={gcalUrl(m)} target="_blank" rel="noopener">Add to Google Calendar ↗</a>
+                </div>))}
+            </div>
+          </div>
+          <label className="kfo-check" style={{ marginTop: 4 }}><input type="checkbox" checked={!!d.checks.cal} onChange={e => setD(s => Object.assign({}, s, { checks: Object.assign({}, s.checks, { cal: e.target.checked }) }))} /> I've added these to my calendar</label>
+          <div className="kfo-actions"><NextBtn on={() => next()} disabled={!req(d.checks.cal)}>Continue →</NextBtn>{!KFO_TEST_MODE && <span className="kfo-hint">Confirm you've added these to your calendar.</span>}</div>
+        </div>
+      );
+      else if (cur === 'training') body = (
+        <div className="kfo-screen">
+          <H title="Your training videos" sub="Last step of setup. Your required training videos are ready — you'll finish them inside the Sales Hub." />
+          <div className="kfo-card">
+            <div className="kfo-para" style={{ marginTop: 0 }}>When you continue, your account activates and you'll be taken straight to your training. You'll need to watch the required videos before the rest of the Sales Hub unlocks — your progress there saves automatically, just like it did here.</div>
+          </div>
+          <div className="kfo-actions"><NextBtn on={() => next()}>Finish setup →</NextBtn></div>
+        </div>
+      );
+      else if (cur === 'done') body = (
+        <div className="kfo-screen" style={{ maxWidth: 560, margin: '0 auto', textAlign: 'center' }}>
+          <div className="kfo-card" style={{ padding: '34px 30px' }}>
+            <div style={{ width: 60, height: 60, borderRadius: '50%', background: 'var(--ac)', color: 'var(--acOn)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: 28, margin: '0 auto 18px' }}>✓</div>
+            <h1 className="kfo-h1" style={{ fontSize: 26 }}>You're all set, {d.first || 'agent'}!</h1>
+            <div className="kfo-sub" style={{ marginBottom: 8 }}>Your account is active. Everything you entered is saved to your profile. Let's get to work.</div>
+            <button className="kfo-btn" style={{ marginTop: 14 }} disabled={busy} onClick={finish}>{busy ? 'Finishing…' : 'Enter the Sales Hub →'}</button>
+          </div>
+        </div>
+      );
+
+      return (
+        <div className="kfo">
+          <div className="kfo-topbar">
+            <div className="kfo-brand"><div className="kfo-logo">K</div><div><div className="kfo-brand-t">Kairos Financial</div><div className="kfo-brand-s">Agent Onboarding</div></div></div>
+            <div className="kfo-progwrap"><div className="kfo-progtrack"><div className="kfo-progfill" style={{ width: pct + '%' }}></div></div><span className="kfo-progpct">{pct}%</span></div>
+          </div>
+          {cur !== 'done' && rail}
+          <div id="kfoScroll" className="kfo-scroll">{body}</div>
+        </div>
+      );
+    }
+
+    // ── scoped styles (design palette, tracks the app theme) ─────────────────
+    const CSS = `
+    #kfoRoot .kfo {
+      --bg:#F6F6F4;--sf:#FFFFFF;--sf2:#F0F0ED;--bd:#E7E7E2;--tx:#2E2B2B;--tx2:#454040;--tx3:#9C9694;
+      --ac:#A1CB35;--acOn:#232B07;--acDeep:#5F7F10;--ac2:#65DCD5;--acSoft:#EFF6D9;
+      --sh:0 1px 2px rgba(40,38,30,.05),0 4px 16px rgba(40,38,30,.06);
+      --s2b:#FFF3CD;--s2f:#93700A;--bd2:#E7E7E2;
+      position:fixed;inset:0;z-index:100000;background:var(--bg);color:var(--tx);
+      font-family:'Instrument Sans','Inter',system-ui,sans-serif;display:flex;flex-direction:column;overflow:hidden;
+    }
+    html[data-kf-theme="dark"] #kfoRoot .kfo {
+      --bg:#121110;--sf:#1B1A18;--sf2:#242220;--bd:#2F2D2A;--tx:#F4F3F1;--tx2:#B3AFAB;--tx3:#736F6B;
+      --acOn:#1A2005;--acDeep:#B9DD5E;--acSoft:#2A3313;--sh:0 1px 2px rgba(0,0,0,.4),0 6px 20px rgba(0,0,0,.35);--s2b:#3B3110;--s2f:#FED24F;
+    }
+    #kfoRoot .kfo *{box-sizing:border-box}
+    #kfoRoot .kfo-topbar{background:var(--sf);border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:12px;padding:12px 20px;flex-wrap:wrap}
+    #kfoRoot .kfo-brand{display:flex;align-items:center;gap:11px}
+    #kfoRoot .kfo-logo{width:36px;height:36px;border-radius:11px;background:linear-gradient(135deg,#A1CB35,#65DCD5);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:17px}
+    #kfoRoot .kfo-brand-t{font-weight:700;font-size:15px;letter-spacing:-.01em;line-height:1.2}
+    #kfoRoot .kfo-brand-s{font-size:11.5px;color:var(--tx3);font-weight:500}
+    #kfoRoot .kfo-progwrap{margin-left:auto;display:flex;align-items:center;gap:9px;padding:7px 13px;border-radius:999px;background:var(--sf2)}
+    #kfoRoot .kfo-progtrack{width:120px;max-width:34vw;height:6px;border-radius:99px;background:var(--bd);overflow:hidden}
+    #kfoRoot .kfo-progfill{height:100%;background:linear-gradient(90deg,#A1CB35,#65DCD5);border-radius:99px;transition:width .3s}
+    #kfoRoot .kfo-progpct{font-size:12px;font-weight:700;color:var(--tx2)}
+    #kfoRoot .kfo-rail{background:var(--bg);border-bottom:1px solid var(--bd);display:flex;gap:8px;overflow-x:auto;padding:13px 20px}
+    #kfoRoot .kfo-pill{display:inline-flex;align-items:center;gap:8px;white-space:nowrap;border:1px solid var(--bd);background:var(--sf);color:var(--tx2);font-size:12.5px;font-weight:600;padding:7px 13px;border-radius:999px;cursor:pointer}
+    #kfoRoot .kfo-pill.on{border-color:var(--ac);color:var(--tx);box-shadow:var(--sh)}
+    #kfoRoot .kfo-pill.done{color:var(--acDeep)}
+    #kfoRoot .kfo-pill-mark{width:18px;height:18px;border-radius:50%;background:var(--sf2);display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
+    #kfoRoot .kfo-pill.done .kfo-pill-mark{background:var(--ac);color:var(--acOn)}
+    #kfoRoot .kfo-scroll{flex:1;overflow-y:auto;padding:28px 20px 90px}
+    #kfoRoot .kfo-screen{max-width:780px;margin:0 auto;display:flex;flex-direction:column;gap:18px;animation:kfoUp .3s ease}
+    @keyframes kfoUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+    #kfoRoot .kfo-h1{margin:0;font-size:24px;font-weight:700;letter-spacing:-.02em}
+    #kfoRoot .kfo-sub{color:var(--tx2);font-size:13.5px;margin-top:4px}
+    #kfoRoot .kfo-card{background:var(--sf);border:1px solid var(--bd);border-radius:16px;padding:22px 24px;box-shadow:var(--sh)}
+    #kfoRoot .kfo-cardtitle{font-size:15px;font-weight:700}
+    #kfoRoot .kfo-carddesc{font-size:13px;color:var(--tx2);margin:5px 0 0;line-height:1.55}
+    #kfoRoot .kfo-grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
+    #kfoRoot .kfo-lbl{font-size:11px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+    #kfoRoot .kfo-inp{width:100%;padding:11px 13px;border-radius:11px;border:1px solid var(--bd);background:var(--bg);color:var(--tx);font-size:13.5px;font-family:inherit}
+    #kfoRoot textarea.kfo-inp{line-height:1.55}
+    #kfoRoot .kfo-inp:focus{outline:2px solid rgba(161,203,53,.55);outline-offset:0}
+    #kfoRoot .kfo-note{font-family:ui-monospace,Menlo,monospace;font-size:11px;color:var(--tx3);background:var(--sf2);border:1px dashed var(--bd);border-radius:8px;padding:8px 10px;margin-top:14px}
+    #kfoRoot .kfo-meter{font-size:12px;color:var(--tx3);margin-top:7px;font-family:ui-monospace,Menlo,monospace}
+    #kfoRoot .kfo-actions{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+    #kfoRoot .kfo-btn{padding:12px 22px;border-radius:999px;border:none;background:var(--ac);color:var(--acOn);font-size:14px;font-weight:700;cursor:pointer;box-shadow:var(--sh)}
+    #kfoRoot .kfo-btn:hover{filter:brightness(1.08)}
+    #kfoRoot .kfo-btn.ghost{background:transparent;color:var(--tx2);border:1px solid var(--bd);box-shadow:none;font-weight:600;text-decoration:none;display:inline-flex;align-items:center}
+    #kfoRoot .kfo-btn.ghost:hover{background:var(--sf2);filter:none}
+    #kfoRoot .kfo-link{background:none;border:none;color:var(--acDeep);font-size:12.5px;font-weight:600;cursor:pointer;text-decoration:underline}
+    #kfoRoot .kfo-hint{font-size:12.5px;color:var(--tx3)}
+    #kfoRoot .kfo-err{font-size:12.5px;color:var(--df,#D90000);font-weight:600}
+    #kfoRoot .kfo-para{font-size:14px;color:var(--tx2);line-height:1.65;margin-top:12px}
+    #kfoRoot .kfo-choice{flex:1;min-width:200px;padding:18px;border-radius:14px;border:1px solid var(--bd);background:var(--bg);color:var(--tx);font-size:14px;font-weight:600;cursor:pointer;text-align:left}
+    #kfoRoot .kfo-choice:hover{border-color:var(--ac)}
+    #kfoRoot .kfo-choice span{display:block;font-size:12.5px;color:var(--tx3);font-weight:500;margin-top:4px}
+    #kfoRoot .kfo-badge{display:inline-flex;padding:4px 12px;border-radius:999px;background:var(--s2b);color:var(--s2f);font-size:12px;font-weight:700}
+    #kfoRoot .kfo-checkrow{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;border:1px solid var(--bd);background:var(--bg);cursor:pointer;text-align:left;width:100%;color:var(--tx);font-size:13.5px}
+    #kfoRoot .kfo-checkrow:hover{border-color:var(--ac)}
+    #kfoRoot .kfo-box{width:22px;height:22px;border-radius:7px;border:1.5px solid var(--bd);display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--acOn);flex:none}
+    #kfoRoot .kfo-box.on{background:var(--ac);border-color:var(--ac)}
+    #kfoRoot .kfo-check{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--tx2);cursor:pointer}
+    `;
+    function ensureCSS() { if (document.getElementById('kfoCSS')) return; const st = document.createElement('style'); st.id = 'kfoCSS'; st.textContent = CSS; document.head.appendChild(st); }
+
+    // ── mount / gate controller ──────────────────────────────────────────────
+    let root = null, mountEl = null, showing = false, checking = false;
+    function teardown() {
+      showing = false;
+      if (root) { try { root.unmount(); } catch (e) {} root = null; }
+      if (mountEl && mountEl.parentNode) mountEl.parentNode.removeChild(mountEl);
+      mountEl = null;
+      document.body.style.overflow = '';
+    }
+    function show(initial) {
+      ensureCSS();
+      if (!mountEl) { mountEl = document.createElement('div'); mountEl.id = 'kfoRoot'; document.body.appendChild(mountEl); }
+      if (!root) root = ReactDOM.createRoot(mountEl);
+      showing = true;
+      document.body.style.overflow = 'hidden';
+      root.render(<Onboarding initial={initial} onFinish={() => { teardown(); if (typeof window.updateAuthUI === 'function') window.updateAuthUI(); }} />);
+    }
+
+    // Decide whether the signed-in user needs onboarding, and show/hide.
+    async function refresh() {
+      const u = window.currentUser;
+      if (!u || !u.id) { if (showing) teardown(); return; }
+      if (u.id === 'be364ef5-8426-4587-b8b8-9328b02055a7') { if (showing) teardown(); return; } // admin never onboards
+      if (showing || checking) return;
+      checking = true;
+      try {
+        const rows = await getRows('agent_profiles?select=onboarding_completed&user_id=eq.' + u.id + '&limit=1');
+        const row = rows && rows[0];
+        // Fail SAFE: only show onboarding when the DB explicitly says it's not done.
+        // (Missing row / offline → don't trap an existing user behind the flow.)
+        if (row && row.onboarding_completed === false) {
+          const initial = await loadState();
+          show(initial);
+        }
+      } catch (e) { /* silent */ }
+      checking = false;
+    }
+    window.KFOnboarding = { refresh };
+
+    // Hook auth changes (login / session restore) like the training system does.
+    if (typeof window.updateAuthUI === 'function') {
+      const _orig = window.updateAuthUI;
+      window.updateAuthUI = function () { _orig.apply(this, arguments); try { refresh(); } catch (e) {} };
+    }
+    // First paint (session may already be restored by the time we run).
+    setTimeout(refresh, 400);
   })();
   </script>
 </body>
