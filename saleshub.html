@@ -32018,7 +32018,7 @@
     const TZ_OPTS = ['Eastern', 'Central', 'Mountain', 'Pacific'];
     // Mirrors the onboarding island's STEPS (last index = done). Kept here so the
     // dashboard/profile can show a new agent's onboarding progress.
-    const ONB_LABELS = ['Account', 'Welcome', 'Profile', 'Photo', 'Goals', 'Commitment', 'License / NPN', 'States', 'E&O', 'Discord', 'CRM', 'Headset', 'Meetings', 'Done'];
+    const ONB_LABELS = ['Account', 'Photo', 'Welcome', 'Goals', 'Commitment', 'License / NPN', 'Exam', 'States', 'E&O', 'Discord', 'CRM', 'Headset', 'Meetings', 'Done'];
     const ONB_LAST = ONB_LABELS.length - 1;   // 13
     const onbPct = (step) => Math.min(100, Math.round((Number(step) || 0) / ONB_LAST * 100));
 
@@ -32752,7 +32752,6 @@
       const [inviteMsg, setInviteMsg] = useState('');
       // Admin-only Sales Hub account state (approval, training, comp, remove flow)
       const [acct, setAcct] = useState(null);            // linked agent_profiles fields
-      const [videoDone, setVideoDone] = useState(null);  // Set of completed video slugs
       const [removeOpen, setRemoveOpen] = useState(false);
       const [rmHasPolicies, setRmHasPolicies] = useState(null);
       const [rmDeleteData, setRmDeleteData] = useState(false);
@@ -32779,12 +32778,11 @@
       // progress + licenses load only for the admin (the account panel is admin-only).
       useEffect(() => {
         let live = true;
-        if (!sel.linked_user_id) { setProd(null); setLic({ state_licenses: [], carrier_numbers: [] }); setAcct(null); setVideoDone(null); return; }
+        if (!sel.linked_user_id) { setProd(null); setLic({ state_licenses: [], carrier_numbers: [] }); setAcct(null); return; }
         (async () => {
           const jobs = [getJSON('policies?select=annual_premium,policy_date,status&user_id=eq.' + sel.linked_user_id + '&limit=5000')];
           if (isAdmin) {
-            jobs.push(getJSON('agent_profiles?select=state_licenses,carrier_numbers,approved,training_complete,comp_level,status,npn,avatar_url,signed_name,signed_at,licensed,onboarding_completed,onboarding_step&user_id=eq.' + sel.linked_user_id + '&limit=1'));
-            jobs.push(getJSON('video_progress?select=video_id&user_id=eq.' + sel.linked_user_id));
+            jobs.push(getJSON('agent_profiles?select=state_licenses,carrier_numbers,approved,comp_level,status,npn,avatar_url,signed_name,signed_at,licensed,onboarding_completed,onboarding_step&user_id=eq.' + sel.linked_user_id + '&limit=1'));
           }
           const res = await Promise.all(jobs);
           if (!live) return;
@@ -32799,8 +32797,7 @@
           if (isAdmin) {
             const pr = (res[1] && res[1][0]) || {};
             setLic({ state_licenses: Array.isArray(pr.state_licenses) ? pr.state_licenses : [], carrier_numbers: Array.isArray(pr.carrier_numbers) ? pr.carrier_numbers : [] });
-            setAcct({ approved: pr.approved, training_complete: pr.training_complete, comp_level: pr.comp_level, status: pr.status, npn: pr.npn, avatar_url: pr.avatar_url, signed_name: pr.signed_name, signed_at: pr.signed_at, licensed: pr.licensed, onboarding_completed: pr.onboarding_completed, onboarding_step: pr.onboarding_step });
-            setVideoDone(new Set((res[2] || []).map(v => v.video_id)));
+            setAcct({ approved: pr.approved, comp_level: pr.comp_level, status: pr.status, npn: pr.npn, avatar_url: pr.avatar_url, signed_name: pr.signed_name, signed_at: pr.signed_at, licensed: pr.licensed, onboarding_completed: pr.onboarding_completed, onboarding_step: pr.onboarding_step });
           }
         })();
         return () => { live = false; };
@@ -32858,7 +32855,6 @@
       // Admin-only account mutations on the linked agent_profiles row.
       const patchAgent = async (body) => { await ensureToken(); const r = await rest('agent_profiles?user_id=eq.' + sel.linked_user_id, { method: 'PATCH', headers: writeHeaders(), body: JSON.stringify(body) }); return r.ok; };
       const setApproved = async (val) => { setAcct(a => Object.assign({}, a, { approved: val })); await patchAgent({ approved: val }); };
-      const setTraining = async (val) => { setAcct(a => Object.assign({}, a, { training_complete: val })); await patchAgent({ training_complete: val }); };
       const setComp = async (val) => { const cv = val ? parseInt(val) : null; setAcct(a => Object.assign({}, a, { comp_level: cv })); await patchAgent({ comp_level: cv }); };
       const openRemove = async () => {
         setRemoveOpen(true); setRmHasPolicies(null); setRmDeleteData(false); setRmArchiveInstead(false); setRmText('');
@@ -32881,20 +32877,6 @@
         onBack(); onChanged();
       };
 
-      // Training-video progress. "Complete" = finished the current required videos,
-      // OR admin-granted access, OR completed the OLD pre-revamp training. The R2
-      // revamp renamed/expanded the videos, so legacy completions are stored under
-      // old slugs; we grandfather them (same as the training re-check migration).
-      const reqSlugs = (typeof window !== 'undefined' && window.KF_TRAINING_REQUIRED) || [];
-      const OLD_CORE_SLUGS = ['watch-first-new-agents', 'discord-walkthrough', 'submit-new-sale', 'script-sales-presentation', 'buy-state-licenses', 'next-steps-licenses'];
-      const trainReqTotal = reqSlugs.length;
-      const doneReq = (videoDone && trainReqTotal) ? reqSlugs.filter(s => videoDone.has(s)).length : 0;
-      const legacyDone = videoDone ? OLD_CORE_SLUGS.filter(s => videoDone.has(s)).length >= 4 : false;
-      const newVideosDone = trainReqTotal > 0 && doneReq >= trainReqTotal;
-      const adminGranted = !!(acct && acct.training_complete === true);
-      const trainingComplete = newVideosDone || adminGranted || legacyDone;
-      const legacyComplete = trainingComplete && !newVideosDone && !adminGranted;  // done via prior training
-      const trainPct = trainingComplete ? 100 : (trainReqTotal ? Math.round(doneReq / trainReqTotal * 100) : 0);
 
       const linkedProfile = sel.linked_user_id && rosterMap[sel.linked_user_id];
       const abandoned = sel.status === 'abandoned';
@@ -32910,8 +32892,12 @@
         <div className="rhq">
           <button className="rhq-btn ghost sm" onClick={onBack} style={{ marginBottom: 14 }}>← Back</button>
 
-          {/* header card */}
+          {/* Personal Details — identity, contact, and profile fields */}
           <div className="rhq-card pad" style={{ marginBottom: 14 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, flexWrap: 'wrap', gap: 8 }}>
+              <div className="rhq-sectitle">Personal Details</div>
+              <button className="rhq-btn ghost sm" onClick={editing ? () => setEditing(false) : startEdit}>{editing ? 'Close' : 'Edit'}</button>
+            </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
               <Avatar name={sel.full_name} size={54} fs={18} url={(acct && acct.avatar_url) || (sel.linked_user_id && rosterMap[sel.linked_user_id] && rosterMap[sel.linked_user_id].avatar_url) || undefined} />
               <div style={{ flex: 1, minWidth: 200 }}>
@@ -32921,42 +32907,120 @@
                   {isAdmin ? ' · via ' + recruiterName(sel.recruiter_user_id) : ''}
                 </div>
               </div>
-              {sel.exam_date && !abandoned && sel.stage < 3 && <span className="rhq-chip rhq-stg2">Exam {fmtDate(sel.exam_date)}</span>}
-              {!abandoned &&
-                <span style={{ position: 'relative', display: 'inline-flex' }}>
-                  <span className={'rhq-chip rhq-stg' + sel.stage} style={{ cursor: 'pointer', gap: 4 }} onClick={() => setStageOpen(o => !o)} title="Click to change stage">{STAGES[sel.stage]} ▾</span>
-                  {stageOpen && <>
-                    <div onClick={() => setStageOpen(false)} style={{ position: 'fixed', inset: 0, zIndex: 40 }}></div>
-                    <div style={{ position: 'absolute', top: '100%', left: 0, marginTop: 6, zIndex: 50, background: 'var(--sf)', border: '1px solid var(--bd)', borderRadius: 12, boxShadow: 'var(--sh)', padding: 5, minWidth: 170 }}>
-                      {STAGE_FLOW.map(i =>
-                        <div key={i} className="rhq-rowhover" onClick={() => pickStage(i)} style={{ display: 'flex', alignItems: 'center', gap: 9, padding: '8px 11px', borderRadius: 8, cursor: 'pointer', fontSize: 13, fontWeight: i === sel.stage ? 700 : 500, background: i === sel.stage ? 'var(--sf2)' : 'transparent' }}>
-                          <span className={'rhq-dot rhq-dot' + i}></span>{STAGES[i]}
-                        </div>)}
-                    </div>
-                  </>}
-                </span>}
-              {abandoned
-                ? <>
+            </div>
+            {(() => {
+              const details = [
+                ['Date of birth', sel.dob ? fmtDate(sel.dob) : null],
+                ['ZIP', sel.zip], ['Resident state', sel.resident_state],
+                ['Exam date', sel.exam_date ? fmtDate(sel.exam_date) : null],
+              ].filter(d => d[1]);
+              if (!details.length) return null;
+              return (
+                <div className="rhq-grid3" style={{ marginTop: 16 }}>
+                  {details.map(([l, v]) => <div key={l} style={{ background: 'var(--sf2)', borderRadius: 13, padding: '12px 15px' }}><div className="rhq-kpi-l">{l}</div><div style={{ fontSize: 14, fontWeight: 600, marginTop: 4, wordBreak: 'break-word' }}>{v}</div></div>)}
+                </div>
+              );
+            })()}
+          </div>
+
+          {/* Progress — pipeline stage, onboarding, and Sales Hub account together */}
+          <div className="rhq-card pad" style={{ marginBottom: 14 }}>
+            <div className="rhq-sectitle" style={{ marginBottom: 16 }}>Progress</div>
+
+            {/* Pipeline stage */}
+            {!abandoned
+              ? <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', marginBottom: 16 }}>
+                    <div className="rhq-label" style={{ marginBottom: 0 }}>Pipeline stage</div>
+                    <span style={{ position: 'relative', display: 'inline-flex' }}>
+                      <span className={'rhq-chip rhq-stg' + sel.stage} style={{ cursor: 'pointer', gap: 4 }} onClick={() => setStageOpen(o => !o)} title="Click to change stage">{STAGES[sel.stage]} ▾</span>
+                      {stageOpen && <>
+                        <div onClick={() => setStageOpen(false)} style={{ position: 'fixed', inset: 0, zIndex: 40 }}></div>
+                        <div style={{ position: 'absolute', top: '100%', left: 0, marginTop: 6, zIndex: 50, background: 'var(--sf)', border: '1px solid var(--bd)', borderRadius: 12, boxShadow: 'var(--sh)', padding: 5, minWidth: 170 }}>
+                          {STAGE_FLOW.map(i =>
+                            <div key={i} className="rhq-rowhover" onClick={() => pickStage(i)} style={{ display: 'flex', alignItems: 'center', gap: 9, padding: '8px 11px', borderRadius: 8, cursor: 'pointer', fontSize: 13, fontWeight: i === sel.stage ? 700 : 500, background: i === sel.stage ? 'var(--sf2)' : 'transparent' }}>
+                              <span className={'rhq-dot rhq-dot' + i}></span>{STAGES[i]}
+                            </div>)}
+                        </div>
+                      </>}
+                    </span>
+                    {nextStage(sel.stage) !== undefined && (confirm === 'advance'
+                      ? <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'var(--sf2)', borderRadius: 999, padding: '5px 6px 5px 14px' }}>
+                        <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--tx2)' }}>Move to {STAGES[nextStage(sel.stage)]}?</span>
+                        <button className="rhq-btn sm" onClick={advance}>Confirm</button>
+                        <button className="rhq-btn ghost sm" onClick={() => setConfirm(null)}>Cancel</button>
+                      </span>
+                      : <button className="rhq-btn sm" onClick={() => setConfirm('advance')}>Advance to {STAGES[nextStage(sel.stage)]} →</button>)}
+                  </div>
+                  <div style={{ display: 'flex', gap: 4 }}>
+                    {STAGE_FLOW.map((st) => { const done = flowIdx(st) <= flowIdx(sel.stage); return (
+                      <div key={st} style={{ flex: 1 }}>
+                        <div className={'rhq-step ' + (done ? 'rhq-dot' + st : '')}></div>
+                        <div style={{ fontSize: 11, marginTop: 6, fontWeight: st === sel.stage ? 700 : 500, color: done ? 'var(--tx2)' : 'var(--tx3)' }}>{STAGES[st]}</div>
+                      </div>); })}
+                  </div>
+                </div>
+              : <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
                   <span className="rhq-chip rhq-stg3">Abandoned{sel.abandoned_at ? ' · ' + fmtDate(sel.abandoned_at) : ''}</span>
                   <button className="rhq-btn sm" onClick={restore}>Restore to pipeline</button>
-                </>
-                : nextStage(sel.stage) !== undefined && (confirm === 'advance'
-                  ? <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'var(--sf2)', borderRadius: 999, padding: '5px 6px 5px 14px' }}>
-                    <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--tx2)' }}>Move to {STAGES[nextStage(sel.stage)]}?</span>
-                    <button className="rhq-btn sm" onClick={advance}>Confirm</button>
-                    <button className="rhq-btn ghost sm" onClick={() => setConfirm(null)}>Cancel</button>
-                  </span>
-                  : <button className="rhq-btn sm" onClick={() => setConfirm('advance')}>Advance to {STAGES[nextStage(sel.stage)]} →</button>)}
-              <button className="rhq-btn ghost sm" onClick={editing ? () => setEditing(false) : startEdit}>{editing ? 'Close' : 'Edit'}</button>
-            </div>
-            {/* stage stepper */}
-            {!abandoned &&
-              <div style={{ display: 'flex', gap: 4, marginTop: 20 }}>
-                {STAGE_FLOW.map((st) => { const done = flowIdx(st) <= flowIdx(sel.stage); return (
-                  <div key={st} style={{ flex: 1 }}>
-                    <div className={'rhq-step ' + (done ? 'rhq-dot' + st : '')}></div>
-                    <div style={{ fontSize: 11, marginTop: 6, fontWeight: st === sel.stage ? 700 : 500, color: done ? 'var(--tx2)' : 'var(--tx3)' }}>{STAGES[st]}</div>
-                  </div>); })}
+                </div>}
+
+            {/* Onboarding progress — linked account */}
+            {acct && acct.onboarding_completed != null &&
+              <div style={{ marginTop: 18, borderTop: '1px solid var(--bd)', paddingTop: 16 }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12, flexWrap: 'wrap', gap: 8 }}>
+                  <div className="rhq-label" style={{ marginBottom: 0 }}>Onboarding</div>
+                  {acct.onboarding_completed === true
+                    ? <span className="rhq-chip rhq-stg1">Complete</span>
+                    : <span className="rhq-chip rhq-stg5">{ONB_LABELS[Number(acct.onboarding_step) || 0] || '—'} · {onbPct(acct.onboarding_step)}%</span>}
+                </div>
+                {acct.onboarding_completed === false &&
+                  <div style={{ height: 8, background: 'var(--sf2)', borderRadius: 6, overflow: 'hidden' }}>
+                    <div style={{ height: '100%', width: onbPct(acct.onboarding_step) + '%', borderRadius: 6, background: 'var(--ac)' }}></div>
+                  </div>}
+              </div>}
+
+            {/* Sales Hub account — admin + linked */}
+            {sel.linked_user_id && isAdmin && acct &&
+              <div style={{ marginTop: 18, borderTop: '1px solid var(--bd)', paddingTop: 16 }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14, flexWrap: 'wrap', gap: 8 }}>
+                  <div className="rhq-label" style={{ marginBottom: 0 }}>Sales Hub account</div>
+                  <span className={'rhq-chip ' + (acct.status === 'inactive' ? 'rhq-stg3' : acct.approved === false ? 'rhq-stg2' : 'rhq-stg1')}>{acct.status === 'inactive' ? 'Archived' : acct.approved === false ? 'Awaiting approval' : 'Active'}</span>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(180px,1fr))', gap: 12 }}>
+                  <div style={{ background: 'var(--sf2)', borderRadius: 13, padding: '14px 16px' }}>
+                    <div className="rhq-label">Account approval</div>
+                    <div style={{ fontSize: 15, fontWeight: 700, margin: '4px 0 10px' }}>{acct.approved === false ? 'Not approved' : 'Approved'}</div>
+                    {acct.approved === false
+                      ? <button className="rhq-btn sm" onClick={() => setApproved(true)}>Approve</button>
+                      : <button className="rhq-btn ghost sm" onClick={() => setApproved(false)}>Revoke</button>}
+                  </div>
+                  <div style={{ background: 'var(--sf2)', borderRadius: 13, padding: '14px 16px' }}>
+                    <div className="rhq-label">Comp level</div>
+                    <select className="rhq-sel" style={{ width: '100%', marginTop: 4 }} value={acct.comp_level || ''} onChange={e => setComp(e.target.value)}>
+                      <option value="">—</option>
+                      {Array.from({ length: 17 }, (_, k) => 65 + k * 5).map(n => <option key={n} value={n}>{n}%</option>)}
+                    </select>
+                  </div>
+                </div>
+                <div style={{ marginTop: 16, borderTop: '1px solid var(--bd)', paddingTop: 14 }}>
+                  {!removeOpen
+                    ? <button className="rhq-btn danger" onClick={openRemove}>Remove agent…</button>
+                    : <div style={{ background: 'var(--sf2)', borderRadius: 12, padding: '14px 16px' }}>
+                      <div style={{ fontSize: 13.5, fontWeight: 700, marginBottom: 8 }}>Remove {sel.full_name}?</div>
+                      {rmHasPolicies === null
+                        ? <div className="rhq-muted">Checking their book of business…</div>
+                        : <div>
+                            <div className="rhq-muted" style={{ marginBottom: 10 }}>By default this agent is <strong>archived</strong> (login disabled, all data kept). Nothing is deleted unless you check the box below.</div>
+                            <label style={{ display: 'flex', gap: 8, alignItems: 'center', fontSize: 13, marginBottom: 8 }}><input type="checkbox" checked={rmDeleteData} onChange={e => setRmDeleteData(e.target.checked)} /> Permanently delete the agent{rmHasPolicies ? ' AND all their data' : ''}</label>
+                            {rmDeleteData && <input className="rhq-inp" style={{ width: '100%', marginBottom: 10 }} placeholder="Type DELETE to confirm" value={rmText} onChange={e => setRmText(e.target.value)} />}
+                          </div>}
+                      <div style={{ display: 'flex', gap: 8, marginTop: 6 }}>
+                        <button className={'rhq-btn' + (rmDeleteData ? ' danger' : '')} disabled={rmBusy || rmHasPolicies === null || (rmDeleteData && rmText.trim().toUpperCase() !== 'DELETE')} onClick={confirmRemove}>{rmBusy ? 'Working…' : (rmDeleteData ? (rmHasPolicies ? 'Delete + data' : 'Delete agent') : 'Archive agent')}</button>
+                        <button className="rhq-btn ghost" onClick={() => setRemoveOpen(false)}>Cancel</button>
+                      </div>
+                    </div>}
+                </div>
               </div>}
           </div>
 
@@ -33050,67 +33114,6 @@
               </div>
             </div>}
 
-          {/* Sales Hub account — admin only (merged from the old Agency → Agent Profiles page) */}
-          {sel.linked_user_id && isAdmin && acct &&
-            <div className="rhq-card pad" style={{ marginBottom: 14 }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14, flexWrap: 'wrap', gap: 8 }}>
-                <div className="rhq-sectitle">Sales Hub account</div>
-                <span className={'rhq-chip ' + (acct.status === 'inactive' ? 'rhq-stg3' : acct.approved === false ? 'rhq-stg2' : 'rhq-stg1')}>{acct.status === 'inactive' ? 'Archived' : acct.approved === false ? 'Awaiting approval' : 'Active'}</span>
-              </div>
-              <div className="rhq-grid3">
-                <div style={{ background: 'var(--sf2)', borderRadius: 13, padding: '14px 16px' }}>
-                  <div className="rhq-label">Account approval</div>
-                  <div style={{ fontSize: 15, fontWeight: 700, margin: '4px 0 10px' }}>{acct.approved === false ? 'Not approved' : 'Approved'}</div>
-                  {acct.approved === false
-                    ? <button className="rhq-btn sm" onClick={() => setApproved(true)}>Approve</button>
-                    : <button className="rhq-btn ghost sm" onClick={() => setApproved(false)}>Revoke</button>}
-                </div>
-                <div style={{ background: 'var(--sf2)', borderRadius: 13, padding: '14px 16px' }}>
-                  <div className="rhq-label">Training access</div>
-                  <div style={{ fontSize: 15, fontWeight: 700, margin: '4px 0 10px' }}>{acct.training_complete ? 'Full access' : 'Locked to training'}</div>
-                  {acct.training_complete
-                    ? <button className="rhq-btn ghost sm" onClick={() => setTraining(false)}>Lock to training</button>
-                    : <button className="rhq-btn sm" onClick={() => setTraining(true)}>Grant access</button>}
-                </div>
-                <div style={{ background: 'var(--sf2)', borderRadius: 13, padding: '14px 16px' }}>
-                  <div className="rhq-label">Comp level</div>
-                  <select className="rhq-sel" style={{ width: '100%', marginTop: 4 }} value={acct.comp_level || ''} onChange={e => setComp(e.target.value)}>
-                    <option value="">—</option>
-                    {Array.from({ length: 17 }, (_, k) => 65 + k * 5).map(n => <option key={n} value={n}>{n}%</option>)}
-                  </select>
-                </div>
-              </div>
-              <div style={{ marginTop: 14 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 6 }}>
-                  <div className="rhq-label" style={{ marginBottom: 0 }}>Training videos</div>
-                  <div className="rhq-muted">{adminGranted ? 'Full access granted' : legacyComplete ? 'Completed (prior training)' : trainReqTotal ? (doneReq + ' / ' + trainReqTotal + ' required' + (newVideosDone ? ' · complete' : '')) : (doneReq + ' completed')}</div>
-                </div>
-                <div style={{ height: 10, background: 'var(--sf2)', borderRadius: 6, overflow: 'hidden' }}>
-                  <div className={trainingComplete ? 'rhq-dot1' : 'rhq-dot5'} style={{ height: '100%', width: trainPct + '%', borderRadius: 6 }}></div>
-                </div>
-                {!trainingComplete && <div className="rhq-muted" style={{ marginTop: 6 }}>At 100% of required videos they auto-advance to Active Agent.</div>}
-                {legacyComplete && <div className="rhq-muted" style={{ marginTop: 6 }}>Completed the previous training curriculum (before the video revamp).</div>}
-              </div>
-              <div style={{ marginTop: 16, borderTop: '1px solid var(--bd)', paddingTop: 14 }}>
-                {!removeOpen
-                  ? <button className="rhq-btn danger" onClick={openRemove}>Remove agent…</button>
-                  : <div style={{ background: 'var(--sf2)', borderRadius: 12, padding: '14px 16px' }}>
-                    <div style={{ fontSize: 13.5, fontWeight: 700, marginBottom: 8 }}>Remove {sel.full_name}?</div>
-                    {rmHasPolicies === null
-                      ? <div className="rhq-muted">Checking their book of business…</div>
-                      : <div>
-                          <div className="rhq-muted" style={{ marginBottom: 10 }}>By default this agent is <strong>archived</strong> (login disabled, all data kept). Nothing is deleted unless you check the box below.</div>
-                          <label style={{ display: 'flex', gap: 8, alignItems: 'center', fontSize: 13, marginBottom: 8 }}><input type="checkbox" checked={rmDeleteData} onChange={e => setRmDeleteData(e.target.checked)} /> Permanently delete the agent{rmHasPolicies ? ' AND all their data' : ''}</label>
-                          {rmDeleteData && <input className="rhq-inp" style={{ width: '100%', marginBottom: 10 }} placeholder="Type DELETE to confirm" value={rmText} onChange={e => setRmText(e.target.value)} />}
-                        </div>}
-                    <div style={{ display: 'flex', gap: 8, marginTop: 6 }}>
-                      <button className={'rhq-btn' + (rmDeleteData ? ' danger' : '')} disabled={rmBusy || rmHasPolicies === null || (rmDeleteData && rmText.trim().toUpperCase() !== 'DELETE')} onClick={confirmRemove}>{rmBusy ? 'Working…' : (rmDeleteData ? (rmHasPolicies ? 'Delete + data' : 'Delete agent') : 'Archive agent')}</button>
-                      <button className="rhq-btn ghost" onClick={() => setRemoveOpen(false)}>Cancel</button>
-                    </div>
-                  </div>}
-              </div>
-            </div>}
-
           {/* goals */}
           <div className="rhq-card pad" style={{ marginBottom: 14 }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
@@ -33144,35 +33147,6 @@
               );
             })()}
           </div>
-
-          {/* Personal details — DOB / ZIP / resident state + onboarding progress. */}
-          {(() => {
-            const details = [
-              ['Date of birth', sel.dob ? fmtDate(sel.dob) : null],
-              ['ZIP', sel.zip], ['Resident state', sel.resident_state],
-            ].filter(d => d[1]);
-            const onbActive = acct && acct.onboarding_completed === false;
-            const hasAny = details.length || (acct && (acct.onboarding_completed === true || onbActive));
-            if (!hasAny) return null;
-            return (
-              <div className="rhq-card pad" style={{ marginBottom: 14 }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14, flexWrap: 'wrap', gap: 8 }}>
-                  <div className="rhq-sectitle">Personal details</div>
-                  {acct && (acct.onboarding_completed === true
-                    ? <span className="rhq-chip rhq-stg1">Onboarding complete</span>
-                    : onbActive ? <span className="rhq-chip rhq-stg5">Onboarding · {ONB_LABELS[Number(acct.onboarding_step) || 0] || '—'} · {onbPct(acct.onboarding_step)}%</span> : null)}
-                </div>
-                {onbActive &&
-                  <div style={{ height: 8, background: 'var(--sf2)', borderRadius: 6, overflow: 'hidden', marginBottom: 14 }}>
-                    <div style={{ height: '100%', width: onbPct(acct.onboarding_step) + '%', borderRadius: 6, background: 'var(--ac)' }}></div>
-                  </div>}
-                {details.length > 0 &&
-                  <div className="rhq-grid3">
-                    {details.map(([l, v]) => <div key={l} style={{ background: 'var(--sf2)', borderRadius: 13, padding: '12px 15px' }}><div className="rhq-kpi-l">{l}</div><div style={{ fontSize: 14, fontWeight: 600, marginTop: 4, wordBreak: 'break-word' }}>{v}</div></div>)}
-                  </div>}
-              </div>
-            );
-          })()}
 
           {/* production (linked only) */}
           <div className="rhq-card pad" style={{ marginBottom: 14 }}>
