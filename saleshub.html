@@ -8079,6 +8079,11 @@
       transition: all 120ms;
     }
     #panel-goals .tk-action-btn .tk-plus { font-size: 14px; line-height: 1; }
+    /* Profitability KPI stat grid — 4 across on wide screens (8 cards → 4+4), scaling down. */
+    #panel-goals .tk-prof .tk-prof-kpi-grid { display: grid; gap: 16px; margin-bottom: 24px; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    @media (max-width: 1024px) { #panel-goals .tk-prof .tk-prof-kpi-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+    @media (max-width: 760px)  { #panel-goals .tk-prof .tk-prof-kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (max-width: 460px)  { #panel-goals .tk-prof .tk-prof-kpi-grid { grid-template-columns: 1fr; } }
     #panel-goals .tk-action-btn.green { border: 1px solid var(--s1r); background: var(--s1b); color: var(--s1f); }
     #panel-goals .tk-action-btn.green:hover { background: var(--s1b); filter: brightness(1.12); }
     #panel-goals .tk-action-btn.blue  { border: 1px solid var(--s0r); background: var(--s0b); color: var(--s0f); }
@@ -15316,7 +15321,7 @@
           <p class="ss-panel-sub">Update your account info and compensation level.</p>
         </div>
 
-        <!-- Personal Information (name, photo, phone, NPN) -->
+        <!-- Personal Information (name, photo, phone, city, state, time zone) -->
         <div class="ss-form-card" style="margin-bottom:1.25rem;">
           <div class="ss-form-title" style="color:#0891b2;">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
@@ -15332,15 +15337,30 @@
           </div>
           <div class="ss-field full">
             <label class="ss-label">Full Name</label>
-            <input class="ss-input" type="text" id="profileName" placeholder="First Last" />
+            <input class="ss-input" type="text" id="profileName" placeholder="First Last" readonly style="cursor:not-allowed;opacity:0.7;" />
+            <div style="font-size:0.75rem;color:#94a3b8;margin-top:0.35rem;">🔒 Your name is locked. Contact your admin to change it.</div>
           </div>
           <div class="ss-field full">
             <label class="ss-label">Phone Number</label>
             <input class="ss-input" type="tel" id="profilePhone" placeholder="(555) 123-4567" />
           </div>
           <div class="ss-field full">
-            <label class="ss-label">NPN <span style="color:#94a3b8;font-weight:400;">· National Producer Number</span></label>
-            <input class="ss-input" type="text" inputmode="numeric" id="profileNpn" placeholder="e.g. 18223344" />
+            <label class="ss-label">City</label>
+            <input class="ss-input" type="text" id="profileCity" placeholder="Austin" />
+          </div>
+          <div class="ss-field full">
+            <label class="ss-label">State</label>
+            <select class="ss-select" id="profileState"><option value="">Select…</option></select>
+          </div>
+          <div class="ss-field full">
+            <label class="ss-label">Time Zone</label>
+            <select class="ss-select" id="profileTimezone">
+              <option value="">Select…</option>
+              <option value="Eastern">Eastern</option>
+              <option value="Central">Central</option>
+              <option value="Mountain">Mountain</option>
+              <option value="Pacific">Pacific</option>
+            </select>
           </div>
           <button class="ss-submit" type="button" id="profilePersonalSave" style="background:#0891b2;">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
@@ -15388,6 +15408,10 @@
           <!-- ── VIEW MODE (locked / read-only, organized) ── -->
           <div id="licView">
             <div class="lic-view-group">
+              <div class="lic-view-label">NPN · National Producer Number</div>
+              <div id="licNpnView" class="lic-view-list"></div>
+            </div>
+            <div class="lic-view-group">
               <div class="lic-view-label">State Licenses</div>
               <div id="licStateView" class="lic-view-list"></div>
             </div>
@@ -15399,7 +15423,13 @@
 
           <!-- ── EDIT MODE (hidden until Edit is clicked) ── -->
           <div id="licEdit" style="display:none;">
-            <p style="font-size:0.82rem;color:#666;margin:0 0 1rem;">Add or update your state license numbers and carrier writing numbers, then Save.</p>
+            <p style="font-size:0.82rem;color:#666;margin:0 0 1rem;">Add or update your NPN, state license numbers, and carrier writing numbers, then Save.</p>
+
+            <!-- NPN -->
+            <div style="margin-bottom:1.1rem;">
+              <label class="ss-label" style="display:block;margin-bottom:0.5rem;">NPN · National Producer Number</label>
+              <input class="ss-input" type="text" inputmode="numeric" id="profileNpn" placeholder="e.g. 18223344" />
+            </div>
 
             <!-- State Licenses -->
             <div style="margin-bottom:1.1rem;">
@@ -20669,19 +20699,33 @@
         wrap.textContent = (((parts[0] || '')[0] || '') + ((parts[parts.length - 1] || '')[0] || '')).toUpperCase() || '?';
       }
     }
+    // Fill the profile State dropdown with spelled-out, alphabetical names once.
+    function populateProfileStateOptions() {
+      const sel = document.getElementById('profileState');
+      if (!sel || sel.dataset.filled === '1') return;
+      sel.innerHTML = '<option value="">Select…</option>' + US_STATES_FULL.map(s => '<option value="' + s + '">' + s + '</option>').join('');
+      sel.dataset.filled = '1';
+    }
     async function loadProfilePersonal() {
       if (!currentUser) return;
+      populateProfileStateOptions();
       try {
         await window.ensureValidAccessToken?.();
-        const r = await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?user_id=eq.' + currentUser.id + '&select=agent_name,phone,npn,avatar_url&limit=1', {
-          headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + (accessToken || SUPABASE_KEY) }
+        const token = accessToken || SUPABASE_KEY;
+        // Everything here lives on the agent's own agent_profiles row (readable/
+        // writable by the agent). A trigger mirrors city/state/timezone into the
+        // linked recruit row so managers see them in Recruiter HQ.
+        const r = await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?user_id=eq.' + currentUser.id + '&select=agent_name,phone,avatar_url,city,state,timezone&limit=1', {
+          headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + token }
         });
         const rows = r.ok ? await r.json() : [];
         const p = (rows && rows[0]) || {};
         const name = p.agent_name || (currentUser.user_metadata && currentUser.user_metadata.name) || '';
         const nameEl = document.getElementById('profileName'); if (nameEl) nameEl.value = name;
-        const phoneEl = document.getElementById('profilePhone'); if (phoneEl) phoneEl.value = p.phone || '';
-        const npnEl = document.getElementById('profileNpn'); if (npnEl) npnEl.value = p.npn || '';
+        const phoneEl = document.getElementById('profilePhone'); if (phoneEl) { phoneEl.value = p.phone || ''; phoneEl.dataset.original = p.phone || ''; }
+        const cityEl = document.getElementById('profileCity'); if (cityEl) cityEl.value = p.city || '';
+        const stateEl = document.getElementById('profileState'); if (stateEl) stateEl.value = stateFull(p.state || '');
+        const tzEl = document.getElementById('profileTimezone'); if (tzEl) tzEl.value = p.timezone || '';
         renderProfileAvatar(p.avatar_url || null, name);
       } catch (e) { console.error('loadProfilePersonal failed', e); }
     }
@@ -20691,20 +20735,34 @@
       const showMsg = (text, ok) => { const m = document.getElementById('profilePersonalMsg'); if (!m) return; m.textContent = text; m.style.color = ok ? '#16a34a' : '#dc2626'; m.style.display = 'block'; if (ok) setTimeout(() => { m.style.display = 'none'; }, 3000); };
       if (saveBtn) saveBtn.addEventListener('click', async () => {
         if (!currentUser) return;
-        const name = (document.getElementById('profileName').value || '').trim();
-        const phone = (document.getElementById('profilePhone').value || '').trim();
-        const npn = (document.getElementById('profileNpn').value || '').trim();
+        // Name is read-only (locked) — kept for the avatar initials, never saved.
+        const nameEl = document.getElementById('profileName');
+        const name = (nameEl.value || '').trim();
+        const phoneEl = document.getElementById('profilePhone');
+        const phone = (phoneEl.value || '').trim();
+        const city = (document.getElementById('profileCity').value || '').trim();
+        const state = (document.getElementById('profileState').value || '').trim();
+        const timezone = (document.getElementById('profileTimezone').value || '').trim();
+        // A phone-number change needs an explicit confirmation.
+        if (phone !== (phoneEl.dataset.original || '')) {
+          const ok = await showConfirmModal({
+            title: 'Update phone number?',
+            message: 'Change your phone number to ' + (phone || '(blank)') + '? This is the number your team and clients may use to reach you.',
+            confirmText: 'Yes, update', cancelText: 'Cancel', icon: '📱'
+          });
+          if (!ok) return;
+        }
         try {
           await window.ensureValidAccessToken?.();
           const token = accessToken || SUPABASE_KEY;
           const r = await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?user_id=eq.' + currentUser.id, {
             method: 'PATCH',
             headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
-            body: JSON.stringify({ agent_name: name || null, phone: phone || null, npn: npn || null })
+            body: JSON.stringify({ phone: phone || null, city: city || null, state: state || null, timezone: timezone || null })
           });
           if (!r.ok) throw new Error('HTTP ' + r.status);
-          // Keep the linked recruit row in sync (best-effort; RLS allows own row).
-          try { await fetch(SUPABASE_URL + '/rest/v1/recruits?linked_user_id=eq.' + currentUser.id, { method: 'PATCH', headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' }, body: JSON.stringify({ full_name: name || null, phone: phone || null }) }); } catch (e) {}
+          // A DB trigger (kf_sync_profile_location) mirrors ONLY city/state/timezone
+          // into the linked recruit row. Agents never write the recruits table directly.
           renderProfileAvatar(null, name);
           loadProfilePersonal();
           showMsg('✓ Saved', true);
@@ -20787,9 +20845,16 @@
     // changed by an accidental click. Carrier options mirror the
     // submit-a-sale list (the shared CARRIERS constant).
     const US_STATES = ['AL','AK','AZ','AR','CA','CO','CT','DE','DC','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY'];
+    // Full state names, index-aligned with US_STATES above. Used for the state
+    // dropdowns (spelled out, alphabetical) — profile State field + license rows.
+    const US_STATES_FULL = ['Alabama','Alaska','Arizona','Arkansas','California','Colorado','Connecticut','Delaware','District of Columbia','Florida','Georgia','Hawaii','Idaho','Illinois','Indiana','Iowa','Kansas','Kentucky','Louisiana','Maine','Maryland','Massachusetts','Michigan','Minnesota','Mississippi','Missouri','Montana','Nebraska','Nevada','New Hampshire','New Jersey','New Mexico','New York','North Carolina','North Dakota','Ohio','Oklahoma','Oregon','Pennsylvania','Rhode Island','South Carolina','South Dakota','Tennessee','Texas','Utah','Vermont','Virginia','Washington','West Virginia','Wisconsin','Wyoming'];
+    const STATE_ABBR2FULL = US_STATES.reduce((m, ab, i) => { m[ab] = US_STATES_FULL[i]; return m; }, {});
+    // Normalize any stored value (old 2-letter code or already-full name) to a
+    // full state name, so legacy entries still match the spelled-out dropdowns.
+    const stateFull = (v) => { v = (v == null ? '' : String(v)).trim(); return STATE_ABBR2FULL[v.toUpperCase()] || v; };
 
     // Last-loaded values, kept so Edit/Cancel can repopulate without a refetch.
-    let licData = { state_licenses: [], carrier_numbers: [] };
+    let licData = { state_licenses: [], carrier_numbers: [], npn: '' };
 
     function licEscape(str) {
       return String(str == null ? '' : str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -20811,8 +20876,8 @@
       row.className = 'lic-row';
       const sel = document.createElement('select');
       sel.className = 'ss-select lic-state';
-      sel.innerHTML = '<option value="">State…</option>' + US_STATES.map(s => '<option value="' + s + '">' + s + '</option>').join('');
-      if (state) sel.value = state;
+      sel.innerHTML = '<option value="">State…</option>' + US_STATES_FULL.map(s => '<option value="' + s + '">' + s + '</option>').join('');
+      if (state) sel.value = stateFull(state);
       const num = document.createElement('input');
       num.type = 'text';
       num.className = 'ss-input lic-number';
@@ -20852,16 +20917,22 @@
     function renderLicensesView() {
       const stateView = document.getElementById('licStateView');
       const carrierView = document.getElementById('licCarrierView');
+      const npnView = document.getElementById('licNpnView');
+      if (npnView) {
+        npnView.innerHTML = licData.npn
+          ? '<div class="lic-view-row"><span class="lic-view-val">' + licEscape(licData.npn) + '</span></div>'
+          : '<div class="lic-view-empty">Not added yet.</div>';
+      }
       if (!stateView || !carrierView) return;
-      // Sort copies alphabetically for display (state code / carrier name),
+      // Sort copies alphabetically for display (state name / carrier name),
       // leaving the stored order untouched.
       const states = (licData.state_licenses || []).slice().sort((a, b) =>
-        (a.state || '').localeCompare(b.state || ''));
+        stateFull(a.state).localeCompare(stateFull(b.state)));
       const carriers = (licData.carrier_numbers || []).slice().sort((a, b) =>
         (a.carrier || '').localeCompare(b.carrier || ''));
       if (states.length) {
         stateView.innerHTML = states.map(s =>
-          '<div class="lic-view-row"><span class="lic-view-badge">' + licEscape(s.state || '—') + '</span>' +
+          '<div class="lic-view-row"><span class="lic-view-badge">' + licEscape(stateFull(s.state) || '—') + '</span>' +
           '<span class="lic-view-val">' + licEscape(s.number || '—') + '</span></div>'
         ).join('');
       } else {
@@ -20898,6 +20969,8 @@
       if (!view || !edit) return;
       if (editing) {
         populateLicenseEditRows();
+        const npnInput = document.getElementById('profileNpn');
+        if (npnInput) npnInput.value = licData.npn || '';
         view.style.display = 'none';
         edit.style.display = '';
         if (editBtn) editBtn.style.display = 'none';
@@ -20920,16 +20993,17 @@
 
     async function loadProfileLicenses() {
       if (!currentUser) return;
-      licData = { state_licenses: [], carrier_numbers: [] };
+      licData = { state_licenses: [], carrier_numbers: [], npn: '' };
       try {
         const token = accessToken || SUPABASE_KEY;
-        const res = await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?user_id=eq.' + currentUser.id + '&select=state_licenses,carrier_numbers', {
+        const res = await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?user_id=eq.' + currentUser.id + '&select=state_licenses,carrier_numbers,npn', {
           headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + token }
         });
         const rows = await res.json();
         const prof = (rows && rows[0]) || {};
         licData.state_licenses = Array.isArray(prof.state_licenses) ? prof.state_licenses : [];
         licData.carrier_numbers = Array.isArray(prof.carrier_numbers) ? prof.carrier_numbers : [];
+        licData.npn = prof.npn || '';
       } catch (e) {
         console.error('Failed to load licenses:', e);
       }
@@ -20956,7 +21030,8 @@
         if (carrier || number) carrierNumbers.push({ carrier, number });
       });
 
-      const payload = { state_licenses: stateLicenses, carrier_numbers: carrierNumbers };
+      const npn = (document.getElementById('profileNpn')?.value || '').trim();
+      const payload = { state_licenses: stateLicenses, carrier_numbers: carrierNumbers, npn: npn || null };
       try {
         // Update first; if no row exists yet, insert.
         const updRes = await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?user_id=eq.' + currentUser.id, {
@@ -20975,6 +21050,7 @@
         // Persist locally and drop back into the locked view.
         licData.state_licenses = stateLicenses;
         licData.carrier_numbers = carrierNumbers;
+        licData.npn = npn;
         setLicensesMode(false);
         msgEl.textContent = '✓ Licenses & numbers saved';
         msgEl.style.color = '#16a34a';
@@ -20993,6 +21069,12 @@
       const newEmail = document.getElementById('profileEmail').value.trim();
       const msgEl = document.getElementById('profileEmailMsg');
       if (!newEmail) { msgEl.textContent = 'Enter a valid email'; msgEl.style.color = '#dc2626'; msgEl.style.display = 'block'; return; }
+      const okEmail = await showConfirmModal({
+        title: 'Change email address?',
+        message: 'We’ll send a confirmation link to ' + newEmail + '. You must click that link before the change takes effect, and you’ll sign in with this email going forward.',
+        confirmText: 'Send confirmation', cancelText: 'Cancel', icon: '✉️'
+      });
+      if (!okEmail) return;
       try {
         const res = await fetch(SUPABASE_URL + '/auth/v1/user', {
           method: 'PUT',
@@ -21022,6 +21104,12 @@
       const msgEl = document.getElementById('profilePasswordMsg');
       if (pw.length < 6) { msgEl.textContent = 'Password must be at least 6 characters'; msgEl.style.color = '#dc2626'; msgEl.style.display = 'block'; return; }
       if (pw !== pw2) { msgEl.textContent = 'Passwords do not match'; msgEl.style.color = '#dc2626'; msgEl.style.display = 'block'; return; }
+      const okPw = await showConfirmModal({
+        title: 'Update password?',
+        message: 'Are you sure you want to change your password? You’ll need the new password the next time you sign in.',
+        confirmText: 'Yes, update', cancelText: 'Cancel', icon: '🔒'
+      });
+      if (!okPw) return;
       try {
         const res = await fetch(SUPABASE_URL + '/auth/v1/user', {
           method: 'PUT',
@@ -28159,10 +28247,10 @@
                   </div>
                 </div>
                 <div className="tk-mod-grid cols-4">
-                  <div className="tk-mod-field"><label>Calls</label><input className="tk-mod-input mono" type="number" min="0" value={dials} onChange={e => setDials(e.target.value)} placeholder="0" /><span className="tk-mod-hint">Answers &amp; calls are the same for inbounds</span></div>
-                  <div className="tk-mod-field"><label>Answers</label><input className="tk-mod-input mono" type="number" min="0" value={answers} onChange={e => setAnswers(e.target.value)} placeholder="0" /><span className="tk-mod-hint">Answers &amp; calls are the same for inbounds</span></div>
+                  <div className="tk-mod-field"><label>Dials / Inbound calls</label><input className="tk-mod-input mono" type="number" min="0" value={dials} onChange={e => setDials(e.target.value)} placeholder="0" /><span className="tk-mod-hint">Conversations &amp; dials are the same for inbounds</span></div>
+                  <div className="tk-mod-field"><label>Conversations / Billable calls</label><input className="tk-mod-input mono" type="number" min="0" value={answers} onChange={e => setAnswers(e.target.value)} placeholder="0" /><span className="tk-mod-hint">Conversations &amp; dials are the same for inbounds</span></div>
                   <div className="tk-mod-field"><label>Appointments Booked</label><input className="tk-mod-input mono" type="number" min="0" value={appointments} onChange={e => setAppointments(e.target.value)} placeholder="0" /></div>
-                  <div className="tk-mod-field"><label>Presentations / Billable Calls</label><input className="tk-mod-input mono" type="number" min="0" value={presentations} onChange={e => setPresentations(e.target.value)} placeholder="0" /></div>
+                  <div className="tk-mod-field"><label>Full presentations</label><input className="tk-mod-input mono" type="number" min="0" value={presentations} onChange={e => setPresentations(e.target.value)} placeholder="0" /></div>
                 </div>
                 <div className="tk-mod-grid cols-2">
                   <div className="tk-mod-field"><label>Lead spend</label><input className="tk-mod-input mono" type="number" min="0" step="0.01" value={leadSpend} onChange={e => setLeadSpend(e.target.value)} placeholder="0.00" /></div>
@@ -28671,12 +28759,14 @@
         };
       }
 
-      function ProfitabilitySection({ theme, kpis, policies, expenses, agentName, readOnly, onAddExpense, onDeleteExpense, tf, customFrom, customTo }) {
+      function ProfitabilitySection({ theme, kpis, policies, expenses, agentName, readOnly, onAddExpense, onEditExpense, onDeleteExpense, tf, customFrom, customTo }) {
         const T = profPalette(theme);
         const MONO = "'JetBrains Mono', ui-monospace, monospace";
         const todayYMD = (() => { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); })();
         const [form, setForm] = useState({ amount:'', category:'Software', note:'', date: todayYMD });
         const [plHover, setPlHover] = useState(null); // hovered P&L month index
+        const [editId, setEditId] = useState(null); // id of the one-off expense being edited inline
+        const [editForm, setEditForm] = useState({ category:'', note:'', amount:'' });
 
         // ── date helpers ──
         const pd = (s) => { if (!s) return null; const p = String(s).split('-'); if (p.length !== 3) return null; const y=+p[0], m=+p[1], d=+p[2]; if(!y||!m||!d) return null; return new Date(y, m-1, d); };
@@ -28834,7 +28924,10 @@
         // ── shared styles ──
         const card = { background:T.surface, border:'1px solid '+T.hairline, borderRadius:10, overflow:'hidden', backdropFilter:'blur(14px) saturate(1.3)', WebkitBackdropFilter:'blur(14px) saturate(1.3)' };
         const monoLabel = { fontFamily:MONO, fontSize:11, textTransform:'uppercase', letterSpacing:'.08em', color:T.ink3, fontWeight:500 };
-        const tintCard = (color, op) => ({ background:'color-mix(in oklch, '+color+' '+op+'%, '+T.surface+')', border:'1px solid color-mix(in oklch, '+color+' 26%, transparent)', borderRadius:10, padding:'20px 22px', textAlign:'center', backdropFilter:'blur(14px) saturate(1.3)', WebkitBackdropFilter:'blur(14px) saturate(1.3)' });
+        const tintCard = (color, op) => ({ background:'color-mix(in oklch, '+color+' '+op+'%, '+T.surface+')', border:'1px solid color-mix(in oklch, '+color+' 26%, transparent)', borderRadius:10, padding:'20px 22px', textAlign:'center', display:'flex', flexDirection:'column', justifyContent:'center', minHeight:112, backdropFilter:'blur(14px) saturate(1.3)', WebkitBackdropFilter:'blur(14px) saturate(1.3)' });
+        // Fixed-height label row so every card's number lands on the same line,
+        // whether the label wraps to one or two lines.
+        const finCardLblRow = { display:'flex', flexDirection:'column', alignItems:'center', gap:6, minHeight:44 };
         const finCardVal = (color) => ({ fontFamily:MONO, fontSize:29, fontWeight:500, marginTop:14, color, letterSpacing:'-.01em', fontVariantNumeric:'tabular-nums' });
         const finCardLbl = { fontSize:11, fontFamily:MONO, textTransform:'uppercase', letterSpacing:'.08em', color:T.ink3, fontWeight:500 };
         const finCardSub = { fontFamily:MONO, fontSize:11, color:T.ink3, marginTop:8 };
@@ -28852,7 +28945,22 @@
         const cxp = (i) => months.length <= 1 ? pad.l + iw/2 : pad.l + (i/(months.length-1))*iw;
         const cyp = (v) => pad.t + (1 - v/pmax)*ih;
         const toLine = (arr) => arr.map((v,i)=>(i?'L':'M')+cxp(i).toFixed(1)+','+cyp(v).toFixed(1)).join(' ');
-        const depArea = months.length>1 ? (toLine(depArr)+' L '+cxp(months.length-1).toFixed(1)+','+(pad.t+ih)+' L '+cxp(0).toFixed(1)+','+(pad.t+ih)+' Z') : '';
+        // Smoothed path (Catmull-Rom → cubic bezier) so the P&L curves read soft
+        // instead of sharp zig-zags between months.
+        const toSmooth = (arr) => {
+          if (arr.length < 2) return toLine(arr);
+          const pts = arr.map((v,i) => [cxp(i), cyp(v)]);
+          const t = 0.18; // tension
+          let d = 'M ' + pts[0][0].toFixed(1) + ',' + pts[0][1].toFixed(1);
+          for (let i = 0; i < pts.length - 1; i++) {
+            const p0 = pts[i-1] || pts[i], p1 = pts[i], p2 = pts[i+1], p3 = pts[i+2] || pts[i+1];
+            const c1x = p1[0] + (p2[0]-p0[0])*t, c1y = p1[1] + (p2[1]-p0[1])*t;
+            const c2x = p2[0] - (p3[0]-p1[0])*t, c2y = p2[1] - (p3[1]-p1[1])*t;
+            d += ' C ' + c1x.toFixed(1)+','+c1y.toFixed(1)+' '+c2x.toFixed(1)+','+c2y.toFixed(1)+' '+p2[0].toFixed(1)+','+p2[1].toFixed(1);
+          }
+          return d;
+        };
+        const depArea = months.length>1 ? (toSmooth(depArr)+' L '+cxp(months.length-1).toFixed(1)+','+(pad.t+ih)+' L '+cxp(0).toFixed(1)+','+(pad.t+ih)+' Z') : '';
 
         // ── expense-mix donut (SVG) ──
         const dSize = 156, dR = dSize/2 - 8, dCx = dSize/2, dCy = dSize/2, dInner = dR*0.62;
@@ -28903,22 +29011,12 @@
                   <div style={{ fontSize:15, fontFamily:MONO, textTransform:'uppercase', letterSpacing:'.06em', color:T.ink1, fontWeight:600 }}>Pipeline value</div>
                   <div style={{ fontFamily:MONO, fontSize:12, color:T.ink3 }}>pending commissions</div>
                 </div>
-                <div style={{ fontFamily:MONO, fontSize:11, textTransform:'uppercase', letterSpacing:'.06em', color:T.ink3, padding:'5px 11px', borderRadius:6, background:T.surface2, border:'1px solid '+T.hairline }}>{periodLabel}</div>
+                <div style={{ fontFamily:MONO, fontSize:11, fontWeight:700, textTransform:'uppercase', letterSpacing:'.08em', color:'var(--s1f)', padding:'6px 14px', borderRadius:999, background:'var(--s1b)', border:'1px solid var(--s1r)' }}>{periodLabel}</div>
               </div>
               <div style={{ display:'flex', alignItems:'baseline', justifyContent:'center', gap:24, flexWrap:'wrap', marginBottom:20 }}>
                 <div style={{ fontFamily:MONO, fontSize:'clamp(34px,5vw,44px)', fontWeight:500, color:T.ink1, letterSpacing:'-.02em', fontVariantNumeric:'tabular-nums', lineHeight:1 }}>{usd0(pipelineTotal)}</div>
                 <div style={{ display:'inline-flex', alignItems:'center', gap:4, fontFamily:MONO, fontSize:12, padding:'3px 10px', borderRadius:999, ...(pipeDelta.up===null ? { color:T.ink3, background:T.surface3 } : { color: pipeDelta.up ? T.pos : T.neg, background:'color-mix(in oklch, '+(pipeDelta.up?T.pos:T.neg)+' 14%, transparent)' }) }}>
                   {pipeDelta.text}<span style={{ color:T.ink3, marginLeft:6 }}>vs prior {sel.word}</span>
-                </div>
-              </div>
-              <div style={{ display:'flex', flexWrap:'wrap', justifyContent:'center', gap:40, marginBottom:22, paddingBottom:20, borderBottom:'1px solid '+T.hairline }}>
-                <div>
-                  <div style={{ fontFamily:MONO, fontSize:10, letterSpacing:'.07em', textTransform:'uppercase', color:T.ink3 }}>Total Annual Premium Submitted</div>
-                  <div style={{ fontFamily:MONO, fontSize:23, fontWeight:500, color:T.ink1, marginTop:7, fontVariantNumeric:'tabular-nums' }}>{usd0(cur.apSub)}</div>
-                </div>
-                <div>
-                  <div style={{ fontFamily:MONO, fontSize:10, letterSpacing:'.07em', textTransform:'uppercase', color:T.ink3 }}>Total Annual Premium Issued</div>
-                  <div style={{ fontFamily:MONO, fontSize:23, fontWeight:500, color:T.pos, marginTop:7, fontVariantNumeric:'tabular-nums' }}>{usd0(cur.apIss)}</div>
                 </div>
               </div>
               <div style={{ display:'flex', height:14, borderRadius:99, background:T.surface3, overflow:'hidden' }}>
@@ -28927,11 +29025,11 @@
               </div>
               <div style={{ display:'flex', flexWrap:'wrap', justifyContent:'center', gap:48, marginTop:18 }}>
                 <div>
-                  <div style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:8 }}><span style={{ width:8, height:8, borderRadius:2, background:'var(--s0f)' }}></span><span style={{ fontSize:12, color:T.ink2 }}>Submitted &middot; awaiting payout</span></div>
+                  <div style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:8 }}><span style={{ width:8, height:8, borderRadius:2, background:'var(--s0f)' }}></span><span style={{ fontSize:12, color:T.ink2 }}>Submitted commission &middot; pending issue</span></div>
                   <div style={{ fontFamily:MONO, fontSize:20, fontWeight:500, color:T.ink1, marginTop:6, fontVariantNumeric:'tabular-nums' }}>{usd0(cur.pSub)}</div>
                 </div>
                 <div>
-                  <div style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:8 }}><span style={{ width:8, height:8, borderRadius:2, background:T.green }}></span><span style={{ fontSize:12, color:T.ink2 }}>Advanced &middot; remaining balance</span></div>
+                  <div style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:8 }}><span style={{ width:8, height:8, borderRadius:2, background:T.green }}></span><span style={{ fontSize:12, color:T.ink2 }}>Advanced commission &middot; pending Month 9 backend</span></div>
                   <div style={{ fontFamily:MONO, fontSize:20, fontWeight:500, color:T.ink1, marginTop:6, fontVariantNumeric:'tabular-nums' }}>{usd0(cur.pRem)}</div>
                 </div>
               </div>
@@ -28958,8 +29056,8 @@
                   </g>
                 ))}
                 {depArea && <path d={depArea} fill="url(#profPlGrad)" />}
-                {months.length>1 && <path d={toLine(expArr)} fill="none" stroke={T.neg} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />}
-                {months.length>1 && <path d={toLine(depArr)} fill="none" stroke={T.pos} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />}
+                {months.length>1 && <path d={toSmooth(expArr)} fill="none" stroke={T.neg} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />}
+                {months.length>1 && <path d={toSmooth(depArr)} fill="none" stroke={T.pos} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />}
                 <circle cx={cxp(months.length-1)} cy={cyp(depArr[depArr.length-1]||0)} r="4" fill={T.pos} />
                 <circle cx={cxp(months.length-1)} cy={cyp(expArr[expArr.length-1]||0)} r="4" fill={T.neg} />
                 {months.map((m,i) => ((i % xLabelStep === 0 || i === months.length-1) ? <text key={'x'+i} x={cxp(i)} y={Hc-8} textAnchor="middle" fill={T.ink3} fontSize="13" fontFamily={MONO}>{m.label}</text> : null))}
@@ -28991,24 +29089,20 @@
             {/* FINANCIAL CARDS */}
             <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(200px,1fr))', gap:16, marginBottom:24 }}>
               <div style={tintCard(T.pos, 10)}>
-                <div style={{ ...finCardLbl, display:'flex', alignItems:'center', justifyContent:'center', gap:6, flexWrap:'wrap' }}>Commissions deposited <span style={tickStyle(tDep.up)}>{tDep.text}</span></div>
+                <div style={{ ...finCardLbl, ...finCardLblRow }}>Commissions deposited <span style={tickStyle(tDep.up)}>{tDep.text}</span></div>
                 <div style={finCardVal(T.pos)}>{usd0(cur.deposits)}</div>
-                <div style={finCardSub}>advances received</div>
               </div>
               <div style={tintCard(T.neg, 9)}>
-                <div style={{ ...finCardLbl, display:'flex', alignItems:'center', justifyContent:'center', gap:6, flexWrap:'wrap' }}>Total expenses <span style={tickStyle(tExp.up)}>{tExp.text}</span></div>
+                <div style={{ ...finCardLbl, ...finCardLblRow }}>Total expenses <span style={tickStyle(tExp.up)}>{tExp.text}</span></div>
                 <div style={finCardVal(T.neg)}>{usd0(totalExpenses)}</div>
-                <div style={finCardSub}>lead spend + one-off</div>
               </div>
               <div style={tintCard(T.pos, 10)}>
-                <div style={{ ...finCardLbl, display:'flex', alignItems:'center', justifyContent:'center', gap:6, flexWrap:'wrap' }}>Net profit <span style={tickStyle(tNet.up)}>{tNet.text}</span></div>
+                <div style={{ ...finCardLbl, ...finCardLblRow }}>Net profit <span style={tickStyle(tNet.up)}>{tNet.text}</span></div>
                 <div style={finCardVal(net>=0?T.pos:T.neg)}>{usd0(net)}</div>
-                <div style={finCardSub}>after lead spend &amp; expenses</div>
               </div>
               <div style={tintCard(T.pos, 10)}>
-                <div style={{ ...finCardLbl, display:'flex', alignItems:'center', justifyContent:'center', gap:6, flexWrap:'wrap' }}>Return on ad spend <span style={tickStyle(tRoas.up)}>{tRoas.text}</span></div>
+                <div style={{ ...finCardLbl, ...finCardLblRow }}>Return on lead spend <span style={tickStyle(tRoas.up)}>{tRoas.text}</span></div>
                 <div style={finCardVal(T.pos)}>{adSpend>0 ? roas.toFixed(1)+'×' : '—'}</div>
-                <div style={finCardSub}>deposited &divide; lead spend + marketing</div>
               </div>
             </div>
 
@@ -29017,7 +29111,7 @@
               <div style={monoLabel}>KPI tracking &middot; {periodLabel}</div>
               <div style={{ fontFamily:MONO, fontSize:11, color:T.ink3 }}>synced from activity log</div>
             </div>
-            <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(190px,1fr))', gap:16, marginBottom:24 }}>
+            <div className="tk-prof-kpi-grid">
               <div style={kpiCard}>
                 <div style={kpiLbl}>Calls<span style={tickStyle(tCalls.up)}>{tCalls.text}</span></div>
                 <div style={kpiVal}>{Math.round(cur.dials).toLocaleString('en-US')}</div>
@@ -29122,13 +29216,30 @@
                   )}
                   <div style={{ maxHeight:300, overflow:'auto', marginTop:4 }}>
                     {cur.oneOff.map(e => (
+                      editId === e.id ? (
+                        <div key={e.id} style={{ display:'flex', alignItems:'center', gap:8, padding:'11px 2px', borderBottom:'1px solid '+T.hairline, flexWrap:'wrap' }}>
+                          <span style={{ fontFamily:MONO, fontSize:11, color:T.ink3, width:46, flexShrink:0 }}>{fmtDay(e.expense_date)}</span>
+                          <select value={editForm.category} onChange={ev=>setEditForm({...editForm, category:ev.target.value})} style={{ ...inputBase, flex:'0 0 auto', padding:'7px 9px', fontFamily:"'Geist', sans-serif", cursor:'pointer' }}>
+                            {PROF_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+                          </select>
+                          <input type="text" value={editForm.note} onChange={ev=>setEditForm({...editForm, note:ev.target.value})} placeholder="What was it for?" style={{ ...inputBase, flex:'1 1 110px', minWidth:90, padding:'7px 9px', fontFamily:"'Geist', sans-serif" }} />
+                          <div style={{ position:'relative', flex:'0 0 96px' }}>
+                            <span style={{ position:'absolute', left:9, top:'50%', transform:'translateY(-50%)', color:T.ink4, fontSize:12, fontFamily:MONO }}>$</span>
+                            <input type="number" min="0" step="0.01" value={editForm.amount} onChange={ev=>setEditForm({...editForm, amount:ev.target.value})} onKeyDown={ev=>{ if(ev.key==='Enter'){ const amt=parseFloat(editForm.amount); if(amt&&amt>0){ onEditExpense(e.id, { category:editForm.category, note:(editForm.note||'').trim()||editForm.category, amount:Math.round(amt*100)/100 }); setEditId(null); } } }} style={{ ...inputBase, width:'100%', padding:'7px 8px 7px 18px' }} />
+                          </div>
+                          <button onClick={() => { const amt=parseFloat(editForm.amount); if(!amt||amt<=0) return; onEditExpense(e.id, { category:editForm.category, note:(editForm.note||'').trim()||editForm.category, amount:Math.round(amt*100)/100 }); setEditId(null); }} style={{ border:'none', background:T.green, color:T.accentText, cursor:'pointer', fontFamily:MONO, fontSize:10, fontWeight:600, letterSpacing:'.04em', textTransform:'uppercase', padding:'7px 11px', borderRadius:6 }}>Save</button>
+                          <button onClick={() => setEditId(null)} style={{ border:'1px solid '+T.hairlineStrong, background:'transparent', color:T.ink2, cursor:'pointer', fontFamily:MONO, fontSize:10, letterSpacing:'.04em', textTransform:'uppercase', padding:'7px 10px', borderRadius:6 }}>Cancel</button>
+                        </div>
+                      ) : (
                       <div key={e.id} style={{ display:'flex', alignItems:'center', gap:11, padding:'11px 2px', borderBottom:'1px solid '+T.hairline }}>
                         <span style={{ fontFamily:MONO, fontSize:11, color:T.ink3, width:46, flexShrink:0 }}>{fmtDay(e.expense_date)}</span>
                         <span style={{ display:'inline-block', fontFamily:MONO, fontSize:9, letterSpacing:'.05em', textTransform:'uppercase', padding:'3px 7px', borderRadius:5, background:'color-mix(in oklch, '+(HUE[e.category]||T.gray)+' 16%, transparent)', color:HUE[e.category]||T.gray, whiteSpace:'nowrap', flexShrink:0 }}>{e.category}</span>
                         <span style={{ flex:1, minWidth:0, fontSize:13, color:T.ink1, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{e.note}</span>
                         <span style={{ fontFamily:MONO, fontSize:13, color:T.neg, fontVariantNumeric:'tabular-nums' }}>&minus;{usd0(parseFloat(e.amount||0))}</span>
+                        {!readOnly && <button onClick={() => { setEditId(e.id); setEditForm({ category: PROF_CATEGORIES.indexOf(e.category) >= 0 ? e.category : 'Other', note: e.note || '', amount: String(e.amount != null ? e.amount : '') }); }} style={{ border:'none', background:'transparent', color:T.ink4, cursor:'pointer', fontSize:13, lineHeight:1, padding:'2px 5px', borderRadius:5 }} aria-label="Edit expense">&#9998;</button>}
                         {!readOnly && <button onClick={() => { if (window.confirm('Delete this expense?\n\n' + (e.note || e.category) + '  −' + usd0(parseFloat(e.amount||0)))) onDeleteExpense(e.id); }} style={{ border:'none', background:'transparent', color:T.ink4, cursor:'pointer', fontSize:16, lineHeight:1, padding:'2px 5px', borderRadius:5 }} aria-label="Remove expense">&times;</button>}
                       </div>
+                      )
                     ))}
                   </div>
                 </div>
@@ -29333,6 +29444,18 @@
               console.error('Add expense failed:', res.status, await res.text().catch(() => ''));
             }
           } catch (e) { console.error('Add expense failed:', e); }
+        };
+        const updateExpense = async (id, patch) => {
+          if (!agentProfile || viewingOther) return;
+          const prev = expenses;
+          setExpenses(prev.map(e => e.id === id ? Object.assign({}, e, patch) : e)); // optimistic
+          try {
+            const res = await fetch(SUPABASE_URL + '/rest/v1/expenses?id=eq.' + encodeURIComponent(id), {
+              method: 'PATCH', headers: HDRS_WRITE,
+              body: JSON.stringify(patch),
+            });
+            if (!res.ok) { console.error('Update expense failed:', res.status, await res.text().catch(() => '')); setExpenses(prev); }
+          } catch (e) { console.error('Update expense failed:', e); setExpenses(prev); }
         };
         const removeExpense = async (id) => {
           if (!agentProfile || viewingOther) return;
@@ -29925,6 +30048,7 @@
                   agentName={agentProfile.agent_name}
                   readOnly={viewingOther}
                   onAddExpense={addExpense}
+                  onEditExpense={updateExpense}
                   onDeleteExpense={removeExpense}
                   tf={tf}
                   customFrom={customFrom}
