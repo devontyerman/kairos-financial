@@ -34175,13 +34175,14 @@
           geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
           geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
           const material = new THREE.ShaderMaterial({
-            uniforms: { time: { value: 0 }, depth: { value: i } },
+            uniforms: { time: { value: 0 }, depth: { value: i }, viewSize: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) } },
             vertexShader: `
               attribute float size;
               attribute vec3 color;
               varying vec3 vColor;
               uniform float time;
               uniform float depth;
+              uniform vec2 viewSize;
               void main() {
                 vColor = color;
                 vec3 pos = position;
@@ -34195,11 +34196,15 @@
                 // the center of the scene.
                 float dz = -mvPosition.z;
                 gl_Position = projectionMatrix * mvPosition;
-                // Fade a star out as it nears dead-center of the screen so none
+                // Fade a star out as it nears the center of the screen so none
                 // ever sits behind the title as a stray white dot. Uses the real
                 // projected position each frame, so it tracks the moving camera.
+                // ndc.x is de-squished by aspect so the clear zone is roughly a
+                // screen circle (not a wide ellipse). Fully clear well past the
+                // title area, easing to full brightness toward the edges.
                 vec2 ndc = gl_Position.xy / gl_Position.w;
-                float centerFade = smoothstep(0.02, 0.09, length(ndc));
+                ndc.x *= (viewSize.x / viewSize.y);
+                float centerFade = smoothstep(0.14, 0.30, length(ndc));
                 gl_PointSize = (dz > 1.0 ? min(size * (300.0 / dz), 14.0) : 0.0) * centerFade;
               }
             `,
@@ -34338,6 +34343,9 @@
         refs.camera.aspect = w / h;
         refs.camera.updateProjectionMatrix();
         refs.renderer.setSize(w, h);
+        refs.stars.forEach((s) => {
+          if (s.material.uniforms && s.material.uniforms.viewSize) s.material.uniforms.viewSize.value.set(w, h);
+        });
       }
 
       function animate() {
