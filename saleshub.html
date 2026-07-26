@@ -33290,9 +33290,12 @@
       },
       links: {
         eo:       'https://app.nextinsurance.com/?bp_e=N0vjoMW0SLx6RPv17QbtOGy8ZWSabPdFv%2BwbDYGyAS5YWh%2BN0rh2w7Kyah8J%2B6YSR6xJ6swk4TCnounKEMGYHYz5%2FoUvL1wSEZPG1zjV8wHsNXjFlXHaWueQwtulprnB3C4Iv%2FqqR%2BRacxNATarRRbH36bryC%2FGarM8r7icQ2NemFKupaqFgtKVlFaOtphw1kOSPuWBkk5jtRocaDLMed%2F8U7%2FMDe3ElztKnorhHdjiuvJK0xjI1PwhZ05RpvGsRvcM1%2BJBs6UriMXm2s%2FkSyJdhLn5vx1jJPnEQMcx%2FCI1FtrqI71EG4I6ytMmDxlsiU8emfSC3LHUdS9hd2mzq6vl%2FZiAkCtZuUXFhWU48c9H5I7astZgSDX3fSoZ0A1hn&bp_no_cookies=1',   // NextInsurance E&O signup
-        discord1: '#',   // TODO: Discord server 1 invite
-        discord2: '#',   // TODO: Discord server 2 invite
-        crm:      '#',   // TODO: CRM signup URL
+        discord1: 'https://discord.gg/BcXEphwVCA',   // Kairos — team group chat
+        discord2: 'https://discord.gg/gjftwt2y6c',   // Thrive — main agency Discord
+        discordVideo: 'https://www.youtube.com/embed/z5c6Bc-S0TI',   // optional "how to use Discord" tutorial
+        crm:      'https://buy.stripe.com/00w14n0A5bLC4lhd4h2VG2n',   // CRM signup ($1/mo, free 30 days)
+        states:   'https://nipr.com/',   // purchase additional non-resident state licenses
+        licenseCourse: 'https://partners.xcelsolutions.com/ffldisruption-v3dc',   // pre-licensing course (Life only)
         headsetRecommended: 'https://www.amazon.com/Jabra-Evolve2-Wireless-Stereo-Headset/dp/B0C1D8JYZ7?crid=2XKR1EYM2V7UM&dib=eyJ2IjoiMSJ9.-xiMbeh7bkdj-gZ5WyHSe8ZEQayAw5fYT5eXVA910ZZdFZKkz-hwFH4mMtyDuJDtuZGV0LHuMOAke9qYehIUjxUexOc-iYgXW34wcN8bAPoemP3UpUrtgvYcHFtT3-q0_4SOgZUqBa_5IFsjfTpNPcI9FMgpj0dTuu34th3T_WQYvmeYU_x91B535AB7ra8mLRam4GR8RsXOiwo7bel6IMSWLnIsfbzoctwurPyiewo.xwpIzjREIWBnNMxq0U3fUzX4DCvcjxaV9z10P8QciEA&dib_tag=se&keywords=jabra+evolve+2+65+flex&qid=1780784262&sprefix=jabra+evolve+2+65+fle,aps,262&sr=8-3&linkCode=sl2&tag=devkenneth-20&linkId=af270a651b9337d318d80120bb0cd913&language=en_US&ref_=as_li_ss_tl',
         headsetBudget:      'https://www.amazon.com/Logitech-Bluetooth-Noise-Canceling-Microphone-Compatible/dp/B0CVF9J862?crid=26CQMWLH1BO9C&dib=eyJ2IjoiMSJ9.C5ZN2VSj1hVn1nHpC7tXm2C1cc40CbFxYUo9FQ6PH5jaqDD8eth9zOFs32t1rF1IK6Yn5FptK84vUbUfOcgeHHCydu5zZASQ1MFdO4d5Lsdb9ttsXk0RuXkqBAISNhkU8oj4NCX-k2Si5l4DwzmG0rViM09HMh5sLk8iq4DS4dgiCMPTjZyuLFaA14XEAQo53x7KyxRcviZkoS9y4gRWrieM2UXFa7CCeU5Zl2aXJAI.I8iaw0Amnz9yJkJSZEKAGyvIqKq5g1jcrV-AAdt3j2Y&dib_tag=se&keywords=call%2Bcenter%2Bheadset%2Bwireless&qid=1780784415&sprefix=call%2Bcenter%2Bheadset%2Bwirele,aps,270&sr=8-3&th=1&linkCode=sl2&tag=kairosfinanci-20&linkId=ec026bbf5e6aa9da1aedda585a76cf71&language=en_US&ref_=as_li_ss_tl',
       },
@@ -33318,12 +33321,12 @@
     // a real password immediately. `training` hands off to the R2 training system.
     const STEPS = [
       { id: 'account',  label: 'Account' },
-      { id: 'welcome',  label: 'Welcome' },
-      { id: 'profile',  label: 'Profile' },
       { id: 'photo',    label: 'Photo' },
+      { id: 'welcome',  label: 'Welcome' },
       { id: 'goals',    label: 'Goals' },
       { id: 'commit',   label: 'Commitment' },
       { id: 'license',  label: 'License / NPN' },
+      { id: 'exam',     label: 'Exam' },
       { id: 'states',   label: 'States' },
       { id: 'eo',       label: 'E&O' },
       { id: 'discord',  label: 'Discord' },
@@ -33413,8 +33416,8 @@
         photo: null,
         why: '', stg: ['', '', ''], ltg: ['', '', ''], vision: '', skills: ['', '', ''], quits: ['', '', ''],
         signedName: '', signedAt: null,
-        licensed: null, npn: '',
-        checks: { eo: false, d1: false, d2: false, crm: false, cal: false, headset: false },
+        licensed: null, npn: '', examDate: '',
+        checks: { eo: false, d1: false, d2: false, app: false, crm: false, cal: false, headset: false, statesAck: false },
         videos: {}, stateBuys: {},
         step: 0, furthest: 0,
       };
@@ -33449,6 +33452,7 @@
       if (rc) {
         d.city = rc.city || ''; d.st = rc.state || ''; d.zip = rc.zip || '';
         d.resState = rc.resident_state || ''; d.dob = rc.dob || '';
+        d.examDate = rc.exam_date || '';
         d.phone = d.phone || rc.phone || '';
         d.why = rc.their_why || '';
         d.vision = rc.vision || '';
@@ -33538,6 +33542,8 @@
             if (!d.password || d.password.length < 6) return setErr('Please create a password (at least 6 characters) so you can log in next time.');
             if (d.password !== d.password2) return setErr('Passwords don’t match.');
           }
+          // Profile details (folded in from the old separate Profile step).
+          if (!d.city.trim() || !d.st || !d.zip.trim() || !d.resState || !d.dob) return setErr('Please fill out every field, including your city, state, ZIP, resident state, and date of birth.');
         }
         if (d.password || d.password2) {   // if they typed one, still validate it
           if (d.password.length < 6) return setErr('Password must be at least 6 characters.');
@@ -33552,16 +33558,28 @@
             if (!r.ok) { setBusy(false); return setErr('Could not set your password — please try again.'); }
           }
           await patchAgent({ agent_name: nm, phone: d.phone.trim() || null });
-          await patchRecruit({ full_name: nm, phone: d.phone.trim() || null });
+          await patchRecruit({ full_name: nm, phone: d.phone.trim() || null, city: d.city.trim() || null, state: d.st || null, zip: d.zip.trim() || null, resident_state: d.resState || null, dob: d.dob || null });
         } catch (e) { setBusy(false); return setErr('Something went wrong saving your account.'); }
         setBusy(false); next();
       };
-      const saveProfile = async () => {
+      // Exam step: save the booked/committed exam date, or skip if already licensed.
+      const saveExam = async () => {
         setErr('');
-        if (!KFO_TEST_MODE && !KFO_PREVIEW && (!d.city.trim() || !d.st || !d.zip.trim() || !d.resState || !d.dob)) return setErr('Please fill out every field before continuing.');
+        if (!KFO_TEST_MODE && !KFO_PREVIEW && !d.examDate) return setErr('Please select your exam date — the date you’ve booked, or the date you’re committing to take it by.');
         setBusy(true);
-        await patchRecruit({ city: d.city.trim() || null, state: d.st || null, zip: d.zip.trim() || null, resident_state: d.resState || null, dob: d.dob || null });
+        await patchRecruit({ exam_date: d.examDate || null });
         setBusy(false); next();
+      };
+      const skipExam = () => { setErr(''); next(); };
+      // States step NPN gate: an un-licensed agent must enter their NPN here
+      // before they can purchase states / proceed. Saves + unlocks in place.
+      const saveNpnStay = async () => {
+        setErr('');
+        if (!KFO_TEST_MODE && !KFO_PREVIEW && !(d.npn && String(d.npn).trim())) return setErr('Please enter your NPN to continue.');
+        setBusy(true);
+        await patchAgent({ npn: String(d.npn).trim() || null, licensed: true });
+        set({ licensed: true });
+        setBusy(false);
       };
       const saveGoals = async () => {
         setErr('');
@@ -33638,23 +33656,28 @@
 
       // ── per-step body ──
       let body = null;
-      if (cur === 'welcome') body = (
+      if (cur === 'welcome') {
+        const examBy = new Date(Date.now() + 10 * 864e5).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+        body = (
         <div className="kfo-screen">
-          <H title="Welcome to Kairos Financial" sub="Start with this short video from the team — then we'll get your account set up." />
-          <VideoBox url={KFO_CONFIG.videos.welcome} slot="welcome" big done={d.videos.welcome >= 100} onDone={() => markVideo('welcome')} />
-          <div className="kfo-actions">
-            <NextBtn on={() => next()} disabled={!req(d.videos.welcome >= 100)}>Continue →</NextBtn>
-            <span className="kfo-hint">{d.videos.welcome >= 100 ? 'Nice — let’s keep going.' : 'Watch the video to continue.'}</span>
+          <H title="Welcome to Kairos Financial" sub="We're glad to have you on board! 🎉" />
+          <div className="kfo-card">
+            <div className="kfo-para" style={{ marginTop: 0 }}>We're excited you're here and can't wait to see you win. Take a minute to get set up — but here's the one thing that matters most right now:</div>
+            <div className="kfo-cardtitle" style={{ marginTop: 18 }}>🎯 Focus #1: get your insurance exam done</div>
+            <div className="kfo-para">Your top priority is passing your state life insurance exam. We expect you to pass it <strong>within 10 days</strong> — by <strong>{examBy}</strong>. The sooner you're licensed, the sooner you can start writing business and earning. Everything else in this onboarding gets you ready to hit the ground running.</div>
           </div>
+          <div className="kfo-actions"><NextBtn on={() => next()}>Let’s go →</NextBtn></div>
         </div>
       );
+      }
       else if (cur === 'account') body = (
         <div className="kfo-screen">
           <H title="Set up your account" sub="Confirm your details and choose a password so you can log back in any time." />
           <div className="kfo-card">
+            <div className="kfo-cardtitle" style={{ marginBottom: 14 }}>Your login</div>
             <div className="kfo-grid2">
-              <Field label="First name"><input className="kfo-inp" value={d.first} onChange={e => set({ first: e.target.value })} placeholder="Jordan" /></Field>
-              <Field label="Last name"><input className="kfo-inp" value={d.last} onChange={e => set({ last: e.target.value })} placeholder="Ellis" /></Field>
+              <Field label="First name · required"><input className="kfo-inp" value={d.first} onChange={e => set({ first: e.target.value })} placeholder="Jordan" /></Field>
+              <Field label="Last name · required"><input className="kfo-inp" value={d.last} onChange={e => set({ last: e.target.value })} placeholder="Ellis" /></Field>
               <Field label="Phone number · required"><input className="kfo-inp" type="tel" value={d.phone} onChange={e => set({ phone: e.target.value })} placeholder="(555) 201-8834" /></Field>
               <Field label="Email"><input className="kfo-inp" value={d.email} disabled style={{ opacity: .7 }} /></Field>
               <Field label="Create a password · required"><input className="kfo-inp" type="password" value={d.password} onChange={e => set({ password: e.target.value })} placeholder="Min 6 characters" /></Field>
@@ -33662,23 +33685,19 @@
             </div>
             <div className="kfo-note">You logged in from your invite link. Setting a password lets you sign in normally next time.</div>
           </div>
-          {err && <div className="kfo-err">{err}</div>}
-          <div className="kfo-actions"><NextBtn on={saveAccount} disabled={busy}>{busy ? 'Saving…' : 'Save & continue →'}</NextBtn></div>
-        </div>
-      );
-      else if (cur === 'profile') body = (
-        <div className="kfo-screen">
-          <H title="Complete your profile" sub="A few details we need for licensing and contracting." />
           <div className="kfo-card">
+            <div className="kfo-cardtitle" style={{ marginBottom: 14 }}>A few more details</div>
+            <div className="kfo-carddesc" style={{ marginBottom: 14 }}>We need these for licensing and contracting — all fields are required.</div>
             <div className="kfo-grid2">
-              <Field label="City"><input className="kfo-inp" value={d.city} onChange={e => set({ city: e.target.value })} placeholder="Austin" /></Field>
-              <Field label="State"><select className="kfo-inp" value={d.st} onChange={e => set({ st: e.target.value })}><option value="">Select…</option>{US_STATES.map(u => <option key={u} value={u}>{u}</option>)}</select></Field>
-              <Field label="ZIP"><input className="kfo-inp" value={d.zip} onChange={e => set({ zip: e.target.value })} placeholder="78701" /></Field>
-              <Field label="Resident state (licensing)"><select className="kfo-inp" value={d.resState} onChange={e => set({ resState: e.target.value })}><option value="">Select…</option>{US_STATES.map(u => <option key={u} value={u}>{u}</option>)}</select></Field>
-              <Field label="Date of birth"><input className="kfo-inp" type="date" value={d.dob} onChange={e => set({ dob: e.target.value })} /></Field>
+              <Field label="City · required"><input className="kfo-inp" value={d.city} onChange={e => set({ city: e.target.value })} placeholder="Austin" /></Field>
+              <Field label="State · required"><select className="kfo-inp" value={d.st} onChange={e => set({ st: e.target.value })}><option value="">Select…</option>{US_STATES.map(u => <option key={u} value={u}>{u}</option>)}</select></Field>
+              <Field label="ZIP · required"><input className="kfo-inp" value={d.zip} onChange={e => set({ zip: e.target.value })} placeholder="78701" /></Field>
+              <Field label="Resident state (licensing) · required"><select className="kfo-inp" value={d.resState} onChange={e => set({ resState: e.target.value })}><option value="">Select…</option>{US_STATES.map(u => <option key={u} value={u}>{u}</option>)}</select></Field>
+              <Field label="Date of birth · required"><input className="kfo-inp" type="date" value={d.dob} onChange={e => set({ dob: e.target.value })} /></Field>
             </div>
           </div>
-          <div className="kfo-actions"><NextBtn on={saveProfile} disabled={busy}>{busy ? 'Saving…' : 'Save & continue →'}</NextBtn></div>
+          {err && <div className="kfo-err">{err}</div>}
+          <div className="kfo-actions"><NextBtn on={saveAccount} disabled={busy}>{busy ? 'Saving…' : 'Save & continue →'}</NextBtn></div>
         </div>
       );
       else if (cur === 'photo') body = (
@@ -33784,71 +33803,151 @@
             )}
             {d.licensed === false && (
               <div className="kfo-card">
-                <span className="kfo-badge">Paused until you're licensed</span>
-                <div className="kfo-para">No problem — pass your state exam first, then come back here with your National Producer Number. Your progress is saved, and everything you've written stays right where you left it.</div>
-                <div className="kfo-cardtitle" style={{ marginTop: 20 }}>Tips for studying for the exam</div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 10 }}>
-                  {KFO_CONFIG.studyTips.map((t, i) => <div key={i} style={{ padding: '10px 13px', border: '1px dashed var(--bd)', borderRadius: 11, fontSize: 13, color: 'var(--tx3)', fontFamily: 'ui-monospace,Menlo,monospace' }}>{t}</div>)}
+                <span className="kfo-badge">No license yet — no problem</span>
+                <div className="kfo-para">You don't need your license to keep going. On the next step we'll show you exactly how to get it and help you lock in an exam date. Your progress is saved the whole way.</div>
+                <div className="kfo-actions" style={{ marginTop: 18 }}>
+                  <NextBtn on={() => next()}>Continue →</NextBtn>
+                  <button className="kfo-btn ghost" onClick={() => setLicensed(true)}>Actually, I have my NPN</button>
                 </div>
-                <button className="kfo-btn" style={{ marginTop: 20 }} onClick={() => setLicensed(true)}>I have my NPN now →</button>
               </div>
             )}
           </div>
         );
       }
+      else if (cur === 'exam') body = (
+        <div className="kfo-screen">
+          <H title="Get your life insurance license" sub="If you're not licensed yet, here's exactly how to get it done — fast." />
+          <div className="kfo-card" style={{ display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap' }}>
+            <button className="kfo-btn ghost" onClick={skipExam}>I already have my life insurance license →</button>
+            <span className="kfo-hint">Already licensed? Skip this step.</span>
+          </div>
+          <div className="kfo-card">
+            <div className="kfo-cardtitle">1 · Take the pre-licensing course</div>
+            <div className="kfo-carddesc">Enroll through the link below. Important: for now you only need the <strong>Life insurance</strong> course — <strong>not</strong> the Life &amp; Health course.</div>
+            <div style={{ marginTop: 14 }}><a className="kfo-btn ghost" href={KFO_CONFIG.links.licenseCourse} target="_blank" rel="noopener">Open the licensing course ↗</a></div>
+          </div>
+          <div className="kfo-card">
+            <div className="kfo-cardtitle">2 · How to study</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 8 }}>
+              {KFO_CONFIG.studyTips.map((t, i) => <div key={i} className="kfo-carddesc" style={{ margin: 0 }}>• {t}</div>)}
+            </div>
+          </div>
+          <div className="kfo-card">
+            <div className="kfo-cardtitle">3 · When is your exam?</div>
+            <div className="kfo-carddesc">Pick the date you've booked your exam for. Haven't booked it yet? Pick the date you're <strong>committing</strong> to take it by — we expect you licensed within 10 days.</div>
+            <div style={{ marginTop: 14, maxWidth: 260 }}>
+              <Field label="Exam date · required"><input className="kfo-inp" type="date" value={d.examDate} onChange={e => set({ examDate: e.target.value })} /></Field>
+            </div>
+          </div>
+          {err && <div className="kfo-err">{err}</div>}
+          <div className="kfo-actions"><NextBtn on={saveExam} disabled={busy || !req(d.examDate)}>{busy ? 'Saving…' : 'Save & continue →'}</NextBtn></div>
+        </div>
+      );
       else if (cur === 'states') {
         const toggle = (name) => setD(s => Object.assign({}, s, { stateBuys: Object.assign({}, s.stateBuys, { [name]: !s.stateBuys[name] }) }));
+        const hasNpn = d.licensed === true;
         body = (
           <div className="kfo-screen">
-            <H title="Purchase additional states" sub="Watch how to add non-resident state licenses, then check each one off as you purchase it." />
-            <VideoBox url={KFO_CONFIG.videos.states} slot="states" done={d.videos.states >= 100} onDone={() => markVideo('states')} />
-            <div className="kfo-card">
-              <div className="kfo-cardtitle">States to purchase</div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 12 }}>
-                {KFO_CONFIG.statesToBuy.map((name) => { const on = !!d.stateBuys[name]; return (
-                  <button key={name} onClick={() => toggle(name)} className="kfo-checkrow">
-                    <span className={'kfo-box' + (on ? ' on' : '')}>{on ? '✓' : ''}</span>
-                    <span style={{ fontWeight: 600 }}>{name}</span>
-                    <span style={{ marginLeft: 'auto', fontSize: 12, color: 'var(--tx3)' }}>{on ? 'Purchased' : 'Pending'}</span>
-                  </button>); })}
+            <H title="Purchase additional states" sub="You'll write business in more than just your home state. Add non-resident licenses through NIPR, then check each one off as you buy it." />
+            {!hasNpn ? (
+              <div className="kfo-card">
+                <span className="kfo-badge">Your NPN is required to continue</span>
+                <div className="kfo-para">This is the point where you need to be licensed to go any further. Once you've passed your exam, enter your National Producer Number (NPN) below — then you can purchase your states and finish onboarding.</div>
+                <div style={{ maxWidth: 460, marginTop: 16 }}>
+                  <div className="kfo-lbl">National Producer Number · required</div>
+                  <input className="kfo-inp" value={d.npn} inputMode="numeric" onChange={e => set({ npn: e.target.value.replace(/[^0-9]/g, '') })} placeholder="e.g. 18223344" style={{ fontSize: 15, fontWeight: 600 }} />
+                  <div className="kfo-hint" style={{ marginTop: 8 }}>Numbers only. Find it at nipr.com if you're not sure.</div>
+                </div>
+                {err && <div className="kfo-err" style={{ marginTop: 10 }}>{err}</div>}
+                <div className="kfo-actions" style={{ marginTop: 16 }}><NextBtn on={saveNpnStay} disabled={busy || !req(d.npn && d.npn.trim())}>{busy ? 'Saving…' : 'Save NPN & unlock states'}</NextBtn></div>
               </div>
-            </div>
-            <div className="kfo-actions"><NextBtn on={() => next()} disabled={!req(d.videos.states >= 100)}>Continue →</NextBtn><span className="kfo-hint">{KFO_TEST_MODE ? 'Check off states as you buy them — you can return to this later.' : 'Watch the walkthrough to continue.'}</span></div>
+            ) : (
+              <>
+                <div className="kfo-card">
+                  <div className="kfo-cardtitle">How to purchase</div>
+                  <div className="kfo-carddesc">Head to NIPR, sign in (or create an account), choose the states you want to add, and complete the payment. Each state is a separate non-resident license.</div>
+                  <div style={{ marginTop: 14 }}><a className="kfo-btn ghost" href={KFO_CONFIG.links.states} target="_blank" rel="noopener">Open NIPR ↗</a></div>
+                </div>
+                <div className="kfo-card">
+                  <div className="kfo-cardtitle">States to purchase</div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 12 }}>
+                    {KFO_CONFIG.statesToBuy.map((name) => { const on = !!d.stateBuys[name]; return (
+                      <button key={name} onClick={() => toggle(name)} className="kfo-checkrow">
+                        <span className={'kfo-box' + (on ? ' on' : '')}>{on ? '✓' : ''}</span>
+                        <span style={{ fontWeight: 600 }}>{name}</span>
+                        <span style={{ marginLeft: 'auto', fontSize: 12, color: 'var(--tx3)' }}>{on ? 'Purchased' : 'Pending'}</span>
+                      </button>); })}
+                  </div>
+                </div>
+                <div className="kfo-card">
+                  <div className="kfo-cardtitle">Important — validate your new licenses</div>
+                  <div className="kfo-carddesc">When your additional states come in, you must send your state license number over to the insurance carriers so they can validate your license, or you will not be able to write products in those states.</div>
+                  <label className="kfo-check" style={{ marginTop: 14 }}><input type="checkbox" checked={!!d.checks.statesAck} onChange={e => setD(s => Object.assign({}, s, { checks: Object.assign({}, s.checks, { statesAck: e.target.checked }) }))} /> I understand — I'll send my license numbers to the carriers</label>
+                </div>
+                <div className="kfo-actions"><NextBtn on={() => next()} disabled={!req(d.checks.statesAck)}>Continue →</NextBtn><span className="kfo-hint">{d.checks.statesAck ? 'Check off states as you buy them — you can return to this later.' : 'Read and acknowledge the note above to continue.'}</span></div>
+              </>
+            )}
           </div>
         );
       }
       else if (cur === 'eo') body = (
         <div className="kfo-screen">
-          <H title="Errors & Omissions insurance" sub="Every agent needs an active E&O policy. Watch the walkthrough, then purchase yours." />
-          <VideoBox url={KFO_CONFIG.videos.eo} slot="eo" done={d.videos.eo >= 100} onDone={() => markVideo('eo')} />
-          <div className="kfo-card" style={{ display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap' }}>
-            <a className="kfo-btn ghost" href={KFO_CONFIG.links.eo} target="_blank" rel="noopener">Open E&O signup ↗</a>
-            <label className="kfo-check"><input type="checkbox" checked={!!d.checks.eo} onChange={e => setD(s => Object.assign({}, s, { checks: Object.assign({}, s.checks, { eo: e.target.checked }) }))} /> I've purchased my E&O policy</label>
+          <H title="Errors & Omissions insurance" sub="Every agent needs an active E&O policy before writing business." />
+          <div className="kfo-card">
+            <div className="kfo-cardtitle">What you need to buy</div>
+            <div className="kfo-carddesc">You only need the <strong>$1,000,000 Errors &amp; Omissions</strong> coverage — that's it. When you sign up they may try to upsell you <strong>General Liability</strong>; you do <strong>not</strong> need that, so leave it off.</div>
+            <div style={{ marginTop: 14, display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap' }}>
+              <a className="kfo-btn ghost" href={KFO_CONFIG.links.eo} target="_blank" rel="noopener">Open E&O signup ↗</a>
+              <label className="kfo-check"><input type="checkbox" checked={!!d.checks.eo} onChange={e => setD(s => Object.assign({}, s, { checks: Object.assign({}, s.checks, { eo: e.target.checked }) }))} /> I've purchased my $1M E&O policy</label>
+            </div>
           </div>
-          <div className="kfo-actions"><NextBtn on={() => next()} disabled={!req(d.videos.eo >= 100 && d.checks.eo)}>Continue →</NextBtn>{!KFO_TEST_MODE && <span className="kfo-hint">Watch the walkthrough and confirm your E&O policy.</span>}</div>
+          <div className="kfo-actions"><NextBtn on={() => next()} disabled={!req(d.checks.eo)}>Continue →</NextBtn>{!KFO_TEST_MODE && <span className="kfo-hint">Confirm your E&O policy to continue.</span>}</div>
         </div>
       );
       else if (cur === 'discord') body = (
         <div className="kfo-screen">
-          <H title="Join our Discord" sub="This is where the team lives — announcements, training, and daily wins. Join both servers." />
+          <H title="Join our Discord" sub="This is where the team lives — announcements, training, and daily wins. Join both servers below." />
           <div className="kfo-card">
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-              <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}><a className="kfo-btn ghost" href={KFO_CONFIG.links.discord1} target="_blank" rel="noopener">Join Discord server 1 ↗</a><label className="kfo-check"><input type="checkbox" checked={!!d.checks.d1} onChange={e => setD(s => Object.assign({}, s, { checks: Object.assign({}, s.checks, { d1: e.target.checked }) }))} /> Joined</label></div>
-              <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}><a className="kfo-btn ghost" href={KFO_CONFIG.links.discord2} target="_blank" rel="noopener">Join Discord server 2 ↗</a><label className="kfo-check"><input type="checkbox" checked={!!d.checks.d2} onChange={e => setD(s => Object.assign({}, s, { checks: Object.assign({}, s.checks, { d2: e.target.checked }) }))} /> Joined</label></div>
+            <div className="kfo-cardtitle">New to Discord?</div>
+            <div className="kfo-carddesc">If you've never used Discord before, watch this quick tutorial. It's optional — skip it if you already know your way around.</div>
+            <div style={{ position: 'relative', aspectRatio: '16 / 9', marginTop: 14, borderRadius: 12, overflow: 'hidden', background: '#000' }}>
+              <iframe src={KFO_CONFIG.links.discordVideo} title="How to use Discord" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', border: 0 }} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen></iframe>
             </div>
           </div>
-          <div className="kfo-actions"><NextBtn on={() => next()} disabled={!req(d.checks.d1 && d.checks.d2)}>Continue →</NextBtn>{!KFO_TEST_MODE && <span className="kfo-hint">Join both servers and check them off.</span>}</div>
+          <div className="kfo-card">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+              <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
+                <a className="kfo-btn ghost" href={KFO_CONFIG.links.discord1} target="_blank" rel="noopener">Join Kairos ↗</a>
+                <label className="kfo-check"><input type="checkbox" checked={!!d.checks.d1} onChange={e => setD(s => Object.assign({}, s, { checks: Object.assign({}, s.checks, { d1: e.target.checked }) }))} /> Joined Kairos</label>
+              </div>
+              <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
+                <a className="kfo-btn ghost" href={KFO_CONFIG.links.discord2} target="_blank" rel="noopener">Join Thrive ↗</a>
+                <label className="kfo-check"><input type="checkbox" checked={!!d.checks.d2} onChange={e => setD(s => Object.assign({}, s, { checks: Object.assign({}, s.checks, { d2: e.target.checked }) }))} /> Joined Thrive</label>
+              </div>
+            </div>
+            <div className="kfo-note"><strong>Kairos</strong> is our team group chat. <strong>Thrive</strong> is the main agency Discord — it's where we dial out of and where team meetings are held. You need to be in both.</div>
+          </div>
+          <div className="kfo-card">
+            <div className="kfo-cardtitle">Two must-dos</div>
+            <div className="kfo-carddesc">Download the Discord app on your phone and turn your notifications <strong>on</strong> — that's how you'll catch team calls, announcements, and pings in real time.</div>
+            <label className="kfo-check" style={{ marginTop: 14 }}><input type="checkbox" checked={!!d.checks.app} onChange={e => setD(s => Object.assign({}, s, { checks: Object.assign({}, s.checks, { app: e.target.checked }) }))} /> I've downloaded the app on my phone and turned notifications on</label>
+          </div>
+          <div className="kfo-actions"><NextBtn on={() => next()} disabled={!req(d.checks.d1 && d.checks.d2 && d.checks.app)}>Continue →</NextBtn>{!KFO_TEST_MODE && <span className="kfo-hint">Join both servers, get the app, and check everything off.</span>}</div>
         </div>
       );
       else if (cur === 'crm') body = (
         <div className="kfo-screen">
-          <H title="Sign up for the CRM" sub="Your CRM keeps every lead and client in one place. Watch the walkthrough, then create your account." />
-          <VideoBox url={KFO_CONFIG.videos.crm} slot="crm" done={d.videos.crm >= 100} onDone={() => markVideo('crm')} />
-          <div className="kfo-card" style={{ display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap' }}>
-            <a className="kfo-btn ghost" href={KFO_CONFIG.links.crm} target="_blank" rel="noopener">Open CRM signup ↗</a>
-            <label className="kfo-check"><input type="checkbox" checked={!!d.checks.crm} onChange={e => setD(s => Object.assign({}, s, { checks: Object.assign({}, s.checks, { crm: e.target.checked }) }))} /> I've created my CRM account</label>
+          <H title="Sign up for the CRM" sub="Your CRM keeps every lead and client in one place." />
+          <div className="kfo-card">
+            <div className="kfo-cardtitle">Click the link and sign up</div>
+            <div className="kfo-carddesc">Your CRM is only <strong>$1 a month</strong> and <strong>free for the first 30 days</strong>. The only reason we charge anything is so we can set up a Stripe account and bill you for your inbound calls — that's it.</div>
+            <div className="kfo-carddesc" style={{ marginTop: 8 }}>Once you've signed up, reach out to your mentor to let them know.</div>
+            <div style={{ marginTop: 14, display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap' }}>
+              <a className="kfo-btn ghost" href={KFO_CONFIG.links.crm} target="_blank" rel="noopener">Sign up for the CRM ↗</a>
+              <label className="kfo-check"><input type="checkbox" checked={!!d.checks.crm} onChange={e => setD(s => Object.assign({}, s, { checks: Object.assign({}, s.checks, { crm: e.target.checked }) }))} /> I've signed up and told my mentor</label>
+            </div>
           </div>
-          <div className="kfo-actions"><NextBtn on={() => next()} disabled={!req(d.videos.crm >= 100 && d.checks.crm)}>Continue →</NextBtn>{!KFO_TEST_MODE && <span className="kfo-hint">Watch the walkthrough and confirm your CRM account.</span>}</div>
+          <div className="kfo-actions"><NextBtn on={() => next()} disabled={!req(d.checks.crm)}>Continue →</NextBtn>{!KFO_TEST_MODE && <span className="kfo-hint">Sign up and confirm to continue.</span>}</div>
         </div>
       );
       else if (cur === 'headset') body = (
