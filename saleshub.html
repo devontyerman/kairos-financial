@@ -12449,6 +12449,112 @@
       background: var(--kfa-surface-3);
       border-color: var(--kfa-hairline-strong);
     }
+
+    /* ═══════════════════════════════════════════════════════════════════════
+       GREEN / ROUNDED re-skin — recruiting (.rhq) aesthetic for the logged-out
+       "Sign in required" gate + the Log In modal. Overrides the older blue/dark
+       auth skin above (same selectors, placed later so these win). Palette +
+       Instrument Sans track the recruiting pages; light/dark follow
+       data-kf-theme (app default is dark).
+       ═══════════════════════════════════════════════════════════════════════ */
+    #signupOverlay, .kf-gate {
+      --kfg-bg:#F6F6F4; --kfg-sf:#FFFFFF; --kfg-sf2:#F0F0ED; --kfg-bd:#E7E7E2;
+      --kfg-tx:#2E2B2B; --kfg-tx2:#454040; --kfg-tx3:#9C9694;
+      --kfg-ac:#A1CB35; --kfg-acOn:#232B07; --kfg-acDeep:#5F7F10; --kfg-acSoft:#EFF6D9;
+      --kfg-sh:0 1px 2px rgba(40,38,30,.06),0 14px 44px rgba(40,38,30,.16);
+      --kfg-sb:#EFF7DA; --kfg-sfg:#5F7F10; --kfg-db:#FDE0E0; --kfg-df:#D90000;
+    }
+    html[data-kf-theme="dark"] #signupOverlay, html[data-kf-theme="dark"] .kf-gate {
+      --kfg-bg:#121110; --kfg-sf:#1B1A18; --kfg-sf2:#242220; --kfg-bd:#2F2D2A;
+      --kfg-tx:#F4F3F1; --kfg-tx2:#B3AFAB; --kfg-tx3:#736F6B;
+      --kfg-acOn:#1A2005; --kfg-acDeep:#B9DD5E; --kfg-acSoft:#2A3313;
+      --kfg-sh:0 1px 2px rgba(0,0,0,.4),0 18px 54px rgba(0,0,0,.52);
+      --kfg-sb:#28330F; --kfg-sfg:#C6E378; --kfg-db:#421515; --kfg-df:#FF6B6B;
+    }
+
+    /* ── Log In modal ── */
+    #signupOverlay.ss-signup-overlay {
+      background: color-mix(in srgb, var(--kfg-bg) 62%, transparent) !important;
+      backdrop-filter: blur(8px) !important;
+    }
+    #signupOverlay .ss-signup-modal {
+      background: var(--kfg-sf) !important;
+      border: 1px solid var(--kfg-bd) !important;
+      border-radius: 20px !important;
+      padding: 28px 28px 26px !important;
+      max-width: 420px !important; width: 92% !important;
+      box-shadow: var(--kfg-sh) !important;
+      color: var(--kfg-tx) !important;
+      font-family: 'Instrument Sans','Inter',system-ui,sans-serif !important;
+    }
+    #signupOverlay .ss-signup-close {
+      width: 34px !important; height: 34px !important; border-radius: 50% !important;
+      top: 16px !important; right: 16px !important;
+      background: var(--kfg-sf2) !important; border: 1px solid var(--kfg-bd) !important;
+      color: var(--kfg-tx3) !important; font-size: 18px !important;
+    }
+    #signupOverlay .ss-signup-close:hover { background: var(--kfg-bd) !important; color: var(--kfg-tx) !important; }
+    #signupOverlay .ss-auth-tabs { border-bottom: 1px solid var(--kfg-bd) !important; margin-bottom: 20px !important; }
+    #signupOverlay .ss-auth-tab {
+      font-family: inherit !important; color: var(--kfg-tx3) !important; background: transparent !important;
+      font-size: 14px !important; font-weight: 700 !important; letter-spacing: -.01em !important;
+      padding: 10px 2px !important; margin-right: 18px !important;
+      border: none !important; border-bottom: 2px solid transparent !important;
+    }
+    #signupOverlay .ss-auth-tab:hover { color: var(--kfg-tx) !important; }
+    #signupOverlay .ss-auth-tab.active { color: var(--kfg-tx) !important; border-bottom-color: var(--kfg-ac) !important; }
+    #signupOverlay h2, #signupOverlay h3 { color: var(--kfg-tx) !important; font-family: inherit !important; font-weight: 700 !important; letter-spacing: -.02em !important; }
+    #signupOverlay p, #signupOverlay form p { color: var(--kfg-tx2) !important; font-size: 13px !important; line-height: 1.55 !important; }
+    #signupOverlay .ss-signup-field { margin-bottom: 14px !important; }
+    #signupOverlay .ss-signup-field label, #signupOverlay label {
+      font-family: inherit !important; font-size: 11px !important; text-transform: uppercase !important;
+      letter-spacing: .06em !important; color: var(--kfg-tx3) !important; font-weight: 700 !important;
+      display: block !important; margin-bottom: 6px !important;
+    }
+    #signupOverlay input[type="text"], #signupOverlay input[type="email"], #signupOverlay input[type="password"] {
+      width: 100% !important; box-sizing: border-box !important;
+      background: var(--kfg-bg) !important; border: 1px solid var(--kfg-bd) !important;
+      border-radius: 11px !important; color: var(--kfg-tx) !important;
+      font-family: inherit !important; font-size: 13.5px !important; padding: 11px 13px !important;
+      box-shadow: none !important;
+    }
+    #signupOverlay input::placeholder { color: var(--kfg-tx3) !important; }
+    #signupOverlay input:focus { outline: 2px solid rgba(161,203,53,.55) !important; outline-offset: 0 !important; border-color: var(--kfg-ac) !important; box-shadow: none !important; }
+    #signupOverlay .ss-signup-submit, #signupOverlay button[type="submit"] {
+      width: 100% !important; background: var(--kfg-ac) !important; border: none !important;
+      color: var(--kfg-acOn) !important; font-family: inherit !important; font-weight: 700 !important;
+      font-size: 14px !important; padding: 12px 18px !important; border-radius: 999px !important;
+      margin-top: 6px !important; box-shadow: var(--kfg-sh) !important; transform: none !important;
+    }
+    #signupOverlay .ss-signup-submit:hover, #signupOverlay button[type="submit"]:hover { filter: brightness(1.08) !important; transform: none !important; box-shadow: var(--kfg-sh) !important; }
+    #signupOverlay .ss-signup-submit:disabled, #signupOverlay button[type="submit"]:disabled { opacity: .5 !important; cursor: not-allowed !important; }
+    #signupOverlay a, #signupOverlay #forgotPasswordLink, #signupOverlay #forgotBack, #signupOverlay #discordIdHelp {
+      color: var(--kfg-acDeep) !important; text-decoration: none !important; font-weight: 600 !important; font-size: 12.5px !important;
+    }
+    #signupOverlay a:hover { filter: brightness(1.08) !important; }
+    #signupOverlay small { color: var(--kfg-tx3) !important; }
+    #signupOverlay .ss-signup-msg { margin-top: 10px !important; padding: 9px 12px !important; font-size: 12.5px !important; border-radius: 10px !important; font-weight: 600 !important; }
+    #signupOverlay .ss-signup-msg.success { background: var(--kfg-sb) !important; border: 1px solid var(--kfg-ac) !important; color: var(--kfg-sfg) !important; }
+    #signupOverlay .ss-signup-msg.error { background: var(--kfg-db) !important; border: 1px solid var(--kfg-df) !important; color: var(--kfg-df) !important; }
+
+    /* ── "Sign in required" gate ── */
+    .kf-gate { background: color-mix(in srgb, var(--kfg-bg) 80%, transparent) !important; backdrop-filter: blur(8px) !important; font-family: 'Instrument Sans','Inter',system-ui,sans-serif !important; }
+    .kf-gate-card {
+      background: var(--kfg-sf) !important; border: 1px solid var(--kfg-bd) !important;
+      border-radius: 20px !important; box-shadow: var(--kfg-sh) !important;
+      color: var(--kfg-tx) !important; max-width: 380px !important; padding: 30px 30px 26px !important;
+    }
+    .kf-gate-icon {
+      width: 52px !important; height: 52px !important; border-radius: 50% !important;
+      background: var(--kfg-acSoft) !important; border: none !important; color: var(--kfg-acDeep) !important;
+    }
+    .kf-gate-title { color: var(--kfg-tx) !important; font-size: 19px !important; font-weight: 700 !important; letter-spacing: -.02em !important; }
+    .kf-gate-sub { color: var(--kfg-tx2) !important; font-size: 13.5px !important; }
+    .kf-gate-btn { font-family: inherit !important; border-radius: 999px !important; font-weight: 700 !important; padding: 11px 22px !important; }
+    .kf-gate-btn.primary { background: var(--kfg-ac) !important; border: none !important; color: var(--kfg-acOn) !important; box-shadow: var(--kfg-sh) !important; }
+    .kf-gate-btn.primary:hover { filter: brightness(1.08) !important; }
+    .kf-gate-btn.ghost { background: var(--kfg-sf2) !important; border: 1px solid var(--kfg-bd) !important; color: var(--kfg-tx2) !important; }
+    .kf-gate-btn.ghost:hover { background: var(--kfg-bd) !important; }
     /* Reusable confirm modal — re-skin to match KF UI in both themes */
     .ss-confirm-overlay {
       background: rgba(8,9,12,0.78) !important;
