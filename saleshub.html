@@ -22946,8 +22946,9 @@
       function computeGate() {
         const u = window.currentUser;
         const ct = (u && u.created_at) ? Date.parse(u.created_at) : NaN;
-        // Fail OPEN: no user, missing/unparseable date → treat as existing rep (full access).
-        granted = !u || isNaN(ct) || ct < Date.parse(GO_LIVE_CUTOFF) || dbGranted;
+        // Training videos are no longer REQUIRED (onboarding replaced them). Everyone
+        // gets full hub access; the videos stay available but optional/unlocked.
+        granted = true;
         // Only the REQUIRED sections (not the optional CRM Guide) gate access.
         const requiredVids = curriculum.sections.filter(s => !s.optional).flatMap(s => s.videos);
         const allDone = requiredVids.length > 0 && requiredVids.every(v => completed.has(v.slug));
@@ -28889,7 +28890,7 @@
         const [expenses, setExpenses] = useState([]); // one-off expenses (Profitability section)
         const [loading, setLoading] = useState(true);
         const [error, setError] = useState(null);
-        const [tf, setTf] = useState('MTD');
+        const [tf, setTf] = useState('YTD');
         const [customFrom, setCustomFrom] = useState('');
         const [customTo, setCustomTo] = useState('');
         const [showDealModal, setShowDealModal] = useState(false);
@@ -31602,7 +31603,7 @@
     const TZ_OPTS = ['Eastern', 'Central', 'Mountain', 'Pacific'];
     // Mirrors the onboarding island's STEPS (last index = done). Kept here so the
     // dashboard/profile can show a new agent's onboarding progress.
-    const ONB_LABELS = ['Account', 'Welcome', 'Profile', 'Photo', 'Goals', 'Commitment', 'License / NPN', 'States', 'E&O', 'Discord', 'CRM', 'Meetings', 'Training', 'Done'];
+    const ONB_LABELS = ['Account', 'Welcome', 'Profile', 'Photo', 'Goals', 'Commitment', 'License / NPN', 'States', 'E&O', 'Discord', 'CRM', 'Headset', 'Meetings', 'Done'];
     const ONB_LAST = ONB_LABELS.length - 1;   // 13
     const onbPct = (step) => Math.min(100, Math.round((Number(step) || 0) / ONB_LAST * 100));
 
@@ -32858,6 +32859,9 @@
     // can click straight through the flow to test it. false = ENFORCE all required
     // fields (required inputs, watched videos, checked boxes). LIVE: enforced.
     const KFO_TEST_MODE = false;
+    // Set by KFOnboarding.preview() — lets you walk the whole flow to SEE the
+    // steps without saving anything (all DB writes + password set are skipped).
+    let KFO_PREVIEW = false;
 
     // ── CONFIG · edit these as content becomes available ─────────────────────
     // videos: null = styled placeholder slot with simulated playback. Drop any
@@ -32870,12 +32874,14 @@
         crm:     null,   // How to sign up for the CRM
       },
       links: {
-        eo:       '#',   // TODO: E&O provider signup URL
+        eo:       'https://app.nextinsurance.com/?bp_e=N0vjoMW0SLx6RPv17QbtOGy8ZWSabPdFv%2BwbDYGyAS5YWh%2BN0rh2w7Kyah8J%2B6YSR6xJ6swk4TCnounKEMGYHYz5%2FoUvL1wSEZPG1zjV8wHsNXjFlXHaWueQwtulprnB3C4Iv%2FqqR%2BRacxNATarRRbH36bryC%2FGarM8r7icQ2NemFKupaqFgtKVlFaOtphw1kOSPuWBkk5jtRocaDLMed%2F8U7%2FMDe3ElztKnorhHdjiuvJK0xjI1PwhZ05RpvGsRvcM1%2BJBs6UriMXm2s%2FkSyJdhLn5vx1jJPnEQMcx%2FCI1FtrqI71EG4I6ytMmDxlsiU8emfSC3LHUdS9hd2mzq6vl%2FZiAkCtZuUXFhWU48c9H5I7astZgSDX3fSoZ0A1hn&bp_no_cookies=1',   // NextInsurance E&O signup
         discord1: '#',   // TODO: Discord server 1 invite
         discord2: '#',   // TODO: Discord server 2 invite
         crm:      '#',   // TODO: CRM signup URL
+        headsetRecommended: 'https://www.amazon.com/Jabra-Evolve2-Wireless-Stereo-Headset/dp/B0C1D8JYZ7?crid=2XKR1EYM2V7UM&dib=eyJ2IjoiMSJ9.-xiMbeh7bkdj-gZ5WyHSe8ZEQayAw5fYT5eXVA910ZZdFZKkz-hwFH4mMtyDuJDtuZGV0LHuMOAke9qYehIUjxUexOc-iYgXW34wcN8bAPoemP3UpUrtgvYcHFtT3-q0_4SOgZUqBa_5IFsjfTpNPcI9FMgpj0dTuu34th3T_WQYvmeYU_x91B535AB7ra8mLRam4GR8RsXOiwo7bel6IMSWLnIsfbzoctwurPyiewo.xwpIzjREIWBnNMxq0U3fUzX4DCvcjxaV9z10P8QciEA&dib_tag=se&keywords=jabra+evolve+2+65+flex&qid=1780784262&sprefix=jabra+evolve+2+65+fle,aps,262&sr=8-3&linkCode=sl2&tag=devkenneth-20&linkId=af270a651b9337d318d80120bb0cd913&language=en_US&ref_=as_li_ss_tl',
+        headsetBudget:      'https://www.amazon.com/Logitech-Bluetooth-Noise-Canceling-Microphone-Compatible/dp/B0CVF9J862?crid=26CQMWLH1BO9C&dib=eyJ2IjoiMSJ9.C5ZN2VSj1hVn1nHpC7tXm2C1cc40CbFxYUo9FQ6PH5jaqDD8eth9zOFs32t1rF1IK6Yn5FptK84vUbUfOcgeHHCydu5zZASQ1MFdO4d5Lsdb9ttsXk0RuXkqBAISNhkU8oj4NCX-k2Si5l4DwzmG0rViM09HMh5sLk8iq4DS4dgiCMPTjZyuLFaA14XEAQo53x7KyxRcviZkoS9y4gRWrieM2UXFa7CCeU5Zl2aXJAI.I8iaw0Amnz9yJkJSZEKAGyvIqKq5g1jcrV-AAdt3j2Y&dib_tag=se&keywords=call%2Bcenter%2Bheadset%2Bwireless&qid=1780784415&sprefix=call%2Bcenter%2Bheadset%2Bwirele,aps,270&sr=8-3&th=1&linkCode=sl2&tag=kairosfinanci-20&linkId=ec026bbf5e6aa9da1aedda585a76cf71&language=en_US&ref_=as_li_ss_tl',
       },
-      statesToBuy: ['Texas', 'Florida', 'Georgia', 'North Carolina', 'Ohio'],
+      statesToBuy: ['Texas', 'Ohio', 'California', 'North Carolina', 'South Carolina', 'Florida', 'Georgia', 'Illinois', 'Pennsylvania', 'Indiana'],
       // Each meeting becomes an "Add to Google Calendar" button (pre-filled,
       // recurring). Fill in: title, day (full weekday), time (24h, local to tz),
       // durationMin, tz (Eastern/Central/Mountain/Pacific or IANA), freq
@@ -32886,9 +32892,8 @@
         { title: 'New agent onboarding', days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'], anchorDay: 'Monday', time: '10:00', durationMin: 60, tz: 'Eastern', freq: 'WEEKLY', count: 5, note: 'Your first week only', location: '', details: '' },
       ],
       studyTips: [
-        'Study tip slot 1 — content coming soon',
-        'Study tip slot 2 — content coming soon',
-        'Study tip slot 3 — content coming soon',
+        'Skip the reading material — focus on taking the practice exams over and over again. That repetition is what gets you to pass.',
+        'Search YouTube for videos on how to study for the exam — there are lots of great ones.',
       ],
     };
 
@@ -32908,8 +32913,8 @@
       { id: 'eo',       label: 'E&O' },
       { id: 'discord',  label: 'Discord' },
       { id: 'crm',      label: 'CRM' },
+      { id: 'headset',  label: 'Headset' },
       { id: 'meeting',  label: 'Meetings' },
-      { id: 'training', label: 'Training' },
       { id: 'done',     label: 'Done' },
     ];
     const idxOf = (id) => Math.max(0, STEPS.findIndex(s => s.id === id));
@@ -32978,9 +32983,9 @@
     async function getRows(path) { try { const r = await fetch(SUPABASE_URL + '/rest/v1/' + path, { headers: rHeaders() }); return r.ok ? await r.json() : []; } catch (e) { return []; } }
 
     const uid = () => (window.currentUser && window.currentUser.id) || null;
-    async function patchAgent(body) { await ensureTok(); try { await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?user_id=eq.' + uid(), { method: 'PATCH', headers: wHeaders(), body: JSON.stringify(body) }); } catch (e) { console.error('[onb] patchAgent', e); } }
+    async function patchAgent(body) { if (KFO_PREVIEW) return; await ensureTok(); try { await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?user_id=eq.' + uid(), { method: 'PATCH', headers: wHeaders(), body: JSON.stringify(body) }); } catch (e) { console.error('[onb] patchAgent', e); } }
     let HAS_RECRUIT = false;
-    async function patchRecruit(body) { if (!HAS_RECRUIT) return; await ensureTok(); try { await fetch(SUPABASE_URL + '/rest/v1/recruits?linked_user_id=eq.' + uid(), { method: 'PATCH', headers: wHeaders(), body: JSON.stringify(body) }); } catch (e) { console.error('[onb] patchRecruit', e); } }
+    async function patchRecruit(body) { if (KFO_PREVIEW || !HAS_RECRUIT) return; await ensureTok(); try { await fetch(SUPABASE_URL + '/rest/v1/recruits?linked_user_id=eq.' + uid(), { method: 'PATCH', headers: wHeaders(), body: JSON.stringify(body) }); } catch (e) { console.error('[onb] patchRecruit', e); } }
 
     function splitName(n) { const p = (n || '').trim().split(/\s+/).filter(Boolean); return { first: p[0] || '', last: p.slice(1).join(' ') || '' }; }
     function initialsOf(f, l) { return ((f || '')[0] || '') + ((l || '')[0] || '') || '?'; }
@@ -32994,7 +32999,7 @@
         why: '', stg: ['', '', ''], ltg: ['', '', ''], vision: '', skills: ['', '', ''], quits: ['', '', ''],
         signedName: '', signedAt: null,
         licensed: null, npn: '',
-        checks: { eo: false, d1: false, d2: false, crm: false, cal: false },
+        checks: { eo: false, d1: false, d2: false, crm: false, cal: false, headset: false },
         videos: {}, stateBuys: {},
         step: 0, furthest: 0,
       };
@@ -33086,7 +33091,7 @@
       const setArr = (key, i) => (e) => setD(s => { const a = s[key].slice(); a[i] = e.target.value; return Object.assign({}, s, { [key]: a }); });
       const fullName = ((d.first || '') + ' ' + (d.last || '')).trim();
       // req(cond): in TEST MODE always passes; otherwise requires the condition.
-      const req = (cond) => KFO_TEST_MODE ? true : !!cond;
+      const req = (cond) => (KFO_TEST_MODE || KFO_PREVIEW) ? true : !!cond;
       const allFilled = (arr) => jarr(arr).every(x => (x || '').trim());
 
       const persist = useCallback(async (extra) => {
@@ -33109,7 +33114,7 @@
       const saveAccount = async () => {
         setErr('');
         const firstPass = d.furthest <= idxOf('account');
-        if (!KFO_TEST_MODE) {
+        if (!KFO_TEST_MODE && !KFO_PREVIEW) {
           if (!d.first.trim() || !d.last.trim()) return setErr('Please enter your first and last name.');
           if (!d.phone.trim()) return setErr('Please enter your phone number.');
           // First time through, a password is REQUIRED — the invite logged them in
@@ -33126,7 +33131,7 @@
         setBusy(true);
         const nm = (d.first.trim() + ' ' + d.last.trim()).trim();
         try {
-          if (d.password) {
+          if (!KFO_PREVIEW && d.password) {
             await ensureTok();
             const r = await fetch(SUPABASE_URL + '/auth/v1/user', { method: 'PUT', headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + tok(), 'Content-Type': 'application/json' }, body: JSON.stringify({ password: d.password, data: { name: nm } }) });
             if (!r.ok) { setBusy(false); return setErr('Could not set your password — please try again.'); }
@@ -33138,14 +33143,14 @@
       };
       const saveProfile = async () => {
         setErr('');
-        if (!KFO_TEST_MODE && (!d.city.trim() || !d.st || !d.zip.trim() || !d.resState || !d.dob)) return setErr('Please fill out every field before continuing.');
+        if (!KFO_TEST_MODE && !KFO_PREVIEW && (!d.city.trim() || !d.st || !d.zip.trim() || !d.resState || !d.dob)) return setErr('Please fill out every field before continuing.');
         setBusy(true);
         await patchRecruit({ city: d.city.trim() || null, state: d.st || null, zip: d.zip.trim() || null, resident_state: d.resState || null, dob: d.dob || null });
         setBusy(false); next();
       };
       const saveGoals = async () => {
         setErr('');
-        if (!KFO_TEST_MODE && (!d.why.trim() || !d.vision.trim() || !allFilled(d.stg) || !allFilled(d.ltg) || !allFilled(d.skills) || !allFilled(d.quits)))
+        if (!KFO_TEST_MODE && !KFO_PREVIEW && (!d.why.trim() || !d.vision.trim() || !allFilled(d.stg) || !allFilled(d.ltg) || !allFilled(d.skills) || !allFilled(d.quits)))
           return setErr('Please complete every field — your why, all goals, skills, and things to give up.');
         setBusy(true);
         const clean = (a) => jarr(a).map(x => (x || '').trim()).filter(Boolean);
@@ -33176,6 +33181,7 @@
         setBusy(true);
         // instant local preview
         try { const rd = new FileReader(); rd.onload = () => set({ photo: rd.result }); rd.readAsDataURL(file); } catch (e) {}
+        if (KFO_PREVIEW) { setBusy(false); return; }   // preview: local preview only, no upload
         try {
           if (window.kfDownscaleImage) file = await window.kfDownscaleImage(file, 512, 0.85);   // safety re-encode
           await ensureTok();
@@ -33430,6 +33436,23 @@
           <div className="kfo-actions"><NextBtn on={() => next()} disabled={!req(d.videos.crm >= 100 && d.checks.crm)}>Continue →</NextBtn>{!KFO_TEST_MODE && <span className="kfo-hint">Watch the walkthrough and confirm your CRM account.</span>}</div>
         </div>
       );
+      else if (cur === 'headset') body = (
+        <div className="kfo-screen">
+          <H title="Get your headset ready" sub="You'll be on the phone a lot — a good headset keeps your hands free and your callers hearing you clearly. Here's one we recommend, plus a budget option." />
+          <div className="kfo-card">
+            <div className="kfo-cardtitle">Recommended</div>
+            <div className="kfo-carddesc">Jabra Evolve2 65 Flex — wireless, great mic, all-day comfort.</div>
+            <div style={{ marginTop: 12 }}><a className="kfo-btn ghost" href={KFO_CONFIG.links.headsetRecommended} target="_blank" rel="noopener">View on Amazon ↗</a></div>
+          </div>
+          <div className="kfo-card">
+            <div className="kfo-cardtitle">Budget option</div>
+            <div className="kfo-carddesc">If the recommended one is too pricey, this wireless call-center headset works great too.</div>
+            <div style={{ marginTop: 12 }}><a className="kfo-btn ghost" href={KFO_CONFIG.links.headsetBudget} target="_blank" rel="noopener">View on Amazon ↗</a></div>
+          </div>
+          <label className="kfo-check" style={{ marginTop: 4 }}><input type="checkbox" checked={!!d.checks.headset} onChange={e => setD(s => Object.assign({}, s, { checks: Object.assign({}, s.checks, { headset: e.target.checked }) }))} /> I have a headset ready</label>
+          <div className="kfo-actions"><NextBtn on={() => next()} disabled={!req(d.checks.headset)}>Continue →</NextBtn>{!KFO_TEST_MODE && <span className="kfo-hint">Confirm you have a headset to continue.</span>}</div>
+        </div>
+      );
       else if (cur === 'meeting') body = (
         <div className="kfo-screen">
           <H title="Your meeting schedule" sub="Put these on your calendar — showing up is the fastest way to ramp." />
@@ -33447,21 +33470,12 @@
           <div className="kfo-actions"><NextBtn on={() => next()} disabled={!req(d.checks.cal)}>Continue →</NextBtn>{!KFO_TEST_MODE && <span className="kfo-hint">Confirm you've added these to your calendar.</span>}</div>
         </div>
       );
-      else if (cur === 'training') body = (
-        <div className="kfo-screen">
-          <H title="Your training videos" sub="Last step of setup. Your required training videos are ready — you'll finish them inside the Sales Hub." />
-          <div className="kfo-card">
-            <div className="kfo-para" style={{ marginTop: 0 }}>When you continue, your account activates and you'll be taken straight to your training. You'll need to watch the required videos before the rest of the Sales Hub unlocks — your progress there saves automatically, just like it did here.</div>
-          </div>
-          <div className="kfo-actions"><NextBtn on={() => next()}>Finish setup →</NextBtn></div>
-        </div>
-      );
       else if (cur === 'done') body = (
         <div className="kfo-screen" style={{ maxWidth: 560, margin: '0 auto', textAlign: 'center' }}>
           <div className="kfo-card" style={{ padding: '34px 30px' }}>
             <div style={{ width: 60, height: 60, borderRadius: '50%', background: 'var(--ac)', color: 'var(--acOn)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: 28, margin: '0 auto 18px' }}>✓</div>
-            <h1 className="kfo-h1" style={{ fontSize: 26 }}>You're all set, {d.first || 'agent'}!</h1>
-            <div className="kfo-sub" style={{ marginBottom: 8 }}>Your account is active. Everything you entered is saved to your profile. Let's get to work.</div>
+            <h1 className="kfo-h1" style={{ fontSize: 26 }}>Congratulations, {d.first || 'agent'} — you're finished!</h1>
+            <div className="kfo-sub" style={{ marginBottom: 8 }}>Your account is active and everything you entered is saved to your profile. Welcome to the team — let's get to work.</div>
             <button className="kfo-btn" style={{ marginTop: 14 }} disabled={busy} onClick={finish}>{busy ? 'Finishing…' : 'Enter the Sales Hub →'}</button>
           </div>
         </div>
@@ -33549,6 +33563,7 @@
     let root = null, mountEl = null, showing = false, checking = false;
     function teardown() {
       showing = false;
+      KFO_PREVIEW = false;
       if (root) { try { root.unmount(); } catch (e) {} root = null; }
       if (mountEl && mountEl.parentNode) mountEl.parentNode.removeChild(mountEl);
       mountEl = null;
@@ -33582,7 +33597,20 @@
       } catch (e) { /* silent */ }
       checking = false;
     }
-    window.KFOnboarding = { refresh };
+    // Preview the flow without an account or any saving. In the browser console:
+    //   KFOnboarding.preview()   → opens onboarding; click the numbered step pills
+    //   (or Continue) to walk every screen. Close it from the final "Enter the
+    //   Sales Hub" step, or just refresh the page.
+    function preview() {
+      KFO_PREVIEW = true;
+      const init = Object.assign(blank(), {
+        first: 'Preview', last: 'Agent',
+        email: (window.currentUser && window.currentUser.email) || 'you@example.com',
+        step: 0, furthest: STEPS.length - 1   // all steps reachable via the top rail
+      });
+      show(init);
+    }
+    window.KFOnboarding = { refresh, preview };
 
     // Hook auth changes (login / session restore) like the training system does.
     if (typeof window.updateAuthUI === 'function') {
