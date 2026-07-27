@@ -1282,6 +1282,67 @@
       margin-right: 0;
       overflow-x: hidden;
     }
+
+    /* ── Persistent notification bar ─────────────────────────────────────
+       FIXED to the top of the viewport, spanning from the sidebar's right edge
+       to the window edge. It is intentionally taken OUT of normal flow (a plain
+       flow sibling of .ss-main renders as a left-hand column in this layout).
+       Content is pushed down by `body.has-notifbar .ss-main` padding. Shown by
+       JS only when the signed-in agent has overdue items. */
+    .ss-notifbar {
+      position: fixed;
+      top: 0; left: 220px; right: 0;
+      z-index: 900;
+      height: 54px;
+      display: flex; align-items: center; gap: 14px;
+      padding: 0 2rem;
+      box-sizing: border-box;
+      overflow-x: auto;
+      scrollbar-width: none;
+      font-family: 'Inter', system-ui, sans-serif;
+      background: linear-gradient(180deg, rgba(254,210,79,0.13), rgba(254,210,79,0.05)), #17150e;
+      color: #f4f3f1;
+      border-bottom: 1px solid rgba(254,210,79,0.28);
+      transition: left 180ms ease;
+    }
+    .ss-notifbar::-webkit-scrollbar { display: none; }
+    .ss-notifbar[hidden] { display: none; }
+    body:has(.ss-sidebar.collapsed) .ss-notifbar { left: 64px; }
+    /* Push all content below the fixed bar — only while it's showing. */
+    body.has-notifbar .ss-main { padding-top: calc(1.5rem + 54px); }
+    .ss-notifbar-icon { display: inline-flex; color: #FED24F; flex-shrink: 0; }
+    .ss-notifbar-icon svg { width: 19px; height: 19px; }
+    .ss-notifbar-label { font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: #FED24F; white-space: nowrap; flex-shrink: 0; }
+    .ss-notifbar-items { display: flex; align-items: center; gap: 8px; flex-wrap: nowrap; }
+    .ss-notif-chip {
+      appearance: none; cursor: pointer;
+      display: inline-flex; align-items: center; gap: 7px; white-space: nowrap; flex-shrink: 0;
+      font-family: inherit; font-size: 12.5px; font-weight: 500; line-height: 1;
+      color: #f4f3f1;
+      background: rgba(254,210,79,0.12);
+      border: 1px solid rgba(254,210,79,0.30);
+      border-radius: 999px;
+      padding: 7px 14px;
+      transition: background 120ms ease, transform 120ms ease, border-color 120ms ease;
+    }
+    .ss-notif-chip:hover { background: rgba(254,210,79,0.22); border-color: rgba(254,210,79,0.5); transform: translateY(-1px); }
+    .ss-notif-chip strong { color: #FED24F; font-weight: 800; font-variant-numeric: tabular-nums; }
+    .ss-notif-chip svg { width: 13px; height: 13px; opacity: 0.55; }
+    html[data-kf-theme="light"] .ss-notifbar {
+      background: linear-gradient(180deg, #FFF6DD, #FFFBF0);
+      color: #3f350f;
+      border-bottom: 1px solid #F0DCA3;
+    }
+    html[data-kf-theme="light"] .ss-notifbar-icon,
+    html[data-kf-theme="light"] .ss-notifbar-label { color: #8a6a08; }
+    html[data-kf-theme="light"] .ss-notif-chip { color: #4a3d12; background: #FFF3CD; border-color: #EBCB72; }
+    html[data-kf-theme="light"] .ss-notif-chip:hover { background: #FCEBB0; border-color: #D9B34E; }
+    html[data-kf-theme="light"] .ss-notif-chip strong { color: #8a6a08; }
+    @media (max-width: 768px) {
+      .ss-notifbar { left: 0; padding: 0 0.9rem; height: 50px; gap: 10px; }
+      .ss-notifbar-label { display: none; }
+      body.has-notifbar .ss-main { padding-top: calc(0.75rem + 50px); }
+    }
     .ss-page-dark {
       background: transparent;
       max-width: none; margin: 0; padding: 0;
@@ -13954,6 +14015,14 @@
       </svg>
     </button>
   </nav>
+
+  <!-- Persistent notification bar — sits above .ss-main, pushes all panels
+       down, and only appears when the signed-in agent has overdue items. -->
+  <div class="ss-notifbar" id="ssNotifBar" role="status" aria-live="polite" hidden>
+    <span class="ss-notifbar-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 00-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg></span>
+    <span class="ss-notifbar-label">Needs attention</span>
+    <div class="ss-notifbar-items" id="ssNotifItems"></div>
+  </div>
 
   <!-- MAIN CONTENT -->
   <div class="ss-main">
@@ -30959,6 +31028,12 @@
         const [sortDir, setSortDir] = useState('desc');
         const [page, setPage] = useState(0);
         const [perPage] = useState(25);
+        // Deep-link hook (top notification bar): filter to a single status across
+        // all time, e.g. bobFilterStatus('Underwriting').
+        window.bobFilterStatus = (status) => {
+          setFilters(f => Object.assign({}, f, { statuses: status ? [status] : BOB_STATUSES.slice(), timeframe: 'all' }));
+          setSearch(''); setPage(0);
+        };
         const [openPolicy, setOpenPolicy] = useState(null);
         // Pending status-advance awaiting user confirmation
         const [confirmAdvance, setConfirmAdvance] = useState(null);
@@ -32310,6 +32385,9 @@
       // its buttons can switch the view. Assigned during render so it's ready
       // immediately after the synchronous initial mount.
       window.rhqSetView = (v) => { setSelId(null); setView(v); };
+      // Deep-link hook (used by the top notification bar): open a view with an
+      // optional list-filter chip, e.g. rhqGoTo('list','stalled').
+      window.rhqGoTo = (v, chipVal) => { setSelId(null); if (chipVal !== undefined) setChip(chipVal); setView(v || 'dashboard'); };
       const [showAdd, setShowAdd] = useState(false);
       const [mgrFilter, setMgrFilter] = useState('all');       // admin recruiter filter
       const [search, setSearch] = useState('');
@@ -34344,6 +34422,98 @@
       window.updateAuthUI = function () { o.apply(this, arguments); try { check(); } catch (e) {} };
     }
     setTimeout(check, 1200);
+  })();
+  </script>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       Persistent notification bar — surfaces time-sensitive items for the
+       signed-in agent. Data is RLS-scoped: recruits show only what this agent
+       can see (their downline), policies only their own book.
+       Thresholds live in NOTIF_DAYS; tweak freely.
+       ═══════════════════════════════════════════════════════════════════════ -->
+  <script>
+  (function () {
+    const NOTIF_DAYS = 15;                 // stale threshold (days)
+    const RECRUIT_ACTIVE_STAGE = 4;        // "Active Agent" — fully contracted / last step
+    const RECRUIT_TRAINING_STAGE = 5;      // "Training" — post-contracting; excluded too
+    let busy = false;
+
+    const bar = () => document.getElementById('ssNotifBar');
+    const daysSince = (d) => { if (!d) return -1; const t = Date.parse(d); if (isNaN(t)) return -1; return Math.floor((Date.now() - t) / 86400000); };
+    async function q(path) {
+      try {
+        if (window.ensureValidAccessToken) await window.ensureValidAccessToken();
+        const r = await fetch(SUPABASE_URL + '/rest/v1/' + path, { headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + (window.accessToken || SUPABASE_KEY) } });
+        return r.ok ? await r.json() : [];
+      } catch (e) { return []; }
+    }
+    // Pluralize the WORD only — the count is rendered once, bolded, by the chip.
+    const plural = (n, w) => w + (n === 1 ? '' : 's');
+    const arrow = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>';
+
+    const show = (on) => { const b = bar(); if (!b) return; b.hidden = !on; document.body.classList.toggle('has-notifbar', !!on); };
+
+    async function refresh() {
+      const b = bar(); if (!b) return;
+      const u = window.currentUser;
+      if (!u || !u.id) { show(false); return; }
+      if (busy) return; busy = true;
+      try {
+        const [recruits, policies] = await Promise.all([
+          // RLS returns only recruits this agent can see (their recruited/downline).
+          q('recruits?select=stage,stage_entered_at,status&status=eq.active'),
+          // Their own book only.
+          q('policies?select=status,policy_date,effective_date&user_id=eq.' + u.id + '&status=in.(Underwriting,Approved)'),
+        ]);
+        // Recruits stalled NOTIF_DAYS+ in a stage, excluding Active Agent (fully
+        // contracted / last step) and Training (post-contracting).
+        const stalled = (recruits || []).filter(r =>
+          r.stage !== RECRUIT_ACTIVE_STAGE && r.stage !== RECRUIT_TRAINING_STAGE &&
+          daysSince(r.stage_entered_at) >= NOTIF_DAYS).length;
+        // Deals sitting in underwriting NOTIF_DAYS+ (measured from date sold).
+        const uw = (policies || []).filter(p => p.status === 'Underwriting' && daysSince(p.policy_date) >= NOTIF_DAYS).length;
+        // Approved but not yet paid NOTIF_DAYS+ (from effective date if set, else date sold).
+        const unpaid = (policies || []).filter(p => p.status === 'Approved' && daysSince(p.effective_date || p.policy_date) >= NOTIF_DAYS).length;
+
+        const items = [];
+        if (stalled) items.push({ n: stalled, label: plural(stalled, 'recruit') + ' stalled ' + NOTIF_DAYS + '+ days', kind: 'stalled' });
+        if (uw) items.push({ n: uw, label: plural(uw, 'deal') + ' in underwriting ' + NOTIF_DAYS + '+ days', kind: 'underwriting' });
+        if (unpaid) items.push({ n: unpaid, label: plural(unpaid, 'approved deal') + ' unpaid ' + NOTIF_DAYS + '+ days', kind: 'unpaid' });
+
+        if (!items.length) { show(false); return; }
+        const host = document.getElementById('ssNotifItems');
+        if (host) host.innerHTML = items.map(it =>
+          '<button type="button" class="ss-notif-chip" data-kind="' + it.kind + '"><strong>' + it.n + '</strong> ' + it.label + arrow + '</button>').join('');
+        show(true);
+      } finally { busy = false; }
+    }
+
+    // Navigate to a panel, then call its deep-link hook once the island mounts.
+    function navTo(panel, fnName, args) {
+      if (typeof activatePanel === 'function') activatePanel(panel);
+      let tries = 0;
+      (function apply() {
+        const fn = window[fnName];
+        if (typeof fn === 'function') { try { fn.apply(null, args || []); } catch (e) {} return; }
+        if (tries++ < 40) setTimeout(apply, 60);   // wait up to ~2.4s for the island to mount
+      })();
+    }
+    document.addEventListener('click', (e) => {
+      const c = e.target.closest && e.target.closest('.ss-notif-chip');
+      if (!c) return;
+      const kind = c.dataset.kind;
+      if (kind === 'stalled') navTo('recruiterhq', 'rhqGoTo', ['list', 'stalled']);
+      else if (kind === 'underwriting') navTo('policies', 'bobFilterStatus', ['Underwriting']);
+      else if (kind === 'unpaid') navTo('policies', 'bobFilterStatus', ['Approved']);
+    });
+
+    window.KFNotifBar = { refresh };
+    if (typeof window.updateAuthUI === 'function') {
+      const o = window.updateAuthUI;
+      window.updateAuthUI = function () { o.apply(this, arguments); try { refresh(); } catch (e) {} };
+    }
+    setTimeout(refresh, 1500);
+    setInterval(refresh, 5 * 60 * 1000);   // keep fresh while the tab stays open
   })();
   </script>
 
