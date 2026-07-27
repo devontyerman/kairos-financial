@@ -14947,7 +14947,15 @@
           <div class="sh-resources-grid">
             <a href="assets/Documents/FEX%20Inbound%20Script.pdf" target="_blank" rel="noopener noreferrer" class="sh-resource-card" data-pdf-viewer data-pdf-title="FEX Inbound Script" data-pdf-filename="FEX Inbound Script.pdf">
               <div class="sh-resource-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
-              <div><div class="sh-resource-title">FEX Inbound Script</div><div class="sh-resource-desc">Call script for FEX inbound leads. The script you use depends on the lead — more coming soon.</div><span class="sh-resource-tag">PDF</span></div>
+              <div><div class="sh-resource-title">FEX Inbound Script</div><div class="sh-resource-desc">Call script for FEX inbound leads. The script you use depends on the lead.</div><span class="sh-resource-tag">PDF</span></div>
+            </a>
+            <a href="assets/Documents/Unlimited%20dialer%20script.pdf" target="_blank" rel="noopener noreferrer" class="sh-resource-card" data-pdf-viewer data-pdf-title="Unlimited Dialer Script" data-pdf-filename="Unlimited dialer script.pdf">
+              <div class="sh-resource-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+              <div><div class="sh-resource-title">Unlimited Dialer Script</div><div class="sh-resource-desc">Call script for unlimited dialer leads.</div><span class="sh-resource-tag">PDF</span></div>
+            </a>
+            <a href="assets/Documents/General%20Scripts.pdf" target="_blank" rel="noopener noreferrer" class="sh-resource-card" data-pdf-viewer data-pdf-title="General Scripts" data-pdf-filename="General Scripts.pdf">
+              <div class="sh-resource-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+              <div><div class="sh-resource-title">General Scripts</div><div class="sh-resource-desc">General-purpose sales scripts.</div><span class="sh-resource-tag">PDF</span></div>
             </a>
             <a href="assets/Documents/Objections.pdf" target="_blank" rel="noopener noreferrer" class="sh-resource-card" data-pdf-viewer data-pdf-title="Objections" data-pdf-filename="Objections.pdf">
               <div class="sh-resource-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div>
@@ -33962,13 +33970,20 @@
       );
       else if (cur === 'script') body = (
         <div className="kfo-screen">
-          <H title="Your call script" sub="The script you'll run on your calls." />
+          <H title="Your call scripts" sub="Download all three, then talk with your mentor about where to start." />
           <div className="kfo-card">
-            <div className="kfo-cardtitle">FEX Inbound Script</div>
-            <div className="kfo-carddesc">This is the script for <strong>FEX inbound</strong> leads. Heads up — you'll have a few different scripts, and which one you use depends on the type of lead you're working. This is one of them; the rest are coming soon.</div>
-            <div style={{ marginTop: 14, display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-              <a className="kfo-btn ghost" href="assets/Documents/FEX%20Inbound%20Script.pdf" target="_blank" rel="noopener">Open the script ↗</a>
-              <a className="kfo-btn ghost" href="assets/Documents/FEX%20Inbound%20Script.pdf" download>Download PDF</a>
+            <div className="kfo-carddesc">These are the three scripts we use. Open and download all three, then have a conversation with your mentor about which lead type to get started on.</div>
+            <div style={{ marginTop: 14, display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {[
+                { name: 'FEX Inbound Script', desc: 'For FEX inbound leads', file: 'assets/Documents/FEX%20Inbound%20Script.pdf' },
+                { name: 'Unlimited Dialer Script', desc: 'For unlimited dialer leads', file: 'assets/Documents/Unlimited%20dialer%20script.pdf' },
+                { name: 'General Scripts', desc: 'General-purpose scripts', file: 'assets/Documents/General%20Scripts.pdf' },
+              ].map((s) => (
+                <div key={s.name} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '13px 15px', border: '1px solid var(--bd)', borderRadius: 12, flexWrap: 'wrap' }}>
+                  <div style={{ flex: 1, minWidth: 160 }}><div style={{ fontWeight: 600, fontSize: 14 }}>{s.name}</div><div className="kfo-hint">{s.desc}</div></div>
+                  <a className="kfo-btn ghost" href={s.file} target="_blank" rel="noopener">Open ↗</a>
+                </div>
+              ))}
             </div>
           </div>
           <div className="kfo-actions"><NextBtn on={() => next()}>Continue →</NextBtn></div>
@@ -33976,13 +33991,12 @@
       );
       else if (cur === 'objections') body = (
         <div className="kfo-screen">
-          <H title="Objection responses" sub="Common objections and how to handle them." />
+          <H title="Objection responses" sub="Download it and memorize every response." />
           <div className="kfo-card">
             <div className="kfo-cardtitle">Objections</div>
-            <div className="kfo-carddesc">Pull this up whenever you hit an objection on a call. Open it to read through, and download a copy so you always have it on hand.</div>
+            <div className="kfo-carddesc">Open and download this, then memorize all of the objection responses — you'll want them ready to go on every call.</div>
             <div style={{ marginTop: 14, display: 'flex', gap: 12, flexWrap: 'wrap' }}>
               <a className="kfo-btn ghost" href="assets/Documents/Objections.pdf" target="_blank" rel="noopener">Open objections ↗</a>
-              <a className="kfo-btn ghost" href="assets/Documents/Objections.pdf" download>Download PDF</a>
             </div>
           </div>
           <div className="kfo-actions"><NextBtn on={() => next()}>Continue →</NextBtn></div>
