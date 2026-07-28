@@ -33072,6 +33072,27 @@
     }
 
     // ── RECRUIT PROFILE (drill-in) ────────────────────────────────────────────
+    // Pad/normalize a goal array to exactly 3 slots (matches onboarding).
+    const goal3 = (a) => { const r = Array.isArray(a) ? a.slice(0, 3) : []; while (r.length < 3) r.push(''); return r; };
+    // Steps an admin can require when re-sending an agent through onboarding.
+    // Order + ids MUST match the onboarding island's STEPS array (minus 'done').
+    const ONB_STEP_OPTIONS = [
+      { id: 'account', label: 'Account & profile details' },
+      { id: 'photo', label: 'Profile photo' },
+      { id: 'welcome', label: 'Welcome' },
+      { id: 'goals', label: 'Goals' },
+      { id: 'commit', label: '90-day commitment' },
+      { id: 'license', label: 'License / NPN' },
+      { id: 'exam', label: 'Exam booking' },
+      { id: 'states', label: 'Purchase states' },
+      { id: 'eo', label: 'E&O insurance' },
+      { id: 'discord', label: 'Discord' },
+      { id: 'crm', label: 'CRM' },
+      { id: 'headset', label: 'Headset' },
+      { id: 'meeting', label: 'Meetings / boot camp' },
+      { id: 'script', label: 'Call script' },
+      { id: 'objections', label: 'Objections' },
+    ];
     function Profile({ sel, isAdmin, me, roster, rosterMap, recruiterName, recruiterOptions, onBack, onChanged }) {
       const [notes, setNotes] = useState([]);
       const [events, setEvents] = useState([]);
@@ -33079,9 +33100,17 @@
       const [lic, setLic] = useState({ state_licenses: [], carrier_numbers: [] });
       const [noteDraft, setNoteDraft] = useState('');
       const [editing, setEditing] = useState(false);
+      const [progEdit, setProgEdit] = useState(false);
       const [ed, setEd] = useState({});
       const [confirm, setConfirm] = useState(null);   // 'advance'|'abandon'|'delete'|null
-      const [goals, setGoals] = useState({ goal_90: sel.goal_90 || '', goal_year1: sel.goal_year1 || '', goal_long_term: sel.goal_long_term || '', their_why: sel.their_why || '' });
+      // Goals are read-only until the admin clicks Edit (avoids accidentally
+      // overwriting what the agent wrote). ge = the editable buffer.
+      const [goalsEdit, setGoalsEdit] = useState(false);
+      const [ge, setGe] = useState(() => ({
+        their_why: sel.their_why || '', vision: sel.vision || '', motivation: sel.motivation || '',
+        income_need: sel.income_need || '', income_want: sel.income_want || '', help_note: sel.help_note || '',
+        stg: goal3(sel.st_goals), ltg: goal3(sel.lt_goals), skills: goal3(sel.skills), quits: goal3(sel.give_ups),
+      }));
       const [linkId, setLinkId] = useState('');
       const [inviteBusy, setInviteBusy] = useState(false);
       const [inviteMsg, setInviteMsg] = useState('');
@@ -33093,6 +33122,11 @@
       const [rmArchiveInstead, setRmArchiveInstead] = useState(false);
       const [rmText, setRmText] = useState('');
       const [rmBusy, setRmBusy] = useState(false);
+      // Send-through-onboarding (re-onboarding) modal state.
+      const [onbOpen, setOnbOpen] = useState(false);
+      const [onbSel, setOnbSel] = useState({});
+      const [onbBusy, setOnbBusy] = useState(false);
+      const [onbMsg, setOnbMsg] = useState('');
       const [stageOpen, setStageOpen] = useState(false);   // quick stage picker on the header chip
 
       useEffect(() => {
@@ -33121,14 +33155,30 @@
           }
           const res = await Promise.all(jobs);
           if (!live) return;
-          const days = {}, weeks = {}; let total = 0, count = 0;
+          const days = {}, weeks = {}, dayCounts = {}; let total = 0, count = 0, largest = 0;
           (res[0] || []).forEach(p => {
             const ap = Number(p.annual_premium) || 0; total += ap; count++;
-            if (p.policy_date) { days[p.policy_date] = (days[p.policy_date] || 0) + ap; const w = isoWeek(p.policy_date); weeks[w] = (weeks[w] || 0) + ap; }
+            if (ap > largest) largest = ap;
+            if (p.policy_date) {
+              days[p.policy_date] = (days[p.policy_date] || 0) + ap;
+              dayCounts[p.policy_date] = (dayCounts[p.policy_date] || 0) + 1;
+              const w = isoWeek(p.policy_date); weeks[w] = (weeks[w] || 0) + ap;
+            }
           });
           const bestDay = Object.keys(days).reduce((a, k) => days[k] > a.v ? { k, v: days[k] } : a, { k: null, v: 0 });
           const bestWeek = Object.keys(weeks).reduce((a, k) => weeks[k] > a.v ? { k, v: weeks[k] } : a, { k: null, v: 0 });
-          setProd({ totalAp: total, count, bestDay, bestWeek });
+          // # of days they wrote 3+ deals, and their longest run of consecutive
+          // calendar days with at least one deal.
+          const threePlus = Object.keys(dayCounts).filter(k => dayCounts[k] >= 3).length;
+          const sortedDays = Object.keys(dayCounts).sort();
+          let longestStreak = 0, run = 0, prevDate = null;
+          sortedDays.forEach(dstr => {
+            const dt = new Date(dstr + 'T00:00:00');
+            run = (prevDate && Math.round((dt - prevDate) / 86400000) === 1) ? run + 1 : 1;
+            if (run > longestStreak) longestStreak = run;
+            prevDate = dt;
+          });
+          setProd({ totalAp: total, count, bestDay, bestWeek, largest, threePlus, longestStreak });
           if (isAdmin) {
             const pr = (res[1] && res[1][0]) || {};
             setLic({ state_licenses: Array.isArray(pr.state_licenses) ? pr.state_licenses : [], carrier_numbers: Array.isArray(pr.carrier_numbers) ? pr.carrier_numbers : [] });
@@ -33157,7 +33207,20 @@
         }
         setEditing(false);
       };
-      const saveGoals = () => doPatch({ goal_90: goals.goal_90 || null, goal_year1: goals.goal_year1 || null, goal_long_term: goals.goal_long_term || null, their_why: goals.their_why || null });
+      const startGoalsEdit = () => { setGe({ their_why: sel.their_why || '', vision: sel.vision || '', motivation: sel.motivation || '', income_need: sel.income_need || '', income_want: sel.income_want || '', help_note: sel.help_note || '', stg: goal3(sel.st_goals), ltg: goal3(sel.lt_goals), skills: goal3(sel.skills), quits: goal3(sel.give_ups) }); setGoalsEdit(true); };
+      const geField = (k) => (e) => setGe(s => Object.assign({}, s, { [k]: e.target.value }));
+      const geArr = (k, i) => (e) => setGe(s => { const a = s[k].slice(); a[i] = e.target.value; return Object.assign({}, s, { [k]: a }); });
+      const saveGoalsFull = async () => {
+        const clean = (a) => (a || []).map(x => (x || '').trim()).filter(Boolean);
+        const stg = clean(ge.stg), ltg = clean(ge.ltg);
+        await doPatch({
+          their_why: ge.their_why.trim() || null, vision: ge.vision.trim() || null, motivation: ge.motivation.trim() || null,
+          income_need: ge.income_need.trim() || null, income_want: ge.income_want.trim() || null, help_note: ge.help_note.trim() || null,
+          st_goals: stg, lt_goals: ltg, skills: clean(ge.skills), give_ups: clean(ge.quits),
+          goal_90: stg.join(' · ') || null, goal_year1: ltg.join(' · ') || null, goal_long_term: ge.vision.trim() || null,
+        });
+        setGoalsEdit(false);
+      };
       const advance = async () => { const n = nextStage(sel.stage); if (n !== undefined) await doPatch({ stage: n }); setConfirm(null); };
       const pickStage = async (n) => { setStageOpen(false); if (n !== sel.stage) await doPatch({ stage: n }); };
       const abandon = async () => { await doPatch({ status: 'abandoned', abandoned_at: new Date().toISOString() }); setConfirm(null); };
@@ -33191,6 +33254,20 @@
 
       // Admin-only account mutations on the linked agent_profiles row.
       const patchAgent = async (body) => { await ensureToken(); const r = await rest('agent_profiles?user_id=eq.' + sel.linked_user_id, { method: 'PATCH', headers: writeHeaders(), body: JSON.stringify(body) }); return r.ok; };
+      // Re-onboarding: flip the linked agent back to onboarding_completed=false
+      // with only the chosen steps. They're pulled in next login OR within ~a
+      // minute if they're already logged in (the island polls).
+      const sendThroughOnboarding = async () => {
+        const selected = ONB_STEP_OPTIONS.filter(o => onbSel[o.id]).map(o => o.id);
+        if (!selected.length) { setOnbMsg('Pick at least one step.'); return; }
+        setOnbBusy(true); setOnbMsg('');
+        const firstIdx = Math.max(0, ONB_STEP_OPTIONS.findIndex(o => selected.indexOf(o.id) !== -1));
+        const ok = await patchAgent({ onboarding_completed: false, onboarding_steps: selected, onboarding_step: firstIdx });
+        setOnbBusy(false);
+        if (!ok) { setOnbMsg('Could not send — please try again.'); return; }
+        setOnbOpen(false); setOnbSel({});
+        if (onChanged) await onChanged();
+      };
       const setApproved = async (val) => { setAcct(a => Object.assign({}, a, { approved: val })); await patchAgent({ approved: val }); };
       const setComp = async (val) => { const cv = val ? parseInt(val) : null; setAcct(a => Object.assign({}, a, { comp_level: cv })); await patchAgent({ comp_level: cv }); };
       const openRemove = async () => {
@@ -33220,105 +33297,107 @@
       const stats = prod ? [
         { l: 'Best day', v: moneyK(prod.bestDay.v), s: prod.bestDay.k ? fmtDate(prod.bestDay.k) : '—' },
         { l: 'Best week', v: moneyK(prod.bestWeek.v), s: prod.bestWeek.k || '—' },
-        { l: 'Total AP', v: moneyK(prod.totalAp), s: prod.count + ' policies' }
+        { l: 'Total AP', v: moneyK(prod.totalAp), s: prod.count + ' policies' },
+        { l: 'Longest streak', v: prod.longestStreak + (prod.longestStreak === 1 ? ' day' : ' days'), s: 'Deal every day' },
+        { l: 'Largest deal', v: moneyK(prod.largest), s: 'Single policy AP' },
+        { l: '3+ in a day', v: prod.threePlus + '×', s: 'Days with 3+ deals' }
       ] : null;
       // accounts available to link (unlinked recruit only): visible roster not already the recruit
       const linkable = roster.filter(r => r.user_id !== me.id || true);
+
+      // Small pencil/check icon button — used to gate every editable section so
+      // nothing changes from a stray click.
+      const editIconBtn = (on, onClick, title) => (
+        <button onClick={onClick} title={title || (on ? 'Done' : 'Edit')} style={{ appearance: 'none', border: '1px solid var(--bd)', background: on ? 'var(--acSoft)' : 'var(--sf)', color: on ? 'var(--acDeep)' : 'var(--tx2)', width: 32, height: 32, borderRadius: 9, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flex: 'none' }}>
+          {on
+            ? <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+            : <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9" /><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" /></svg>}
+        </button>
+      );
 
       return (
         <div className="rhq">
           <button className="rhq-btn ghost sm" onClick={onBack} style={{ marginBottom: 14 }}>← Back</button>
 
-          {/* Personal Details — identity, contact, and profile fields */}
+          {/* Personal Details — condensed, social-profile style; edits happen
+              inline (gated by the pencil icon) instead of in a separate panel. */}
           <div className="rhq-card pad" style={{ marginBottom: 14 }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, flexWrap: 'wrap', gap: 8 }}>
-              <div className="rhq-sectitle">Personal Details</div>
-              <button className="rhq-btn ghost sm" onClick={editing ? () => setEditing(false) : startEdit}>{editing ? 'Close' : 'Edit'}</button>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
-              <Avatar name={sel.full_name} size={54} fs={18} url={(acct && acct.avatar_url) || (sel.linked_user_id && rosterMap[sel.linked_user_id] && rosterMap[sel.linked_user_id].avatar_url) || undefined} />
-              <div style={{ flex: 1, minWidth: 200 }}>
-                <div style={{ fontSize: 21, fontWeight: 700, letterSpacing: '-0.02em' }}>{sel.full_name}</div>
-                <div style={{ fontSize: 13, color: 'var(--tx2)', marginTop: 2 }}>
-                  {[sel.city && (sel.city + (sel.state ? ', ' + sel.state : '')), sel.timezone, sel.email, sel.phone].filter(Boolean).join(' · ')}
-                  {isAdmin ? ' · via ' + recruiterName(sel.recruiter_user_id) : ''}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 12, flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, minWidth: 0 }}>
+                <Avatar name={sel.full_name} size={46} fs={16} url={(acct && acct.avatar_url) || (sel.linked_user_id && rosterMap[sel.linked_user_id] && rosterMap[sel.linked_user_id].avatar_url) || undefined} />
+                <div style={{ minWidth: 0 }}>
+                  {editing
+                    ? <input className="rhq-inp" style={{ fontSize: 16, fontWeight: 700, maxWidth: 300 }} value={ed.full_name || ''} onChange={setEK('full_name')} />
+                    : <div style={{ fontSize: 19, fontWeight: 700, letterSpacing: '-0.02em' }}>{sel.full_name}</div>}
+                  {!editing && <div style={{ fontSize: 12.5, color: 'var(--tx3)', marginTop: 1 }}>{[sel.city && (sel.city + (sel.state ? ', ' + sel.state : '')), isAdmin && ('Upline · ' + recruiterName(sel.recruiter_user_id))].filter(Boolean).join('   ·   ')}</div>}
                 </div>
+              </div>
+              <div style={{ display: 'flex', gap: 8, alignItems: 'center', flex: 'none' }}>
+                {editing && isAdmin && sel.linked_user_id && <button className="rhq-btn ghost sm" onClick={() => { setOnbSel({}); setOnbMsg(''); setOnbOpen(true); }}>Send through onboarding</button>}
+                {editing
+                  ? <><button className="rhq-btn sm" onClick={saveEdit}>Save</button><button className="rhq-btn ghost sm" onClick={() => { setEditing(false); setConfirm(null); }}>Cancel</button></>
+                  : editIconBtn(false, startEdit, 'Edit details')}
               </div>
             </div>
             {(() => {
-              const details = [
-                ['Date of birth', sel.dob ? fmtDate(sel.dob) : null],
-                ['ZIP', sel.zip], ['Resident state', sel.resident_state],
-                ['Exam date', sel.exam_date ? fmtDate(sel.exam_date) : null],
-              ].filter(d => d[1]);
-              if (!details.length) return null;
+              const npn = (acct && acct.npn) || (sel.linked_user_id && rosterMap[sel.linked_user_id] && rosterMap[sel.linked_user_id].npn) || '';
+              const lbl = (t) => <div style={{ fontSize: 10.5, color: 'var(--tx3)', textTransform: 'uppercase', letterSpacing: '.05em', fontWeight: 700 }}>{t}</div>;
+              const inp = (k, type) => <input className="rhq-inp" type={type || 'text'} style={{ width: '100%', marginTop: 4 }} value={ed[k] || ''} onChange={setEK(k)} />;
+              const sel2 = (k, opts) => <select className="rhq-sel" style={{ width: '100%', marginTop: 4 }} value={ed[k]} onChange={setEK(k)}>{opts}</select>;
+              // Read = compact single-line "label   value"; edit = stacked label + field.
+              const row = (label, v) => <div style={{ display: 'flex', gap: 12, padding: '3px 0', fontSize: 13, lineHeight: 1.4 }}><span style={{ color: 'var(--tx3)', flex: '0 0 94px' }}>{label}</span><span style={{ fontWeight: 600, color: v ? 'var(--tx)' : 'var(--tx3)', wordBreak: 'break-word', minWidth: 0 }}>{v || '—'}</span></div>;
+              const f = (label, v, editNode) => editing ? <div>{lbl(label)}{editNode || <div style={{ fontSize: 14, fontWeight: 600, marginTop: 3, color: v ? 'var(--tx)' : 'var(--tx3)' }}>{v || '—'}</div>}</div> : row(label, v);
               return (
-                <div className="rhq-grid3" style={{ marginTop: 16 }}>
-                  {details.map(([l, v]) => <div key={l} style={{ background: 'var(--sf2)', borderRadius: 13, padding: '12px 15px' }}><div className="rhq-kpi-l">{l}</div><div style={{ fontSize: 14, fontWeight: 600, marginTop: 4, wordBreak: 'break-word' }}>{v}</div></div>)}
+                <div style={{ display: 'grid', gridTemplateColumns: editing ? 'repeat(auto-fit,minmax(190px,1fr))' : 'repeat(auto-fit,minmax(215px,1fr))', gap: editing ? '14px 26px' : '2px 28px', marginTop: 2 }}>
+                  {f('Email', sel.email, inp('email'))}
+                  {f('Phone', sel.phone, inp('phone'))}
+                  {f('City', sel.city, inp('city'))}
+                  {f('State', sel.state, inp('state'))}
+                  {f('ZIP', sel.zip)}
+                  {f('Resident state', sel.resident_state)}
+                  {f('Date of birth', sel.dob ? fmtDate(sel.dob) : '')}
+                  {f('Timezone', sel.timezone, sel2('timezone', TZ_OPTS.map(t => <option key={t}>{t}</option>)))}
+                  {f('Exam date', sel.exam_date ? fmtDate(sel.exam_date) : '', inp('exam_date', 'date'))}
+                  {isAdmin && f('Upline', recruiterName(sel.recruiter_user_id), sel2('recruiter_user_id', recruiterOptions.map(o => <option key={o.id} value={o.id}>{o.name}</option>)))}
+                  {isAdmin && f('NPN', npn)}
                 </div>
               );
             })()}
+            {/* Destructive actions only surface in edit mode so they can't be hit by accident. */}
+            {editing &&
+              <div style={{ marginTop: 16, borderTop: '1px solid var(--bd)', paddingTop: 14, display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                {!abandoned && (confirm === 'abandon'
+                  ? <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'var(--wb)', borderRadius: 999, padding: '5px 6px 5px 14px' }}>
+                    <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--wf)' }}>Abandon?</span>
+                    <button className="rhq-btn sm" style={{ background: 'var(--wf)', color: '#fff' }} onClick={abandon}>Abandon</button>
+                    <button className="rhq-btn ghost sm" onClick={() => setConfirm(null)}>Cancel</button>
+                  </span>
+                  : confirm !== 'delete' && <button className="rhq-btn warn" onClick={() => setConfirm('abandon')}>Abandon agent</button>)}
+                {isAdmin && !sel.linked_user_id && (confirm === 'delete'
+                  ? <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'var(--db)', borderRadius: 999, padding: '5px 6px 5px 14px' }}>
+                    <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--df)' }}>Delete forever?</span>
+                    <button className="rhq-btn sm" style={{ background: 'var(--df)', color: '#fff' }} onClick={remove}>Delete</button>
+                    <button className="rhq-btn ghost sm" onClick={() => setConfirm(null)}>Cancel</button>
+                  </span>
+                  : confirm !== 'abandon' && <button className="rhq-btn danger" onClick={() => setConfirm('delete')}>Delete permanently</button>)}
+              </div>}
           </div>
 
-          {/* Edit panel — drops down right under Personal Details when you click Edit */}
-          {editing &&
-            <div className="rhq-card pad" style={{ marginBottom: 14 }}>
-              <div className="rhq-sectitle" style={{ marginBottom: 16 }}>Edit agent info</div>
-              <div className="rhq-grid3">
-                {[['Full name', 'full_name'], ['Email', 'email'], ['Phone', 'phone'], ['City', 'city'], ['State', 'state']].map(([l, k]) =>
-                  <div key={k}><div className="rhq-label">{l}</div><input className="rhq-inp" style={{ width: '100%' }} value={ed[k]} onChange={setEK(k)} /></div>)}
-                <div><div className="rhq-label">Timezone</div><select className="rhq-sel" style={{ width: '100%' }} value={ed.timezone} onChange={setEK('timezone')}>{TZ_OPTS.map(t => <option key={t}>{t}</option>)}</select></div>
-                {isAdmin && <div><div className="rhq-label">Upline <span style={{ color: 'var(--tx3)', fontWeight: 400 }}>· reports-to</span></div><select className="rhq-sel" style={{ width: '100%' }} value={ed.recruiter_user_id} onChange={setEK('recruiter_user_id')}>{recruiterOptions.map(o => <option key={o.id} value={o.id}>{o.name}</option>)}</select><div style={{ fontSize: 11, color: 'var(--tx3)', marginTop: 4 }}>Recruiter credit + org hierarchy — kept in sync.</div></div>}
-                <div><div className="rhq-label">Stage</div><select className="rhq-sel" style={{ width: '100%' }} value={ed.stage} onChange={setEK('stage')}>{STAGE_FLOW.map(i => <option key={i} value={i}>{STAGES[i]}</option>)}</select></div>
-                <div><div className="rhq-label">Exam date</div><input className="rhq-inp" type="date" style={{ width: '100%' }} value={ed.exam_date || ''} onChange={setEK('exam_date')} /></div>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 18, flexWrap: 'wrap' }}>
-                <button className="rhq-btn" onClick={saveEdit}>Save changes</button>
-                <button className="rhq-btn ghost" onClick={() => setEditing(false)}>Cancel</button>
-                <div style={{ marginLeft: 'auto', display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-                  {!abandoned && confirm !== 'delete' && (confirm === 'abandon'
-                    ? <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'var(--wb)', borderRadius: 999, padding: '5px 6px 5px 14px' }}>
-                      <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--wf)' }}>Abandon?</span>
-                      <button className="rhq-btn sm" style={{ background: 'var(--wf)', color: '#fff' }} onClick={abandon}>Abandon</button>
-                      <button className="rhq-btn ghost sm" onClick={() => setConfirm(null)}>Cancel</button>
-                    </span>
-                    : <button className="rhq-btn warn" onClick={() => setConfirm('abandon')}>Abandon agent</button>)}
-                  {/* Permanent delete for recruits with no linked Sales Hub account —
-                      linked agents are deleted via the account panel's "Remove agent". */}
-                  {isAdmin && !sel.linked_user_id && confirm !== 'abandon' && (confirm === 'delete'
-                    ? <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'var(--db)', borderRadius: 999, padding: '5px 6px 5px 14px' }}>
-                      <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--df)' }}>Delete forever?</span>
-                      <button className="rhq-btn sm" style={{ background: 'var(--df)', color: '#fff' }} onClick={remove}>Delete</button>
-                      <button className="rhq-btn ghost sm" onClick={() => setConfirm(null)}>Cancel</button>
-                    </span>
-                    : <button className="rhq-btn danger" onClick={() => setConfirm('delete')}>Delete permanently</button>)}
-                </div>
-              </div>
-              <div className="rhq-muted" style={{ marginTop: 12 }}>Abandoning keeps the recruit and their notes in the Abandoned list in case they re-apply, and archives their linked Sales Hub agent. {isAdmin && !sel.linked_user_id ? 'Delete permanently removes this recruit and their notes from the pipeline for good (no Sales Hub account is linked).' : 'Agents with a Sales Hub account are permanently deleted via “Remove agent” in their account panel.'}</div>
-            </div>}
-
-          {/* Progress — pipeline stage, onboarding, and Sales Hub account together */}
+          {/* Progress — pipeline stage, onboarding, and Sales Hub account together.
+              All the controls (stage, approval, comp, remove) only become
+              clickable once you click the pencil, so nothing changes by accident. */}
           <div className="rhq-card pad" style={{ marginBottom: 14 }}>
-            <div className="rhq-sectitle" style={{ marginBottom: 16 }}>Progress</div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, gap: 8 }}>
+              <div className="rhq-sectitle">Progress</div>
+              {editIconBtn(progEdit, () => { setProgEdit(p => !p); setStageOpen(false); setConfirm(null); setRemoveOpen(false); }, progEdit ? 'Done' : 'Edit progress')}
+            </div>
 
             {/* Pipeline stage */}
             {!abandoned
               ? <div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', marginBottom: 16 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, flexWrap: 'wrap', marginBottom: 14 }}>
                     <div className="rhq-label" style={{ marginBottom: 0 }}>Pipeline stage</div>
-                    <span style={{ position: 'relative', display: 'inline-flex' }}>
-                      <span className={'rhq-chip rhq-stg' + sel.stage} style={{ cursor: 'pointer', gap: 4 }} onClick={() => setStageOpen(o => !o)} title="Click to change stage">{STAGES[sel.stage]} ▾</span>
-                      {stageOpen && <>
-                        <div onClick={() => setStageOpen(false)} style={{ position: 'fixed', inset: 0, zIndex: 40 }}></div>
-                        <div style={{ position: 'absolute', top: '100%', left: 0, marginTop: 6, zIndex: 50, background: 'var(--sf)', border: '1px solid var(--bd)', borderRadius: 12, boxShadow: 'var(--sh)', padding: 5, minWidth: 170 }}>
-                          {STAGE_FLOW.map(i =>
-                            <div key={i} className="rhq-rowhover" onClick={() => pickStage(i)} style={{ display: 'flex', alignItems: 'center', gap: 9, padding: '8px 11px', borderRadius: 8, cursor: 'pointer', fontSize: 13, fontWeight: i === sel.stage ? 700 : 500, background: i === sel.stage ? 'var(--sf2)' : 'transparent' }}>
-                              <span className={'rhq-dot rhq-dot' + i}></span>{STAGES[i]}
-                            </div>)}
-                        </div>
-                      </>}
-                    </span>
-                    {nextStage(sel.stage) !== undefined && (confirm === 'advance'
+                    {progEdit && nextStage(sel.stage) !== undefined && (confirm === 'advance'
                       ? <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'var(--sf2)', borderRadius: 999, padding: '5px 6px 5px 14px' }}>
                         <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--tx2)' }}>Move to {STAGES[nextStage(sel.stage)]}?</span>
                         <button className="rhq-btn sm" onClick={advance}>Confirm</button>
@@ -33326,11 +33405,13 @@
                       </span>
                       : <button className="rhq-btn sm" onClick={() => setConfirm('advance')}>Advance to {STAGES[nextStage(sel.stage)]} →</button>)}
                   </div>
+                  {/* The bar IS the stage indicator now — the current stage is
+                      highlighted; in edit mode click a segment to set the stage. */}
                   <div style={{ display: 'flex', gap: 4 }}>
-                    {STAGE_FLOW.map((st) => { const done = flowIdx(st) <= flowIdx(sel.stage); return (
-                      <div key={st} style={{ flex: 1 }}>
-                        <div className={'rhq-step ' + (done ? 'rhq-dot' + st : '')}></div>
-                        <div style={{ fontSize: 11, marginTop: 6, fontWeight: st === sel.stage ? 700 : 500, color: done ? 'var(--tx2)' : 'var(--tx3)' }}>{STAGES[st]}</div>
+                    {STAGE_FLOW.map((st) => { const done = flowIdx(st) <= flowIdx(sel.stage); const isCur = st === sel.stage; return (
+                      <div key={st} style={{ flex: 1, cursor: progEdit ? 'pointer' : 'default' }} onClick={progEdit ? () => pickStage(st) : undefined} title={progEdit ? 'Set stage to ' + STAGES[st] : ''}>
+                        <div className={'rhq-step ' + (done ? 'rhq-dot' + st : '')} style={isCur ? { outline: '2px solid var(--ac)', outlineOffset: 2 } : null}></div>
+                        <div style={{ fontSize: 11, marginTop: 6, fontWeight: isCur ? 700 : 500, color: isCur ? 'var(--tx)' : done ? 'var(--tx2)' : 'var(--tx3)' }}>{STAGES[st]}</div>
                       </div>); })}
                   </div>
                 </div>
@@ -33357,27 +33438,32 @@
             {/* Sales Hub account — admin + linked */}
             {sel.linked_user_id && isAdmin && acct &&
               <div style={{ marginTop: 18, borderTop: '1px solid var(--bd)', paddingTop: 16 }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14, flexWrap: 'wrap', gap: 8 }}>
+                {/* Status chip + an inline approve/revoke edit right beside it —
+                    no separate approval box (it was duplicating the chip). */}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4, flexWrap: 'wrap', gap: 8 }}>
                   <div className="rhq-label" style={{ marginBottom: 0 }}>Sales Hub account</div>
-                  <span className={'rhq-chip ' + (acct.status === 'inactive' ? 'rhq-stg3' : acct.approved === false ? 'rhq-stg2' : 'rhq-stg1')}>{acct.status === 'inactive' ? 'Archived' : acct.approved === false ? 'Awaiting approval' : 'Active'}</span>
-                </div>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(180px,1fr))', gap: 12 }}>
-                  <div style={{ background: 'var(--sf2)', borderRadius: 13, padding: '14px 16px' }}>
-                    <div className="rhq-label">Account approval</div>
-                    <div style={{ fontSize: 15, fontWeight: 700, margin: '4px 0 10px' }}>{acct.approved === false ? 'Not approved' : 'Approved'}</div>
-                    {acct.approved === false
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                    <span className={'rhq-chip ' + (acct.status === 'inactive' ? 'rhq-stg3' : acct.approved === false ? 'rhq-stg2' : 'rhq-stg1')}>{acct.status === 'inactive' ? 'Archived' : acct.approved === false ? 'Awaiting approval' : 'Active'}</span>
+                    {progEdit && acct.status !== 'inactive' && (acct.approved === false
                       ? <button className="rhq-btn sm" onClick={() => setApproved(true)}>Approve</button>
-                      : <button className="rhq-btn ghost sm" onClick={() => setApproved(false)}>Revoke</button>}
-                  </div>
-                  <div style={{ background: 'var(--sf2)', borderRadius: 13, padding: '14px 16px' }}>
-                    <div className="rhq-label">Comp level</div>
-                    <select className="rhq-sel" style={{ width: '100%', marginTop: 4 }} value={acct.comp_level || ''} onChange={e => setComp(e.target.value)}>
-                      <option value="">—</option>
-                      {Array.from({ length: 17 }, (_, k) => 65 + k * 5).map(n => <option key={n} value={n}>{n}%</option>)}
-                    </select>
+                      : <button className="rhq-btn ghost sm" onClick={() => setApproved(false)}>Revoke</button>)}
                   </div>
                 </div>
-                <div style={{ marginTop: 16, borderTop: '1px solid var(--bd)', paddingTop: 14 }}>
+                {/* Comp level — read-only value until you're in edit mode. Divider
+                    above so it lines up with the other sections. */}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginTop: 12, borderTop: '1px solid var(--bd)', paddingTop: 14, flexWrap: 'wrap' }}>
+                  <div className="rhq-label" style={{ marginBottom: 0 }}>Comp level</div>
+                  <div>
+                    {progEdit
+                      ? <select className="rhq-sel" style={{ minWidth: 150 }} value={acct.comp_level || ''} onChange={e => setComp(e.target.value)}>
+                          <option value="">—</option>
+                          {Array.from({ length: 17 }, (_, k) => 65 + k * 5).map(n => <option key={n} value={n}>{n}%</option>)}
+                        </select>
+                      : <span style={{ fontSize: 14, fontWeight: 700, color: acct.comp_level ? 'var(--tx)' : 'var(--tx3)' }}>{acct.comp_level ? acct.comp_level + '%' : '—'}</span>}
+                  </div>
+                </div>
+                {progEdit &&
+                  <div style={{ marginTop: 16, borderTop: '1px solid var(--bd)', paddingTop: 14 }}>
                   {!removeOpen
                     ? <button className="rhq-btn danger" onClick={openRemove}>Remove agent…</button>
                     : <div style={{ background: 'var(--sf2)', borderRadius: 12, padding: '14px 16px' }}>
@@ -33394,7 +33480,7 @@
                         <button className="rhq-btn ghost" onClick={() => setRemoveOpen(false)}>Cancel</button>
                       </div>
                     </div>}
-                </div>
+                </div>}
               </div>}
           </div>
 
@@ -33449,47 +33535,46 @@
               </div>
             </div>}
 
-          {/* goals */}
+          {/* goals — the full onboarding question set, shown even when blank.
+              Read-only until Edit is clicked (so a stray click can't overwrite
+              what the agent wrote); then edit + Save. */}
           <div className="rhq-card pad" style={{ marginBottom: 14 }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14, flexWrap: 'wrap', gap: 8 }}>
               <div className="rhq-sectitle">Goals</div>
-              <button className="rhq-btn ghost sm" onClick={saveGoals}>Save goals</button>
+              {goalsEdit
+                ? <div style={{ display: 'flex', gap: 8 }}><button className="rhq-btn sm" onClick={saveGoalsFull}>Save</button><button className="rhq-btn ghost sm" onClick={() => setGoalsEdit(false)}>Cancel</button></div>
+                : editIconBtn(false, startGoalsEdit, 'Edit goals')}
             </div>
-            <div className="rhq-grid3">
-              {[['First 90 days', 'goal_90', 'e.g. Pass the state exam, write first 3 policies…'], ['Year one', 'goal_year1', 'e.g. $60k in commissions, recruit 2 agents…'], ['Long term', 'goal_long_term', 'e.g. Build an agency, replace day-job income…']].map(([l, k, ph]) =>
-                <div key={k}><div className="rhq-label">{l}</div><textarea className="rhq-ta" rows={4} value={goals[k]} placeholder={ph} onChange={e => setGoals(s => Object.assign({}, s, { [k]: e.target.value }))}></textarea></div>)}
-            </div>
-            <div style={{ marginTop: 14 }}><div className="rhq-label">Their why</div><textarea className="rhq-ta" rows={2} value={goals.their_why} placeholder="Why are they doing this?" onChange={e => setGoals(s => Object.assign({}, s, { their_why: e.target.value }))}></textarea></div>
-            {/* Everything the agent entered during the onboarding Goals step —
-                shown read-only so this section correlates directly with it. */}
             {(() => {
               const arr = (x) => Array.isArray(x) ? x.filter(Boolean) : [];
-              const stg = arr(sel.st_goals), ltg = arr(sel.lt_goals), skills = arr(sel.skills), quits = arr(sel.give_ups);
-              const has = sel.vision || stg.length || ltg.length || skills.length || quits.length || sel.motivation || sel.income_need || sel.income_want || sel.help_note || (acct && acct.signed_at);
-              if (!has) return null;
-              const bullets = (label, items) => items.length > 0 && <div><div className="rhq-label">{label}</div><ul style={{ margin: '6px 0 0', paddingLeft: 18, fontSize: 13, color: 'var(--tx2)', lineHeight: 1.6 }}>{items.map((s, i) => <li key={i}>{s}</li>)}</ul></div>;
-              const para = (label, text) => text && <div><div className="rhq-label">{label}</div><div style={{ fontSize: 13.5, color: 'var(--tx2)', lineHeight: 1.55 }}>{text}</div></div>;
-              const money = (label, text) => text && <div style={{ background: 'var(--sf2)', borderRadius: 13, padding: '12px 15px' }}><div className="rhq-kpi-l">{label}</div><div style={{ fontSize: 16, fontWeight: 700, marginTop: 4 }}>{text}</div></div>;
+              const fld = (label, child) => <div><div className="rhq-label">{label}</div>{child}</div>;
+              const g2 = (a, b) => <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(220px,1fr))', gap: 12 }}>{a}{b}</div>;
+              if (goalsEdit) {
+                const ta = (k, rows) => <textarea className="rhq-ta" rows={rows || 3} value={ge[k]} onChange={geField(k)} style={{ width: '100%' }}></textarea>;
+                const list = (k) => <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>{ge[k].map((v, i) => <input key={i} className="rhq-inp" value={v} onChange={geArr(k, i)} placeholder={'Item ' + (i + 1)} />)}</div>;
+                return (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                    {fld('Their why', ta('their_why', 3))}
+                    {g2(fld('Short-term goals · first 90 days', list('stg')), fld('Long-term goals · first year', list('ltg')))}
+                    {fld('Vision · 3–5 years', ta('vision', 3))}
+                    {fld('What motivates them · aside from money', ta('motivation', 3))}
+                    {g2(fld('What they need to make', <input className="rhq-inp" value={ge.income_need} onChange={geField('income_need')} />), fld('What they want to make · year one', <input className="rhq-inp" value={ge.income_want} onChange={geField('income_want')} />))}
+                    {g2(fld('Skills / habits to improve', list('skills')), fld('Willing to give up', list('quits')))}
+                    {fld('Anything to help them succeed', ta('help_note', 3))}
+                  </div>
+                );
+              }
+              const roText = (v) => v ? <div style={{ fontSize: 13.5, color: 'var(--tx2)', lineHeight: 1.55, whiteSpace: 'pre-wrap' }}>{v}</div> : <div style={{ fontSize: 13, color: 'var(--tx3)', fontStyle: 'italic' }}>Not answered yet</div>;
+              const roList = (items) => { const f = arr(items); return f.length ? <ul style={{ margin: '4px 0 0', paddingLeft: 18, fontSize: 13, color: 'var(--tx2)', lineHeight: 1.6 }}>{f.map((s, i) => <li key={i}>{s}</li>)}</ul> : <div style={{ fontSize: 13, color: 'var(--tx3)', fontStyle: 'italic' }}>Not answered yet</div>; };
               return (
-                <div style={{ marginTop: 16, borderTop: '1px solid var(--bd)', paddingTop: 16, display: 'flex', flexDirection: 'column', gap: 14 }}>
-                  {(stg.length > 0 || ltg.length > 0) &&
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(220px,1fr))', gap: 12 }}>
-                      {bullets('Short-term goals · first 90 days', stg)}
-                      {bullets('Long-term goals · first year', ltg)}
-                    </div>}
-                  {para('Vision · 3–5 years', sel.vision)}
-                  {para('What motivates them · aside from money', sel.motivation)}
-                  {(sel.income_need || sel.income_want) &&
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(220px,1fr))', gap: 12 }}>
-                      {money('Needs to make', sel.income_need)}
-                      {money('Wants to make · year one', sel.income_want)}
-                    </div>}
-                  {(skills.length > 0 || quits.length > 0) &&
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(220px,1fr))', gap: 12 }}>
-                      {bullets('Skills / habits to improve', skills)}
-                      {bullets('Willing to give up', quits)}
-                    </div>}
-                  {para('Anything to help them succeed', sel.help_note)}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                  {fld('Their why', roText(sel.their_why))}
+                  {g2(fld('Short-term goals · first 90 days', roList(sel.st_goals)), fld('Long-term goals · first year', roList(sel.lt_goals)))}
+                  {fld('Vision · 3–5 years', roText(sel.vision))}
+                  {fld('What motivates them · aside from money', roText(sel.motivation))}
+                  {g2(fld('What they need to make', roText(sel.income_need)), fld('What they want to make · year one', roText(sel.income_want)))}
+                  {g2(fld('Skills / habits to improve', roList(sel.skills)), fld('Willing to give up', roList(sel.give_ups)))}
+                  {fld('Anything to help them succeed', roText(sel.help_note))}
                   {acct && acct.signed_at &&
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '11px 14px', borderRadius: 12, background: 'var(--s1b)' }}>
                       <span style={{ fontSize: 13, color: 'var(--s1f)', fontWeight: 600 }}>✍️ 90-day commitment signed by {acct.signed_name} · {fmtDate(acct.signed_at)}</span>
@@ -33559,6 +33644,30 @@
               </div>
             </div>
           </div>
+
+          {onbOpen &&
+            <div className="rhq-modalwrap" onClick={() => !onbBusy && setOnbOpen(false)}>
+              <div className="rhq-modal" onClick={e => e.stopPropagation()}>
+                <div className="rhq-sectitle" style={{ marginBottom: 4 }}>Send through onboarding</div>
+                <div className="rhq-muted" style={{ marginBottom: 14 }}>Pick the steps {sel.full_name} must complete. They'll be pulled into onboarding next time they log in — or within a minute if they're already logged in. Every step you don't check is skipped.</div>
+                <div style={{ display: 'flex', gap: 8, marginBottom: 12, flexWrap: 'wrap' }}>
+                  <button className="rhq-btn ghost sm" onClick={() => setOnbSel(ONB_STEP_OPTIONS.reduce((a, o) => (a[o.id] = true, a), {}))}>Select all</button>
+                  <button className="rhq-btn ghost sm" onClick={() => setOnbSel({})}>Clear</button>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(200px,1fr))', gap: 8, maxHeight: '46vh', overflowY: 'auto' }}>
+                  {ONB_STEP_OPTIONS.map(o => { const on = !!onbSel[o.id]; return (
+                    <button key={o.id} onClick={() => setOnbSel(s => Object.assign({}, s, { [o.id]: !s[o.id] }))} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', border: '1px solid ' + (on ? 'var(--ac)' : 'var(--bd)'), borderRadius: 11, cursor: 'pointer', textAlign: 'left', background: on ? 'var(--acSoft)' : 'var(--sf)' }}>
+                      <span style={{ width: 20, height: 20, borderRadius: 6, border: '1.5px solid ' + (on ? 'var(--ac)' : 'var(--bd)'), background: on ? 'var(--ac)' : 'transparent', color: 'var(--acOn)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700, flex: 'none' }}>{on ? '✓' : ''}</span>
+                      <span style={{ fontSize: 13.5, fontWeight: 600 }}>{o.label}</span>
+                    </button>); })}
+                </div>
+                {onbMsg && <div style={{ marginTop: 12, fontSize: 12.5, color: 'var(--df)', fontWeight: 600 }}>{onbMsg}</div>}
+                <div style={{ display: 'flex', gap: 10, marginTop: 18, flexWrap: 'wrap' }}>
+                  <button className="rhq-btn" disabled={onbBusy} onClick={sendThroughOnboarding}>{onbBusy ? 'Sending…' : 'Send through onboarding'}</button>
+                  <button className="rhq-btn ghost" disabled={onbBusy} onClick={() => setOnbOpen(false)}>Cancel</button>
+                </div>
+              </div>
+            </div>}
         </div>
       );
     }
@@ -33751,6 +33860,7 @@
         licensed: null, npn: '', examDate: '',
         checks: { eo: false, d1: false, d2: false, app: false, crm: false, cal: false, headset: false, statesAck: false },
         videos: {}, stateBuys: {},
+        reqSteps: null,
         step: 0, furthest: 0,
       };
     }
@@ -33763,7 +33873,7 @@
       const nm = splitName((u.user_metadata && u.user_metadata.name) || '');
       d.first = nm.first; d.last = nm.last;
       const [aps, rcs] = await Promise.all([
-        getRows('agent_profiles?select=agent_name,phone,avatar_url,npn,licensed,signed_name,signed_at,onboarding_step,onboarding_checks,onboarding_videos,state_buys,onboarding_completed&user_id=eq.' + uid() + '&limit=1'),
+        getRows('agent_profiles?select=agent_name,phone,avatar_url,npn,licensed,signed_name,signed_at,onboarding_step,onboarding_checks,onboarding_videos,state_buys,onboarding_completed,onboarding_steps&user_id=eq.' + uid() + '&limit=1'),
         getRows('recruits?select=*&linked_user_id=eq.' + uid() + '&limit=1'),
       ]);
       const ap = aps[0] || {};
@@ -33779,6 +33889,8 @@
       d.stateBuys = Object.assign({}, ap.state_buys || {});
       d.step = Number(ap.onboarding_step) || 0;
       d.furthest = d.step;
+      // Admin-selected subset of steps for a re-onboarding (null = full flow).
+      d.reqSteps = (Array.isArray(ap.onboarding_steps) && ap.onboarding_steps.length) ? ap.onboarding_steps : null;
       const rc = rcs[0] || null;
       HAS_RECRUIT = !!rc;
       if (rc) {
@@ -33844,6 +33956,15 @@
       const [busy, setBusy] = useState(false);
       const [err, setErr] = useState('');
       const cur = STEPS[d.step] ? STEPS[d.step].id : 'welcome';
+      // Which steps are part of THIS run. An admin re-onboarding can restrict the
+      // flow to a subset (d.reqSteps); the exam step also drops out once the
+      // agent says they're licensed. 'done' is always active (the finish screen).
+      const reqSteps = (Array.isArray(d.reqSteps) && d.reqSteps.length) ? d.reqSteps : null;
+      const stepActive = (id) => id === 'done' ? true
+        : (id === 'exam' && d.licensed === true) ? false
+        : (!reqSteps || reqSteps.indexOf(id) !== -1);
+      const nextActiveIdx = (from) => { for (let i = from + 1; i < STEPS.length; i++) { if (stepActive(STEPS[i].id)) return i; } return STEPS.length - 1; };
+      const railSteps = STEPS.filter(s => s.id !== 'done' && stepActive(s.id));
       const set = (patch) => setD(s => Object.assign({}, s, patch));
       const setArr = (key, i) => (e) => setD(s => { const a = s[key].slice(); a[i] = e.target.value; return Object.assign({}, s, { [key]: a }); });
       const fullName = ((d.first || '') + ' ' + (d.last || '')).trim();
@@ -33863,7 +33984,7 @@
         await patchAgent(Object.assign({ onboarding_step: ni, onboarding_checks: d.checks, onboarding_videos: d.videos, state_buys: d.stateBuys }, extraSave || {}));
         try { document.getElementById('kfoScroll').scrollTop = 0; } catch (e) {}
       };
-      const next = (extraSave) => { const ni = Math.min(STEPS.length - 1, d.step + 1); goto(STEPS[ni].id, extraSave); };
+      const next = (extraSave) => { goto(STEPS[nextActiveIdx(d.step)].id, extraSave); };
 
       const markVideo = (slot) => setD(s => Object.assign({}, s, { videos: Object.assign({}, s.videos, { [slot]: 100 }) }));
 
@@ -33876,7 +33997,9 @@
           if (!d.phone.trim()) return setErr('Please enter your phone number.');
           // First time through, a password is REQUIRED — the invite logged them in
           // passwordless, so without one they couldn't log back in normally later.
-          if (firstPass) {
+          // On an admin re-onboarding (reqSteps set) they already have a password,
+          // so we don't force a new one.
+          if (firstPass && !reqSteps) {
             if (!d.password || d.password.length < 6) return setErr('Please create a password (at least 6 characters) so you can log in next time.');
             if (d.password !== d.password2) return setErr('Passwords don’t match.');
           }
@@ -33945,9 +34068,9 @@
         await patchAgent({ signed_name: d.signedName.trim(), signed_at: at });
         next();
       };
-      // Licensed agents (they have an NPN) don't need the exam step — skip
-      // straight to States, which is the licensing gate they still need.
-      const saveNpn = async () => { setBusy(true); await patchAgent({ npn: d.npn.trim() || null, licensed: true }); setBusy(false); goto('states'); };
+      // Licensed agents (they have an NPN) don't need the exam step — next()
+      // skips it automatically because stepActive('exam') is false once licensed.
+      const saveNpn = async () => { setBusy(true); await patchAgent({ npn: d.npn.trim() || null, licensed: true }); setBusy(false); next(); };
       const setLicensed = async (v) => { set({ licensed: v }); await patchAgent({ licensed: v }); };
 
       const uploadPhoto = async (file) => {
@@ -33975,18 +34098,23 @@
 
       const finish = async () => {
         setBusy(true);
-        await patchAgent({ onboarding_completed: true, approved: true, onboarding_step: idxOf('done') });
+        // Clear any admin-selected step subset so the next re-onboarding (if any)
+        // starts from a clean slate / the full flow.
+        await patchAgent({ onboarding_completed: true, approved: true, onboarding_step: idxOf('done'), onboarding_steps: null });
         setBusy(false);
         onFinish && onFinish();
       };
 
       // progress %
-      const pct = Math.round(d.furthest / (STEPS.length - 1) * 100);
+      // Progress = how far through the ACTIVE steps we are (so a short custom
+      // re-onboarding still reads 0→100%, not stuck partway).
+      const furthestPos = railSteps.reduce((acc, s, idx) => idxOf(s.id) <= d.furthest ? idx : acc, 0);
+      const pct = railSteps.length > 1 ? Math.round(furthestPos / (railSteps.length - 1) * 100) : 100;
 
       // ── step rail ──
       const rail = (
         <div className="kfo-rail">
-          {STEPS.filter(s => s.id !== 'done' && !(s.id === 'exam' && d.licensed === true)).map((s, pos) => {
+          {railSteps.map((s, pos) => {
             const i = idxOf(s.id); const active = i === d.step; const doneStep = i < d.furthest;
             const reachable = i <= d.furthest;
             return (
@@ -34563,6 +34691,11 @@
     }
     // First paint (session may already be restored by the time we run).
     setTimeout(refresh, 400);
+    // Live re-onboarding: poll so an agent who's already logged in (and never
+    // logs out) still gets pulled into onboarding within ~a minute of an admin
+    // sending them through it. refresh() no-ops when already showing/checking or
+    // when the DB says onboarding is complete.
+    setInterval(function () { try { refresh(); } catch (e) {} }, 60000);
   })();
   </script>
 
