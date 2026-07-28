@@ -33260,6 +33260,43 @@
             })()}
           </div>
 
+          {/* Edit panel — drops down right under Personal Details when you click Edit */}
+          {editing &&
+            <div className="rhq-card pad" style={{ marginBottom: 14 }}>
+              <div className="rhq-sectitle" style={{ marginBottom: 16 }}>Edit agent info</div>
+              <div className="rhq-grid3">
+                {[['Full name', 'full_name'], ['Email', 'email'], ['Phone', 'phone'], ['City', 'city'], ['State', 'state']].map(([l, k]) =>
+                  <div key={k}><div className="rhq-label">{l}</div><input className="rhq-inp" style={{ width: '100%' }} value={ed[k]} onChange={setEK(k)} /></div>)}
+                <div><div className="rhq-label">Timezone</div><select className="rhq-sel" style={{ width: '100%' }} value={ed.timezone} onChange={setEK('timezone')}>{TZ_OPTS.map(t => <option key={t}>{t}</option>)}</select></div>
+                {isAdmin && <div><div className="rhq-label">Upline <span style={{ color: 'var(--tx3)', fontWeight: 400 }}>· reports-to</span></div><select className="rhq-sel" style={{ width: '100%' }} value={ed.recruiter_user_id} onChange={setEK('recruiter_user_id')}>{recruiterOptions.map(o => <option key={o.id} value={o.id}>{o.name}</option>)}</select><div style={{ fontSize: 11, color: 'var(--tx3)', marginTop: 4 }}>Recruiter credit + org hierarchy — kept in sync.</div></div>}
+                <div><div className="rhq-label">Stage</div><select className="rhq-sel" style={{ width: '100%' }} value={ed.stage} onChange={setEK('stage')}>{STAGE_FLOW.map(i => <option key={i} value={i}>{STAGES[i]}</option>)}</select></div>
+                <div><div className="rhq-label">Exam date</div><input className="rhq-inp" type="date" style={{ width: '100%' }} value={ed.exam_date || ''} onChange={setEK('exam_date')} /></div>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 18, flexWrap: 'wrap' }}>
+                <button className="rhq-btn" onClick={saveEdit}>Save changes</button>
+                <button className="rhq-btn ghost" onClick={() => setEditing(false)}>Cancel</button>
+                <div style={{ marginLeft: 'auto', display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                  {!abandoned && confirm !== 'delete' && (confirm === 'abandon'
+                    ? <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'var(--wb)', borderRadius: 999, padding: '5px 6px 5px 14px' }}>
+                      <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--wf)' }}>Abandon?</span>
+                      <button className="rhq-btn sm" style={{ background: 'var(--wf)', color: '#fff' }} onClick={abandon}>Abandon</button>
+                      <button className="rhq-btn ghost sm" onClick={() => setConfirm(null)}>Cancel</button>
+                    </span>
+                    : <button className="rhq-btn warn" onClick={() => setConfirm('abandon')}>Abandon agent</button>)}
+                  {/* Permanent delete for recruits with no linked Sales Hub account —
+                      linked agents are deleted via the account panel's "Remove agent". */}
+                  {isAdmin && !sel.linked_user_id && confirm !== 'abandon' && (confirm === 'delete'
+                    ? <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'var(--db)', borderRadius: 999, padding: '5px 6px 5px 14px' }}>
+                      <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--df)' }}>Delete forever?</span>
+                      <button className="rhq-btn sm" style={{ background: 'var(--df)', color: '#fff' }} onClick={remove}>Delete</button>
+                      <button className="rhq-btn ghost sm" onClick={() => setConfirm(null)}>Cancel</button>
+                    </span>
+                    : <button className="rhq-btn danger" onClick={() => setConfirm('delete')}>Delete permanently</button>)}
+                </div>
+              </div>
+              <div className="rhq-muted" style={{ marginTop: 12 }}>Abandoning keeps the recruit and their notes in the Abandoned list in case they re-apply, and archives their linked Sales Hub agent. {isAdmin && !sel.linked_user_id ? 'Delete permanently removes this recruit and their notes from the pipeline for good (no Sales Hub account is linked).' : 'Agents with a Sales Hub account are permanently deleted via “Remove agent” in their account panel.'}</div>
+            </div>}
+
           {/* Progress — pipeline stage, onboarding, and Sales Hub account together */}
           <div className="rhq-card pad" style={{ marginBottom: 14 }}>
             <div className="rhq-sectitle" style={{ marginBottom: 16 }}>Progress</div>
@@ -33396,42 +33433,7 @@
               {inviteMsg && <div className="rhq-muted" style={{ marginTop: 10, color: 'var(--tx2)' }}>{inviteMsg}</div>}
             </div>}
 
-          {/* edit panel */}
-          {editing &&
-            <div className="rhq-card pad" style={{ marginBottom: 14 }}>
-              <div className="rhq-sectitle" style={{ marginBottom: 16 }}>Edit agent info</div>
-              <div className="rhq-grid3">
-                {[['Full name', 'full_name'], ['Email', 'email'], ['Phone', 'phone'], ['City', 'city'], ['State', 'state']].map(([l, k]) =>
-                  <div key={k}><div className="rhq-label">{l}</div><input className="rhq-inp" style={{ width: '100%' }} value={ed[k]} onChange={setEK(k)} /></div>)}
-                <div><div className="rhq-label">Timezone</div><select className="rhq-sel" style={{ width: '100%' }} value={ed.timezone} onChange={setEK('timezone')}>{TZ_OPTS.map(t => <option key={t}>{t}</option>)}</select></div>
-                {isAdmin && <div><div className="rhq-label">Upline <span style={{ color: 'var(--tx3)', fontWeight: 400 }}>· reports-to</span></div><select className="rhq-sel" style={{ width: '100%' }} value={ed.recruiter_user_id} onChange={setEK('recruiter_user_id')}>{recruiterOptions.map(o => <option key={o.id} value={o.id}>{o.name}</option>)}</select><div style={{ fontSize: 11, color: 'var(--tx3)', marginTop: 4 }}>Recruiter credit + org hierarchy — kept in sync.</div></div>}
-                <div><div className="rhq-label">Stage</div><select className="rhq-sel" style={{ width: '100%' }} value={ed.stage} onChange={setEK('stage')}>{STAGE_FLOW.map(i => <option key={i} value={i}>{STAGES[i]}</option>)}</select></div>
-                <div><div className="rhq-label">Exam date</div><input className="rhq-inp" type="date" style={{ width: '100%' }} value={ed.exam_date || ''} onChange={setEK('exam_date')} /></div>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 18, flexWrap: 'wrap' }}>
-                <button className="rhq-btn" onClick={saveEdit}>Save changes</button>
-                <button className="rhq-btn ghost" onClick={() => setEditing(false)}>Cancel</button>
-                <div style={{ marginLeft: 'auto', display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-                  {!abandoned && confirm !== 'delete' && (confirm === 'abandon'
-                    ? <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'var(--wb)', borderRadius: 999, padding: '5px 6px 5px 14px' }}>
-                      <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--wf)' }}>Abandon?</span>
-                      <button className="rhq-btn sm" style={{ background: 'var(--wf)', color: '#fff' }} onClick={abandon}>Abandon</button>
-                      <button className="rhq-btn ghost sm" onClick={() => setConfirm(null)}>Cancel</button>
-                    </span>
-                    : <button className="rhq-btn warn" onClick={() => setConfirm('abandon')}>Abandon agent</button>)}
-                  {/* Permanent delete for recruits with no linked Sales Hub account —
-                      linked agents are deleted via the account panel's "Remove agent". */}
-                  {isAdmin && !sel.linked_user_id && confirm !== 'abandon' && (confirm === 'delete'
-                    ? <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'var(--db)', borderRadius: 999, padding: '5px 6px 5px 14px' }}>
-                      <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--df)' }}>Delete forever?</span>
-                      <button className="rhq-btn sm" style={{ background: 'var(--df)', color: '#fff' }} onClick={remove}>Delete</button>
-                      <button className="rhq-btn ghost sm" onClick={() => setConfirm(null)}>Cancel</button>
-                    </span>
-                    : <button className="rhq-btn danger" onClick={() => setConfirm('delete')}>Delete permanently</button>)}
-                </div>
-              </div>
-              <div className="rhq-muted" style={{ marginTop: 12 }}>Abandoning keeps the recruit and their notes in the Abandoned list in case they re-apply, and archives their linked Sales Hub agent. {isAdmin && !sel.linked_user_id ? 'Delete permanently removes this recruit and their notes from the pipeline for good (no Sales Hub account is linked).' : 'Agents with a Sales Hub account are permanently deleted via “Remove agent” in their account panel.'}</div>
-            </div>}
+          {/* edit panel moved up — renders directly under Personal Details */}
 
           {/* link prompt for unlinked / ambiguous recruits — admin only */}
           {(!sel.linked_user_id) && isAdmin &&
@@ -33458,20 +33460,36 @@
                 <div key={k}><div className="rhq-label">{l}</div><textarea className="rhq-ta" rows={4} value={goals[k]} placeholder={ph} onChange={e => setGoals(s => Object.assign({}, s, { [k]: e.target.value }))}></textarea></div>)}
             </div>
             <div style={{ marginTop: 14 }}><div className="rhq-label">Their why</div><textarea className="rhq-ta" rows={2} value={goals.their_why} placeholder="Why are they doing this?" onChange={e => setGoals(s => Object.assign({}, s, { their_why: e.target.value }))}></textarea></div>
-            {/* Read-only goal content the agent entered during onboarding —
-                vision, skills, things to give up, and the 90-day commitment. */}
+            {/* Everything the agent entered during the onboarding Goals step —
+                shown read-only so this section correlates directly with it. */}
             {(() => {
               const arr = (x) => Array.isArray(x) ? x.filter(Boolean) : [];
-              const skills = arr(sel.skills), quits = arr(sel.give_ups);
-              if (!(sel.vision || skills.length || quits.length || (acct && acct.signed_at))) return null;
+              const stg = arr(sel.st_goals), ltg = arr(sel.lt_goals), skills = arr(sel.skills), quits = arr(sel.give_ups);
+              const has = sel.vision || stg.length || ltg.length || skills.length || quits.length || sel.motivation || sel.income_need || sel.income_want || sel.help_note || (acct && acct.signed_at);
+              if (!has) return null;
+              const bullets = (label, items) => items.length > 0 && <div><div className="rhq-label">{label}</div><ul style={{ margin: '6px 0 0', paddingLeft: 18, fontSize: 13, color: 'var(--tx2)', lineHeight: 1.6 }}>{items.map((s, i) => <li key={i}>{s}</li>)}</ul></div>;
+              const para = (label, text) => text && <div><div className="rhq-label">{label}</div><div style={{ fontSize: 13.5, color: 'var(--tx2)', lineHeight: 1.55 }}>{text}</div></div>;
+              const money = (label, text) => text && <div style={{ background: 'var(--sf2)', borderRadius: 13, padding: '12px 15px' }}><div className="rhq-kpi-l">{label}</div><div style={{ fontSize: 16, fontWeight: 700, marginTop: 4 }}>{text}</div></div>;
               return (
                 <div style={{ marginTop: 16, borderTop: '1px solid var(--bd)', paddingTop: 16, display: 'flex', flexDirection: 'column', gap: 14 }}>
-                  {sel.vision && <div><div className="rhq-label">Vision · 3–5 years</div><div style={{ fontSize: 13.5, color: 'var(--tx2)', lineHeight: 1.55 }}>{sel.vision}</div></div>}
+                  {(stg.length > 0 || ltg.length > 0) &&
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(220px,1fr))', gap: 12 }}>
+                      {bullets('Short-term goals · first 90 days', stg)}
+                      {bullets('Long-term goals · first year', ltg)}
+                    </div>}
+                  {para('Vision · 3–5 years', sel.vision)}
+                  {para('What motivates them · aside from money', sel.motivation)}
+                  {(sel.income_need || sel.income_want) &&
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(220px,1fr))', gap: 12 }}>
+                      {money('Needs to make', sel.income_need)}
+                      {money('Wants to make · year one', sel.income_want)}
+                    </div>}
                   {(skills.length > 0 || quits.length > 0) &&
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(220px,1fr))', gap: 12 }}>
-                      {skills.length > 0 && <div><div className="rhq-label">Skills / habits to improve</div><ul style={{ margin: '6px 0 0', paddingLeft: 18, fontSize: 13, color: 'var(--tx2)', lineHeight: 1.6 }}>{skills.map((s, i) => <li key={i}>{s}</li>)}</ul></div>}
-                      {quits.length > 0 && <div><div className="rhq-label">Willing to give up</div><ul style={{ margin: '6px 0 0', paddingLeft: 18, fontSize: 13, color: 'var(--tx2)', lineHeight: 1.6 }}>{quits.map((s, i) => <li key={i}>{s}</li>)}</ul></div>}
+                      {bullets('Skills / habits to improve', skills)}
+                      {bullets('Willing to give up', quits)}
                     </div>}
+                  {para('Anything to help them succeed', sel.help_note)}
                   {acct && acct.signed_at &&
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '11px 14px', borderRadius: 12, background: 'var(--s1b)' }}>
                       <span style={{ fontSize: 13, color: 'var(--s1f)', fontWeight: 600 }}>✍️ 90-day commitment signed by {acct.signed_name} · {fmtDate(acct.signed_at)}</span>
@@ -33927,7 +33945,9 @@
         await patchAgent({ signed_name: d.signedName.trim(), signed_at: at });
         next();
       };
-      const saveNpn = async () => { setBusy(true); await patchAgent({ npn: d.npn.trim() || null, licensed: true }); setBusy(false); next(); };
+      // Licensed agents (they have an NPN) don't need the exam step — skip
+      // straight to States, which is the licensing gate they still need.
+      const saveNpn = async () => { setBusy(true); await patchAgent({ npn: d.npn.trim() || null, licensed: true }); setBusy(false); goto('states'); };
       const setLicensed = async (v) => { set({ licensed: v }); await patchAgent({ licensed: v }); };
 
       const uploadPhoto = async (file) => {
@@ -33966,12 +33986,12 @@
       // ── step rail ──
       const rail = (
         <div className="kfo-rail">
-          {STEPS.filter(s => s.id !== 'done').map((s) => {
+          {STEPS.filter(s => s.id !== 'done' && !(s.id === 'exam' && d.licensed === true)).map((s, pos) => {
             const i = idxOf(s.id); const active = i === d.step; const doneStep = i < d.furthest;
             const reachable = i <= d.furthest;
             return (
               <button key={s.id} onClick={() => reachable && goto(s.id)} className={'kfo-pill' + (active ? ' on' : '') + (doneStep ? ' done' : '')} disabled={!reachable} style={!reachable ? { opacity: .5, cursor: 'not-allowed' } : null}>
-                <span className="kfo-pill-mark">{doneStep ? '✓' : (i + 1)}</span>{s.label}
+                <span className="kfo-pill-mark">{doneStep ? '✓' : (pos + 1)}</span>{s.label}
               </button>
             );
           })}
@@ -34451,7 +34471,12 @@
     #kfoRoot .kfo-card{background:var(--sf);border:1px solid var(--bd);border-radius:16px;padding:22px 24px;box-shadow:var(--sh)}
     #kfoRoot .kfo-cardtitle{font-size:15px;font-weight:700}
     #kfoRoot .kfo-carddesc{font-size:13px;color:var(--tx2);margin:5px 0 0;line-height:1.55}
-    #kfoRoot .kfo-grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
+    #kfoRoot .kfo-grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;align-items:stretch}
+    /* Each grid cell is a flex column and its input is pinned to the bottom, so
+       the input boxes line up across a row even when one label (e.g. "Resident
+       state (licensing)") wraps to two lines and its neighbor doesn't. */
+    #kfoRoot .kfo-grid2 > div{display:flex;flex-direction:column}
+    #kfoRoot .kfo-grid2 > div > .kfo-inp{margin-top:auto}
     #kfoRoot .kfo-lbl{font-size:11px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
     #kfoRoot .kfo-inp{width:100%;padding:11px 13px;border-radius:11px;border:1px solid var(--bd);background:var(--bg);color:var(--tx);font-size:13.5px;font-family:inherit}
     #kfoRoot textarea.kfo-inp{line-height:1.55}
