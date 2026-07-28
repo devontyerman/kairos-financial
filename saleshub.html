@@ -34661,6 +34661,9 @@
 
     // Decide whether the signed-in user needs onboarding, and show/hide.
     async function refresh() {
+      // Never touch a running preview — the poll (and the admin/no-user teardown
+      // below) would otherwise close KFOnboarding.preview() after ~a minute.
+      if (KFO_PREVIEW) return;
       const u = window.currentUser;
       if (!u || !u.id) { if (showing) teardown(); return; }
       if (u.id === 'be364ef5-8426-4587-b8b8-9328b02055a7') { if (showing) teardown(); return; } // admin never onboards
