@@ -150,9 +150,10 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      /* Extra bottom padding reserves clearance for the absolute-positioned
-         collapse chevron pinned at bottom:12px. */
-      padding: 0 8px 44px;
+      /* Small bottom padding so the footer (theme toggle + profile chip) seats
+         at the very bottom of the sidebar. (The collapse chevron is pinned at
+         the top now, so the old 44px reserve is no longer needed.) */
+      padding: 0 8px 12px;
       transition: width 180ms ease;
       gap: 0;
       z-index: 1000;
@@ -1339,9 +1340,19 @@
     html[data-kf-theme="light"] .ss-notif-chip:hover { background: #FCEBB0; border-color: #D9B34E; }
     html[data-kf-theme="light"] .ss-notif-chip strong { color: #8a6a08; }
     @media (max-width: 768px) {
-      .ss-notifbar { left: 0; padding: 0 0.9rem; height: 50px; gap: 10px; }
+      /* In normal flow, directly beneath the sticky sidebar header, so the
+         brand + hamburger and the notifications are both visible at the top
+         (no more fixed-overlay covering the header). The header stays pinned;
+         this bar scrolls with the content beneath it. */
+      .ss-notifbar {
+        position: static;
+        top: auto; left: auto; right: auto;
+        width: 100%;
+        padding: 0 0.9rem; height: 50px; gap: 10px;
+      }
       .ss-notifbar-label { display: none; }
-      body.has-notifbar .ss-main { padding-top: calc(0.75rem + 50px); }
+      /* No longer a fixed overlay on mobile, so drop the content offset. */
+      body.has-notifbar .ss-main { padding-top: 0.75rem; }
     }
     .ss-page-dark {
       background: transparent;
@@ -2789,7 +2800,11 @@
 
     /* AP hero */
     #tpatab-performance .tp-ap-hero { grid-column: span 12; padding: 22px 24px 12px; }
-    #tpatab-performance .tp-ap-stats { display: flex; align-items: baseline; gap: 28px; flex-wrap: wrap; margin-bottom: 6px; }
+    /* Stacked + centered: total premium sits in the center on its own line, the
+       two period-over-period deltas sit just below it, and the avg stats below
+       those. */
+    #tpatab-performance .tp-ap-stats { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px; margin-bottom: 6px; }
+    #tpatab-performance .tp-ap-deltas { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; justify-content: center; }
     #tpatab-performance .tp-ap-num {
       font-family: var(--tp-mono); font-size: 38px; font-weight: 500;
       color: var(--tp-ink-1); letter-spacing: -0.02em;
@@ -2803,6 +2818,9 @@
     }
     #tpatab-performance .tp-ap-delta.pos { color: var(--tp-pos); background: color-mix(in oklch, var(--tp-pos) 14%, transparent); }
     #tpatab-performance .tp-ap-delta.neg { color: var(--tp-neg); background: color-mix(in oklch, var(--tp-neg) 14%, transparent); }
+    /* Cumulative / Comparison mode toggle — right-aligned above the chart on
+       desktop; centered + kept compact on mobile (see the mobile block). */
+    #tpatab-performance .tp-chartmode { display: flex; justify-content: flex-end; margin-bottom: 8px; }
 
     /* Chart wrap + tooltip */
     #tpatab-performance .tp-chart-wrap, #tpatab-agents .tp-chart-wrap, #tpatab-policies .tp-chart-wrap { position: relative; width: 100%; }
@@ -3702,8 +3720,18 @@
       #tpatab-policies .tp-policy-table-wrap { grid-column: span 1; }
       #tpatab-performance .tp-kpi-grid { grid-template-columns: repeat(2, 1fr); }
       #tpatab-performance .tp-ap-num { font-size: 28px; }
-      #tpatab-performance .tp-ap-stats { gap: 12px; }
+      /* Center the headline number + comparison stats on mobile instead of
+         letting them hug the left edge. */
+      #tpatab-performance .tp-ap-stats { gap: 12px; justify-content: center; text-align: center; }
+      /* Cumulative/Comparison toggle: center it and keep it compact (the shared
+         .tp-tf-segment mobile rule below would otherwise stretch it full-width). */
+      #tpatab-performance .tp-chartmode { justify-content: center; }
+      #tpatab-performance .tp-chartmode .tp-tf-segment { width: auto; }
+      /* Carrier Mix donut: the fixed-width SVG must re-center when the body
+         stacks into a column (align-items:stretch would otherwise pin it left). */
       #tpatab-performance .tp-carriers-body { flex-direction: column; align-items: stretch; gap: 16px; }
+      #tpatab-performance .tp-carriers-body > svg,
+      #tpatab-performance .tp-carriers-body > .tp-carriers-donut { align-self: center; }
       #tpatab-performance .tp-hdr, #tpatab-agents .tp-hdr, #tpatab-policies .tp-hdr { flex-direction: column; align-items: flex-start; gap: 12px; }
       #tpatab-performance .tp-card, #tpatab-agents .tp-card, #tpatab-policies .tp-card { padding: 16px 14px; }
       /* AP hero chart needs more height to be readable on a phone */
@@ -6240,6 +6268,21 @@
         gap: 8px !important;
         width: 100% !important;
       }
+      /* AP hero header: center + stack the Submit actions and the Timeframe
+         instead of shoving them to opposite edges. The 7-button timeframe
+         scrolls horizontally at full width; the 2-button Annual/MTD toggle
+         stays compact and centered. */
+      #panel-goals.active .tk-ap-hero-hd { flex-direction: column; align-items: center; gap: 12px; }
+      #panel-goals.active .tk-ap-actions { justify-content: center; width: 100%; }
+      #panel-goals.active .tk-ap-tf { flex-direction: column; align-items: center; width: 100%; gap: 6px; }
+      #panel-goals.active .tk-ap-tf > .tk-tf-segment {
+        display: flex; width: 100%;
+        overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none;
+      }
+      #panel-goals.active .tk-ap-tf > .tk-tf-segment::-webkit-scrollbar { display: none; }
+      #panel-goals.active .tk-tf-segment button { flex-shrink: 0; white-space: nowrap; }
+      #panel-goals.active .tk-ap-custom { justify-content: center; }
+      #panel-goals.active .tk-chart-mode { justify-content: center; }
       #panel-goals.active .tk-ap-num { font-size: 28px !important; word-break: break-word; }
       #panel-goals.active .tk-card-title { font-size: 14px !important; }
       /* Charts use ResizeObserver — make sure their container can't
@@ -8111,6 +8154,8 @@
       font-variant-numeric: tabular-nums; line-height: 1.1;
     }
     #panel-goals .tk-ap-num-sub { font-family: var(--tk-mono); font-size: 13px; color: var(--tk-ink-3); }
+    /* Pace % on its own line, centered, between the AP number and the pace text. */
+    #panel-goals .tk-ap-deltas { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
     #panel-goals .tk-ap-delta {
       display: inline-flex; align-items: center; gap: 4px;
       font-family: var(--tk-mono); font-size: 12px;
@@ -8236,6 +8281,24 @@
     #panel-goals .tk-tf-segment button.on {
       background: var(--tk-surface-3); color: var(--tk-ink-1);
       box-shadow: 0 1px 0 var(--tk-hairline-strong) inset;
+    }
+    /* AP hero header: Submit actions (left) + Timeframe (right), integrated
+       into the chart card to mirror the Agency Performance dashboard. */
+    #panel-goals .tk-ap-hero-hd {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 16px; flex-wrap: wrap; margin-bottom: 12px;
+    }
+    #panel-goals .tk-ap-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    #panel-goals .tk-ap-tf { display: flex; align-items: center; gap: 10px; }
+    #panel-goals .tk-ap-custom {
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+      justify-content: flex-end; margin-bottom: 12px;
+    }
+    /* Annual / MTD mode toggle — matches the Cumulative/Comparison control on
+       the Agency Performance chart; right-aligned above the chart on desktop. */
+    #panel-goals .tk-chart-mode {
+      display: flex; align-items: center; justify-content: flex-end;
+      gap: 12px; flex-wrap: wrap; margin-bottom: 10px;
     }
 
     /* Heatmap */
@@ -11658,12 +11721,15 @@
 
       .ss-dashboard { flex-direction: column; }
       .ss-sidebar {
-        position: relative;
-        top: auto; left: auto; right: auto; bottom: auto;
+        /* Sticky (not relative) so the brand + hamburger header stays pinned at
+           the top while scrolling instead of sliding away and letting the notif
+           bar cover it. */
+        position: sticky;
+        top: 0; left: auto; right: auto; bottom: auto;
         width: 100%;
         height: auto;
         border-right: none;
-        border-bottom: 1px solid #e0e0e0;
+        border-bottom: none;
         padding: 0.5rem 0 0;
         gap: 0;
         overflow: visible;
@@ -13891,8 +13957,8 @@
         <svg class="ss-navgroup-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
       </button>
       <div class="ss-navsub" id="rhqNavSub">
-        <div class="ss-navsub-label">Agency</div>
-        <button class="ss-navsub-btn" data-nav="tp:performance">Performance Dashboard</button>
+        <div class="ss-navsub-label">Performance</div>
+        <button class="ss-navsub-btn" data-nav="tp:performance">Agency Summary</button>
         <button class="ss-navsub-btn" data-nav="tp:policies">Agency Policies</button>
         <button class="ss-navsub-btn" data-nav="tp:hierarchy">Agent Hierarchy</button>
         <button class="ss-navsub-btn hq-admin-only" data-nav="tp:discord" style="display:none;">Discord</button>
@@ -13909,7 +13975,7 @@
     </button>
     <button class="ss-sidebar-btn" data-panel="policies">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
-      <span>Book of Biz</span>
+      <span>Book of Business</span>
     </button>
     <button class="ss-sidebar-btn" data-panel="leaderboard">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h12v6a6 6 0 01-12 0V2z"/><path d="M6 4H4a2 2 0 00-2 2v1a4 4 0 004 4"/><path d="M18 4h2a2 2 0 012 2v1a4 4 0 01-4 4"/><path d="M12 14v4"/><path d="M8 22h8"/><path d="M8 22a2 2 0 01-2-2h12a2 2 0 01-2 2"/></svg>
@@ -15106,7 +15172,7 @@
         </div>
         <div id="tpContent" style="display:none;">
           <div class="tp-admin-tabs">
-            <button class="tp-admin-tab active" data-tpatab="performance">Performance Dashboard</button>
+            <button class="tp-admin-tab active" data-tpatab="performance">Agency Summary</button>
             <button class="tp-admin-tab" data-tpatab="policies">Agency Policies</button>
             <button class="tp-admin-tab" data-tpatab="hierarchy">Agent Hierarchy</button>
             <button class="tp-admin-tab" data-tpatab="agents" data-admin-only="true">Agent Profiles</button>
@@ -16182,21 +16248,11 @@
             } catch (e) { /* silent — sidebar just stays hidden */ }
           })();
         }
-        // Admin-only landing: when the admin signs in for the first time
-        // this session, snap them to Team Dashboard. Everyone else stays
-        // on the default Tracker. Tracked in sessionStorage so navigating
-        // away in the same tab doesn't keep yanking them back.
-        if (isWtAdmin && !sessionStorage.getItem('kf_admin_landed_v1')) {
-          sessionStorage.setItem('kf_admin_landed_v1', '1');
-          const tpPanel = document.getElementById('panel-teamperf');
-          const goalsPanel = document.getElementById('panel-goals');
-          if (tpPanel && tpBtn && goalsPanel) {
-            document.querySelectorAll('.ss-sidebar-btn').forEach(b => b.classList.remove('active'));
-            document.querySelectorAll('.ss-panel').forEach(p => p.classList.remove('active'));
-            tpBtn.classList.add('active');
-            tpPanel.classList.add('active');
-          }
-        }
+        // Landing (which page you see on entry) is resolved centrally by
+        // kfApplyLanding() — called from checkSession() on a reload and from
+        // kfPerformLogin() on a fresh sign-in. Admin defaults to the Team
+        // Performance dashboard; everyone else to their Tracker; a refresh
+        // keeps whatever page you were on.
         // If WT panel is currently active and we just got auth, reload so goals fetch with the user bearer
         if (isWtAdmin) {
           const activePanel = document.querySelector('.ss-panel.active');
@@ -16267,15 +16323,10 @@
         }
       } catch (e) { console.error('Session check failed:', e); }
       updateAuthUI();
-      // Re-run the active panel's loaders now that currentUser is populated
-      // (the hash IIFE may have activated a panel before auth resolved).
-      try {
-        const activeBtn = document.querySelector('.ss-sidebar-btn.active');
-        const activePanel = (activeBtn && activeBtn.dataset.panel)
-          || (window.location.hash || '').replace('#', '')
-          || 'goals';
-        if (typeof activatePanel === 'function') activatePanel(activePanel);
-      } catch (e) { /* ignore */ }
+      // Resolve + mount the landing panel now that currentUser is populated
+      // (the hash IIFE may have activated a panel before auth resolved). A
+      // reload keeps the page you were on; otherwise it's the per-role default.
+      if (typeof kfApplyLanding === 'function') kfApplyLanding(false);
     }
     checkSession();
 
@@ -16429,8 +16480,36 @@
         document.documentElement.removeAttribute('data-kf-active');
       }
       try { history.replaceState(null, '', '#' + panelName); } catch (e) { /* ignore */ }
+      // Persist the current page so a refresh (or a return visit) restores it
+      // instead of dropping back to the default landing panel.
+      try { localStorage.setItem('kf_last_panel', panelName); } catch (e) { /* ignore */ }
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
+
+    // Resolve which panel to show on entry.
+    //  • A valid #hash (e.g. after a refresh) always wins — this is what makes
+    //    a refresh keep you on the page you were on.
+    //  • freshEntry=true (a brand-new sign-in): go straight to the default
+    //    landing — admin → Team Performance dashboard, everyone else → Tracker.
+    //  • Otherwise (a reload with no hash): restore the last saved panel, then
+    //    fall back to the same per-role default.
+    function kfApplyLanding(freshEntry) {
+      try {
+        const valid = (n) => n && (document.getElementById('panel-' + n) || ['submit', 'training', 'performance', 'recruiterhq', 'teamperf'].includes(n));
+        const hash = (window.location.hash || '').replace('#', '');
+        const isAdmin = (currentUser && (currentUser.email || '').toLowerCase() === 'dev@kairos-financial.com');
+        const fallback = isAdmin ? 'teamperf' : 'goals';
+        let target;
+        if (valid(hash)) target = hash;
+        else if (freshEntry) target = fallback;
+        else {
+          let stored = null; try { stored = localStorage.getItem('kf_last_panel'); } catch (e) {}
+          target = valid(stored) ? stored : fallback;
+        }
+        if (typeof activatePanel === 'function') activatePanel(target);
+      } catch (e) { /* ignore */ }
+    }
+    window.kfApplyLanding = kfApplyLanding;
 
     // Agency HQ sub-nav: switch the Agency Hub tab programmatically. Mirrors the
     // in-panel tab click handler but is timing-robust (doesn't need the tab's
@@ -17285,10 +17364,15 @@
     // E-App Guides — so a refresh keeps you on the page you were on instead of
     // snapping back to the default Tracker.
     (function openPanelFromHash() {
-      const hash = (window.location.hash || '').replace('#', '');
-      if (!hash) return;
       const special = ['submit', 'training', 'performance', 'recruiterhq', 'teamperf'];
-      if (special.includes(hash) || document.getElementById('panel-' + hash)) activatePanel(hash);
+      const valid = (n) => n && (special.includes(n) || document.getElementById('panel-' + n));
+      const hash = (window.location.hash || '').replace('#', '');
+      if (valid(hash)) { activatePanel(hash); return; }
+      // No hash (e.g. a plain reload of the base URL) — restore the last saved
+      // panel for a fast first paint. checkSession()/kfApplyLanding() re-resolves
+      // once auth completes, so this is just to avoid a flash of the default.
+      let stored = null; try { stored = localStorage.getItem('kf_last_panel'); } catch (e) {}
+      if (valid(stored)) activatePanel(stored);
     })();
 
     // ─── SIDEBAR HAMBURGER (toggles unified mobile dropdown) ───
@@ -18953,6 +19037,10 @@
           localStorage.setItem('sb_access_token', result.access_token);
           localStorage.setItem('sb_refresh_token', result.refresh_token);
           updateAuthUI();
+          // Fresh sign-in → land on the per-role default (admin → Team
+          // Performance dashboard, everyone else → their Tracker), unless a
+          // deep-link #hash was supplied.
+          if (typeof kfApplyLanding === 'function') kfApplyLanding(true);
           return { ok: true };
         }
         console.error('Login failed:', res.status, result);
@@ -20111,8 +20199,12 @@
     updateAuthUI = function() {
       origUpdateAuthUI();
       if (currentUser) {
-        setTimeout(checkUnderwritingReminders, 1500);
-        setTimeout(checkEffectiveDateReminders, 2500);
+        // Login-time policy popups (Underwriting Check-In + Effective Date
+        // Reminder) are disabled — the persistent top notification bar now
+        // surfaces overdue/attention items, so these modals are redundant.
+        // Functions + markup are left intact so they can be re-enabled if needed.
+        // setTimeout(checkUnderwritingReminders, 1500);
+        // setTimeout(checkEffectiveDateReminders, 2500);
         // The Tracker panel is now React-rendered (see KairosTracker IIFE).
         // Mount it on auth so the dashboard fills with the user's data.
         if (window.tkMountTracker) { try { window.tkMountTracker(); } catch (e) { console.error('Tracker mount failed:', e); } }
@@ -20753,6 +20845,10 @@
         // Re-render any mounted views that draw avatars so photos appear.
         try { if (typeof window.lbMountLeaderboard === 'function') window.lbMountLeaderboard(); } catch (e) {}
         try { const rp = document.getElementById('panel-recruiterhq'); if (rp && rp.classList.contains('active') && typeof window.mountRecruiterHq === 'function') window.mountRecruiterHq(); } catch (e) {}
+        // Agency HQ Policies + Hierarchy draw avatars too — re-render if the
+        // user is already viewing them when the photo map finishes loading.
+        try { const pp = document.getElementById('tpatab-policies'); if (pp && pp.classList.contains('active') && typeof window.tpMountPolicies === 'function') window.tpMountPolicies(); } catch (e) {}
+        try { const hp = document.getElementById('tpatab-hierarchy'); if (hp && hp.classList.contains('active') && typeof window.tpMountHierarchy === 'function') window.tpMountHierarchy(); } catch (e) {}
         // Own sidebar chip.
         try {
           const pa = document.getElementById('ssProfileAv');
@@ -25241,27 +25337,29 @@
             )}
             <div className="tp-ap-stats">
               <div className="tp-ap-num">{fmtCurrency(total)}</div>
-              {prior > 0 ? (
-                <div className={'tp-ap-delta ' + (delta >= 0 ? 'pos' : 'neg')}>
-                  {delta >= 0 ? '▲' : '▼'} {Math.abs(delta).toFixed(1)}% premium
-                  <span style={{color:'var(--tp-ink-3)', marginLeft:6}}>{deltaLabel}</span>
-                </div>
-              ) : (
-                <div className="tp-ap-num-sub">no prior period to compare</div>
-              )}
-              {priorDeals > 0 && (
-                <div className={'tp-ap-delta ' + (dealsDelta >= 0 ? 'pos' : 'neg')}>
-                  {dealsDelta >= 0 ? '▲' : '▼'} {Math.abs(dealsDelta).toFixed(1)}% deals
-                  <span style={{color:'var(--tp-ink-3)', marginLeft:6}}>{deltaLabel}</span>
-                </div>
-              )}
+              <div className="tp-ap-deltas">
+                {prior > 0 ? (
+                  <div className={'tp-ap-delta ' + (delta >= 0 ? 'pos' : 'neg')}>
+                    {delta >= 0 ? '▲' : '▼'} {Math.abs(delta).toFixed(1)}% premium
+                    <span style={{color:'var(--tp-ink-3)', marginLeft:6}}>{deltaLabel}</span>
+                  </div>
+                ) : (
+                  <div className="tp-ap-num-sub">no prior period to compare</div>
+                )}
+                {priorDeals > 0 && (
+                  <div className={'tp-ap-delta ' + (dealsDelta >= 0 ? 'pos' : 'neg')}>
+                    {dealsDelta >= 0 ? '▲' : '▼'} {Math.abs(dealsDelta).toFixed(1)}% deals
+                    <span style={{color:'var(--tp-ink-3)', marginLeft:6}}>{deltaLabel}</span>
+                  </div>
+                )}
+              </div>
               <div className="tp-ap-num-sub">
                 Avg premium <b style={{color:'var(--tp-ink-1)'}}>{fmtCurrency(view.avgPremium)}</b> · Avg/day <b style={{color:'var(--tp-ink-1)'}}>{fmtCurrency(avgPerDay)}</b> · Deals <b style={{color:'var(--tp-ink-1)'}}>{view.deals.toLocaleString()}</b> · Avg deals/day <b style={{color:'var(--tp-ink-1)'}}>{avgDealsPerDay.toFixed(1)}</b>
                 {isTeam && <> · Avg agent AP <b style={{color:'var(--tp-ink-1)'}}>{fmtCurrency(avgAgentAP)}</b> <span style={{color:'var(--tp-ink-3)'}}>({activeAgents} {activeAgents === 1 ? 'agent' : 'agents'})</span></>}
               </div>
             </div>
-            <div style={{display:'flex', justifyContent:'flex-end', marginBottom:8}}>
-              <div className="tp-tf-segment">
+            <div className="tp-chartmode">
+              <div className="tp-tf-segment tp-seg-mode">
                 <button className={chartMode === 'cumulative' ? 'on' : ''} onClick={() => setChartMode('cumulative')}>Cumulative</button>
                 <button className={chartMode === 'comparison' ? 'on' : ''} onClick={() => setChartMode('comparison')}>Comparison</button>
               </div>
@@ -27083,6 +27181,9 @@
                         const repHueIdx = Math.abs((p.user_id || repName).split('').reduce((s,c)=>s+c.charCodeAt(0), 0)) % RAINBOW_TOKENS.length;
                         const sparkColor = RAINBOW_TOKENS[repHueIdx];
                         const initials = repName.split(' ').map(s => s[0]).filter(Boolean).slice(0,2).join('').toUpperCase() || '··';
+                        // Resolve the agent photo by user_id first (robust), then by
+                        // name — sales_rep free-text often doesn't match agent_name.
+                        const repAv = window.kfAvatar && (window.kfAvatar(p.user_id) || window.kfAvatar(repName));
                         return (
                           <tr key={p.id}>
                             <td>
@@ -27093,7 +27194,7 @@
                             </td>
                             <td>
                               <div className="tp-cell-rep">
-                                <div className="tp-avatar" style={(window.kfAvatar && window.kfAvatar(repName)) ? {backgroundImage:'url('+window.kfAvatar(repName)+')',backgroundSize:'cover',backgroundPosition:'center',color:'transparent',borderColor:'color-mix(in oklch, ' + sparkColor + ' 40%, transparent)'} : {background: 'color-mix(in oklch, ' + sparkColor + ' 22%, var(--tp-surface-2))', borderColor: 'color-mix(in oklch, ' + sparkColor + ' 40%, transparent)'}}>
+                                <div className="tp-avatar" style={repAv ? {backgroundImage:'url('+repAv+')',backgroundSize:'cover',backgroundPosition:'center',color:'transparent',borderColor:'color-mix(in oklch, ' + sparkColor + ' 40%, transparent)'} : {background: 'color-mix(in oklch, ' + sparkColor + ' 22%, var(--tp-surface-2))', borderColor: 'color-mix(in oklch, ' + sparkColor + ' 40%, transparent)'}}>
                                   {initials}
                                 </div>
                                 <span className="name">{repName}</span>
@@ -27191,6 +27292,13 @@
       }
       function hvAvatarTint(profile) {
         return 'color-mix(in oklch, ' + hvRankFor(profile).color + ' 22%, var(--tp-surface-2))';
+      }
+      // Avatar style for a hierarchy node: the agent's photo when we have one
+      // (looked up by user_id then name), else the rank-tinted initials chip.
+      function hvAvatarStyle(profile) {
+        const av = profile && window.kfAvatar && (window.kfAvatar(profile.user_id) || window.kfAvatar(profile.agent_name));
+        if (av) return { backgroundImage: 'url(' + av + ')', backgroundSize: 'cover', backgroundPosition: 'center', color: 'transparent' };
+        return { background: hvAvatarTint(profile) };
       }
 
       function hvBuildIndex(profiles) {
@@ -27358,7 +27466,7 @@
             <div className="hv-node-stripe"></div>
             <div className="hv-node-body">
               <div className="hv-node-row">
-                <div className="hv-node-avatar" style={{ background: hvAvatarTint(profile) }}>
+                <div className="hv-node-avatar" style={hvAvatarStyle(profile)}>
                   {hvInitials(profile.agent_name)}
                 </div>
                 <div className="hv-node-id">
@@ -27433,7 +27541,7 @@
           <div className="hv-detail" onClick={(e) => e.stopPropagation()}>
             <div className="hv-detail-hd">
               <div className="hv-detail-title">
-                <div className="hv-detail-avatar" style={{ background: hvAvatarTint(profile) }}>
+                <div className="hv-detail-avatar" style={hvAvatarStyle(profile)}>
                   {hvInitials(profile.agent_name)}
                 </div>
                 <div className="hv-detail-name-block">
@@ -27516,7 +27624,7 @@
                 <div className="hv-direct-list">
                   {directs.map(d => (
                     <div key={d.user_id} className="hv-direct-row">
-                      <div className="hv-direct-avatar" style={{background: hvAvatarTint(d)}}>{hvInitials(d.agent_name)}</div>
+                      <div className="hv-direct-avatar" style={hvAvatarStyle(d)}>{hvInitials(d.agent_name)}</div>
                       <div className="hv-direct-nm">
                         <div className="hv-direct-nm-name">{d.agent_name}</div>
                         <div className="hv-direct-nm-rank">{hvRankFor(d).label}</div>
@@ -28999,7 +29107,11 @@
         const breakdown = mixEntries.map(([name, amt]) => ({ name, amt, color: HUE[name] || T.gray, pct: totalExpenses>0 ? amt/totalExpenses*100 : 0 }));
 
         // ── shared styles ──
-        const card = { background:T.surface, border:'1px solid '+T.hairline, borderRadius:10, overflow:'hidden', backdropFilter:'blur(14px) saturate(1.3)', WebkitBackdropFilter:'blur(14px) saturate(1.3)' };
+        // Solid charcoal that matches the line-graph card (.tk-card → --tk-surface)
+        // instead of the translucent glass that read as a different shade over the
+        // page gradient. Covers Pipeline value, P&L, the KPI + Earned-Per-Activity
+        // boxes (kpiCard spreads this), Expenses, and Expense Mix.
+        const card = { background:'var(--tk-surface)', border:'1px solid var(--tk-hairline)', borderRadius:10, overflow:'hidden' };
         const monoLabel = { fontFamily:MONO, fontSize:11, textTransform:'uppercase', letterSpacing:'.08em', color:T.ink3, fontWeight:500 };
         const tintCard = (color, op) => ({ background:'color-mix(in oklch, '+color+' '+op+'%, '+T.surface+')', border:'1px solid color-mix(in oklch, '+color+' 26%, transparent)', borderRadius:10, padding:'20px 22px', textAlign:'center', display:'flex', flexDirection:'column', justifyContent:'center', minHeight:112, backdropFilter:'blur(14px) saturate(1.3)', WebkitBackdropFilter:'blur(14px) saturate(1.3)' });
         // Fixed-height label row so every card's number lands on the same line,
@@ -29866,36 +29978,14 @@
                   </select>
                 )}
               </div>
-              <div style={{display:'flex', alignItems:'center', gap:10, flexWrap:'wrap'}}>
-                <span className="tk-hdr-sub" style={{textTransform:'uppercase', letterSpacing:'0.06em'}}>Timeframe</span>
-                <div className="tk-tf-segment">
-                  {[['WTD','WTD'],['MTD','MTD'],['YTD','YTD'],['LW','Last Wk'],['LM','Last Mo'],['ALL','All Time'],['CUSTOM','Custom']].map(([key, lbl]) => (
-                    <button key={key} className={tf === key ? 'on' : ''} onClick={() => setTf(key)}>{lbl}</button>
-                  ))}
-                </div>
-              </div>
             </div>
-
-            {tf === 'CUSTOM' && (
-              <div className="tk-filter-bar" style={{paddingTop:0, marginTop:-4}}>
-                <div style={{display:'flex', alignItems:'center', gap:10, flexWrap:'wrap'}}>
-                  <span style={{fontFamily:'var(--tk-mono)', fontSize:10, color:'var(--tk-ink-3)', textTransform:'uppercase', letterSpacing:'0.06em'}}>From</span>
-                  <input type="date" value={customFrom} onChange={e => setCustomFrom(e.target.value)} style={{appearance:'none', background:'var(--tk-surface)', color:'var(--tk-ink-1)', border:'1px solid var(--tk-hairline-strong)', borderRadius:8, padding:'6px 10px', fontFamily:'var(--tk-mono)', fontSize:12, outline:'none'}} />
-                  <span style={{fontFamily:'var(--tk-mono)', fontSize:10, color:'var(--tk-ink-3)', textTransform:'uppercase', letterSpacing:'0.06em'}}>To</span>
-                  <input type="date" value={customTo} onChange={e => setCustomTo(e.target.value)} style={{appearance:'none', background:'var(--tk-surface)', color:'var(--tk-ink-1)', border:'1px solid var(--tk-hairline-strong)', borderRadius:8, padding:'6px 10px', fontFamily:'var(--tk-mono)', fontSize:12, outline:'none'}} />
-                  {(customFrom || customTo) && (
-                    <button type="button" onClick={() => { setCustomFrom(''); setCustomTo(''); }} style={{appearance:'none', border:'1px solid var(--tk-hairline-strong)', background:'transparent', color:'var(--tk-ink-2)', borderRadius:8, padding:'6px 10px', fontFamily:'var(--tk-mono)', fontSize:11, cursor:'pointer'}}>Clear</button>
-                  )}
-                </div>
-              </div>
-            )}
 
             <div className="tk-grid tk-grid-12">
               {/* Annual Premium Goal hero */}
               <div className="tk-card tk-ap-hero" style={{gridColumn:'span 12', order:0}}>
-                <div className="tk-card-hd tk-card-hd-center" style={{marginBottom:8}}>
-                  {!viewingOther && (
-                    <div style={{display:'flex', alignItems:'center', gap:10, flexWrap:'wrap', padding:'14px 0'}}>
+                <div className="tk-ap-hero-hd">
+                  {!viewingOther ? (
+                    <div className="tk-ap-actions">
                       <button className="tk-action-btn green" onClick={() => setShowDealModal(true)}>
                         <span className="tk-plus">+</span> Submit Deal
                       </button>
@@ -29903,8 +29993,27 @@
                         <span className="tk-plus">+</span> Submit KPI
                       </button>
                     </div>
-                  )}
+                  ) : <div className="tk-ap-actions" />}
+                  <div className="tk-ap-tf">
+                    <span className="tk-hdr-sub" style={{textTransform:'uppercase', letterSpacing:'0.06em'}}>Timeframe</span>
+                    <div className="tk-tf-segment">
+                      {[['WTD','WTD'],['MTD','MTD'],['YTD','YTD'],['LW','Last Wk'],['LM','Last Mo'],['ALL','All Time'],['CUSTOM','Custom']].map(([key, lbl]) => (
+                        <button key={key} className={tf === key ? 'on' : ''} onClick={() => setTf(key)}>{lbl}</button>
+                      ))}
+                    </div>
+                  </div>
                 </div>
+                {tf === 'CUSTOM' && (
+                  <div className="tk-ap-custom">
+                    <span style={{fontFamily:'var(--tk-mono)', fontSize:10, color:'var(--tk-ink-3)', textTransform:'uppercase', letterSpacing:'0.06em'}}>From</span>
+                    <input type="date" value={customFrom} onChange={e => setCustomFrom(e.target.value)} style={{appearance:'none', background:'var(--tk-surface)', color:'var(--tk-ink-1)', border:'1px solid var(--tk-hairline-strong)', borderRadius:8, padding:'6px 10px', fontFamily:'var(--tk-mono)', fontSize:12, outline:'none'}} />
+                    <span style={{fontFamily:'var(--tk-mono)', fontSize:10, color:'var(--tk-ink-3)', textTransform:'uppercase', letterSpacing:'0.06em'}}>To</span>
+                    <input type="date" value={customTo} onChange={e => setCustomTo(e.target.value)} style={{appearance:'none', background:'var(--tk-surface)', color:'var(--tk-ink-1)', border:'1px solid var(--tk-hairline-strong)', borderRadius:8, padding:'6px 10px', fontFamily:'var(--tk-mono)', fontSize:12, outline:'none'}} />
+                    {(customFrom || customTo) && (
+                      <button type="button" onClick={() => { setCustomFrom(''); setCustomTo(''); }} style={{appearance:'none', border:'1px solid var(--tk-hairline-strong)', background:'transparent', color:'var(--tk-ink-2)', borderRadius:8, padding:'6px 10px', fontFamily:'var(--tk-mono)', fontSize:11, cursor:'pointer'}}>Clear</button>
+                    )}
+                  </div>
+                )}
                 <div style={{display:'flex', flexDirection:'column', gap:4, marginBottom:8, alignItems:'center', textAlign:'center'}}>
                   {chartMode === 'mtd' ? (
                     <>
@@ -29938,12 +30047,16 @@
                           )}
                         </span>
                       </div>
+                      {monthlyGoal > 0 && (
+                        <div className="tk-ap-deltas">
+                          <span className={'tk-ap-delta ' + (monthlyPace >= 0 ? 'pos' : 'neg')}>
+                            {monthlyPace >= 0 ? '▲' : '▼'} {Math.abs(monthlyPace).toFixed(1)}%
+                          </span>
+                        </div>
+                      )}
                       <div className="tk-ap-num-sub">
                         {monthlyGoal > 0 && (
                           <>
-                            <span className={'tk-ap-delta ' + (monthlyPace >= 0 ? 'pos' : 'neg')} style={{marginRight:8}}>
-                              {monthlyPace >= 0 ? '▲' : '▼'} {Math.abs(monthlyPace).toFixed(1)}%
-                            </span>
                             {monthlyPace >= 0 ? 'ahead of' : 'behind'} pace ·{' '}
                             <b style={{color:'var(--tk-ink-1)'}}>{fmtCurrency(monthlyRemaining, {compact:true})}</b> to goal ·{' '}
                             <b style={{color:'var(--tk-ink-1)'}}>{fmtCurrency(neededPerDay, {compact:true})}/day</b> needed
@@ -29984,12 +30097,16 @@
                           )}
                         </span>
                       </div>
+                      {goal > 0 && (
+                        <div className="tk-ap-deltas">
+                          <span className={'tk-ap-delta ' + (pace >= 0 ? 'pos' : 'neg')}>
+                            {pace >= 0 ? '▲' : '▼'} {Math.abs(pace).toFixed(1)}%
+                          </span>
+                        </div>
+                      )}
                       <div className="tk-ap-num-sub">
                         {goal > 0 && (
                           <>
-                            <span className={'tk-ap-delta ' + (pace >= 0 ? 'pos' : 'neg')} style={{marginRight:8}}>
-                              {pace >= 0 ? '▲' : '▼'} {Math.abs(pace).toFixed(1)}%
-                            </span>
                             {pace >= 0 ? 'ahead of' : 'behind'} pace ·{' '}
                             <b style={{color:'var(--tk-ink-1)'}}>{fmtCurrency(remaining, {compact:true})}</b> to goal ·{' '}
                             <b style={{color:'var(--tk-ink-1)'}}>{fmtCurrency(neededPerMonth, {compact:true})}/mo</b> needed
@@ -30000,10 +30117,10 @@
                     </>
                   )}
                 </div>
-                <div className="tk-chart-mode" style={{display:'flex', alignItems:'center', justifyContent:'flex-end', gap:12, flexWrap:'wrap', marginBottom:10}}>
-                  <div className="tk-seg" role="tablist" aria-label="Chart goal mode">
-                    <button type="button" className={'tk-seg-btn' + (chartMode === 'annual' ? ' active' : '')} onClick={() => setChartMode('annual')}>Annual</button>
-                    <button type="button" className={'tk-seg-btn' + (chartMode === 'mtd' ? ' active' : '')} onClick={() => setChartMode('mtd')}>MTD</button>
+                <div className="tk-chart-mode">
+                  <div className="tk-tf-segment tk-seg-mode" role="tablist" aria-label="Chart goal mode">
+                    <button type="button" className={chartMode === 'annual' ? 'on' : ''} onClick={() => setChartMode('annual')}>Annual</button>
+                    <button type="button" className={chartMode === 'mtd' ? 'on' : ''} onClick={() => setChartMode('mtd')}>MTD</button>
                   </div>
                 </div>
                 {chartMode === 'mtd'
