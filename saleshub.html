@@ -26928,7 +26928,7 @@
         const [sortKey, setSortKey] = useState('soldDate');
         const [sortDir, setSortDir] = useState('desc');
         const [page, setPage] = useState(0);
-        const [perPage] = useState(25);
+        const [perPage, setPerPage] = useState(25);
         const [openPolicy, setOpenPolicy] = useState(null);
 
         useEffect(() => {
@@ -27270,8 +27270,12 @@
                 </div>
 
                 <div className="tp-pt-foot">
-                  <div>
-                    Showing {filtered.length === 0 ? 0 : start + 1}–{Math.min(start + perPage, filtered.length)} of {filtered.length.toLocaleString()}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+                    <span>Showing {filtered.length === 0 ? 0 : start + 1}–{Math.min(start + perPage, filtered.length)} of {filtered.length.toLocaleString()}</span>
+                    <select value={perPage} onChange={e => { setPerPage(Number(e.target.value)); setPage(0); }} title="Rows per page"
+                      style={{ appearance: 'none', background: 'var(--tp-surface)', color: 'var(--tp-ink-1)', border: '1px solid var(--tp-hairline-strong)', borderRadius: 8, padding: '5px 10px', fontSize: 12, fontFamily: 'var(--tp-mono)', cursor: 'pointer' }}>
+                      {[25, 50, 100].map(n => <option key={n} value={n}>{n} / page</option>)}
+                    </select>
                   </div>
                   <div className="tp-pager">
                     <button onClick={() => setPage(0)} disabled={page === 0}>« First</button>
@@ -31258,7 +31262,7 @@
         const [sortKey, setSortKey] = useState('policy_date');
         const [sortDir, setSortDir] = useState('desc');
         const [page, setPage] = useState(0);
-        const [perPage] = useState(25);
+        const [perPage, setPerPage] = useState(25);
         // Deep-link hook (top notification bar): filter to a single status across
         // all time, e.g. bobFilterStatus('Underwriting').
         window.bobFilterStatus = (status) => {
@@ -31754,8 +31758,12 @@
                   </div>
 
                   <div className="bob-pt-foot">
-                    <div>
-                      Showing {filtered.length === 0 ? 0 : start + 1}–{Math.min(start + perPage, filtered.length)} of {filtered.length.toLocaleString()}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+                      <span>Showing {filtered.length === 0 ? 0 : start + 1}–{Math.min(start + perPage, filtered.length)} of {filtered.length.toLocaleString()}</span>
+                      <select value={perPage} onChange={e => { setPerPage(Number(e.target.value)); setPage(0); }} title="Rows per page"
+                        style={{ appearance: 'none', background: 'var(--bob-surface)', color: 'var(--bob-ink-1)', border: '1px solid var(--bob-hairline-strong)', borderRadius: 6, padding: '5px 10px', fontSize: 12, cursor: 'pointer' }}>
+                        {[25, 50, 100].map(n => <option key={n} value={n}>{n} / page</option>)}
+                      </select>
                     </div>
                     <div className="bob-pager">
                       <button onClick={() => setPage(0)} disabled={page === 0}>« First</button>
@@ -32466,7 +32474,7 @@
     .rhq-col { flex:1 0 250px; background:var(--sf2); border:1px solid var(--bd); border-radius:15px; padding:12px; display:flex; flex-direction:column; min-height:0; }
     .rhq-col-cards { display:flex; flex-direction:column; gap:8px; overflow-y:auto; flex:1; min-height:50px; margin:0 -4px; padding:0 4px; }
     .rhq-col.drag { outline:2px dashed var(--ac); outline-offset:-4px; }
-    .rhq-pcard { background:var(--sf); border:1px solid var(--bd); border-radius:13px; padding:12px 13px; cursor:grab; box-shadow:var(--sh); }
+    .rhq-pcard { background:var(--sf); border:1px solid var(--bd); border-radius:12px; padding:8px 12px; cursor:grab; box-shadow:var(--sh); }
     .rhq-pcard:hover { border-color:var(--ac); }
     .rhq-gate { padding:3rem 1rem; text-align:center; color:var(--tx3); font-size:0.95rem; }
     .rhq-step { height:6px; border-radius:4px; background:var(--sf2); }
@@ -32870,9 +32878,9 @@
                 <div className="rhq-col-cards">
                   {col.recruits.map(r =>
                     <div key={r.id} className="rhq-pcard" draggable onDragStart={() => { dragId.current = r.id; }} onClick={() => onOpen(r.id)}>
-                      <div style={{ fontSize: 14, fontWeight: 600, letterSpacing: '-0.01em' }}>{r.full_name}</div>
-                      <div style={{ fontSize: 12, color: 'var(--tx3)', marginTop: 2 }}>{[isAdmin && ('via ' + recruiterName(r.recruiter_user_id)), r.city && (r.city + (r.state ? ', ' + r.state : ''))].filter(Boolean).join(' · ')}</div>
-                      <div style={{ marginTop: 10 }}><DayBadge days={daysSince(r.stage_entered_at)} stage={r.stage} /></div>
+                      <div style={{ fontSize: 13.5, fontWeight: 600, letterSpacing: '-0.01em' }}>{r.full_name}</div>
+                      <div style={{ fontSize: 11.5, color: 'var(--tx3)', marginTop: 1 }}>{[isAdmin && ('Upline · ' + recruiterName(r.recruiter_user_id)), r.city && (r.city + (r.state ? ', ' + r.state : ''))].filter(Boolean).join(' · ')}</div>
+                      <div style={{ marginTop: 4 }}><DayBadge days={daysSince(r.stage_entered_at)} stage={r.stage} /></div>
                     </div>)}
                 </div>
               </div>)}
