@@ -15393,6 +15393,13 @@
     <!-- ═══ TRAINING PANEL ═══ -->
     <!-- ═══ TRAINING PANEL (Course Editor design · R2 custom player) ═══ -->
     <div class="ss-panel" id="panel-training">
+      <!-- Everyone but the admin sees an "updating" notice; updateAuthUI reveals
+           the real training (#tve) for the admin only. -->
+      <div class="pay-under-construction" id="trainingUnderConstruction" style="display:none;">
+        <div class="puc-icon">🚧</div>
+        <h2>We're updating this page</h2>
+        <p>Come back later.</p>
+      </div>
       <div class="tve" id="tve">
 
         <!-- Curriculum sidebar -->
@@ -16255,6 +16262,12 @@
         if (_payUC) _payUC.style.display = isWtAdmin ? 'none' : '';
         if (_payReal) { if (isWtAdmin) _payReal.removeAttribute('hidden'); else _payReal.setAttribute('hidden', ''); }
         if (_payBanner) _payBanner.style.display = isWtAdmin ? 'flex' : 'none';
+        // Training Videos: admin only while the page is being updated; everyone
+        // else sees the "we're updating this page" notice instead of the videos.
+        const _tvUC = document.getElementById('trainingUnderConstruction');
+        const _tvReal = document.getElementById('tve');
+        if (_tvUC) _tvUC.style.display = isWtAdmin ? 'none' : '';
+        if (_tvReal) _tvReal.style.display = isWtAdmin ? '' : 'none';
         // Agency HQ: admin always; managers revealed by the is_manager fetch below.
         if (rhqBtn) rhqBtn.style.display = isWtAdmin ? '' : 'none';
         // Admin-only Agency HQ dropdown items (Agent Profiles, Discord).
@@ -23343,19 +23356,11 @@
       // ── Curriculum. file = exact R2 object name. slug = stable progress key. ──
       const CURRICULUM = {
         title: 'Kairos Agent Training',
+        // Ungrouped — the New Agent Steps, Licensing, and CRM Guide sections were
+        // removed; the remaining videos show as a flat list (no category header,
+        // handled by the empty section title in renderSidebar).
         sections: [
-          { title: 'New Agent Steps', videos: [
-            { slug: 'first-90-days', title: 'First 90 Days Expectations for Agents', file: 'First 90 Days Expectations for Agents.mp4', duration: 538, desc: '', resources: [] },
-            // Kairos Discord only (Disruption Group link + 3 PM Zoom link removed per admin)
-            { slug: 'navigating-discord', title: 'Navigating Discord', file: 'Discord and Team Meeting Schedule Overview.mp4', duration: 0, desc: '', resources: [...DISCORD, TEAM_MEETING_NOTE] },
-            { slug: 'submit-a-sale', title: 'How to Submit a Sale', file: 'How to Submit a Sale in Discord 🚀.mp4', duration: 115, desc: '', resources: DISCORD }
-          ]},
-          { title: 'Licensing', videos: [
-            { slug: 'carrier-contracting', title: 'Insurance Carrier Contracting Before Emailing States', file: 'Insurance Carrier Contracting Before Emailing States.mp4', duration: 78, desc: '', resources: [EO_INSURANCE_LINK] },
-            { slug: 'purchase-licenses', title: 'How to Purchase Additional Insurance Licenses', file: 'How to Purchase State Insurance Licenses.mp4', duration: 0, desc: '', resources: [NIPR_LINK] },
-            { slug: 'after-state-license', title: 'After State License, Next Steps Checklist', file: 'After State License, Next Steps Checklist 📄.mp4', duration: 107, desc: '', resources: [CARRIER_CONTRACT_EMAILS] }
-          ]},
-          { title: 'Sales & Presentation', videos: [
+          { title: '', videos: [
             { slug: 'call-intro-script', title: 'Intro', file: 'Mastering Your Call Intro Script.mp4', duration: 1496, desc: '', resources: [SCRIPT_PDF] },
             { slug: 'insurance-presentation', title: 'Presentation', file: 'Insurance Presentation.mp4', duration: 1523, desc: '', resources: [SCRIPT_PDF] },
             { slug: 'overcome-objections', title: 'Objections', file: 'How to Overcome Client Insurance Objections.mp4', duration: 1034, desc: '', resources: [OBJ_PDF] },
@@ -23364,16 +23369,6 @@
             { slug: 'product-selection', title: 'Product Selection', file: 'Product Selection.mp4', duration: 828, desc: '', resources: [] },
             { slug: 'underwriting-guide', title: 'Underwriting Guide', file: 'Underwriting Guide.mp4', duration: 1154, desc: '', resources: [] },
             { slug: 'carrier-applications-portal', title: 'Carrier Applications, Quotes, and Portal Tips', file: 'Carrier Applications, Quotes, and Portal Tips.mp4', duration: 533, desc: '', resources: [] }
-          ]},
-          // CRM Guide is OPTIONAL — not required to pass the training gate. It comes
-          // after the three required sections (New Agent Steps, Licensing, Sales &
-          // Presentation). `optional: true` excludes it from the gate's "all done" check.
-          { title: 'CRM Guide', optional: true, videos: [
-            { slug: 'how-to-buy-crm', title: 'How to Buy CRM', file: 'How to Buy CRM.mp4', duration: 166, desc: '', resources: [CRM_LINK] },
-            { slug: 'crm-setup', title: 'CRM Setup', file: 'CRM Setup.mp4', duration: 974, desc: '', resources: [] },
-            { slug: 'calendar-setup', title: 'Calendar Setup', file: 'Calendar Setup.mp4', duration: 342, desc: '', resources: [] },
-            { slug: 'wavv-setup', title: 'WAVV Setup', file: 'WAVV Setup.mp4', duration: 266, desc: '', resources: [WAVV, WAVV_COURSE] },
-            { slug: 'atp-registration', title: 'A2P Guide', file: 'How to Complete ATP Registration Setup ✅.mp4', duration: 164, desc: '', resources: [A2P_GUIDE] }
           ]}
         ]
       };
@@ -23656,13 +23651,16 @@
         curriculum.sections.forEach((sec) => {
           const secEl = document.createElement('div');
           secEl.className = 'tve-section';
-          const head = document.createElement('div');
-          head.className = 'tve-section-head';
-          const name = document.createElement('span');
-          name.className = 'tve-section-name';
-          name.textContent = sec.title;
-          head.appendChild(name);
-          secEl.appendChild(head);
+          // No category header when the section has no title (flat video list).
+          if (sec.title) {
+            const head = document.createElement('div');
+            head.className = 'tve-section-head';
+            const name = document.createElement('span');
+            name.className = 'tve-section-name';
+            name.textContent = sec.title;
+            head.appendChild(name);
+            secEl.appendChild(head);
+          }
 
           sec.videos.forEach((v) => {
             const locked = !isUnlocked(v.slug);
@@ -23707,7 +23705,7 @@
         const add = (txt, cur) => { const s = document.createElement('span'); if (cur) s.className = 'current'; s.textContent = txt; elCrumbs.appendChild(s); };
         const sep = () => { const s = document.createElement('span'); s.className = 'sep'; s.textContent = '/'; elCrumbs.appendChild(s); };
         add('Training'); sep(); add(curriculum.title);
-        if (o) { sep(); add(o.sec.title + ' → ' + o.v.title, true); }
+        if (o) { sep(); add((o.sec.title ? o.sec.title + ' → ' : '') + o.v.title, true); }
       }
 
       // ── Player ──
@@ -23735,7 +23733,7 @@
         completedThis = isDone(slug);
 
         renderCrumbs();
-        elEyebrow.innerHTML = 'Section <span class="accent">' + escapeHtml(o.sec.title) + '</span>';
+        elEyebrow.innerHTML = o.sec.title ? ('Section <span class="accent">' + escapeHtml(o.sec.title) + '</span>') : 'Training';
         elTitle.textContent = v.title;
 
         if (v.desc && v.desc.trim()) { elDescWrap.style.display = ''; elDesc.textContent = v.desc; }
@@ -24242,7 +24240,7 @@
       const authReadHeaders = (extra) => Object.assign({}, HDRS, {
         'Authorization': 'Bearer ' + (window.accessToken || SUPABASE_KEY)
       }, extra || {});
-      const TOTAL_TRAINING_VIDEOS = 25;
+      const TOTAL_TRAINING_VIDEOS = 8;
 
       // All carriers we currently sell — extends the design's 5-color rainbow
       // palette to cover all 15 by cycling through CSS rainbow tokens.
@@ -32340,7 +32338,7 @@
     const TZ_OPTS = ['Eastern', 'Central', 'Mountain', 'Pacific'];
     // Mirrors the onboarding island's STEPS (last index = done). Kept here so the
     // dashboard/profile can show a new agent's onboarding progress.
-    const ONB_LABELS = ['Account', 'Photo', 'Welcome', 'Goals', 'Commitment', 'License / NPN', 'Exam', 'States', 'E&O', 'Discord', 'CRM', 'Headset', 'Meetings', 'Script', 'Objections', 'Done'];
+    const ONB_LABELS = ['Account', 'Photo', 'Welcome', 'Goals', 'License / NPN', 'Exam', 'States', 'E&O', 'Discord', 'CRM', 'Headset', 'Meetings', 'Script', 'Objections', 'Done'];
     const ONB_LAST = ONB_LABELS.length - 1;   // 13
     const onbPct = (step) => Math.min(100, Math.round((Number(step) || 0) / ONB_LAST * 100));
 
@@ -33089,7 +33087,6 @@
       { id: 'photo', label: 'Profile photo' },
       { id: 'welcome', label: 'Welcome' },
       { id: 'goals', label: 'Goals' },
-      { id: 'commit', label: '90-day commitment' },
       { id: 'license', label: 'License / NPN' },
       { id: 'exam', label: 'Exam booking' },
       { id: 'states', label: 'Purchase states' },
@@ -33769,7 +33766,6 @@
       { id: 'photo',    label: 'Photo' },
       { id: 'welcome',  label: 'Welcome' },
       { id: 'goals',    label: 'Goals' },
-      { id: 'commit',   label: 'Commitment' },
       { id: 'license',  label: 'License / NPN' },
       { id: 'exam',     label: 'Exam' },
       { id: 'states',   label: 'States' },
@@ -33922,32 +33918,63 @@
     }
 
     // ══ Video box (placeholder = simulated; real url = watch-gated) ═══════════
+    // Onboarding step videos live in R2 under the "onboarding videos/" folder.
+    // Encode each path segment so the folder slash stays a slash while spaces /
+    // punctuation get encoded (a whole-string encode would turn "/" into %2F).
+    const KFO_R2 = 'https://pub-71115aa4b60d4cb68a4d88a29e2eea75.r2.dev/';
+    const onbVid = (name) => KFO_R2 + ('Onboarding Videos/' + name).split('/').map(encodeURIComponent).join('/');
+
     function VideoBox({ url, slot, big, done, onDone }) {
       const [pct, setPct] = useState(done ? 100 : 0);
       const [playing, setPlaying] = useState(false);
       const vref = useRef(null); const timer = useRef(null);
+      // Furthest point actually watched. They can rewind to anywhere they've
+      // already seen, but any seek PAST this point snaps back — no skipping
+      // ahead. Already-watched videos (done) can seek freely.
+      const maxTime = useRef(done ? Infinity : 0);
       useEffect(() => () => { if (timer.current) clearInterval(timer.current); }, []);
       const finish = () => { setPct(100); setPlaying(false); if (timer.current) clearInterval(timer.current); onDone && onDone(); };
+      // Only advance maxTime for contiguous playback (small step), never a jump.
+      const onTime = (e) => { const v = e.target; if (v.currentTime <= maxTime.current + 1.5) maxTime.current = Math.max(maxTime.current, v.currentTime); if (v.duration) setPct(Math.min(100, v.currentTime / v.duration * 100)); };
+      const clampFwd = (e) => { const v = e.target; if (v.currentTime > maxTime.current + 0.5) v.currentTime = maxTime.current; };
       const toggle = () => {
-        if (url) { const v = vref.current; if (!v) return; if (v.paused) { v.play(); setPlaying(true); } else { v.pause(); setPlaying(false); } return; }
-        // placeholder: simulate ~10s of playback
+        // placeholder-only (real videos use the native controls / seek bar).
         if (playing) { setPlaying(false); if (timer.current) clearInterval(timer.current); return; }
         setPlaying(true);
         timer.current = setInterval(() => setPct(p => { const n = Math.min(100, p + 2.5); if (n >= 100) finish(); return n; }), 250);
       };
-      const mm = (s) => { s = Math.max(0, Math.floor(s || 0)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
       return (
         <div className="kfo-card" style={{ overflow: 'hidden', padding: 0 }}>
-          <div style={{ position: 'relative', aspectRatio: '16 / 9', background: 'repeating-linear-gradient(45deg,#1C1B1A,#1C1B1A 14px,#242322 14px,#242322 28px)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            {url && <video ref={vref} src={url} playsInline onTimeUpdate={e => { const v = e.target; if (v.duration) setPct(Math.min(100, v.currentTime / v.duration * 100)); }} onEnded={finish} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain', background: '#000' }} />}
-            <button onClick={toggle} style={{ position: 'relative', width: big ? 66 : 58, height: big ? 66 : 58, borderRadius: '50%', border: 'none', background: 'var(--ac)', color: 'var(--acOn)', fontSize: 18, cursor: 'pointer', boxShadow: '0 4px 20px rgba(0,0,0,.35)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{playing ? '❚❚' : '►'}</button>
-            <div style={{ position: 'absolute', left: 14, bottom: 11, fontFamily: 'ui-monospace,Menlo,monospace', fontSize: 11, color: 'rgba(255,255,255,.5)' }}>{url ? '' : 'VIDEO SLOT · ' + slot}</div>
+          <div style={{ position: 'relative', aspectRatio: '16 / 9', background: url ? '#000' : 'repeating-linear-gradient(45deg,#1C1B1A,#1C1B1A 14px,#242322 14px,#242322 28px)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            {url
+              ? <video ref={vref} src={url} controls controlsList="nodownload" playsInline onTimeUpdate={onTime} onSeeking={clampFwd} onSeeked={clampFwd} onEnded={finish} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain', background: '#000' }} />
+              : <>
+                  <button onClick={toggle} style={{ position: 'relative', width: big ? 66 : 58, height: big ? 66 : 58, borderRadius: '50%', border: 'none', background: 'var(--ac)', color: 'var(--acOn)', fontSize: 18, cursor: 'pointer', boxShadow: '0 4px 20px rgba(0,0,0,.35)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{playing ? '❚❚' : '►'}</button>
+                  <div style={{ position: 'absolute', left: 14, bottom: 11, fontFamily: 'ui-monospace,Menlo,monospace', fontSize: 11, color: 'rgba(255,255,255,.5)' }}>VIDEO SLOT · {slot}</div>
+                </>}
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px' }}>
-            <div style={{ flex: 1, height: 6, borderRadius: 99, background: 'var(--sf2)', overflow: 'hidden' }}><div style={{ height: '100%', width: pct + '%', background: 'var(--ac)', borderRadius: 99 }}></div></div>
-            <span style={{ fontSize: 11.5, fontWeight: 700, color: pct >= 100 ? 'var(--acDeep)' : 'var(--tx3)', whiteSpace: 'nowrap' }}>{pct >= 100 ? 'Watched ✓' : Math.round(pct) + '%'}</span>
-          </div>
+          {url
+            /* Real video already has the native seek bar — just a small
+               "Watched" confirmation once it's finished (no second progress bar). */
+            ? (pct >= 100 && <div style={{ padding: '9px 16px', fontSize: 11.5, fontWeight: 700, color: 'var(--acDeep)', textAlign: 'right' }}>Watched ✓</div>)
+            : <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px' }}>
+                <div style={{ flex: 1, height: 6, borderRadius: 99, background: 'var(--sf2)', overflow: 'hidden' }}><div style={{ height: '100%', width: pct + '%', background: 'var(--ac)', borderRadius: 99 }}></div></div>
+                <span style={{ fontSize: 11.5, fontWeight: 700, color: pct >= 100 ? 'var(--acDeep)' : 'var(--tx3)', whiteSpace: 'nowrap' }}>{pct >= 100 ? 'Watched ✓' : Math.round(pct) + '%'}</span>
+              </div>}
         </div>
+      );
+    }
+
+    // Mandatory video + gated content: everything below the video (forms,
+    // buttons, links) stays hidden until the video has played to the end.
+    function VideoGate({ url, slot, big, watched, onDone, children }) {
+      return (
+        <>
+          <VideoBox url={url} slot={slot} big={big} done={watched} onDone={onDone} />
+          {watched
+            ? children
+            : <div className="kfo-hint" style={{ textAlign: 'center', padding: '2px 0 4px' }}>▲ Watch the video to continue — the rest of this step unlocks when it finishes.</div>}
+        </>
       );
     }
 
@@ -34141,12 +34168,14 @@
         body = (
         <div className="kfo-screen">
           <H title="Welcome to Kairos Financial" sub="We're glad to have you on board! 🎉" />
-          <div className="kfo-card">
-            <div className="kfo-para" style={{ marginTop: 0 }}>We're excited you're here and can't wait to see you win. Take a minute to get set up — but here's the one thing that matters most right now:</div>
-            <div className="kfo-cardtitle" style={{ marginTop: 18 }}>🎯 Focus #1: get your insurance exam done</div>
-            <div className="kfo-para">Your top priority is passing your state life insurance exam. We expect you to pass it <strong>within 10 days</strong> — by <strong>{examBy}</strong>. The sooner you're licensed, the sooner you can start writing business and earning. Everything else in this onboarding gets you ready to hit the ground running.</div>
-          </div>
-          <div className="kfo-actions"><NextBtn on={() => next()}>Let’s go →</NextBtn></div>
+          <VideoGate url={onbVid('Onboarding - Intro.mp4')} slot="intro" big watched={d.videos.intro === 100} onDone={() => markVideo('intro')}>
+            <div className="kfo-card">
+              <div className="kfo-para" style={{ marginTop: 0 }}>We're excited you're here and can't wait to see you win. Take a minute to get set up — but here's the one thing that matters most right now:</div>
+              <div className="kfo-cardtitle" style={{ marginTop: 18 }}>🎯 Focus #1: get your insurance exam done</div>
+              <div className="kfo-para">Your top priority is passing your state life insurance exam. We expect you to pass it <strong>within 10 days</strong> — by <strong>{examBy}</strong>. The sooner you're licensed, the sooner you can start writing business and earning. Everything else in this onboarding gets you ready to hit the ground running.</div>
+            </div>
+            <div className="kfo-actions"><NextBtn on={() => next()}>Let’s go →</NextBtn></div>
+          </VideoGate>
         </div>
       );
       }
@@ -34222,6 +34251,7 @@
         body = (
           <div className="kfo-screen">
             <H title="Set your goals" sub="Take your time here. What you write becomes the foundation of your first 90 days — and your mentor will go over it with you." />
+            <VideoGate url={onbVid('Onboarding - Goals.mp4')} slot="goals" big watched={d.videos.goals === 100} onDone={() => markVideo('goals')}>
             <div className="kfo-card">
               <div className="kfo-cardtitle">What is your why?</div>
               <div className="kfo-carddesc">Not just money. What will this change for your life, your family, and your future? Write at least a couple of sentences.</div>
@@ -34259,33 +34289,7 @@
             </div>
             {err && <div className="kfo-err">{err}</div>}
             <div className="kfo-actions"><NextBtn on={saveGoals} disabled={busy}>{busy ? 'Saving…' : 'Save my goals →'}</NextBtn></div>
-          </div>
-        );
-      }
-      else if (cur === 'commit') {
-        const signed = !!d.signedAt;
-        const canSign = d.signedName.trim().length >= 3;
-        body = (
-          <div className="kfo-screen" style={{ maxWidth: 620, margin: '0 auto' }}>
-            <div className="kfo-card" style={{ padding: '30px' }}>
-              <div style={{ width: 44, height: 44, borderRadius: '50%', background: 'var(--acSoft)', color: 'var(--acDeep)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: 19, marginBottom: 16 }}>90</div>
-              <h1 className="kfo-h1" style={{ fontSize: 23 }}>Your commitment to yourself</h1>
-              <div className="kfo-para">This is a difficult career — and the first 90 days are the most difficult. We're here to support you at every step, but the one person who can't quit on you is <em>you</em>.</div>
-              <div className="kfo-para">By typing your name below, you're giving your word to yourself: <strong>no matter how tough it gets over the next 90 days, you will not give up.</strong> Everything you just wrote down is on the other side.</div>
-              <div style={{ marginTop: 22 }}>
-                <div className="kfo-lbl">Type your full name to sign</div>
-                <input className="kfo-inp" value={d.signedName} onChange={e => set({ signedName: e.target.value })} placeholder={fullName || 'Your full name'} style={{ fontSize: 16, fontWeight: 600 }} disabled={signed} />
-              </div>
-              {!signed
-                ? <button className="kfo-btn" style={Object.assign({ marginTop: 18 }, canSign ? null : { opacity: .5, cursor: 'not-allowed' })} disabled={!canSign} onClick={saveCommit}>I give my word — commit to 90 days</button>
-                : <>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 20, padding: '14px 16px', borderRadius: 12, background: 'var(--acSoft)' }}>
-                    <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'var(--ac)', color: 'var(--acOn)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, flex: 'none' }}>✓</div>
-                    <div style={{ fontSize: 13, color: 'var(--acDeep)', fontWeight: 600 }}>Signed by {d.signedName} · {new Date(d.signedAt).toLocaleDateString()}</div>
-                  </div>
-                  <button className="kfo-btn" style={{ marginTop: 16 }} onClick={() => next()}>Continue →</button>
-                </>}
-            </div>
+            </VideoGate>
           </div>
         );
       }
@@ -34329,6 +34333,7 @@
       else if (cur === 'exam') body = (
         <div className="kfo-screen">
           <H title="Get your life insurance license" sub="If you're not licensed yet, here's exactly how to get it done — fast." />
+          <VideoGate url={onbVid('Onboarding - Exam.mp4')} slot="exam" big watched={d.videos.exam === 100} onDone={() => markVideo('exam')}>
           <div className="kfo-card" style={{ display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap' }}>
             <button className="kfo-btn ghost" onClick={skipExam}>I already have my life insurance license →</button>
             <span className="kfo-hint">Already licensed? Skip this step.</span>
@@ -34351,8 +34356,15 @@
               <Field label="Exam date (booked) · required"><input className="kfo-inp" type="date" value={d.examDate} onChange={e => set({ examDate: e.target.value })} /></Field>
             </div>
           </div>
+          {/* Optional helper video — doesn't gate the step. */}
+          <div>
+            <div className="kfo-cardtitle" style={{ marginBottom: 4 }}>Need additional help registering for the course? <span style={{ fontWeight: 400, color: 'var(--tx3)' }}>· optional</span></div>
+            <div className="kfo-carddesc" style={{ marginBottom: 10 }}>Watch this walkthrough of exactly how to register for the course site.</div>
+            <VideoBox url={onbVid('Onboarding - Couse Site Tutorial.mp4')} slot="course-tutorial" done={d.videos['course-tutorial'] === 100} onDone={() => markVideo('course-tutorial')} />
+          </div>
           {err && <div className="kfo-err">{err}</div>}
           <div className="kfo-actions"><NextBtn on={saveExam} disabled={busy}>{busy ? 'Saving…' : 'Save & continue →'}</NextBtn></div>
+          </VideoGate>
         </div>
       );
       else if (cur === 'states') {
@@ -34367,6 +34379,7 @@
         body = (
           <div className="kfo-screen">
             <H title="Purchase additional states" sub="You'll write business in more than just your home state. Add non-resident licenses through NIPR, then check each one off as you buy it." />
+            <VideoGate url={onbVid('Onboarding - States.mp4')} slot="states" big watched={d.videos.states === 100} onDone={() => markVideo('states')}>
             {!hasNpn ? (
               <div className="kfo-card">
                 <span className="kfo-badge">Your NPN is required to continue</span>
@@ -34408,6 +34421,7 @@
                 <div className="kfo-actions"><NextBtn on={() => next()} disabled={!req(d.checks.statesAck)}>Continue →</NextBtn><span className="kfo-hint">{d.checks.statesAck ? 'Check off states as you buy them — you can return to this later.' : 'Read and acknowledge the note above to continue.'}</span></div>
               </>
             )}
+            </VideoGate>
           </div>
         );
       }
@@ -34428,13 +34442,7 @@
       else if (cur === 'discord') body = (
         <div className="kfo-screen">
           <H title="Join our Discord" sub="This is where the team lives — announcements, training, and daily wins. Join both servers below." />
-          <div className="kfo-card">
-            <div className="kfo-cardtitle">New to Discord?</div>
-            <div className="kfo-carddesc">If you've never used Discord before, watch this quick tutorial. It's optional — skip it if you already know your way around.</div>
-            <div style={{ position: 'relative', aspectRatio: '16 / 9', marginTop: 14, borderRadius: 12, overflow: 'hidden', background: '#000' }}>
-              <iframe src={KFO_CONFIG.links.discordVideo} title="How to use Discord" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', border: 0 }} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen></iframe>
-            </div>
-          </div>
+          <VideoGate url={onbVid('Onboarding - Discord.mp4')} slot="discord" big watched={d.videos.discord === 100} onDone={() => markVideo('discord')}>
           <div className="kfo-card">
             <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
               <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
@@ -34453,12 +34461,24 @@
             <div className="kfo-carddesc">Download the Discord app on your phone and turn your notifications <strong>on</strong> — that's how you'll catch team calls, announcements, and pings in real time.</div>
             <label className="kfo-check" style={{ marginTop: 14 }}><input type="checkbox" checked={!!d.checks.app} onChange={e => setD(s => Object.assign({}, s, { checks: Object.assign({}, s.checks, { app: e.target.checked }) }))} /> I've downloaded the app on my phone and turned notifications on</label>
           </div>
+          {/* Optional Discord tutorial (YouTube) — doesn't gate the step. */}
+          <div>
+            <div className="kfo-cardtitle" style={{ marginBottom: 4 }}>Never used Discord before? <span style={{ fontWeight: 400, color: 'var(--tx3)' }}>· optional</span></div>
+            <div className="kfo-carddesc" style={{ marginBottom: 10 }}>Watch this quick tutorial — skip it if you already know your way around.</div>
+            <div className="kfo-card" style={{ overflow: 'hidden', padding: 0 }}>
+              <div style={{ position: 'relative', aspectRatio: '16 / 9', background: '#000' }}>
+                <iframe src={KFO_CONFIG.links.discordVideo} title="How to use Discord" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', border: 0 }} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen></iframe>
+              </div>
+            </div>
+          </div>
           <div className="kfo-actions"><NextBtn on={() => next()} disabled={!req(d.checks.d1 && d.checks.d2 && d.checks.app)}>Continue →</NextBtn>{!KFO_TEST_MODE && <span className="kfo-hint">Join both servers, get the app, and check everything off.</span>}</div>
+          </VideoGate>
         </div>
       );
       else if (cur === 'crm') body = (
         <div className="kfo-screen">
           <H title="Sign up for the CRM" sub="Your CRM keeps every lead and client in one place." />
+          <VideoGate url={onbVid('Onboarding - CRM.mp4')} slot="crm-vid" big watched={d.videos['crm-vid'] === 100} onDone={() => markVideo('crm-vid')}>
           <div className="kfo-card">
             <div className="kfo-cardtitle">Click the link and sign up</div>
             <div className="kfo-carddesc">Your CRM is only <strong>$1 a month</strong> and <strong>free for the first 30 days</strong>. The only reason we charge anything is so we can set up a Stripe account and bill you for your inbound calls — that's it.</div>
@@ -34478,6 +34498,7 @@
             <label className="kfo-check" style={{ marginTop: 14 }}><input type="checkbox" checked={!!d.checks.crm} onChange={e => setD(s => Object.assign({}, s, { checks: Object.assign({}, s.checks, { crm: e.target.checked }) }))} /> I've signed up for the CRM + Lead Tech Inbounds (Thrive Companies) and created my Agent View account</label>
           </div>
           <div className="kfo-actions"><NextBtn on={() => next()} disabled={!req(d.checks.crm)}>Continue →</NextBtn>{!KFO_TEST_MODE && <span className="kfo-hint">Complete all the steps and confirm to continue.</span>}</div>
+          </VideoGate>
         </div>
       );
       else if (cur === 'headset') body = (
@@ -34500,6 +34521,7 @@
       else if (cur === 'meeting') body = (
         <div className="kfo-screen">
           <H title="Your meeting schedule" sub="Put these on your calendar — showing up is the fastest way to ramp." />
+          <VideoGate url={onbVid('Onboarding - Schedule.mp4')} slot="schedule" big watched={d.videos.schedule === 100} onDone={() => markVideo('schedule')}>
           <div className="kfo-card">
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {KFO_CONFIG.meetings.map((m, i) => (
@@ -34512,11 +34534,13 @@
           </div>
           <label className="kfo-check" style={{ marginTop: 4 }}><input type="checkbox" checked={!!d.checks.cal} onChange={e => setD(s => Object.assign({}, s, { checks: Object.assign({}, s.checks, { cal: e.target.checked }) }))} /> I've added these to my calendar</label>
           <div className="kfo-actions"><NextBtn on={() => next()} disabled={!req(d.checks.cal)}>Continue →</NextBtn>{!KFO_TEST_MODE && <span className="kfo-hint">Confirm you've added these to your calendar.</span>}</div>
+          </VideoGate>
         </div>
       );
       else if (cur === 'script') body = (
         <div className="kfo-screen">
           <H title="Your call script" sub="Download it, then talk with your mentor about where to start." />
+          <VideoGate url={onbVid('Onboarding - Script.mp4')} slot="script" big watched={d.videos.script === 100} onDone={() => markVideo('script')}>
           <div className="kfo-card">
             <div className="kfo-carddesc">This is the script we use. Open and download it, then have a conversation with your mentor about which lead type to get started on.</div>
             <div style={{ marginTop: 14, display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -34531,6 +34555,7 @@
             </div>
           </div>
           <div className="kfo-actions"><NextBtn on={() => next()}>Continue →</NextBtn></div>
+          </VideoGate>
         </div>
       );
       else if (cur === 'objections') body = (
@@ -34543,16 +34568,16 @@
               <a className="kfo-btn ghost" href="assets/Documents/Objections.pdf" target="_blank" rel="noopener">Open objections ↗</a>
             </div>
           </div>
-          <div className="kfo-actions"><NextBtn on={() => next()}>Continue →</NextBtn></div>
+          <div className="kfo-actions"><NextBtn on={() => next()}>Finish →</NextBtn></div>
         </div>
       );
       else if (cur === 'done') body = (
         <div className="kfo-screen" style={{ maxWidth: 560, margin: '0 auto', textAlign: 'center' }}>
           <div className="kfo-card" style={{ padding: '34px 30px' }}>
             <div style={{ width: 60, height: 60, borderRadius: '50%', background: 'var(--ac)', color: 'var(--acOn)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: 28, margin: '0 auto 18px' }}>✓</div>
-            <h1 className="kfo-h1" style={{ fontSize: 26 }}>Congratulations, {d.first || 'agent'} — you're finished!</h1>
-            <div className="kfo-sub" style={{ marginBottom: 8 }}>Your account is active and everything you entered is saved to your profile. Welcome to the team — let's get to work.</div>
-            <button className="kfo-btn" style={{ marginTop: 14 }} disabled={busy} onClick={finish}>{busy ? 'Finishing…' : 'Enter the Sales Hub →'}</button>
+            <h1 className="kfo-h1" style={{ fontSize: 26 }}>Congrats, your onboarding is completed! 🎉</h1>
+            <div className="kfo-sub" style={{ marginBottom: 8 }}>Please let your direct manager know. Everything you entered is saved to your profile — welcome to the team.</div>
+            <button className="kfo-btn" style={{ marginTop: 14 }} disabled={busy} onClick={finish}>{busy ? 'Finishing…' : 'Go to Sales Hub →'}</button>
           </div>
         </div>
       );
