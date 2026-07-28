@@ -27319,11 +27319,6 @@
       const HV_H_GAP = 28;
       const HV_V_GAP = 76;
       const HV_CANVAS_PAD = 80;
-      // Vertical-stacking: when a node's reports are all leaves (individual
-      // agents with no downline of their own) they stack in a compact indented
-      // column instead of fanning out horizontally, so the chart stays narrow.
-      const HV_INDENT = 60;      // how far a stacked child column is indented
-      const HV_STACK_GAP = 20;   // vertical gap between stacked leaf siblings
 
       function hvFmtMoney(n) {
         if (n >= 1e6) return '$' + (n / 1e6).toFixed(2) + 'M';
@@ -27411,62 +27406,35 @@
         const positions = new Map();
         if (!roots.length) return positions;
 
-        // Pass 1 — measure each subtree's bounding box and decide, per node,
-        // whether its children stack vertically (all leaves → compact indented
-        // column) or spread horizontally (branchy subtrees keep the org look).
         function measure(node) {
-          if (!node.children.length) {
-            node._w = HV_NODE_W; node._h = HV_NODE_H; node._stack = null;
-            return;
-          }
-          node.children.forEach(measure);
-          const allLeaves = node.children.every(c => !c.children.length);
-          if (allLeaves && node.children.length > 1) {
-            node._stack = 'v';
-            const colH = node.children.reduce((s, c) => s + c._h, 0) + HV_STACK_GAP * (node.children.length - 1);
-            node._w = Math.max(HV_NODE_W, HV_INDENT + HV_NODE_W);
-            node._h = HV_NODE_H + HV_V_GAP + colH;
-          } else {
-            node._stack = 'h';
-            const totalW = node.children.reduce((s, c) => s + c._w, 0) + HV_H_GAP * (node.children.length - 1);
-            const maxChildH = node.children.reduce((m, c) => Math.max(m, c._h), 0);
-            node._w = Math.max(HV_NODE_W, totalW);
-            node._h = HV_NODE_H + HV_V_GAP + maxChildH;
-          }
+          if (!node.children.length) return HV_NODE_W;
+          const widths = node.children.map(measure);
+          const total = widths.reduce((a, w) => a + w, 0) + HV_H_GAP * (node.children.length - 1);
+          return Math.max(HV_NODE_W, total);
         }
-
-        // Pass 2 — place each node from its subtree box's top-left (x, y).
-        function place(node, x, y) {
+        function place(node, depth, leftEdge) {
+          const width = measure(node);
           if (!node.children.length) {
-            positions.set(node.user_id, { x: x + (node._w - HV_NODE_W) / 2, y, stack: null });
+            positions.set(node.user_id, { x: leftEdge + (width - HV_NODE_W) / 2, y: depth * (HV_NODE_H + HV_V_GAP), w: width });
             return;
           }
-          if (node._stack === 'v') {
-            positions.set(node.user_id, { x, y, stack: 'v' });
-            let cy = y + HV_NODE_H + HV_V_GAP;
-            for (const c of node.children) {
-              place(c, x + HV_INDENT, cy);
-              cy += c._h + HV_STACK_GAP;
-            }
-          } else {
-            let cx = x;
-            const cy = y + HV_NODE_H + HV_V_GAP;
-            for (const c of node.children) {
-              place(c, cx, cy);
-              cx += c._w + HV_H_GAP;
-            }
-            const first = positions.get(node.children[0].user_id);
-            const last = positions.get(node.children[node.children.length - 1].user_id);
-            const centerX = (first.x + last.x + HV_NODE_W) / 2 - HV_NODE_W / 2;
-            positions.set(node.user_id, { x: centerX, y, stack: 'h' });
+          let cursor = leftEdge;
+          for (const c of node.children) {
+            const cw = measure(c);
+            place(c, depth + 1, cursor);
+            cursor += cw + HV_H_GAP;
           }
+          const first = positions.get(node.children[0].user_id);
+          const last = positions.get(node.children[node.children.length - 1].user_id);
+          const centerX = (first.x + last.x + HV_NODE_W) / 2 - HV_NODE_W / 2;
+          positions.set(node.user_id, { x: centerX, y: depth * (HV_NODE_H + HV_V_GAP), w: width });
         }
 
         let cursor = 0;
         for (const r of roots) {
-          measure(r);
-          place(r, cursor, 0);
-          cursor += r._w + HV_H_GAP;
+          const w = measure(r);
+          place(r, 0, cursor);
+          cursor += w + HV_H_GAP;
         }
         return positions;
       }
@@ -27590,23 +27558,6 @@
         function walk(node) {
           const pp = positions.get(node.user_id);
           if (!pp) return;
-          // Vertically-stacked children: an indented-tree elbow — a spine down
-          // the parent's lower-left with a horizontal stub into each child.
-          if (pp.stack === 'v' && node.children.length) {
-            const spineX = pp.x + 28;
-            const yTop = pp.y + HV_NODE_H;
-            let lastMidY = yTop;
-            for (const c of node.children) {
-              const cp = positions.get(c.user_id);
-              if (!cp) continue;
-              const midY = cp.y + HV_NODE_H / 2;
-              lastMidY = midY;
-              edges.push({ d: 'M ' + spineX + ' ' + midY + ' L ' + cp.x + ' ' + midY, key: node.user_id + '-' + c.user_id });
-              walk(c);
-            }
-            edges.push({ d: 'M ' + spineX + ' ' + yTop + ' L ' + spineX + ' ' + lastMidY, key: node.user_id + '-spine' });
-            return;
-          }
           for (const c of node.children) {
             const cp = positions.get(c.user_id);
             if (!cp) continue;
