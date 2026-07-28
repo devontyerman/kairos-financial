@@ -3026,24 +3026,54 @@
     #tpatab-performance .tp-kpi-cell.featured .tp-ring-wrap { flex-direction: column; gap: 8px; }
     #tpatab-performance .tp-ring-text { display: flex; flex-direction: column; gap: 2px; }
 
-    /* ─── Agent Hierarchy tab ──────────────────────────────────────────
-       Ported from the Claude design bundle. Scoped to #tpatab-hierarchy
-       and uses the existing --tp-* variables so dark/light themes work
-       the same way as the rest of the Performance tab. */
-    #tpatab-hierarchy .hv-app {
-      height: calc(100vh - 200px); min-height: 560px;
-      display: flex; flex-direction: column; gap: 14px;
-      position: relative; padding: 4px 0 12px;
+    /* ─── Hierarchy (org chart) — now lives inside Recruiter HQ ──────────
+       The chart markup/behavior is reused verbatim; it just mounts into the
+       `.rhq-hv` host. This block remaps the chart's --tp-* tokens to the
+       Recruiting palette (--bg/--sf/--tx/--ac/… inherited from
+       #recruiterHqRoot .rhq), so colors, fonts, radii and surfaces match the
+       rest of Recruiting automatically in both light and dark. */
+    .rhq-hv {
+      --tp-mono: 'Instrument Sans', 'Inter', system-ui, sans-serif;
+      --tp-sans: 'Instrument Sans', 'Inter', system-ui, sans-serif;
+      --tp-radius: 16px;
+      --tp-radius-sm: 11px;
+      --tp-bg:        var(--bg);
+      --tp-bg-2:      var(--sf2);
+      --tp-surface:   var(--sf);
+      --tp-surface-2: var(--sf2);
+      --tp-surface-3: var(--sf2);
+      --tp-hairline:  var(--bd);
+      --tp-hairline-strong: var(--bd);
+      --tp-ink-1:     var(--tx);
+      --tp-ink-2:     var(--tx2);
+      --tp-ink-3:     var(--tx3);
+      --tp-ink-4:     var(--tx3);
+      --tp-pos:       var(--s1f);
+      --tp-neg:       var(--df);
+      --tp-grain:     transparent;
+      --rb-green:     var(--s1f);
+      --rb-yellow:    var(--s2f);
+      --rb-orange:    var(--wf);
+      --rb-red:       var(--s3f);
+      --rb-purple:    var(--s4f);
+      --rb-blue:      var(--s0f);
+      font-family: 'Instrument Sans', 'Inter', system-ui, sans-serif;
+      color: var(--tx);
     }
-    #tpatab-hierarchy .hv-hdr {
+    .rhq-hv .hv-app {
+      height: calc(100vh - 240px); min-height: 520px;
+      display: flex; flex-direction: column; gap: 14px;
+      position: relative; padding: 0 0 12px;
+    }
+    .rhq-hv .hv-hdr {
       display: flex; align-items: flex-end; justify-content: space-between;
       gap: 24px; padding-bottom: 14px;
       border-bottom: 1px solid var(--tp-hairline);
       flex-wrap: wrap;
     }
-    #tpatab-hierarchy .hv-hdr-l { display: flex; flex-direction: column; gap: 4px; }
-    #tpatab-hierarchy .hv-hdr-brand { display: flex; align-items: center; gap: 12px; }
-    #tpatab-hierarchy .hv-hdr-mark {
+    .rhq-hv .hv-hdr-l { display: flex; flex-direction: column; gap: 4px; }
+    .rhq-hv .hv-hdr-brand { display: flex; align-items: center; gap: 12px; }
+    .rhq-hv .hv-hdr-mark {
       width: 22px; height: 22px; border-radius: 5px;
       background:
         linear-gradient(180deg,
@@ -3052,44 +3082,44 @@
           var(--rb-purple) 66.66% 83.33%, var(--rb-blue) 83.33% 100%);
       box-shadow: 0 0 0 1px var(--tp-hairline-strong);
     }
-    #tpatab-hierarchy .hv-hdr-title { font-size: 20px; font-weight: 600; letter-spacing: -0.01em; color: var(--tp-ink-1); }
-    #tpatab-hierarchy .hv-hdr-sub {
+    .rhq-hv .hv-hdr-title { font-size: 20px; font-weight: 600; letter-spacing: -0.01em; color: var(--tp-ink-1); }
+    .rhq-hv .hv-hdr-sub {
       font-family: var(--tp-mono); font-size: 11px; color: var(--tp-ink-3);
       letter-spacing: 0.04em; text-transform: uppercase;
     }
-    #tpatab-hierarchy .hv-hdr-r { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
-    #tpatab-hierarchy .hv-hdr-stat {
+    .rhq-hv .hv-hdr-r { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+    .rhq-hv .hv-hdr-stat {
       display: flex; flex-direction: column; gap: 2px; align-items: flex-end;
       padding-right: 14px; border-right: 1px solid var(--tp-hairline);
     }
-    #tpatab-hierarchy .hv-hdr-stat:last-of-type { border-right: 0; padding-right: 0; }
-    #tpatab-hierarchy .hv-hdr-stat-lbl {
+    .rhq-hv .hv-hdr-stat:last-of-type { border-right: 0; padding-right: 0; }
+    .rhq-hv .hv-hdr-stat-lbl {
       font-family: var(--tp-mono); font-size: 10px; color: var(--tp-ink-3);
       text-transform: uppercase; letter-spacing: 0.08em;
     }
-    #tpatab-hierarchy .hv-hdr-stat-val {
+    .rhq-hv .hv-hdr-stat-val {
       font-family: var(--tp-mono); font-size: 15px; color: var(--tp-ink-1);
       font-variant-numeric: tabular-nums; font-weight: 500;
     }
-    #tpatab-hierarchy .hv-theme-toggle {
+    .rhq-hv .hv-theme-toggle {
       appearance: none; border: 1px solid var(--tp-hairline-strong);
       background: var(--tp-surface); color: var(--tp-ink-2);
       width: 30px; height: 30px; border-radius: 8px;
       display: grid; place-items: center; cursor: pointer;
       transition: all 120ms;
     }
-    #tpatab-hierarchy .hv-theme-toggle:hover { color: var(--tp-ink-1); border-color: var(--tp-ink-3); }
+    .rhq-hv .hv-theme-toggle:hover { color: var(--tp-ink-1); border-color: var(--tp-ink-3); }
 
     /* Toolbar */
-    #tpatab-hierarchy .hv-toolbar {
+    .rhq-hv .hv-toolbar {
       display: flex; align-items: center; justify-content: space-between;
       gap: 12px; flex-wrap: wrap;
     }
-    #tpatab-hierarchy .hv-toolbar-l, #tpatab-hierarchy .hv-toolbar-r {
+    .rhq-hv .hv-toolbar-l, .rhq-hv .hv-toolbar-r {
       display: flex; align-items: center; gap: 10px;
     }
-    #tpatab-hierarchy .hv-search { position: relative; display: flex; align-items: center; }
-    #tpatab-hierarchy .hv-search input {
+    .rhq-hv .hv-search { position: relative; display: flex; align-items: center; }
+    .rhq-hv .hv-search input {
       appearance: none; border: 1px solid var(--tp-hairline-strong);
       background: var(--tp-surface); color: var(--tp-ink-1);
       padding: 8px 12px 8px 32px; border-radius: 8px;
@@ -3097,21 +3127,21 @@
       width: 240px; outline: none;
       transition: border-color 120ms;
     }
-    #tpatab-hierarchy .hv-search input::placeholder { color: var(--tp-ink-4); }
-    #tpatab-hierarchy .hv-search input:focus {
+    .rhq-hv .hv-search input::placeholder { color: var(--tp-ink-4); }
+    .rhq-hv .hv-search input:focus {
       border-color: color-mix(in oklch, var(--rb-blue) 60%, var(--tp-hairline-strong));
     }
-    #tpatab-hierarchy .hv-search svg {
+    .rhq-hv .hv-search svg {
       position: absolute; left: 10px; pointer-events: none; color: var(--tp-ink-4);
     }
-    #tpatab-hierarchy .hv-viewonly-badge {
+    .rhq-hv .hv-viewonly-badge {
       font-family: var(--tp-mono); font-size: 10px;
       letter-spacing: 0.06em; text-transform: uppercase;
       color: var(--tp-ink-3);
       background: var(--tp-surface-2); border: 1px solid var(--tp-hairline-strong);
       padding: 6px 10px; border-radius: 100px;
     }
-    #tpatab-hierarchy .hv-btn, #tpatab-agents .hv-btn {
+    .rhq-hv .hv-btn, #tpatab-agents .hv-btn {
       appearance: none; cursor: pointer;
       background: var(--tp-surface); border: 1px solid var(--tp-hairline-strong);
       color: var(--tp-ink-2);
@@ -3121,43 +3151,43 @@
       display: inline-flex; align-items: center; gap: 8px;
       transition: all 120ms;
     }
-    #tpatab-hierarchy .hv-btn:hover, #tpatab-agents .hv-btn:hover { border-color: var(--tp-ink-3); color: var(--tp-ink-1); background: var(--tp-surface-2); }
-    #tpatab-hierarchy .hv-btn.primary {
+    .rhq-hv .hv-btn:hover, #tpatab-agents .hv-btn:hover { border-color: var(--tp-ink-3); color: var(--tp-ink-1); background: var(--tp-surface-2); }
+    .rhq-hv .hv-btn.primary {
       background: color-mix(in oklch, var(--rb-blue) 22%, var(--tp-surface));
       border-color: color-mix(in oklch, var(--rb-blue) 60%, transparent);
       color: var(--tp-ink-1);
     }
-    #tpatab-hierarchy .hv-btn.primary:hover { background: color-mix(in oklch, var(--rb-blue) 32%, var(--tp-surface)); }
-    #tpatab-hierarchy .hv-btn.danger, #tpatab-agents .hv-btn.danger {
+    .rhq-hv .hv-btn.primary:hover { background: color-mix(in oklch, var(--rb-blue) 32%, var(--tp-surface)); }
+    .rhq-hv .hv-btn.danger, #tpatab-agents .hv-btn.danger {
       background: color-mix(in oklch, var(--rb-red) 18%, var(--tp-surface));
       border-color: color-mix(in oklch, var(--rb-red) 50%, transparent);
       color: var(--tp-ink-1);
     }
-    #tpatab-hierarchy .hv-zoom-cluster {
+    .rhq-hv .hv-zoom-cluster {
       display: inline-flex; background: var(--tp-surface);
       border: 1px solid var(--tp-hairline-strong); border-radius: 8px; overflow: hidden;
     }
-    #tpatab-hierarchy .hv-zoom-cluster button {
+    .rhq-hv .hv-zoom-cluster button {
       appearance: none; cursor: pointer; background: transparent; border: 0;
       color: var(--tp-ink-2); width: 30px; height: 30px;
       display: grid; place-items: center;
       font-family: var(--tp-mono); font-size: 13px;
       transition: all 120ms; border-right: 1px solid var(--tp-hairline);
     }
-    #tpatab-hierarchy .hv-zoom-cluster button:last-child { border-right: 0; }
-    #tpatab-hierarchy .hv-zoom-cluster button:hover { background: var(--tp-surface-2); color: var(--tp-ink-1); }
-    #tpatab-hierarchy .hv-zoom-val {
+    .rhq-hv .hv-zoom-cluster button:last-child { border-right: 0; }
+    .rhq-hv .hv-zoom-cluster button:hover { background: var(--tp-surface-2); color: var(--tp-ink-1); }
+    .rhq-hv .hv-zoom-val {
       display: grid; place-items: center;
       font-family: var(--tp-mono); font-size: 11px; color: var(--tp-ink-2);
       min-width: 52px; border-right: 1px solid var(--tp-hairline);
     }
 
     /* View-mode toggle (Chart ↔ List) */
-    #tpatab-hierarchy .hv-mode-toggle {
+    .rhq-hv .hv-mode-toggle {
       display: inline-flex; background: var(--tp-surface);
       border: 1px solid var(--tp-hairline-strong); border-radius: 8px; overflow: hidden;
     }
-    #tpatab-hierarchy .hv-mode-toggle button {
+    .rhq-hv .hv-mode-toggle button {
       appearance: none; cursor: pointer; background: transparent; border: 0;
       color: var(--tp-ink-3); padding: 0 12px; height: 30px;
       display: inline-flex; align-items: center; gap: 6px;
@@ -3165,99 +3195,99 @@
       text-transform: uppercase; transition: all 120ms;
       border-right: 1px solid var(--tp-hairline);
     }
-    #tpatab-hierarchy .hv-mode-toggle button:last-child { border-right: 0; }
-    #tpatab-hierarchy .hv-mode-toggle button:hover { color: var(--tp-ink-1); }
-    #tpatab-hierarchy .hv-mode-toggle button.on { background: var(--tp-surface-3); color: var(--tp-ink-1); }
+    .rhq-hv .hv-mode-toggle button:last-child { border-right: 0; }
+    .rhq-hv .hv-mode-toggle button:hover { color: var(--tp-ink-1); }
+    .rhq-hv .hv-mode-toggle button.on { background: var(--tp-surface-3); color: var(--tp-ink-1); }
 
     /* List (text) view */
-    #tpatab-hierarchy .hv-list-wrap {
+    .rhq-hv .hv-list-wrap {
       flex: 1; position: relative; overflow: auto; min-height: 0;
       background: var(--tp-surface);
       border: 1px solid var(--tp-hairline);
       border-radius: 10px;
     }
-    #tpatab-hierarchy .hv-list-row {
+    .rhq-hv .hv-list-row {
       display: flex; align-items: center; gap: 10px;
       padding: 7px 16px; cursor: pointer;
       border-bottom: 1px solid var(--tp-hairline);
       transition: background 100ms;
     }
-    #tpatab-hierarchy .hv-list-row:hover { background: var(--tp-surface-2); }
-    #tpatab-hierarchy .hv-list-row.selected { background: color-mix(in oklch, var(--rb-blue) 14%, var(--tp-surface)); }
-    #tpatab-hierarchy .hv-list-row.search-hit { background: color-mix(in oklch, var(--rb-yellow) 12%, var(--tp-surface)); }
-    #tpatab-hierarchy .hv-list-twisty {
+    .rhq-hv .hv-list-row:hover { background: var(--tp-surface-2); }
+    .rhq-hv .hv-list-row.selected { background: color-mix(in oklch, var(--rb-blue) 14%, var(--tp-surface)); }
+    .rhq-hv .hv-list-row.search-hit { background: color-mix(in oklch, var(--rb-yellow) 12%, var(--tp-surface)); }
+    .rhq-hv .hv-list-twisty {
       appearance: none; border: 0; background: transparent; cursor: pointer;
       color: var(--tp-ink-3); width: 18px; height: 18px; flex-shrink: 0;
       display: grid; place-items: center; font-size: 9px; border-radius: 4px;
       transition: transform 120ms, color 120ms, background 120ms;
     }
-    #tpatab-hierarchy .hv-list-twisty:hover { color: var(--tp-ink-1); background: var(--tp-surface-3); }
-    #tpatab-hierarchy .hv-list-twisty.spacer { visibility: hidden; }
-    #tpatab-hierarchy .hv-list-rank {
+    .rhq-hv .hv-list-twisty:hover { color: var(--tp-ink-1); background: var(--tp-surface-3); }
+    .rhq-hv .hv-list-twisty.spacer { visibility: hidden; }
+    .rhq-hv .hv-list-rank {
       flex-shrink: 0; width: 30px; height: 20px; border-radius: 5px;
       display: grid; place-items: center;
       font-family: var(--tp-mono); font-size: 9px; font-weight: 700; letter-spacing: 0.04em;
       color: #fff; box-shadow: 0 0 0 1px var(--tp-hairline-strong);
     }
-    #tpatab-hierarchy .hv-list-name {
+    .rhq-hv .hv-list-name {
       font-family: var(--tp-sans); font-size: 13px; color: var(--tp-ink-1);
       font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
-    #tpatab-hierarchy .hv-list-tag {
+    .rhq-hv .hv-list-tag {
       font-family: var(--tp-mono); font-size: 9px; letter-spacing: 0.06em;
       text-transform: uppercase; color: var(--tp-ink-3); flex-shrink: 0;
       border: 1px solid var(--tp-hairline-strong); border-radius: 100px; padding: 2px 7px;
     }
-    #tpatab-hierarchy .hv-list-tag.you {
+    .rhq-hv .hv-list-tag.you {
       color: var(--tp-ink-1);
       border-color: color-mix(in oklch, var(--rb-blue) 50%, transparent);
       background: color-mix(in oklch, var(--rb-blue) 16%, var(--tp-surface));
     }
-    #tpatab-hierarchy .hv-list-spacer { flex: 1 1 auto; min-width: 12px; }
-    #tpatab-hierarchy .hv-list-meta {
+    .rhq-hv .hv-list-spacer { flex: 1 1 auto; min-width: 12px; }
+    .rhq-hv .hv-list-meta {
       font-family: var(--tp-mono); font-size: 11px; color: var(--tp-ink-3);
       font-variant-numeric: tabular-nums; flex-shrink: 0;
       min-width: 92px; text-align: right;
     }
-    #tpatab-hierarchy .hv-list-ap {
+    .rhq-hv .hv-list-ap {
       font-family: var(--tp-mono); font-size: 12px; color: var(--tp-ink-1);
       font-variant-numeric: tabular-nums; font-weight: 500; flex-shrink: 0;
       min-width: 84px; text-align: right;
     }
     @media (max-width: 720px) {
-      #tpatab-hierarchy .hv-list-meta { display: none; }
+      .rhq-hv .hv-list-meta { display: none; }
     }
 
     /* Canvas */
-    #tpatab-hierarchy .hv-canvas-wrap {
+    .rhq-hv .hv-canvas-wrap {
       flex: 1; position: relative;
       background: var(--tp-surface);
       border: 1px solid var(--tp-hairline);
       border-radius: 10px;
       overflow: hidden; min-height: 0;
     }
-    #tpatab-hierarchy .hv-canvas-bg {
+    .rhq-hv .hv-canvas-bg {
       position: absolute; inset: 0;
       background-image: radial-gradient(circle at 1px 1px, var(--tp-hairline-strong) 1px, transparent 1px);
       background-size: 24px 24px; background-position: 0 0;
       opacity: 0.5; pointer-events: none;
     }
-    #tpatab-hierarchy .hv-canvas {
+    .rhq-hv .hv-canvas {
       position: absolute; inset: 0; cursor: grab; user-select: none;
     }
-    #tpatab-hierarchy .hv-canvas.panning { cursor: grabbing; }
-    #tpatab-hierarchy .hv-canvas-inner {
+    .rhq-hv .hv-canvas.panning { cursor: grabbing; }
+    .rhq-hv .hv-canvas-inner {
       position: absolute; top: 0; left: 0; transform-origin: 0 0;
     }
-    #tpatab-hierarchy .hv-edge-layer {
+    .rhq-hv .hv-edge-layer {
       position: absolute; pointer-events: none; top: 0; left: 0; overflow: visible;
     }
-    #tpatab-hierarchy .hv-edge {
+    .rhq-hv .hv-edge {
       fill: none; stroke: var(--tp-hairline-strong); stroke-width: 1.5;
     }
 
     /* Node card */
-    #tpatab-hierarchy .hv-node {
+    .rhq-hv .hv-node {
       position: absolute; width: 240px;
       background: var(--tp-surface-2);
       border: 1px solid var(--tp-hairline-strong);
@@ -3267,37 +3297,37 @@
                   box-shadow 160ms, border-color 160ms, opacity 160ms;
       display: flex; overflow: hidden;
     }
-    #tpatab-hierarchy .hv-node:hover { border-color: var(--tp-ink-4); box-shadow: 0 6px 24px rgba(0,0,0,0.35); }
-    #tpatab-hierarchy .hv-node.dragging {
+    .rhq-hv .hv-node:hover { border-color: var(--tp-ink-4); box-shadow: 0 6px 24px rgba(0,0,0,0.35); }
+    .rhq-hv .hv-node.dragging {
       cursor: grabbing; z-index: 100;
       box-shadow: 0 18px 48px rgba(0,0,0,0.5);
       border-color: var(--tp-ink-3); transition: none;
     }
-    #tpatab-hierarchy .hv-node.selected {
+    .rhq-hv .hv-node.selected {
       border-color: color-mix(in oklch, var(--rb-blue) 70%, var(--tp-hairline-strong));
       box-shadow: 0 0 0 1px color-mix(in oklch, var(--rb-blue) 70%, transparent),
                   0 8px 28px rgba(0,0,0,0.4);
     }
-    #tpatab-hierarchy .hv-node.drop-valid {
+    .rhq-hv .hv-node.drop-valid {
       border-color: var(--rb-green);
       box-shadow: 0 0 0 2px color-mix(in oklch, var(--rb-green) 50%, transparent),
                   0 6px 24px rgba(0,0,0,0.4);
     }
-    #tpatab-hierarchy .hv-node.drop-invalid { border-color: var(--rb-red); opacity: 0.45; }
-    #tpatab-hierarchy .hv-node.search-dim { opacity: 0.18; }
-    #tpatab-hierarchy .hv-node.search-hit {
+    .rhq-hv .hv-node.drop-invalid { border-color: var(--rb-red); opacity: 0.45; }
+    .rhq-hv .hv-node.search-dim { opacity: 0.18; }
+    .rhq-hv .hv-node.search-hit {
       border-color: color-mix(in oklch, var(--rb-yellow) 70%, var(--tp-hairline-strong));
       box-shadow: 0 0 0 1px color-mix(in oklch, var(--rb-yellow) 70%, transparent);
     }
-    #tpatab-hierarchy .hv-node-stripe {
+    .rhq-hv .hv-node-stripe {
       width: 4px; flex-shrink: 0; background: var(--rank-color, var(--s0f));
     }
-    #tpatab-hierarchy .hv-node-body {
+    .rhq-hv .hv-node-body {
       flex: 1; padding: 12px 14px;
       display: flex; flex-direction: column; gap: 8px; min-width: 0;
     }
-    #tpatab-hierarchy .hv-node-row { display: flex; align-items: center; gap: 10px; }
-    #tpatab-hierarchy .hv-node-avatar {
+    .rhq-hv .hv-node-row { display: flex; align-items: center; gap: 10px; }
+    .rhq-hv .hv-node-avatar {
       width: 32px; height: 32px; border-radius: 99px;
       display: grid; place-items: center; flex-shrink: 0;
       font-family: var(--tp-mono); font-size: 11px; font-weight: 500;
@@ -3305,37 +3335,37 @@
       border: 1px solid var(--tp-hairline-strong);
       background: var(--tp-surface);
     }
-    #tpatab-hierarchy .hv-node-id { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
-    #tpatab-hierarchy .hv-node-name {
+    .rhq-hv .hv-node-id { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+    .rhq-hv .hv-node-name {
       font-size: 13px; font-weight: 500; color: var(--tp-ink-1);
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
       letter-spacing: -0.01em;
     }
-    #tpatab-hierarchy .hv-node-rank {
+    .rhq-hv .hv-node-rank {
       font-family: var(--tp-mono); font-size: 10px;
       color: var(--tp-ink-3); text-transform: uppercase; letter-spacing: 0.06em;
       display: flex; align-items: center; gap: 6px;
     }
-    #tpatab-hierarchy .hv-node-rank .hv-rank-dot {
+    .rhq-hv .hv-node-rank .hv-rank-dot {
       width: 5px; height: 5px; border-radius: 99px;
       background: var(--rank-color, var(--s0f));
       display: inline-block;
     }
-    #tpatab-hierarchy .hv-node-stats {
+    .rhq-hv .hv-node-stats {
       display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;
       padding-top: 8px; border-top: 1px solid var(--tp-hairline);
     }
-    #tpatab-hierarchy .hv-node-stat { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
-    #tpatab-hierarchy .hv-node-stat-val {
+    .rhq-hv .hv-node-stat { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+    .rhq-hv .hv-node-stat-val {
       font-family: var(--tp-mono); font-size: 12px; color: var(--tp-ink-1);
       font-variant-numeric: tabular-nums; font-weight: 500;
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
-    #tpatab-hierarchy .hv-node-stat-lbl {
+    .rhq-hv .hv-node-stat-lbl {
       font-family: var(--tp-mono); font-size: 9px; color: var(--tp-ink-4);
       text-transform: uppercase; letter-spacing: 0.06em;
     }
-    #tpatab-hierarchy .hv-downline-badge {
+    .rhq-hv .hv-downline-badge {
       position: absolute; bottom: -8px; right: 10px;
       font-family: var(--tp-mono); font-size: 10px; color: var(--tp-ink-2);
       background: var(--tp-surface-3);
@@ -3344,10 +3374,10 @@
       display: inline-flex; align-items: center; gap: 4px;
       pointer-events: none;
     }
-    #tpatab-hierarchy .hv-downline-badge svg { color: var(--tp-ink-3); }
+    .rhq-hv .hv-downline-badge svg { color: var(--tp-ink-3); }
 
     /* Detail panel */
-    #tpatab-hierarchy .hv-detail {
+    .rhq-hv .hv-detail {
       position: absolute; right: 16px; top: 70px; bottom: 16px;
       width: 340px;
       background: var(--tp-surface);
@@ -3358,17 +3388,17 @@
       display: flex; flex-direction: column; gap: 18px;
       overflow-y: auto; z-index: 50;
     }
-    #tpatab-hierarchy .hv-detail-hd { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
-    #tpatab-hierarchy .hv-detail-close {
+    .rhq-hv .hv-detail-hd { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+    .rhq-hv .hv-detail-close {
       appearance: none; cursor: pointer; background: transparent;
       border: 1px solid transparent; color: var(--tp-ink-3);
       width: 26px; height: 26px; border-radius: 6px;
       display: grid; place-items: center; transition: all 100ms;
       font-size: 18px; line-height: 1;
     }
-    #tpatab-hierarchy .hv-detail-close:hover { color: var(--tp-ink-1); background: var(--tp-surface-2); border-color: var(--tp-hairline); }
-    #tpatab-hierarchy .hv-detail-title { display: flex; align-items: center; gap: 12px; }
-    #tpatab-hierarchy .hv-detail-avatar {
+    .rhq-hv .hv-detail-close:hover { color: var(--tp-ink-1); background: var(--tp-surface-2); border-color: var(--tp-hairline); }
+    .rhq-hv .hv-detail-title { display: flex; align-items: center; gap: 12px; }
+    .rhq-hv .hv-detail-avatar {
       width: 44px; height: 44px; border-radius: 99px;
       display: grid; place-items: center; flex-shrink: 0;
       font-family: var(--tp-mono); font-size: 13px; font-weight: 500;
@@ -3376,95 +3406,95 @@
       border: 1px solid var(--tp-hairline-strong);
       background: var(--tp-surface-2);
     }
-    #tpatab-hierarchy .hv-detail-name-block { display: flex; flex-direction: column; gap: 3px; }
-    #tpatab-hierarchy .hv-detail-name { font-size: 16px; font-weight: 600; letter-spacing: -0.01em; color: var(--tp-ink-1); }
-    #tpatab-hierarchy .hv-detail-rank-sub {
+    .rhq-hv .hv-detail-name-block { display: flex; flex-direction: column; gap: 3px; }
+    .rhq-hv .hv-detail-name { font-size: 16px; font-weight: 600; letter-spacing: -0.01em; color: var(--tp-ink-1); }
+    .rhq-hv .hv-detail-rank-sub {
       font-family: var(--tp-mono); font-size: 10px; color: var(--tp-ink-3);
       text-transform: uppercase; letter-spacing: 0.06em;
       display: flex; align-items: center; gap: 6px;
     }
-    #tpatab-hierarchy .hv-detail-rank-sub b { color: var(--tp-ink-2); font-weight: 500; }
-    #tpatab-hierarchy .hv-rank-dot { width: 6px; height: 6px; border-radius: 99px; display: inline-block; }
-    #tpatab-hierarchy .hv-field { display: flex; flex-direction: column; gap: 6px; }
-    #tpatab-hierarchy .hv-field-lbl {
+    .rhq-hv .hv-detail-rank-sub b { color: var(--tp-ink-2); font-weight: 500; }
+    .rhq-hv .hv-rank-dot { width: 6px; height: 6px; border-radius: 99px; display: inline-block; }
+    .rhq-hv .hv-field { display: flex; flex-direction: column; gap: 6px; }
+    .rhq-hv .hv-field-lbl {
       font-family: var(--tp-mono); font-size: 10px; color: var(--tp-ink-3);
       text-transform: uppercase; letter-spacing: 0.08em;
     }
-    #tpatab-hierarchy .hv-field input, #tpatab-hierarchy .hv-field select {
+    .rhq-hv .hv-field input, .rhq-hv .hv-field select {
       appearance: none; background: var(--tp-surface-2);
       border: 1px solid var(--tp-hairline-strong); color: var(--tp-ink-1);
       padding: 9px 12px; border-radius: 7px;
       font-family: var(--tp-sans); font-size: 13px;
       outline: none; transition: border-color 120ms; width: 100%;
     }
-    #tpatab-hierarchy .hv-field select {
+    .rhq-hv .hv-field select {
       font-family: var(--tp-mono); font-size: 12px; cursor: pointer;
     }
-    #tpatab-hierarchy .hv-field input:focus, #tpatab-hierarchy .hv-field select:focus {
+    .rhq-hv .hv-field input:focus, .rhq-hv .hv-field select:focus {
       border-color: color-mix(in oklch, var(--rb-blue) 60%, var(--tp-hairline-strong));
     }
-    #tpatab-hierarchy .hv-block { display: flex; flex-direction: column; gap: 8px; }
-    #tpatab-hierarchy .hv-sec-hd { display: flex; align-items: baseline; justify-content: space-between; }
-    #tpatab-hierarchy .hv-sec-lbl {
+    .rhq-hv .hv-block { display: flex; flex-direction: column; gap: 8px; }
+    .rhq-hv .hv-sec-hd { display: flex; align-items: baseline; justify-content: space-between; }
+    .rhq-hv .hv-sec-lbl {
       font-family: var(--tp-mono); font-size: 10px; color: var(--tp-ink-3);
       text-transform: uppercase; letter-spacing: 0.08em;
     }
-    #tpatab-hierarchy .hv-sec-meta { font-family: var(--tp-mono); font-size: 10px; color: var(--tp-ink-4); }
-    #tpatab-hierarchy .hv-kpi-mini-grid {
+    .rhq-hv .hv-sec-meta { font-family: var(--tp-mono); font-size: 10px; color: var(--tp-ink-4); }
+    .rhq-hv .hv-kpi-mini-grid {
       display: grid; grid-template-columns: 1fr 1fr; gap: 1px;
       background: var(--tp-hairline);
       border: 1px solid var(--tp-hairline);
       border-radius: 8px; overflow: hidden;
     }
-    #tpatab-hierarchy .hv-kpi-mini {
+    .rhq-hv .hv-kpi-mini {
       background: var(--tp-surface-2); padding: 10px 12px;
       display: flex; flex-direction: column; gap: 4px;
     }
-    #tpatab-hierarchy .hv-kpi-mini-lbl {
+    .rhq-hv .hv-kpi-mini-lbl {
       font-family: var(--tp-mono); font-size: 9px;
       color: var(--tp-ink-3); text-transform: uppercase; letter-spacing: 0.08em;
       display: flex; align-items: center; gap: 5px;
     }
-    #tpatab-hierarchy .hv-kpi-mini-lbl .swatch { width: 5px; height: 5px; border-radius: 1px; }
-    #tpatab-hierarchy .hv-kpi-mini-val {
+    .rhq-hv .hv-kpi-mini-lbl .swatch { width: 5px; height: 5px; border-radius: 1px; }
+    .rhq-hv .hv-kpi-mini-val {
       font-family: var(--tp-mono); font-size: 16px; font-weight: 500;
       font-variant-numeric: tabular-nums; letter-spacing: -0.01em;
       color: var(--tp-ink-1);
     }
-    #tpatab-hierarchy .hv-kpi-mini-sub { font-family: var(--tp-mono); font-size: 10px; color: var(--tp-ink-3); }
-    #tpatab-hierarchy .hv-direct-list {
+    .rhq-hv .hv-kpi-mini-sub { font-family: var(--tp-mono); font-size: 10px; color: var(--tp-ink-3); }
+    .rhq-hv .hv-direct-list {
       display: flex; flex-direction: column;
       border: 1px solid var(--tp-hairline);
       border-radius: 8px; overflow: hidden;
     }
-    #tpatab-hierarchy .hv-direct-row {
+    .rhq-hv .hv-direct-row {
       display: flex; align-items: center; gap: 10px;
       padding: 8px 12px; background: var(--tp-surface-2);
       border-bottom: 1px solid var(--tp-hairline);
     }
-    #tpatab-hierarchy .hv-direct-row:last-child { border-bottom: 0; }
-    #tpatab-hierarchy .hv-direct-avatar {
+    .rhq-hv .hv-direct-row:last-child { border-bottom: 0; }
+    .rhq-hv .hv-direct-avatar {
       width: 22px; height: 22px; border-radius: 99px;
       display: grid; place-items: center; flex-shrink: 0;
       font-family: var(--tp-mono); font-size: 9px; font-weight: 500;
       border: 1px solid var(--tp-hairline-strong);
       background: var(--tp-surface);
     }
-    #tpatab-hierarchy .hv-direct-nm { flex: 1; min-width: 0; }
-    #tpatab-hierarchy .hv-direct-nm-name { font-size: 12px; color: var(--tp-ink-1); }
-    #tpatab-hierarchy .hv-direct-nm-rank {
+    .rhq-hv .hv-direct-nm { flex: 1; min-width: 0; }
+    .rhq-hv .hv-direct-nm-name { font-size: 12px; color: var(--tp-ink-1); }
+    .rhq-hv .hv-direct-nm-rank {
       font-family: var(--tp-mono); font-size: 9px;
       color: var(--tp-ink-3); text-transform: uppercase; letter-spacing: 0.06em;
     }
-    #tpatab-hierarchy .hv-direct-ap {
+    .rhq-hv .hv-direct-ap {
       font-family: var(--tp-mono); font-size: 11px; color: var(--tp-ink-2);
       font-variant-numeric: tabular-nums;
     }
-    #tpatab-hierarchy .hv-actions { display: flex; gap: 8px; margin-top: auto; }
-    #tpatab-hierarchy .hv-actions .hv-btn { flex: 1; justify-content: center; }
+    .rhq-hv .hv-actions { display: flex; gap: 8px; margin-top: auto; }
+    .rhq-hv .hv-actions .hv-btn { flex: 1; justify-content: center; }
 
     /* Overlay messages (loading / error / empty) */
-    #tpatab-hierarchy .hv-overlay-msg {
+    .rhq-hv .hv-overlay-msg {
       position: absolute; top: 50%; left: 50%;
       transform: translate(-50%, -50%);
       font-family: var(--tp-mono); font-size: 12px;
@@ -3474,13 +3504,13 @@
     }
 
     /* Confirm modal */
-    #tpatab-hierarchy .hv-modal-layer, #tpatab-agents .hv-modal-layer {
+    .rhq-hv .hv-modal-layer, #tpatab-agents .hv-modal-layer {
       position: fixed; inset: 0; z-index: 9999;
       background: rgba(0,0,0,0.55);
       display: grid; place-items: center;
       backdrop-filter: blur(4px);
     }
-    #tpatab-hierarchy .hv-modal, #tpatab-agents .hv-modal {
+    .rhq-hv .hv-modal, #tpatab-agents .hv-modal {
       width: min(440px, calc(100vw - 40px));
       background: var(--tp-surface);
       border: 1px solid var(--tp-hairline-strong);
@@ -3560,28 +3590,28 @@
       #tpatab-agents .hv-form-grid { grid-template-columns: 1fr; }
       #tpatab-agents .tp-lic-grid { grid-template-columns: 1fr; }
     }
-    #tpatab-hierarchy .hv-modal-hd, #tpatab-agents .hv-modal-hd {
+    .rhq-hv .hv-modal-hd, #tpatab-agents .hv-modal-hd {
       padding: 18px 22px;
       border-bottom: 1px solid var(--tp-hairline);
       font-family: var(--tp-sans); font-size: 16px; font-weight: 600;
       color: var(--tp-ink-1);
     }
-    #tpatab-hierarchy .hv-modal-body, #tpatab-agents .hv-modal-body {
+    .rhq-hv .hv-modal-body, #tpatab-agents .hv-modal-body {
       padding: 18px 22px; color: var(--tp-ink-2);
       font-size: 13px; line-height: 1.5;
     }
-    #tpatab-hierarchy .hv-modal-body b, #tpatab-agents .hv-modal-body b { color: var(--tp-ink-1); font-weight: 600; }
-    #tpatab-hierarchy .hv-modal-foot, #tpatab-agents .hv-modal-foot {
+    .rhq-hv .hv-modal-body b, #tpatab-agents .hv-modal-body b { color: var(--tp-ink-1); font-weight: 600; }
+    .rhq-hv .hv-modal-foot, #tpatab-agents .hv-modal-foot {
       display: flex; justify-content: flex-end; gap: 8px;
       padding: 14px 18px; border-top: 1px solid var(--tp-hairline);
     }
 
     @media (max-width: 768px) {
-      #tpatab-hierarchy .hv-app { height: calc(100vh - 160px); }
-      #tpatab-hierarchy .hv-detail { left: 12px; right: 12px; width: auto; top: 90px; }
-      #tpatab-hierarchy .hv-search input { width: 160px; }
-      #tpatab-hierarchy .hv-hdr-stat { padding-right: 10px; }
-      #tpatab-hierarchy .hv-hdr-stat-val { font-size: 13px; }
+      .rhq-hv .hv-app { height: calc(100vh - 160px); }
+      .rhq-hv .hv-detail { left: 12px; right: 12px; width: auto; top: 90px; }
+      .rhq-hv .hv-search input { width: 160px; }
+      .rhq-hv .hv-hdr-stat { padding-right: 10px; }
+      .rhq-hv .hv-hdr-stat-val { font-size: 13px; }
     }
 
     /* Footer */
@@ -13442,7 +13472,7 @@
     }
     /* Agent Hierarchy: stop the node card from clipping the downline-count badge
        that hangs off its bottom edge. */
-    #tpatab-hierarchy .hv-node { overflow: visible !important; }
+    .rhq-hv .hv-node { overflow: visible !important; }
     /* Leaders: tint the whole podium card with its medal color (not just a wash). */
     #panel-leaderboard .lb-podium-card.gold,
     #panel-leaderboard .lb-podium-card.silver,
@@ -13960,12 +13990,12 @@
         <div class="ss-navsub-label">Performance</div>
         <button class="ss-navsub-btn" data-nav="tp:performance">Agency Summary</button>
         <button class="ss-navsub-btn" data-nav="tp:policies">Agency Policies</button>
-        <button class="ss-navsub-btn" data-nav="tp:hierarchy">Agent Hierarchy</button>
         <button class="ss-navsub-btn hq-admin-only" data-nav="tp:discord" style="display:none;">Discord</button>
         <div class="ss-navsub-label">Recruiting</div>
         <button class="ss-navsub-btn" data-nav="rhq:dashboard">Dashboard</button>
         <button class="ss-navsub-btn" data-nav="rhq:board">Pipeline</button>
         <button class="ss-navsub-btn" data-nav="rhq:list">Recruits</button>
+        <button class="ss-navsub-btn" data-nav="rhq:hierarchy">Hierarchy</button>
         <button class="ss-navsub-btn" data-nav="rhq:leaders">Leaderboard</button>
       </div>
     </div>
@@ -15174,8 +15204,7 @@
           <div class="tp-admin-tabs">
             <button class="tp-admin-tab active" data-tpatab="performance">Agency Summary</button>
             <button class="tp-admin-tab" data-tpatab="policies">Agency Policies</button>
-            <button class="tp-admin-tab" data-tpatab="hierarchy">Agent Hierarchy</button>
-            <button class="tp-admin-tab" data-tpatab="agents" data-admin-only="true">Agent Profiles</button>
+                <button class="tp-admin-tab" data-tpatab="agents" data-admin-only="true">Agent Profiles</button>
             <button class="tp-admin-tab" data-tpatab="discord" data-admin-only="true">Discord</button>
           </div>
 
@@ -24340,6 +24369,15 @@
         if (!res.ok) return [];
         return res.json();
       }
+      // Pipeline recruits who don't have a Sales Hub account yet (linked_user_id
+      // is null). They live only in the recruits table but are shown in the org
+      // chart as leaf nodes under whoever recruited them.
+      async function fetchNoAccountRecruits() {
+        await window.ensureValidAccessToken?.();
+        const res = await fetch(SUPABASE_URL + '/rest/v1/recruits?select=id,full_name,email,stage,recruiter_user_id,linked_user_id&linked_user_id=is.null&status=eq.active&order=full_name.asc', { headers: authReadHeaders() });
+        if (!res.ok) return [];
+        return res.json();
+      }
 
       // ─── Role / downline helpers ──────────────────────────────────────────
       // Admin is hardcoded — only the owner email. Managers are agent_profiles
@@ -27271,6 +27309,11 @@
       const HV_H_GAP = 28;
       const HV_V_GAP = 76;
       const HV_CANVAS_PAD = 80;
+      // Vertical-stacking: when a node's reports are all leaves (individual
+      // agents with no downline of their own) they stack in a compact indented
+      // column instead of fanning out horizontally, so the chart stays narrow.
+      const HV_INDENT = 60;      // how far a stacked child column is indented
+      const HV_STACK_GAP = 20;   // vertical gap between stacked leaf siblings
 
       function hvFmtMoney(n) {
         if (n >= 1e6) return '$' + (n / 1e6).toFixed(2) + 'M';
@@ -27358,35 +27401,62 @@
         const positions = new Map();
         if (!roots.length) return positions;
 
+        // Pass 1 — measure each subtree's bounding box and decide, per node,
+        // whether its children stack vertically (all leaves → compact indented
+        // column) or spread horizontally (branchy subtrees keep the org look).
         function measure(node) {
-          if (!node.children.length) return HV_NODE_W;
-          const widths = node.children.map(measure);
-          const total = widths.reduce((a, w) => a + w, 0) + HV_H_GAP * (node.children.length - 1);
-          return Math.max(HV_NODE_W, total);
-        }
-        function place(node, depth, leftEdge) {
-          const width = measure(node);
           if (!node.children.length) {
-            positions.set(node.user_id, { x: leftEdge + (width - HV_NODE_W) / 2, y: depth * (HV_NODE_H + HV_V_GAP), w: width });
+            node._w = HV_NODE_W; node._h = HV_NODE_H; node._stack = null;
             return;
           }
-          let cursor = leftEdge;
-          for (const c of node.children) {
-            const cw = measure(c);
-            place(c, depth + 1, cursor);
-            cursor += cw + HV_H_GAP;
+          node.children.forEach(measure);
+          const allLeaves = node.children.every(c => !c.children.length);
+          if (allLeaves && node.children.length > 1) {
+            node._stack = 'v';
+            const colH = node.children.reduce((s, c) => s + c._h, 0) + HV_STACK_GAP * (node.children.length - 1);
+            node._w = Math.max(HV_NODE_W, HV_INDENT + HV_NODE_W);
+            node._h = HV_NODE_H + HV_V_GAP + colH;
+          } else {
+            node._stack = 'h';
+            const totalW = node.children.reduce((s, c) => s + c._w, 0) + HV_H_GAP * (node.children.length - 1);
+            const maxChildH = node.children.reduce((m, c) => Math.max(m, c._h), 0);
+            node._w = Math.max(HV_NODE_W, totalW);
+            node._h = HV_NODE_H + HV_V_GAP + maxChildH;
           }
-          const first = positions.get(node.children[0].user_id);
-          const last = positions.get(node.children[node.children.length - 1].user_id);
-          const centerX = (first.x + last.x + HV_NODE_W) / 2 - HV_NODE_W / 2;
-          positions.set(node.user_id, { x: centerX, y: depth * (HV_NODE_H + HV_V_GAP), w: width });
+        }
+
+        // Pass 2 — place each node from its subtree box's top-left (x, y).
+        function place(node, x, y) {
+          if (!node.children.length) {
+            positions.set(node.user_id, { x: x + (node._w - HV_NODE_W) / 2, y, stack: null });
+            return;
+          }
+          if (node._stack === 'v') {
+            positions.set(node.user_id, { x, y, stack: 'v' });
+            let cy = y + HV_NODE_H + HV_V_GAP;
+            for (const c of node.children) {
+              place(c, x + HV_INDENT, cy);
+              cy += c._h + HV_STACK_GAP;
+            }
+          } else {
+            let cx = x;
+            const cy = y + HV_NODE_H + HV_V_GAP;
+            for (const c of node.children) {
+              place(c, cx, cy);
+              cx += c._w + HV_H_GAP;
+            }
+            const first = positions.get(node.children[0].user_id);
+            const last = positions.get(node.children[node.children.length - 1].user_id);
+            const centerX = (first.x + last.x + HV_NODE_W) / 2 - HV_NODE_W / 2;
+            positions.set(node.user_id, { x: centerX, y, stack: 'h' });
+          }
         }
 
         let cursor = 0;
         for (const r of roots) {
-          const w = measure(r);
-          place(r, 0, cursor);
-          cursor += w + HV_H_GAP;
+          measure(r);
+          place(r, cursor, 0);
+          cursor += r._w + HV_H_GAP;
         }
         return positions;
       }
@@ -27510,6 +27580,23 @@
         function walk(node) {
           const pp = positions.get(node.user_id);
           if (!pp) return;
+          // Vertically-stacked children: an indented-tree elbow — a spine down
+          // the parent's lower-left with a horizontal stub into each child.
+          if (pp.stack === 'v' && node.children.length) {
+            const spineX = pp.x + 28;
+            const yTop = pp.y + HV_NODE_H;
+            let lastMidY = yTop;
+            for (const c of node.children) {
+              const cp = positions.get(c.user_id);
+              if (!cp) continue;
+              const midY = cp.y + HV_NODE_H / 2;
+              lastMidY = midY;
+              edges.push({ d: 'M ' + spineX + ' ' + midY + ' L ' + cp.x + ' ' + midY, key: node.user_id + '-' + c.user_id });
+              walk(c);
+            }
+            edges.push({ d: 'M ' + spineX + ' ' + yTop + ' L ' + spineX + ' ' + lastMidY, key: node.user_id + '-spine' });
+            return;
+          }
           for (const c of node.children) {
             const cp = positions.get(c.user_id);
             if (!cp) continue;
@@ -27729,13 +27816,26 @@
         const reload = async () => {
           setLoading(true); setError(null);
           try {
-            const [ps, pols] = await Promise.all([fetchAgentProfiles(), fetchPolicies()]);
+            const [ps, pols, noAcctRecruits] = await Promise.all([fetchAgentProfiles(), fetchPolicies(), fetchNoAccountRecruits()]);
+            // Pre-account pipeline recruits appear as leaf nodes under whoever
+            // recruited them (recruiter_user_id → their upline's user_id), so the
+            // org chart matches the recruiting pipeline even before they sign up.
+            // Their node id is prefixed "recruit:" so writes route to the
+            // recruits table instead of agent_profiles.
+            const pseudo = (noAcctRecruits || []).map(r => ({
+              user_id: 'recruit:' + r.id,
+              agent_name: r.full_name || 'Recruit',
+              manager_user_id: r.recruiter_user_id || null,
+              is_manager: false, comp_level: null, status: 'active', approved: true,
+              _isRecruit: true, _recruitId: r.id, _recruitStage: r.stage,
+            }));
+            const all = ps.concat(pseudo);
             // Scope for managers — show themselves + entire subtree only.
-            let scoped = ps;
-            if (!isCurrentUserAdmin() && isCurrentUserManager(ps)) {
+            let scoped = all;
+            if (!isCurrentUserAdmin() && isCurrentUserManager(all)) {
               const myUid = (window.currentUser && window.currentUser.id) || null;
-              const downline = collectDownlineUserIds(ps, myUid);
-              scoped = ps.filter(p => downline.has(p.user_id));
+              const downline = collectDownlineUserIds(all, myUid);
+              scoped = all.filter(p => downline.has(p.user_id));
             }
             const withStats = hvAttachStats(scoped, pols);
             setProfiles(withStats);
@@ -27907,9 +28007,39 @@
             console.error('Hierarchy PATCH threw:', e);
           }
         };
-        const persistReparent = (userId, newManagerId) => persistPatch(userId, { manager_user_id: newManagerId });
+        // ── Reparent = set upline, kept in sync with the recruiting pipeline ──
+        // "Reports to" (agent_profiles.manager_user_id) and "recruiter/upline"
+        // (recruits.recruiter_user_id) are one and the same, so every reparent
+        // writes both. Pre-account recruit nodes ("recruit:<id>") live only in
+        // the recruits table.
+        const patchRecruitById = async (recruitId, mgr) => {
+          try {
+            await fetch(SUPABASE_URL + '/rest/v1/recruits?id=eq.' + encodeURIComponent(recruitId), {
+              method: 'PATCH', headers: writeHdrs(), body: JSON.stringify({ recruiter_user_id: mgr || null })
+            });
+          } catch (e) { console.error('Recruit upline sync (by id) failed:', e); }
+        };
+        const syncRecruitUplineForAgent = async (userId, mgr) => {
+          try {
+            await fetch(SUPABASE_URL + '/rest/v1/recruits?linked_user_id=eq.' + encodeURIComponent(userId), {
+              method: 'PATCH', headers: writeHdrs(), body: JSON.stringify({ recruiter_user_id: mgr || null })
+            });
+          } catch (e) { console.error('Recruit upline sync (by agent) failed:', e); }
+        };
+        const applyReparent = async (nodeId, newManagerId) => {
+          if (!canEdit) return;
+          const mgr = (newManagerId && String(newManagerId).indexOf('recruit:') === 0) ? null : (newManagerId || null);
+          if (typeof nodeId === 'string' && nodeId.indexOf('recruit:') === 0) {
+            await patchRecruitById(nodeId.slice('recruit:'.length), mgr);
+            await reload();
+            return;
+          }
+          await syncRecruitUplineForAgent(nodeId, mgr);
+          await persistPatch(nodeId, { manager_user_id: mgr });   // persistPatch reloads
+        };
+        const persistReparent = (userId, newManagerId) => applyReparent(userId, newManagerId);
         const updateAgent = (userId, patch) => persistPatch(userId, patch);
-        const reparentFromDropdown = (userId, newManagerId) => persistPatch(userId, { manager_user_id: newManagerId });
+        const reparentFromDropdown = (userId, newManagerId) => applyReparent(userId, newManagerId);
         const askToggleManager = (profile) => setConfirmFor({ profile, grant: !profile.is_manager });
         const confirmToggle = async () => {
           if (!confirmFor) return;
@@ -28131,11 +28261,22 @@
         if (!policiesRoot) policiesRoot = ReactDOM.createRoot(el);
         policiesRoot.render(<PoliciesView />);
       };
-      window.tpMountHierarchy = function () {
-        const el = document.getElementById('tpHierarchyRoot');
-        if (!el) return;
-        if (!hierarchyRoot) hierarchyRoot = ReactDOM.createRoot(el);
-        hierarchyRoot.render(<HierarchyView />);
+      // Accepts an optional host element so the org chart can mount inside the
+      // Recruiter HQ app (its new home) as well as the legacy teamperf root.
+      // For the singleton teamperf root we reuse one React root; for any other
+      // host (e.g. the RHQ hierarchy view) we spin up a fresh root and return
+      // it so the caller can unmount on teardown.
+      window.tpMountHierarchy = function (el) {
+        el = el || document.getElementById('tpHierarchyRoot');
+        if (!el) return null;
+        if (el.id === 'tpHierarchyRoot') {
+          if (!hierarchyRoot) hierarchyRoot = ReactDOM.createRoot(el);
+          hierarchyRoot.render(<HierarchyView />);
+          return hierarchyRoot;
+        }
+        const root = ReactDOM.createRoot(el);
+        root.render(<HierarchyView />);
+        return root;
       };
 
       // ─── TRACKER (Agent Dashboard — claude.ai/design) ────────────────
@@ -32487,6 +32628,23 @@
       } catch (e) { console.error('[invite] send failed', e); return false; }
     }
 
+    // ── Hierarchy host ──────────────────────────────────────────────────────
+    // The org chart lives in its own babel block (defined alongside the Agency
+    // dashboard). We reuse it verbatim by mounting it into a host div here, so
+    // its behavior is untouched — only the surrounding chrome + palette change.
+    // `.rhq-hv` remaps the chart's --tp-* tokens to the Recruiting palette.
+    function HierarchyHost() {
+      const ref = useRef(null);
+      useEffect(() => {
+        let root = null;
+        if (ref.current && typeof window.tpMountHierarchy === 'function') {
+          try { root = window.tpMountHierarchy(ref.current); } catch (e) { console.error('Hierarchy mount failed:', e); }
+        }
+        return () => { if (root && root.unmount) { try { root.unmount(); } catch (e) {} } };
+      }, []);
+      return <div className="rhq-hv" ref={ref}></div>;
+    }
+
     // ══════════════════════════════════════════════════════════════════════════
     //  MAIN COMPONENT
     // ══════════════════════════════════════════════════════════════════════════
@@ -32496,7 +32654,7 @@
       const isAdmin = ADMIN_EMAILS.includes(myEmail) || me.id === ADMIN_UID;
 
       const { recruits, roster, activity, err, reload } = useRecruiterData();
-      const [view, setView] = useState('dashboard');           // dashboard|board|list|leaders
+      const [view, setView] = useState('dashboard');           // dashboard|board|list|leaders|hierarchy
       const [selId, setSelId] = useState(null);                // open profile
       // Sub-nav now lives in the Sales Hub sidebar dropdown; expose a setter so
       // its buttons can switch the view. Assigned during render so it's ready
@@ -32584,6 +32742,7 @@
           {view === 'board' && <Board active={active} header={header} isAdmin={isAdmin} recruiterName={recruiterName} onOpen={openProfile} onDrop={async (id, stage) => { await patchRecruit(id, { stage }); afterMutate(); }} />}
           {view === 'list' && <RecruitList rows={filteredByMgr} header={header} isAdmin={isAdmin} search={search} setSearch={setSearch} chip={chip} setChip={setChip} recruiterName={recruiterName} onOpen={openProfile} />}
           {view === 'leaders' && <Leaderboard rows={filteredByMgr} recruiterName={recruiterName} />}
+          {view === 'hierarchy' && <HierarchyHost />}
 
           {showAdd && <AddRecruit me={me} isAdmin={isAdmin} recruiterOptions={recruiterOptions} onClose={() => setShowAdd(false)} onSaved={async () => { setShowAdd(false); await afterMutate(); }} />}
         </div>
@@ -33012,13 +33171,15 @@
       const doPatch = async (body) => { await patchRecruit(sel.id, body); await onChanged(); };
       const saveEdit = async () => {
         await doPatch({ full_name: ed.full_name.trim(), email: ed.email.trim() || null, phone: ed.phone.trim() || null, city: ed.city.trim() || null, state: ed.state.trim() || null, timezone: ed.timezone, recruiter_user_id: ed.recruiter_user_id || null, exam_date: ed.exam_date || null, stage: Number(ed.stage) });
-        // Upline = the linked Sales Hub account's manager_user_id — the real org
-        // hierarchy (separate from the recruiter credit). Admin + linked only.
+        // Upline / reports-to is a single field now: the recruiter credit
+        // (recruits.recruiter_user_id, written above) and the Sales Hub org
+        // hierarchy (agent_profiles.manager_user_id) stay in sync. For a linked
+        // account, mirror the recruiter into manager_user_id (self → top of org).
         if (isAdmin && sel.linked_user_id) {
           const curMgr = (rosterMap[sel.linked_user_id] && rosterMap[sel.linked_user_id].manager_user_id) || '';
-          const newMgr = (ed.upline_user_id === sel.linked_user_id) ? '' : (ed.upline_user_id || '');
+          const newMgr = (ed.recruiter_user_id && ed.recruiter_user_id !== sel.linked_user_id) ? ed.recruiter_user_id : '';
           if (newMgr !== curMgr) {
-            try { await ensureToken(); await rest('agent_profiles?user_id=eq.' + sel.linked_user_id, { method: 'PATCH', headers: writeHeaders(), body: JSON.stringify({ manager_user_id: newMgr || null }) }); await onChanged(); } catch (e) { console.error('upline update failed', e); }
+            try { await ensureToken(); await rest('agent_profiles?user_id=eq.' + sel.linked_user_id, { method: 'PATCH', headers: writeHeaders(), body: JSON.stringify({ manager_user_id: newMgr || null }) }); await onChanged(); } catch (e) { console.error('upline sync failed', e); }
           }
         }
         setEditing(false);
@@ -33270,11 +33431,7 @@
                 {[['Full name', 'full_name'], ['Email', 'email'], ['Phone', 'phone'], ['City', 'city'], ['State', 'state']].map(([l, k]) =>
                   <div key={k}><div className="rhq-label">{l}</div><input className="rhq-inp" style={{ width: '100%' }} value={ed[k]} onChange={setEK(k)} /></div>)}
                 <div><div className="rhq-label">Timezone</div><select className="rhq-sel" style={{ width: '100%' }} value={ed.timezone} onChange={setEK('timezone')}>{TZ_OPTS.map(t => <option key={t}>{t}</option>)}</select></div>
-                {isAdmin && <div><div className="rhq-label">Recruiter <span style={{ color: 'var(--tx3)', fontWeight: 400 }}>· pipeline credit</span></div><select className="rhq-sel" style={{ width: '100%' }} value={ed.recruiter_user_id} onChange={setEK('recruiter_user_id')}>{recruiterOptions.map(o => <option key={o.id} value={o.id}>{o.name}</option>)}</select></div>}
-                {isAdmin && sel.linked_user_id && <div><div className="rhq-label">Upline <span style={{ color: 'var(--tx3)', fontWeight: 400 }}>· Sales Hub hierarchy</span></div><select className="rhq-sel" style={{ width: '100%' }} value={ed.upline_user_id || ''} onChange={setEK('upline_user_id')}>
-                  <option value="">— None (top of org) —</option>
-                  {roster.filter(o => o.user_id !== sel.linked_user_id).map(o => <option key={o.user_id} value={o.user_id}>{o.agent_name}</option>)}
-                </select></div>}
+                {isAdmin && <div><div className="rhq-label">Upline <span style={{ color: 'var(--tx3)', fontWeight: 400 }}>· reports-to</span></div><select className="rhq-sel" style={{ width: '100%' }} value={ed.recruiter_user_id} onChange={setEK('recruiter_user_id')}>{recruiterOptions.map(o => <option key={o.id} value={o.id}>{o.name}</option>)}</select><div style={{ fontSize: 11, color: 'var(--tx3)', marginTop: 4 }}>Recruiter credit + org hierarchy — kept in sync.</div></div>}
                 <div><div className="rhq-label">Stage</div><select className="rhq-sel" style={{ width: '100%' }} value={ed.stage} onChange={setEK('stage')}>{STAGE_FLOW.map(i => <option key={i} value={i}>{STAGES[i]}</option>)}</select></div>
                 <div><div className="rhq-label">Exam date</div><input className="rhq-inp" type="date" style={{ width: '100%' }} value={ed.exam_date || ''} onChange={setEK('exam_date')} /></div>
               </div>
