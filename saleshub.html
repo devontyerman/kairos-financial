@@ -33742,6 +33742,16 @@
       // highlighted at the top of the States step; then the fuller recommended list.
       statesMustBuy: ['Texas', 'Ohio', 'California', 'North Carolina', 'South Carolina', 'Florida', 'Georgia'],
       statesRecommended: ['Alabama', 'Alaska', 'Arizona', 'Colorado', 'Iowa', 'Illinois', 'Indiana', 'Kansas', 'Kentucky', 'Louisiana', 'Maryland', 'Michigan', 'Mississippi', 'Missouri', 'Nevada', 'New Mexico', 'Pennsylvania', 'Tennessee', 'Virginia'],
+      // Approximate non-resident LIFE producer license fee per state (the state
+      // filing fee via NIPR, USD; excludes the small ~$5 NIPR transaction fee).
+      // Best-effort from public NIPR / state DOI fee schedules — a disclaimer is
+      // shown on the step since fees change and some states bill per line.
+      stateLicenseCosts: {
+        'Texas': 50, 'Ohio': 15, 'California': 188, 'North Carolina': 50, 'South Carolina': 25, 'Florida': 55, 'Georgia': 100,
+        'Alabama': 80, 'Alaska': 75, 'Arizona': 120, 'Colorado': 47, 'Iowa': 50, 'Illinois': 215, 'Indiana': 40, 'Kansas': 30,
+        'Kentucky': 40, 'Louisiana': 75, 'Maryland': 54, 'Michigan': 10, 'Mississippi': 100, 'Missouri': 100, 'Nevada': 185,
+        'New Mexico': 35, 'Pennsylvania': 55, 'Tennessee': 50, 'Virginia': 15,
+      },
       // Each meeting becomes an "Add to Google Calendar" button (pre-filled,
       // recurring). Fill in: title, day (full weekday), time (24h, local to tz),
       // durationMin, tz (Eastern/Central/Mountain/Pacific or IANA), freq
@@ -33898,6 +33908,9 @@
       const rc = rcs[0] || null;
       HAS_RECRUIT = !!rc;
       if (rc) {
+        // Preload the name the recruiter entered when they added this recruit,
+        // if the account itself didn't carry one.
+        if (!d.first && !d.last && rc.full_name) { const s = splitName(rc.full_name); d.first = s.first; d.last = s.last; }
         d.street = rc.street || '';
         d.city = rc.city || ''; d.st = rc.state || ''; d.zip = rc.zip || '';
         d.resState = rc.resident_state || ''; d.dob = rc.dob || '';
@@ -34188,7 +34201,7 @@
               <Field label="First name · required"><input className="kfo-inp" value={d.first} onChange={e => set({ first: e.target.value })} /></Field>
               <Field label="Last name · required"><input className="kfo-inp" value={d.last} onChange={e => set({ last: e.target.value })} /></Field>
               <Field label="Phone number · required"><input className="kfo-inp" type="tel" value={d.phone} onChange={e => set({ phone: e.target.value })} /></Field>
-              <Field label="Email"><input className="kfo-inp" value={d.email} disabled style={{ opacity: .7 }} /></Field>
+              <Field label="Email · locked"><input className="kfo-inp" value={d.email} disabled title="This is the email your invite was sent to and can't be changed here." style={{ opacity: .7, cursor: 'not-allowed' }} /></Field>
               <Field label="Create a password · required"><input className="kfo-inp" type="password" value={d.password} onChange={e => set({ password: e.target.value })} placeholder="Min 6 characters" /></Field>
               <Field label="Confirm password · required"><input className="kfo-inp" type="password" value={d.password2} onChange={e => set({ password2: e.target.value })} placeholder="Re-enter password" /></Field>
             </div>
@@ -34370,10 +34383,12 @@
       else if (cur === 'states') {
         const toggle = (name) => setD(s => Object.assign({}, s, { stateBuys: Object.assign({}, s.stateBuys, { [name]: !s.stateBuys[name] }) }));
         const hasNpn = d.licensed === true;
-        const stateRow = (name) => { const on = !!d.stateBuys[name]; return (
+        const stateCost = (name) => { const c = (KFO_CONFIG.stateLicenseCosts || {})[name]; return (typeof c === 'number') ? ('~$' + c) : null; };
+        const stateRow = (name) => { const on = !!d.stateBuys[name]; const cost = stateCost(name); return (
           <button key={name} onClick={() => toggle(name)} className="kfo-checkrow">
             <span className={'kfo-box' + (on ? ' on' : '')}>{on ? '✓' : ''}</span>
             <span style={{ fontWeight: 600 }}>{name}</span>
+            {cost && <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ac)', background: 'var(--acSoft, rgba(161,203,53,.12))', padding: '2px 8px', borderRadius: 999 }}>{cost}</span>}
             <span style={{ marginLeft: 'auto', fontSize: 12, color: 'var(--tx3)' }}>{on ? 'Purchased' : 'Pending'}</span>
           </button>); };
         body = (
@@ -34397,6 +34412,7 @@
                 <div className="kfo-card">
                   <div className="kfo-cardtitle">How to purchase</div>
                   <div className="kfo-carddesc">Head to NIPR, sign in (or create an account), choose the states you want to add, and complete the payment. Each state is a separate non-resident license.</div>
+                  <div className="kfo-carddesc" style={{ marginTop: 8, fontSize: 12, color: 'var(--tx3)' }}>The price next to each state is the approximate state filing fee for a non-resident life license. These are estimates only — actual fees vary, change over time, and don't include NIPR's small (~$5) transaction fee. Confirm the exact amount at checkout on NIPR.</div>
                   <div style={{ marginTop: 14 }}><a className="kfo-btn ghost" href={KFO_CONFIG.links.states} target="_blank" rel="noopener">Open NIPR ↗</a></div>
                 </div>
                 <div className="kfo-card" style={{ borderColor: 'var(--ac)', boxShadow: '0 0 0 1px var(--ac) inset' }}>
