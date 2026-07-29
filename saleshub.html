@@ -19236,6 +19236,57 @@
       })();
     })();
 
+    // Expired / already-used invite link. Supabase caps sign-in links at 60 min,
+    // and email security scanners often open (and use up) the link before the
+    // agent clicks — either way it comes back as an error hash with no token,
+    // which would otherwise dump them silently on the login page. Instead, show a
+    // clear "this link expired — get a new one" screen with a resend button.
+    (function handleExpiredLink() {
+      const blob = (window.location.hash || '').replace(/^#/, '') + '&' + (window.location.search || '').replace(/^\?/, '');
+      if (!/(?:^|&)error(?:_code|_description)?=/.test(blob)) return;
+      const p = new URLSearchParams(blob);
+      // Only intercept genuine link/OTP failures, not unrelated errors.
+      const codeStr = (p.get('error_code') || p.get('error') || '').toLowerCase();
+      const descStr = (p.get('error_description') || '').toLowerCase();
+      if (!/expired|invalid|otp|access_denied|used/.test(codeStr + ' ' + descStr)) return;
+      try { history.replaceState(null, '', window.location.pathname); } catch (e) {}
+      if (document.getElementById('kfLinkErr')) return;
+      const wrap = document.createElement('div');
+      wrap.id = 'kfLinkErr';
+      wrap.style.cssText = 'position:fixed;inset:0;z-index:100001;background:rgba(8,8,10,.88);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:20px;font-family:Inter,system-ui,sans-serif;';
+      wrap.innerHTML =
+        '<div style="max-width:440px;width:100%;background:#fff;border-radius:18px;padding:32px 26px;box-shadow:0 20px 60px rgba(0,0,0,.45);text-align:center;">'
+        + '<div style="font-size:42px;line-height:1;margin-bottom:10px;">⏳</div>'
+        + '<h2 style="margin:0 0 8px;font-size:20px;font-weight:800;color:#1a1a1a;">This link has expired</h2>'
+        + '<p style="margin:0 0 18px;font-size:14px;line-height:1.55;color:#555;">For security, sign-in links are only valid for 60 minutes (and some email apps open the link before you do). Enter your email and we’ll send you a fresh one.</p>'
+        + '<input id="kfLinkErrEmail" type="email" autocomplete="email" placeholder="you@email.com" style="width:100%;box-sizing:border-box;padding:12px 14px;border:1px solid #d7d7db;border-radius:10px;font-size:15px;margin-bottom:10px;outline:none;" />'
+        + '<button id="kfLinkErrSend" style="width:100%;padding:13px;border:none;border-radius:999px;background:#A1CB35;color:#232B07;font-weight:800;font-size:15px;cursor:pointer;">Send me a new link</button>'
+        + '<div id="kfLinkErrMsg" style="margin-top:12px;font-size:13px;line-height:1.5;color:#555;min-height:18px;"></div>'
+        + '<button id="kfLinkErrClose" style="margin-top:10px;background:none;border:none;color:#888;font-size:13px;cursor:pointer;text-decoration:underline;">Back to login</button>'
+        + '</div>';
+      (document.body || document.documentElement).appendChild(wrap);
+      const emailEl = document.getElementById('kfLinkErrEmail');
+      const sendBtn = document.getElementById('kfLinkErrSend');
+      const msgEl = document.getElementById('kfLinkErrMsg');
+      try { emailEl.focus(); } catch (e) {}
+      sendBtn.addEventListener('click', async () => {
+        const email = (emailEl.value || '').trim();
+        if (!email || email.indexOf('@') === -1) { msgEl.style.color = '#c0392b'; msgEl.textContent = 'Please enter a valid email address.'; return; }
+        sendBtn.disabled = true; msgEl.style.color = '#555'; msgEl.textContent = 'Sending…';
+        try {
+          const redirect = location.origin + location.pathname;
+          const r = await fetch(SUPABASE_URL + '/auth/v1/otp?redirect_to=' + encodeURIComponent(redirect), {
+            method: 'POST', headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: email, create_user: true })
+          });
+          if (r.ok) { msgEl.style.color = '#2e7d32'; msgEl.textContent = 'Sent! Check your email for a new link (look in spam too). It’s good for 60 minutes.'; sendBtn.textContent = 'Link sent ✓'; }
+          else { msgEl.style.color = '#c0392b'; msgEl.textContent = 'Could not send — double-check the email address and try again.'; sendBtn.disabled = false; }
+        } catch (e) { msgEl.style.color = '#c0392b'; msgEl.textContent = 'Something went wrong — please try again.'; sendBtn.disabled = false; }
+      });
+      emailEl.addEventListener('keydown', (e) => { if (e.key === 'Enter') sendBtn.click(); });
+      document.getElementById('kfLinkErrClose').addEventListener('click', () => wrap.remove());
+    })();
+
     document.getElementById('resetForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const btn = document.getElementById('resetBtn');
