@@ -33107,6 +33107,8 @@
       { id: 'script', label: 'Call script' },
       { id: 'recordings', label: 'Sales recordings' },
       { id: 'objections', label: 'Objections' },
+      { id: 'carriers', label: 'Carrier contracts' },
+      { id: 'launch', label: 'Launch call' },
     ];
     function Profile({ sel, isAdmin, me, roster, rosterMap, recruiterName, recruiterOptions, onBack, onChanged }) {
       const [notes, setNotes] = useState([]);
@@ -33797,6 +33799,8 @@
       { id: 'script',   label: 'Script' },
       { id: 'recordings', label: 'Sales recordings' },
       { id: 'objections', label: 'Objections' },
+      { id: 'carriers', label: 'Carrier contracts' },
+      { id: 'launch',   label: 'Launch call' },
       { id: 'done',     label: 'Done' },
     ];
     const idxOf = (id) => Math.max(0, STEPS.findIndex(s => s.id === id));
@@ -33883,7 +33887,7 @@
         motivation: '', incomeNeed: '', incomeWant: '', helpNote: '',
         signedName: '', signedAt: null,
         licensed: null, npn: '', examDate: '',
-        checks: { eo: false, d1: false, d2: false, app: false, crm: false, cal: false, headset: false, statesAck: false, recordings: false, scriptFex: false, scriptGoogle: false, objections: false },
+        checks: { eo: false, d1: false, d2: false, app: false, crm: false, cal: false, headset: false, statesAck: false, recordings: false, scriptFex: false, scriptGoogle: false, objections: false, carriers: false, launch: false },
         videos: {}, stateBuys: {},
         reqSteps: null,
         step: 0, furthest: 0,
@@ -34619,14 +34623,46 @@
             </div>
             <label className="kfo-check" style={{ marginTop: 16 }}><input type="checkbox" checked={!!d.checks.objections} onChange={e => setD(s => Object.assign({}, s, { checks: Object.assign({}, s.checks, { objections: e.target.checked }) }))} /> I've opened and reviewed the objection responses</label>
           </div>
-          <div className="kfo-actions"><NextBtn on={() => next()} disabled={!req(d.checks.objections)}>Finish →</NextBtn>{!KFO_TEST_MODE && <span className="kfo-hint">Open the objections and check the box to finish.</span>}</div>
+          <div className="kfo-actions"><NextBtn on={() => next()} disabled={!req(d.checks.objections)}>Continue →</NextBtn>{!KFO_TEST_MODE && <span className="kfo-hint">Open the objections and check the box to continue.</span>}</div>
+        </div>
+      );
+      else if (cur === 'carriers') body = (
+        <div className="kfo-screen">
+          <H title="Sign your carrier contracts" sub="The last piece — getting contracted with the insurance carriers so you can write business." />
+          <div className="kfo-card">
+            <div className="kfo-cardtitle">Get contracted with the carriers</div>
+            <div className="kfo-carddesc">The final step is signing all of your contracts with the insurance carriers. <strong>Once you've finished onboarding, reach out to your manager to begin the carrier contracting process</strong> — they'll walk you through it.</div>
+            <div className="kfo-carddesc" style={{ marginTop: 10 }}>Keep in mind the carriers typically take <strong>about 2–3 weeks</strong> to review and approve you to start selling, so it's best to get started as soon as you can.</div>
+            <label className="kfo-check" style={{ marginTop: 16 }}><input type="checkbox" checked={!!d.checks.carriers} onChange={e => setD(s => Object.assign({}, s, { checks: Object.assign({}, s.checks, { carriers: e.target.checked }) }))} /> I understand — I'll reach out to my manager to start carrier contracting</label>
+          </div>
+          <div className="kfo-actions"><NextBtn on={() => next()} disabled={!req(d.checks.carriers)}>Continue →</NextBtn>{!KFO_TEST_MODE && <span className="kfo-hint">Check the box to continue.</span>}</div>
+        </div>
+      );
+      else if (cur === 'launch') body = (
+        <div className="kfo-screen">
+          <H title="Schedule your launch call" sub="Your final step — line up your launch call and stay sharp while your contracts come in." />
+          <div className="kfo-card">
+            <div className="kfo-cardtitle">Book your launch call</div>
+            <div className="kfo-carddesc"><strong>Once you've fully completed all of your contracting with the insurance carriers, schedule a launch call with your manager.</strong> On this call you'll review your goals, discuss a lead plan and schedule, and build a long-term plan to hit those goals. This happens <strong>after all of your contracts have been submitted with the carriers.</strong></div>
+          </div>
+          <div className="kfo-card">
+            <div className="kfo-cardtitle">While you wait for your contracts</div>
+            <div className="kfo-carddesc">Carrier approvals take about 2–3 weeks. Spend that next week getting better every day — <strong>on a daily basis:</strong></div>
+            <div style={{ marginTop: 12, display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <div className="kfo-carddesc" style={{ margin: 0 }}>• Listen to experienced agents closing deals live on Discord</div>
+              <div className="kfo-carddesc" style={{ margin: 0 }}>• Attend the trainings</div>
+              <div className="kfo-carddesc" style={{ margin: 0 }}>• Practice your script and objections</div>
+            </div>
+            <label className="kfo-check" style={{ marginTop: 16 }}><input type="checkbox" checked={!!d.checks.launch} onChange={e => setD(s => Object.assign({}, s, { checks: Object.assign({}, s.checks, { launch: e.target.checked }) }))} /> I understand my next steps</label>
+          </div>
+          <div className="kfo-actions"><NextBtn on={() => next()} disabled={!req(d.checks.launch)}>Complete →</NextBtn>{!KFO_TEST_MODE && <span className="kfo-hint">Check the box to complete onboarding.</span>}</div>
         </div>
       );
       else if (cur === 'done') body = (
         <div className="kfo-screen" style={{ maxWidth: 560, margin: '0 auto', textAlign: 'center' }}>
           <div className="kfo-card" style={{ padding: '34px 30px' }}>
             <div style={{ width: 60, height: 60, borderRadius: '50%', background: 'var(--ac)', color: 'var(--acOn)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: 28, margin: '0 auto 18px' }}>✓</div>
-            <h1 className="kfo-h1" style={{ fontSize: 26 }}>Congrats, your onboarding is completed! 🎉</h1>
+            <h1 className="kfo-h1" style={{ fontSize: 26 }}>Congratulations, your onboarding is complete! 🎉</h1>
             <div className="kfo-sub" style={{ marginBottom: 8 }}>Please let your direct manager know. Everything you entered is saved to your profile — welcome to the team.</div>
             <button className="kfo-btn" style={{ marginTop: 14 }} disabled={busy} onClick={finish}>{busy ? 'Finishing…' : 'Go to Sales Hub →'}</button>
           </div>
