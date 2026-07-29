@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/png" href="/KF Transparent.png" />
+  <title>Whole Life Insurance Quote — Kairos Financial</title>
+  <meta name="description" content="Get a free, no-obligation whole life insurance quote in under a minute. Coverage that never expires, premiums that never rise, and a benefit that protects the people you love." />
+
+  <!-- Open Graph (for when the link is shared with clients) -->
+  <meta property="og:title" content="Whole Life Insurance Quote — Kairos Financial" />
+  <meta property="og:description" content="Lifelong coverage, fixed premiums, and guaranteed peace of mind. Get your free quote in under a minute." />
+  <meta property="og:image" content="/assets/kairos-og.png" />
+  <meta property="og:type" content="website" />
+
+  <link rel="stylesheet" href="css/styles.css" />
+  <style>
+    /* =========================================================
+       QUOTER PAGE — client-facing marketing + quote landing
+       Built on the Kairos design system (charcoal / white)
+       with a restrained gold accent for warmth & trust.
+       ========================================================= */
+    :root {
+      --gold:       #c8a24c;
+      --gold-soft:  #e3c989;
+      --gold-deep:  #a8853a;
+      --gold-tint:  rgba(200, 162, 76, 0.12);
+    }
+
+    /* --- Minimal client-facing header ----------------------- */
+    .q-header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      height: var(--nav-height);
+      display: flex;
+      align-items: center;
+      padding: 0 2.5rem;
+      background: rgba(17, 17, 17, 0.92);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+    }
+    .q-header-inner {
+      width: 100%;
+      max-width: 1280px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .q-logo { display: flex; align-items: center; gap: 0.6rem; }
+    .q-logo-mark {
+      width: 38px; height: 38px;
+      border-radius: 7px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .q-logo-mark img { width: 100%; height: 100%; object-fit: contain; filter: brightness(3); }
+    .q-logo-text {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1rem; font-weight: 700;
+      letter-spacing: 0.05em; color: #fff;
+    }
+    .q-header .btn-quote {
+      background: var(--gold);
+      color: #1a1a1a;
+      font-weight: 700;
+    }
+    .q-header .btn-quote:hover { background: var(--gold-soft); transform: translateY(-1px); }
+
+    /* --- Hero ----------------------------------------------- */
+    .q-hero {
+      position: relative;
+      background: var(--dark);
+      padding: calc(var(--nav-height) + 5.5rem) 1.5rem 6rem;
+      text-align: center;
+      overflow: hidden;
+    }
+    .q-hero::before {
+      /* soft radial glow behind the headline */
+      content: '';
+      position: absolute;
+      top: -20%; left: 50%;
+      width: 900px; height: 900px;
+      transform: translateX(-50%);
+      background: radial-gradient(circle, rgba(200,162,76,0.16) 0%, rgba(200,162,76,0) 62%);
+      pointer-events: none;
+    }
+    .q-hero-inner { position: relative; z-index: 2; max-width: 820px; margin: 0 auto; }
+    .q-eyebrow {
+      display: inline-flex; align-items: center; gap: 0.6rem;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.7rem; font-weight: 700;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--gold-soft);
+      border: 1px solid rgba(200,162,76,0.3);
+      background: var(--gold-tint);
+      padding: 0.4rem 1rem; border-radius: 100px;
+      margin-bottom: 1.75rem;
+    }
+    .q-hero h1 {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: clamp(2.4rem, 6vw, 4.2rem);
+      font-weight: 800; line-height: 1.07;
+      letter-spacing: -0.03em; color: #fff;
+      margin-bottom: 1.35rem;
+    }
+    .q-hero h1 .accent { color: var(--gold-soft); }
+    .q-hero p {
+      font-family: 'Inter', sans-serif;
+      font-size: clamp(1rem, 2vw, 1.18rem);
+      color: rgba(255,255,255,0.6);
+      line-height: 1.7; max-width: 580px; margin: 0 auto 2.5rem;
+    }
+    .q-hero-cta { display: flex; gap: 0.9rem; justify-content: center; flex-wrap: wrap; }
+    .q-hero-cta .btn-primary {
+      background: var(--gold); color: #1a1a1a; font-weight: 700;
+      padding: 0.95rem 2.2rem; font-size: 0.95rem;
+    }
+    .q-hero-cta .btn-primary:hover { background: var(--gold-soft); transform: translateY(-2px); box-shadow: 0 10px 30px rgba(200,162,76,0.25); }
+
+    /* trust strip under hero CTA */
+    .q-trust {
+      display: flex; flex-wrap: wrap; gap: 1.5rem 2.25rem;
+      justify-content: center;
+      margin-top: 2.75rem;
+    }
+    .q-trust-item {
+      display: flex; align-items: center; gap: 0.5rem;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.82rem; font-weight: 500;
+      color: rgba(255,255,255,0.55);
+    }
+    .q-trust-item svg { width: 16px; height: 16px; color: var(--gold-soft); flex-shrink: 0; }
+
+    /* --- Quote section -------------------------------------- */
+    .q-quote-section {
+      background: var(--bg-surface);
+      padding: 5rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .q-quote-card {
+      max-width: 860px; margin: 0 auto;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+    }
+    .q-quote-card-head {
+      padding: 2rem 2.25rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      text-align: center;
+    }
+    .q-quote-card-head h2 {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: clamp(1.5rem, 3vw, 2rem);
+      font-weight: 800; letter-spacing: -0.02em;
+      color: var(--text-primary); margin-bottom: 0.5rem;
+    }
+    .q-quote-card-head p { font-size: 0.95rem; color: var(--text-secondary); }
+    .q-quote-steps {
+      display: flex; flex-wrap: wrap; gap: 0.6rem 1.5rem;
+      justify-content: center; margin-top: 1.25rem;
+    }
+    .q-quote-step {
+      display: flex; align-items: center; gap: 0.5rem;
+      font-family: 'Inter', sans-serif; font-size: 0.8rem; font-weight: 600;
+      color: var(--text-secondary);
+    }
+    .q-quote-step span {
+      width: 22px; height: 22px; border-radius: 50%;
+      background: var(--dark); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.72rem; font-weight: 700;
+    }
+    .q-iframe-wrap { padding: 1rem 1.25rem 1.5rem; }
+    .q-iframe-wrap iframe { display: block; border: none; width: 100%; height: 800px; border-radius: var(--radius-md); }
+    .q-quote-note {
+      text-align: center; padding: 0 2rem 1.75rem;
+      font-family: 'Inter', sans-serif; font-size: 0.78rem; color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    /* --- Generic section header (light) --------------------- */
+    .q-section { padding: 5.5rem 0; }
+    .q-section-head { text-align: center; max-width: 640px; margin: 0 auto 3.25rem; }
+    .q-section-eyebrow {
+      display: inline-block;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.68rem; font-weight: 700; letter-spacing: 0.2em;
+      text-transform: uppercase; color: var(--gold-deep);
+      margin-bottom: 0.75rem;
+    }
+    .q-section-title {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: clamp(1.8rem, 3.8vw, 2.6rem);
+      font-weight: 800; letter-spacing: -0.025em;
+      color: var(--text-primary); margin-bottom: 0.9rem;
+    }
+    .q-section-desc { font-size: 1.02rem; color: var(--text-secondary); line-height: 1.7; }
+
+    /* --- "What is it" explainer band ------------------------ */
+    .q-explainer { background: #fff; }
+    .q-explainer .q-explainer-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 3.5rem; align-items: center; max-width: 1080px; margin: 0 auto;
+    }
+    .q-explainer-text h2 {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: clamp(1.7rem, 3.4vw, 2.4rem); font-weight: 800;
+      letter-spacing: -0.025em; color: var(--text-primary); margin-bottom: 1.1rem;
+    }
+    .q-explainer-text p { color: var(--text-secondary); font-size: 1rem; line-height: 1.8; margin-bottom: 1rem; }
+    .q-explainer-text strong { color: var(--text-primary); }
+    .q-explainer-points { list-style: none; margin-top: 1.5rem; display: grid; gap: 0.85rem; }
+    .q-explainer-points li {
+      display: flex; gap: 0.75rem; align-items: flex-start;
+      font-family: 'Inter', sans-serif; font-size: 0.95rem; color: var(--text-primary);
+    }
+    .q-explainer-points svg { width: 20px; height: 20px; color: var(--gold-deep); flex-shrink: 0; margin-top: 1px; }
+    .q-explainer-visual {
+      background: var(--dark);
+      border-radius: var(--radius-xl);
+      padding: 2.5rem;
+      color: #fff;
+      box-shadow: var(--shadow-lg);
+    }
+    .q-explainer-visual .q-stat { padding: 1.25rem 0; border-bottom: 1px solid rgba(255,255,255,0.1); }
+    .q-explainer-visual .q-stat:last-child { border-bottom: none; padding-bottom: 0; }
+    .q-explainer-visual .q-stat:first-child { padding-top: 0; }
+    .q-explainer-visual .q-stat-num {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 2rem; font-weight: 800; color: var(--gold-soft); letter-spacing: -0.02em;
+    }
+    .q-explainer-visual .q-stat-label { font-size: 0.85rem; color: rgba(255,255,255,0.55); margin-top: 0.2rem; }
+
+    /* --- Benefits grid -------------------------------------- */
+    .q-benefits { background: var(--bg-surface); }
+    .q-benefit-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem; max-width: 1080px; margin: 0 auto;
+    }
+    .q-benefit-card {
+      background: #fff; border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 2rem 1.75rem;
+      box-shadow: var(--shadow-xs); transition: var(--transition);
+    }
+    .q-benefit-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); border-color: #d8d8d8; }
+    .q-benefit-icon {
+      width: 48px; height: 48px; border-radius: var(--radius-md);
+      background: var(--gold-tint); color: var(--gold-deep);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 1.25rem;
+    }
+    .q-benefit-icon svg { width: 24px; height: 24px; }
+    .q-benefit-card h3 {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 1.1rem; font-weight: 700; color: var(--text-primary);
+      margin-bottom: 0.5rem; letter-spacing: -0.01em;
+    }
+    .q-benefit-card p { font-size: 0.9rem; color: var(--text-secondary); line-height: 1.65; }
+
+    /* --- Comparison table ----------------------------------- */
+    .q-compare { background: #fff; }
+    .q-compare-table {
+      max-width: 860px; margin: 0 auto;
+      border: 1px solid var(--border); border-radius: var(--radius-lg);
+      overflow: hidden; box-shadow: var(--shadow-sm);
+    }
+    .q-compare-row { display: grid; grid-template-columns: 1.4fr 1fr 1fr; }
+    .q-compare-row:not(:last-child) { border-bottom: 1px solid var(--border); }
+    .q-compare-cell { padding: 1.15rem 1.4rem; display: flex; align-items: center; gap: 0.55rem; font-size: 0.92rem; }
+    .q-compare-cell.feature { font-weight: 600; color: var(--text-primary); font-family: 'Inter', sans-serif; }
+    .q-compare-head { background: var(--dark); }
+    .q-compare-head .q-compare-cell { color: #fff; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 0.95rem; }
+    .q-compare-head .q-compare-cell.whole { color: var(--gold-soft); }
+    .q-compare-row:nth-child(even):not(.q-compare-head) { background: var(--bg-surface); }
+    .q-compare-cell.whole { color: var(--text-primary); font-weight: 600; }
+    .q-compare-cell.term { color: var(--text-secondary); }
+    .q-compare-cell svg { width: 17px; height: 17px; flex-shrink: 0; }
+    .q-check { color: #2e9e5b; }
+    .q-cross { color: #c0392b; }
+    .q-compare-note { text-align: center; font-size: 0.82rem; color: var(--text-muted); margin-top: 1.25rem; }
+
+    /* --- FAQ ------------------------------------------------ */
+    .q-faq { background: var(--bg-surface); }
+    .q-faq-list { max-width: 760px; margin: 0 auto; display: grid; gap: 0.85rem; }
+    .q-faq-item {
+      background: #fff; border: 1px solid var(--border); border-radius: var(--radius-md);
+      overflow: hidden; transition: var(--transition);
+    }
+    .q-faq-item[open] { box-shadow: var(--shadow-sm); border-color: #d8d8d8; }
+    .q-faq-item summary {
+      list-style: none; cursor: pointer;
+      padding: 1.25rem 1.5rem;
+      font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 1rem;
+      color: var(--text-primary);
+      display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+    }
+    .q-faq-item summary::-webkit-details-marker { display: none; }
+    .q-faq-item summary .q-faq-icon {
+      flex-shrink: 0; width: 22px; height: 22px;
+      border-radius: 50%; border: 1.5px solid var(--border-strong);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--text-muted); transition: var(--transition);
+      font-size: 1rem; line-height: 1;
+    }
+    .q-faq-item[open] summary .q-faq-icon { transform: rotate(45deg); background: var(--dark); color: #fff; border-color: var(--dark); }
+    .q-faq-item .q-faq-body { padding: 0 1.5rem 1.4rem; color: var(--text-secondary); font-size: 0.95rem; line-height: 1.75; }
+
+    /* --- Final CTA band ------------------------------------- */
+    .q-cta-band {
+      background: var(--dark);
+      padding: 5rem 1.5rem; text-align: center; position: relative; overflow: hidden;
+    }
+    .q-cta-band::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(circle at 50% 0%, rgba(200,162,76,0.16) 0%, rgba(200,162,76,0) 60%);
+      pointer-events: none;
+    }
+    .q-cta-band-inner { position: relative; z-index: 2; max-width: 640px; margin: 0 auto; }
+    .q-cta-band h2 {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: clamp(1.9rem, 4.5vw, 3rem); font-weight: 800;
+      letter-spacing: -0.025em; color: #fff; margin-bottom: 1rem; line-height: 1.1;
+    }
+    .q-cta-band p { color: rgba(255,255,255,0.6); font-size: 1.05rem; line-height: 1.7; margin-bottom: 2.25rem; }
+    .q-cta-band .btn-primary {
+      background: var(--gold); color: #1a1a1a; font-weight: 700;
+      padding: 1rem 2.5rem; font-size: 1rem;
+    }
+    .q-cta-band .btn-primary:hover { background: var(--gold-soft); transform: translateY(-2px); box-shadow: 0 12px 34px rgba(200,162,76,0.3); }
+
+    /* --- Disclaimer footer ---------------------------------- */
+    .q-disclaimer {
+      background: var(--bg-base); border-top: 1px solid var(--border);
+      padding: 2.5rem 2rem; text-align: center;
+      font-family: 'Inter', sans-serif; font-size: 0.74rem; color: var(--text-muted);
+      line-height: 1.7; max-width: 880px; margin: 0 auto;
+    }
+    .q-disclaimer strong { color: var(--text-secondary); }
+
+    /* --- Responsive ----------------------------------------- */
+    @media (max-width: 860px) {
+      .q-benefit-grid { grid-template-columns: 1fr 1fr; }
+      .q-explainer .q-explainer-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+    }
+    @media (max-width: 600px) {
+      .q-header { padding: 0 1.25rem; }
+      .q-header .btn-quote { padding: 0.55rem 1.1rem; font-size: 0.8rem; }
+      .q-benefit-grid { grid-template-columns: 1fr; }
+      .q-iframe-wrap iframe { height: 760px; }
+      .q-compare-cell { padding: 0.9rem 0.85rem; font-size: 0.82rem; }
+      .q-quote-card-head, .q-iframe-wrap { padding-left: 0.75rem; padding-right: 0.75rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ============================================================
+       HEADER — minimal, client-facing (no internal agent nav)
+  ============================================================= -->
+  <header class="q-header">
+    <div class="q-header-inner">
+      <a href="#top" class="q-logo">
+        <span class="q-logo-mark"><img src="assets/kf-logo.png" alt="Kairos Financial" /></span>
+        <span class="q-logo-text">KAIROS</span>
+      </a>
+      <a href="#quote" class="btn btn-quote">Get My Free Quote</a>
+    </div>
+  </header>
+
+  <!-- ============================================================
+       HERO
+  ============================================================= -->
+  <section class="q-hero" id="top">
+    <div class="q-hero-inner">
+      <span class="q-eyebrow">Whole Life Insurance</span>
+      <h1>Coverage built to last <span class="accent">a lifetime.</span></h1>
+      <p>
+        Whole life insurance gives your family a guaranteed payout, premiums that never
+        rise, and cash value that grows over time. Get your free, no-obligation quote in
+        under a minute — no medical exam required.
+      </p>
+      <div class="q-hero-cta">
+        <a href="#quote" class="btn btn-primary">See My Rate</a>
+        <a href="#why" class="btn btn-outline">Why whole life?</a>
+      </div>
+
+      <div class="q-trust">
+        <div class="q-trust-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+          Free &amp; no obligation
+        </div>
+        <div class="q-trust-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Takes about 60 seconds
+        </div>
+        <div class="q-trust-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          No medical exam to apply
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       QUOTE TOOL — embedded FEX Lite quoter
+  ============================================================= -->
+  <section class="q-quote-section" id="quote">
+    <div class="container">
+      <div class="q-quote-card fade-in">
+        <div class="q-quote-card-head">
+          <h2>Get Your Instant Quote</h2>
+          <p>Answer a few quick questions and see your personalized whole life rate right away.</p>
+          <div class="q-quote-steps">
+            <div class="q-quote-step"><span>1</span> Enter your details</div>
+            <div class="q-quote-step"><span>2</span> Compare your rate</div>
+            <div class="q-quote-step"><span>3</span> Lock it in for life</div>
+          </div>
+        </div>
+
+        <div class="q-iframe-wrap">
+          <!-- FEX Lite Start -->
+          <iframe style="border: none; height: 800px; width: 100%;"
+            src="https://insurancetoolkits.com/fex/lite-form/?token=fXnVA0JWGFQ8-6nYBj_7VFqvPu9Px2w2txhq2oFp"
+            title="Whole Life Insurance Quote">
+          </iframe>
+          <!-- FEX Lite End -->
+        </div>
+
+        <p class="q-quote-note">
+          Your information is used only to prepare your quote. There's no cost and no commitment —
+          and a licensed Kairos Financial agent is here to walk you through your options whenever you're ready.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       WHAT IS WHOLE LIFE — explainer
+  ============================================================= -->
+  <section class="q-section q-explainer" id="why">
+    <div class="container">
+      <div class="q-explainer-grid">
+        <div class="q-explainer-text fade-in">
+          <span class="q-section-eyebrow">What is whole life insurance?</span>
+          <h2>Permanent protection that never expires.</h2>
+          <p>
+            Unlike term insurance — which only covers you for a set number of years and then ends —
+            <strong>whole life insurance lasts your entire life</strong>, as long as your premiums are paid.
+            It's the kind of coverage families turn to so a funeral, final medical bills, or leftover
+            debts never become a burden for the people they leave behind.
+          </p>
+          <p>
+            A portion of every premium also builds <strong>cash value</strong> that grows over time and
+            belongs to you — money you can borrow against if life ever calls for it.
+          </p>
+          <ul class="q-explainer-points">
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+              Designed to cover funeral and final expenses, typically $5,000–$50,000
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+              Benefit paid directly to your loved ones, usually tax-free
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+              Most plans require no medical exam — just a few health questions
+            </li>
+          </ul>
+        </div>
+
+        <div class="q-explainer-visual fade-in">
+          <div class="q-stat">
+            <div class="q-stat-num">$8,000–$12,000</div>
+            <div class="q-stat-label">Average cost of a traditional funeral in 2026</div>
+          </div>
+          <div class="q-stat">
+            <div class="q-stat-num">From ~$30/mo</div>
+            <div class="q-stat-label">Typical starting premium for $10,000 of coverage</div>
+          </div>
+          <div class="q-stat">
+            <div class="q-stat-num">Lifetime</div>
+            <div class="q-stat-label">Your coverage never expires and never gets more expensive</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       BENEFITS GRID
+  ============================================================= -->
+  <section class="q-section q-benefits">
+    <div class="container">
+      <div class="q-section-head fade-in">
+        <span class="q-section-eyebrow">The advantages</span>
+        <h2 class="q-section-title">Why families choose whole life</h2>
+        <p class="q-section-desc">Lifelong peace of mind, in a policy that's simple to qualify for and easy to keep.</p>
+      </div>
+
+      <div class="q-benefit-grid">
+        <div class="q-benefit-card fade-in">
+          <div class="q-benefit-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+          <h3>Coverage that never expires</h3>
+          <p>As long as you pay your premiums, your policy stays in force for the rest of your life — it can't be cancelled or outlived.</p>
+        </div>
+        <div class="q-benefit-card fade-in">
+          <div class="q-benefit-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+          <h3>Premiums locked in for life</h3>
+          <p>Your rate is set the day you're approved and never increases — even as you get older or your health changes.</p>
+        </div>
+        <div class="q-benefit-card fade-in">
+          <div class="q-benefit-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+          <h3>Builds cash value</h3>
+          <p>Part of every premium grows into cash value you can borrow against for emergencies, opportunities, or extra income.</p>
+        </div>
+        <div class="q-benefit-card fade-in">
+          <div class="q-benefit-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+          <h3>Easy to qualify for</h3>
+          <p>Most plans skip the medical exam entirely. A few simple health questions are usually all it takes to get covered.</p>
+        </div>
+        <div class="q-benefit-card fade-in">
+          <div class="q-benefit-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+          <h3>Protects the people you love</h3>
+          <p>The benefit goes straight to your beneficiaries — usually tax-free — so a funeral or final bills never fall on family.</p>
+        </div>
+        <div class="q-benefit-card fade-in">
+          <div class="q-benefit-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+          <h3>Money for what matters</h3>
+          <p>Your family can use the payout however they need — funeral costs, medical bills, mortgage, or simply time to grieve.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       WHOLE LIFE vs TERM COMPARISON
+  ============================================================= -->
+  <section class="q-section q-compare">
+    <div class="container">
+      <div class="q-section-head fade-in">
+        <span class="q-section-eyebrow">Whole life vs. term</span>
+        <h2 class="q-section-title">See the difference at a glance</h2>
+        <p class="q-section-desc">Term life can be cheaper up front — but it expires, and most people outlive it. Whole life is built to be there when it matters.</p>
+      </div>
+
+      <div class="q-compare-table fade-in">
+        <div class="q-compare-row q-compare-head">
+          <div class="q-compare-cell feature">&nbsp;</div>
+          <div class="q-compare-cell whole">Whole Life</div>
+          <div class="q-compare-cell term">Term Life</div>
+        </div>
+        <div class="q-compare-row">
+          <div class="q-compare-cell feature">Length of coverage</div>
+          <div class="q-compare-cell whole"><svg class="q-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Your entire life</div>
+          <div class="q-compare-cell term">Set term (10–30 yrs)</div>
+        </div>
+        <div class="q-compare-row">
+          <div class="q-compare-cell feature">Premiums over time</div>
+          <div class="q-compare-cell whole"><svg class="q-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Locked in, never rise</div>
+          <div class="q-compare-cell term">Rise sharply when renewed</div>
+        </div>
+        <div class="q-compare-row">
+          <div class="q-compare-cell feature">Builds cash value</div>
+          <div class="q-compare-cell whole"><svg class="q-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Yes</div>
+          <div class="q-compare-cell term"><svg class="q-cross" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> No</div>
+        </div>
+        <div class="q-compare-row">
+          <div class="q-compare-cell feature">Guaranteed payout</div>
+          <div class="q-compare-cell whole"><svg class="q-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> As long as it's in force</div>
+          <div class="q-compare-cell term">Only if you pass during the term</div>
+        </div>
+        <div class="q-compare-row">
+          <div class="q-compare-cell feature">Medical exam</div>
+          <div class="q-compare-cell whole"><svg class="q-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Usually none</div>
+          <div class="q-compare-cell term">Often required</div>
+        </div>
+      </div>
+      <p class="q-compare-note">Comparison is general in nature. Exact features vary by carrier and policy.</p>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       FAQ
+  ============================================================= -->
+  <section class="q-section q-faq">
+    <div class="container">
+      <div class="q-section-head fade-in">
+        <span class="q-section-eyebrow">Good to know</span>
+        <h2 class="q-section-title">Common questions</h2>
+      </div>
+
+      <div class="q-faq-list">
+        <details class="q-faq-item fade-in">
+          <summary>How much coverage do I actually need? <span class="q-faq-icon">+</span></summary>
+          <div class="q-faq-body">Most people choose enough to cover their final expenses — a funeral and burial average $8,000–$12,000 in 2026 — plus any leftover medical bills or small debts. Coverage typically ranges from $5,000 up to $50,000. Your Kairos agent can help you land on the right amount for your situation.</div>
+        </details>
+        <details class="q-faq-item fade-in">
+          <summary>Do I have to take a medical exam? <span class="q-faq-icon">+</span></summary>
+          <div class="q-faq-body">In most cases, no. Whole life final-expense plans are typically "simplified issue," meaning you answer a few health questions instead of taking a medical exam. Many applicants are approved within minutes.</div>
+        </details>
+        <details class="q-faq-item fade-in">
+          <summary>Will my premium ever go up? <span class="q-faq-icon">+</span></summary>
+          <div class="q-faq-body">No. With whole life, the premium you're quoted is locked in for life. It won't increase as you age or if your health changes — and your coverage won't expire as long as premiums are paid.</div>
+        </details>
+        <details class="q-faq-item fade-in">
+          <summary>What's the difference between this and term insurance? <span class="q-faq-icon">+</span></summary>
+          <div class="q-faq-body">Term insurance covers you for a fixed number of years and then ends, with no cash value. Whole life lasts your entire life, keeps the same premium, and builds cash value you can borrow against. Most people outlive their term policies — whole life is designed to always be there.</div>
+        </details>
+        <details class="q-faq-item fade-in">
+          <summary>How fast does my family get the money? <span class="q-faq-icon">+</span></summary>
+          <div class="q-faq-body">Once a claim is filed with a death certificate, benefits are usually paid to your beneficiaries quickly — often within days. The payout is generally income-tax-free and can be used for anything they need.</div>
+        </details>
+        <details class="q-faq-item fade-in">
+          <summary>Is the quote really free? <span class="q-faq-icon">+</span></summary>
+          <div class="q-faq-body">Yes — completely free and with no obligation. The quote tool above gives you a personalized rate in about a minute. From there, you decide if and when you'd like to move forward.</div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       FINAL CTA
+  ============================================================= -->
+  <section class="q-cta-band">
+    <div class="q-cta-band-inner">
+      <h2>Peace of mind starts with one quick quote.</h2>
+      <p>See your personalized whole life rate now — free, no obligation, and no medical exam to apply.</p>
+      <a href="#quote" class="btn btn-primary">Get My Free Quote</a>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       DISCLAIMER / FOOTER
+  ============================================================= -->
+  <footer class="footer">
+    <div class="q-disclaimer">
+      <p>
+        <strong>Kairos Financial</strong> &middot; Whole life and final expense insurance.
+        This page is for general informational purposes only and is not an offer of insurance,
+        financial advice, or a guarantee of coverage. Coverage amounts, premiums, eligibility,
+        and policy features vary by carrier, state, age, and health. Quotes are estimates and are
+        not final until an application is approved and a policy is issued. Cost figures shown are
+        industry averages for 2026 and may not reflect your specific rate.
+      </p>
+      <p style="margin-top:1rem;">&copy; 2026 Kairos Financial. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

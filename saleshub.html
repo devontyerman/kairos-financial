@@ -15129,9 +15129,9 @@
               <div class="sh-resource-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
               <div><div class="sh-resource-title">FEX Inbound Script</div><div class="sh-resource-desc">Call script for FEX inbound leads. The script you use depends on the lead.</div><span class="sh-resource-tag">PDF</span></div>
             </a>
-            <a href="assets/Documents/Google%20Customer%20Service%20Inbound%20Calls.pdf" target="_blank" rel="noopener noreferrer" class="sh-resource-card" data-pdf-viewer data-pdf-title="Google Customer Service Inbound Calls" data-pdf-filename="Google Customer Service Inbound Calls.pdf">
+            <a href="https://docs.google.com/document/d/1HZBkb0H2awS2IX5uAsoJAnhOmLPRWgeb1YfJSLDFGyA/edit?usp=sharing" target="_blank" rel="noopener noreferrer" class="sh-resource-card">
               <div class="sh-resource-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
-              <div><div class="sh-resource-title">Google Customer Service Inbound Calls</div><div class="sh-resource-desc">Call script for Google customer service inbound calls.</div><span class="sh-resource-tag">PDF</span></div>
+              <div><div class="sh-resource-title">Google Customer Service Inbound Calls</div><div class="sh-resource-desc">Call script for Google customer service inbound calls.</div><span class="sh-resource-tag">LINK</span></div>
             </a>
             <a href="assets/Documents/Objections.pdf" target="_blank" rel="noopener noreferrer" class="sh-resource-card" data-pdf-viewer data-pdf-title="Objections" data-pdf-filename="Objections.pdf">
               <div class="sh-resource-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div>
@@ -33105,6 +33105,7 @@
       { id: 'headset', label: 'Headset' },
       { id: 'meeting', label: 'Meetings / boot camp' },
       { id: 'script', label: 'Call script' },
+      { id: 'recordings', label: 'Sales recordings' },
       { id: 'objections', label: 'Objections' },
     ];
     function Profile({ sel, isAdmin, me, roster, rosterMap, recruiterName, recruiterOptions, onBack, onChanged }) {
@@ -33768,7 +33769,7 @@
       meetings: [
         { title: 'Team training call', days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'], time: '17:00', durationMin: 60, tz: 'Eastern', freq: 'WEEKLY', location: '', details: '' },
         { title: 'Morning team huddle', days: ['Monday', 'Wednesday', 'Friday'], time: '11:00', durationMin: 30, tz: 'Eastern', freq: 'WEEKLY', location: '', details: '' },
-        { title: 'New agent boot camp', days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'], anchorDay: 'Monday', time: '10:00', durationMin: 60, tz: 'Eastern', freq: 'WEEKLY', count: 5, note: 'Your first week only', location: '', details: '' },
+        { title: 'New agent boot camp', noCalendar: true, when: 'Every day at 10:00 AM EST · daily through your entire first week working leads', desc: 'Talk with your manager about which week will be your first week.' },
       ],
       studyTips: [
         'Skip the reading material — focus on taking the practice exams over and over again. That repetition is what gets you to pass.',
@@ -33794,6 +33795,7 @@
       { id: 'headset',  label: 'Headset' },
       { id: 'meeting',  label: 'Meetings' },
       { id: 'script',   label: 'Script' },
+      { id: 'recordings', label: 'Sales recordings' },
       { id: 'objections', label: 'Objections' },
       { id: 'done',     label: 'Done' },
     ];
@@ -33881,7 +33883,7 @@
         motivation: '', incomeNeed: '', incomeWant: '', helpNote: '',
         signedName: '', signedAt: null,
         licensed: null, npn: '', examDate: '',
-        checks: { eo: false, d1: false, d2: false, app: false, crm: false, cal: false, headset: false, statesAck: false },
+        checks: { eo: false, d1: false, d2: false, app: false, crm: false, cal: false, headset: false, statesAck: false, recordings: false, scriptFex: false, scriptGoogle: false, objections: false },
         videos: {}, stateBuys: {},
         reqSteps: null,
         step: 0, furthest: 0,
@@ -34561,8 +34563,8 @@
               {KFO_CONFIG.meetings.map((m, i) => (
                 <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '13px 15px', border: '1px solid var(--bd)', borderRadius: 12, flexWrap: 'wrap' }}>
                   <div style={{ width: 34, height: 34, borderRadius: 9, background: 'var(--acSoft)', color: 'var(--acDeep)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, flex: 'none' }}>📅</div>
-                  <div style={{ flex: 1, minWidth: 150 }}><div style={{ fontWeight: 600, fontSize: 14 }}>{m.title}</div><div className="kfo-hint">{mtgWhen(m)}</div></div>
-                  <a className="kfo-btn ghost" href={gcalUrl(m)} target="_blank" rel="noopener">Add to Google Calendar ↗</a>
+                  <div style={{ flex: 1, minWidth: 150 }}><div style={{ fontWeight: 600, fontSize: 14 }}>{m.title}</div><div className="kfo-hint">{m.noCalendar ? m.when : mtgWhen(m)}</div>{m.noCalendar && m.desc && <div className="kfo-hint" style={{ marginTop: 3 }}>{m.desc}</div>}</div>
+                  {!m.noCalendar && <a className="kfo-btn ghost" href={gcalUrl(m)} target="_blank" rel="noopener">Add to Google Calendar ↗</a>}
                 </div>))}
             </div>
           </div>
@@ -34579,18 +34581,31 @@
             <div className="kfo-carddesc">We have <strong>two main lead types</strong>, and each one has its own script below. Before you start memorizing, have a conversation with your manager about which lead type you'll begin with — that decides which script you should memorize first. Open and download both so you have them ready.</div>
             <div style={{ marginTop: 14, display: 'flex', flexDirection: 'column', gap: 10 }}>
               {[
-                { name: 'FEX Inbound Script', desc: 'For FEX inbound leads', file: 'assets/Documents/FEX%20Inbound%20Script.pdf' },
-                { name: 'Google Customer Service Inbound Calls', desc: 'For Google customer service inbound calls', file: 'assets/Documents/Google%20Customer%20Service%20Inbound%20Calls.pdf' },
+                { name: 'FEX Inbound Script', desc: 'For FEX inbound leads', file: 'assets/Documents/FEX%20Inbound%20Script.pdf', key: 'scriptFex' },
+                { name: 'Google Customer Service Inbound Calls', desc: 'For Google customer service inbound calls', file: 'https://docs.google.com/document/d/1HZBkb0H2awS2IX5uAsoJAnhOmLPRWgeb1YfJSLDFGyA/edit?usp=sharing', key: 'scriptGoogle' },
               ].map((s) => (
-                <div key={s.name} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '13px 15px', border: '1px solid var(--bd)', borderRadius: 12, flexWrap: 'wrap' }}>
-                  <div style={{ flex: 1, minWidth: 160 }}><div style={{ fontWeight: 600, fontSize: 14 }}>{s.name}</div><div className="kfo-hint">{s.desc}</div></div>
+                <div key={s.key} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '13px 15px', border: '1px solid var(--bd)', borderRadius: 12, flexWrap: 'wrap' }}>
+                  <input type="checkbox" checked={!!d.checks[s.key]} onChange={e => setD(s2 => Object.assign({}, s2, { checks: Object.assign({}, s2.checks, { [s.key]: e.target.checked }) }))} style={{ width: 18, height: 18, flex: 'none', cursor: 'pointer' }} />
+                  <div style={{ flex: 1, minWidth: 140 }}><div style={{ fontWeight: 600, fontSize: 14 }}>{s.name}</div><div className="kfo-hint">{s.desc}</div></div>
                   <a className="kfo-btn ghost" href={s.file} target="_blank" rel="noopener">Open ↗</a>
                 </div>
               ))}
             </div>
           </div>
-          <div className="kfo-actions"><NextBtn on={() => next()}>Continue →</NextBtn></div>
+          <div className="kfo-actions"><NextBtn on={() => next()} disabled={!req(d.checks.scriptFex && d.checks.scriptGoogle)}>Continue →</NextBtn>{!KFO_TEST_MODE && <span className="kfo-hint">Open each script and check it off to continue.</span>}</div>
           </VideoGate>
+        </div>
+      );
+      else if (cur === 'recordings') body = (
+        <div className="kfo-screen">
+          <H title="Sales recordings" sub="Save this link — real recorded calls across every lead type." />
+          <div className="kfo-card">
+            <div className="kfo-cardtitle">Listen to real sales calls</div>
+            <div className="kfo-carddesc"><strong>Save this link</strong> so you can come back to it any time. Inside you'll find recordings of real sales calls across a bunch of different lead types. They're all worth listening to — but the ones to focus on depend on the lead type you're working, so <strong>consult with your manager</strong> about which recordings to prioritize.</div>
+            <div style={{ marginTop: 16 }}><a className="kfo-btn ghost" href="https://drive.google.com/drive/folders/1izEuGg4tSywDIGxN5yFo27Q37kb8RmrH?usp=sharing" target="_blank" rel="noopener">Open sales recordings ↗</a></div>
+            <label className="kfo-check" style={{ marginTop: 16 }}><input type="checkbox" checked={!!d.checks.recordings} onChange={e => setD(s => Object.assign({}, s, { checks: Object.assign({}, s.checks, { recordings: e.target.checked }) }))} /> I've saved this link so I can come back to it</label>
+          </div>
+          <div className="kfo-actions"><NextBtn on={() => next()} disabled={!req(d.checks.recordings)}>Continue →</NextBtn>{!KFO_TEST_MODE && <span className="kfo-hint">Save the link and check the box to continue.</span>}</div>
         </div>
       );
       else if (cur === 'objections') body = (
@@ -34602,8 +34617,9 @@
             <div style={{ marginTop: 14, display: 'flex', gap: 12, flexWrap: 'wrap' }}>
               <a className="kfo-btn ghost" href="assets/Documents/Objections.pdf" target="_blank" rel="noopener">Open objections ↗</a>
             </div>
+            <label className="kfo-check" style={{ marginTop: 16 }}><input type="checkbox" checked={!!d.checks.objections} onChange={e => setD(s => Object.assign({}, s, { checks: Object.assign({}, s.checks, { objections: e.target.checked }) }))} /> I've opened and reviewed the objection responses</label>
           </div>
-          <div className="kfo-actions"><NextBtn on={() => next()}>Finish →</NextBtn></div>
+          <div className="kfo-actions"><NextBtn on={() => next()} disabled={!req(d.checks.objections)}>Finish →</NextBtn>{!KFO_TEST_MODE && <span className="kfo-hint">Open the objections and check the box to finish.</span>}</div>
         </div>
       );
       else if (cur === 'done') body = (
@@ -34632,7 +34648,7 @@
     // ── scoped styles (design palette, tracks the app theme) ─────────────────
     const CSS = `
     #kfoRoot .kfo {
-      --bg:#F6F6F4;--sf:#FFFFFF;--sf2:#F0F0ED;--bd:#E7E7E2;--tx:#2E2B2B;--tx2:#454040;--tx3:#9C9694;
+      --bg:#F6F6F4;--sf:#FFFFFF;--sf2:#F0F0ED;--bd:#E7E7E2;--tx:#2E2B2B;--tx2:#3C3838;--tx3:#666160;
       --ac:#A1CB35;--acOn:#232B07;--acDeep:#5F7F10;--ac2:#65DCD5;--acSoft:#EFF6D9;
       --sh:0 1px 2px rgba(40,38,30,.05),0 4px 16px rgba(40,38,30,.06);
       --s2b:#FFF3CD;--s2f:#93700A;--bd2:#E7E7E2;
