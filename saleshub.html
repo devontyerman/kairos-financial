@@ -32348,7 +32348,7 @@
     // Mirrors the onboarding island's STEPS (last index = done). Kept here so the
     // dashboard/profile can show a new agent's onboarding progress. KEEP IN SYNC
     // with the STEPS array in the onboarding babel island.
-    const ONB_LABELS = ['Welcome', 'Account', 'Photo', 'Goals', 'License / NPN', 'Exam', 'States', 'E&O', 'Discord', 'CRM', 'Headset', 'Meetings', 'Script', 'Sales recordings', 'Objections', 'Carrier contracts', 'Launch call', 'Done'];
+    const ONB_LABELS = ['Welcome', 'Account', 'Photo', 'Goals', 'License / NPN', 'Exam', 'States', 'E&O', 'Discord', 'CRM', 'Headset', 'Meetings', 'Script', 'Sales recordings', 'Objections', 'Carrier contracts', 'Launch call', 'Licenses & carriers', 'Done'];
     const ONB_LAST = ONB_LABELS.length - 1;   // 17
     const onbPct = (step) => Math.min(100, Math.round((Number(step) || 0) / ONB_LAST * 100));
 
@@ -33120,6 +33120,7 @@
       { id: 'objections', label: 'Objections' },
       { id: 'carriers', label: 'Carrier contracts' },
       { id: 'launch', label: 'Launch call' },
+      { id: 'carrierready', label: 'Carrier-ready numbers & state licenses (re-onboarding only)' },
     ];
     function Profile({ sel, isAdmin, me, roster, rosterMap, recruiterName, recruiterOptions, onBack, onChanged }) {
       const [notes, setNotes] = useState([]);
@@ -33152,6 +33153,7 @@
       const [rmBusy, setRmBusy] = useState(false);
       // Send-through-onboarding (re-onboarding) modal state.
       const [onbOpen, setOnbOpen] = useState(false);
+      const [onbEdit, setOnbEdit] = useState(false);   // reveal "Send through onboarding" in the progress section
       const [onbSel, setOnbSel] = useState({});
       const [onbBusy, setOnbBusy] = useState(false);
       const [onbMsg, setOnbMsg] = useState('');
@@ -33361,7 +33363,6 @@
                 </div>
               </div>
               <div style={{ display: 'flex', gap: 8, alignItems: 'center', flex: 'none' }}>
-                {editing && isAdmin && sel.linked_user_id && <button className="rhq-btn ghost sm" onClick={() => { setOnbSel({}); setOnbMsg(''); setOnbOpen(true); }}>Send through onboarding</button>}
                 {editing
                   ? <><button className="rhq-btn sm" onClick={saveEdit}>Save</button><button className="rhq-btn ghost sm" onClick={() => { setEditing(false); setConfirm(null); }}>Cancel</button></>
                   : editIconBtn(false, startEdit, 'Edit details')}
@@ -33453,13 +33454,20 @@
               <div style={{ marginTop: 18, borderTop: '1px solid var(--bd)', paddingTop: 16 }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12, flexWrap: 'wrap', gap: 8 }}>
                   <div className="rhq-label" style={{ marginBottom: 0 }}>Onboarding</div>
-                  {acct.onboarding_completed === true
-                    ? <span className="rhq-chip rhq-stg1">Complete</span>
-                    : <span className="rhq-chip rhq-onb">{ONB_LABELS[Number(acct.onboarding_step) || 0] || '—'} · {onbPct(acct.onboarding_step)}%</span>}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    {acct.onboarding_completed === true
+                      ? <span className="rhq-chip rhq-stg1">Complete</span>
+                      : <span className="rhq-chip rhq-onb">{ONB_LABELS[Number(acct.onboarding_step) || 0] || '—'} · {onbPct(acct.onboarding_step)}%</span>}
+                    {isAdmin && sel.linked_user_id && editIconBtn(onbEdit, () => setOnbEdit(v => !v), 'Send through onboarding')}
+                  </div>
                 </div>
                 {acct.onboarding_completed === false &&
                   <div style={{ height: 8, background: 'var(--sf2)', borderRadius: 6, overflow: 'hidden' }}>
                     <div style={{ height: '100%', width: onbPct(acct.onboarding_step) + '%', borderRadius: 6, background: '#7c3aed' }}></div>
+                  </div>}
+                {onbEdit && isAdmin && sel.linked_user_id &&
+                  <div style={{ marginTop: 12 }}>
+                    <button className="rhq-btn ghost sm" onClick={() => { setOnbSel({}); setOnbMsg(''); setOnbOpen(true); }}>Send through onboarding</button>
                   </div>}
               </div>}
 
@@ -33795,6 +33803,8 @@
     };
 
     const US_STATES = ['Alabama','Alaska','Arizona','Arkansas','California','Colorado','Connecticut','Delaware','District of Columbia','Florida','Georgia','Hawaii','Idaho','Illinois','Indiana','Iowa','Kansas','Kentucky','Louisiana','Maine','Maryland','Massachusetts','Michigan','Minnesota','Mississippi','Missouri','Montana','Nebraska','Nevada','New Hampshire','New Jersey','New Mexico','New York','North Carolina','North Dakota','Ohio','Oklahoma','Oregon','Pennsylvania','Rhode Island','South Carolina','South Dakota','Tennessee','Texas','Utah','Vermont','Virginia','Washington','West Virginia','Wisconsin','Wyoming'];
+    // The carriers on the Sales Hub (mirror of the main app's CARRIERS list).
+    const KFO_CARRIERS = ['Aetna', 'American Amicable', 'Americo', 'Banner', 'Chubb', 'CICA', 'Corebridge', 'Ethos', 'F&G', 'Foresters', 'InstaBrain', 'KCL', 'Liberty', 'Life X', 'Mutual of Omaha', 'NLG', 'Royal Neighbors', 'Transamerica'];
 
     // Ordered flow. Welcome (intro video + exam focus) comes first, right after
     // the start screen, then Account where a magic-link (passwordless) invitee
@@ -33817,6 +33827,7 @@
       { id: 'objections', label: 'Objections' },
       { id: 'carriers', label: 'Carrier contracts' },
       { id: 'launch',   label: 'Launch call' },
+      { id: 'carrierready', label: 'Licenses & carriers' },
       { id: 'done',     label: 'Done' },
     ];
     const idxOf = (id) => Math.max(0, STEPS.findIndex(s => s.id === id));
@@ -33905,6 +33916,9 @@
         licensed: null, npn: '', examDate: '',
         checks: { eo: false, d1: false, d2: false, app: false, crm: false, cal: false, headset: false, statesAck: false, recordings: false, scriptFex: false, scriptGoogle: false, objections: false, carriers: false, launch: false, crmBookmark: false },
         videos: {}, stateBuys: {},
+        // Carrier-ready step (re-onboarding only): state license numbers + carrier
+        // writing numbers. Start with one empty row each.
+        stateLics: [{ state: '', number: '' }], carrierNums: [{ carrier: '', number: '' }],
         reqSteps: null,
         step: 0, furthest: 0,
       };
@@ -33918,10 +33932,13 @@
       const nm = splitName((u.user_metadata && u.user_metadata.name) || '');
       d.first = nm.first; d.last = nm.last;
       const [aps, rcs] = await Promise.all([
-        getRows('agent_profiles?select=agent_name,phone,avatar_url,npn,licensed,signed_name,signed_at,onboarding_step,onboarding_checks,onboarding_videos,state_buys,onboarding_completed,onboarding_steps&user_id=eq.' + uid() + '&limit=1'),
+        getRows('agent_profiles?select=agent_name,phone,avatar_url,npn,licensed,signed_name,signed_at,onboarding_step,onboarding_checks,onboarding_videos,state_buys,onboarding_completed,onboarding_steps,state_licenses,carrier_numbers&user_id=eq.' + uid() + '&limit=1'),
         getRows('recruits?select=*&linked_user_id=eq.' + uid() + '&limit=1'),
       ]);
       const ap = aps[0] || {};
+      // Carrier-ready step: prefill any state licenses / carrier numbers on file.
+      if (Array.isArray(ap.state_licenses) && ap.state_licenses.length) d.stateLics = ap.state_licenses.map(x => ({ state: x.state || '', number: x.number || '' }));
+      if (Array.isArray(ap.carrier_numbers) && ap.carrier_numbers.length) d.carrierNums = ap.carrier_numbers.map(x => ({ carrier: x.carrier || '', number: x.number || '' }));
       if (ap.agent_name) { const s = splitName(ap.agent_name); d.first = s.first; d.last = s.last; }
       d.phone = ap.phone || d.phone;
       d.photo = ap.avatar_url || null;
@@ -34065,6 +34082,9 @@
       const reqSteps = (Array.isArray(d.reqSteps) && d.reqSteps.length) ? d.reqSteps : null;
       const stepActive = (id) => id === 'done' ? true
         : (id === 'exam' && d.licensed === true) ? false
+        // Carrier-ready step is re-onboarding ONLY (never in a first-time flow),
+        // and only when the admin selected it in the send-through step picker.
+        : (id === 'carrierready') ? (!!reqSteps && reqSteps.indexOf(id) !== -1)
         : (!reqSteps || reqSteps.indexOf(id) !== -1);
       const nextActiveIdx = (from) => { for (let i = from + 1; i < STEPS.length; i++) { if (stepActive(STEPS[i].id)) return i; } return STEPS.length - 1; };
       const railSteps = STEPS.filter(s => s.id !== 'done' && stepActive(s.id));
@@ -34146,6 +34166,24 @@
         await patchAgent({ npn: String(d.npn).trim() || null, licensed: true });
         set({ licensed: true });
         setBusy(false);
+      };
+      // Carrier-ready step (re-onboarding): state licenses + carrier writing numbers.
+      const addLic = () => setD(s => Object.assign({}, s, { stateLics: s.stateLics.concat([{ state: '', number: '' }]) }));
+      const setLic = (i, field, val) => setD(s => { const a = s.stateLics.slice(); a[i] = Object.assign({}, a[i], { [field]: val }); return Object.assign({}, s, { stateLics: a }); });
+      const rmLic = (i) => setD(s => { const a = s.stateLics.slice(); a.splice(i, 1); return Object.assign({}, s, { stateLics: a.length ? a : [{ state: '', number: '' }] }); });
+      const addCar = () => setD(s => Object.assign({}, s, { carrierNums: s.carrierNums.concat([{ carrier: '', number: '' }]) }));
+      const setCar = (i, field, val) => setD(s => { const a = s.carrierNums.slice(); a[i] = Object.assign({}, a[i], { [field]: val }); return Object.assign({}, s, { carrierNums: a }); });
+      const rmCar = (i) => setD(s => { const a = s.carrierNums.slice(); a.splice(i, 1); return Object.assign({}, s, { carrierNums: a.length ? a : [{ carrier: '', number: '' }] }); });
+      const validLics = jarr(d.stateLics).filter(x => x.state && String(x.number).trim());
+      const validCars = jarr(d.carrierNums).filter(x => x.carrier && String(x.number).trim());
+      const saveLicensing = async () => {
+        setErr('');
+        if (!KFO_TEST_MODE && !KFO_PREVIEW && (!validLics.length || !validCars.length))
+          return setErr('Please add your state licenses and carrier writing numbers to continue.');
+        setBusy(true);
+        await patchAgent({ state_licenses: validLics.map(x => ({ state: x.state, number: String(x.number).trim() })), carrier_numbers: validCars.map(x => ({ carrier: x.carrier, number: String(x.number).trim() })) });
+        setBusy(false);
+        next();
       };
       const saveGoals = async () => {
         setErr('');
@@ -34685,6 +34723,47 @@
             <label className="kfo-check" style={{ marginTop: 16 }}><input type="checkbox" checked={!!d.checks.launch} onChange={e => setD(s => Object.assign({}, s, { checks: Object.assign({}, s.checks, { launch: e.target.checked }) }))} /> I understand my next steps</label>
           </div>
           <div className="kfo-actions"><NextBtn on={() => next()} disabled={!req(d.checks.launch)}>Complete →</NextBtn>{!KFO_TEST_MODE && <span className="kfo-hint">Check the box to complete onboarding.</span>}</div>
+        </div>
+      );
+      else if (cur === 'carrierready') body = (
+        <div className="kfo-screen">
+          <H title="Your licenses & carrier numbers" sub="Add your state license numbers and your carrier writing numbers so you're ready to sell." />
+          <div className="kfo-card">
+            <div className="kfo-cardtitle">State licenses</div>
+            <div className="kfo-carddesc">Add every state you're licensed in, along with that state's license number.</div>
+            <div style={{ marginTop: 14, display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {jarr(d.stateLics).map((row, i) => (
+                <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
+                  <select className="kfo-inp" value={row.state} onChange={e => setLic(i, 'state', e.target.value)} style={{ flex: '1 1 160px', minWidth: 140 }}>
+                    <option value="">Select state…</option>
+                    {US_STATES.map(s => <option key={s} value={s}>{s}</option>)}
+                  </select>
+                  <input className="kfo-inp" value={row.number} onChange={e => setLic(i, 'number', e.target.value)} placeholder="License number" style={{ flex: '1 1 160px', minWidth: 140 }} />
+                  <button type="button" className="kfo-btn ghost" onClick={() => rmLic(i)} aria-label="Remove" style={{ padding: '10px 14px' }}>✕</button>
+                </div>
+              ))}
+            </div>
+            <div style={{ marginTop: 12 }}><button type="button" className="kfo-btn ghost" onClick={addLic}>+ Add another state</button></div>
+          </div>
+          <div className="kfo-card">
+            <div className="kfo-cardtitle">Carrier writing numbers</div>
+            <div className="kfo-carddesc">Add every carrier you're appointed with, along with your writing number for that carrier.</div>
+            <div style={{ marginTop: 14, display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {jarr(d.carrierNums).map((row, i) => (
+                <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
+                  <select className="kfo-inp" value={row.carrier} onChange={e => setCar(i, 'carrier', e.target.value)} style={{ flex: '1 1 160px', minWidth: 140 }}>
+                    <option value="">Select carrier…</option>
+                    {KFO_CARRIERS.map(c => <option key={c} value={c}>{c}</option>)}
+                  </select>
+                  <input className="kfo-inp" value={row.number} onChange={e => setCar(i, 'number', e.target.value)} placeholder="Writing number" style={{ flex: '1 1 160px', minWidth: 140 }} />
+                  <button type="button" className="kfo-btn ghost" onClick={() => rmCar(i)} aria-label="Remove" style={{ padding: '10px 14px' }}>✕</button>
+                </div>
+              ))}
+            </div>
+            <div style={{ marginTop: 12 }}><button type="button" className="kfo-btn ghost" onClick={addCar}>+ Add another carrier</button></div>
+          </div>
+          {err && <div className="kfo-err">{err}</div>}
+          <div className="kfo-actions"><NextBtn on={saveLicensing} disabled={busy || !req(validLics.length >= 1 && validCars.length >= 1)}>{busy ? 'Saving…' : 'Finish →'}</NextBtn>{!KFO_TEST_MODE && <span className="kfo-hint">Add your state licenses and carrier writing numbers to continue.</span>}</div>
         </div>
       );
       else if (cur === 'done') body = (
