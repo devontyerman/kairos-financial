@@ -33092,9 +33092,9 @@
     // Steps an admin can require when re-sending an agent through onboarding.
     // Order + ids MUST match the onboarding island's STEPS array (minus 'done').
     const ONB_STEP_OPTIONS = [
+      { id: 'welcome', label: 'Welcome' },
       { id: 'account', label: 'Account & profile details' },
       { id: 'photo', label: 'Profile photo' },
-      { id: 'welcome', label: 'Welcome' },
       { id: 'goals', label: 'Goals' },
       { id: 'license', label: 'License / NPN' },
       { id: 'exam', label: 'Exam booking' },
@@ -33728,6 +33728,10 @@
     // Set by KFOnboarding.preview() — lets you walk the whole flow to SEE the
     // steps without saving anything (all DB writes + password set are skipped).
     let KFO_PREVIEW = false;
+    // True when an admin sent an EXISTING account back through onboarding
+    // (reqSteps set). In that case the step videos are OPTIONAL — the gated
+    // content shows without watching. First-time signups still must watch.
+    let KFO_VIDEO_OPTIONAL = false;
 
     // ── CONFIG · edit these as content becomes available ─────────────────────
     // videos: null = styled placeholder slot with simulated playback. Drop any
@@ -33781,12 +33785,13 @@
 
     const US_STATES = ['Alabama','Alaska','Arizona','Arkansas','California','Colorado','Connecticut','Delaware','District of Columbia','Florida','Georgia','Hawaii','Idaho','Illinois','Indiana','Iowa','Kansas','Kentucky','Louisiana','Maine','Maryland','Massachusetts','Michigan','Minnesota','Mississippi','Missouri','Montana','Nebraska','Nevada','New Hampshire','New Jersey','New Mexico','New York','North Carolina','North Dakota','Ohio','Oklahoma','Oregon','Pennsylvania','Rhode Island','South Carolina','South Dakota','Tennessee','Texas','Utah','Vermont','Virginia','Washington','West Virginia','Wisconsin','Wyoming'];
 
-    // Ordered flow. Account is FIRST so a magic-link (passwordless) invitee sets
-    // a real password immediately. `training` hands off to the R2 training system.
+    // Ordered flow. Welcome (intro video + exam focus) comes first, right after
+    // the start screen, then Account where a magic-link (passwordless) invitee
+    // sets a real password. `training` hands off to the R2 training system.
     const STEPS = [
+      { id: 'welcome',  label: 'Welcome' },
       { id: 'account',  label: 'Account' },
       { id: 'photo',    label: 'Photo' },
-      { id: 'welcome',  label: 'Welcome' },
       { id: 'goals',    label: 'Goals' },
       { id: 'license',  label: 'License / NPN' },
       { id: 'exam',     label: 'Exam' },
@@ -33887,7 +33892,7 @@
         motivation: '', incomeNeed: '', incomeWant: '', helpNote: '',
         signedName: '', signedAt: null,
         licensed: null, npn: '', examDate: '',
-        checks: { eo: false, d1: false, d2: false, app: false, crm: false, cal: false, headset: false, statesAck: false, recordings: false, scriptFex: false, scriptGoogle: false, objections: false, carriers: false, launch: false },
+        checks: { eo: false, d1: false, d2: false, app: false, crm: false, cal: false, headset: false, statesAck: false, recordings: false, scriptFex: false, scriptGoogle: false, objections: false, carriers: false, launch: false, crmBookmark: false },
         videos: {}, stateBuys: {},
         reqSteps: null,
         step: 0, furthest: 0,
@@ -33920,6 +33925,8 @@
       d.furthest = d.step;
       // Admin-selected subset of steps for a re-onboarding (null = full flow).
       d.reqSteps = (Array.isArray(ap.onboarding_steps) && ap.onboarding_steps.length) ? ap.onboarding_steps : null;
+      // Existing account sent back through → videos optional (content unblocked).
+      KFO_VIDEO_OPTIONAL = !!d.reqSteps;
       const rc = rcs[0] || null;
       HAS_RECRUIT = !!rc;
       if (rc) {
@@ -33955,6 +33962,9 @@
     function VideoBox({ url, slot, big, done, onDone }) {
       const [pct, setPct] = useState(done ? 100 : 0);
       const [playing, setPlaying] = useState(false);
+      // "Click to play" cover — hides the ugly first-frame freeze until the user
+      // starts the video. Dismissed on first play.
+      const [played, setPlayed] = useState(false);
       // Adopt the video's real aspect ratio once it loads so odd-sized clips
       // (e.g. a ~2:1 screen recording) aren't letterboxed into black bars.
       const [ar, setAr] = useState('16 / 9');
@@ -33978,7 +33988,16 @@
         <div className="kfo-card" style={{ overflow: 'hidden', padding: 0 }}>
           <div style={{ position: 'relative', aspectRatio: url ? ar : '16 / 9', background: url ? '#000' : 'repeating-linear-gradient(45deg,#1C1B1A,#1C1B1A 14px,#242322 14px,#242322 28px)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             {url
-              ? <video ref={vref} src={url} controls controlsList="nodownload" playsInline onLoadedMetadata={e => { const v = e.target; if (v.videoWidth && v.videoHeight) setAr(v.videoWidth + ' / ' + v.videoHeight); }} onTimeUpdate={onTime} onSeeking={clampFwd} onSeeked={clampFwd} onEnded={finish} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain', background: '#000' }} />
+              ? <>
+                <video ref={vref} src={url} controls controlsList="nodownload" playsInline preload="metadata" onPlay={() => setPlayed(true)} onLoadedMetadata={e => { const v = e.target; if (v.videoWidth && v.videoHeight) setAr(v.videoWidth + ' / ' + v.videoHeight); }} onTimeUpdate={onTime} onSeeking={clampFwd} onSeeked={clampFwd} onEnded={finish} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain', background: '#000' }} />
+                {!played && (
+                  <button type="button" onClick={() => { setPlayed(true); try { vref.current && vref.current.play(); } catch (e) {} }} aria-label="Click to play"
+                    style={{ position: 'absolute', inset: 0, zIndex: 2, border: 'none', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 14, background: 'linear-gradient(135deg,#1C1B1A,#242322)' }}>
+                    <span style={{ width: big ? 74 : 62, height: big ? 74 : 62, borderRadius: '50%', background: 'var(--ac)', color: 'var(--acOn)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: big ? 26 : 22, boxShadow: '0 6px 24px rgba(0,0,0,.4)' }}>►</span>
+                    <span style={{ color: '#fff', fontWeight: 700, fontSize: 15, letterSpacing: '.02em' }}>Click to play</span>
+                  </button>
+                )}
+                </>
               : <>
                   <button onClick={toggle} style={{ position: 'relative', width: big ? 66 : 58, height: big ? 66 : 58, borderRadius: '50%', border: 'none', background: 'var(--ac)', color: 'var(--acOn)', fontSize: 18, cursor: 'pointer', boxShadow: '0 4px 20px rgba(0,0,0,.35)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{playing ? '❚❚' : '►'}</button>
                   <div style={{ position: 'absolute', left: 14, bottom: 11, fontFamily: 'ui-monospace,Menlo,monospace', fontSize: 11, color: 'rgba(255,255,255,.5)' }}>VIDEO SLOT · {slot}</div>
@@ -33999,13 +34018,13 @@
     // Mandatory video + gated content: everything below the video (forms,
     // buttons, links) stays hidden until the video has played to the end.
     function VideoGate({ url, slot, big, watched, onDone, children }) {
-      // In preview mode (admin tweaking the flow) the content is never gated —
-      // show everything so it can be reviewed without sitting through each video.
-      // Real agents still must watch the video before the content unlocks.
-      const open = watched || KFO_PREVIEW;
+      // Content is never gated when: previewing (admin tweaking the flow) OR an
+      // existing account was sent back through onboarding (videos optional).
+      // First-time signups still must watch the video before the content unlocks.
+      const open = watched || KFO_PREVIEW || KFO_VIDEO_OPTIONAL;
       return (
         <>
-          <VideoBox url={url} slot={slot} big={big} done={watched} onDone={onDone} />
+          <VideoBox url={url} slot={slot} big={big} done={open} onDone={onDone} />
           {open
             ? children
             : <div className="kfo-hint" style={{ textAlign: 'center', padding: '2px 0 4px' }}>▲ Watch the video to continue — the rest of this step unlocks when it finishes.</div>}
@@ -34025,6 +34044,9 @@
       const [d, setD] = useState(initial);
       const [busy, setBusy] = useState(false);
       const [err, setErr] = useState('');
+      // Pre-flow start screen (a different message for a first-time signup vs an
+      // existing account sent back through). Shown once before the step flow.
+      const [started, setStarted] = useState(false);
       const cur = STEPS[d.step] ? STEPS[d.step].id : 'welcome';
       // Which steps are part of THIS run. An admin re-onboarding can restrict the
       // flow to a subset (d.reqSteps); the exam step also drops out once the
@@ -34339,7 +34361,7 @@
                 <div className="kfo-cardtitle" style={{ marginBottom: 16 }}>Do you already have your insurance license?</div>
                 <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
                   <button className="kfo-choice" onClick={() => setLicensed(true)} style={{ borderColor: 'rgba(52,168,83,.55)', background: 'rgba(52,168,83,.09)' }}>Yes — I have my NPN<span>Enter it and keep going</span></button>
-                  <button className="kfo-choice" onClick={() => setLicensed(false)} style={{ borderColor: 'rgba(217,48,37,.5)', background: 'rgba(217,48,37,.08)' }}>Not yet<span>I still need to pass my exam</span></button>
+                  <button className="kfo-choice" onClick={() => { setLicensed(false); next(); }} style={{ borderColor: 'rgba(217,48,37,.5)', background: 'rgba(217,48,37,.08)' }}>Not yet<span>I still need to pass my exam</span></button>
                 </div>
               </div>
             )}
@@ -34351,16 +34373,6 @@
                 <div className="kfo-actions">
                   <NextBtn on={saveNpn} disabled={busy || !req(d.npn.trim())}>{busy ? 'Saving…' : 'Save NPN & continue →'}</NextBtn>
                   <button className="kfo-btn ghost" onClick={() => setLicensed(null)}>Back</button>
-                </div>
-              </div>
-            )}
-            {d.licensed === false && (
-              <div className="kfo-card">
-                <span className="kfo-badge">No license yet — no problem</span>
-                <div className="kfo-para">You don't need your license to keep going. On the next step we'll show you exactly how to get it and help you lock in an exam date. Your progress is saved the whole way.</div>
-                <div className="kfo-actions" style={{ marginTop: 18 }}>
-                  <NextBtn on={() => next()}>Continue →</NextBtn>
-                  <button className="kfo-btn ghost" onClick={() => setLicensed(true)}>Actually, I have my NPN</button>
                 </div>
               </div>
             )}
@@ -34412,7 +34424,7 @@
           <button key={name} onClick={() => toggle(name)} className="kfo-checkrow">
             <span className={'kfo-box' + (on ? ' on' : '')}>{on ? '✓' : ''}</span>
             <span style={{ fontWeight: 600 }}>{name}</span>
-            {cost && <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--ac)', background: 'var(--acSoft, rgba(161,203,53,.12))', padding: '2px 8px', borderRadius: 999 }}>{cost}</span>}
+            {cost && <span style={{ fontSize: 12.5, fontWeight: 700, color: 'var(--acDeep)', background: 'var(--acSoft, rgba(161,203,53,.12))', border: '1px solid var(--acDeep)', padding: '2px 8px', borderRadius: 999 }}>{cost}</span>}
             <span style={{ marginLeft: 'auto', fontSize: 12, color: 'var(--tx3)' }}>{on ? 'Purchased' : 'Pending'}</span>
           </button>); };
         body = (
@@ -34520,6 +34532,12 @@
           <H title="Sign up for the CRM" sub="Your CRM keeps every lead and client in one place." />
           <VideoGate url={onbVid('Onboarding - CRM.mp4')} slot="crm-vid" big watched={d.videos['crm-vid'] === 100} onDone={() => markVideo('crm-vid')}>
           <div className="kfo-card">
+            <div className="kfo-cardtitle">Your CRM login page</div>
+            <div style={{ marginTop: 12 }}><a className="kfo-btn ghost" href="https://app.thrive-companies.com/" target="_blank" rel="noopener">Click here to go to the CRM login page ↗</a></div>
+            <div className="kfo-carddesc" style={{ marginTop: 10 }}>This is where you'll log in every day — <strong>bookmark it now</strong> so it's always one click away.</div>
+            <label className="kfo-check" style={{ marginTop: 14 }}><input type="checkbox" checked={!!d.checks.crmBookmark} onChange={e => setD(s => Object.assign({}, s, { checks: Object.assign({}, s.checks, { crmBookmark: e.target.checked }) }))} /> I have bookmarked the CRM</label>
+          </div>
+          <div className="kfo-card">
             <div className="kfo-cardtitle">Click the link and sign up</div>
             <div className="kfo-carddesc">Your CRM is only <strong>$1 a month</strong> and <strong>free for the first 30 days</strong>. The only reason we charge anything is so we can set up a Stripe account and bill you for your inbound calls — that's it.</div>
             <div className="kfo-carddesc" style={{ marginTop: 8 }}>Once you've signed up, reach out to your mentor to let them know.</div>
@@ -34537,7 +34555,7 @@
             </div>
             <label className="kfo-check" style={{ marginTop: 14 }}><input type="checkbox" checked={!!d.checks.crm} onChange={e => setD(s => Object.assign({}, s, { checks: Object.assign({}, s.checks, { crm: e.target.checked }) }))} /> I've signed up for the CRM + Lead Tech Inbounds (Thrive Companies) and created my Agent View account</label>
           </div>
-          <div className="kfo-actions"><NextBtn on={() => next()} disabled={!req(d.checks.crm)}>Continue →</NextBtn>{!KFO_TEST_MODE && <span className="kfo-hint">Complete all the steps and confirm to continue.</span>}</div>
+          <div className="kfo-actions"><NextBtn on={() => next()} disabled={!req(d.checks.crm && d.checks.crmBookmark)}>Continue →</NextBtn>{!KFO_TEST_MODE && <span className="kfo-hint">Complete all the steps and confirm to continue.</span>}</div>
           </VideoGate>
         </div>
       );
@@ -34669,6 +34687,29 @@
         </div>
       );
 
+      // ── pre-flow start screen ──
+      // Same welcome for everyone. (Videos still behave differently: optional for
+      // an existing account sent back through, required for a first-time signup.)
+      if (!started) {
+        return (
+          <div className="kfo">
+            <div className="kfo-topbar">
+              <div className="kfo-brand"><div className="kfo-logo">K</div><div><div className="kfo-brand-t">Kairos Financial</div><div className="kfo-brand-s">Agent Onboarding</div></div></div>
+            </div>
+            <div className="kfo-scroll" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <div className="kfo-screen" style={{ maxWidth: 520, margin: '0 auto', textAlign: 'center' }}>
+                <div className="kfo-card" style={{ padding: '40px 32px' }}>
+                  <div style={{ width: 58, height: 58, borderRadius: 16, background: 'linear-gradient(135deg,#A1CB35,#65DCD5)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: 26, margin: '0 auto 20px' }}>K</div>
+                  <h1 className="kfo-h1">Welcome to Kairos Financial</h1>
+                  <div className="kfo-sub" style={{ marginTop: 10 }}>Click below to start your onboarding.</div>
+                  <button className="kfo-btn" style={{ marginTop: 24 }} onClick={() => setStarted(true)}>Start onboarding →</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      }
+
       return (
         <div className="kfo">
           <div className="kfo-topbar">
@@ -34797,15 +34838,25 @@
     //   KFOnboarding.preview()   → opens onboarding; click the numbered step pills
     //   (or Continue) to walk every screen. Close it from the final "Enter the
     //   Sales Hub" step, or just refresh the page.
-    function preview() {
+    // preview()                     → first-time signup experience
+    // preview({ returning: true })   → the "sent back through" experience
+    //   (or the shorthand previewReturning()): shows the "Your profile is
+    //   incomplete" start message and treats videos as optional, exactly like an
+    //   admin re-onboarding. reqSteps = the full flow so every step is included.
+    function preview(opts) {
+      opts = opts || {};
+      const returning = !!opts.returning;
       KFO_PREVIEW = true;
+      KFO_VIDEO_OPTIONAL = returning;
       const init = Object.assign(blank(), {
         email: (window.currentUser && window.currentUser.email) || '',
-        step: 0, furthest: STEPS.length - 1   // all steps reachable via the top rail
+        step: 0, furthest: STEPS.length - 1,   // all steps reachable via the top rail
+        reqSteps: returning ? STEPS.filter(s => s.id !== 'done').map(s => s.id) : null,
       });
       show(init);
     }
-    window.KFOnboarding = { refresh, preview };
+    const previewReturning = () => preview({ returning: true });
+    window.KFOnboarding = { refresh, preview, previewReturning };
 
     // Hook auth changes (login / session restore) like the training system does.
     if (typeof window.updateAuthUI === 'function') {
