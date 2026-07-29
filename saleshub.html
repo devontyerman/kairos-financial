@@ -32834,11 +32834,10 @@
             {kpis.map((k, i) =>
               <div key={i} className={'rhq-card pad' + (onFilter ? ' rhq-rowhover' : '')}
                 onClick={onFilter ? () => onFilter(k.chip) : undefined}
-                style={onFilter ? { cursor: 'pointer' } : undefined}
+                style={Object.assign({ textAlign: 'center' }, onFilter ? { cursor: 'pointer' } : {})}
                 title={onFilter ? 'View these recruits' : undefined}>
                 <div className="rhq-kpi-l">{k.l}</div>
                 <div className="rhq-kpi-v">{k.v}</div>
-                <div className="rhq-kpi-s">{k.s}</div>
               </div>)}
           </div>
           <div className="rhq-cols">
