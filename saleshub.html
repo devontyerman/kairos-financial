@@ -32396,7 +32396,7 @@
     // Stage VALUES never got renumbered: 4 stays "Fully licensed" so nothing in
     // the DB shifted. "Training" was added as value 5. The pipeline is DISPLAYED
     // in STAGE_FLOW order (Training sits between Contracting and Fully licensed).
-    const STAGES = ['Recruiting', 'Studying', 'Exam passed', 'Contracting', 'Active Agent', 'Training'];
+    const STAGES = ['Outreach', 'Studying', 'Exam passed', 'Contracting', 'Active Agent', 'Training'];
     const STAGE_FLOW = [0, 1, 2, 3, 5, 4];   // display / progression order
     const FULLY_LICENSED = 4, TRAINING = 5;
     const flowIdx = (s) => { const i = STAGE_FLOW.indexOf(s); return i < 0 ? 0 : i; };
@@ -32782,10 +32782,10 @@
           <div className="rhq-head-actions" style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
             {isAdmin && mgrOpts.length > 0 &&
               <select className="rhq-sel" value={mgrFilter} onChange={e => setMgrFilter(e.target.value)}>
-                <option value="all">All recruiters</option>
+                <option value="all">All leaders</option>
                 {mgrOpts.map(o => <option key={o.id} value={o.id}>{o.name}</option>)}
               </select>}
-            <button className="rhq-btn" onClick={() => setShowAdd(true)}>+ Add recruit</button>
+            <button className="rhq-btn" onClick={() => setShowAdd(true)}>+ Add agent</button>
           </div>
         </div>
       );
@@ -33129,7 +33129,7 @@
         <div className="rhq-modalwrap" onClick={onClose}>
           <div className="rhq rhq-modal" onClick={e => e.stopPropagation()} style={{ padding: 0 }}>
             <div style={{ padding: '24px 26px' }}>
-              <div style={{ fontSize: 18, fontWeight: 700, marginBottom: 18 }}>Add recruit</div>
+              <div style={{ fontSize: 18, fontWeight: 700, marginBottom: 18 }}>Add agent</div>
               <div className="rhq-grid3" style={{ marginBottom: 12 }}>
                 <div style={{ gridColumn: '1 / -1' }}><div className="rhq-label">Full name</div><input className="rhq-inp" style={{ width: '100%' }} value={f.full_name} onChange={set('full_name')} placeholder="First Last" autoFocus /></div>
                 {F({ label: 'Email', k: 'email' })}
@@ -33146,9 +33146,9 @@
                   </select></div>
                 {F({ label: 'Exam date', k: 'exam_date', type: 'date' })}
               </div>
-              <div className="rhq-muted" style={{ marginBottom: 16 }}>New recruits start in <strong>Recruiting</strong>. They’ll auto-link to their Sales Hub account by email or name when they sign up.</div>
+              <div className="rhq-muted" style={{ marginBottom: 16 }}>New agents start in <strong>Outreach</strong>. They’ll auto-link to their Sales Hub account by email or name when they sign up.</div>
               <div style={{ display: 'flex', gap: 10 }}>
-                <button className="rhq-btn" disabled={busy} onClick={save}>{busy ? 'Adding…' : 'Add recruit'}</button>
+                <button className="rhq-btn" disabled={busy} onClick={save}>{busy ? 'Adding…' : 'Add agent'}</button>
                 <button className="rhq-btn ghost" onClick={onClose}>Cancel</button>
               </div>
             </div>
