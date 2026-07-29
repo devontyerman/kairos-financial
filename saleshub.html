@@ -33940,6 +33940,9 @@
     function VideoBox({ url, slot, big, done, onDone }) {
       const [pct, setPct] = useState(done ? 100 : 0);
       const [playing, setPlaying] = useState(false);
+      // Adopt the video's real aspect ratio once it loads so odd-sized clips
+      // (e.g. a ~2:1 screen recording) aren't letterboxed into black bars.
+      const [ar, setAr] = useState('16 / 9');
       const vref = useRef(null); const timer = useRef(null);
       // Furthest point actually watched. They can rewind to anywhere they've
       // already seen, but any seek PAST this point snaps back — no skipping
@@ -33958,9 +33961,9 @@
       };
       return (
         <div className="kfo-card" style={{ overflow: 'hidden', padding: 0 }}>
-          <div style={{ position: 'relative', aspectRatio: '16 / 9', background: url ? '#000' : 'repeating-linear-gradient(45deg,#1C1B1A,#1C1B1A 14px,#242322 14px,#242322 28px)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ position: 'relative', aspectRatio: url ? ar : '16 / 9', background: url ? '#000' : 'repeating-linear-gradient(45deg,#1C1B1A,#1C1B1A 14px,#242322 14px,#242322 28px)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             {url
-              ? <video ref={vref} src={url} controls controlsList="nodownload" playsInline onTimeUpdate={onTime} onSeeking={clampFwd} onSeeked={clampFwd} onEnded={finish} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain', background: '#000' }} />
+              ? <video ref={vref} src={url} controls controlsList="nodownload" playsInline onLoadedMetadata={e => { const v = e.target; if (v.videoWidth && v.videoHeight) setAr(v.videoWidth + ' / ' + v.videoHeight); }} onTimeUpdate={onTime} onSeeking={clampFwd} onSeeked={clampFwd} onEnded={finish} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain', background: '#000' }} />
               : <>
                   <button onClick={toggle} style={{ position: 'relative', width: big ? 66 : 58, height: big ? 66 : 58, borderRadius: '50%', border: 'none', background: 'var(--ac)', color: 'var(--acOn)', fontSize: 18, cursor: 'pointer', boxShadow: '0 4px 20px rgba(0,0,0,.35)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{playing ? '❚❚' : '►'}</button>
                   <div style={{ position: 'absolute', left: 14, bottom: 11, fontFamily: 'ui-monospace,Menlo,monospace', fontSize: 11, color: 'rgba(255,255,255,.5)' }}>VIDEO SLOT · {slot}</div>
