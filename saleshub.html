@@ -25980,6 +25980,9 @@
 
       // ─── Agent Profiles ──────────────────────────────────────────────
       function AgentProfiles() {
+        // Only the main admin may approve accounts or remove/delete agents (and
+        // their policy data). Managers can view/edit other fields but not these.
+        const canAdmin = !!(window.currentUser && (((window.currentUser.email || '').toLowerCase() === 'dev@kairos-financial.com') || window.currentUser.id === 'be364ef5-8426-4587-b8b8-9328b02055a7'));
         const [theme, setTheme] = useState(initialTheme);
         useEffect(() => kfWatchTheme(setTheme), []); // follow the global skin theme
         const [profiles, setProfiles] = useState([]);
@@ -26220,7 +26223,9 @@
           const cnt = deleteCount || 0;
           const hasPolicies = cnt > 0;
           if (hasPolicies && alsoDeleteData && confirmText.trim().toUpperCase() !== 'DELETE') return;
-          const rpc = (!hasPolicies && archiveInstead) ? 'archive_agent_user'
+          // Managers can ONLY archive — never a hard delete or a data purge.
+          const rpc = !canAdmin ? 'archive_agent_user'
+                    : (!hasPolicies && archiveInstead) ? 'archive_agent_user'
                     : !hasPolicies ? 'delete_agent_user'
                     : alsoDeleteData ? 'delete_agent_user_and_data'
                     : 'archive_agent_user';
@@ -26425,6 +26430,7 @@
                           <div className="tp-progress-fill" style={{width:pct + '%', background: pct >= 100 ? 'var(--rb-green)' : 'linear-gradient(90deg, var(--rb-purple), var(--rb-blue))'}}></div>
                         </div>
                       </div>
+                      {canAdmin &&
                       <div className="hv-form-section">
                         <div className="hv-form-section-hd">
                           <div>
@@ -26438,7 +26444,7 @@
                             {isApproved ? 'Revoke approval' : 'Approve'}
                           </button>
                         </div>
-                      </div>
+                      </div>}
                       <div className="hv-form-section">
                         <div className="hv-form-section-hd">
                           <div>
@@ -26498,12 +26504,14 @@
                       <div className="hv-form-section hv-form-section-danger">
                         <div className="hv-form-section-hd">
                           <div>
-                            <div className="hv-form-section-lbl" style={{color:'var(--tp-neg)'}}>Remove agent</div>
-                            <div className="hv-form-section-meta">Disables their login immediately. With policies on file they're archived (data kept); with none, the account is fully deleted.</div>
+                            <div className="hv-form-section-lbl" style={{color:'var(--tp-neg)'}}>{canAdmin ? 'Remove agent' : 'Archive agent'}</div>
+                            <div className="hv-form-section-meta">{canAdmin
+                              ? "Disables their login immediately. With policies on file they're archived (data kept); with none, the account is fully deleted."
+                              : 'Disables their login immediately and archives them — their profile and all data are kept, and you can restore them later. Only the main admin can permanently delete an account.'}</div>
                           </div>
                           <button type="button" className="hv-btn danger"
                             onClick={() => { setEditFor(null); askDelete(live); }}>
-                            Remove agent
+                            {canAdmin ? 'Remove agent' : 'Archive agent'}
                           </button>
                         </div>
                       </div>
@@ -26522,8 +26530,8 @@
               const loadingCnt = deleteCount === null;
               const cnt = deleteCount || 0;
               const hasPolicies = cnt > 0;
-              const willHardDelete = (!hasPolicies && !archiveInstead) || alsoDeleteData;
-              const needType = hasPolicies && alsoDeleteData;
+              const willHardDelete = canAdmin && ((!hasPolicies && !archiveInstead) || alsoDeleteData);
+              const needType = canAdmin && hasPolicies && alsoDeleteData;
               const mgr = deleteFor.manager_user_id ? ((profiles.find(x => x.user_id === deleteFor.manager_user_id) || {}).agent_name || 'their manager') : 'top of org';
               const canConfirm = !loadingCnt && !deleting && (!needType || confirmText.trim().toUpperCase() === 'DELETE');
               return (
@@ -26555,10 +26563,11 @@
                             <p style={{margin:'0 0 12px', color:'var(--tp-ink-3)', fontSize:12}}>This cannot be undone.</p>
                           </>
                         )}
+                        {canAdmin &&
                         <label style={{display:'flex', alignItems:'flex-start', gap:8, fontSize:13, color:'var(--tp-ink-2)', cursor:'pointer', padding:'10px 12px', border:'1px solid var(--tp-hairline)', borderRadius:8}}>
                           <input type="checkbox" checked={archiveInstead} onChange={e => setArchiveInstead(e.target.checked)} style={{marginTop:2, flex:'0 0 auto'}} />
                           <span><b style={{color:'var(--tp-ink-1)'}}>Archive instead of deleting</b> — keep their profile and just revoke access, so you can bring them back later (for someone who may return).</span>
-                        </label>
+                        </label>}
                       </>
                     ) : (
                       <>
@@ -26569,10 +26578,11 @@
                           <li><b style={{color:'var(--tp-ink-1)'}}>Reparent</b> any reports to <b style={{color:'var(--tp-ink-1)'}}>{mgr}</b></li>
                           <li><span style={{color:'var(--tp-ink-3)'}}>Reversible — you can unarchive them later</span></li>
                         </ul>
+                        {canAdmin &&
                         <label style={{display:'flex', alignItems:'flex-start', gap:8, fontSize:13, color:'var(--tp-ink-2)', cursor:'pointer', padding:'10px 12px', border:'1px solid var(--tp-hairline)', borderRadius:8}}>
                           <input type="checkbox" checked={alsoDeleteData} onChange={e => { setAlsoDeleteData(e.target.checked); setConfirmText(''); }} style={{marginTop:2, flex:'0 0 auto'}} />
                           <span>Instead, <b style={{color:'var(--tp-neg)'}}>permanently delete</b> this agent <b>and all {cnt} of their {cnt === 1 ? 'policy' : 'policies'}</b>. Cannot be undone.</span>
-                        </label>
+                        </label>}
                         {needType && (
                           <div style={{marginTop:10}}>
                             <div style={{fontSize:12, color:'var(--tp-ink-3)', marginBottom:6}}>Type <b style={{color:'var(--tp-ink-1)'}}>DELETE</b> to confirm:</div>
