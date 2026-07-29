@@ -32346,9 +32346,10 @@
     const ADMIN_UID = 'be364ef5-8426-4587-b8b8-9328b02055a7';
     const TZ_OPTS = ['Eastern', 'Central', 'Mountain', 'Pacific'];
     // Mirrors the onboarding island's STEPS (last index = done). Kept here so the
-    // dashboard/profile can show a new agent's onboarding progress.
-    const ONB_LABELS = ['Account', 'Photo', 'Welcome', 'Goals', 'License / NPN', 'Exam', 'States', 'E&O', 'Discord', 'CRM', 'Headset', 'Meetings', 'Script', 'Objections', 'Done'];
-    const ONB_LAST = ONB_LABELS.length - 1;   // 13
+    // dashboard/profile can show a new agent's onboarding progress. KEEP IN SYNC
+    // with the STEPS array in the onboarding babel island.
+    const ONB_LABELS = ['Welcome', 'Account', 'Photo', 'Goals', 'License / NPN', 'Exam', 'States', 'E&O', 'Discord', 'CRM', 'Headset', 'Meetings', 'Script', 'Sales recordings', 'Objections', 'Carrier contracts', 'Launch call', 'Done'];
+    const ONB_LAST = ONB_LABELS.length - 1;   // 17
     const onbPct = (step) => Math.min(100, Math.round((Number(step) || 0) / ONB_LAST * 100));
 
     // ── low-level helpers ────────────────────────────────────────────────────
@@ -32463,6 +32464,9 @@
     .rhq-stg3 { background:var(--s3b); color:var(--s3f); } .rhq-dot3 { background:var(--s3f); }
     .rhq-stg4 { background:var(--s4b); color:var(--s4f); } .rhq-dot4 { background:var(--s4f); }
     .rhq-stg5 { background:var(--s5b); color:var(--s5f); } .rhq-dot5 { background:var(--s5f); }
+    /* Onboarding-progress chip — purple, distinct from the pipeline-stage colors. */
+    .rhq-onb { background:rgba(124,58,237,.14); color:#6d28d9; }
+    html[data-kf-theme="dark"] .rhq-onb { background:rgba(167,139,250,.22); color:#cbb6fb; }
     .rhq-dot { width:9px; height:9px; border-radius:50%; flex:none; }
     .rhq-sectitle { font-size:15px; font-weight:700; }
     .rhq-row { border-bottom:1px solid var(--bd); }
@@ -32554,6 +32558,12 @@
       return <span className={'rhq-chip ' + cls}>{days}d</span>;
     }
     function StageChip({ stage }) { return <span className={'rhq-chip rhq-stg' + stage}>{STAGES[stage]}</span>; }
+    // Purple onboarding-progress chip for a recruit's linked account. Renders only
+    // while onboarding is in progress (onboarding_completed === false).
+    function OnbBadge({ prof }) {
+      if (!prof || prof.onboarding_completed !== false) return null;
+      return <span className="rhq-chip rhq-onb" title="Onboarding progress">{onbPct(prof.onboarding_step)}% onboarding</span>;
+    }
 
     // ── data hook ─────────────────────────────────────────────────────────────
     function useRecruiterData() {
@@ -32727,8 +32737,8 @@
             <button className="rhq-btn ghost sm" style={{ marginBottom: 14 }}
               onClick={() => { setSelId(null); setView('dashboard'); }}>← Dashboard</button>}
           {view === 'dashboard' && <Dashboard active={active} all={filteredByMgr} activity={activity} onboarding={onboardingList} header={header} onOpen={openProfile} onFilter={goToList} onBoard={goToBoard} />}
-          {view === 'board' && <Board active={active} header={header} isAdmin={isAdmin} recruiterName={recruiterName} onOpen={openProfile} onDrop={async (id, stage) => { await patchRecruit(id, { stage }); afterMutate(); }} />}
-          {view === 'list' && <RecruitList rows={filteredByMgr} header={header} isAdmin={isAdmin} search={search} setSearch={setSearch} chip={chip} setChip={setChip} recruiterName={recruiterName} onOpen={openProfile} />}
+          {view === 'board' && <Board active={active} header={header} isAdmin={isAdmin} recruiterName={recruiterName} rosterMap={rosterMap} onOpen={openProfile} onDrop={async (id, stage) => { await patchRecruit(id, { stage }); afterMutate(); }} />}
+          {view === 'list' && <RecruitList rows={filteredByMgr} header={header} isAdmin={isAdmin} search={search} setSearch={setSearch} chip={chip} setChip={setChip} recruiterName={recruiterName} rosterMap={rosterMap} onOpen={openProfile} />}
           {view === 'leaders' && <Leaderboard rows={filteredByMgr} recruiterName={recruiterName} />}
           {view === 'hierarchy' && <HierarchyHost />}
 
@@ -32863,7 +32873,7 @@
     }
 
     // ── PIPELINE BOARD ────────────────────────────────────────────────────────
-    function Board({ active, header, isAdmin, recruiterName, onOpen, onDrop }) {
+    function Board({ active, header, isAdmin, recruiterName, rosterMap, onOpen, onDrop }) {
       const dragId = useRef(null);
       const [over, setOver] = useState(null);
       const cols = STAGE_FLOW.map(i => ({ name: STAGES[i], i, recruits: active.filter(r => r.stage === i) }));
@@ -32887,7 +32897,7 @@
                     <div key={r.id} className="rhq-pcard" draggable onDragStart={() => { dragId.current = r.id; }} onClick={() => onOpen(r.id)}>
                       <div style={{ fontSize: 13.5, fontWeight: 600, letterSpacing: '-0.01em' }}>{r.full_name}</div>
                       <div style={{ fontSize: 11.5, color: 'var(--tx3)', marginTop: 1 }}>{[isAdmin && ('Upline · ' + recruiterName(r.recruiter_user_id)), r.city && (r.city + (r.state ? ', ' + r.state : ''))].filter(Boolean).join(' · ')}</div>
-                      <div style={{ marginTop: 4 }}><DayBadge days={daysSince(r.stage_entered_at)} stage={r.stage} /></div>
+                      <div style={{ marginTop: 4, display: 'flex', gap: 6, flexWrap: 'wrap' }}><DayBadge days={daysSince(r.stage_entered_at)} stage={r.stage} /><OnbBadge prof={r.linked_user_id && rosterMap && rosterMap[r.linked_user_id]} /></div>
                     </div>)}
                 </div>
               </div>)}
@@ -32897,7 +32907,7 @@
     }
 
     // ── RECRUITS LIST ─────────────────────────────────────────────────────────
-    function RecruitList({ rows, header, isAdmin, search, setSearch, chip, setChip, recruiterName, onOpen }) {
+    function RecruitList({ rows, header, isAdmin, search, setSearch, chip, setChip, recruiterName, rosterMap, onOpen }) {
       const chips = [{ k: 'all', l: 'All active' }, { k: 'pipeline', l: 'In pipeline' }, { k: 'stalled', l: 'Stalled' }]
         .concat(STAGE_FLOW.map(i => ({ k: 'stage:' + i, l: STAGES[i] })))
         .concat([{ k: 'abandoned', l: 'Archived / abandoned' }]);
@@ -32934,6 +32944,7 @@
                       <div style={{ display: 'flex', gap: 6, alignItems: 'center', marginTop: 8, flexWrap: 'wrap' }}>
                         {r.status === 'abandoned' ? <span className="rhq-chip rhq-stg3">Archived</span> : <StageChip stage={r.stage} />}
                         {r.status !== 'abandoned' && <DayBadge days={daysSince(r.stage_entered_at)} stage={r.stage} />}
+                        {r.status !== 'abandoned' && <OnbBadge prof={r.linked_user_id && rosterMap && rosterMap[r.linked_user_id]} />}
                       </div>
                     </div>
                     <span style={{ color: 'var(--tx3)', fontSize: 18, flex: 'none' }}>›</span>
@@ -32958,7 +32969,7 @@
                     <div style={{ fontSize: 13, color: 'var(--tx2)' }}>{r.phone || '—'}</div>
                     {isAdmin && <div style={{ fontSize: 13, color: 'var(--tx2)' }}>{recruiterName(r.recruiter_user_id)}</div>}
                     <div>{r.status === 'abandoned' ? <span className="rhq-chip rhq-stg3">Abandoned</span> : <StageChip stage={r.stage} />}</div>
-                    <div>{r.status === 'abandoned' ? <span className="rhq-muted">—</span> : <DayBadge days={daysSince(r.stage_entered_at)} stage={r.stage} />}</div>
+                    <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center' }}>{r.status === 'abandoned' ? <span className="rhq-muted">—</span> : <><DayBadge days={daysSince(r.stage_entered_at)} stage={r.stage} /><OnbBadge prof={r.linked_user_id && rosterMap && rosterMap[r.linked_user_id]} /></>}</div>
                   </div>)}
               </div>
             </div>}
@@ -33444,11 +33455,11 @@
                   <div className="rhq-label" style={{ marginBottom: 0 }}>Onboarding</div>
                   {acct.onboarding_completed === true
                     ? <span className="rhq-chip rhq-stg1">Complete</span>
-                    : <span className="rhq-chip rhq-stg5">{ONB_LABELS[Number(acct.onboarding_step) || 0] || '—'} · {onbPct(acct.onboarding_step)}%</span>}
+                    : <span className="rhq-chip rhq-onb">{ONB_LABELS[Number(acct.onboarding_step) || 0] || '—'} · {onbPct(acct.onboarding_step)}%</span>}
                 </div>
                 {acct.onboarding_completed === false &&
                   <div style={{ height: 8, background: 'var(--sf2)', borderRadius: 6, overflow: 'hidden' }}>
-                    <div style={{ height: '100%', width: onbPct(acct.onboarding_step) + '%', borderRadius: 6, background: 'var(--ac)' }}></div>
+                    <div style={{ height: '100%', width: onbPct(acct.onboarding_step) + '%', borderRadius: 6, background: '#7c3aed' }}></div>
                   </div>}
               </div>}
 
