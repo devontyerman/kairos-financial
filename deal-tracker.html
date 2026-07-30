@@ -8,7 +8,7 @@
 <title>Deal Tracker — Kairos Financial</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 /* ============================================================================
    Deal Tracker — editorial, dark/light, rainbow accents
@@ -16,62 +16,43 @@
    ============================================================================ */
 
 :root {
-  --rb-green:   oklch(0.72 0.16 145);
-  --rb-yellow:  oklch(0.82 0.14 90);
-  --rb-orange:  oklch(0.74 0.16 50);
-  --rb-red:     oklch(0.66 0.18 25);
-  --rb-purple:  oklch(0.62 0.15 305);
-  --rb-blue:    oklch(0.68 0.13 240);
+  /* Accents = Recruiting palette. --rb-blue is the interactive accent → KF green
+     (focus rings / active states), matching the Recruiting tab exactly. */
+  --rb-green:  #A1CB35; --rb-yellow: #E0B93A; --rb-orange: #D98A3D;
+  --rb-red:    #D9483B; --rb-purple: #7C5CD6; --rb-blue:   #A1CB35;
+  --ac:#A1CB35; --acOn:#232B07; --acDeep:#5F7F10; --acSoft:#EFF6D9;
 
-  --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
-  --sans: "Geist", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  /* Match the Recruiting page: everything is Instrument Sans (no monospace).
+     Numeric cells keep tabular alignment via font-variant-numeric where set. */
+  --mono: "Instrument Sans", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --sans: "Instrument Sans", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
 
-  --radius: 10px;
-  --radius-sm: 6px;
+  --radius: 16px;
+  --radius-sm: 11px;
 }
 
-/* Dark default */
+/* Dark default — Recruiting (.rhq) warm-neutral dark */
 :root, [data-theme="dark"] {
-  --bg:        #0d0e10;
-  --bg-2:      #131418;
-  --surface:   #16181d;
-  --surface-2: #1c1f26;
-  --surface-3: #232730;
-  --hairline:  rgba(255, 255, 255, 0.07);
-  --hairline-strong: rgba(255, 255, 255, 0.13);
-  --ink-1:     #f3f3f1;
-  --ink-2:     rgba(243, 243, 241, 0.72);
-  --ink-3:     rgba(243, 243, 241, 0.45);
-  --ink-4:     rgba(243, 243, 241, 0.28);
-  --pos:       oklch(0.78 0.16 145);
-  --neg:       oklch(0.7 0.18 25);
-  --grain:     rgba(255, 255, 255, 0.012);
-  --shadow-lg: 0 24px 60px rgba(0,0,0,0.5);
+  --bg:#121110; --bg-2:#1B1A18; --surface:#1B1A18; --surface-2:#242220; --surface-3:#2F2D2A;
+  --hairline:rgba(255,255,255,0.08); --hairline-strong:rgba(255,255,255,0.14);
+  --ink-1:#F4F3F1; --ink-2:#B3AFAB; --ink-3:#837E79; --ink-4:rgba(243,243,241,0.28);
+  --pos:#A1CB35; --neg:#E5776B; --grain:rgba(255,255,255,0.012); --shadow-lg:0 24px 60px rgba(0,0,0,0.5);
+  --acOn:#1A2005; --acDeep:#B9DD5E; --acSoft:#2A3313; --rb-blue:#A1CB35;
+  /* Recruiting stage colors (bg/fg) for status chips + row tints */
+  --s0b:#123638;--s0f:#7FD9DE;--s1b:#28330F;--s1f:#C6E378;--s2b:#3B3110;--s2f:#FED24F;--s3b:#421515;--s3f:#FF7A7A;--s4b:#31153F;--s4f:#C77BE8;--s5b:#1E2450;--s5f:#8B9BF0;
+  --wb:#3D2412;--wf:#FF9A4D;--db:#421515;--df:#FF6B6B;
 }
 
+/* Light — Recruiting (.rhq) light */
 [data-theme="light"] {
-  --bg:        #f6f5f1;
-  --bg-2:      #efece5;
-  --surface:   #ffffff;
-  --surface-2: #fbfaf6;
-  --surface-3: #f1efe8;
-  --hairline:  rgba(15, 12, 8, 0.08);
-  --hairline-strong: rgba(15, 12, 8, 0.16);
-  --ink-1:     #14130f;
-  --ink-2:     rgba(20, 19, 15, 0.74);
-  --ink-3:     rgba(20, 19, 15, 0.5);
-  --ink-4:     rgba(20, 19, 15, 0.32);
-  --pos:       oklch(0.55 0.14 145);
-  --neg:       oklch(0.55 0.18 25);
-  --grain:     rgba(0, 0, 0, 0.012);
-  --shadow-lg: 0 18px 48px rgba(15, 12, 8, 0.18);
-
-  --rb-green:  oklch(0.55 0.15 145);
-  --rb-yellow: oklch(0.7 0.14 85);
-  --rb-orange: oklch(0.62 0.16 50);
-  --rb-red:    oklch(0.55 0.17 25);
-  --rb-purple: oklch(0.5 0.15 305);
-  --rb-blue:   oklch(0.55 0.13 240);
+  --bg:#F6F6F4; --bg-2:#F0F0ED; --surface:#FFFFFF; --surface-2:#F6F6F4; --surface-3:#F0F0ED;
+  --hairline:#E7E7E2; --hairline-strong:#DAD9D2;
+  --ink-1:#2E2B2B; --ink-2:#403B3B; --ink-3:#666160; --ink-4:rgba(20,19,15,0.32);
+  --pos:#5F7F10; --neg:#C0392B; --grain:rgba(0,0,0,0.012); --shadow-lg:0 18px 48px rgba(40,38,30,0.14);
+  --acOn:#232B07; --acDeep:#5F7F10; --acSoft:#EFF6D9;
+  --rb-green:#5F7F10; --rb-yellow:#B08A12; --rb-orange:#B96A22; --rb-red:#C0392B; --rb-purple:#6A4FC0; --rb-blue:#5F7F10;
+  --s0b:#E0F5F6;--s0f:#1F8A90;--s1b:#EFF7DA;--s1f:#5F7F10;--s2b:#FFF3CD;--s2f:#93700A;--s3b:#FEE1E1;--s3f:#D31A1A;--s4b:#F0E2F8;--s4f:#792CA2;--s5b:#E4E8FD;--s5f:#3B4DB8;
+  --wb:#FFE9D6;--wf:#C25400;--db:#FDE0E0;--df:#D90000;
 }
 
 * { box-sizing: border-box; }
@@ -87,8 +68,8 @@ body {
   font-feature-settings: "ss01", "cv11";
   min-height: 100vh;
   background-image:
-    radial-gradient(1100px 600px at 90% -10%, color-mix(in srgb, var(--rb-blue) 8%, transparent), transparent 60%),
-    radial-gradient(900px 500px at -10% 110%, color-mix(in srgb, var(--rb-purple) 7%, transparent), transparent 60%);
+    radial-gradient(1100px 600px at 90% -10%, color-mix(in srgb, var(--rb-green) 6%, transparent), transparent 60%),
+    radial-gradient(900px 500px at -10% 110%, color-mix(in srgb, var(--rb-green) 4%, transparent), transparent 60%);
 }
 
 button { font-family: inherit; cursor: pointer; }
@@ -270,9 +251,9 @@ input, select { font-family: inherit; font-size: inherit; color: var(--ink-1); }
   background: var(--surface);
   border: 1px solid var(--hairline-strong);
   color: var(--ink-1);
-  padding: 5px 10px 5px 5px;
-  border-radius: 8px;
-  height: 34px;
+  padding: 5px 12px 5px 5px;
+  border-radius: 999px;
+  height: 36px;
   transition: all 120ms;
 }
 .setter-trigger:hover { border-color: var(--ink-3); }
@@ -436,9 +417,9 @@ input, select { font-family: inherit; font-size: inherit; color: var(--ink-1); }
 /* ─── Buttons ─── */
 .btn {
   display: inline-flex; align-items: center; gap: 6px;
-  padding: 9px 14px;
-  border-radius: 8px;
-  font-size: 12.5px; font-weight: 500;
+  padding: 10px 18px;
+  border-radius: 999px;
+  font-size: 13px; font-weight: 600;
   border: 1px solid var(--hairline-strong);
   background: var(--surface);
   color: var(--ink-1);
@@ -446,11 +427,12 @@ input, select { font-family: inherit; font-size: inherit; color: var(--ink-1); }
 }
 .btn:hover { border-color: var(--ink-3); }
 .btn.primary {
-  background: var(--ink-1);
-  color: var(--bg);
-  border-color: var(--ink-1);
+  background: var(--ac);
+  color: var(--acOn);
+  border-color: var(--ac);
+  font-weight: 700;
 }
-.btn.primary:hover { opacity: 0.9; }
+.btn.primary:hover { filter: brightness(1.08); opacity: 1; }
 .btn.primary:disabled { opacity: 0.4; cursor: not-allowed; }
 .btn.ghost { border-color: transparent; background: transparent; color: var(--ink-2); }
 .btn.ghost:hover { background: var(--surface-2); color: var(--ink-1); }
@@ -475,38 +457,39 @@ input, select { font-family: inherit; font-size: inherit; color: var(--ink-1); }
   border-radius: var(--radius);
 }
 
+/* Separate, individually-rounded cards with a gap — like the Recruiting
+   dashboard KPI boxes. Centered label + value, no description, no dot. */
 .kpi-grid {
-  display: grid; grid-template-columns: repeat(6, 1fr); gap: 1px;
-  background: var(--hairline);
-  border: 1px solid var(--hairline);
-  border-radius: var(--radius);
-  overflow: hidden;
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+  background: transparent; border: none; border-radius: 0; overflow: visible;
 }
 .kpi-cell {
   background: var(--surface);
-  padding: 18px 20px 20px;
-  display: flex; flex-direction: column; gap: 8px;
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05), 0 4px 16px rgba(0,0,0,0.05);
+  padding: 18px 18px;
+  display: flex; flex-direction: column; gap: 6px;
+  align-items: center; text-align: center;
   position: relative;
-  min-height: 116px;
 }
 .kpi-cell.featured { background: var(--surface-2); }
 
 .kpi-lbl {
-  font-family: var(--mono); font-size: 10px;
-  text-transform: uppercase; letter-spacing: 0.08em;
-  color: var(--ink-3); display: flex; align-items: center; gap: 6px;
+  font-family: var(--sans); font-size: 12px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.05em;
+  color: var(--ink-3);
 }
-.kpi-lbl .swatch { width: 6px; height: 6px; border-radius: 2px; display: inline-block; }
 .kpi-val {
-  font-family: var(--mono); font-size: 28px; font-weight: 500;
-  color: var(--ink-1); letter-spacing: -0.01em;
-  font-variant-numeric: tabular-nums; line-height: 1;
-  margin-top: 4px;
+  font-family: var(--sans); font-size: 29px; font-weight: 700;
+  color: var(--ink-1); letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums; line-height: 1.05;
+  margin-top: 2px;
 }
 .kpi-cell.featured .kpi-val { font-size: 32px; color: var(--pos); }
 .kpi-cell.tone-neg .kpi-val { color: var(--neg); }
 .kpi-cell.tone-warn .kpi-val { color: var(--rb-orange); }
-.kpi-sub { font-family: var(--mono); font-size: 11px; color: var(--ink-3); }
+.kpi-sub { display: none; }
 
 /* ─── Filter row ─── */
 .deals-section { display: flex; flex-direction: column; gap: 14px; }
@@ -551,8 +534,8 @@ input, select { font-family: inherit; font-size: inherit; color: var(--ink-1); }
   background: var(--surface);
   border: 1px solid var(--hairline-strong);
   color: var(--ink-1);
-  padding: 9px 32px 9px 12px;
-  border-radius: 8px;
+  padding: 9px 34px 9px 14px;
+  border-radius: 999px;
   font-size: 13px;
   font-family: inherit;
   cursor: pointer;
@@ -613,9 +596,9 @@ th .sort-btn { font-family: var(--mono); font-size: 10px; font-weight: 500; colo
 .carrier-select {
   appearance: none; -webkit-appearance: none;
   width: 100%;
-  padding: 9px 34px 9px 12px;
+  padding: 9px 34px 9px 13px;
   border: 1px solid var(--hairline-strong);
-  border-radius: 6px;
+  border-radius: 11px;
   background: var(--bg);
   color: var(--ink-1);
   font-size: 13px;
@@ -646,8 +629,10 @@ th .sort-btn { font-family: var(--mono); font-size: 10px; font-weight: 500; colo
   transition: all 0.15s;
 }
 .chip:hover { border-color: var(--hairline-strong); color: var(--ink-1); }
-.chip.on { background: var(--ink-1); color: var(--bg); border-color: var(--ink-1); }
-.chip.on .chip-count { background: color-mix(in srgb, var(--bg) 20%, transparent); color: var(--bg); }
+/* Active filter chip takes the status's own color (bg/fg set per chip via
+   --fbg/--ffg); chips with no status color (All) fall back to ink. */
+.chip.on { background: var(--fbg, var(--ink-1)); color: var(--ffg, var(--bg)); border-color: transparent; font-weight: 700; }
+.chip.on .chip-count { background: color-mix(in srgb, var(--ffg, var(--bg)) 22%, transparent); color: var(--ffg, var(--bg)); }
 
 .chip-dot { width: 7px; height: 7px; border-radius: 50%; }
 .chip-count {
@@ -712,19 +697,21 @@ th .sort-btn { font-family: var(--mono); font-size: 10px; font-weight: 500; colo
   display: inline-flex; align-items: center; gap: 8px;
   position: relative; flex-wrap: wrap;
 }
+/* Chips mirror the Recruiting pipeline stage chips: solid pastel bg + colored
+   text, pill shape, no dot. --cb = bg, --cf = fg (set per status in the render). */
 .status-pill {
   display: inline-flex; align-items: center; gap: 6px;
-  border: 1px solid color-mix(in srgb, var(--c) 35%, transparent);
-  background: color-mix(in srgb, var(--c) 14%, transparent);
-  color: var(--ink-1);
-  padding: 4px 9px;
-  border-radius: 99px;
-  font-size: 11.5px; font-weight: 500;
-  transition: all 0.15s;
+  border: none;
+  background: var(--cb, color-mix(in srgb, var(--c) 14%, transparent));
+  color: var(--cf, var(--ink-1));
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 11.5px; font-weight: 700; white-space: nowrap;
+  transition: filter 0.15s;
 }
-.status-pill:hover:not(:disabled) { background: color-mix(in srgb, var(--c) 22%, transparent); }
+.status-pill:hover:not(:disabled) { filter: brightness(0.96); }
 .status-pill:disabled { cursor: default; }
-.pill-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.pill-dot { display: none; }
 
 .status-menu {
   position: absolute;
@@ -945,22 +932,24 @@ th .sort-btn { font-family: var(--mono); font-size: 10px; font-weight: 500; colo
 .manual-form { padding: 14px 16px; }
 .manual-form-row {
   display: grid;
-  grid-template-columns: 160px 160px 1fr auto;
-  gap: 12px;
+  grid-template-columns: minmax(0, 180px) minmax(0, 180px) minmax(0, 1fr) auto;
+  gap: 14px;
   align-items: end;
 }
-.manual-form-row .field { gap: 4px; }
+/* min-width:0 lets the grid items shrink so the date/amount inputs don't
+   overflow into (overlap) the next field. */
+.manual-form-row .field { gap: 4px; min-width: 0; }
 .manual-form-row .field-label {
-  font-family: var(--mono); font-size: 10px;
+  font-family: var(--sans); font-size: 10px;
   text-transform: uppercase; letter-spacing: 0.08em;
   color: var(--ink-3);
 }
 .manual-form-row input[type="date"],
 .manual-form-row input[type="text"] {
-  width: 100%;
-  padding: 9px 12px;
+  width: 100%; min-width: 0;
+  padding: 9px 13px;
   border: 1px solid var(--hairline-strong);
-  border-radius: 6px;
+  border-radius: 11px;
   background: var(--bg);
   color: var(--ink-1);
   font-size: 13px;
@@ -1085,8 +1074,8 @@ th .sort-btn { font-family: var(--mono); font-size: 10px; font-weight: 500; colo
 .field input[type="password"],
 .field input:not([type]) {
   border: 1px solid var(--hairline-strong);
-  border-radius: 6px;
-  padding: 9px 12px;
+  border-radius: 11px;
+  padding: 9px 13px;
   outline: none;
   background: var(--bg);
   color: var(--ink-1);
@@ -1384,12 +1373,13 @@ async function supaRpc(fn, params, token) {
 }
 
 // ============== STATUS CONFIG ==============
+// Colors mirror the Recruiting pipeline stage chips exactly (bg + fg pairs).
 const STATUSES = [
-  { id: 'uw_submitted',  label: 'Underwriting / Submitted', short: 'UW / Submitted', color: 'var(--rb-yellow)' },
-  { id: 'approved',      label: 'Approved',                 short: 'Approved',       color: 'var(--rb-purple)' },
-  { id: 'pending_lapse', label: 'Pending Lapse',            short: 'Pending Lapse',  color: 'var(--rb-orange)' },
-  { id: 'issued',        label: 'Issued',                   short: 'Issued',         color: 'var(--rb-green)' },
-  { id: 'declined',      label: 'Declined',                 short: 'Declined',       color: 'var(--rb-red)' },
+  { id: 'uw_submitted',  label: 'Underwriting / Submitted', short: 'UW / Submitted', bg: 'var(--s2b)', fg: 'var(--s2f)', color: 'var(--s2f)' },
+  { id: 'approved',      label: 'Approved',                 short: 'Approved',       bg: 'var(--s4b)', fg: 'var(--s4f)', color: 'var(--s4f)' },
+  { id: 'pending_lapse', label: 'Pending Lapse',            short: 'Pending Lapse',  bg: 'var(--wb)',  fg: 'var(--wf)',  color: 'var(--wf)' },
+  { id: 'issued',        label: 'Issued',                   short: 'Issued',         bg: 'var(--s1b)', fg: 'var(--s1f)', color: 'var(--s1f)' },
+  { id: 'declined',      label: 'Declined',                 short: 'Declined',       bg: 'var(--s3b)', fg: 'var(--s3f)', color: 'var(--s3f)' },
 ];
 const statusMeta = (id) => STATUSES.find(s => s.id === id) || STATUSES[0];
 // Chargeback allowed on any status (still requires the deal be marked Paid first).
@@ -2021,15 +2011,7 @@ function Header({ isAdmin, setters, activeSetter, onSelectSetter, onAddSetter, o
 
   return (
     <header className="hdr">
-      <div className="hdr-l">
-        <div className="hdr-brand">
-          <div className="hdr-mark"></div>
-          <div>
-            <div className="hdr-title">Deal Tracker</div>
-            <div className="hdr-sub">Pipeline · Commissions · Chargebacks</div>
-          </div>
-        </div>
-      </div>
+      <div className="hdr-l"></div>
 
       <div className="hdr-r">
         <span className={'role-badge ' + (isAdmin ? 'admin' : 'rep')}>
@@ -2421,8 +2403,6 @@ function Dashboard({ isAdmin, setter, deals, manualPayments = [], loading, onAdd
           sub={stats.counts.manual + ' manual payment' + (stats.counts.manual === 1 ? '' : 's')}
           swatch="var(--rb-blue)"
         />
-        <KpiCell label="Chargebacks" value={fmt(stats.chargeback)} sub={stats.counts.chargeback + ' owed back'} swatch="var(--rb-red)" tone="neg" />
-        <KpiCell label="At risk" value={fmt(stats.atRisk)} sub={stats.counts.pending_lapse + ' pending lapse'} swatch="var(--rb-orange)" tone="warn" />
         <KpiCell label="Net earned" value={fmt(stats.netEarned)} sub={stats.counts.issued + ' issued'} swatch="var(--rb-green)" tone="pos" featured />
       </section>
 
@@ -2461,12 +2441,12 @@ function Dashboard({ isAdmin, setter, deals, manualPayments = [], loading, onAdd
             <div className="filter-row">
               <FilterChip active={filterStatus === 'all'} onClick={() => setFilterStatus('all')} count={deals.length}>All</FilterChip>
               {STATUSES.map(s => (
-                <FilterChip key={s.id} active={filterStatus === s.id} onClick={() => setFilterStatus(s.id)} count={stats.counts[s.id] || 0} dot={s.color}>
+                <FilterChip key={s.id} active={filterStatus === s.id} onClick={() => setFilterStatus(s.id)} count={stats.counts[s.id] || 0} dot={s.fg} bg={s.bg} fg={s.fg}>
                   {s.short}
                 </FilterChip>
               ))}
               <span className="filter-sep"></span>
-              <FilterChip active={filterStatus === 'chargeback'} onClick={() => setFilterStatus('chargeback')} count={stats.counts.chargeback} dot="var(--rb-red)">Chargeback</FilterChip>
+              <FilterChip active={filterStatus === 'chargeback'} onClick={() => setFilterStatus('chargeback')} count={stats.counts.chargeback} dot="var(--df)" bg="var(--db)" fg="var(--df)">Chargeback</FilterChip>
             </div>
 
             {filtered.length === 0 ? (
@@ -2540,21 +2520,18 @@ function Dashboard({ isAdmin, setter, deals, manualPayments = [], loading, onAdd
 function KpiCell({ label, value, sub, swatch, tone, featured }) {
   return (
     <div className={'kpi-cell' + (featured ? ' featured' : '') + (tone ? ' tone-' + tone : '')}>
-      <div className="kpi-lbl">
-        <span className="swatch" style={{ background: swatch }}></span>
-        {label}
-      </div>
+      <div className="kpi-lbl">{label}</div>
       <div className="kpi-val">{value}</div>
-      <div className="kpi-sub">{sub}</div>
     </div>
   );
 }
 
 // ============== FILTER CHIP ==============
-function FilterChip({ active, onClick, count, dot, children }) {
+function FilterChip({ active, onClick, count, dot, bg, fg, children }) {
   return (
-    <button className={'chip' + (active ? ' on' : '')} onClick={onClick}>
-      {dot && <span className="chip-dot" style={{ background: dot }}></span>}
+    <button className={'chip' + (active ? ' on' : '')} onClick={onClick}
+      style={(bg || fg) ? { '--fbg': bg, '--ffg': fg } : undefined}>
+      {dot && !active && <span className="chip-dot" style={{ background: dot }}></span>}
       <span>{children}</span>
       <span className="chip-count">{count}</span>
     </button>
@@ -2696,7 +2673,7 @@ function DealRow({ deal, isAdmin, onUpdate, onEdit, onRemove }) {
           <button
             ref={triggerRef}
             className="status-pill"
-            style={{ '--c': meta.color }}
+            style={{ '--c': meta.color, '--cb': meta.bg, '--cf': meta.fg }}
             onClick={openMenu}
             disabled={!isAdmin}
           >
