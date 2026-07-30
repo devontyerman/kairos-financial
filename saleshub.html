@@ -16275,12 +16275,12 @@
         if (_payUC) _payUC.style.display = isWtAdmin ? 'none' : '';
         if (_payReal) { if (isWtAdmin) _payReal.removeAttribute('hidden'); else _payReal.setAttribute('hidden', ''); }
         if (_payBanner) _payBanner.style.display = isWtAdmin ? 'flex' : 'none';
-        // Training Videos: admin only while the page is being updated; everyone
-        // else sees the "we're updating this page" notice instead of the videos.
+        // Training Videos: live for everyone. The "we're updating this page"
+        // notice stays hidden; all agents see the real training.
         const _tvUC = document.getElementById('trainingUnderConstruction');
         const _tvReal = document.getElementById('tve');
-        if (_tvUC) _tvUC.style.display = isWtAdmin ? 'none' : '';
-        if (_tvReal) _tvReal.style.display = isWtAdmin ? '' : 'none';
+        if (_tvUC) _tvUC.style.display = 'none';
+        if (_tvReal) _tvReal.style.display = '';
         // Agency HQ: admin always; managers revealed by the is_manager fetch below.
         if (rhqBtn) rhqBtn.style.display = isWtAdmin ? '' : 'none';
         // Admin-only Agency HQ dropdown items (Agent Profiles, Discord).
@@ -33106,7 +33106,7 @@
 
     // ── ADD RECRUIT MODAL ─────────────────────────────────────────────────────
     function AddRecruit({ me, isAdmin, recruiterOptions, onClose, onSaved }) {
-      const [f, setF] = useState({ full_name: '', email: '', phone: '', city: '', state: '', timezone: 'Central', recruiter_user_id: me.id || '', exam_date: '' });
+      const [f, setF] = useState({ full_name: '', email: '', phone: '', city: '', state: '', timezone: 'Central', recruiter_user_id: me.id || '', exam_date: '', stage: 0 });
       const [busy, setBusy] = useState(false);
       const set = (k) => (e) => setF(s => Object.assign({}, s, { [k]: e.target.value }));
       const save = async () => {
@@ -33116,7 +33116,7 @@
           full_name: f.full_name.trim(), email: f.email.trim() || null, phone: f.phone.trim() || null,
           city: f.city.trim() || null, state: f.state.trim() || null, timezone: f.timezone,
           recruiter_user_id: f.recruiter_user_id || null, exam_date: f.exam_date || null,
-          stage: 0, status: 'active', created_by: me.id || null
+          stage: Number(f.stage) || 0, status: 'active', created_by: me.id || null
         };
         const row = await insertRecruit(body);
         setBusy(false);
@@ -33149,8 +33149,12 @@
                     {TZ_OPTS.map(t => <option key={t} value={t}>{t}</option>)}
                   </select></div>
                 {F({ label: 'Exam date', k: 'exam_date', type: 'date' })}
+                <div><div className="rhq-label">Starting stage</div>
+                  <select className="rhq-sel" style={{ width: '100%' }} value={f.stage} onChange={set('stage')}>
+                    {STAGE_FLOW.map(i => <option key={i} value={i}>{STAGES[i]}</option>)}
+                  </select></div>
               </div>
-              <div className="rhq-muted" style={{ marginBottom: 16 }}>New agents start in <strong>Outreach</strong>. They’ll auto-link to their Sales Hub account by email or name when they sign up.</div>
+              <div className="rhq-muted" style={{ marginBottom: 16 }}>New agents default to <strong>Outreach</strong> — pick a different starting stage above if needed. They’ll auto-link to their Sales Hub account by email or name when they sign up.</div>
               <div style={{ display: 'flex', gap: 10 }}>
                 <button className="rhq-btn" disabled={busy} onClick={save}>{busy ? 'Adding…' : 'Add agent'}</button>
                 <button className="rhq-btn ghost" onClick={onClose}>Cancel</button>
