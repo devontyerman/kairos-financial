@@ -2396,7 +2396,7 @@ function Dashboard({ isAdmin, setter, deals, manualPayments = [], loading, onAdd
 
       <section className="kpi-grid">
         <KpiCell label="Issued AP" value={fmt(stats.issuedAP)} sub={stats.counts.issued + ' issued'} swatch="var(--rb-green)" tone="pos" featured />
-        <KpiCell label="Pipeline" value={fmt(stats.pipeline)} sub="Active deals − paid out" swatch="var(--rb-green)" tone="pos" />
+        <KpiCell label="Pipeline" value={fmt(stats.pipeline)} sub="Active deals − paid out" swatch="var(--rb-green)" tone={stats.pipeline < 0 ? 'neg' : 'pos'} />
         <KpiCell
           label="Paid out"
           value={fmt(stats.paidOut)}
