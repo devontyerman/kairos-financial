@@ -1,304 +1,437 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="icon" type="image/png" href="/KF Transparent.png" />
-  <title>State License Costs — Kairos Financial</title>
-  <link rel="stylesheet" href="css/styles.css" />
-  <style>
-    .license-section {
-      padding: 4rem 0 6rem;
-    }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="icon" type="image/png" href="/KF Transparent.png" />
+<meta name="robots" content="noindex, nofollow" />
+<title>State License Costs — Kairos Financial</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ============================================================================
+   State License Costs — Recruiting (.rhq) design system
+   Matches deal-tracker.html: warm-neutral dark/light, rainbow accent mark
+   ============================================================================ */
 
-    .license-disclaimer {
-      background: var(--bg-elevated);
-      border: 1px solid var(--border-strong);
-      border-radius: var(--radius-lg);
-      padding: 1.5rem 2rem;
-      margin-bottom: 2.5rem;
-      display: flex;
-      align-items: flex-start;
-      gap: 1rem;
-    }
+:root {
+  --rb-green:  #A1CB35; --rb-yellow: #E0B93A; --rb-orange: #D98A3D;
+  --rb-red:    #D9483B; --rb-purple: #7C5CD6; --rb-blue:   #A1CB35;
+  --ac:#A1CB35; --acOn:#232B07; --acDeep:#5F7F10; --acSoft:#EFF6D9;
 
-    .license-disclaimer-icon {
-      width: 36px;
-      height: 36px;
-      background: var(--bg-surface);
-      border: 1px solid var(--border-strong);
-      border-radius: var(--radius-md);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      color: var(--text-muted);
-    }
+  --mono: "Instrument Sans", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --sans: "Instrument Sans", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
 
-    .license-disclaimer p {
-      font-size: 0.875rem;
-      color: var(--text-secondary);
-      line-height: 1.65;
-    }
+  --radius: 16px;
+  --radius-sm: 11px;
+}
 
-    .license-disclaimer a {
-      color: var(--text-primary);
-      font-weight: 600;
-      text-decoration: underline;
-      text-underline-offset: 2px;
-    }
+/* Dark default — Recruiting (.rhq) warm-neutral dark */
+:root, [data-theme="dark"] {
+  --bg:#121110; --bg-2:#1B1A18; --surface:#1B1A18; --surface-2:#242220; --surface-3:#2F2D2A;
+  --hairline:rgba(255,255,255,0.08); --hairline-strong:rgba(255,255,255,0.14);
+  --ink-1:#F4F3F1; --ink-2:#B3AFAB; --ink-3:#837E79; --ink-4:rgba(243,243,241,0.28);
+  --pos:#A1CB35; --neg:#E5776B; --grain:rgba(255,255,255,0.012); --shadow-lg:0 24px 60px rgba(0,0,0,0.5);
+  --acOn:#1A2005; --acDeep:#B9DD5E; --acSoft:#2A3313; --rb-blue:#A1CB35;
+}
 
-    .license-disclaimer a:hover {
-      color: var(--text-secondary);
-    }
+/* Light — Recruiting (.rhq) light */
+[data-theme="light"] {
+  --bg:#F6F6F4; --bg-2:#F0F0ED; --surface:#FFFFFF; --surface-2:#F6F6F4; --surface-3:#F0F0ED;
+  --hairline:#E7E7E2; --hairline-strong:#DAD9D2;
+  --ink-1:#2E2B2B; --ink-2:#403B3B; --ink-3:#666160; --ink-4:rgba(20,19,15,0.32);
+  --pos:#5F7F10; --neg:#C0392B; --grain:rgba(0,0,0,0.012); --shadow-lg:0 18px 48px rgba(40,38,30,0.14);
+  --acOn:#232B07; --acDeep:#5F7F10; --acSoft:#EFF6D9;
+  --rb-green:#5F7F10; --rb-yellow:#B08A12; --rb-orange:#B96A22; --rb-red:#C0392B; --rb-purple:#6A4FC0; --rb-blue:#5F7F10;
+}
 
-    .license-table-wrap {
-      background: #ffffff;
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      overflow: hidden;
-      box-shadow: var(--shadow-sm);
-    }
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
 
-    .license-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-family: 'Inter', sans-serif;
-    }
+body {
+  background: var(--bg);
+  color: var(--ink-1);
+  font-family: var(--sans);
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: "ss01", "cv11";
+  min-height: 100vh;
+  background-image:
+    radial-gradient(1100px 600px at 90% -10%, color-mix(in srgb, var(--rb-green) 6%, transparent), transparent 60%),
+    radial-gradient(900px 500px at -10% 110%, color-mix(in srgb, var(--rb-green) 4%, transparent), transparent 60%);
+}
 
-    .license-table thead {
-      background: var(--dark);
-      color: #ffffff;
-    }
+a { color: inherit; text-decoration: none; }
+button { font-family: inherit; cursor: pointer; }
 
-    .license-table thead th {
-      padding: 0.9rem 1.5rem;
-      font-size: 0.7rem;
-      font-weight: 700;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      text-align: left;
-    }
+.app {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 28px 32px 80px;
+  position: relative;
+}
+.app::before {
+  content: ""; position: fixed; inset: 0; pointer-events: none;
+  background-image:
+    radial-gradient(circle at 25% 20%, var(--grain) 0.5px, transparent 1px),
+    radial-gradient(circle at 75% 60%, var(--grain) 0.5px, transparent 1px);
+  background-size: 3px 3px, 4px 4px;
+  z-index: 0;
+}
+.app > * { position: relative; z-index: 1; }
 
-    .license-table thead th:last-child {
-      text-align: right;
-    }
+/* ─── Header ─── */
+.hdr {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 28px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--hairline);
+}
+.hdr-l { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.hdr-brand { display: flex; align-items: center; gap: 12px; }
+.hdr-mark {
+  width: 22px; height: 22px; border-radius: 5px;
+  background:
+    linear-gradient(180deg,
+      var(--rb-green) 0 16.66%,
+      var(--rb-yellow) 16.66% 33.33%,
+      var(--rb-orange) 33.33% 50%,
+      var(--rb-red) 50% 66.66%,
+      var(--rb-purple) 66.66% 83.33%,
+      var(--rb-blue) 83.33% 100%);
+  box-shadow: 0 0 0 1px var(--hairline-strong);
+  flex-shrink: 0;
+}
+.eyebrow {
+  font-family: var(--mono);
+  font-size: 11px; font-weight: 500;
+  color: var(--ink-3);
+  text-transform: uppercase; letter-spacing: 0.08em;
+}
+.hdr-title { font-size: 28px; font-weight: 600; letter-spacing: -0.02em; margin: 0; }
+.hdr-desc { font-size: 13px; color: var(--ink-2); margin: 0; max-width: 60ch; }
+.hdr-r { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 
-    .license-table tbody tr {
-      border-bottom: 1px solid var(--border);
-      transition: var(--transition);
-    }
+.theme-toggle {
+  appearance: none; border: 1px solid var(--hairline-strong);
+  background: var(--surface); color: var(--ink-2);
+  width: 34px; height: 34px; border-radius: 8px;
+  display: grid; place-items: center; cursor: pointer;
+  transition: all 120ms;
+}
+.theme-toggle:hover { color: var(--ink-1); border-color: var(--ink-3); }
 
-    .license-table tbody tr:last-child {
-      border-bottom: none;
-    }
+/* ─── KPI strip ─── */
+.kpi-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+  margin-bottom: 22px;
+}
+.kpi-cell {
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05), 0 4px 16px rgba(0,0,0,0.05);
+  padding: 18px;
+  display: flex; flex-direction: column; gap: 6px;
+  align-items: center; text-align: center;
+}
+.kpi-label {
+  font-family: var(--mono); font-size: 10px; font-weight: 500;
+  color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.08em;
+}
+.kpi-value {
+  font-size: 24px; font-weight: 600; letter-spacing: -0.02em;
+  color: var(--ink-1); font-variant-numeric: tabular-nums;
+}
+.kpi-sub { font-size: 11px; color: var(--ink-3); }
 
-    .license-table tbody tr:hover {
-      background: var(--bg-surface);
-    }
+/* ─── Note / disclaimer ─── */
+.note {
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  margin-bottom: 22px;
+  display: flex; align-items: flex-start; gap: 12px;
+}
+.note-icon {
+  width: 34px; height: 34px; flex-shrink: 0;
+  border-radius: 9px;
+  background: var(--surface-2);
+  border: 1px solid var(--hairline-strong);
+  display: grid; place-items: center;
+  color: var(--ink-3);
+}
+.note p { margin: 0; font-size: 13px; color: var(--ink-2); line-height: 1.6; }
+.note a { color: var(--ink-1); font-weight: 600; text-decoration: underline; text-underline-offset: 2px; }
+.note a:hover { color: var(--rb-green); }
 
-    .license-table tbody td {
-      padding: 0.75rem 1.5rem;
-      font-size: 0.88rem;
-      color: var(--text-primary);
-    }
+/* ─── Card + table ─── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius);
+}
+.table-card { padding: 0; overflow-x: auto; }
 
-    .license-table tbody td:first-child {
-      color: var(--text-muted);
-      font-size: 0.78rem;
-      font-weight: 600;
-      width: 50px;
-      text-align: center;
-    }
+.lic-table { width: 100%; border-collapse: collapse; }
+.lic-table th {
+  text-align: left;
+  padding: 12px 16px;
+  font-family: var(--mono);
+  font-size: 10px; font-weight: 500;
+  color: var(--ink-3);
+  text-transform: uppercase; letter-spacing: 0.08em;
+  border-bottom: 1px solid var(--hairline);
+  white-space: nowrap;
+}
+.lic-table th:first-child { padding-left: 22px; width: 52px; text-align: center; }
+.lic-table th.num { text-align: right; padding-right: 22px; }
+.lic-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--hairline);
+  vertical-align: middle;
+  font-size: 13px;
+  color: var(--ink-1);
+}
+.lic-table td:first-child {
+  padding-left: 22px; text-align: center;
+  font-family: var(--mono); color: var(--ink-3);
+  font-size: 12px; font-variant-numeric: tabular-nums;
+}
+.lic-table tbody tr:last-child td { border-bottom: none; }
+.lic-table tbody tr:hover td { background: var(--surface-2); }
 
-    .license-table tbody td:last-child {
-      text-align: right;
-      font-weight: 600;
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: 0.95rem;
-    }
+.state-name { font-weight: 500; }
 
-    .license-table tbody tr:nth-child(even) {
-      background: var(--bg-surface);
-    }
+/* Fee pill — right aligned, color-graded by cost band */
+.fee-cell { text-align: right; padding-right: 22px; }
+.fee {
+  display: inline-block;
+  font-family: var(--mono); font-variant-numeric: tabular-nums;
+  font-size: 12px; font-weight: 600;
+  padding: 3px 10px; border-radius: 99px;
+  background: var(--surface-2);
+  border: 1px solid var(--hairline-strong);
+  color: var(--ink-1);
+}
+.fee.low  { background: color-mix(in srgb, var(--rb-green) 16%, transparent); border-color: color-mix(in srgb, var(--rb-green) 30%, transparent); color: var(--acDeep); }
+.fee.mid  { background: color-mix(in srgb, var(--rb-yellow) 16%, transparent); border-color: color-mix(in srgb, var(--rb-yellow) 30%, transparent); color: var(--rb-yellow); }
+.fee.high { background: color-mix(in srgb, var(--rb-red) 14%, transparent); border-color: color-mix(in srgb, var(--rb-red) 30%, transparent); color: var(--neg); }
 
-    .license-table tbody tr:nth-child(even):hover {
-      background: var(--bg-elevated);
-    }
+/* Timezone group header row */
+.tz-row td {
+  background: var(--surface-3);
+  color: var(--ink-2);
+  font-family: var(--mono);
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 9px 22px;
+  border-bottom: 1px solid var(--hairline);
+}
+.tz-row:hover td { background: var(--surface-3); }
+.tz-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 8px; vertical-align: middle; }
 
-    .tz-group-header td {
-      background: var(--dark-3) !important;
-      color: #ffffff !important;
-      font-family: 'Plus Jakarta Sans', sans-serif !important;
-      font-weight: 700 !important;
-      font-size: 0.78rem !important;
-      letter-spacing: 0.08em !important;
-      text-transform: uppercase !important;
-      padding: 0.65rem 1.5rem !important;
-      text-align: left !important;
-    }
+/* ─── Back link ─── */
+.back-link {
+  display: inline-flex; align-items: center; gap: 8px;
+  margin-top: 24px;
+  padding: 9px 16px; border-radius: 999px;
+  border: 1px solid var(--hairline-strong);
+  background: var(--surface);
+  font-family: var(--mono); font-size: 11px; font-weight: 500;
+  text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--ink-2);
+  transition: all 0.15s;
+}
+.back-link:hover { color: var(--ink-1); border-color: var(--ink-3); }
 
-    .tz-group-header:hover td {
-      background: var(--dark-3) !important;
-    }
+/* ─── Footer ─── */
+.foot {
+  margin-top: 40px; padding-top: 20px;
+  border-top: 1px solid var(--hairline);
+  text-align: center;
+  font-family: var(--mono); font-size: 11px;
+  color: var(--ink-3); letter-spacing: 0.04em;
+}
+.foot span { color: var(--ink-2); }
 
-    .back-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.45rem;
-      color: var(--text-muted);
-      font-family: 'Inter', sans-serif;
-      font-size: 0.82rem;
-      font-weight: 500;
-      margin-top: 2rem;
-      transition: var(--transition);
-    }
-
-    .back-link:hover {
-      color: var(--text-primary);
-    }
-
-    @media (max-width: 600px) {
-      .license-table thead th,
-      .license-table tbody td {
-        padding: 0.65rem 0.85rem;
-      }
-
-      .license-table tbody td {
-        font-size: 0.82rem;
-      }
-
-      .license-table tbody td:last-child {
-        font-size: 0.88rem;
-      }
-
-      .license-disclaimer {
-        flex-direction: column;
-        gap: 0.75rem;
-        padding: 1.25rem;
-      }
-    }
-  </style>
+@media (max-width: 720px) {
+  .app { padding: 22px 16px 64px; }
+  .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+  .hdr { flex-direction: column; align-items: flex-start; }
+  .hdr-title { font-size: 24px; }
+}
+</style>
 </head>
 <body>
-<!-- PAGE HEADER -->
-  <div class="page-header">
-    <div class="container">
-      <div class="page-header-eyebrow">Agent Resources</div>
-      <h1 class="page-header-title">State License Costs</h1>
-      <p class="page-header-desc">Insurance licensing fees by state for new agent applications.</p>
+  <div class="app">
+
+    <!-- HEADER -->
+    <header class="hdr">
+      <div class="hdr-l">
+        <div class="hdr-brand">
+          <div class="hdr-mark"></div>
+          <span class="eyebrow">Agent Resources</span>
+        </div>
+        <h1 class="hdr-title">State License Costs</h1>
+        <p class="hdr-desc">Insurance licensing fees by state for new agent applications, grouped by time zone.</p>
+      </div>
+      <div class="hdr-r">
+        <button class="theme-toggle" id="themeToggle" title="Toggle theme" aria-label="Toggle theme"></button>
+      </div>
+    </header>
+
+    <!-- KPI STRIP -->
+    <div class="kpi-grid">
+      <div class="kpi-cell">
+        <span class="kpi-label">States</span>
+        <span class="kpi-value">50</span>
+        <span class="kpi-sub">licensed regions</span>
+      </div>
+      <div class="kpi-cell">
+        <span class="kpi-label">Lowest fee</span>
+        <span class="kpi-value">$10</span>
+        <span class="kpi-sub">Michigan</span>
+      </div>
+      <div class="kpi-cell">
+        <span class="kpi-label">Highest fee</span>
+        <span class="kpi-value">$225</span>
+        <span class="kpi-sub">Massachusetts</span>
+      </div>
+      <div class="kpi-cell">
+        <span class="kpi-label">Average fee</span>
+        <span class="kpi-value">$75</span>
+        <span class="kpi-sub">across all states</span>
+      </div>
     </div>
+
+    <!-- NOTE -->
+    <div class="note">
+      <div class="note-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+      </div>
+      <p>These figures may not be 100% accurate — states change their fees regularly. <a href="https://nipr.com" target="_blank" rel="noopener noreferrer">NIPR.com</a> always has the most up-to-date information.</p>
+    </div>
+
+    <!-- TABLE -->
+    <div class="card table-card">
+      <table class="lic-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>State</th>
+            <th class="num">Fee</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- EASTERN TIME -->
+          <tr class="tz-row"><td colspan="3"><span class="tz-dot" style="background:var(--rb-green)"></span>Eastern Time (ET)</td></tr>
+          <tr><td>1</td><td class="state-name">Michigan</td><td class="fee-cell"><span class="fee low">$10</span></td></tr>
+          <tr><td>2</td><td class="state-name">Ohio</td><td class="fee-cell"><span class="fee low">$15</span></td></tr>
+          <tr><td>3</td><td class="state-name">Virginia</td><td class="fee-cell"><span class="fee low">$15</span></td></tr>
+          <tr><td>4</td><td class="state-name">South Carolina</td><td class="fee-cell"><span class="fee low">$25</span></td></tr>
+          <tr><td>5</td><td class="state-name">West Virginia</td><td class="fee-cell"><span class="fee low">$25</span></td></tr>
+          <tr><td>6</td><td class="state-name">Indiana</td><td class="fee-cell"><span class="fee low">$40</span></td></tr>
+          <tr><td>7</td><td class="state-name">Kentucky</td><td class="fee-cell"><span class="fee low">$40</span></td></tr>
+          <tr><td>8</td><td class="state-name">New York</td><td class="fee-cell"><span class="fee low">$40</span></td></tr>
+          <tr><td>9</td><td class="state-name">Florida</td><td class="fee-cell"><span class="fee mid">$50</span></td></tr>
+          <tr><td>10</td><td class="state-name">Maine</td><td class="fee-cell"><span class="fee mid">$50</span></td></tr>
+          <tr><td>11</td><td class="state-name">North Carolina</td><td class="fee-cell"><span class="fee mid">$50</span></td></tr>
+          <tr><td>12</td><td class="state-name">Tennessee</td><td class="fee-cell"><span class="fee mid">$50</span></td></tr>
+          <tr><td>13</td><td class="state-name">Vermont</td><td class="fee-cell"><span class="fee mid">$50</span></td></tr>
+          <tr><td>14</td><td class="state-name">Maryland</td><td class="fee-cell"><span class="fee mid">$54</span></td></tr>
+          <tr><td>15</td><td class="state-name">Pennsylvania</td><td class="fee-cell"><span class="fee mid">$55</span></td></tr>
+          <tr><td>16</td><td class="state-name">Delaware</td><td class="fee-cell"><span class="fee mid">$100</span></td></tr>
+          <tr><td>17</td><td class="state-name">Georgia</td><td class="fee-cell"><span class="fee mid">$100</span></td></tr>
+          <tr><td>18</td><td class="state-name">New Hampshire</td><td class="fee-cell"><span class="fee mid">$100</span></td></tr>
+          <tr><td>19</td><td class="state-name">Rhode Island</td><td class="fee-cell"><span class="fee high">$130</span></td></tr>
+          <tr><td>20</td><td class="state-name">Connecticut</td><td class="fee-cell"><span class="fee high">$140</span></td></tr>
+          <tr><td>21</td><td class="state-name">New Jersey</td><td class="fee-cell"><span class="fee high">$150</span></td></tr>
+          <tr><td>22</td><td class="state-name">Massachusetts</td><td class="fee-cell"><span class="fee high">$225</span></td></tr>
+
+          <!-- CENTRAL TIME -->
+          <tr class="tz-row"><td colspan="3"><span class="tz-dot" style="background:var(--rb-yellow)"></span>Central Time (CT)</td></tr>
+          <tr><td>23</td><td class="state-name">Arkansas</td><td class="fee-cell"><span class="fee low">$20</span></td></tr>
+          <tr><td>24</td><td class="state-name">South Dakota</td><td class="fee-cell"><span class="fee low">$25</span></td></tr>
+          <tr><td>25</td><td class="state-name">Kansas</td><td class="fee-cell"><span class="fee low">$30</span></td></tr>
+          <tr><td>26</td><td class="state-name">Iowa</td><td class="fee-cell"><span class="fee mid">$50</span></td></tr>
+          <tr><td>27</td><td class="state-name">Minnesota</td><td class="fee-cell"><span class="fee mid">$50</span></td></tr>
+          <tr><td>28</td><td class="state-name">Nebraska</td><td class="fee-cell"><span class="fee mid">$50</span></td></tr>
+          <tr><td>29</td><td class="state-name">Texas</td><td class="fee-cell"><span class="fee mid">$50</span></td></tr>
+          <tr><td>30</td><td class="state-name">Oklahoma</td><td class="fee-cell"><span class="fee mid">$60</span></td></tr>
+          <tr><td>31</td><td class="state-name">Louisiana</td><td class="fee-cell"><span class="fee mid">$75</span></td></tr>
+          <tr><td>32</td><td class="state-name">Wisconsin</td><td class="fee-cell"><span class="fee mid">$75</span></td></tr>
+          <tr><td>33</td><td class="state-name">Alabama</td><td class="fee-cell"><span class="fee mid">$80</span></td></tr>
+          <tr><td>34</td><td class="state-name">Mississippi</td><td class="fee-cell"><span class="fee mid">$100</span></td></tr>
+          <tr><td>35</td><td class="state-name">Missouri</td><td class="fee-cell"><span class="fee mid">$100</span></td></tr>
+          <tr><td>36</td><td class="state-name">North Dakota</td><td class="fee-cell"><span class="fee mid">$100</span></td></tr>
+          <tr><td>37</td><td class="state-name">Illinois</td><td class="fee-cell"><span class="fee high">$215</span></td></tr>
+
+          <!-- MOUNTAIN TIME -->
+          <tr class="tz-row"><td colspan="3"><span class="tz-dot" style="background:var(--rb-orange)"></span>Mountain Time (MT)</td></tr>
+          <tr><td>38</td><td class="state-name">New Mexico</td><td class="fee-cell"><span class="fee low">$30</span></td></tr>
+          <tr><td>39</td><td class="state-name">Montana</td><td class="fee-cell"><span class="fee mid">$50</span></td></tr>
+          <tr><td>40</td><td class="state-name">Utah</td><td class="fee-cell"><span class="fee mid">$75</span></td></tr>
+          <tr><td>41</td><td class="state-name">Idaho</td><td class="fee-cell"><span class="fee mid">$80</span></td></tr>
+          <tr><td>42</td><td class="state-name">Colorado</td><td class="fee-cell"><span class="fee mid">$82</span></td></tr>
+          <tr><td>43</td><td class="state-name">Wyoming</td><td class="fee-cell"><span class="fee mid">$100</span></td></tr>
+          <tr><td>44</td><td class="state-name">Arizona</td><td class="fee-cell"><span class="fee high">$120</span></td></tr>
+
+          <!-- PACIFIC TIME -->
+          <tr class="tz-row"><td colspan="3"><span class="tz-dot" style="background:var(--rb-red)"></span>Pacific Time (PT)</td></tr>
+          <tr><td>45</td><td class="state-name">Washington</td><td class="fee-cell"><span class="fee mid">$60</span></td></tr>
+          <tr><td>46</td><td class="state-name">Oregon</td><td class="fee-cell"><span class="fee mid">$75</span></td></tr>
+          <tr><td>47</td><td class="state-name">California</td><td class="fee-cell"><span class="fee high">$188</span></td></tr>
+          <tr><td>48</td><td class="state-name">Nevada</td><td class="fee-cell"><span class="fee high">$195</span></td></tr>
+
+          <!-- ALASKA & HAWAII -->
+          <tr class="tz-row"><td colspan="3"><span class="tz-dot" style="background:var(--rb-purple)"></span>Alaska &amp; Hawaii</td></tr>
+          <tr><td>49</td><td class="state-name">Hawaii</td><td class="fee-cell"><span class="fee mid">$50</span></td></tr>
+          <tr><td>50</td><td class="state-name">Alaska</td><td class="fee-cell"><span class="fee mid">$75</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <a href="agent-resources.html" class="back-link">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
+      </svg>
+      Back to Agent Resources
+    </a>
+
+    <footer class="foot">
+      &copy; 2026 <span>Kairos Financial</span> — Agent Portal, Internal Use Only.
+    </footer>
+
   </div>
 
-  <!-- CONTENT -->
-  <section class="license-section">
-    <div class="container">
-
-      <div class="license-disclaimer fade-in">
-        <div class="license-disclaimer-icon">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10"/>
-            <line x1="12" y1="8" x2="12" y2="12"/>
-            <line x1="12" y1="16" x2="12.01" y2="16"/>
-          </svg>
-        </div>
-        <p>
-          This may not be 100% accurate as states change their fees all the time. <a href="https://nipr.com" target="_blank" rel="noopener noreferrer">NIPR.com</a> will have the most up-to-date information.
-        </p>
-      </div>
-
-      <div class="license-table-wrap fade-in">
-        <table class="license-table">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>State</th>
-              <th>Fee</th>
-            </tr>
-          </thead>
-          <tbody>
-            <!-- EASTERN TIME -->
-            <tr class="tz-group-header"><td colspan="3">Eastern Time (ET)</td></tr>
-            <tr><td>1</td><td>Michigan</td><td>$10</td></tr>
-            <tr><td>2</td><td>Ohio</td><td>$15</td></tr>
-            <tr><td>3</td><td>Virginia</td><td>$15</td></tr>
-            <tr><td>4</td><td>South Carolina</td><td>$25</td></tr>
-            <tr><td>5</td><td>West Virginia</td><td>$25</td></tr>
-            <tr><td>6</td><td>Indiana</td><td>$40</td></tr>
-            <tr><td>7</td><td>Kentucky</td><td>$40</td></tr>
-            <tr><td>8</td><td>New York</td><td>$40</td></tr>
-            <tr><td>9</td><td>Florida</td><td>$50</td></tr>
-            <tr><td>10</td><td>Maine</td><td>$50</td></tr>
-            <tr><td>11</td><td>North Carolina</td><td>$50</td></tr>
-            <tr><td>12</td><td>Tennessee</td><td>$50</td></tr>
-            <tr><td>13</td><td>Vermont</td><td>$50</td></tr>
-            <tr><td>14</td><td>Maryland</td><td>$54</td></tr>
-            <tr><td>15</td><td>Pennsylvania</td><td>$55</td></tr>
-            <tr><td>16</td><td>Delaware</td><td>$100</td></tr>
-            <tr><td>17</td><td>Georgia</td><td>$100</td></tr>
-            <tr><td>18</td><td>New Hampshire</td><td>$100</td></tr>
-            <tr><td>19</td><td>Rhode Island</td><td>$130</td></tr>
-            <tr><td>20</td><td>Connecticut</td><td>$140</td></tr>
-            <tr><td>21</td><td>New Jersey</td><td>$150</td></tr>
-            <tr><td>22</td><td>Massachusetts</td><td>$225</td></tr>
-
-            <!-- CENTRAL TIME -->
-            <tr class="tz-group-header"><td colspan="3">Central Time (CT)</td></tr>
-            <tr><td>23</td><td>Arkansas</td><td>$20</td></tr>
-            <tr><td>24</td><td>South Dakota</td><td>$25</td></tr>
-            <tr><td>25</td><td>Kansas</td><td>$30</td></tr>
-            <tr><td>26</td><td>Iowa</td><td>$50</td></tr>
-            <tr><td>27</td><td>Minnesota</td><td>$50</td></tr>
-            <tr><td>28</td><td>Nebraska</td><td>$50</td></tr>
-            <tr><td>29</td><td>Texas</td><td>$50</td></tr>
-            <tr><td>30</td><td>Oklahoma</td><td>$60</td></tr>
-            <tr><td>31</td><td>Louisiana</td><td>$75</td></tr>
-            <tr><td>32</td><td>Wisconsin</td><td>$75</td></tr>
-            <tr><td>33</td><td>Alabama</td><td>$80</td></tr>
-            <tr><td>34</td><td>Mississippi</td><td>$100</td></tr>
-            <tr><td>35</td><td>Missouri</td><td>$100</td></tr>
-            <tr><td>36</td><td>North Dakota</td><td>$100</td></tr>
-            <tr><td>37</td><td>Illinois</td><td>$215</td></tr>
-
-            <!-- MOUNTAIN TIME -->
-            <tr class="tz-group-header"><td colspan="3">Mountain Time (MT)</td></tr>
-            <tr><td>38</td><td>New Mexico</td><td>$30</td></tr>
-            <tr><td>39</td><td>Montana</td><td>$50</td></tr>
-            <tr><td>40</td><td>Utah</td><td>$75</td></tr>
-            <tr><td>41</td><td>Colorado</td><td>$82</td></tr>
-            <tr><td>42</td><td>Idaho</td><td>$80</td></tr>
-            <tr><td>43</td><td>Wyoming</td><td>$100</td></tr>
-            <tr><td>44</td><td>Arizona</td><td>$120</td></tr>
-
-            <!-- PACIFIC TIME -->
-            <tr class="tz-group-header"><td colspan="3">Pacific Time (PT)</td></tr>
-            <tr><td>45</td><td>Washington</td><td>$60</td></tr>
-            <tr><td>46</td><td>Oregon</td><td>$75</td></tr>
-            <tr><td>47</td><td>California</td><td>$188</td></tr>
-            <tr><td>48</td><td>Nevada</td><td>$195</td></tr>
-
-            <!-- ALASKA & HAWAII -->
-            <tr class="tz-group-header"><td colspan="3">Alaska &amp; Hawaii</td></tr>
-            <tr><td>49</td><td>Hawaii</td><td>$50</td></tr>
-            <tr><td>50</td><td>Alaska</td><td>$75</td></tr>
-          </tbody>
-        </table>
-      </div>
-
-      <a href="agent-resources.html" class="back-link">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="19" y1="12" x2="5" y2="12"/>
-          <polyline points="12 19 5 12 12 5"/>
-        </svg>
-        Back to Agent Resources
-      </a>
-    </div>
-  </section>
-
-  <footer class="footer">
-    <p>&copy; 2026 <span>Kairos Financial</span>. Agent Portal — Internal Use Only.</p>
-  </footer>
-
-  <script src="js/main.js"></script>
+<script>
+  (function () {
+    var KEY = 'kf_theme';
+    var root = document.documentElement;
+    var btn = document.getElementById('themeToggle');
+    var SUN = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>';
+    var MOON = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>';
+    function apply(t) {
+      root.setAttribute('data-theme', t);
+      btn.innerHTML = t === 'dark' ? SUN : MOON;
+      try { localStorage.setItem(KEY, t); } catch (e) {}
+    }
+    var saved;
+    try { saved = localStorage.getItem(KEY); } catch (e) {}
+    apply(saved || 'dark');
+    btn.addEventListener('click', function () {
+      apply(root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+    });
+  })();
+</script>
 </body>
 </html>
