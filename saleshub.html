@@ -33617,8 +33617,8 @@
           {/* Notes — near the top for quick logging + at-a-glance history. */}
           <div className="rhq-card pad" style={{ marginBottom: 14 }}>
             <div className="rhq-sectitle" style={{ marginBottom: 14 }}>Notes</div>
-            <div style={{ display: 'flex', gap: 8, marginBottom: 14 }}>
-              <input className="rhq-inp" style={{ flex: 1 }} value={noteDraft} onChange={e => setNoteDraft(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') postNote(); }} placeholder="Log a call, text, or update…" />
+            <div style={{ display: 'flex', gap: 8, marginBottom: 14, alignItems: 'flex-start' }}>
+              <textarea className="rhq-ta" style={{ flex: 1, minHeight: 44 }} rows={2} value={noteDraft} onChange={e => setNoteDraft(e.target.value)} onKeyDown={e => { if (e.key === 'Escape') setNoteDraft(''); }} placeholder="Log a call, text, or update…  (Enter for a new line)" />
               <button className="rhq-btn" onClick={postNote}>Add</button>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -33627,9 +33627,9 @@
                 <div key={n.id} style={{ background: 'var(--sf2)', borderRadius: 12, padding: '12px 14px' }}>
                   {editNoteId === n.id
                     ? <div>
-                        <input className="rhq-inp" style={{ width: '100%' }} value={editNoteDraft} autoFocus
+                        <textarea className="rhq-ta" style={{ width: '100%', minHeight: 44 }} rows={2} value={editNoteDraft} autoFocus
                           onChange={e => setEditNoteDraft(e.target.value)}
-                          onKeyDown={e => { if (e.key === 'Enter') saveEditNote(); if (e.key === 'Escape') cancelEditNote(); }} />
+                          onKeyDown={e => { if (e.key === 'Escape') cancelEditNote(); }} />
                         <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
                           <button className="rhq-btn sm" onClick={saveEditNote}>Save</button>
                           <button className="rhq-btn ghost sm" onClick={cancelEditNote}>Cancel</button>
@@ -33637,7 +33637,7 @@
                       </div>
                     : <div>
                         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8 }}>
-                          <div style={{ fontSize: 13.5, lineHeight: 1.5, flex: 1, minWidth: 0, wordBreak: 'break-word' }}>{n.body}</div>
+                          <div style={{ fontSize: 13.5, lineHeight: 1.5, flex: 1, minWidth: 0, wordBreak: 'break-word', whiteSpace: 'pre-wrap' }}>{n.body}</div>
                           <div style={{ display: 'flex', gap: 4, flex: 'none' }}>
                             <button title="Edit note" onClick={() => startEditNote(n)} style={{ appearance: 'none', border: 'none', background: 'transparent', color: 'var(--tx3)', width: 26, height: 26, borderRadius: 7, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
                               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9" /><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" /></svg>
