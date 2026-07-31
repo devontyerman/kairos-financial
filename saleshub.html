@@ -2982,54 +2982,47 @@
     #tpatab-performance .tp-legend { display: flex; align-items: center; gap: 18px; font-size: 12px; color: var(--tp-ink-2); }
     #tpatab-performance .tp-legend > div { display: flex; align-items: center; gap: 6px; }
 
-    /* KPI panel */
-    #tpatab-performance .tp-kpi-panel { grid-column: span 7; display: flex; flex-direction: column; }
-    #tpatab-performance .tp-kpi-grid {
-      display: grid; grid-template-columns: repeat(5, 1fr); gap: 1px;
-      background: var(--tp-hairline);
-      border: 1px solid var(--tp-hairline);
-      border-radius: var(--tp-radius);
-      overflow: hidden;
-      flex: 1; grid-auto-rows: minmax(150px, 1fr);
+    /* KPI panel — transparent wrapper so each stat reads as a box floating on
+       the darker page background, not a card sitting on another card. */
+    #tpatab-performance .tp-kpi-panel {
+      grid-column: span 7; display: flex; flex-direction: column;
+      background: transparent; border: none; border-radius: 0;
+      padding: 0; box-shadow: none; overflow: visible;
     }
+    #tpatab-performance .tp-kpi-grid {
+      display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px;
+      grid-auto-rows: 1fr;
+    }
+    /* Square-ish stat boxes. Uniform structure (label / value / sub) with every
+       line kept to a single row, so all three rows of text line up horizontally
+       across every box. Condensed vertical padding keeps them close to square. */
     #tpatab-performance .tp-kpi-cell {
       background: var(--tp-surface);
-      padding: 34px 14px 16px;
-      display: flex; flex-direction: column; gap: 6px;
+      border: 1px solid var(--tp-hairline);
+      border-radius: var(--tp-radius);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.18);
+      padding: 14px 12px;
+      display: flex; flex-direction: column; gap: 5px;
       justify-content: center; align-items: center; text-align: center;
-      position: relative; min-height: 0; min-width: 0;
-    }
-    /* Uniform internal rhythm so every box lines up: the label is pinned to the
-       same top position in every cell (so titles never drift to different
-       heights), and the data below is vertically centered. A reserved two-line
-       slot for the sub keeps short/long subs at the same height. */
-    #tpatab-performance .tp-kpi-cell .tp-kpi-lbl {
-      position: absolute; top: 14px; left: 12px; right: 12px; margin: 0;
-      white-space: nowrap; justify-content: center;
-    }
-    #tpatab-performance .tp-kpi-cell:not(.featured) .tp-kpi-sub {
-      min-height: 2.6em; display: flex; align-items: center; justify-content: center;
+      min-height: 104px; min-width: 0; overflow: hidden;
     }
     #tpatab-performance .tp-kpi-lbl {
       font-family: var(--tp-mono); font-size: 10px;
-      text-transform: uppercase; letter-spacing: 0.08em;
+      text-transform: uppercase; letter-spacing: 0.06em;
       color: var(--tp-ink-3); display: flex; align-items: center; gap: 6px;
+      white-space: nowrap; max-width: 100%;
     }
-    #tpatab-performance .tp-kpi-lbl .swatch { width: 6px; height: 6px; border-radius: 2px; display: inline-block; }
+    #tpatab-performance .tp-kpi-lbl .swatch { width: 6px; height: 6px; border-radius: 2px; display: inline-block; flex: none; }
     #tpatab-performance .tp-kpi-val {
-      font-family: var(--tp-mono); font-size: 26px; font-weight: 500;
+      font-family: var(--tp-mono); font-size: 24px; font-weight: 500;
       color: var(--tp-ink-1); letter-spacing: -0.01em;
-      font-variant-numeric: tabular-nums; line-height: 1; margin-top: 4px;
+      font-variant-numeric: tabular-nums; line-height: 1.1; white-space: nowrap;
     }
-    #tpatab-performance .tp-kpi-sub { font-family: var(--tp-mono); font-size: 11px; color: var(--tp-ink-3); }
+    #tpatab-performance .tp-kpi-sub {
+      font-family: var(--tp-mono); font-size: 11px; color: var(--tp-ink-3);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;
+    }
     #tpatab-performance .tp-kpi-sub b { color: var(--tp-ink-1); font-weight: 500; }
-    #tpatab-performance .tp-kpi-cell.featured { grid-column: span 1; background: var(--tp-surface-2); }
-    #tpatab-performance .tp-kpi-cell.featured .tp-kpi-val { font-size: 30px; }
-    #tpatab-performance .tp-ring-wrap { display: flex; align-items: center; gap: 14px; }
-    /* In the uniform KPI grid the columns are narrow, so stack the ring above
-       its text (instead of beside it) to stay centered and uncramped. */
-    #tpatab-performance .tp-kpi-cell.featured .tp-ring-wrap { flex-direction: column; gap: 8px; }
-    #tpatab-performance .tp-ring-text { display: flex; flex-direction: column; gap: 2px; }
 
     /* ─── Hierarchy (org chart) — now lives inside Recruiter HQ ──────────
        The chart markup/behavior is reused verbatim; it just mounts into the
@@ -25708,13 +25701,13 @@
           deposits: 'var(--s1f)', roi: 'var(--s0f)', dialToDeal: 'var(--s4f)',
         };
         const cells = [
-          { lbl: 'Dials', val: fmtNum(s.dials), sub: <>{(s.dials / dayDivisor).toFixed(0)} <span style={{color:'var(--tp-ink-4)'}}>/ business day</span></>, hue: HUES.dials },
-          { lbl: 'Answers', val: fmtNum(s.answers), sub: <><b>{(s.answers / Math.max(s.dials, 1) * 100).toFixed(1)}%</b> answer rate</>, hue: HUES.answers },
-          { lbl: 'Appointments', val: fmtNum(s.appointments), sub: <><b>{(s.appointments / Math.max(s.answers, 1) * 100).toFixed(1)}%</b> set rate</>, hue: HUES.appointments },
-          { lbl: 'Presentations', val: fmtNum(s.presentations), sub: <><b>{(s.presentations / Math.max(s.appointments, 1) * 100).toFixed(1)}%</b> show rate</>, hue: HUES.presentations },
-          { lbl: 'Deals', val: fmtNum(s.deals), sub: <><b>{(s.deals / Math.max(s.presentations, 1) * 100).toFixed(1)}%</b> close rate</>, hue: HUES.deals },
-          { lbl: 'Lead spend', val: fmtCurrency(s.leadSpend, {compact:true}), sub: <>{fmtCurrency(s.leadSpend / Math.max(s.deals, 1))} <span style={{color:'var(--tp-ink-4)'}}>per deal</span></>, hue: HUES.leadSpend },
-          { lbl: 'Deposits', val: fmtCurrency(s.deposits, {compact:true}), sub: <>{(s.deposits / Math.max(s.ap, 1) * 100).toFixed(0)}% <span style={{color:'var(--tp-ink-4)'}}>of AP collected</span></>, hue: HUES.deposits },
+          { lbl: 'Dials', val: fmtNum(s.dials), sub: <>{(s.dials / dayDivisor).toFixed(0)}/day</>, hue: HUES.dials },
+          { lbl: 'Answers', val: fmtNum(s.answers), sub: <><b>{(s.answers / Math.max(s.dials, 1) * 100).toFixed(1)}%</b> answered</>, hue: HUES.answers },
+          { lbl: 'Appts', val: fmtNum(s.appointments), sub: <><b>{(s.appointments / Math.max(s.answers, 1) * 100).toFixed(1)}%</b> set</>, hue: HUES.appointments },
+          { lbl: 'Presentations', val: fmtNum(s.presentations), sub: <><b>{(s.presentations / Math.max(s.appointments, 1) * 100).toFixed(1)}%</b> shown</>, hue: HUES.presentations },
+          { lbl: 'Deals', val: fmtNum(s.deals), sub: <><b>{(s.deals / Math.max(s.presentations, 1) * 100).toFixed(1)}%</b> close</>, hue: HUES.deals },
+          { lbl: 'Lead spend', val: fmtCurrency(s.leadSpend, {compact:true}), sub: <>{fmtCurrency(s.leadSpend / Math.max(s.deals, 1))}/deal</>, hue: HUES.leadSpend },
+          { lbl: 'Deposits', val: fmtCurrency(s.deposits, {compact:true}), sub: <>{(s.deposits / Math.max(s.ap, 1) * 100).toFixed(0)}% collected</>, hue: HUES.deposits },
         ];
         return (
           <div className="tp-card tp-kpi-panel">
@@ -25730,32 +25723,20 @@
                   <div className="tp-kpi-sub">{c.sub}</div>
                 </div>
               ))}
-              <div className="tp-kpi-cell featured">
+              <div className="tp-kpi-cell">
                 <div className="tp-kpi-lbl"><span className="swatch" style={{background: HUES.roi}}></span>ROI</div>
-                <div className="tp-ring-wrap">
-                  <ROIRing value={s.roi} color={HUES.roi} />
-                  <div className="tp-ring-text">
-                    <div className="tp-kpi-val" style={{fontSize:22, color: s.roi >= 0 ? 'var(--tp-pos)' : 'var(--tp-neg)'}}>
-                      {s.roi >= 0 ? '+' : ''}{s.roi.toFixed(0)}%
-                    </div>
-                    <div className="tp-kpi-sub">(deposits − spend) / spend</div>
-                  </div>
-                </div>
+                <div className="tp-kpi-val" style={{color: s.roi >= 0 ? 'var(--tp-pos)' : 'var(--tp-neg)'}}>{s.roi >= 0 ? '+' : ''}{s.roi.toFixed(0)}%</div>
+                <div className="tp-kpi-sub">return on spend</div>
               </div>
-              <div className="tp-kpi-cell featured">
+              <div className="tp-kpi-cell">
                 <div className="tp-kpi-lbl"><span className="swatch" style={{background: HUES.dialToDeal}}></span>Dial → Deal</div>
-                <div className="tp-ring-wrap">
-                  <ROIRing value={s.dialToDeal * 30} color={HUES.dialToDeal} />
-                  <div className="tp-ring-text">
-                    <div className="tp-kpi-val" style={{fontSize:22}}>{s.dialToDeal.toFixed(2)}%</div>
-                    <div className="tp-kpi-sub">{Math.round(s.dials / Math.max(s.deals, 1))} dials → 1 deal</div>
-                  </div>
-                </div>
+                <div className="tp-kpi-val">{s.dialToDeal.toFixed(2)}%</div>
+                <div className="tp-kpi-sub">{Math.round(s.dials / Math.max(s.deals, 1))} dials/deal</div>
               </div>
               <div className="tp-kpi-cell">
                 <div className="tp-kpi-lbl"><span className="swatch" style={{background: 'var(--rb-blue)'}}></span>Avg premium</div>
                 <div className="tp-kpi-val">{fmtCurrency(s.avgPremium, {compact:true})}</div>
-                <div className="tp-kpi-sub">per closed deal</div>
+                <div className="tp-kpi-sub">per deal</div>
               </div>
             </div>
           </div>
