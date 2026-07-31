@@ -16762,6 +16762,28 @@
       });
     })();
 
+    // ─── State License Costs iframe (embedded reference page) ───
+    // Grow the frame to its content height so the table isn't cut off at the
+    // fixed .cp-iframe min-height. Same pattern as the Carrier Products frame.
+    (function wireStateLicenseIframe() {
+      const f = document.getElementById('stateLicenseFrame');
+      if (!f) return;
+      const doResize = () => resizePayIframe('stateLicenseFrame');
+      f.addEventListener('load', () => {
+        requestAnimationFrame(() => {
+          doResize();
+          setTimeout(doResize, 300);
+          try {
+            const doc = f.contentDocument;
+            if (doc && doc.body && 'ResizeObserver' in window) {
+              new ResizeObserver(doResize).observe(doc.body);
+            }
+          } catch (e) {}
+        });
+      });
+      window.addEventListener('resize', doResize);
+    })();
+
     // Single delegated click handler on the sidebar — bulletproof against timing
     // issues (admin-only buttons that mount hidden, dynamic re-renders, etc.).
     const ssSidebarRoot = document.getElementById('ssSidebar');

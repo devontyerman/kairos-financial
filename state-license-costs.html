@@ -67,9 +67,9 @@ a { color: inherit; text-decoration: none; }
 button { font-family: inherit; cursor: pointer; }
 
 .app {
-  max-width: 1100px;
+  max-width: 1160px;
   margin: 0 auto;
-  padding: 28px 32px 80px;
+  padding: 24px 28px 48px;
   position: relative;
 }
 .app::before {
@@ -286,30 +286,6 @@ button { font-family: inherit; cursor: pointer; }
       </div>
     </header>
 
-    <!-- KPI STRIP -->
-    <div class="kpi-grid">
-      <div class="kpi-cell">
-        <span class="kpi-label">States</span>
-        <span class="kpi-value">50</span>
-        <span class="kpi-sub">licensed regions</span>
-      </div>
-      <div class="kpi-cell">
-        <span class="kpi-label">Lowest fee</span>
-        <span class="kpi-value">$10</span>
-        <span class="kpi-sub">Michigan</span>
-      </div>
-      <div class="kpi-cell">
-        <span class="kpi-label">Highest fee</span>
-        <span class="kpi-value">$225</span>
-        <span class="kpi-sub">Massachusetts</span>
-      </div>
-      <div class="kpi-cell">
-        <span class="kpi-label">Average fee</span>
-        <span class="kpi-value">$75</span>
-        <span class="kpi-sub">across all states</span>
-      </div>
-    </div>
-
     <!-- NOTE -->
     <div class="note">
       <div class="note-icon">
@@ -414,21 +390,34 @@ button { font-family: inherit; cursor: pointer; }
 
 <script>
   (function () {
-    var KEY = 'kf_theme';
+    // Share the Sales Hub's theme key so this page follows the site's
+    // light/dark mode (both when embedded in the hub and standalone).
+    var KEY = 'kf_skin_theme_v1';
     var root = document.documentElement;
     var btn = document.getElementById('themeToggle');
     var SUN = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>';
     var MOON = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>';
+    var embedded = false;
+    try { embedded = window.self !== window.top; } catch (e) { embedded = true; }
+    function read() {
+      try { var v = localStorage.getItem(KEY); if (v === 'dark' || v === 'light') return v; } catch (e) {}
+      return 'dark';
+    }
     function apply(t) {
       root.setAttribute('data-theme', t);
-      btn.innerHTML = t === 'dark' ? SUN : MOON;
-      try { localStorage.setItem(KEY, t); } catch (e) {}
+      if (btn) btn.innerHTML = t === 'dark' ? SUN : MOON;
     }
-    var saved;
-    try { saved = localStorage.getItem(KEY); } catch (e) {}
-    apply(saved || 'dark');
-    btn.addEventListener('click', function () {
-      apply(root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+    apply(read());
+    // When embedded in the hub, the site's own toggle governs the theme.
+    if (embedded && btn) btn.style.display = 'none';
+    // Follow the site's theme live — fires when the Sales Hub toggle flips it.
+    window.addEventListener('storage', function (e) {
+      if (e.key === KEY && (e.newValue === 'dark' || e.newValue === 'light')) apply(e.newValue);
+    });
+    if (btn) btn.addEventListener('click', function () {
+      var t = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      try { localStorage.setItem(KEY, t); } catch (e) {}
+      apply(t);
     });
   })();
 </script>
