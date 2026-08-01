@@ -34638,7 +34638,7 @@
                 </div>
                 <div className="kfo-card">
                   <div className="kfo-cardtitle">States to purchase</div>
-                  <div className="kfo-carddesc" style={{ marginTop: 6 }}>These are the states you should purchase if you want to get on inbound calls. If you can't afford to purchase all of these, we've marked the <strong>minimum required</strong> ones.</div>
+                  <div className="kfo-carddesc" style={{ marginTop: 6 }}>These are the states you should purchase if you want to get on inbound calls. If you can't afford to purchase all of these, we've marked the <strong>minimum required</strong> ones. If you cannot afford to purchase the minimum required states, inbound calls may not be an option — please have a discussion with your manager to organize an alternative plan.</div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 14 }}>
                     {allStatesToBuy.map(n => stateRow(n, requiredSet.has(n)))}
                   </div>
@@ -34688,8 +34688,8 @@
           </div>
           <div className="kfo-card">
             <div className="kfo-cardtitle">Two must-dos</div>
-            <div className="kfo-carddesc">Download the Discord app on your phone and turn your notifications <strong>on</strong> — that's how you'll catch team calls, announcements, and pings in real time.</div>
-            <label className="kfo-check" style={{ marginTop: 14 }}><input type="checkbox" checked={!!d.checks.app} onChange={e => setD(s => Object.assign({}, s, { checks: Object.assign({}, s.checks, { app: e.target.checked }) }))} /> I've downloaded the app on my phone and turned notifications on</label>
+            <div className="kfo-carddesc">Download the Discord app on your phone and make sure your <strong>push notifications are on</strong> — that's how you'll catch team calls, announcements, and pings in real time. Important updates come from the <strong>Kairos</strong> server, so make sure notifications are turned on for that one specifically.</div>
+            <label className="kfo-check" style={{ marginTop: 14 }}><input type="checkbox" checked={!!d.checks.app} onChange={e => setD(s => Object.assign({}, s, { checks: Object.assign({}, s.checks, { app: e.target.checked }) }))} /> I've downloaded the app and turned push notifications on for the Kairos server</label>
           </div>
           {/* Optional Discord tutorial (YouTube) — doesn't gate the step. */}
           <div>
