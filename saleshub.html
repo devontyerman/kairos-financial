@@ -33889,28 +33889,27 @@
         headsetRecommended: 'https://www.amazon.com/Jabra-Evolve2-Wireless-Stereo-Headset/dp/B0C1D8JYZ7?crid=2XKR1EYM2V7UM&dib=eyJ2IjoiMSJ9.-xiMbeh7bkdj-gZ5WyHSe8ZEQayAw5fYT5eXVA910ZZdFZKkz-hwFH4mMtyDuJDtuZGV0LHuMOAke9qYehIUjxUexOc-iYgXW34wcN8bAPoemP3UpUrtgvYcHFtT3-q0_4SOgZUqBa_5IFsjfTpNPcI9FMgpj0dTuu34th3T_WQYvmeYU_x91B535AB7ra8mLRam4GR8RsXOiwo7bel6IMSWLnIsfbzoctwurPyiewo.xwpIzjREIWBnNMxq0U3fUzX4DCvcjxaV9z10P8QciEA&dib_tag=se&keywords=jabra+evolve+2+65+flex&qid=1780784262&sprefix=jabra+evolve+2+65+fle,aps,262&sr=8-3&linkCode=sl2&tag=devkenneth-20&linkId=af270a651b9337d318d80120bb0cd913&language=en_US&ref_=as_li_ss_tl',
         headsetBudget:      'https://www.amazon.com/Logitech-Bluetooth-Noise-Canceling-Microphone-Compatible/dp/B0CVF9J862?crid=26CQMWLH1BO9C&dib=eyJ2IjoiMSJ9.C5ZN2VSj1hVn1nHpC7tXm2C1cc40CbFxYUo9FQ6PH5jaqDD8eth9zOFs32t1rF1IK6Yn5FptK84vUbUfOcgeHHCydu5zZASQ1MFdO4d5Lsdb9ttsXk0RuXkqBAISNhkU8oj4NCX-k2Si5l4DwzmG0rViM09HMh5sLk8iq4DS4dgiCMPTjZyuLFaA14XEAQo53x7KyxRcviZkoS9y4gRWrieM2UXFa7CCeU5Zl2aXJAI.I8iaw0Amnz9yJkJSZEKAGyvIqKq5g1jcrV-AAdt3j2Y&dib_tag=se&keywords=call%2Bcenter%2Bheadset%2Bwireless&qid=1780784415&sprefix=call%2Bcenter%2Bheadset%2Bwirele,aps,270&sr=8-3&th=1&linkCode=sl2&tag=kairosfinanci-20&linkId=ec026bbf5e6aa9da1aedda585a76cf71&language=en_US&ref_=as_li_ss_tl',
       },
-      // The minimum states an agent must buy to start (most-purchased), shown
-      // highlighted at the top of the States step; then the fuller recommended list.
-      statesMustBuy: ['Arizona', 'Texas', 'Pennsylvania', 'Ohio', 'Florida', 'North Carolina', 'Tennessee', 'Illinois', 'California', 'Virginia'],
-      statesRecommended: ['Alabama', 'Colorado', 'Indiana', 'Iowa', 'Kentucky', 'Louisiana', 'Maryland', 'Michigan', 'Mississippi', 'Missouri', 'South Carolina'],
+      // The minimum states an agent must buy to start (most popular for inbound
+      // calls), shown highlighted at the top of the States step; then the fuller
+      // recommended list.
+      statesMustBuy: ['California', 'Florida', 'Iowa', 'Maryland', 'Michigan', 'North Carolina', 'Ohio', 'Pennsylvania', 'South Carolina', 'Tennessee', 'Texas', 'Virginia'],
+      statesRecommended: ['Alabama', 'Arizona', 'Colorado', 'Indiana', 'Kentucky', 'Louisiana', 'Mississippi', 'Missouri', 'New Mexico'],
       // Approximate non-resident LIFE producer license fee per state (the state
       // filing fee via NIPR, USD; excludes the small ~$5 NIPR transaction fee).
       // Best-effort from public NIPR / state DOI fee schedules — a disclaimer is
       // shown on the step since fees change and some states bill per line.
       stateLicenseCosts: {
-        'Texas': 50, 'Ohio': 15, 'California': 188, 'North Carolina': 50, 'South Carolina': 25, 'Florida': 55, 'Georgia': 100,
-        'Alabama': 80, 'Alaska': 75, 'Arizona': 120, 'Colorado': 47, 'Iowa': 50, 'Illinois': 215, 'Indiana': 40, 'Kansas': 30,
-        'Kentucky': 40, 'Louisiana': 75, 'Maryland': 54, 'Michigan': 10, 'Mississippi': 100, 'Missouri': 100, 'Nevada': 185,
-        'New Mexico': 35, 'Pennsylvania': 55, 'Tennessee': 50, 'Virginia': 15,
+        'Texas': 55, 'Ohio': 15, 'California': 193, 'North Carolina': 100, 'South Carolina': 30, 'Florida': 60, 'Georgia': 100,
+        'Alabama': 85, 'Alaska': 75, 'Arizona': 125, 'Colorado': 73, 'Iowa': 55, 'Illinois': 385, 'Indiana': 105, 'Kansas': 30,
+        'Kentucky': 105, 'Louisiana': 80, 'Maryland': 60, 'Michigan': 15, 'Mississippi': 106, 'Missouri': 105, 'Nevada': 185,
+        'New Mexico': 35, 'Pennsylvania': 115, 'Tennessee': 85, 'Virginia': 20,
       },
       // Each meeting becomes an "Add to Google Calendar" button (pre-filled,
       // recurring). Fill in: title, day (full weekday), time (24h, local to tz),
       // durationMin, tz (Eastern/Central/Mountain/Pacific or IANA), freq
       // (WEEKLY | BIWEEKLY | MONTHLY), and optional location (Zoom link) + details.
       meetings: [
-        { title: 'Team training call', days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'], time: '17:00', durationMin: 60, tz: 'Eastern', freq: 'WEEKLY', location: '', details: '' },
-        { title: 'Morning team huddle', days: ['Monday', 'Wednesday', 'Friday'], time: '11:00', durationMin: 30, tz: 'Eastern', freq: 'WEEKLY', location: '', details: '' },
-        { title: 'New agent boot camp', noCalendar: true, when: 'Every day at 10:00 AM EST · daily through your entire first week working leads', desc: 'Talk with your manager about which week will be your first week.' },
+        { title: 'Daily team call', days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'], time: '11:00', durationMin: 60, tz: 'Eastern', freq: 'WEEKLY', location: '', details: '' },
       ],
       studyTips: [
         'Skip the reading material — focus on taking the practice exams over and over again. That repetition is what gets you to pass.',
@@ -34018,6 +34017,9 @@
 
     function splitName(n) { const p = (n || '').trim().split(/\s+/).filter(Boolean); return { first: p[0] || '', last: p.slice(1).join(' ') || '' }; }
     function initialsOf(f, l) { return ((f || '')[0] || '') + ((l || '')[0] || '') || '?'; }
+    // Title-case a name/place: capitalize the first letter of each word, lowercase
+    // the rest (fixes "john smith" → "John Smith", "austin" → "Austin").
+    const titleCase = (s) => (s || '').replace(/\S+/g, w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase());
     const jarr = (x) => Array.isArray(x) ? x : [];
 
     function blank() {
@@ -34252,7 +34254,10 @@
           if (d.password !== d.password2) return setErr('Passwords don’t match.');
         }
         setBusy(true);
-        const nm = (d.first.trim() + ' ' + d.last.trim()).trim();
+        const nm = titleCase((d.first.trim() + ' ' + d.last.trim()).trim());
+        const street = titleCase(d.street.trim());
+        const city = titleCase(d.city.trim());
+        const emName = titleCase(d.emName.trim());
         try {
           if (!KFO_PREVIEW && !reqSteps && d.password) {
             await ensureTok();
@@ -34260,7 +34265,7 @@
             if (!r.ok) { setBusy(false); return setErr('Could not set your password — please try again.'); }
           }
           await patchAgent({ agent_name: nm, phone: d.phone.trim() || null });
-          await patchRecruit({ full_name: nm, phone: d.phone.trim() || null, street: d.street.trim() || null, city: d.city.trim() || null, state: d.st || null, zip: d.zip.trim() || null, resident_state: d.resState || null, dob: d.dob || null, shirt_size: d.shirt || null, emergency_name: d.emName.trim() || null, emergency_phone: d.emPhone.trim() || null, emergency_relationship: d.emRel.trim() || null });
+          await patchRecruit({ full_name: nm, phone: d.phone.trim() || null, street: street || null, city: city || null, state: d.st || null, zip: d.zip.trim() || null, resident_state: d.resState || null, dob: d.dob || null, shirt_size: d.shirt || null, emergency_name: emName || null, emergency_phone: d.emPhone.trim() || null, emergency_relationship: d.emRel.trim() || null });
         } catch (e) { setBusy(false); return setErr('Something went wrong saving your account.'); }
         setBusy(false); next();
       };
@@ -34303,8 +34308,13 @@
       };
       const saveGoals = async () => {
         setErr('');
-        if (!KFO_TEST_MODE && !KFO_PREVIEW && (!d.why.trim() || !d.vision.trim() || !allFilled(d.stg) || !allFilled(d.ltg) || !allFilled(d.skills) || !allFilled(d.quits) || !d.motivation.trim() || !d.incomeNeed.trim() || !d.incomeWant.trim()))
-          return setErr('Please complete every field — your why, goals, skills, what motivates you, and what you need and want to make. (Only the last question is optional.)');
+        const wc = (t) => (t || '').trim().split(/\s+/).filter(Boolean).length;
+        if (!KFO_TEST_MODE && !KFO_PREVIEW) {
+          if (wc(d.why) < 20 || wc(d.vision) < 20 || wc(d.motivation) < 20)
+            return setErr('Your why, your 3–5 year vision, and what motivates you each need at least 20 words.');
+          if (!allFilled(d.stg) || !allFilled(d.ltg) || !allFilled(d.skills) || !allFilled(d.quits) || !d.incomeNeed.trim() || !d.incomeWant.trim())
+            return setErr('Please complete every field — your goals, skills, and what you need and want to make. (Only the last question is optional.)');
+        }
         setBusy(true);
         const clean = (a) => jarr(a).map(x => (x || '').trim()).filter(Boolean);
         const stg = clean(d.stg), ltg = clean(d.ltg);
@@ -34407,8 +34417,8 @@
           <div className="kfo-card">
             <div className="kfo-cardtitle" style={{ marginBottom: 14 }}>Your login</div>
             <div className="kfo-grid2">
-              <Field label="First name"><input className="kfo-inp" value={d.first} onChange={e => set({ first: e.target.value })} /></Field>
-              <Field label="Last name"><input className="kfo-inp" value={d.last} onChange={e => set({ last: e.target.value })} /></Field>
+              <Field label="First name"><input className="kfo-inp" value={d.first} onChange={e => set({ first: e.target.value })} onBlur={e => set({ first: titleCase(e.target.value) })} /></Field>
+              <Field label="Last name"><input className="kfo-inp" value={d.last} onChange={e => set({ last: e.target.value })} onBlur={e => set({ last: titleCase(e.target.value) })} /></Field>
               <Field label="Phone number"><input className="kfo-inp" type="tel" value={d.phone} onChange={e => set({ phone: e.target.value })} /></Field>
               <Field label="Email · locked"><input className="kfo-inp" value={d.email} disabled title="This is the email your invite was sent to and can't be changed here." style={{ opacity: .7, cursor: 'not-allowed' }} /></Field>
               {!reqSteps && (<>
@@ -34421,9 +34431,9 @@
           <div className="kfo-card">
             <div className="kfo-cardtitle" style={{ marginBottom: 14 }}>A few more details</div>
             <div className="kfo-carddesc" style={{ marginBottom: 14 }}>We need these for licensing and contracting — all fields are required.</div>
-            <Field label="Street address"><input className="kfo-inp" value={d.street} onChange={e => set({ street: e.target.value })} /></Field>
+            <Field label="Street address"><input className="kfo-inp" value={d.street} onChange={e => set({ street: e.target.value })} onBlur={e => set({ street: titleCase(e.target.value) })} /></Field>
             <div className="kfo-grid2" style={{ marginTop: 12 }}>
-              <Field label="City"><input className="kfo-inp" value={d.city} onChange={e => set({ city: e.target.value })} /></Field>
+              <Field label="City"><input className="kfo-inp" value={d.city} onChange={e => set({ city: e.target.value })} onBlur={e => set({ city: titleCase(e.target.value) })} /></Field>
               <Field label="State"><select className="kfo-inp" value={d.st} onChange={e => set({ st: e.target.value })}><option value="">Select…</option>{US_STATES.map(u => <option key={u} value={u}>{u}</option>)}</select></Field>
               <Field label="ZIP"><input className="kfo-inp" value={d.zip} onChange={e => set({ zip: e.target.value })} /></Field>
               <Field label="Resident state (licensing)"><select className="kfo-inp" value={d.resState} onChange={e => set({ resState: e.target.value })}><option value="">Select…</option>{US_STATES.map(u => <option key={u} value={u}>{u}</option>)}</select></Field>
@@ -34435,7 +34445,7 @@
             <div className="kfo-cardtitle" style={{ marginBottom: 6 }}>Emergency contact</div>
             <div className="kfo-carddesc" style={{ marginBottom: 14 }}>Someone we can reach in an emergency — all fields are required.</div>
             <div className="kfo-grid2">
-              <Field label="Contact name"><input className="kfo-inp" value={d.emName} onChange={e => set({ emName: e.target.value })} /></Field>
+              <Field label="Contact name"><input className="kfo-inp" value={d.emName} onChange={e => set({ emName: e.target.value })} onBlur={e => set({ emName: titleCase(e.target.value) })} /></Field>
               <Field label="Cell phone number"><input className="kfo-inp" type="tel" value={d.emPhone} onChange={e => set({ emPhone: e.target.value })} /></Field>
               <Field label="Relationship"><input className="kfo-inp" value={d.emRel} onChange={e => set({ emRel: e.target.value })} /></Field>
             </div>
@@ -34487,7 +34497,7 @@
             <div className="kfo-card">
               <div className="kfo-cardtitle">Where do you see yourself in 3–5 years?</div>
               <textarea className="kfo-inp" rows={4} value={d.vision} onChange={e => set({ vision: e.target.value })} placeholder="In three to five years…" style={{ resize: 'vertical', marginTop: 12 }} />
-              <div className="kfo-meter">{meter(d.vision, 15)}</div>
+              <div className="kfo-meter">{meter(d.vision, 20)}</div>
             </div>
             <div className="kfo-card"><div className="kfo-cardtitle">Three skills or habits you want to improve</div><div className="kfo-carddesc">They don't have to be sales skills — anything that makes you a better version of yourself.</div>{goalList('skills', ['Skill / habit 1', 'Skill / habit 2', 'Skill / habit 3'])}</div>
             <div className="kfo-card"><div className="kfo-cardtitle">Three things you're willing to give up</div><div className="kfo-carddesc">Bad habits, vices, distractions — what will you trade for your goals?</div>{goalList('quits', ['Willing to give up 1', 'Willing to give up 2', 'Willing to give up 3'])}</div>
@@ -34495,6 +34505,7 @@
               <div className="kfo-cardtitle">What motivates you — aside from money?</div>
               <div className="kfo-carddesc">Money aside, what actually drives you? Family, freedom, proving something to yourself — what keeps you going when it's hard?</div>
               <textarea className="kfo-inp" rows={4} value={d.motivation} onChange={e => set({ motivation: e.target.value })} style={{ resize: 'vertical', marginTop: 12 }} />
+              <div className="kfo-meter">{meter(d.motivation, 20)}</div>
             </div>
             <div className="kfo-card">
               <div className="kfo-cardtitle">What do you <em>need</em> to make?</div>
@@ -34585,13 +34596,22 @@
         const toggle = (name) => setD(s => Object.assign({}, s, { stateBuys: Object.assign({}, s.stateBuys, { [name]: !s.stateBuys[name] }) }));
         const hasNpn = d.licensed === true;
         const stateCost = (name) => { const c = (KFO_CONFIG.stateLicenseCosts || {})[name]; return (typeof c === 'number') ? ('~$' + c) : null; };
-        const stateRow = (name) => { const on = !!d.stateBuys[name]; const cost = stateCost(name); return (
-          <button key={name} onClick={() => toggle(name)} className="kfo-checkrow">
+        const stateRow = (name, required) => { const on = !!d.stateBuys[name]; const cost = stateCost(name); return (
+          <button key={name} onClick={() => toggle(name)} className="kfo-checkrow" style={required ? { borderColor: 'var(--ac)', boxShadow: '0 0 0 1px var(--ac) inset' } : undefined}>
             <span className={'kfo-box' + (on ? ' on' : '')}>{on ? '✓' : ''}</span>
             <span style={{ fontWeight: 600 }}>{name}</span>
+            {required && <span style={{ fontSize: 10.5, fontWeight: 800, letterSpacing: '.05em', textTransform: 'uppercase', color: 'var(--acOn, #1A2005)', background: 'var(--ac)', padding: '2px 8px', borderRadius: 999 }}>Required</span>}
             {cost && <span style={{ fontSize: 12.5, fontWeight: 700, color: 'var(--acDeep)', background: 'var(--acSoft, rgba(161,203,53,.12))', border: '1px solid var(--acDeep)', padding: '2px 8px', borderRadius: 999 }}>{cost}</span>}
             <span style={{ marginLeft: 'auto', fontSize: 12, color: 'var(--tx3)' }}>{on ? 'Purchased' : 'Pending'}</span>
           </button>); };
+        // One combined list: required states highlighted and grouped up top,
+        // then the rest — each group sorted by cost, cheapest first.
+        const requiredSet = new Set(KFO_CONFIG.statesMustBuy);
+        const byCost = (a, b) => ((KFO_CONFIG.stateLicenseCosts || {})[a] || 0) - ((KFO_CONFIG.stateLicenseCosts || {})[b] || 0);
+        const allStatesToBuy = [
+          ...Array.from(new Set(KFO_CONFIG.statesMustBuy)).sort(byCost),
+          ...Array.from(new Set(KFO_CONFIG.statesRecommended)).filter(n => !requiredSet.has(n)).sort(byCost),
+        ];
         body = (
           <div className="kfo-screen">
             <H title="Purchase additional states" sub="You'll write business in more than just your home state. Add non-resident licenses through NIPR, then check each one off as you buy it." />
@@ -34616,18 +34636,11 @@
                   <div className="kfo-carddesc" style={{ marginTop: 8, fontSize: 12, color: 'var(--tx3)' }}>The price next to each state is the approximate state filing fee for a non-resident life license. These are estimates only — actual fees vary, change over time, and don't include NIPR's small (~$5) transaction fee. Confirm the exact amount at checkout on NIPR.</div>
                   <div style={{ marginTop: 14 }}><a className="kfo-btn ghost" href={KFO_CONFIG.links.states} target="_blank" rel="noopener">Open NIPR ↗</a></div>
                 </div>
-                <div className="kfo-card" style={{ borderColor: 'var(--ac)', boxShadow: '0 0 0 1px var(--ac) inset' }}>
-                  <span className="kfo-badge">Must purchase — minimum to start</span>
-                  <div className="kfo-carddesc" style={{ marginTop: 10 }}>These are our most-purchased states. If you can't afford to buy them all up front, <strong>these are the ones you must purchase to start, at minimum.</strong></div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 14 }}>
-                    {KFO_CONFIG.statesMustBuy.map(stateRow)}
-                  </div>
-                </div>
                 <div className="kfo-card">
-                  <div className="kfo-cardtitle">Additional recommended states</div>
-                  <div className="kfo-carddesc">Once you've covered the minimum above, add these next — they round out the states we write in most.</div>
+                  <div className="kfo-cardtitle">States to purchase</div>
+                  <div className="kfo-carddesc" style={{ marginTop: 6 }}>These are the states you should purchase if you want to get on inbound calls. If you can't afford to purchase all of these, we've marked the <strong>minimum required</strong> ones.</div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 14 }}>
-                    {KFO_CONFIG.statesRecommended.map(stateRow)}
+                    {allStatesToBuy.map(n => stateRow(n, requiredSet.has(n)))}
                   </div>
                 </div>
                 <div className="kfo-card">
@@ -34755,7 +34768,8 @@
                 </div>))}
             </div>
           </div>
-          <label className="kfo-check" style={{ marginTop: 4 }}><input type="checkbox" checked={!!d.checks.cal} onChange={e => setD(s => Object.assign({}, s, { checks: Object.assign({}, s.checks, { cal: e.target.checked }) }))} /> I've added these to my calendar</label>
+          <div className="kfo-note" style={{ marginTop: 12 }}>Attendance is <strong>required for all agents</strong> until you are consistently submitting <strong>$4,000 in annual premium per week</strong>.</div>
+          <label className="kfo-check" style={{ marginTop: 4 }}><input type="checkbox" checked={!!d.checks.cal} onChange={e => setD(s => Object.assign({}, s, { checks: Object.assign({}, s.checks, { cal: e.target.checked }) }))} /> I've added this to my calendar</label>
           <div className="kfo-actions"><NextBtn on={() => next()} disabled={!req(d.checks.cal)}>Continue →</NextBtn>{!KFO_TEST_MODE && <span className="kfo-hint">Confirm you've added these to your calendar.</span>}</div>
           </VideoGate>
         </div>
