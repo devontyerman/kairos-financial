@@ -29236,6 +29236,11 @@
           const marketingSpend = oneOff.filter(e => e.category === 'Marketing').reduce((s,e)=>s+parseFloat(e.amount||0),0);
           return { dials, answers, pres, deposits, leadSpend, deals, approvedSameDay, immediateDraft, pSub, pRem, apSub, apIss, avgComm, oneOff, oneOffTotal, marketingSpend,
                    closeRatio: pres > 0 ? deals/pres : 0, dts: dials > 0 ? deals/dials : 0,
+                   // Billable close ratio: deals per billable call (the "answers"
+                   // field on the activity log — labelled "Conversations / Billable calls").
+                   billableCloseRatio: answers > 0 ? deals/answers : 0,
+                   // Cost of acquisition: lead spend only (NOT total expenses) per deal.
+                   cpa: deals > 0 ? leadSpend/deals : 0,
                    avgAP: deals > 0 ? apSub/deals : 0,
                    approvalRate: deals > 0 ? approvedSameDay/deals : 0,
                    immediateDraftRate: deals > 0 ? immediateDraft/deals : 0,
@@ -29262,8 +29267,11 @@
         const tick = (c, p) => { if (prev == null || !p) return { text:'0.0%', up:null }; const dd = (c-p)/p*100; const up = dd >= 0; return { text:(up?'▲ ':'▼ ')+Math.abs(dd).toFixed(1)+'%', up }; };
         const tCalls = tick(cur.dials, prev ? prev.dials : 0);
         const tPres  = tick(cur.pres, prev ? prev.pres : 0);
+        // Inverted ticker for cost metrics — going down is the good direction.
+        const tickDown = (c, p) => { if (prev == null || !p) return { text:'0.0%', up:null }; const dd = (c-p)/p*100; return { text:(dd>=0?'▲ ':'▼ ')+Math.abs(dd).toFixed(1)+'%', up: dd <= 0 }; };
         const tClose = tick(cur.closeRatio, prev ? prev.closeRatio : 0);
-        const tDts   = tick(cur.dts, prev ? prev.dts : 0);
+        const tBClose = tick(cur.billableCloseRatio, prev ? prev.billableCloseRatio : 0);
+        const tCpa   = tickDown(cur.cpa, prev ? prev.cpa : 0);
         const tAvg   = tick(cur.avgComm, prev ? prev.avgComm : 0);
         const pipeDelta = (prev == null || !prevPipeline) ? { text:'0.0%', up:null } : (() => { const dd=(pipelineTotal-prevPipeline)/prevPipeline*100; const up=dd>=0; return { text:(up?'▲ ':'▼ ')+Math.abs(dd).toFixed(1)+'%', up }; })();
         // Financial-card tickers vs the prior comparable period (e.g. MTD vs last month).
@@ -29310,7 +29318,7 @@
         const finCardLbl = { fontSize:11, fontFamily:MONO, textTransform:'uppercase', letterSpacing:'.08em', color:T.ink3, fontWeight:500 };
         const finCardSub = { fontFamily:MONO, fontSize:11, color:T.ink3, marginTop:8 };
         const kpiCard = { ...card, padding:'18px 20px', display:'flex', flexDirection:'column', gap:8, minHeight:108, alignItems:'center', textAlign:'center' };
-        const kpiLbl = { fontFamily:MONO, fontSize:10, textTransform:'uppercase', letterSpacing:'.08em', color:T.ink3, display:'flex', alignItems:'center', justifyContent:'center', gap:6 };
+        const kpiLbl = { fontFamily:MONO, fontSize:10, textTransform:'uppercase', letterSpacing:'.08em', color:T.ink3, display:'flex', alignItems:'center', justifyContent:'center', gap:6, flexWrap:'wrap' };
         const kpiVal = { fontFamily:MONO, fontSize:26, fontWeight:500, color:T.ink1, letterSpacing:'-.01em', fontVariantNumeric:'tabular-nums', lineHeight:1, marginTop:4 };
         const kpiSub = { fontFamily:MONO, fontSize:11, color:T.ink3 };
         const inputBase = { borderRadius:8, border:'1px solid '+T.hairlineStrong, background:T.surface2, color:T.ink1, fontSize:13, fontFamily:MONO };
@@ -29359,12 +29367,6 @@
                 return <path key={i} d={path} fill={d.color} />;
               });
             })();
-
-        // ── Dial→Deal ring ──
-        const ringC = 2*Math.PI*22;
-        const dtsFill = Math.max(0, Math.min(100, cur.dts*100*30));
-        const dtsDash = (dtsFill/100*ringC).toFixed(2)+' '+ringC.toFixed(2);
-        const dialPerSale = cur.deals > 0 ? Math.round(cur.dials/cur.deals) : 0;
 
         const hr = new Date().getHours();
         const greeting = (hr < 12 ? 'Morning' : hr < 18 ? 'Afternoon' : 'Evening') + ', ' + ((agentName||'').trim().split(/\s+/)[0] || 'there');
@@ -29501,14 +29503,19 @@
                 <div style={kpiSub}>{Math.max(0, Math.round(cur.pres/div))} <span style={{ color:T.ink4 }}>/ business day</span></div>
               </div>
               <div style={kpiCard}>
-                <div style={kpiLbl}>Close ratio<span style={tickStyle(tClose.up)}>{tClose.text}</span></div>
+                <div style={kpiLbl}>Pres. &rarr; Close<span style={tickStyle(tClose.up)}>{tClose.text}</span></div>
                 <div style={{ ...kpiVal, color: cur.pres > 0 ? (cur.closeRatio >= 0.25 ? T.pos : T.neg) : T.ink1 }}>{(cur.closeRatio*100).toFixed(1)}%</div>
                 <div style={kpiSub}><b style={{ color:T.ink1, fontWeight:500 }}>{cur.deals.toLocaleString('en-US')}</b> of {Math.round(cur.pres).toLocaleString('en-US')} pres.</div>
               </div>
               <div style={kpiCard}>
-                <div style={kpiLbl}>Dial &rarr; Deal<span style={tickStyle(tDts.up)}>{tDts.text}</span></div>
-                <div style={kpiVal}>{(cur.dts*100).toFixed(2)}%</div>
-                <div style={kpiSub}>{dialPerSale} dials &rarr; 1 deal</div>
+                <div style={kpiLbl}>Billable &rarr; Close<span style={tickStyle(tBClose.up)}>{tBClose.text}</span></div>
+                <div style={{ ...kpiVal, color: cur.answers > 0 ? (cur.billableCloseRatio >= 0.10 ? T.pos : T.neg) : T.ink1 }}>{cur.answers > 0 ? (cur.billableCloseRatio*100).toFixed(1)+'%' : '—'}</div>
+                <div style={kpiSub}><b style={{ color:T.ink1, fontWeight:500 }}>{cur.deals.toLocaleString('en-US')}</b> of {Math.round(cur.answers).toLocaleString('en-US')} billable calls</div>
+              </div>
+              <div style={kpiCard}>
+                <div style={kpiLbl}>Cost of acquisition<span style={tickStyle(tCpa.up)}>{tCpa.text}</span></div>
+                <div style={kpiVal}>{cur.deals > 0 && cur.leadSpend > 0 ? usd0(cur.cpa) : '—'}</div>
+                <div style={kpiSub}>{usd0(cur.leadSpend)} lead spend / {cur.deals.toLocaleString('en-US')} deals</div>
               </div>
               <div style={kpiCard}>
                 <div style={kpiLbl}>Avg annual premium</div>
