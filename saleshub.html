@@ -1715,18 +1715,31 @@
 
     /* ─── Weekly Tracker (admin-only spreadsheet view) ─── */
     #panel-weeklytracker {
-      --wt-blue-50:#eef5ff; --wt-blue-100:#dbe9fe; --wt-blue-200:#bfd7fe;
-      --wt-blue-400:#5b8def; --wt-blue-500:#2f6fed; --wt-blue-600:#1e54d3;
-      --wt-blue-700:#1842a8; --wt-blue-900:#0f2966;
-      --wt-green-50:#ecfdf3; --wt-green-100:#d1fadf; --wt-green-300:#6ce9a6;
-      --wt-green-500:#12b76a; --wt-green-600:#039855; --wt-green-700:#027a48;
-      --wt-red-50:#fef3f2; --wt-red-500:#f04438; --wt-red-600:#d92d20;
-      --wt-amber-50:#fffaeb; --wt-amber-500:#f79009;
-      --wt-gray-25:#fcfcfd; --wt-gray-50:#f9fafb; --wt-gray-100:#f2f4f7;
-      --wt-gray-200:#e4e7ec; --wt-gray-300:#d0d5dd; --wt-gray-400:#98a2b3;
-      --wt-gray-500:#667085; --wt-gray-600:#475467; --wt-gray-700:#344054;
-      --wt-gray-800:#1d2939; --wt-gray-900:#101828;
-      font-family: 'Inter', system-ui, sans-serif; color: var(--wt-gray-900);
+      /* Palette matches the Recruiting (.rhq) design system — warm neutrals,
+         olive/lime accent, rhq stage colors for success/miss. The token NAMES
+         are unchanged (390 rules reference them), only their values moved, so
+         the whole sheet reskins without touching a single selector.
+           "blue"  = the accent/chrome role  → rhq lime + olive (--ac/--acDeep)
+           "green" = success / goal-hit      → rhq stage-1 green
+           "red"   = missed goal             → rhq stage-3 red
+           "amber" = dials                   → rhq stage-2 amber
+           "gray"  = surfaces + text         → rhq warm neutrals */
+      --wt-blue-50:#F4F9E6; --wt-blue-100:#E4EFC4; --wt-blue-200:#CFE39B;
+      --wt-blue-400:#A1CB35; --wt-blue-500:#8CBB24; --wt-blue-600:#6E8F16;
+      --wt-blue-700:#5F7F10; --wt-blue-900:#3F5409;
+      --wt-green-50:#EFF7DA; --wt-green-100:#DDEBB9; --wt-green-300:#A1CB35;
+      --wt-green-500:#6E8F16; --wt-green-600:#5F7F10; --wt-green-700:#4A6210;
+      --wt-red-50:#FEE1E1; --wt-red-500:#E23A3A; --wt-red-600:#D31A1A;
+      --wt-amber-50:#FFF3CD; --wt-amber-500:#93700A;
+      --wt-gray-25:#FBFBF9; --wt-gray-50:#F6F6F4; --wt-gray-100:#F0F0ED;
+      --wt-gray-200:#E7E7E2; --wt-gray-300:#D8D8D1; --wt-gray-400:#B4AFAC;
+      --wt-gray-500:#9C9694; --wt-gray-600:#6E6866; --wt-gray-700:#454040;
+      --wt-gray-800:#3A3635; --wt-gray-900:#2E2B2B;
+      /* Teal (rhq stage-0) keeps the YTD column distinct from the goal-hit
+         green now that the accent family is also olive. */
+      --wt-teal-50:#E0F5F6; --wt-teal-100:#C3E9EB; --wt-teal-700:#1F8A90;
+      --wt-sh:0 1px 2px rgba(40,38,30,.05),0 4px 16px rgba(40,38,30,.06);
+      font-family: 'Instrument Sans','Inter',system-ui,sans-serif; color: var(--wt-gray-900);
     }
     #panel-weeklytracker .wt-mono { font-family: 'JetBrains Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; }
     /* Edge-to-edge: cancel .ss-main's padding (1.5rem top, 2rem horiz,
@@ -2145,40 +2158,43 @@
        existing CSS keeps working without restructuring.
        ──────────────────────────────────────────────────────────────────── */
     html[data-kf-theme="dark"] #panel-weeklytracker {
-      /* Surface scale (light → dark navy mapping) */
-      --wt-gray-25:  #0a0f1c;  /* app canvas */
-      --wt-gray-50:  #131a2a;  /* primary surface */
-      --wt-gray-100: #1a2236;  /* elevated surface / hover */
-      --wt-gray-200: #232c44;  /* hairline-strong / sticky surface */
-      --wt-gray-300: #2c3650;  /* heavier border accent */
-      --wt-gray-400: #5d6478;  /* faint text */
-      --wt-gray-500: #8a94ad;  /* muted text */
-      --wt-gray-600: #a8b1c6;  /* secondary text */
-      --wt-gray-700: #c5cee0;  /* default text */
-      --wt-gray-800: #dde4ef;  /* near-strong text */
-      --wt-gray-900: #f1f5fb;  /* strong text */
-      /* Blue scale stays vivid in dark — accents must pop on navy */
-      --wt-blue-50:  #15203b;
-      --wt-blue-100: #1a2747;
-      --wt-blue-200: #1a3056;
-      --wt-blue-400: #5b8def;
-      --wt-blue-500: #2f6fed;
-      --wt-blue-600: #1e54d3;
-      --wt-blue-700: #1842a8;
-      --wt-blue-900: #0a1430;
-      /* Green scale — used for YTD success states */
-      --wt-green-50:  #0f2920;
-      --wt-green-100: #1a3d2c;
-      --wt-green-300: #6ce9a6;
-      --wt-green-500: #12b76a;
-      --wt-green-600: #039855;
-      --wt-green-700: #064e36;
-      /* Red / amber */
-      --wt-red-50:   #2a1517;
-      --wt-red-500:  #f87171;
-      --wt-red-600:  #ef4444;
-      --wt-amber-50: #2a1f0a;
-      --wt-amber-500: #f79009;
+      /* Surface scale — rhq dark neutrals (warm charcoal, not navy) */
+      --wt-gray-25:  #121110;  /* app canvas */
+      --wt-gray-50:  #1B1A18;  /* primary surface */
+      --wt-gray-100: #242220;  /* elevated surface / hover */
+      --wt-gray-200: #2F2D2A;  /* hairline-strong / sticky surface */
+      --wt-gray-300: #3B3835;  /* heavier border accent */
+      --wt-gray-400: #5E5A56;  /* faint text */
+      --wt-gray-500: #736F6B;  /* muted text */
+      --wt-gray-600: #948F8B;  /* secondary text */
+      --wt-gray-700: #B3AFAB;  /* default text */
+      --wt-gray-800: #D5D2CF;  /* near-strong text */
+      --wt-gray-900: #F4F3F1;  /* strong text */
+      /* Accent scale — lime brightens in dark so it stays legible on charcoal */
+      --wt-blue-50:  #2A3313;
+      --wt-blue-100: #39461B;
+      --wt-blue-200: #4A5C22;
+      --wt-blue-400: #B9DD5E;
+      --wt-blue-500: #A1CB35;
+      --wt-blue-600: #8CBB24;
+      --wt-blue-700: #6E8F16;
+      --wt-blue-900: #1F2709;
+      /* Green scale — goal-hit / success states */
+      --wt-green-50:  #28330F;
+      --wt-green-100: #39461B;
+      --wt-green-300: #C6E378;
+      --wt-green-500: #A1CB35;
+      --wt-green-600: #B9DD5E;
+      --wt-green-700: #2F3B12;
+      /* Red / amber — rhq dark stage-3 / stage-2 */
+      --wt-red-50:   #421515;
+      --wt-red-500:  #FF7A7A;
+      --wt-red-600:  #FF7A7A;
+      --wt-amber-50: #3B3110;
+      --wt-amber-500: #FED24F;
+      /* Teal — YTD column, rhq dark stage-0 */
+      --wt-teal-50:#123638; --wt-teal-100:#1B4A4D; --wt-teal-700:#7FD9DE;
+      --wt-sh:0 1px 2px rgba(0,0,0,.4),0 6px 20px rgba(0,0,0,.35);
       color: var(--wt-gray-900);
       background: var(--wt-gray-25);
     }
@@ -2511,6 +2527,254 @@
       color: var(--wt-gray-900);
       border: 1px solid var(--wt-gray-300);
     }
+
+    /* ══════════════════════════════════════════════════════════════════════
+       Weekly Tracker — Recruiting (.rhq) skin.
+       Appearance only: no selector here changes layout, sizing, sticky offsets
+       or behaviour — it swaps the old blue "spreadsheet" chrome (navy gradient
+       headers, navy footer/status bars, square tabs) for the Recruiting design
+       system's warm surfaces, hairline borders, 16px radii, soft shadows and
+       olive/lime accent. Placed last so it wins over the light AND dark rules
+       above, including the ones that hard-coded navy hexes.
+       ══════════════════════════════════════════════════════════════════════ */
+    #panel-weeklytracker { --wt-surface:#FFFFFF; }
+    html[data-kf-theme="dark"] #panel-weeklytracker { --wt-surface:#1B1A18; }
+
+    /* ── Chrome: topbar reads as a page header, not a coloured app bar ── */
+    #panel-weeklytracker .wt-topbar,
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-topbar {
+      background: var(--wt-surface); color: var(--wt-gray-900);
+      border-bottom: 1px solid var(--wt-gray-200); box-shadow: none;
+    }
+    #panel-weeklytracker .wt-topbar .wt-logo,
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-topbar .wt-logo {
+      background: linear-gradient(135deg,#A1CB35,#65DCD5); color: #232B07;
+      border: none; border-radius: 11px;
+    }
+    #panel-weeklytracker .wt-topbar .wt-title,
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-topbar .wt-title {
+      color: var(--wt-gray-900); font-weight: 700; letter-spacing: -0.02em;
+    }
+    #panel-weeklytracker .wt-topbar .wt-sub,
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-topbar .wt-sub { color: var(--wt-gray-500); opacity: 1; }
+    #panel-weeklytracker .wt-topbar .wt-stat,
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-topbar .wt-stat { border-left: 1px solid var(--wt-gray-200); }
+    #panel-weeklytracker .wt-topbar .wt-stat-label,
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-topbar .wt-stat-label {
+      color: var(--wt-gray-500); opacity: 1; font-weight: 700; letter-spacing: 0.05em;
+    }
+    #panel-weeklytracker .wt-topbar .wt-stat-value,
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-topbar .wt-stat-value { color: var(--wt-gray-900); }
+    #panel-weeklytracker .wt-theme-toggle {
+      background: var(--wt-gray-100); border: 1px solid var(--wt-gray-200);
+      color: var(--wt-gray-600); border-radius: 999px;
+    }
+    #panel-weeklytracker .wt-theme-toggle:hover { background: var(--wt-gray-200); color: var(--wt-gray-900); }
+
+    #panel-weeklytracker .wt-toolbar,
+    #panel-weeklytracker .wt-sheet-header,
+    #panel-weeklytracker .wt-summary-strip {
+      background: var(--wt-surface); border-bottom: 1px solid var(--wt-gray-200);
+    }
+    #panel-weeklytracker .wt-cell-ref {
+      background: var(--wt-gray-100); border: 1px solid var(--wt-gray-200);
+      color: var(--wt-gray-600); border-radius: 999px;
+    }
+    #panel-weeklytracker .wt-tbtn {
+      border: 1px solid var(--wt-gray-200); background: var(--wt-surface);
+      color: var(--wt-gray-700); border-radius: 999px; font-weight: 600; padding: 6px 14px;
+    }
+    #panel-weeklytracker .wt-tbtn:hover { background: var(--wt-gray-100); }
+    #panel-weeklytracker .wt-sheet-title { font-weight: 700; letter-spacing: -0.02em; }
+    #panel-weeklytracker .wt-sheet-pill { border-radius: 999px; font-weight: 700; }
+
+    /* ── Cards: rhq radius + shadow ── */
+    #panel-weeklytracker .wt-summary-card {
+      background: var(--wt-surface); border: 1px solid var(--wt-gray-200);
+      border-radius: 14px; box-shadow: var(--wt-sh);
+    }
+    #panel-weeklytracker .wt-summary-card .wt-lbl { font-weight: 700; letter-spacing: 0.05em; }
+    #panel-weeklytracker .wt-summary-card .wt-val { font-weight: 700; letter-spacing: -0.02em; }
+
+    /* ── Grid: surface header band instead of the navy gradient ── */
+    #panel-weeklytracker .wt-grid-table {
+      background: var(--wt-surface); border: 1px solid var(--wt-gray-200);
+      border-radius: 16px; box-shadow: var(--wt-sh);
+    }
+    #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th,
+    html[data-kf-theme="dark"] #panel-weeklytracker thead tr.wt-day-row th,
+    html[data-kf-theme="dark"] #panel-weeklytracker thead tr.day-row th {
+      background: var(--wt-gray-100); color: var(--wt-gray-600);
+      font-size: 11px; font-weight: 700; letter-spacing: 0.06em;
+      border-right: 1px solid var(--wt-gray-200);
+      border-bottom: 1px solid var(--wt-gray-200);
+    }
+    #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th.wt-rank-h,
+    #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th.wt-name-h,
+    #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th.wt-monthly-h,
+    #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th.wt-mtd-h,
+    #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th.wt-weekly-h,
+    #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th.wt-wtd-h,
+    #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th.wt-wtd-dials-h,
+    #panel-weeklytracker .wt-grid-table thead tr.wt-day-row th.wt-ytd-h,
+    html[data-kf-theme="dark"] #panel-weeklytracker thead tr.day-row th.rank-h,
+    html[data-kf-theme="dark"] #panel-weeklytracker thead tr.day-row th.name-h,
+    html[data-kf-theme="dark"] #panel-weeklytracker thead tr.day-row th.wtd-h,
+    html[data-kf-theme="dark"] #panel-weeklytracker thead tr.day-row th.ytd-h {
+      background: var(--wt-gray-200); color: var(--wt-gray-700);
+    }
+    #panel-weeklytracker .wt-grid-table thead tr.wt-sub-row th.wt-sub-goal,
+    #panel-weeklytracker .wt-grid-table thead tr.wt-sub-row th.wt-sub-actual,
+    html[data-kf-theme="dark"] #panel-weeklytracker thead tr.wt-sub-row th,
+    html[data-kf-theme="dark"] #panel-weeklytracker thead tr.wt-sub-row th.wt-sub-goal,
+    html[data-kf-theme="dark"] #panel-weeklytracker thead tr.wt-sub-row th.wt-sub-actual {
+      background: var(--wt-blue-50); color: var(--wt-blue-700);
+      border-right: 1px solid var(--wt-gray-200);
+      border-bottom: 1px solid var(--wt-gray-200);
+    }
+    #panel-weeklytracker .wt-grid-table thead tr.wt-sub-row th.wt-empty,
+    html[data-kf-theme="dark"] #panel-weeklytracker thead tr.wt-sub-row th.wt-empty {
+      background: var(--wt-surface); border-bottom: 1px solid var(--wt-gray-200);
+    }
+    #panel-weeklytracker .wt-name-cell { background: var(--wt-surface); }
+    html[data-kf-theme="dark"] #panel-weeklytracker tbody td,
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-cell {
+      background: var(--wt-surface); color: var(--wt-gray-900);
+      border-bottom: 1px solid var(--wt-gray-200);
+      border-right: 1px solid var(--wt-gray-200);
+    }
+    html[data-kf-theme="dark"] #panel-weeklytracker tbody tr:hover td { background: var(--wt-gray-100); }
+    html[data-kf-theme="dark"] #panel-weeklytracker td.wt-rank-cell { background: var(--wt-gray-100); color: var(--wt-gray-500); }
+    #panel-weeklytracker .wt-day-cell input:focus { background: var(--wt-surface); }
+
+    /* YTD keeps its own hue (rhq teal) so it stays distinct now that the
+       accent family is olive like the goal-hit green. */
+    #panel-weeklytracker .wt-ytd-cell,
+    html[data-kf-theme="dark"] #panel-weeklytracker td.wt-ytd-cell,
+    html[data-kf-theme="dark"] #panel-weeklytracker tbody tr:hover td.wt-ytd-cell {
+      background: var(--wt-teal-50); color: var(--wt-teal-700);
+      border-left: 1px solid var(--wt-teal-100);
+    }
+    #panel-weeklytracker .wt-avatar,
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-avatar {
+      background: var(--wt-blue-50); color: var(--wt-blue-700); border: none;
+    }
+    html[data-kf-theme="dark"] #panel-weeklytracker td.wt-wtd-cell { color: var(--wt-blue-400); }
+
+    /* ── Footer totals: strong neutral band, not navy ── */
+    #panel-weeklytracker .wt-grid-table tfoot td,
+    html[data-kf-theme="dark"] #panel-weeklytracker tfoot td {
+      background: var(--wt-gray-100); color: var(--wt-gray-900);
+      border-right: 1px solid var(--wt-gray-200);
+      border-top: 1px solid var(--wt-gray-200);
+    }
+    #panel-weeklytracker .wt-grid-table tfoot td .wt-foot-proj { color: var(--wt-gray-500); }
+    #panel-weeklytracker .wt-grid-table tfoot td.wt-foot-empty { background: var(--wt-gray-100); }
+    #panel-weeklytracker .wt-grid-table tfoot td.wt-ytd-foot,
+    html[data-kf-theme="dark"] #panel-weeklytracker tfoot td.wt-ytd-foot {
+      background: var(--wt-teal-50); color: var(--wt-teal-700);
+    }
+
+    /* ── Tabs: rhq pill group ── */
+    #panel-weeklytracker .wt-tabs-bar,
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-tabs-bar {
+      background: var(--wt-gray-100); border-top: 1px solid var(--wt-gray-200);
+      align-items: center; padding: 6px 10px; gap: 4px;
+    }
+    #panel-weeklytracker .wt-tab,
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-tab {
+      height: 34px; margin-top: 0; border-top: none; border-radius: 10px;
+      font-size: 13px; font-weight: 600; color: var(--wt-gray-600); background: transparent;
+      box-shadow: none;
+    }
+    #panel-weeklytracker .wt-tab:hover,
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-tab:hover {
+      background: var(--wt-surface); color: var(--wt-gray-900);
+    }
+    #panel-weeklytracker .wt-tab.active,
+    #panel-weeklytracker .wt-tab.month.active,
+    #panel-weeklytracker .wt-tab.setup.active,
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-tab.active {
+      background: var(--wt-surface); color: var(--wt-gray-900);
+      border-top-color: transparent; box-shadow: var(--wt-sh); font-weight: 700;
+    }
+    #panel-weeklytracker .wt-tab.month,
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-tab.month { color: var(--wt-blue-700); }
+    #panel-weeklytracker .wt-tab.setup { color: var(--wt-blue-700); }
+    #panel-weeklytracker .wt-tab .wt-tab-dot,
+    #panel-weeklytracker .wt-tab.month .wt-tab-dot,
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-tab.month .wt-tab-dot { background: var(--wt-blue-400); }
+    #panel-weeklytracker .wt-tab-sep,
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-tab-sep { background: var(--wt-gray-300); }
+
+    /* ── Month sheet day headers ── */
+    #panel-weeklytracker .wt-month-day-h,
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-month-day-h {
+      background: var(--wt-gray-100); color: var(--wt-gray-600); font-weight: 700;
+      border-right: 1px solid var(--wt-gray-200);
+    }
+    #panel-weeklytracker .wt-month-day-h.today,
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-month-day-h.today {
+      background: var(--wt-blue-50); color: var(--wt-blue-700);
+    }
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-month-day-cell {
+      background: var(--wt-surface); color: var(--wt-gray-700);
+      border-bottom: 1px solid var(--wt-gray-200);
+      border-right: 1px solid var(--wt-gray-200);
+    }
+
+    /* ── Status bar ── */
+    #panel-weeklytracker .wt-statusbar,
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-statusbar {
+      background: var(--wt-gray-100); color: var(--wt-gray-500);
+      border-top: 1px solid var(--wt-gray-200);
+    }
+    #panel-weeklytracker .wt-statusbar .wt-dot { background: var(--wt-blue-400); }
+    #panel-weeklytracker .wt-statusbar .wt-sep { color: var(--wt-gray-300); }
+
+    /* ── Setup / Sales Reps tab ── */
+    #panel-weeklytracker .wt-setup-card {
+      background: var(--wt-surface); border: 1px solid var(--wt-gray-200);
+      border-radius: 16px; box-shadow: var(--wt-sh);
+    }
+    #panel-weeklytracker .wt-setup-banner {
+      background: var(--wt-blue-50); border-bottom: 1px solid var(--wt-gray-200);
+    }
+    #panel-weeklytracker .wt-setup-banner .wt-icon {
+      background: var(--wt-surface); border: 1px solid var(--wt-gray-200);
+      color: var(--wt-blue-700); border-radius: 11px;
+    }
+    #panel-weeklytracker .wt-setup-banner h3 { color: var(--wt-gray-900); font-weight: 700; }
+    #panel-weeklytracker .wt-setup-banner p { color: var(--wt-gray-600); }
+    #panel-weeklytracker .wt-setup-table th {
+      background: var(--wt-gray-50); color: var(--wt-gray-500);
+      border-bottom: 1px solid var(--wt-gray-200); font-weight: 700;
+    }
+    #panel-weeklytracker .wt-setup-table tr:hover td { background: var(--wt-gray-100); }
+    #panel-weeklytracker .wt-setup-table .wt-goal-col input {
+      border: 1px solid var(--wt-gray-200); border-radius: 11px;
+      background: var(--wt-surface); color: var(--wt-blue-700);
+    }
+    #panel-weeklytracker .wt-setup-table .wt-goal-col input:focus {
+      border-color: var(--wt-blue-400);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--wt-blue-400) 30%, transparent);
+    }
+    #panel-weeklytracker .wt-setup-footer {
+      background: var(--wt-gray-50); border-top: 1px solid var(--wt-gray-200);
+    }
+    #panel-weeklytracker .wt-toggle .wt-toggle-track { background: var(--wt-gray-300); }
+    #panel-weeklytracker .wt-toggle input:checked ~ .wt-toggle-track,
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-toggle input:checked + .wt-toggle-track {
+      background: var(--wt-blue-400); border-color: var(--wt-blue-400);
+    }
+
+    /* ── Expanded-mode close button ── */
+    #panel-weeklytracker .wt-shell.wt-fullsize .wt-fs-close,
+    html[data-kf-theme="dark"] #panel-weeklytracker .wt-shell.wt-fullsize .wt-fs-close {
+      background: var(--wt-gray-900); color: var(--wt-surface);
+      border: 1px solid var(--wt-gray-200); box-shadow: var(--wt-sh);
+    }
+    #panel-weeklytracker .wt-shell.wt-fullsize .wt-fs-close:hover { background: var(--wt-gray-800); }
 
     /* ─── Team Performance panel (admin-only — moved from admin-sales.html) ─── */
     /* When the Team Dashboard is active, fill the entire .ss-main area edge
@@ -22282,7 +22546,7 @@
 
       async function fetchActiveReps() {
         await window.ensureValidAccessToken?.();
-        const res = await fetch(SUPABASE_URL + '/rest/v1/agent_roster?select=user_id,agent_name&order=agent_name.asc', {
+        const res = await fetch(SUPABASE_URL + '/rest/v1/agent_roster?select=user_id,agent_name,status&order=agent_name.asc', {
           headers: Object.assign({ apikey: SUPABASE_KEY, Authorization: 'Bearer ' + (window.accessToken || SUPABASE_KEY) }, { 'Range-Unit': 'items', 'Range': '0-9999' })
         });
         if (!res.ok && res.status !== 206) throw new Error('Failed to fetch reps (' + res.status + ')');
@@ -22308,6 +22572,31 @@
         // policies yet (so they still appear in the team table with zero numbers).
         allPolicies = policyRows.map(p => ({ ...p, rep_key: p.sales_rep || '' }));
         allKpis = (kpiRows || []).map(k => ({ ...k, rep_key: k.sales_rep || '' }));
+
+        // Removed agents must not appear on any sheet. Two ways an agent leaves:
+        //   • ARCHIVED — archive_agent_user sets agent_profiles.status='inactive'
+        //     but keeps the row (this is also what a manager-side remove does).
+        //   • DELETED  — delete_agent_user drops the profile entirely; policies
+        //     survive because policies.user_id is FK SET NULL, so the rep's name
+        //     still shows up on old deals with a null user_id.
+        // A name with no profile but with policies it still OWNS (user_id set) is
+        // NOT treated as removed — that's just a sales_rep string that doesn't
+        // exactly match the profile name, and dropping it would hide a live rep.
+        const activeNames = new Set(), inactiveNames = new Set();
+        (profileRows || []).forEach(p => {
+          if (!p.agent_name) return;
+          const k = p.agent_name.toLowerCase();
+          if ((p.status || 'active') === 'inactive') inactiveNames.add(k);
+          else activeNames.add(k);
+        });
+        const ownedReps = new Set();
+        allPolicies.forEach(p => { if (p.rep_key && p.user_id) ownedReps.add(p.rep_key.toLowerCase()); });
+        const isRemovedRep = (name) => {
+          const k = (name || '').toLowerCase();
+          if (inactiveNames.has(k)) return true;   // archived
+          if (activeNames.has(k)) return false;    // still has a live profile
+          return !ownedReps.has(k);                // no profile + no owned deals = deleted
+        };
 
         // Build distinct sales_rep set from policies (mirrors leaderboard rows)
         const repSet = new Set();
@@ -22337,7 +22626,7 @@
             postCutoffPolicies++;
           }
         });
-        allReps = Array.from(repSet).sort((a, b) => (ytdSeed[b] || 0) - (ytdSeed[a] || 0));
+        allReps = Array.from(repSet).filter(r => !isRemovedRep(r)).sort((a, b) => (ytdSeed[b] || 0) - (ytdSeed[a] || 0));
         reps = allReps.filter(r => !isHiddenRep(r));
         const seedTotal = Object.values(ytdSeed).reduce((s, v) => s + v, 0);
         console.log('[WT] processed:', { allReps: allReps.length, visibleReps: reps.length, preCutoff: preCutoffPolicies, postCutoff: postCutoffPolicies, droppedOutOfRange, seedTotal });
