@@ -21345,7 +21345,6 @@
           renderProfileAvatar(publicUrl, document.getElementById('profileName').value || '');
           showMsg('✓ Photo updated', true);
           if (window.loadAvatarMap) window.loadAvatarMap();          // refresh photos across the app
-          if (window.KFCompliance) window.KFCompliance.refresh();    // may lift the profile-completion lock
         } catch (e) { showMsg('Photo upload failed. Run the onboarding migration (avatars bucket) first.', false); }
       });
     })();
@@ -21612,7 +21611,6 @@
         msgEl.style.color = '#16a34a';
         msgEl.style.display = 'block';
         setTimeout(() => { msgEl.style.display = 'none'; }, 3000);
-        if (window.KFCompliance) window.KFCompliance.refresh();   // may lift the profile-completion lock
       } catch (e) {
         msgEl.textContent = 'Error: ' + e.message;
         msgEl.style.color = '#dc2626';
@@ -23764,10 +23762,8 @@
       let currentSlug = null;
       let isAdmin = false, editMode = false;
       const titleOverrides = {};        // slug → custom name (Supabase training_titles)
-      let granted = true;               // existing account → full access (default true until known)
-      let trainingComplete = true;      // Hub gate flag
-      let dbGranted = false;            // admin "Grant access" override (agent_profiles.training_complete)
-      let dbApproved = true;            // admin approval (agent_profiles.approved). Fail OPEN: only false
+      let granted = true;               // every video unlocked — training is optional now
+      let dbApproved = true;            // account approval (agent_profiles.approved). Fail OPEN: only false
                                         // when the DB explicitly says approved=false (new unapproved signup).
       let isApproved = true;            // computed gate flag — false blocks the whole hub with an "awaiting approval" screen
 
@@ -23858,18 +23854,17 @@
       async function loadCompleted() {
         completed = new Set();
         resumePos = loadResume();
-        dbGranted = false;
         if (!window.currentUser || !window.accessToken) return;
         try {
           const r = await fetch(SUPABASE_URL + '/rest/v1/video_progress?user_id=eq.' + window.currentUser.id + '&select=video_id', { headers: supaHeaders() });
           if (r.ok) { const rows = await r.json(); completed = new Set(rows.map(x => x.video_id)); }
         } catch (e) { /* offline → empty */ }
         try {
-          // Honor an admin "Grant access" (agent_profiles.training_complete) for THIS user.
+          // Read this user's approval flag — the one thing that still gates the hub.
           await window.ensureValidAccessToken?.();
-        const pr = await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?user_id=eq.' + window.currentUser.id + '&select=training_complete,approved', { headers: { apikey: SUPABASE_KEY, Authorization: 'Bearer ' + (window.accessToken || SUPABASE_KEY) } });
-          if (pr.ok) { const prows = await pr.json(); const prow = Array.isArray(prows) ? prows[0] : null; dbGranted = !!(prow && prow.training_complete === true); dbApproved = !(prow && prow.approved === false); }
-        } catch (e) { /* offline → no override */ }
+          const pr = await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?user_id=eq.' + window.currentUser.id + '&select=approved', { headers: { apikey: SUPABASE_KEY, Authorization: 'Bearer ' + (window.accessToken || SUPABASE_KEY) } });
+          if (pr.ok) { const prows = await pr.json(); const prow = Array.isArray(prows) ? prows[0] : null; dbApproved = !(prow && prow.approved === false); }
+        } catch (e) { /* offline → fail open */ }
       }
       async function postComplete(slug) {
         if (!window.currentUser || !window.accessToken) return;
@@ -23883,40 +23878,14 @@
         } catch (e) { console.error('[training] save threw', e); }
       }
 
-      // ── Gate (existing vs new account) ──
-      let gateEl = null;
+      // ── Gate (approval only) ──
       function computeGate() {
         const u = window.currentUser;
-        const ct = (u && u.created_at) ? Date.parse(u.created_at) : NaN;
-        // Training videos are no longer REQUIRED (onboarding replaced them). Everyone
-        // gets full hub access; the videos stay available but optional/unlocked.
-        granted = true;
-        // Only the REQUIRED sections (not the optional CRM Guide) gate access.
-        const requiredVids = curriculum.sections.filter(s => !s.optional).flatMap(s => s.videos);
-        const allDone = requiredVids.length > 0 && requiredVids.every(v => completed.has(v.slug));
-        trainingComplete = granted || allDone;
-        // Approval takes precedence over training: an unapproved account is
-        // blocked entirely. Fail OPEN — approved unless the DB explicitly said
-        // approved=false, and the admin/owner is always approved.
+        // Training videos are optional (onboarding replaced them) — nothing here
+        // gates the hub any more. Approval is the only gate left: an unapproved
+        // account is blocked entirely. Fail OPEN — approved unless the DB
+        // explicitly said approved=false, and the admin/owner is always approved.
         isApproved = !u || dbApproved || (u && u.id === ADMIN_USER_ID);
-      }
-      function ensureGate() {
-        if (gateEl) return gateEl;
-        gateEl = document.getElementById('trainingGate');
-        if (gateEl) return gateEl;
-        gateEl = document.createElement('div');
-        gateEl.className = 'ss-training-gate';
-        gateEl.id = 'trainingGate';
-        gateEl.innerHTML =
-          '<div class="ss-training-gate-box">' +
-            '<div class="kf-gate-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg></div>' +
-            '<h3 class="kf-gate-title">Complete your training</h3>' +
-            '<p class="kf-gate-sub">Watch all training videos before accessing the Sales Hub. Your progress is saved automatically.</p>' +
-            '<div class="kf-gate-actions"><button type="button" class="kf-gate-btn primary">Go to Training Videos</button></div>' +
-          '</div>';
-        document.body.appendChild(gateEl);
-        gateEl.querySelector('.kf-gate-btn').addEventListener('click', () => { if (typeof activatePanel === 'function') activatePanel('training'); });
-        return gateEl;
       }
       function ensureApprovalGate() {
         let el = document.getElementById('approvalGate');
@@ -23935,31 +23904,19 @@
       }
       function applyTrainingGate() {
         const ag = ensureApprovalGate();
-        const g = ensureGate();
         const sidebarBtns = document.querySelectorAll('.ss-sidebar-btn[data-panel]');
         const externalLinks = document.querySelectorAll('.ss-nav-links a[href^="http"], .ss-mobile-menu a[href^="http"]');
-        // Approval gate takes precedence — an unapproved account is fully blocked
-        // (not even training or profile), until an admin approves it.
+        // Approval is the only gate — an unapproved account is fully blocked
+        // until it's approved (which now happens automatically on invite).
         if (!isApproved) {
-          g.classList.remove('active');
           ag.classList.add('active');
           sidebarBtns.forEach(b => b.classList.add('training-locked'));
           externalLinks.forEach(a => a.classList.add('training-locked'));
           return;
         }
         ag.classList.remove('active');
-        if (trainingComplete) {
-          g.classList.remove('active');
-          sidebarBtns.forEach(b => b.classList.remove('training-locked'));
-          externalLinks.forEach(a => a.classList.remove('training-locked'));
-        } else {
-          const open = new Set(['training', 'profile']);
-          sidebarBtns.forEach(b => b.classList.toggle('training-locked', !open.has(b.dataset.panel)));
-          externalLinks.forEach(a => a.classList.add('training-locked'));
-          const activePanel = document.querySelector('.ss-panel.active');
-          if (activePanel && activePanel.id !== 'panel-training') g.classList.add('active');
-          else g.classList.remove('active');
-        }
+        sidebarBtns.forEach(b => b.classList.remove('training-locked'));
+        externalLinks.forEach(a => a.classList.remove('training-locked'));
       }
 
       // ── Sidebar render ──
@@ -24289,31 +24246,19 @@
         if (target) select(target);
       }
 
-      // ── Hub gate: intercept other panels for not-yet-finished new reps ──
+      // Opening the Training panel picks a video if none is selected yet.
       if (typeof activatePanel === 'function') {
         const _ap = activatePanel;
         activatePanel = function (panelName) {
-          if (!trainingComplete && panelName !== 'training' && panelName !== 'profile' && window.currentUser) {
-            if (typeof showConfirmModal === 'function') {
-              const done = completed.size, total = flat().length;
-              showConfirmModal({
-                title: 'Complete Your Training',
-                message: 'You need to finish all training videos before accessing the Sales Hub. You\'ve completed ' + done + ' of ' + total + ' videos so far.',
-                confirmText: 'Go to Training', cancelText: '', variant: 'info', icon: '🎓'
-              }).then(() => { _ap('training'); if (gateEl) gateEl.classList.remove('active'); if (!currentSlug) autoSelect(); });
-              return;
-            }
-          }
           _ap(panelName);
-          if (panelName === 'training') { if (gateEl) gateEl.classList.remove('active'); if (!currentSlug) autoSelect(); }
+          if (panelName === 'training' && !currentSlug) autoSelect();
         };
       }
-      // Click guard: locked external links bounce back to training.
+      // Click guard: while the approval gate is up, external links are inert.
       document.addEventListener('click', function (e) {
         const a = e.target && e.target.closest && e.target.closest('a.training-locked');
         if (!a) return;
         e.preventDefault(); e.stopPropagation();
-        if (typeof activatePanel === 'function') activatePanel('training');
       }, true);
 
       // ── Boot ──
@@ -24604,7 +24549,6 @@
       const authReadHeaders = (extra) => Object.assign({}, HDRS, {
         'Authorization': 'Bearer ' + (window.accessToken || SUPABASE_KEY)
       }, extra || {});
-      const TOTAL_TRAINING_VIDEOS = 8;
 
       // All carriers we currently sell — extends the design's 5-color rainbow
       // palette to cover all 15 by cycling through CSS rainbow tokens.
@@ -24729,7 +24673,7 @@
       }
       async function fetchAgentProfiles() {
         await window.ensureValidAccessToken?.();
-        const res = await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?select=user_id,agent_name,comp_level,training_complete,annual_goal,manager_user_id,is_manager,state_licenses,carrier_numbers,status,approved&order=agent_name.asc', { headers: authReadHeaders() });
+        const res = await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?select=user_id,agent_name,comp_level,annual_goal,manager_user_id,is_manager,state_licenses,carrier_numbers,status,approved&order=agent_name.asc', { headers: authReadHeaders() });
         if (!res.ok) return [];
         return res.json();
       }
@@ -24787,12 +24731,6 @@
         }
         return out;
       }
-      async function fetchVideoProgress() {
-        const res = await fetch(SUPABASE_URL + '/rest/v1/video_progress?select=user_id,video_id', { headers: HDRS });
-        if (!res.ok) return [];
-        return res.json();
-      }
-
       // ─── Aggregations ──────────────────────────────────────────────────────
       function buildAgents(profiles, policies, kpis) {
         const today = new Date();
@@ -24901,7 +24839,6 @@
             initials,
             status: p.status || 'active',
             compLevel: p.comp_level || null,
-            trainingComplete: p.training_complete === true,
             approved: p.approved !== false,   // fail-open: treat missing/true as approved
             annualGoal: parseFloat(p.annual_goal) || 0,
             apYTD, apMTD, apWTD,
@@ -26329,7 +26266,6 @@
         const [theme, setTheme] = useState(initialTheme);
         useEffect(() => kfWatchTheme(setTheme), []); // follow the global skin theme
         const [profiles, setProfiles] = useState([]);
-        const [videoCounts, setVideoCounts] = useState({});
         const [loading, setLoading] = useState(true);
         const [savedFor, setSavedFor] = useState({});
         const [drafts, setDrafts] = useState({});
@@ -26344,14 +26280,18 @@
           try { localStorage.setItem('kf_skin_theme_v1', theme); } catch (e) {}
         }, [theme]);
 
+        // Auth-level login bans (auth.users.banned_until), admin only. Not a
+        // column on agent_profiles — read through the kf_banned_agent_ids RPC.
+        const [bannedIds, setBannedIds] = useState(() => new Set());
+        // null = not checked yet / lookup failed (RPC missing). Never claim
+        // "not banned" off a failed lookup — the ban is invisible either way.
+        const [banCheckOk, setBanCheckOk] = useState(null);
+
         const reload = async () => {
           setLoading(true);
-          const [profs, vids] = await Promise.all([fetchAgentProfiles(), fetchVideoProgress()]);
-          const counts = {};
-          vids.forEach(v => { counts[v.user_id] = (counts[v.user_id] || 0) + 1; });
-          setProfiles(profs);
-          setVideoCounts(counts);
+          setProfiles(await fetchAgentProfiles());
           setLoading(false);
+          loadBanned();
         };
         useEffect(() => { reload(); }, []);
 
@@ -26359,9 +26299,7 @@
           const arr = [...profiles];
           arr.sort((a, b) => {
             let va, vb;
-            if (sortKey === 'training') {
-              va = videoCounts[a.user_id] || 0; vb = videoCounts[b.user_id] || 0;
-            } else if (sortKey === 'comp_level') {
+            if (sortKey === 'comp_level') {
               va = parseInt(a.comp_level || 0); vb = parseInt(b.comp_level || 0);
             } else {
               va = (a[sortKey] || '').toString().toLowerCase();
@@ -26372,7 +26310,7 @@
             return 0;
           });
           return arr;
-        }, [profiles, videoCounts, sortKey, sortDir]);
+        }, [profiles, sortKey, sortDir]);
 
         const setSort = (k) => {
           if (k === sortKey) setSortDir(d => d === 'asc' ? 'desc' : 'asc');
@@ -26420,103 +26358,6 @@
           reload();
         };
 
-        // Approve (or un-approve) a new signup. Flips agent_profiles.approved;
-        // an unapproved account is blocked at the "awaiting approval" gate.
-        const toggleApprove = async (uid, current) => {
-          const next = !current;
-          const prof = profiles.find(p => p.user_id === uid) || {};
-          const who = prof.agent_name || 'this agent';
-          if (typeof window.showConfirmModal === 'function') {
-            const ok = await window.showConfirmModal({
-              title: next ? 'Approve this account?' : 'Revoke approval?',
-              message: next
-                ? 'Approve ' + who + '? They’ll be able to sign in and use the Sales Hub (subject to the training gate).'
-                : 'Revoke ' + who + '’s approval? They keep their login but are blocked at the "awaiting approval" screen until you approve them again.',
-              confirmText: next ? 'Approve' : 'Revoke approval',
-              cancelText: 'Cancel',
-              variant: next ? 'info' : 'danger',
-              icon: next ? '✓' : '⚠️'
-            });
-            if (!ok) return;
-          }
-          try {
-            await window.ensureValidAccessToken?.();
-            const r = await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?user_id=eq.' + uid, {
-              method: 'PATCH', headers: writeHdrs({ Prefer: 'return=minimal' }),
-              body: JSON.stringify({ approved: next })
-            });
-            if (!r.ok && r.status !== 204) {
-              const txt = await r.text().catch(() => '');
-              console.error('[approve] PATCH failed', r.status, txt);
-              try { alert('Could not update approval (' + r.status + ').'); } catch (_) {}
-              return;
-            }
-            if (typeof reload === 'function') reload();
-            else if (typeof refresh === 'function') refresh();
-          } catch (e) { console.error('[approve] threw', e); }
-        };
-
-        const toggleAccess = async (uid, current) => {
-          const next = !current;
-          const prof = profiles.find(p => p.user_id === uid) || {};
-          const who = prof.agent_name || 'this agent';
-          if (typeof window.showConfirmModal === 'function') {
-            const ok = await window.showConfirmModal({
-              title: next ? 'Grant training access?' : 'Lock to training?',
-              message: next
-                ? 'Grant ' + who + ' full Sales Hub access? They\u2019ll be able to log deals, KPIs, and view all panels.'
-                : 'Lock ' + who + ' back into the training gate? They keep their login but only see training until you grant access again. (To remove a departing agent entirely, use Remove agent.)',
-              confirmText: next ? 'Grant access' : 'Lock to training',
-              cancelText: 'Cancel',
-              variant: next ? 'info' : 'danger',
-              icon: next ? '\u2713' : '\u26A0\uFE0F'
-            });
-            if (!ok) return;
-          }
-          try {
-            // PATCH the existing row. Ask for a representation back so we
-            // can see whether any rows actually matched — if zero, the
-            // agent doesn't have an agent_profiles row yet.
-            const r = await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?user_id=eq.' + uid, {
-              method: 'PATCH',
-              headers: writeHdrs({ Prefer: 'return=representation' }),
-              body: JSON.stringify({ training_complete: next })
-            });
-            const rows = r.ok ? await r.json().catch(() => []) : [];
-            if (!r.ok && r.status !== 200 && r.status !== 204) {
-              const txt = await r.text().catch(() => '');
-              console.error('[grant] PATCH failed', r.status, txt);
-              try { alert('Could not update access (' + r.status + '). Open DevTools console for details — likely auth/RLS.'); } catch (_) {}
-              return;
-            }
-            if (!Array.isArray(rows) || rows.length === 0) {
-              // Fall back to insert when the row doesn't exist.
-              const prof = profiles.find(p => p.user_id === uid) || {};
-              const ins = await fetch(SUPABASE_URL + '/rest/v1/agent_profiles', {
-                method: 'POST',
-                headers: writeHdrs({ Prefer: 'resolution=merge-duplicates,return=minimal' }),
-                body: JSON.stringify({
-                  user_id: uid,
-                  agent_name: prof.agent_name || null,
-                  comp_level: prof.comp_level || null,
-                  training_complete: next
-                })
-              });
-              if (!ins.ok) {
-                const body = await ins.text().catch(() => '');
-                console.error('[grant] insert failed', ins.status, body);
-                try { alert('Could not update access (' + ins.status + '). Open DevTools console for details.'); } catch (_) {}
-                return;
-              }
-            }
-          } catch (err) {
-            console.error('[grant] toggle threw:', err);
-            try { alert('Could not update access — ' + (err.message || err)); } catch (_) {}
-            return;
-          }
-          reload();
-        };
-
         // Edit modal — single point of editing for every agent attribute.
         // The row UI is read-only; clicking Edit opens this dialog. Reuses
         // the existing `drafts` state via draftFor/updateDraft so changes
@@ -26542,9 +26383,8 @@
         const [deleting, setDeleting] = useState(false);
         const [deleteCount, setDeleteCount] = useState(null); // # policies (null = loading)
         const [alsoDeleteData, setAlsoDeleteData] = useState(false);
-        const [archiveInstead, setArchiveInstead] = useState(true); // default to archive (safe) even with no policies — delete is opt-in
         const [confirmText, setConfirmText] = useState('');
-        const askDelete = (p) => { setDeleteFor(p); setDeleteCount(null); setAlsoDeleteData(false); setArchiveInstead(true); setConfirmText(''); };
+        const askDelete = (p) => { setDeleteFor(p); setDeleteCount(null); setAlsoDeleteData(false); setConfirmText(''); };
 
         // Count the agent's policies whenever the remove dialog opens.
         useEffect(() => {
@@ -26563,15 +26403,16 @@
 
         const confirmDelete = async () => {
           if (!deleteFor) return;
-          const cnt = deleteCount || 0;
-          const hasPolicies = cnt > 0;
-          if (hasPolicies && alsoDeleteData && confirmText.trim().toUpperCase() !== 'DELETE') return;
-          // Managers can ONLY archive — never a hard delete or a data purge.
-          const rpc = !canAdmin ? 'archive_agent_user'
-                    : (!hasPolicies && archiveInstead) ? 'archive_agent_user'
-                    : !hasPolicies ? 'delete_agent_user'
-                    : alsoDeleteData ? 'delete_agent_user_and_data'
-                    : 'archive_agent_user';
+          const hasPolicies = (deleteCount || 0) > 0;
+          // ONE rule, used here and in Recruiting HQ: Remove always archives —
+          // data kept, login blocked, reversible. Permanently deleting is an
+          // admin-only opt-in that requires typing DELETE, so a misclick can
+          // never destroy anything.
+          const wantDelete = canAdmin && alsoDeleteData;
+          if (wantDelete && confirmText.trim().toUpperCase() !== 'DELETE') return;
+          const rpc = !wantDelete ? 'archive_agent_user'
+                    : hasPolicies ? 'delete_agent_user_and_data'
+                    : 'delete_agent_user';
           setDeleting(true);
           try {
             const r = await fetch(SUPABASE_URL + '/rest/v1/rpc/' + rpc, {
@@ -26592,6 +26433,95 @@
             console.error('[remove agent] threw:', e);
             try { alert('Action failed — ' + (e.message || e)); } catch (_) {}
             setDeleting(false);
+          }
+        };
+
+        // Who is banned in Supabase Auth right now. Admin-only: the RPC returns
+        // an empty set for everyone else, so the Login access UI stays hidden.
+        const loadBanned = async () => {
+          if (!canAdmin) return;
+          try {
+            await window.ensureValidAccessToken?.();
+            const r = await fetch(SUPABASE_URL + '/rest/v1/rpc/kf_banned_agent_ids', {
+              method: 'POST',
+              headers: {
+                'apikey': SUPABASE_KEY,
+                'Authorization': 'Bearer ' + (window.accessToken || SUPABASE_KEY),
+                'Content-Type': 'application/json'
+              },
+              body: '{}'
+            });
+            if (!r.ok) { console.warn('[banned] lookup failed', r.status); setBanCheckOk(false); return; }
+            const rows = await r.json().catch(() => []);
+            setBannedIds(new Set((Array.isArray(rows) ? rows : []).map(x => (x && x.user_id) || x).filter(Boolean)));
+            setBanCheckOk(true);
+          } catch (e) { console.warn('[banned] lookup threw', e); setBanCheckOk(false); }
+        };
+
+        // Escape hatch for an account that never got auto-approved (signed up
+        // under a different email than the recruit record we invited). Normal
+        // invited agents are approved by the database trigger, never by hand.
+        const approveStuck = async (p) => {
+          const who = p.agent_name || 'this agent';
+          if (typeof window.showConfirmModal === 'function') {
+            const ok = await window.showConfirmModal({
+              title: 'Let them in?',
+              message: 'Give ' + who + ' access to the Sales Hub? Only do this if you recognize them — this account wasn’t matched to anyone you invited.',
+              confirmText: 'Let them in',
+              cancelText: 'Cancel',
+              variant: 'info',
+              icon: '✓'
+            });
+            if (!ok) return;
+          }
+          try {
+            await window.ensureValidAccessToken?.();
+            const r = await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?user_id=eq.' + p.user_id, {
+              method: 'PATCH', headers: writeHdrs({ Prefer: 'return=minimal' }),
+              body: JSON.stringify({ approved: true })
+            });
+            if (!r.ok && r.status !== 204) {
+              const t = await r.text().catch(() => '');
+              console.error('[approve] failed', r.status, t);
+              try { alert('Could not approve (' + r.status + ').'); } catch (_) {}
+              return;
+            }
+            reload();
+          } catch (e) { console.error('[approve] threw', e); }
+        };
+
+        // Lift the login block. Undoes only the "User is banned" error at
+        // sign-in — nothing else about the account changes.
+        const unban = async (p) => {
+          const who = p.agent_name || 'this agent';
+          if (typeof window.showConfirmModal === 'function') {
+            const ok = await window.showConfirmModal({
+              title: 'Restore login?',
+              message: 'Let ' + who + ' sign in again? Nothing else about their account changes.',
+              confirmText: 'Restore login',
+              cancelText: 'Cancel',
+              variant: 'info',
+              icon: '✓'
+            });
+            if (!ok) return;
+          }
+          try {
+            await window.ensureValidAccessToken?.();
+            const r = await fetch(SUPABASE_URL + '/rest/v1/rpc/unban_agent_user', {
+              method: 'POST',
+              headers: Object.assign({}, writeHdrs(), { 'Content-Type': 'application/json' }),
+              body: JSON.stringify({ target_user_id: p.user_id })
+            });
+            if (!r.ok) {
+              const t = await r.text().catch(() => '');
+              console.error('[unban] failed', r.status, t);
+              try { alert('Could not restore the login (' + r.status + '). ' + (t || 'See console for details.')); } catch (_) {}
+              return;
+            }
+            reload();
+          } catch (e) {
+            console.error('[unban] threw:', e);
+            try { alert('Could not restore the login — ' + (e.message || e)); } catch (_) {}
           }
         };
 
@@ -26647,7 +26577,6 @@
                       <tr>
                         <th onClick={() => setSort('agent_name')}>Agent {arrow('agent_name')}</th>
                         <th onClick={() => setSort('comp_level')}>Comp level {arrow('comp_level')}</th>
-                        <th onClick={() => setSort('training')}>Training {arrow('training')}</th>
                         <th>Status</th>
                         <th className="num">Actions</th>
                       </tr>
@@ -26656,10 +26585,6 @@
                       {visible.map((p, i) => {
                         const orig = profiles.findIndex(x => x.user_id === p.user_id);
                         const sparkColor = avatarColor(orig);
-                        const isComplete = p.training_complete === true;
-                        // Granted access counts as all videos complete.
-                        const vCount = isComplete ? TOTAL_TRAINING_VIDEOS : (videoCounts[p.user_id] || 0);
-                        const pct = Math.min(100, Math.round((vCount / TOTAL_TRAINING_VIDEOS) * 100));
                         const name = p.agent_name || 'Unnamed';
                         return (
                           <tr key={p.user_id}>
@@ -26677,22 +26602,15 @@
                               </span>
                             </td>
                             <td>
-                              <div style={{display:'flex', flexDirection:'column', gap:2}}>
-                                <span style={{fontFamily:'var(--tp-mono)', fontSize:11, color:'var(--tp-ink-2)'}}>{vCount} / {TOTAL_TRAINING_VIDEOS}</span>
-                                <div className="tp-progress-track">
-                                  <div className="tp-progress-fill" style={{width:pct + '%', background: pct >= 100 ? 'var(--rb-green)' : 'linear-gradient(90deg, var(--rb-purple), var(--rb-blue))'}}></div>
-                                </div>
-                              </div>
-                            </td>
-                            <td>
                               {p.status === 'inactive' ? (
                                 <span className="tp-agent-status" style={{background:'color-mix(in oklch, var(--tp-neg) 16%, transparent)', color:'var(--tp-neg)'}}>Archived</span>
+                              ) : bannedIds.has(p.user_id) ? (
+                                /* Active profile but still banned in auth — a leftover from a removal. Admin-only. */
+                                <span className="tp-agent-status" style={{background:'color-mix(in oklch, var(--tp-neg) 16%, transparent)', color:'var(--tp-neg)'}}>Login banned</span>
                               ) : p.approved === false ? (
                                 <span className="tp-agent-status" style={{background:'color-mix(in oklch, #f59e0b 18%, transparent)', color:'#b45309'}}>Awaiting approval</span>
                               ) : (
-                                <span className={'tp-agent-status ' + (isComplete ? 'active' : 'training')}>
-                                  {isComplete ? 'Active' : 'In training'}
-                                </span>
+                                <span className="tp-agent-status active">Active</span>
                               )}
                             </td>
                             <td className="num">
@@ -26719,11 +26637,7 @@
             {editFor && (() => {
               const live = profiles.find(x => x.user_id === editFor.user_id) || editFor;
               const draft = draftFor(editFor.user_id, live);
-              const isComplete = live.training_complete === true;
-              const isApproved = live.approved !== false;   // fail-open: missing/true = approved
-              // Granted access counts as all videos complete.
-              const vCount = isComplete ? TOTAL_TRAINING_VIDEOS : (videoCounts[editFor.user_id] || 0);
-              const pct = Math.min(100, Math.round((vCount / TOTAL_TRAINING_VIDEOS) * 100));
+              const isBanned = bannedIds.has(editFor.user_id); // login block, admin-only
               const justSaved = !!savedFor[editFor.user_id];
               // Read-only licenses & writing numbers, sorted alphabetically.
               const stateLics = (Array.isArray(live.state_licenses) ? live.state_licenses : [])
@@ -26759,49 +26673,38 @@
                           </select>
                         </div>
                       </div>
+                      {canAdmin && live.approved === false &&
                       <div className="hv-form-section">
                         <div className="hv-form-section-hd">
                           <div>
-                            <div className="hv-form-section-lbl">Training progress</div>
-                            <div className="hv-form-section-meta">{vCount} of {TOTAL_TRAINING_VIDEOS} videos completed</div>
-                          </div>
-                          <span className={'tp-agent-status ' + (isComplete ? 'active' : 'training')}>
-                            {isComplete ? 'Active' : 'In training'}
-                          </span>
-                        </div>
-                        <div className="tp-progress-track" style={{marginTop:10}}>
-                          <div className="tp-progress-fill" style={{width:pct + '%', background: pct >= 100 ? 'var(--rb-green)' : 'linear-gradient(90deg, var(--rb-purple), var(--rb-blue))'}}></div>
-                        </div>
-                      </div>
-                      {canAdmin &&
-                      <div className="hv-form-section">
-                        <div className="hv-form-section-hd">
-                          <div>
-                            <div className="hv-form-section-lbl">Account approval</div>
+                            <div className="hv-form-section-lbl">Waiting to be let in</div>
                             <div className="hv-form-section-meta">
-                              {isApproved ? 'Approved — can sign in and use the hub.' : 'New signup, awaiting your approval. They’re blocked until you approve.'}
+                              This account isn’t linked to anyone you invited, so it’s stuck at the waiting screen. That usually means they signed up with a different email than the one on their recruit record. Approve them only if you recognize them.
                             </div>
                           </div>
-                          <button type="button" className={'hv-btn ' + (isApproved ? 'danger' : 'primary')}
-                            onClick={() => toggleApprove(editFor.user_id, isApproved)}>
-                            {isApproved ? 'Revoke approval' : 'Approve'}
-                          </button>
+                          <button type="button" className="hv-btn primary" onClick={() => approveStuck(live)}>Let them in</button>
                         </div>
                       </div>}
-                      <div className="hv-form-section">
+                      {canAdmin &&
+                      <div className={'hv-form-section' + (isBanned ? ' hv-form-section-danger' : '')}>
                         <div className="hv-form-section-hd">
                           <div>
-                            <div className="hv-form-section-lbl">Training access</div>
+                            <div className="hv-form-section-lbl" style={isBanned ? {color:'var(--tp-neg)'} : null}>Login access</div>
                             <div className="hv-form-section-meta">
-                              {isComplete ? 'Past training — can log deals, KPIs, and see every panel.' : 'Locked into the training gate.'} To remove a departing agent, use Remove agent below.
+                              {banCheckOk === false
+                                ? 'Can’t check whether this account is blocked — the kf_banned_agent_ids function isn’t in Supabase yet (run supabase-login-ban-admin.sql). Restore login will also fail until it is.'
+                                : isBanned
+                                ? 'Blocked from signing in — they see “User is banned”. This is set when an agent is removed, and can be left behind if their profile is made active again some other way.'
+                                : 'Not blocked — nothing is stopping this account from signing in.'}
                             </div>
                           </div>
-                          <button type="button" className={'hv-btn ' + (isComplete ? 'danger' : 'primary')}
-                            onClick={() => toggleAccess(editFor.user_id, isComplete)}>
-                            {isComplete ? 'Lock to training' : 'Grant access'}
-                          </button>
+                          {banCheckOk === false
+                            ? <button type="button" className="hv-btn" onClick={() => unban(live)}>Restore login</button>
+                            : isBanned
+                            ? <button type="button" className="hv-btn primary" onClick={() => unban(live)}>Restore login</button>
+                            : <span className="tp-agent-status active">Can sign in</span>}
                         </div>
-                      </div>
+                      </div>}
                       <div className="hv-form-section">
                         <div className="hv-form-section-hd">
                           <div>
@@ -26847,14 +26750,12 @@
                       <div className="hv-form-section hv-form-section-danger">
                         <div className="hv-form-section-hd">
                           <div>
-                            <div className="hv-form-section-lbl" style={{color:'var(--tp-neg)'}}>{canAdmin ? 'Remove agent' : 'Archive agent'}</div>
-                            <div className="hv-form-section-meta">{canAdmin
-                              ? "Disables their login immediately. With policies on file they're archived (data kept); with none, the account is fully deleted."
-                              : 'Disables their login immediately and archives them — their profile and all data are kept, and you can restore them later. Only the main admin can permanently delete an account.'}</div>
+                            <div className="hv-form-section-lbl" style={{color:'var(--tp-neg)'}}>Remove agent</div>
+                            <div className="hv-form-section-meta">Stops them signing in and hides them everywhere. All their data is kept, and Unarchive brings them back.{canAdmin ? ' Permanently deleting is a separate opt-in on the next screen.' : ''}</div>
                           </div>
                           <button type="button" className="hv-btn danger"
                             onClick={() => { setEditFor(null); askDelete(live); }}>
-                            {canAdmin ? 'Remove agent' : 'Archive agent'}
+                            Remove agent
                           </button>
                         </div>
                       </div>
@@ -26873,60 +26774,33 @@
               const loadingCnt = deleteCount === null;
               const cnt = deleteCount || 0;
               const hasPolicies = cnt > 0;
-              const willHardDelete = canAdmin && ((!hasPolicies && !archiveInstead) || alsoDeleteData);
-              const needType = canAdmin && hasPolicies && alsoDeleteData;
+              // Remove always archives. Permanent delete is the opt-in below.
+              const willHardDelete = canAdmin && alsoDeleteData;
               const mgr = deleteFor.manager_user_id ? ((profiles.find(x => x.user_id === deleteFor.manager_user_id) || {}).agent_name || 'their manager') : 'top of org';
-              const canConfirm = !loadingCnt && !deleting && (!needType || confirmText.trim().toUpperCase() === 'DELETE');
+              const canConfirm = !loadingCnt && !deleting && (!willHardDelete || confirmText.trim().toUpperCase() === 'DELETE');
               return (
               <div className="hv-modal-layer" onClick={() => !deleting && setDeleteFor(null)}>
                 <div className="hv-modal" onClick={(e) => e.stopPropagation()}>
-                  <div className="hv-modal-hd">{willHardDelete ? 'Delete' : 'Archive'} agent · {deleteFor.agent_name || 'Unnamed'}</div>
+                  <div className="hv-modal-hd">{willHardDelete ? 'Permanently delete' : 'Remove'} agent · {deleteFor.agent_name || 'Unnamed'}</div>
                   <div className="hv-modal-body">
                     {loadingCnt ? (
-                      <p style={{margin:0, color:'var(--tp-ink-2)'}}>Checking their policies…</p>
-                    ) : !hasPolicies ? (
-                      <>
-                        {archiveInstead ? (
-                          <>
-                            <p style={{margin:'0 0 10px'}}>No policies on file. This agent will be <b>archived</b>:</p>
-                            <ul style={{margin:'0 0 12px', paddingLeft:18, color:'var(--tp-ink-2)', fontSize:13, lineHeight:1.6}}>
-                              <li><b style={{color:'var(--tp-ink-1)'}}>Disable</b> their login immediately + hide from all dashboards</li>
-                              <li><b style={{color:'var(--tp-ink-1)'}}>Keep</b> their profile so you can restore them later</li>
-                              <li><b style={{color:'var(--tp-ink-1)'}}>Reparent</b> any reports to <b style={{color:'var(--tp-ink-1)'}}>{mgr}</b></li>
-                              <li><span style={{color:'var(--tp-ink-3)'}}>Reversible — you can unarchive them later</span></li>
-                            </ul>
-                          </>
-                        ) : (
-                          <>
-                            <p style={{margin:'0 0 10px'}}><b>No policies on file — safe to fully delete.</b></p>
-                            <ul style={{margin:'0 0 12px', paddingLeft:18, color:'var(--tp-ink-2)', fontSize:13, lineHeight:1.6}}>
-                              <li><b style={{color:'var(--tp-ink-1)'}}>Remove</b> their login, profile, daily KPI activity, and training</li>
-                              <li><b style={{color:'var(--tp-ink-1)'}}>Reparent</b> any reports to <b style={{color:'var(--tp-ink-1)'}}>{mgr}</b></li>
-                            </ul>
-                            <p style={{margin:'0 0 12px', color:'var(--tp-ink-3)', fontSize:12}}>This cannot be undone.</p>
-                          </>
-                        )}
-                        {canAdmin &&
-                        <label style={{display:'flex', alignItems:'flex-start', gap:8, fontSize:13, color:'var(--tp-ink-2)', cursor:'pointer', padding:'10px 12px', border:'1px solid var(--tp-hairline)', borderRadius:8}}>
-                          <input type="checkbox" checked={archiveInstead} onChange={e => setArchiveInstead(e.target.checked)} style={{marginTop:2, flex:'0 0 auto'}} />
-                          <span><b style={{color:'var(--tp-ink-1)'}}>Archive instead of deleting</b> — keep their profile and just revoke access, so you can bring them back later (for someone who may return).</span>
-                        </label>}
-                      </>
+                      <p style={{margin:0, color:'var(--tp-ink-2)'}}>Checking their record…</p>
                     ) : (
                       <>
-                        <p style={{margin:'0 0 10px'}}>This agent has <b>{cnt}</b> {cnt === 1 ? 'policy' : 'policies'}. By default they'll be <b>archived</b>:</p>
+                        <p style={{margin:'0 0 10px'}}>{deleteFor.agent_name || 'This agent'} will be <b>removed</b>:</p>
                         <ul style={{margin:'0 0 12px', paddingLeft:18, color:'var(--tp-ink-2)', fontSize:13, lineHeight:1.6}}>
-                          <li><b style={{color:'var(--tp-ink-1)'}}>Disable</b> their login immediately + hide from all dashboards</li>
-                          <li><b style={{color:'var(--tp-ink-1)'}}>Keep</b> their {cnt === 1 ? 'policy' : 'policies'}, KPIs, and history intact</li>
-                          <li><b style={{color:'var(--tp-ink-1)'}}>Reparent</b> any reports to <b style={{color:'var(--tp-ink-1)'}}>{mgr}</b></li>
-                          <li><span style={{color:'var(--tp-ink-3)'}}>Reversible — you can unarchive them later</span></li>
+                          <li><b style={{color:'var(--tp-ink-1)'}}>Can’t sign in</b> from now on</li>
+                          <li><b style={{color:'var(--tp-ink-1)'}}>Hidden</b> from the roster, tracker, and all dashboards</li>
+                          <li><b style={{color:'var(--tp-ink-1)'}}>Everything kept</b>{hasPolicies ? ' — their ' + cnt + ' ' + (cnt === 1 ? 'policy' : 'policies') + ', KPIs, and history stay put' : ' — profile, KPIs, and history stay put'}</li>
+                          <li><b style={{color:'var(--tp-ink-1)'}}>Anyone reporting to them</b> moves to <b style={{color:'var(--tp-ink-1)'}}>{mgr}</b></li>
+                          <li><span style={{color:'var(--tp-ink-3)'}}>Reversible — Unarchive brings them back and lets them log in again</span></li>
                         </ul>
                         {canAdmin &&
                         <label style={{display:'flex', alignItems:'flex-start', gap:8, fontSize:13, color:'var(--tp-ink-2)', cursor:'pointer', padding:'10px 12px', border:'1px solid var(--tp-hairline)', borderRadius:8}}>
                           <input type="checkbox" checked={alsoDeleteData} onChange={e => { setAlsoDeleteData(e.target.checked); setConfirmText(''); }} style={{marginTop:2, flex:'0 0 auto'}} />
-                          <span>Instead, <b style={{color:'var(--tp-neg)'}}>permanently delete</b> this agent <b>and all {cnt} of their {cnt === 1 ? 'policy' : 'policies'}</b>. Cannot be undone.</span>
+                          <span>Instead, <b style={{color:'var(--tp-neg)'}}>permanently delete</b> this agent{hasPolicies ? <> <b>and all {cnt} of their {cnt === 1 ? 'policy' : 'policies'}</b></> : ''}. Cannot be undone.</span>
                         </label>}
-                        {needType && (
+                        {willHardDelete && (
                           <div style={{marginTop:10}}>
                             <div style={{fontSize:12, color:'var(--tp-ink-3)', marginBottom:6}}>Type <b style={{color:'var(--tp-ink-1)'}}>DELETE</b> to confirm:</div>
                             <input value={confirmText} onChange={e => setConfirmText(e.target.value)} placeholder="DELETE" style={{width:'100%', boxSizing:'border-box', background:'var(--tp-surface)', border:'1px solid var(--tp-hairline-strong)', borderRadius:8, padding:'8px 10px', color:'var(--tp-ink-1)', fontFamily:'var(--tp-mono)', outline:'none'}} />
@@ -26938,7 +26812,7 @@
                   <div className="hv-modal-foot">
                     <button type="button" className="hv-btn" disabled={deleting} onClick={() => setDeleteFor(null)}>Cancel</button>
                     <button type="button" className={'hv-btn ' + (willHardDelete ? 'danger' : 'primary')} disabled={!canConfirm} onClick={confirmDelete}>
-                      {deleting ? 'Working…' : willHardDelete ? (hasPolicies ? 'Delete agent + data' : 'Delete agent') : 'Archive agent'}
+                      {deleting ? 'Working…' : willHardDelete ? 'Delete permanently' : 'Remove agent'}
                     </button>
                   </div>
                 </div>
@@ -33522,12 +33396,14 @@
       const [removeOpen, setRemoveOpen] = useState(false);
       const [rmHasPolicies, setRmHasPolicies] = useState(null);
       const [rmDeleteData, setRmDeleteData] = useState(false);
-      const [rmArchiveInstead, setRmArchiveInstead] = useState(false);
       const [rmText, setRmText] = useState('');
       const [rmBusy, setRmBusy] = useState(false);
+      // Login block (auth.users.banned_until) — not a column on agent_profiles,
+      // so it's read through the kf_banned_agent_ids RPC. null = couldn't check.
+      const [banned, setBanned] = useState(null);
+      const [acctBusy, setAcctBusy] = useState(false);
       // Send-through-onboarding (re-onboarding) modal state.
       const [onbOpen, setOnbOpen] = useState(false);
-      const [onbEdit, setOnbEdit] = useState(false);   // reveal "Send through onboarding" in the progress section
       const [onbSel, setOnbSel] = useState({});
       const [onbBusy, setOnbBusy] = useState(false);
       const [onbMsg, setOnbMsg] = useState('');
@@ -33555,7 +33431,7 @@
         (async () => {
           const jobs = [getJSON('policies?select=annual_premium,policy_date,status&user_id=eq.' + sel.linked_user_id + '&limit=5000')];
           if (isAdmin) {
-            jobs.push(getJSON('agent_profiles?select=state_licenses,carrier_numbers,approved,comp_level,status,npn,avatar_url,signed_name,signed_at,licensed,onboarding_completed,onboarding_step&user_id=eq.' + sel.linked_user_id + '&limit=1'));
+            jobs.push(getJSON('agent_profiles?select=state_licenses,carrier_numbers,approved,comp_level,status,npn,avatar_url,licensed,onboarding_completed,onboarding_step&user_id=eq.' + sel.linked_user_id + '&limit=1'));
           }
           const res = await Promise.all(jobs);
           if (!live) return;
@@ -33586,7 +33462,8 @@
           if (isAdmin) {
             const pr = (res[1] && res[1][0]) || {};
             setLic({ state_licenses: Array.isArray(pr.state_licenses) ? pr.state_licenses : [], carrier_numbers: Array.isArray(pr.carrier_numbers) ? pr.carrier_numbers : [] });
-            setAcct({ approved: pr.approved, comp_level: pr.comp_level, status: pr.status, npn: pr.npn, avatar_url: pr.avatar_url, signed_name: pr.signed_name, signed_at: pr.signed_at, licensed: pr.licensed, onboarding_completed: pr.onboarding_completed, onboarding_step: pr.onboarding_step });
+            setAcct({ approved: pr.approved, comp_level: pr.comp_level, status: pr.status, npn: pr.npn, avatar_url: pr.avatar_url, licensed: pr.licensed, onboarding_completed: pr.onboarding_completed, onboarding_step: pr.onboarding_step });
+            loadBanned();
           }
         })();
         return () => { live = false; };
@@ -33605,8 +33482,16 @@
         if (isAdmin && sel.linked_user_id) {
           const curMgr = (rosterMap[sel.linked_user_id] && rosterMap[sel.linked_user_id].manager_user_id) || '';
           const newMgr = (ed.recruiter_user_id && ed.recruiter_user_id !== sel.linked_user_id) ? ed.recruiter_user_id : '';
-          if (newMgr !== curMgr) {
-            try { await ensureToken(); await rest('agent_profiles?user_id=eq.' + sel.linked_user_id, { method: 'PATCH', headers: writeHeaders(), body: JSON.stringify({ manager_user_id: newMgr || null }) }); await onChanged(); } catch (e) { console.error('upline sync failed', e); }
+          const patch = {};
+          if (newMgr !== curMgr) patch.manager_user_id = newMgr || null;
+          // Name is edited here and nowhere else: agents can't change their own
+          // (the field on their Profile page is read-only), so this keeps the
+          // recruit name and the name on the leaderboard as one and the same.
+          const newName = ed.full_name.trim();
+          const curName = (rosterMap[sel.linked_user_id] && rosterMap[sel.linked_user_id].agent_name) || '';
+          if (newName && newName !== curName) patch.agent_name = newName;
+          if (Object.keys(patch).length) {
+            try { await ensureToken(); await rest('agent_profiles?user_id=eq.' + sel.linked_user_id, { method: 'PATCH', headers: writeHeaders(), body: JSON.stringify(patch) }); await onChanged(); } catch (e) { console.error('profile sync failed', e); }
           }
         }
         setEditing(false);
@@ -33628,7 +33513,22 @@
       const advance = async () => { const n = nextStage(sel.stage); if (n !== undefined) await doPatch({ stage: n }); setConfirm(null); };
       const pickStage = async (n) => { setStageOpen(false); if (n !== sel.stage) await doPatch({ stage: n }); };
       const abandon = async () => { await doPatch({ status: 'abandoned', abandoned_at: new Date().toISOString() }); setConfirm(null); };
-      const restore = async () => { await doPatch({ status: 'active', abandoned_at: null }); };
+      // One button undoes a removal. Removing an agent abandons their recruit
+      // record AND blocks their login, so bringing them back has to undo both —
+      // otherwise you get the half-restored state that stranded Brian.
+      const restore = async () => {
+        setAcctBusy(true);
+        try {
+          if (sel.linked_user_id) {
+            await ensureToken();
+            const r = await rest('rpc/unarchive_agent_user', { method: 'POST', headers: writeHeaders(), body: JSON.stringify({ target_user_id: sel.linked_user_id }) });
+            if (!r.ok) { alert('Could not reactivate their Sales Hub account (' + r.status + '). Check your admin access.'); return; }
+            setAcct(a => a ? Object.assign({}, a, { status: 'active' }) : a);
+            setBanned(false);
+          }
+          await doPatch({ status: 'active', abandoned_at: null });
+        } finally { setAcctBusy(false); }
+      };
       const remove = async () => { await deleteRecruit(sel.id); setConfirm(null); onBack(); onChanged(); };
       const postNote = async () => {
         const b = noteDraft.trim(); if (!b) return;
@@ -33688,10 +33588,37 @@
         setOnbOpen(false); setOnbSel({});
         if (onChanged) await onChanged();
       };
+      // Is this agent blocked from signing in? Admin-only; the RPC hands back
+      // an empty list to everyone else. null = we couldn't tell (RPC missing),
+      // which we say out loud rather than claiming they're fine.
+      const loadBanned = async () => {
+        try {
+          await ensureToken();
+          const r = await rest('rpc/kf_banned_agent_ids', { method: 'POST', headers: writeHeaders(), body: '{}' });
+          if (!r.ok) { setBanned(null); return; }
+          const rows = await r.json().catch(() => []);
+          const ids = (Array.isArray(rows) ? rows : []).map(x => (x && x.user_id) || x);
+          setBanned(ids.indexOf(sel.linked_user_id) !== -1);
+        } catch (e) { setBanned(null); }
+      };
+
+      // Let a blocked agent sign in again.
+      const unbanAgent = async () => {
+        setAcctBusy(true);
+        try {
+          await ensureToken();
+          const r = await rest('rpc/unban_agent_user', { method: 'POST', headers: writeHeaders(), body: JSON.stringify({ target_user_id: sel.linked_user_id }) });
+          if (!r.ok) { alert('Could not restore the login (' + r.status + '). Check your admin access.'); return; }
+          setBanned(false);
+          setAcct(a => Object.assign({}, a, { status: 'active' }));
+          if (onChanged) await onChanged();
+        } finally { setAcctBusy(false); }
+      };
+
       const setApproved = async (val) => { setAcct(a => Object.assign({}, a, { approved: val })); await patchAgent({ approved: val }); };
       const setComp = async (val) => { const cv = val ? parseInt(val) : null; setAcct(a => Object.assign({}, a, { comp_level: cv })); await patchAgent({ comp_level: cv }); };
       const openRemove = async () => {
-        setRemoveOpen(true); setRmHasPolicies(null); setRmDeleteData(false); setRmArchiveInstead(false); setRmText('');
+        setRemoveOpen(true); setRmHasPolicies(null); setRmDeleteData(false); setRmText('');
         const rows = await getJSON('policies?select=id&user_id=eq.' + sel.linked_user_id + '&limit=1');
         setRmHasPolicies((rows || []).length > 0);
       };
@@ -33782,8 +33709,11 @@
                 </div>
               );
             })()}
-            {/* Destructive actions only surface in edit mode so they can't be hit by accident. */}
-            {editing &&
+            {/* Destructive actions only surface in edit mode so they can't be hit
+                by accident. Abandon + Delete are for recruits who never became
+                agents. Once they have a Sales Hub account, the only exit is
+                Remove agent down in Progress — no duplicate ways out. */}
+            {editing && !sel.linked_user_id &&
               <div style={{ marginTop: 16, borderTop: '1px solid var(--bd)', paddingTop: 14, display: 'flex', gap: 10, flexWrap: 'wrap' }}>
                 {!abandoned && (confirm === 'abandon'
                   ? <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'var(--wb)', borderRadius: 999, padding: '5px 6px 5px 14px' }}>
@@ -33792,7 +33722,7 @@
                     <button className="rhq-btn ghost sm" onClick={() => setConfirm(null)}>Cancel</button>
                   </span>
                   : confirm !== 'delete' && <button className="rhq-btn warn" onClick={() => setConfirm('abandon')}>Abandon agent</button>)}
-                {isAdmin && !sel.linked_user_id && (confirm === 'delete'
+                {isAdmin && (confirm === 'delete'
                   ? <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'var(--db)', borderRadius: 999, padding: '5px 6px 5px 14px' }}>
                     <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--df)' }}>Delete forever?</span>
                     <button className="rhq-btn sm" style={{ background: 'var(--df)', color: '#fff' }} onClick={remove}>Delete</button>
@@ -33835,8 +33765,12 @@
                   </div>
                 </div>
               : <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-                  <span className="rhq-chip rhq-stg3">Abandoned{sel.abandoned_at ? ' · ' + fmtDate(sel.abandoned_at) : ''}</span>
-                  <button className="rhq-btn sm" onClick={restore}>Restore to pipeline</button>
+                  <span className="rhq-chip rhq-stg3">{sel.linked_user_id ? 'Removed' : 'Abandoned'}{sel.abandoned_at ? ' · ' + fmtDate(sel.abandoned_at) : ''}</span>
+                  {/* For a former agent this one button does everything: back in
+                      the pipeline, account reactivated, login unblocked. */}
+                  <button className="rhq-btn sm" disabled={acctBusy} onClick={restore}>
+                    {acctBusy ? 'Working…' : sel.linked_user_id ? 'Activate agent' : 'Restore to pipeline'}
+                  </button>
                 </div>}
 
             {/* Onboarding progress — linked account */}
@@ -33848,33 +33782,56 @@
                     {acct.onboarding_completed === true
                       ? <span className="rhq-chip rhq-stg1">Complete</span>
                       : <span className="rhq-chip rhq-onb">{ONB_LABELS[Number(acct.onboarding_step) || 0] || '—'} · {onbPct(acct.onboarding_step)}%</span>}
-                    {isAdmin && sel.linked_user_id && editIconBtn(onbEdit, () => setOnbEdit(v => !v), 'Send through onboarding')}
+                    {/* Only in edit mode, and it gets words rather than a pencil
+                        because it fires an action instead of editing a field. */}
+                    {progEdit && isAdmin && sel.linked_user_id &&
+                      <button className="rhq-btn sm ghost" onClick={() => { setOnbSel({}); setOnbMsg(''); setOnbOpen(true); }}>
+                        Send through onboarding
+                      </button>}
                   </div>
                 </div>
                 {acct.onboarding_completed === false &&
                   <div style={{ height: 8, background: 'var(--sf2)', borderRadius: 6, overflow: 'hidden' }}>
                     <div style={{ height: '100%', width: onbPct(acct.onboarding_step) + '%', borderRadius: 6, background: '#7c3aed' }}></div>
                   </div>}
-                {onbEdit && isAdmin && sel.linked_user_id &&
-                  <div style={{ marginTop: 12 }}>
-                    <button className="rhq-btn ghost sm" onClick={() => { setOnbSel({}); setOnbMsg(''); setOnbOpen(true); }}>Send through onboarding</button>
-                  </div>}
               </div>}
 
             {/* Sales Hub account — admin + linked */}
             {sel.linked_user_id && isAdmin && acct &&
               <div style={{ marginTop: 18, borderTop: '1px solid var(--bd)', paddingTop: 16 }}>
-                {/* Status chip + an inline approve/revoke edit right beside it —
-                    no separate approval box (it was duplicating the chip). */}
+                {/* This label answers ONE question: can they log in right now?
+                    Whether they're removed is already shown up in Progress, so
+                    repeating it here would waste the only place that can tell
+                    you the login is actually switched off. Approval is automatic
+                    for anyone we invited, so Approve only shows if someone is
+                    stuck (signed up under a different email than we invited). */}
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4, flexWrap: 'wrap', gap: 8 }}>
                   <div className="rhq-label" style={{ marginBottom: 0 }}>Sales Hub account</div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-                    <span className={'rhq-chip ' + (acct.status === 'inactive' ? 'rhq-stg3' : acct.approved === false ? 'rhq-stg2' : 'rhq-stg1')}>{acct.status === 'inactive' ? 'Archived' : acct.approved === false ? 'Awaiting approval' : 'Active'}</span>
-                    {progEdit && acct.status !== 'inactive' && (acct.approved === false
-                      ? <button className="rhq-btn sm" onClick={() => setApproved(true)}>Approve</button>
-                      : <button className="rhq-btn ghost sm" onClick={() => setApproved(false)}>Revoke</button>)}
+                    <span className={'rhq-chip ' + (banned === null ? 'rhq-stg2' : banned === true ? 'rhq-stg3' : acct.approved === false ? 'rhq-stg2' : 'rhq-stg1')}>
+                      {banned === null ? 'Login status unknown' : banned === true ? 'Deactivated' : acct.approved === false ? 'Awaiting approval' : 'Active'}
+                    </span>
+                    {acct.status !== 'inactive' && acct.approved === false &&
+                      <button className="rhq-btn sm" onClick={() => setApproved(true)}>Approve</button>}
                   </div>
                 </div>
+                {/* Only speaks up when the two halves disagree — removed but still
+                    able to log in, or blocked while supposedly an active agent.
+                    A silent mismatch here is exactly what stranded Brian. */}
+                {(banned === null
+                  || (banned === false && acct.status === 'inactive')
+                  || (banned === true && acct.status !== 'inactive')) &&
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginTop: 10, flexWrap: 'wrap' }}>
+                    <div className="rhq-muted" style={{ flex: 1, minWidth: 200 }}>
+                      {banned === null
+                        ? 'Can’t check this — the kf_banned_agent_ids function is missing in Supabase.'
+                        : banned === false
+                        ? '⚠️ This agent is removed but can still log in. Use Activate agent, then Remove agent, to set it properly.'
+                        : '⚠️ Their login is switched off even though they’re an active agent — left over from being removed at some point.'}
+                    </div>
+                    {progEdit && banned === true &&
+                      <button className="rhq-btn sm" disabled={acctBusy} onClick={unbanAgent}>{acctBusy ? 'Working…' : 'Let them log in'}</button>}
+                  </div>}
                 {/* Comp level — read-only value until you're in edit mode. Divider
                     above so it lines up with the other sections. */}
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginTop: 12, borderTop: '1px solid var(--bd)', paddingTop: 14, flexWrap: 'wrap' }}>
@@ -33897,12 +33854,12 @@
                       {rmHasPolicies === null
                         ? <div className="rhq-muted">Checking their book of business…</div>
                         : <div>
-                            <div className="rhq-muted" style={{ marginBottom: 10 }}>By default this agent is <strong>archived</strong> (login disabled, all data kept). Nothing is deleted unless you check the box below.</div>
+                            <div className="rhq-muted" style={{ marginBottom: 10 }}>They’ll be <strong>removed</strong>: can’t sign in, hidden everywhere, all data kept, and Unarchive brings them back. Nothing is deleted unless you check the box below.</div>
                             <label style={{ display: 'flex', gap: 8, alignItems: 'center', fontSize: 13, marginBottom: 8 }}><input type="checkbox" checked={rmDeleteData} onChange={e => setRmDeleteData(e.target.checked)} /> Permanently delete the agent{rmHasPolicies ? ' AND all their data' : ''}</label>
                             {rmDeleteData && <input className="rhq-inp" style={{ width: '100%', marginBottom: 10 }} placeholder="Type DELETE to confirm" value={rmText} onChange={e => setRmText(e.target.value)} />}
                           </div>}
                       <div style={{ display: 'flex', gap: 8, marginTop: 6 }}>
-                        <button className={'rhq-btn' + (rmDeleteData ? ' danger' : '')} disabled={rmBusy || rmHasPolicies === null || (rmDeleteData && rmText.trim().toUpperCase() !== 'DELETE')} onClick={confirmRemove}>{rmBusy ? 'Working…' : (rmDeleteData ? (rmHasPolicies ? 'Delete + data' : 'Delete agent') : 'Archive agent')}</button>
+                        <button className={'rhq-btn' + (rmDeleteData ? ' danger' : '')} disabled={rmBusy || rmHasPolicies === null || (rmDeleteData && rmText.trim().toUpperCase() !== 'DELETE')} onClick={confirmRemove}>{rmBusy ? 'Working…' : (rmDeleteData ? 'Delete permanently' : 'Remove agent')}</button>
                         <button className="rhq-btn ghost" onClick={() => setRemoveOpen(false)}>Cancel</button>
                       </div>
                     </div>}
@@ -34023,10 +33980,6 @@
                   {g2(fld('What they need to make', roText(sel.income_need)), fld('What they want to make · year one', roText(sel.income_want)))}
                   {g2(fld('Skills / habits to improve', roList(sel.skills)), fld('Willing to give up', roList(sel.give_ups)))}
                   {fld('Anything to help them succeed', roText(sel.help_note))}
-                  {acct && acct.signed_at &&
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '11px 14px', borderRadius: 12, background: 'var(--s1b)' }}>
-                      <span style={{ fontSize: 13, color: 'var(--s1f)', fontWeight: 600 }}>✍️ 90-day commitment signed by {acct.signed_name} · {fmtDate(acct.signed_at)}</span>
-                    </div>}
                 </div>
               );
             })()}
@@ -34326,7 +34279,6 @@
         photo: null,
         why: '', stg: ['', '', ''], ltg: ['', '', ''], vision: '', skills: ['', '', ''], quits: ['', '', ''],
         motivation: '', incomeNeed: '', incomeWant: '', helpNote: '',
-        signedName: '', signedAt: null,
         licensed: null, npn: '', examDate: '',
         checks: { eo: false, d1: false, d2: false, app: false, crm: false, cal: false, headset: false, statesAck: false, recordings: false, scriptFex: false, objections: false, carriers: false, launch: false, crmBookmark: false },
         videos: {}, stateBuys: {},
@@ -34346,7 +34298,7 @@
       const nm = splitName((u.user_metadata && u.user_metadata.name) || '');
       d.first = nm.first; d.last = nm.last;
       const [aps, rcs] = await Promise.all([
-        getRows('agent_profiles?select=agent_name,phone,avatar_url,npn,licensed,signed_name,signed_at,onboarding_step,onboarding_checks,onboarding_videos,state_buys,onboarding_completed,onboarding_steps,state_licenses,carrier_numbers&user_id=eq.' + uid() + '&limit=1'),
+        getRows('agent_profiles?select=agent_name,phone,avatar_url,npn,licensed,onboarding_step,onboarding_checks,onboarding_videos,state_buys,onboarding_completed,onboarding_steps,state_licenses,carrier_numbers&user_id=eq.' + uid() + '&limit=1'),
         getRows('recruits?select=*&linked_user_id=eq.' + uid() + '&limit=1'),
       ]);
       const ap = aps[0] || {};
@@ -34358,8 +34310,6 @@
       d.photo = ap.avatar_url || null;
       d.npn = ap.npn || '';
       d.licensed = (ap.licensed === true) ? true : (ap.licensed === false ? false : null);
-      d.signedName = ap.signed_name || '';
-      d.signedAt = ap.signed_at || null;
       d.checks = Object.assign(d.checks, ap.onboarding_checks || {});
       d.videos = Object.assign({}, ap.onboarding_videos || {});
       d.stateBuys = Object.assign({}, ap.state_buys || {});
@@ -34624,12 +34574,6 @@
           goal_90: stg.join(' · ') || null, goal_year1: ltg.join(' · ') || null, goal_long_term: d.vision.trim() || null,
         });
         setBusy(false); next();
-      };
-      const saveCommit = async () => {
-        const at = new Date().toISOString();
-        set({ signedAt: at });
-        await patchAgent({ signed_name: d.signedName.trim(), signed_at: at });
-        next();
       };
       // Licensed agents (they have an NPN) don't need the exam step — next()
       // skips it automatically because stepActive('exam') is false once licensed.
@@ -35385,139 +35329,6 @@
     // sending them through it. refresh() no-ops when already showing/checking or
     // when the DB says onboarding is complete.
     setInterval(function () { try { refresh(); } catch (e) {} }, 60000);
-  })();
-  </script>
-
-  <!-- ═══════════════════════════════════════════════════════════════════════
-       PROFILE COMPLETION DEADLINE — nudges existing agents who are missing a
-       profile photo, state license numbers, or carrier writing numbers to add
-       them within 10 days, escalating warnings, then locks the Sales Hub (except
-       Profile) once the due date passes. Deadline stored in
-       agent_profiles.profile_due_at (supabase-profile-compliance-migration.sql).
-       Skips admins and anyone still in onboarding / awaiting approval.
-       ═══════════════════════════════════════════════════════════════════════ -->
-  <script>
-  (function () {
-    var DAYS = 10;
-    var locked = false, wrapped = false, apOrig = null, busy = false, warnedSession = false, lastMissing = null;
-    var lockEl = null, warnEl = null;
-    function theme() {
-      var d = document.documentElement.getAttribute('data-kf-theme') !== 'light';
-      return d ? { sf:'#1B1A18', bd:'#2F2D2A', tx:'#F4F3F1', tx2:'#B3AFAB', tx3:'#736F6B' }
-               : { sf:'#FFFFFF', bd:'#E7E7E2', tx:'#2E2B2B', tx2:'#454040', tx3:'#9C9694' };
-    }
-    function uid() { return window.currentUser && window.currentUser.id; }
-    function isAdmin() { return uid() === 'be364ef5-8426-4587-b8b8-9328b02055a7'; }
-    function tok() { return window.accessToken || SUPABASE_KEY; }
-    // Requires an actual NUMBER in at least one row — a blank/partial row doesn't count.
-    function hasNum(arr) { return Array.isArray(arr) && arr.some(function (x) { return x && String(x.number || '').trim() !== ''; }); }
-    function missingOf(p) { return { photo: !p.avatar_url, licenses: !hasNum(p.state_licenses), carriers: !hasNum(p.carrier_numbers) }; }
-    function missingList(m) { var a = []; if (m.photo) a.push('a profile photo'); if (m.licenses) a.push('your state license number(s)'); if (m.carriers) a.push('your carrier writing number(s)'); return a; }
-    function fmtList(x) { if (x.length <= 1) return x[0] || 'the missing details'; if (x.length === 2) return x[0] + ' and ' + x[1]; return x.slice(0, -1).join(', ') + ', and ' + x[x.length - 1]; }
-    function daysLeft(due) { return Math.ceil((new Date(due).getTime() - Date.now()) / 86400000); }
-    function goProfile() { try { (apOrig || window.activatePanel)('profile'); } catch (e) {} }
-
-    async function fetchState() {
-      try {
-        if (window.ensureValidAccessToken) await window.ensureValidAccessToken();
-        var r = await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?select=avatar_url,state_licenses,carrier_numbers,profile_due_at,onboarding_completed,approved&user_id=eq.' + uid() + '&limit=1',
-          { headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + tok() } });
-        if (!r.ok) return null;
-        var rows = await r.json(); return (rows && rows[0]) || null;
-      } catch (e) { return null; }
-    }
-    async function setDue(iso) {
-      try {
-        if (window.ensureValidAccessToken) await window.ensureValidAccessToken();
-        await fetch(SUPABASE_URL + '/rest/v1/agent_profiles?user_id=eq.' + uid(),
-          { method: 'PATCH', headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + tok(), 'Content-Type': 'application/json', 'Prefer': 'return=minimal' }, body: JSON.stringify({ profile_due_at: iso }) });
-      } catch (e) {}
-    }
-
-    function ensureWrap() {
-      if (wrapped || typeof window.activatePanel !== 'function') return;
-      apOrig = window.activatePanel;
-      window.activatePanel = function (panel) { if (locked && panel !== 'profile') { renderLock(); return; } return apOrig(panel); };
-      wrapped = true;
-    }
-    function renderLock() {
-      var t = theme(); var items = missingList(lastMissing || { photo: true, licenses: true, carriers: true });
-      var lightBg = document.documentElement.getAttribute('data-kf-theme') === 'light';
-      if (!lockEl) { lockEl = document.createElement('div'); lockEl.id = 'kfComplyLock'; document.body.appendChild(lockEl); }
-      lockEl.style.cssText = 'position:fixed;inset:0;z-index:99000;display:flex;align-items:flex-start;justify-content:center;padding-top:6rem;background:' + (lightBg ? 'rgba(246,245,241,.86)' : 'rgba(8,9,12,.82)') + ';backdrop-filter:blur(8px);font-family:\'Instrument Sans\',Inter,system-ui,sans-serif;';
-      lockEl.innerHTML =
-        '<div style="background:' + t.sf + ';color:' + t.tx + ';border:1px solid ' + t.bd + ';border-radius:20px;max-width:420px;width:92%;padding:30px;box-shadow:0 24px 70px rgba(0,0,0,.45);text-align:center;">'
-        + '<div style="width:52px;height:52px;border-radius:50%;background:#FDE0E0;color:#D90000;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg></div>'
-        + '<h3 style="margin:0 0 6px;font-size:19px;font-weight:700;letter-spacing:-.02em;">Your Sales Hub is locked</h3>'
-        + '<p style="margin:0 0 18px;font-size:13.5px;color:' + t.tx2 + ';line-height:1.55;">Your 10 days are up. To unlock the Sales Hub, add ' + fmtList(items) + ' on your Profile.</p>'
-        + '<button id="kfComplyGo" style="padding:12px 22px;border-radius:999px;border:none;background:#A1CB35;color:#232B07;font-weight:700;font-size:14px;cursor:pointer;font-family:inherit;">Complete my profile →</button>'
-        + '</div>';
-      lockEl.style.display = 'flex';
-      var b = document.getElementById('kfComplyGo');
-      if (b) b.onclick = function () { lockEl.style.display = 'none'; goProfile(); };
-    }
-    function showWarning(dl, m) {
-      if (warnedSession) return; warnedSession = true;
-      var t = theme(); var items = missingList(m);
-      var urgent = dl <= 3, mid = dl <= 5;
-      var accent = urgent ? '#D90000' : (mid ? '#C25400' : '#5F7F10');
-      var accentBg = urgent ? '#FDE0E0' : (mid ? '#FFE9D6' : '#EFF6D9');
-      if (!warnEl) { warnEl = document.createElement('div'); warnEl.id = 'kfComplyWarn'; document.body.appendChild(warnEl); }
-      warnEl.style.cssText = 'position:fixed;inset:0;z-index:99001;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.5);backdrop-filter:blur(5px);font-family:\'Instrument Sans\',Inter,system-ui,sans-serif;';
-      var head = urgent ? ('Your Sales Hub will be locked in ' + dl + ' day' + (dl === 1 ? '' : 's')) : (mid ? ('Reminder · ' + dl + ' days left') : 'Please complete your profile');
-      warnEl.innerHTML =
-        '<div style="background:' + t.sf + ';color:' + t.tx + ';border:1px solid ' + t.bd + ';border-radius:20px;max-width:440px;width:92%;padding:26px;box-shadow:0 24px 70px rgba(0,0,0,.45);text-align:center;">'
-        + '<div style="width:48px;height:48px;border-radius:50%;background:' + accentBg + ';color:' + accent + ';display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-weight:800;font-size:22px;">' + (urgent ? '!' : '★') + '</div>'
-        + '<h3 style="margin:0 0 6px;font-size:18px;font-weight:700;letter-spacing:-.02em;">' + head + '</h3>'
-        + '<p style="margin:0 0 8px;font-size:13.5px;color:' + t.tx2 + ';line-height:1.55;">Please add ' + fmtList(items) + ' on your Profile page.</p>'
-        + (urgent
-            ? '<p style="margin:0 0 16px;font-size:13px;color:' + accent + ';font-weight:600;">In ' + dl + ' more day' + (dl === 1 ? '' : 's') + ', your Sales Hub will be locked until this is done.</p>'
-            : '<p style="margin:0 0 16px;font-size:13px;color:' + t.tx3 + ';">You have ' + dl + ' days before your Sales Hub is locked.</p>')
-        + '<div style="display:flex;gap:10px;justify-content:center;">'
-        + '<button id="kfComplyLater" style="padding:10px 18px;border-radius:999px;border:1px solid ' + t.bd + ';background:transparent;color:' + t.tx2 + ';font-weight:600;font-size:13px;cursor:pointer;font-family:inherit;">Remind me later</button>'
-        + '<button id="kfComplyGo2" style="padding:10px 20px;border-radius:999px;border:none;background:#A1CB35;color:#232B07;font-weight:700;font-size:13px;cursor:pointer;font-family:inherit;">Go to my Profile →</button>'
-        + '</div></div>';
-      warnEl.style.display = 'flex';
-      document.getElementById('kfComplyLater').onclick = function () { warnEl.style.display = 'none'; };
-      document.getElementById('kfComplyGo2').onclick = function () { warnEl.style.display = 'none'; goProfile(); };
-      warnEl.onclick = function (e) { if (e.target === warnEl) warnEl.style.display = 'none'; };
-    }
-    function unlockAll() { locked = false; if (lockEl) lockEl.style.display = 'none'; if (warnEl) warnEl.style.display = 'none'; }
-
-    async function refresh(fromAuth) {
-      if (busy) return;
-      var u = window.currentUser;
-      if (!u || !u.id || isAdmin()) { unlockAll(); return; }
-      busy = true;
-      try {
-        var p = await fetchState();
-        if (!p) { unlockAll(); return; }
-        if (p.onboarding_completed === false || p.approved === false) { unlockAll(); return; }   // handled elsewhere
-        var m = missingOf(p); lastMissing = m;
-        if (!m.photo && !m.licenses && !m.carriers) { unlockAll(); return; }                      // compliant
-        var due = p.profile_due_at;
-        if (!due) { due = new Date(Date.now() + DAYS * 86400000).toISOString(); setDue(due); }
-        var dl = daysLeft(due);
-        ensureWrap();
-        if (dl <= 0) { locked = true; renderLock(); }
-        else { locked = false; if (lockEl) lockEl.style.display = 'none'; if (fromAuth) showWarning(dl, m); }
-      } finally { busy = false; }
-    }
-    window.KFCompliance = {
-      refresh: function () { return refresh(false); },
-      // Preview any state without waiting for the real countdown. In the browser
-      // console: KFCompliance.preview(8) / preview(5) / preview(3) / preview(0=lock).
-      preview: function (dl) {
-        var m = lastMissing || { photo: true, licenses: true, carriers: true };
-        if (dl <= 0) { lastMissing = m; ensureWrap(); locked = true; renderLock(); }
-        else { warnedSession = false; showWarning(dl, m); }
-      }
-    };
-    if (typeof window.updateAuthUI === 'function') {
-      var o = window.updateAuthUI;
-      window.updateAuthUI = function () { o.apply(this, arguments); try { refresh(true); } catch (e) {} };
-    }
-    setTimeout(function () { refresh(true); }, 1000);
   })();
   </script>
 
