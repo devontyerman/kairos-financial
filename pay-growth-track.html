@@ -180,14 +180,14 @@
     <div class="seclab">
       <span class="t gold">Leader Levels</span>
       <span class="ln"></span>
-      <span class="r">115% – 150%</span>
+      <span class="r">110% – 145%</span>
     </div>
     <section class="tbl bld" id="bld"></section>
 
     <div class="seclab">
       <span class="t sage">Producer Levels</span>
       <span class="ln"></span>
-      <span class="r">80% – 110%</span>
+      <span class="r">75% – 105%</span>
     </div>
     <section class="tbl prod" id="prod"></section>
 
@@ -197,7 +197,7 @@
         <div class="fine">
           <p><span class="n">01</span>After reaching a level, you must hit at least that level — or the level directly below it — at least once every three months, or you drop down one level.</p>
           <p><span class="n">02</span>You can move up only one level at a time — comp levels cannot be skipped. You must hit a level two months in a row before you can move up to the next one.</p>
-          <p><span class="n">03</span>All agents start at an 80% level unless approved by corporate staff. Exceptions require proof of current production and persistency, at the discretion of corporate staff.</p>
+          <p><span class="n">03</span>All agents start at a 75% level unless approved by corporate staff. Exceptions require proof of current production and persistency, at the discretion of corporate staff.</p>
           <p><span class="n">04</span>Production months end at the end of each calendar month. Split policies count 100% toward the writing agent.</p>
           <p><span class="n">05</span>A minimum 75% persistency over 12 months is required for all promotions.</p>
           <p><span class="n">06</span>Agents may be hired directly to your hierarchy once the 90% level has been achieved.</p>
@@ -215,25 +215,23 @@
 
 <script>
   const BLD=[
-    {pct:150, amt:3000000, req:'15 direct agents each issue paying $25K+ a month', equity:true},
-    {pct:145, amt:2000000, req:'15 direct agents each issue paying $25K+ a month'},
+    {pct:145, amt:2000000, req:'15 direct agents each issue paying $25K+ a month', equity:true},
     {pct:140, amt:1500000, req:'15 direct agents each issue paying $25K+ a month'},
     {pct:135, amt:1000000, req:'15 direct agents each issue paying $25K+ a month'},
     {pct:130, amt:750000,  req:'15 direct agents each issue paying $25K+ a month'},
     {pct:125, amt:500000,  req:'10 direct agents each issue paying $25K+ a month'},
     {pct:120, amt:250000,  req:'5 direct agents each issue paying $25K+ a month'},
     {pct:115, amt:100000,  req:'5 direct agents each issue paying $25K+ a month'},
+    {pct:110, amt:75000,   req:'5 direct agents each issue paying $25K+ a month'},
   ];
   const PROD=[
-    {pct:110, amt:60000},
-    {pct:105, amt:50000},
-    {pct:100, amt:40000},
-    {pct:95,  amt:30000},
-    {pct:90,  amt:20000},
-    {pct:85,  amt:10000},
+    {pct:105, amt:55000},
+    {pct:100, amt:45000},
+    {pct:95,  amt:35000},
+    {pct:90,  amt:25000},
+    {pct:85,  amt:15000},
     {pct:80,  amt:5000},
-    {pct:75,  amt:2500},
-    {pct:70,  pill:'Starting Contract Rate'},
+    {pct:75,  pill:'Starting Contract Rate'},
   ];
   const money=v=>'$'+v.toLocaleString('en-US');
   const pc=p=>typeof p==='number'?`${p}<sup>%</sup>`:p;
